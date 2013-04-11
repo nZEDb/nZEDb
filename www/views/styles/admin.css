@@ -4,7 +4,7 @@ fieldset { margin-bottom:20px; border:1px solid #999;}
 legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:right; }
 
 
-#content { width: 84%; }
+#content { width: 720px; }
 #sidebar { width: 200px; }
 #sidebar li li:hover { cursor:auto; }
 #logo { width: 0; height: 0; margin: 0 auto; padding-left:0; margin-top:0; }
