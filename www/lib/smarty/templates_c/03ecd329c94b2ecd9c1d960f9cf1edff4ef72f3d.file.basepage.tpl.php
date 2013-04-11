@@ -1,24 +1,23 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:41:11
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:46:24
          compiled from "/var/www/newznab/www/views/templates/frontend/basepage.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:146323196251671fe78b1832-54689215%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:50466145551672f301a5244-39316607%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '03ecd329c94b2ecd9c1d960f9cf1edff4ef72f3d' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/basepage.tpl',
-      1 => 1365712869,
+      1 => 1365716781,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '146323196251671fe78b1832-54689215',
+  'nocache_hash' => '50466145551672f301a5244-39316607',
   'function' => 
   array (
   ),
   'has_nocache_code' => false,
 )); /*/%%SmartyHeaderCode%%*/?>
-<?php if (!is_callable('smarty_modifier_date_format')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.date_format.php';
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -132,17 +131,6 @@ $_smarty_tpl->decodeProperties(array (
 			</a> 
 		</div>
 		
-	</div>
-
-	<div class="footer">
-	<p>
-		<?php echo $_smarty_tpl->getVariable('site')->value->footer;?>
-
-		<br /><br /><br /><a title="Newznab - A usenet indexing web application with community features." href="http://www.newznab.com/">Newznab</a> is released under GPL. All rights reserved <?php echo smarty_modifier_date_format(time(),"%Y");?>
-. <br/> <a title="Chat about newznab" href="http://www.newznab.com/chat.html">Newznab Chat</a> <br/><a href="<?php echo @WWW_TOP;?>
-/terms-and-conditions"><?php echo $_smarty_tpl->getVariable('site')->value->title;?>
- Terms and Conditions</a>
-	</p>
 	</div>
 	
 	<?php if ($_smarty_tpl->getVariable('site')->value->google_analytics_acc!=''){?>

@@ -58,19 +58,6 @@
 	</div>
 	<!-- end #page -->
 	
-	<div id="searchfooter">
-		<center>
-		</center>
-	</div>
-	
-	<div class="footer">
-	<p>
-		{$site->footer}
-		<br /><br /><br />Copyright &copy; {$smarty.now|date_format:"%Y"} {$site->title}. All rights reserved.
-	</p>
-	</div>
-	<!-- end #footer -->
-	
 	{if $google_analytics_acc != ''}
 	{literal}
 	<script type="text/javascript">

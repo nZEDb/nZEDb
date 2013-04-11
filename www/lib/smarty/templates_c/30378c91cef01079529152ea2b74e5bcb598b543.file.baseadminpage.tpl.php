@@ -1,24 +1,23 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 10:57:21
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:45:36
          compiled from "/var/www/newznab/www/views/templates/admin/baseadminpage.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:15927500175166cf51c41327-50301248%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:38103464051672f00b63904-81297978%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '30378c91cef01079529152ea2b74e5bcb598b543' => 
     array (
       0 => '/var/www/newznab/www/views/templates/admin/baseadminpage.tpl',
-      1 => 1365687713,
+      1 => 1365716728,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '15927500175166cf51c41327-50301248',
+  'nocache_hash' => '38103464051672f00b63904-81297978',
   'function' => 
   array (
   ),
   'has_nocache_code' => false,
 )); /*/%%SmartyHeaderCode%%*/?>
-<?php if (!is_callable('smarty_modifier_date_format')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.date_format.php';
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -94,22 +93,6 @@ $_smarty_tpl->decodeProperties(array (
 			
 	</div>
 	<!-- end #page -->
-	
-	<div id="searchfooter">
-		<center>
-		</center>
-	</div>
-	
-	<div class="footer">
-	<p>
-		<?php echo $_smarty_tpl->getVariable('site')->value->footer;?>
-
-		<br /><br /><br />Copyright &copy; <?php echo smarty_modifier_date_format(time(),"%Y");?>
- <?php echo $_smarty_tpl->getVariable('site')->value->title;?>
-. All rights reserved.
-	</p>
-	</div>
-	<!-- end #footer -->
 	
 	<?php if ($_smarty_tpl->getVariable('google_analytics_acc')->value!=''){?>
 	
