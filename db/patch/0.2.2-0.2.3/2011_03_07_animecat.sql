@@ -1,0 +1,1 @@
+INSERT INTO category (ID, title, parentID) VALUES (7040, 'Anime', 7000);

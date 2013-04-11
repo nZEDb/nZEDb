@@ -1,0 +1,1 @@
+alter table site add minfilestoformrelease INT NOT NULL DEFAULT 1;

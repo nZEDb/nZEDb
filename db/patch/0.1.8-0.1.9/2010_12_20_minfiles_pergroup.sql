@@ -1,0 +1,1 @@
+alter table groups add minfilestoformrelease int(4) null ;

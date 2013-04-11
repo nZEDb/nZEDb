@@ -1,0 +1,1 @@
+alter table content add role int not null default 0;

@@ -1,0 +1,1 @@
+alter table binaryblacklist add msgcol int not null default 1;

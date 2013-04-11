@@ -1,0 +1,1 @@
+ALTER TABLE releaseregex AUTO_INCREMENT = 100000;

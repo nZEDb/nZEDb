@@ -1,0 +1,1 @@
+ALTER TABLE  binaries ADD INDEX  `ix_name_fromname_groupID` (  `name` ,  `fromname` ,  `groupID` );

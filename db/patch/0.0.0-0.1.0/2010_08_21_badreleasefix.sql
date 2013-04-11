@@ -1,0 +1,11 @@
+UPDATE releases set categoryid = 5040 where name like '%S01%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S02%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S03%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S04%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S05%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S06%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S07%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S08%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S09%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S10%' and regexid = 89 and categoryid = 2040;
+UPDATE releases set categoryid = 5040 where name like '%S11%' and regexid = 89 and categoryid = 2040;

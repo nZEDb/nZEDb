@@ -1,0 +1,1 @@
+alter table category add `disablepreview` tinyint(1) NOT NULL default '0';

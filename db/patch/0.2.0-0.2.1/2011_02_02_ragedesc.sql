@@ -1,0 +1,1 @@
+ALTER TABLE tvrage MODIFY description VARCHAR(10000);

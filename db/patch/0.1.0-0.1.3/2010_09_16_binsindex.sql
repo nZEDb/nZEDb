@@ -1,0 +1,1 @@
+CREATE INDEX ix_binary_groupID_procstat ON binaries (procstat, groupID);

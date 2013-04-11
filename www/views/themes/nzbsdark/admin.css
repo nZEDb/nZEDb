@@ -1,0 +1,7 @@
+
+/* example site specific admin theme*/
+#logo{display:none;}
+body {background-color:#111; background-image:none;}
+
+#sidebar {width:160px;}
+#content {width:750px; border:none;}

@@ -1,0 +1,1 @@
+alter table binaries add importname varchar(255) null;

@@ -1,0 +1,74 @@
+REQUIREMENTS
+	PHP
+		php version 5.2 or higher (5.3 recommended, lower versions may give warnings on some functions)
+		sessions enabled
+		memory limit at 256MB or more
+		minimum execution time of 60+ seconds
+		make sure you update the php.ini for both web and cli
+		OpenSSL (if connecting to ssl usenet provider)
+		php register_globals off
+
+	GD Imaging Library w/PHP integration
+
+	PEAR
+
+	MySQL
+		max_allowed_packet=12582912
+		group_concat_max_len=8192
+		timezone set to php's
+	
+	Apache
+		script timeout of at least 60 seconds
+		mod_rewrite enabled
+		.htaccess allow override on
+
+	3rd Party API Keys (recommended to get your own api keys)
+		tmdb (signup @ http://api.themoviedb.org/2.1/)
+		amazon (signup @ https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html)
+		rottentomatoes (signup @ http://developer.rottentomatoes.com)
+	
+	Deep rar password inspection
+		unrar version 3.9 or higher
+	
+	Thumbnailing and media info (if feep rar inspection is enabled)
+		ffmpeg
+		mediainfo
+	
+		
+INSTALLATION
+	there is an installer in \install\ try it first by creating your website,
+	copying the application files there, and browsing to http://yournewznabserver/install.
+	
+	refer to the list of requirements above if you encounter any errors during install, or the FAQ in the README
+	
+	once installed activate only one or two groups to test with first (a.b.teevee is a good choice), this
+	will save you time if it is not working correctly.
+	
+	run the update_binaries.php and update_releases.php scripts in \misc\update_scripts\ via command-line.
+	
+	if updating was successful then you can continue to setup your site and configure the update scripts for
+	auto-updating.
+	
+	
+RUNNING OUTSIDE OF WEB ROOT
+	set /.htaccess RewriteBase to your virtual directory
+	
+	
+SAMPLE APACHE VHOST CONFIG
+	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.  
+	You should find this under /etc/apache2/sites-enabled/ (000-default).	
+	<VirtualHost *:80>
+	        <Directory /domains/www/example.com/newz/www/>
+	                Options FollowSymLinks
+	                AllowOverride All
+	                Order allow,deny
+	                allow from all
+	        </Directory>
+	
+	        ServerAdmin admin@example.com
+	        ServerName example.com 
+	        ServerAlias www.example.com
+	        DocumentRoot /domains/www/example.com/newz/www
+	        LogLevel warn
+	        ServerSignature Off
+	</VirtualHost>

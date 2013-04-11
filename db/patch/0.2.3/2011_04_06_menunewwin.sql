@@ -1,0 +1,1 @@
+alter table menu add `newwindow` int(1) unsigned NOT NULL DEFAULT 0;

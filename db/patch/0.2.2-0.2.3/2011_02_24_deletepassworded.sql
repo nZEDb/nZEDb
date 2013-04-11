@@ -1,0 +1,1 @@
+alter table site add deletepasswordedrelease int not null default 0;
