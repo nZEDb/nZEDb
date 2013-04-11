@@ -17,6 +17,7 @@ if (isset($argv[1]))
 	else
 	{
 		echo "Wrong argument, type php update_releases.php to see a list of valid arguments.\n";
+		die;
 	}
 }
 else
