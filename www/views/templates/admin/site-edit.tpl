@@ -86,14 +86,6 @@
 </tr>
 
 <tr>
-	<td><label for="style">User Menu Position</label>:</td>
-	<td>
-		{html_options class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$fsite->menuposition}
-		<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (e.g. nzbsu theme)</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="style">Dereferrer Link</label>:</td>
 	<td>
 		<input id="dereferrer_link" class="long" name="dereferrer_link" type="text" value="{$fsite->dereferrer_link}" />
@@ -114,14 +106,6 @@
 	<td>
 		<textarea id="tandc" name="tandc">{$fsite->tandc}</textarea>
 		<div class="hint">Text displayed in the terms and conditions page.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="newznabID">newznab ID</label>:</td>
-	<td>
-		<input id="newznabID" class="long" name="newznabID" type="text" value="{$fsite->newznabID}" />
-		<div class="hint">Your registered newznab ID. Used for access to additional features.</div>
 	</td>
 </tr>
 
@@ -324,22 +308,6 @@
 </tr>
 
 <tr>
-	<td><label for="rawretentiondays">Header Retention</label>:</td>
-	<td>
-		<input class="tiny" id="rawretentiondays" name="rawretentiondays" type="text" value="{$fsite->rawretentiondays}" />
-		<div class="hint">The number of days binary and part data will be retained for use in raw search and release formation. <strong>Set to 0 during import to remove headers immediately.</strong></div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="attemptgroupbindays">Days to Attempt To Group</label>:</td>
-	<td>
-		<input class="tiny" id="attemptgroupbindays" name="attemptgroupbindays" type="text" value="{$fsite->attemptgroupbindays}" />
-		<div class="hint">The number of days an attempt will be made to group binaries into releases after being added.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="releaseretentiondays">Release Retention</label>:</td>
 	<td>
 		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
@@ -392,14 +360,6 @@
 	<td>
 		<input class="long" id="reqidurl" name="reqidurl" type="text" value="{$fsite->reqidurl}" />
 		<div class="hint">The url to use to translate allfilled style reqid usenet posts into real release titles. Leave blank to not perform lookup.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="reqidurl">Latest Regex Lookup URL</label>:</td>
-	<td>
-		<input class="long" id="latestregexurl" name="latestregexurl" type="text" value="{$fsite->latestregexurl}" />
-		<div class="hint">The url to use to get the latest regexs. Leave blank to not perform lookup. This will retrieve all user contributed regexes.</div>
 	</td>
 </tr>
 

@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 11:05:33
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:41:11
          compiled from "/var/www/newznab/www/views/templates/frontend/basepage.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:13938860095166d13d09be28-86624054%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:146323196251671fe78b1832-54689215%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '03ecd329c94b2ecd9c1d960f9cf1edff4ef72f3d' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/basepage.tpl',
-      1 => 1365687713,
+      1 => 1365712869,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '13938860095166d13d09be28-86624054',
+  'nocache_hash' => '146323196251671fe78b1832-54689215',
   'function' => 
   array (
   ),
@@ -91,8 +91,8 @@ $_smarty_tpl->decodeProperties(array (
  Logo" src="<?php echo @WWW_TOP;?>
 /views/images/clearlogo.png" /></a>
 
-		<?php if ($_smarty_tpl->getVariable('site')->value->menuposition==2){?><ul><?php echo $_smarty_tpl->getVariable('main_menu')->value;?>
-</ul><?php }?>
+		<ul><?php echo $_smarty_tpl->getVariable('main_menu')->value;?>
+</ul>
 
 		<h1><a href="<?php echo @WWW_TOP;?>
 <?php echo $_smarty_tpl->getVariable('site')->value->home_link;?>
@@ -124,66 +124,6 @@ $_smarty_tpl->decodeProperties(array (
 			<?php echo $_smarty_tpl->getVariable('page')->value->content;?>
 
 		</div>
-
-		<?php if ($_smarty_tpl->getVariable('site')->value->menuposition==1){?>
-		<div id="sidebar">
-			<ul>		
-			
-			<?php echo $_smarty_tpl->getVariable('main_menu')->value;?>
-
-			
-			<?php echo $_smarty_tpl->getVariable('article_menu')->value;?>
-
-	
-			<?php echo $_smarty_tpl->getVariable('useful_menu')->value;?>
-
-			
-			<?php if ($_smarty_tpl->getVariable('site')->value->google_adsense_acc!=''&&$_smarty_tpl->getVariable('site')->value->google_adsense_search!=''){?>
-			
-				<li>
-				<h2>Search for <?php echo $_smarty_tpl->getVariable('site')->value->term_plural;?>
-</h2> 
-				<div style="padding-left:20px;">
-					<div class="cse-branding-bottom" style="background-color:#FFFFFF;color:#000000">
-					  <div class="cse-branding-form">
-					    <form action="http://www.google.co.uk/cse" id="cse-search-box" target="_blank">
-					      <div>
-					        <input type="hidden" name="cx" value="partner-<?php echo $_smarty_tpl->getVariable('site')->value->google_adsense_acc;?>
-:<?php echo $_smarty_tpl->getVariable('site')->value->google_adsense_search;?>
-" />
-					        <input type="hidden" name="ie" value="UTF-8" />
-					        <input type="text" name="q" size="10" />
-					        <input type="submit" name="sa" value="Search" />
-					      </div>
-					    </form>
-					  </div>
-					  <div class="cse-branding-logo">
-					    <img src="http://www.google.com/images/poweredby_transparent/poweredby_FFFFFF.gif" alt="Google" />
-					  </div>
-					  <div class="cse-branding-text">
-					    Custom Search
-					  </div>
-					</div>
-				</div>
-				</li>		
-			
-			<?php }?>
-			
-			<li>
-				<a title="Sickbeard - The ultimate usenet PVR" href="http://www.sickbeard.com/"><img class="menupic" alt="Sickbeard - The ultimate usenet PVR" src="<?php echo @WWW_TOP;?>
-/views/images/sickbeard.png" /></a>
-			</li>
-			<li>
-				<a title="CouchPotato - Automatic movie downloader" href="http://www.couchpotatoapp.com/"><img style="padding-left:30px;"  class="menupic" alt="CouchPotato - Automatic Movie Downloader" src="<?php echo @WWW_TOP;?>
-/views/images/couchpotato.png" /></a>
-			</li>
-			<li>
-				<a title="Sabznbd - A great usenet binary downloader" href="http://www.sabnzbd.org/"><img class="menupic" alt="Sabznbd - A great usenet binary downloader" src="<?php echo @WWW_TOP;?>
-/views/images/sabnzbd.png" /></a>
-			</li>
-			</ul>
-		</div>
-		<?php }?>
 	
 		<div style="clear: both;text-align:right;">
 			<a class="w3validator" href="http://validator.w3.org/check?uri=referer">

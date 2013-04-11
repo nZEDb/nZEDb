@@ -847,7 +847,7 @@ INSERT INTO `site`
 	('siteseed', MD5(UUID())),
 	('tandc', '<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
 	('registerstatus', 0),
-	('style', ''),
+	('style', 'Default'),
 	('menuposition', 1),
 	('home_link', '/'),
 	('dereferrer_link', 'http://www.dereferer.ws/?'),

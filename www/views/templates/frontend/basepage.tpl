@@ -44,7 +44,7 @@
 	<div id="logo">
 		<a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/views/images/clearlogo.png" /></a>
 
-		{if $site->menuposition==2}<ul>{$main_menu}</ul>{/if}
+		<ul>{$main_menu}</ul>
 
 		<h1><a href="{$smarty.const.WWW_TOP}{$site->home_link}">{$site->title}</a></h1>
 		<p><em>{$site->strapline}</em></p>
@@ -69,57 +69,6 @@
 		<div id="content">
 			{$page->content}
 		</div>
-
-		{if $site->menuposition==1}
-		<div id="sidebar">
-			<ul>		
-			
-			{$main_menu}
-			
-			{$article_menu}
-	
-			{$useful_menu}
-			
-			{if $site->google_adsense_acc != '' && $site->google_adsense_search != ''}
-			{literal}
-				<li>
-				<h2>Search for {/literal}{$site->term_plural}{literal}</h2> 
-				<div style="padding-left:20px;">
-					<div class="cse-branding-bottom" style="background-color:#FFFFFF;color:#000000">
-					  <div class="cse-branding-form">
-					    <form action="http://www.google.co.uk/cse" id="cse-search-box" target="_blank">
-					      <div>
-					        <input type="hidden" name="cx" value="partner-{/literal}{$site->google_adsense_acc}{literal}:{/literal}{$site->google_adsense_search}{literal}" />
-					        <input type="hidden" name="ie" value="UTF-8" />
-					        <input type="text" name="q" size="10" />
-					        <input type="submit" name="sa" value="Search" />
-					      </div>
-					    </form>
-					  </div>
-					  <div class="cse-branding-logo">
-					    <img src="http://www.google.com/images/poweredby_transparent/poweredby_FFFFFF.gif" alt="Google" />
-					  </div>
-					  <div class="cse-branding-text">
-					    Custom Search
-					  </div>
-					</div>
-				</div>
-				</li>		
-			{/literal}
-			{/if}
-			
-			<li>
-				<a title="Sickbeard - The ultimate usenet PVR" href="http://www.sickbeard.com/"><img class="menupic" alt="Sickbeard - The ultimate usenet PVR" src="{$smarty.const.WWW_TOP}/views/images/sickbeard.png" /></a>
-			</li>
-			<li>
-				<a title="CouchPotato - Automatic movie downloader" href="http://www.couchpotatoapp.com/"><img style="padding-left:30px;"  class="menupic" alt="CouchPotato - Automatic Movie Downloader" src="{$smarty.const.WWW_TOP}/views/images/couchpotato.png" /></a>
-			</li>
-			<li>
-				<a title="Sabznbd - A great usenet binary downloader" href="http://www.sabnzbd.org/"><img class="menupic" alt="Sabznbd - A great usenet binary downloader" src="{$smarty.const.WWW_TOP}/views/images/sabnzbd.png" /></a>
-			</li>
-			</ul>
-		</div>
-		{/if}
 	
 		<div style="clear: both;text-align:right;">
 			<a class="w3validator" href="http://validator.w3.org/check?uri=referer">

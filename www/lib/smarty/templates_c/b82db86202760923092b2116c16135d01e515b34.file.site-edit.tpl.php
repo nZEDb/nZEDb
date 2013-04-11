@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 10:57:28
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:45:07
          compiled from "/var/www/newznab/www/views/templates/admin/site-edit.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:16043587105166cf588360f7-02347876%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:828314586516720d3df0682-80530008%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'b82db86202760923092b2116c16135d01e515b34' => 
     array (
       0 => '/var/www/newznab/www/views/templates/admin/site-edit.tpl',
-      1 => 1365687713,
+      1 => 1365713104,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '16043587105166cf588360f7-02347876',
+  'nocache_hash' => '828314586516720d3df0682-80530008',
   'function' => 
   array (
   ),
@@ -120,15 +120,6 @@ if (!is_callable('smarty_function_html_radios')) include '/var/www/newznab/www/l
 </tr>
 
 <tr>
-	<td><label for="style">User Menu Position</label>:</td>
-	<td>
-		<?php echo smarty_function_html_options(array('class'=>"siteeditmenuposition",'id'=>"menuposition",'name'=>'menuposition','values'=>$_smarty_tpl->getVariable('menupos_ids')->value,'output'=>$_smarty_tpl->getVariable('menupos_names')->value,'selected'=>$_smarty_tpl->getVariable('fsite')->value->menuposition),$_smarty_tpl);?>
-
-		<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (e.g. nzbsu theme)</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="style">Dereferrer Link</label>:</td>
 	<td>
 		<input id="dereferrer_link" class="long" name="dereferrer_link" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->dereferrer_link;?>
@@ -152,15 +143,6 @@ if (!is_callable('smarty_function_html_radios')) include '/var/www/newznab/www/l
 		<textarea id="tandc" name="tandc"><?php echo $_smarty_tpl->getVariable('fsite')->value->tandc;?>
 </textarea>
 		<div class="hint">Text displayed in the terms and conditions page.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="newznabID">newznab ID</label>:</td>
-	<td>
-		<input id="newznabID" class="long" name="newznabID" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->newznabID;?>
-" />
-		<div class="hint">Your registered newznab ID. Used for access to additional features.</div>
 	</td>
 </tr>
 
@@ -379,24 +361,6 @@ if (!is_callable('smarty_function_html_radios')) include '/var/www/newznab/www/l
 		<input id="nzbpath" class="long" name="nzbpath" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->nzbpath;?>
 " />
 		<div class="hint">The directory where nzb files will be stored.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="rawretentiondays">Header Retention</label>:</td>
-	<td>
-		<input class="tiny" id="rawretentiondays" name="rawretentiondays" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->rawretentiondays;?>
-" />
-		<div class="hint">The number of days binary and part data will be retained for use in raw search and release formation. <strong>Set to 0 during import to remove headers immediately.</strong></div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="attemptgroupbindays">Days to Attempt To Group</label>:</td>
-	<td>
-		<input class="tiny" id="attemptgroupbindays" name="attemptgroupbindays" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->attemptgroupbindays;?>
-" />
-		<div class="hint">The number of days an attempt will be made to group binaries into releases after being added.</div>
 	</td>
 </tr>
 
