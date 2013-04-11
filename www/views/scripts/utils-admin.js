@@ -111,30 +111,6 @@ function ajax_group_purge(id)
 	});
 }
 
-/**
- * ajax_releaseregex_delete()
- *
- * @param id        regex id
- */
-function ajax_releaseregex_delete(id)
-{
-    // no caching of results
-    var rand_no = Math.random();
-	$.ajax({
-	  url       : WWW_TOP + '/admin/ajax_regex-list.php?action=2&rand=' + rand_no,
-	  data      : { regex_id: id},
-	  dataType  : "html",
-	  success   : function(data)
-	  {
-		  $('div#message').html(data);
-		  $('div#message').show('fast', function() {});
-		  $('#row-'+id).fadeOut(2000);
-		  $('#message').fadeOut(5000);
-	  },
-	  error: function(xhr,err,e) { alert( "Error in ajax_releaseregex_delete: " + err ); }
-	});
-}
-
 
 /**
  * ajax_binaryblacklist_delete()

@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:45:07
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:48:33
          compiled from "/var/www/newznab/www/views/templates/admin/site-edit.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:828314586516720d3df0682-80530008%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:222614300516721a10c5aa4-44650208%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'b82db86202760923092b2116c16135d01e515b34' => 
     array (
       0 => '/var/www/newznab/www/views/templates/admin/site-edit.tpl',
-      1 => 1365713104,
+      1 => 1365713148,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '828314586516720d3df0682-80530008',
+  'nocache_hash' => '222614300516721a10c5aa4-44650208',
   'function' => 
   array (
   ),
@@ -424,15 +424,6 @@ if (!is_callable('smarty_function_html_radios')) include '/var/www/newznab/www/l
 		<input class="long" id="reqidurl" name="reqidurl" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->reqidurl;?>
 " />
 		<div class="hint">The url to use to translate allfilled style reqid usenet posts into real release titles. Leave blank to not perform lookup.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="reqidurl">Latest Regex Lookup URL</label>:</td>
-	<td>
-		<input class="long" id="latestregexurl" name="latestregexurl" type="text" value="<?php echo $_smarty_tpl->getVariable('fsite')->value->latestregexurl;?>
-" />
-		<div class="hint">The url to use to get the latest regexs. Leave blank to not perform lookup. This will retrieve all user contributed regexes.</div>
 	</td>
 </tr>
 

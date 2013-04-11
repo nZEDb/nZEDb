@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 10:57:21
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 16:54:25
          compiled from "/var/www/newznab/www/views/templates/admin/adminmenu.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:9994193735166cf51bd03c3-10254001%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:1612332250516723013847e6-38468850%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '89381d2525b69656adf0cf764b5b8dc688cc7761' => 
     array (
       0 => '/var/www/newznab/www/views/templates/admin/adminmenu.tpl',
-      1 => 1365687713,
+      1 => 1365713661,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '9994193735166cf51bd03c3-10254001',
+  'nocache_hash' => '1612332250516723013847e6-38468850',
   'function' => 
   array (
   ),
@@ -38,11 +38,6 @@ $_smarty_tpl->decodeProperties(array (
 /group-list.php">View</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
 /group-edit.php">Add</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
 /group-bulk.php">BulkAdd</a> Groups</li>
-		<li><a href="<?php echo @WWW_TOP;?>
-/regex-list.php">View</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
-/regex-edit.php?action=add">Add</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
-/regex-test.php">Test</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
-/regex-submit.php">Send</a> Regex</li>
 		<li><a href="<?php echo @WWW_TOP;?>
 /binaryblacklist-list.php">View</a> <a style="padding:0;" href="<?php echo @WWW_TOP;?>
 /binaryblacklist-edit.php?action=add">Add</a> Blacklist</li>
