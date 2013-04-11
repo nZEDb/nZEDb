@@ -28,5 +28,4 @@ fi
 
 echo "waiting ${NEWZNAB_SLEEP_TIME} seconds..."
 sleep ${NEWZNAB_SLEEP_TIME}
-
 done
