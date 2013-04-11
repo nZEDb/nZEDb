@@ -69,12 +69,6 @@
 		<div id="content">
 			{$page->content}
 		</div>
-	
-		<div style="clear: both;text-align:right;">
-			<a class="w3validator" href="http://validator.w3.org/check?uri=referer">
-			<img src="{$smarty.const.WWW_TOP}/views/images/valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
-			</a> 
-		</div>
 		
 	</div>
 	

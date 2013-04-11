@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:46:24
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:51:36
          compiled from "/var/www/newznab/www/views/templates/frontend/basepage.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:50466145551672f301a5244-39316607%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:152056762351673068d848e7-36055033%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '03ecd329c94b2ecd9c1d960f9cf1edff4ef72f3d' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/basepage.tpl',
-      1 => 1365716781,
+      1 => 1365717094,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '50466145551672f301a5244-39316607',
+  'nocache_hash' => '152056762351673068d848e7-36055033',
   'function' => 
   array (
   ),
@@ -122,13 +122,6 @@ $_smarty_tpl->decodeProperties(array (
 		<div id="content">
 			<?php echo $_smarty_tpl->getVariable('page')->value->content;?>
 
-		</div>
-	
-		<div style="clear: both;text-align:right;">
-			<a class="w3validator" href="http://validator.w3.org/check?uri=referer">
-			<img src="<?php echo @WWW_TOP;?>
-/views/images/valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
-			</a> 
 		</div>
 		
 	</div>
