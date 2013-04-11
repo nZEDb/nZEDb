@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 11:05:32
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 18:00:23
          compiled from "/var/www/newznab/www/views/templates/frontend/usefullinksmenu.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:18805399895166d13cca1933-00543833%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:118392161051673277071605-93012927%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '7bcbba019d4c9929498380923c1cedf317a389eb' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/usefullinksmenu.tpl',
-      1 => 1365687713,
+      1 => 1365717560,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '18805399895166d13cca1933-00543833',
+  'nocache_hash' => '118392161051673277071605-93012927',
   'function' => 
   array (
   ),
@@ -25,8 +25,6 @@ $_smarty_tpl->decodeProperties(array (
 	<li class="mmenu"><a title="Site Map" href="<?php echo @WWW_TOP;?>
 /sitemap">Site Map</a></li>
 	<?php if ($_smarty_tpl->getVariable('loggedin')->value=="true"){?>
-	<li class="mmenu"><a title="Search Raw Headers" href="<?php echo @WWW_TOP;?>
-/searchraw">Raw Search</a></li>
 	<li class="mmenu"><a title="<?php echo $_smarty_tpl->getVariable('site')->value->title;?>
  Rss Feeds" href="<?php echo @WWW_TOP;?>
 /rss">Rss Feeds</a></li>

@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 10:57:21
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 19:41:11
          compiled from "/var/www/newznab/www/views/templates/admin/index.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:12488958015166cf51b8ae86-80950223%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:84434834551674a17617369-33118089%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '1828e353c79e3ef580116729f14e25928d9f5ebb' => 
     array (
       0 => '/var/www/newznab/www/views/templates/admin/index.tpl',
-      1 => 1365687713,
+      1 => 1365723642,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '12488958015166cf51b8ae86-80950223',
+  'nocache_hash' => '84434834551674a17617369-33118089',
   'function' => 
   array (
   ),
@@ -20,16 +20,6 @@ $_smarty_tpl->decodeProperties(array (
  
 <h1><?php echo $_smarty_tpl->getVariable('page')->value->title;?>
 </h1>
-
-<div id="donate">
-	<h3>Support development</h3>
-	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-	<input type="hidden" name="cmd" value="_s-xclick">
-	<input type="hidden" name="hosted_button_id" value="K36CTY8X2XMX8">
-	<input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
-	<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-	</form>
-</div>
 
 <p>
 	Welcome to newznab. In this area you will be able to configure many aspects of your site.<br>

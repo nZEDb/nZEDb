@@ -19,11 +19,6 @@ img.right { float: right; margin: 7px 0 0 30px; }
 hr { display: none; }
 input[type=text], input[type=password], textarea, select { background: #fff; background: -webkit-gradient(linear, left top, left 25, from(#fff), color-stop(4%, #f0f0f0), to(#fff)); border: 1px solid #ccc; border-bottom-color: #999; border-right-color: #999; margin: 0; padding: 4px; color: #444; font-size: 100%; outline: none; }
 
-
-
-
-
-
 /*
 page structure
 */
@@ -60,11 +55,6 @@ page structure
 #sidebar p { line-height: 200%;}
 #sidebar a { text-align: left; text-decoration: none; font-weight: bold;}
 
-
-
-
-
-
 /*
 browse by category top menu
 */
@@ -99,13 +89,6 @@ select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
 #logo ul li a {color:#333;}
 #logo ul ul {list-style-type: square;}
 
-
-
-
-
-
-
-
 /*
 data tables, most lists.
 */
@@ -114,7 +97,7 @@ table.data { border-collapse:collapse; }
 table.data th { text-align:left; vertical-align:top; background-color:#DDD; border-color: #AAA; border-width: 1px; border-style: solid; padding:3px; font-style:bolder; text-transform:capitalize;}
 table.data td { white-space:normal; vertical-align:top; padding:5px; border-color: #AAA; border-width: 1px; border-style: solid; }
 table.data td.less { color: #888; font-size: 0.9em; white-space:nowrap; }
-table.data td.icons { white-space:nowrap; padding-left:0px; padding-right:0px; width:60px; }
+table.data td.icons { white-space:nowrap; padding-left:0px; padding-right:0px; }
 table.data td.check {cursor:pointer;}
 table.highlight tr:hover td { background-color: #E1F0D9; }
 table tr.alt { background-color: #F6F6F6; }
@@ -146,24 +129,12 @@ input.date { width:70px; }
 fieldset { margin-bottom:20px; border:1px solid #999;}
 legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:left; }
 
-
-
-
-
-
-
 /*
 pager
 */
 div.pager {display:inline;}
 div.pager a {font-weight:bold; background-color:#DDD; padding:0 3px 0px 4px; border:1px #CCC solid;}
 div.pager .current {color:#fff; font-weight:bold; background-color:#777; padding:0 4px 0px 4px; border:1px #CCC solid;}
-
-
-
-
-
-
 
 /*
 round buttoning
@@ -173,22 +144,10 @@ table.highlight tr:hover .rndbtn, table tr.alt .rndbtn { background-color: #fff;
 table.highlight tr:hover .rndbtn:hover { background-color: #DDD; }
 table.highlight tr:hover td.static { background-color: #FFF; }
 
-
-
-
-
-
-
 /*
 site wide covers and images with dropshadows
 */
 img.shadow {padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; }
-
-
-
-
-
-
 
 /*
 mainly one-off styles used on individual pages
@@ -234,7 +193,6 @@ div.nosearchresults ul { line-height: 150%;}
 
 span.warning { color: red; }
 
-
 /*! Newznab tooltip style */
 .ui-tooltip-newznab .ui-tooltip-titlebar,
 .ui-tooltip-newznab .ui-tooltip-content{
@@ -260,9 +218,6 @@ span.warning { color: red; }
 .ui-tooltip ul {padding:0; margin:0;line-height: 160%;}
 .ui-tooltip li {list-style-type:none;}
 
-
-
-
 /*
 movie, console and music modals with backdrop images.
 */
@@ -280,12 +235,6 @@ movie, console and music modals with backdrop images.
 #musicinfo a { color: #fff; }
 #musicinfo img.cover { float:right;  margin:20px 20px 0 20px; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #333; -webkit-box-shadow: 3px 6px 8px -4px #333; box-shadow: 3px 6px 8px -4px #333; }
 #musicinfo p {text-align: left; line-height: 180%;}
-
-
-
-
-
-
 
 /* 
 icons and multioperation buttons
@@ -307,12 +256,6 @@ div.icon_sab			{ background-image:url('../images/icons/sabup.png'); }
 div.icon_sab_clicked	{ background-image:url('../images/icons/sabdown.png'); }
 div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../images/icons/check.png'); }
-
-
-
-
-
-
 
 /*
     ColorBox Core Style
@@ -400,5 +343,3 @@ div.icon_check			{ background-image:url('../images/icons/check.png'); }
         .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
-
-

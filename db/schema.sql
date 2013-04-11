@@ -188,42 +188,42 @@ PRIMARY KEY  (`ID`)
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('search', 'Search', 
-	'Search for Nzbs', 1, 10);
+	'Search for releases.', 1, 10);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('browse', 'Browse', 
-	'Browse for Nzbs', 1, 20);
+	'Browse all the releases.', 1, 20);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('browsegroup', 'Browse Groups', 
-	'Browse by Group', 1, 25);
+	'Browse by Group.', 1, 25);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('movies', 'Movies', 
-	'Browse for Movies', 1, 40);
+	'Browse Movies.', 1, 40);
 	
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('upcoming', 'In Theatres', 
-	'Whats on in theatres', 1, 45);	
+VALUES ('upcoming', 'Theatres', 
+	'Movies currently in theatres.', 1, 45);	
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('series', 'TV Series', 
-	'Browse for TV Series', 1, 50);
+	'Browse TV Series.', 1, 50);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('calendar', 'TV Calendar', 
-	'View whats on TV', 1, 53);
+	'View what\'s on TV.', 1, 53);
 
 	INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`)
 VALUES ('anime', 'Anime', 'Browse Anime', 1, 55);
 	
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('music', 'Music', 
-	'Browse for Music', 1, 60);
+	'Browse Music.', 1, 60);
 	
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('console', 'Console', 
-	'Browse for Games', 1, 65);
+	'Browse Games.', 1, 65);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('admin', 'Admin', 
@@ -231,35 +231,43 @@ VALUES ('admin', 'Admin',
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('cart', 'My Cart', 
-	'Your Nzb cart', 1, 75);
+	'Your Nzb cart.', 1, 75);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('mymovies', 'My Movies', 
-	'Your Movie Wishlist', 1, 78);
+	'Your Movie Wishlist.', 1, 78);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('apihelp', 'API', 
+	'Information on the API.', 1, 79);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('rss', 'RSS', 
+	'RSS Feeds.', 1, 80);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`, `menueval` )
 VALUES ('queue', 'My Queue', 
-	'View Your Sabnzbd Queue', 1, 80, '{if $sabapikeytype!=2}-1{/if}');
+	'View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('forum', 'Forum', 
-	'Browse Forum', 1, 85);
+	'Browse Forum.', 1, 85);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('profile', 'Profile', 
-	'View your profile', 1, 90);
+	'View your profile.', 1, 90);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('logout', 'Logout', 
-	'Logout', 1, 95);
+	'Logout.', 1, 95);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('login', 'Login', 
-	'Login', 0, 100);
+	'Login.', 0, 100);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('register', 'Register', 
-	'Register', 0, 110);
+	'Register.', 0, 110);
 	
 
 
