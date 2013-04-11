@@ -38,9 +38,6 @@ switch($action)
 	case 'dodelete':
 		$releases->delete($_REQUEST["id"], true);
 	break;
-	case 'dorebuild':
-		$releases->rebuildmulti($_REQUEST["id"]);
-	break;
 	default:
 		$page->show404();
 	break;

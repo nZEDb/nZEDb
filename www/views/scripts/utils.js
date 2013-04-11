@@ -169,19 +169,6 @@ jQuery(function($){
 				});
 			}
 	});
-	$('input.nzb_multi_operations_rebuild').click(function(){
-		var ids = "";
-	    $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
-	    	if ($(row).val()!="on")
-		    	ids += '&id[]='+$(row).val();
-	    });
-	    if (ids)
-			if (confirm('Are you sure you want to rebuild the selected releases?')) {
-				$.post(SERVERROOT + "ajax_release-admin?action=dorebuild"+ids, function(resp){
-					window.location = window.location;
-				});
-			}
-	});
 	//cart functions
 	$('input.nzb_multi_operations_cartdelete').click(function(){
 		var ids = new Array();

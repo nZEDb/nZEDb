@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 11:09:36
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:11:27
          compiled from "/var/www/newznab/www/views/templates/frontend/console.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:7781051495166d23022be22-76068572%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:6505155516726ff369572-31839929%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'd8da2b4423682ffb659512970f75b33f5b41a536' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/console.tpl',
-      1 => 1365687713,
+      1 => 1365714638,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '7781051495166d23022be22-76068572',
+  'nocache_hash' => '6505155516726ff369572-31839929',
   'function' => 
   array (
   ),
@@ -204,10 +204,7 @@ if ($_smarty_tpl->_count($_from) > 0){
 " title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="<?php echo @WWW_TOP;?>
 /admin/release-delete.php?id=<?php echo $_smarty_tpl->tpl_vars['result']->value['releaseID'];?>
 &amp;from=<?php echo smarty_modifier_escape($_SERVER['REQUEST_URI'],"url");?>
-" title="Delete Release">Del</a> <a class="rndbtn confirm_action" href="<?php echo @WWW_TOP;?>
-/admin/release-rebuild.php?id=<?php echo $_smarty_tpl->tpl_vars['result']->value['releaseID'];?>
-&amp;from=<?php echo smarty_modifier_escape($_SERVER['REQUEST_URI'],"url");?>
-" title="Rebuild Release - Delete and reset for reprocessing if binaries still exist.">Reb</a>
+" title="Delete Release">Del</a>
 					<?php }?>
 					<br />
 					<b>Info:</b> <?php echo smarty_modifier_timeago($_smarty_tpl->tpl_vars['result']->value['postdate']);?>

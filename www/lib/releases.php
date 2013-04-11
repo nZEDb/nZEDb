@@ -486,40 +486,6 @@ class Releases
 		$res = $db->queryOneRow("select count(ID) as num from releases");		
 		return $res["num"];
 	}
-
-	public function rebuild($id)
-	{
-		$this->delete($id);
-		
-		$db = new DB();
-		$db->query(sprintf("update binaries set procstat = 0,procattempts=0, categoryID=null, regexID=null,reqID=null,relpart=null,reltotalpart=null,relname=null,releaseID=null where releaseID = %d", $id));
-
-	}
-	
-	public function rebuildmulti($guids)
-	{
-		if (!is_array($guids) || sizeof($guids) < 1)
-			return false;
-		
-		$db = new DB();
-		
-		$updateGuids = array();
-		foreach($guids as $guid) {
-			$updateGuids[] = $db->escapeString($guid);
-		}
-		
-		$rels = $db->query(sprintf('select ID from releases where guid IN (%s)', implode(', ', $updateGuids)));
-		$relids = array();
-		foreach($rels as $r) {
-			$relids[] = $r['ID'];
-		}
-			
-		$this->delete($relids);
-		
-		$db = new DB();
-		$db->query(sprintf("update binaries set procstat = 0,procattempts=0, categoryID=null, regexID=null,reqID=null,relpart=null,reltotalpart=null,relname=null,releaseID=null where releaseID IN (%s)", implode(',',$relids)));
-
-	}
 	
 	public function delete($id, $isGuid=false)
 	{			

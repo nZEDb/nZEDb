@@ -92,7 +92,6 @@
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
-	<input type="button" class="nzb_multi_operations_rebuild" value="Reb" />
 	{/if}
 </div>
 
@@ -168,7 +167,6 @@
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
-	<input type="button" class="nzb_multi_operations_rebuild" value="Reb" />
 	{/if}
 </div>
 

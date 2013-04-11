@@ -11,7 +11,7 @@
 
 <table class="data" id="detailstable" >
 	{if $isadmin || $ismod}
-	<tr><th>Admin:</th><td><a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-rebuild.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Rebuild Release - Delete and reset for reprocessing if binaries still exist.">Rebuild</a></td></tr>
+	<tr><th>Admin:</th><td><a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a><a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td></tr>
 	{/if}
 	<tr><th>Name:</th><td>{$release.name|escape:"htmlall"}</td></tr>
 	
@@ -311,13 +311,6 @@
 	</tr>
 	{/if}
 	{if $isadmin}
-	<tr><th>Release Info:</th>
-		<td>
-			Regex Id (<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php#{$release.regexID}">{$release.regexID}</a>) <br/> 
-			{if $release.reqID != ""}
-				Request Id ({$release.reqID})
-			{/if}
-		</td></tr>
 	{/if}
 </table>
 

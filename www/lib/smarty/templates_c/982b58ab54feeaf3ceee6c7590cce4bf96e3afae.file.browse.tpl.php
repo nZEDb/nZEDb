@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 11:05:32
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:09:09
          compiled from "/var/www/newznab/www/views/templates/frontend/browse.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:14140106995166d13ce60b03-78895254%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:3655864175167267507ac63-93466468%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '982b58ab54feeaf3ceee6c7590cce4bf96e3afae' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/browse.tpl',
-      1 => 1365687713,
+      1 => 1365714546,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '14140106995166d13ce60b03-78895254',
+  'nocache_hash' => '3655864175167267507ac63-93466468',
   'function' => 
   array (
   ),
@@ -61,7 +61,6 @@ if (!is_callable('smarty_modifier_fsize_format')) include '/var/www/newznab/www/
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
-	<input type="button" class="nzb_multi_operations_rebuild" value="Reb" />
 	<?php }?>	
 </div>
 
@@ -220,7 +219,6 @@ _thumb.jpg" name="name<?php echo $_smarty_tpl->tpl_vars['result']->value['guid']
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
-	<input type="button" class="nzb_multi_operations_rebuild" value="Reb" />
 	<?php }?>	
 </div>
 

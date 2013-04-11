@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 13:52:21
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:08:10
          compiled from "/var/www/newznab/www/views/templates/frontend/viewnzb.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:1311596635166f8554e2180-94285633%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:19766644345167263a8f64a7-14608199%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'd5c0f25c379ac7e6a6a8b50812a06a0c9a583281' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/viewnzb.tpl',
-      1 => 1365687713,
+      1 => 1365714488,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '1311596635166f8554e2180-94285633',
+  'nocache_hash' => '19766644345167263a8f64a7-14608199',
   'function' => 
   array (
   ),
@@ -59,13 +59,10 @@ if (!is_callable('smarty_function_cycle')) include '/var/www/newznab/www/lib/sma
 	<tr><th>Admin:</th><td><a class="rndbtn" href="<?php echo @WWW_TOP;?>
 /admin/release-edit.php?id=<?php echo $_smarty_tpl->getVariable('release')->value['ID'];?>
 &amp;from=<?php echo $_SERVER['REQUEST_URI'];?>
-" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="<?php echo @WWW_TOP;?>
+" title="Edit Release">Edit</a><a class="rndbtn confirm_action" href="<?php echo @WWW_TOP;?>
 /admin/release-delete.php?id=<?php echo $_smarty_tpl->getVariable('release')->value['ID'];?>
 &amp;from=<?php echo $_SERVER['HTTP_REFERER'];?>
-" title="Delete Release">Delete</a> <a class="rndbtn confirm_action" href="<?php echo @WWW_TOP;?>
-/admin/release-rebuild.php?id=<?php echo $_smarty_tpl->getVariable('release')->value['ID'];?>
-&amp;from=<?php echo $_SERVER['HTTP_REFERER'];?>
-" title="Rebuild Release - Delete and reset for reprocessing if binaries still exist.">Rebuild</a></td></tr>
+" title="Delete Release">Delete</a></td></tr>
 	<?php }?>
 	<tr><th>Name:</th><td><?php echo smarty_modifier_escape($_smarty_tpl->getVariable('release')->value['name'],"htmlall");?>
 </td></tr>
@@ -506,17 +503,6 @@ if ($_smarty_tpl->_count($_from) > 0){
 	</tr>
 	<?php }?>
 	<?php if ($_smarty_tpl->getVariable('isadmin')->value){?>
-	<tr><th>Release Info:</th>
-		<td>
-			Regex Id (<a href="<?php echo @WWW_TOP;?>
-/admin/regex-list.php#<?php echo $_smarty_tpl->getVariable('release')->value['regexID'];?>
-"><?php echo $_smarty_tpl->getVariable('release')->value['regexID'];?>
-</a>) <br/> 
-			<?php if ($_smarty_tpl->getVariable('release')->value['reqID']!=''){?>
-				Request Id (<?php echo $_smarty_tpl->getVariable('release')->value['reqID'];?>
-)
-			<?php }?>
-		</td></tr>
 	<?php }?>
 </table>
 
