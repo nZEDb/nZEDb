@@ -1236,7 +1236,7 @@ class Releases
 			$minfilesizeres = $db->queryOneRow(sprintf("SELECT coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g inner join ( select value as minsizetoformrelease from site where setting = 'minsizetoformrelease' ) s where g.ID = %d", $groupID));			
 			if ($minfilesizeres["minsizetoformrelease"] != 0)
 			{
-				$resrel = $db->queryDirect(sprintf("SELECT ID from releases where size < %d", $minfilesizeres["minsizetoformrelease"]));
+				$resrel = $db->queryDirect(sprintf("SELECT ID from releases where groupID = %d and size < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
 				while ($rowrel = mysql_fetch_assoc($resrel))
 				{
 					$relID = $rowrel['ID'];
