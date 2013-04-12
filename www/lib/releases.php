@@ -1091,6 +1091,7 @@ class Releases
 		$colcount = 0;
 		$passcount = 0;
 		$minsizecount = 0;
+		$dupecount = 0;
 		$n = "\n";
 		
 		$this->processReleases = microtime(true);
@@ -1202,8 +1203,50 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 			}
 		}
+		//Mark collections smaller than site settings.
+		echo $n."Stage 3 -> Delete collections smaller than minimum size group/site setting.".$n;
+		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
+		{
+			foreach($groupCnt AS $groupID)
+			{
+				$groupID = array_shift($groupID);
+				$minfilesizeres = $db->queryOneRow(sprintf("SELECT coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g inner join ( select value as minsizetoformrelease from site where setting = 'minsizetoformrelease' ) s where g.ID = %d", $groupID));			
+				if ($minfilesizeres["minsizetoformrelease"] != 0)
+				{
+					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and filesize < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
+					while ($rowcol = mysql_fetch_assoc($rescol))
+					{
+						$colID = $rowcol['ID'];
+						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
+						$minsizecount ++;
+					}
+				}
+			}
+		}
+		echo "Deleted ".$minsizecount." collections smaller than group/site settings.".$n;
+		//Mark with less files than site settings.
+		echo $n."Stage 4 -> Delete collections with less files than group/site setting.".$n;
+		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
+		{
+			foreach($groupCnt AS $groupID)
+			{
+				$groupID = array_shift($groupID);
+				$minfilesres = $db->queryOneRow(sprintf("SELECT coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM  FROM groups g inner join ( select value as minfilestoformrelease from site where setting = 'minfilestoformrelease' ) s where g.ID = %d", $groupID));			
+				if ($minfilesres["minfilestoformrelease"] != 0)
+				{
+					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and totalFiles < %d", $groupID, $minfilesres["minfilestoformrelease"]));
+					while ($rowcol = mysql_fetch_assoc($rescol))
+					{
+						$colID = $rowcol['ID'];
+						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
+						$minsizecount ++;
+					}
+				}
+			}
+		}
+		echo "Deleted ".$minfilecount." collections with less files than group/site settings.".$n;
 		//Create releases.
-		echo $n."Stage 3 -> Create releases.".$n;
+		echo $n."Stage 5 -> Create releases.".$n;
 		if($rescol = $db->queryDirect(sprintf("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded asc", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1222,27 +1265,8 @@ class Releases
 				}
 			}
 		}
-		//Delete unwanted releases.
-		echo $n."Stage 4 -> Delete releases smaller than minimum size site setting.".$n;
-		foreach($groupCnt AS $groupID)
-		{
-			$groupID = array_shift($groupID);
-			$minfilesizeres = $db->queryOneRow(sprintf("SELECT coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g inner join ( select value as minsizetoformrelease from site where setting = 'minsizetoformrelease' ) s where g.ID = %d", $groupID));			
-			if ($minfilesizeres["minsizetoformrelease"] != 0)
-			{
-				$resrel = $db->queryDirect(sprintf("SELECT ID from releases where groupID = %d and size < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
-				while ($rowrel = mysql_fetch_assoc($resrel))
-				{
-					$relID = $rowrel['ID'];
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $relID));
-					$db->queryDirect(sprintf("delete from releases where ID = %d", $relID));
-					$minsizecount ++;
-				}
-			}
-		}
-		echo "Deleted ".$minsizecount." releases smaller than group settings".$n;
 		//Look for NFOs.
-		echo $n."Stage 5 -> Mark releases that have an NFO.".$n;
+		echo $n."Stage 6 -> Mark releases that have an NFO.".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1258,7 +1282,7 @@ class Releases
 			}
 		}
 		//Create NZB.
-		echo $n."Stage 6 -> Create the NZB, mark collections as ready for deletion.".$n;
+		echo $n."Stage 7 -> Create the NZB, mark collections as ready for deletion.".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1278,7 +1302,7 @@ class Releases
 			}
 		}
 		//Categorize releases.
-		echo $n."Stage 7 -> Categorize releases.".$n;
+		echo $n."Stage 8 -> Categorize releases.".$n;
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, name, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1292,13 +1316,13 @@ class Releases
 			}
 		}
 		//Post processing
-		echo $n."Stage 8 -> Post processing.".$n;
+		echo $n."Stage 9 -> Post processing.".$n;
 		$postprocess = new PostProcess(true);
 		$postprocess->processAll();
 		//Delete old releases and finished collections.
-		echo $n."Stage 9 -> Delete old releases, finished collections and passworded releases.".$n;
+		echo $n."Stage 10 -> Delete old releases, finished collections and passworded releases.".$n;
 		//Old collections that were missed somehow.
-		if($frescol = $db->queryDirect(sprintf("SELECT ID from collections where dateadded < (now() - interval %d day) order by dateadded asc", $page->site->attemptgroupbindays)))
+		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 8 hour) order by dateadded asc"))
 		{
 			while ($frowcol = mysql_fetch_assoc($frescol))
 			{
@@ -1339,7 +1363,7 @@ class Releases
 				$this->delete($row["ID"]);
 				$remcount ++;
 		}
-		// Delete any passworded releases
+		//Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
 			echo "Determining any passworded releases to be deleted".$n.$n;
@@ -1350,12 +1374,22 @@ class Releases
 				$passcount ++;
 			}
 		}
+		//Crossposted releases.
+		if($resrel = $db->queryDirect("select ID, name from releases where adddate > (now() - interval 2 hour) group by name having count(name) > 1"))
+		{
+			while ($rowrel = mysql_fetch_assoc($resrel))
+			{
+				$relID = $rowrel['ID'];
+				$db->queryDirect(sprintf("delete from releases where ID = %d", $relID));
+				$dupecount ++;
+			}
+		}
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
-		echo "Removed: ".$colcount." collections, ".$remcount." releases past retention, ".$passcount." passworded releases".$n.$n;
+		echo "Removed: ".$colcount." collections, ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases.".$n.$n;
 		$cremain = $db->queryOneRow("select count(ID) from collections");
 		$cremain = array_shift($cremain);
-		echo "Completed creating ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete).".$n;
+		echo "Completed adding ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete).".$n;
 		return $retcount;	
 	}
 

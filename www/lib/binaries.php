@@ -247,16 +247,15 @@ class Binaries
 				{
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim(preg_replace($pattern, '', $msg['Subject'])));
-					//Original big regex, spliting to make it easier to read.
-					//$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\".+\"|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $msg['Subject'])));
 					//Parts/files
-					$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-/i', '', $msg['Subject'])));
-					//Anything between the quotes, disabling for now, maybe I can catch everything without having to do this.
-					//$cleansubject = utf8_encode(trim(preg_replace('/\".+\"/i', '', $cleansubject)));
-					//File extensions
-					$cleansubject = utf8_encode(trim(preg_replace('/\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3/i', '', $cleansubject)));
-					//Size where the is size of file and total size
-					$cleansubject = utf8_encode(trim(preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(M|K)B\s(?=\-\s\d{1,3}\.\d{1,3}\s(G|M)B\s)/i', '', $cleansubject)));
+					$cleansubject = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-/i', '', $msg['Subject']);
+					//Anything between the quotes. Too much variance within the quotes, so remove it completely.
+					$cleansubject = preg_replace('/\".+\"/i', '', $cleansubject);
+					//File extensions - If it was not quotes.
+					$cleansubject = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3/i', '', $cleansubject);
+					//File Sizes - Non unique ones.
+					$cleansubject = preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(M|K)B\s(?=\-\s\d{1,3}\.\d{1,3}\s(G|M)B\s)|><\s\d{1,3}\/\d{1,3}\s\(.+><\s\d{1,3},\d{1,3}\s(G|M)B\s>|\]\s\d{1,}KB\s/i', '', $cleansubject);
+					$cleansubject = utf8_encode(trim($cleansubject));
 					
 					if(!isset($this->message[$subject]))
 					{
@@ -308,13 +307,21 @@ class Binaries
 						$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($data['CollectionHash'])));
 						if(!$cres)
 						{
-							//Removes file extensions, file and part count.
-							$cleanerName = trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|yEnc|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $subject));
-							//- 90.60 MB
-							$cleanerName = trim(preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(G|M|K)B\s/i', '', $cleanerName));
-							//Replaces those characters for space.
-							$cleanerName = trim(preg_replace('/\-|\"|\.|\_|\[|\]/i', ' ', $cleanerName));
-							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
+							/* while testing leave subject as is to see where it screws up during hash
+							//File and part count.
+							$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-/i', '', $subject);
+							//Extensions.
+							$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|yEnc/i', '', $cleanerName);
+							//Size.
+							$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B/i', '', $cleanerName);
+							//Unwanted stuff.
+							$cleanerName = preg_replace('/SECTIONED brings you|usenet-space-cowboys.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{2,}\]\-\[FULL\].+#a\.b\.[a-z]{0,14}\]|brothers-of-usenet.info(\/\.net)?|Partner von SSL-News.info/i', '', $cleanerName);
+							//Removes some characters.
+							$cleanerName = preg_replace('/\[|\]|<|>|"|=/i', '', $cleanerName);
+							//Replaces some characters and multiple spaces for a single space.
+							$cleanerName = preg_replace('/\-|\.|_|\s\s+/i', ' ', $cleanerName);
+							$cleanerName = trim($cleanerName);*/
+							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
 						}
 						else
