@@ -95,7 +95,7 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			echo "Getting ".($last-$first+1)." parts (".($first-$targetpost)." in queue)".$n;
+			echo "Getting ".($last-$first+1)." parts from ".$data["group"]." (".($first-$targetpost)." in queue)".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
