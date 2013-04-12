@@ -1,6 +1,5 @@
 <h1>{$page->title}</h1>
 
-<div style="float:right;">
 {foreach $cal as $c}
 <a href="{$smarty.const.WWW_TOP}/calendar?date={$c}">{$c}</a>&nbsp;&nbsp;&nbsp;             
 {/foreach}

@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 11:05:37
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 20:45:29
          compiled from "/var/www/newznab/www/views/templates/frontend/viewcalendar.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:8729360695166d141113656-96748007%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:162937602151675929ceedb3-80258274%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'e1290a73c50305cd098cf74996aa15ef20826251' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/viewcalendar.tpl',
-      1 => 1365687713,
+      1 => 1365727526,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '8729360695166d141113656-96748007',
+  'nocache_hash' => '162937602151675929ceedb3-80258274',
   'function' => 
   array (
   ),
@@ -21,7 +21,6 @@ $_smarty_tpl->decodeProperties(array (
 ?><h1><?php echo $_smarty_tpl->getVariable('page')->value->title;?>
 </h1>
 
-<div style="float:right;">
 <?php  $_smarty_tpl->tpl_vars['c'] = new Smarty_Variable;
  $_from = $_smarty_tpl->getVariable('cal')->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
 if ($_smarty_tpl->_count($_from) > 0){
