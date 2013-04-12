@@ -1183,7 +1183,7 @@ class Releases
 				{
 					$colID = $rowcol['ID'];
 					//get the filecount
-					$binfiles = $db->queryOneRow(sprintf("SELECT count(ID) from binaries where collectionID = %d", $colID))
+					$binfiles = $db->queryOneRow(sprintf("SELECT count(ID) from binaries where collectionID = %d", $colID));
 					$binfiles = array_shift($binfiles);
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 and totalFiles = %d where ID = %d", $binfiles, $colID));
 				}
