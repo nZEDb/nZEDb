@@ -247,7 +247,7 @@ class Binaries
 				{
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim(preg_replace($pattern, '', $msg['Subject'])));
-					$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\".+\"|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3/i', '', $msg['Subject'])));
+					$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\".+\"|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $msg['Subject'])));
 
 					if(!isset($this->message[$subject]))
 					{
@@ -299,7 +299,8 @@ class Binaries
 						$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($data['CollectionHash'])));
 						if(!$cres)
 						{
-							$cleanerName = trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|yEnc/i', '', $subject));
+							$cleanerName = trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|yEnc|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $subject));
+							$cleanerName = trim(preg_replace('/\-|\"|\.|\_|\[|\]/i', ' ', $cleanerName));
 							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
 						}

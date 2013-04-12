@@ -1167,26 +1167,17 @@ class Releases
 					}
 				}
 			}
-			//If we didnt find all parts in the past 4 hours for releases with files, set filecheck to 2. Incomplete releases.
-			if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and totalFiles > 0 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
+		}
+		//If a collection has not been updated in 4 hours, set filecheck to 2.
+		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 4 hour) order by dateadded asc"))
+		{
+			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
-				while ($rowcol = mysql_fetch_assoc($rescol))
-				{
-					$colID = $rowcol['ID'];
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 where ID = %d", $colID));
-				}
-			}
-			//Look when the collection (without files) was last updated, if more than 4 hours, mark as complete, (filecheck=2). Some might be incomplete releases.
-			if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 0 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
-			{
-				while ($rowcol = mysql_fetch_assoc($rescol))
-				{
-					$colID = $rowcol['ID'];
-					//get the filecount
-					$binfiles = $db->queryOneRow(sprintf("SELECT count(ID) from binaries where collectionID = %d", $colID));
-					$binfiles = array_shift($binfiles);
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 and totalFiles = %d where ID = %d", $db->escapeString($binfiles), $colID));
-				}
+				$colID = $rowcol['ID'];
+				//get the filecount
+				$binfiles = $db->queryOneRow(sprintf("SELECT count(ID) as binfile from binaries where collectionID = %d", $colID));
+				$binfiles = $binfiles['binfile'];
+				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $binfiles, $colID));
 			}
 		}
 		//Get part and file size.
