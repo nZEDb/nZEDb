@@ -317,8 +317,10 @@ class Binaries
 							$cleanerName = preg_replace('/SECTIONED brings you|usenet-space-cowboys.info|<.+https:\/\/secretusenet\.com>|> USC <|/\[\d{1,}\]\-\[FULL\].+#a\.b.+\]\-/i|brothers-of-usenet.info(\/\.net)?|Partner von SSL-News.info/i', '', $cleanerName);
 							//Removes some characters.
 							$cleanerName = preg_replace('/\[|\]|<|>|"|=/i', '', $cleanerName);
-							//Replaces some characters and multiple spaces for a single space.
-							$cleanerName = preg_replace('/\-|\.|_|\s+/i', ' ', $cleanerName);
+							//Replaces some characters with 1 space.
+							$cleanerName = preg_replace('/\-|\.|_/i', ' ', $cleanerName);
+							//Replace multiple spaces with 1 space
+							$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 							$cleanerName = trim($cleanerName);
 							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
