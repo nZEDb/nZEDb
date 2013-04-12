@@ -173,8 +173,8 @@ if (!empty($argc) || $page->isPostBack() )
 					{
 						$usename = str_replace('.nzb', '', ($viabrowser ? $browserpostednames[$nzbFile] : basename($nzbFile)));
 						
-						$db->query(sprintf("update binaries set relname = replace(%s, '_', ' '), relpart = %d, reltotalpart = %d, procstat=%d, categoryID=%s, regexID=%d, reqID=%s where ID = %d", 
-							$db->escapeString($usename), 1, 1, 5, "null", "null", "null", $binaryId));
+						$db->query(sprintf("update binaries set relname = replace(%s, '_', ' '), relpart = %d, reltotalpart = %d, procstat=%d, categoryID=%s, where ID = %d", 
+							$db->escapeString($usename), 1, 1, 5, "null", $binaryId));
 					}
 					
 					//segments (i.e. parts)
