@@ -1168,7 +1168,7 @@ class Releases
 				}
 			}
 			//If we didnt find all parts in the past 4 hours for releases with files, set filecheck to 2. Incomplete releases.
-			if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 1 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and totalFiles > 0 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
 			{
 				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
