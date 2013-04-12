@@ -1240,6 +1240,7 @@ class Releases
 				while ($rowrel = mysql_fetch_assoc($resrel))
 				{
 					$relID = $rowrel['ID'];
+					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $relID));
 					$db->queryDirect(sprintf("delete from releases where ID = %d", $relID));
 					$minsizecount ++;
 				}
