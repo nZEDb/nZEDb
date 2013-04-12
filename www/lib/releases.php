@@ -1177,12 +1177,15 @@ class Releases
 				}
 			}
 			//Look when the collection (without files) was last updated, if more than 4 hours, mark as complete, (filecheck=2). Some might be incomplete releases.
-			if($frescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 0 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 0 and dateadded < (now() - interval 4 hour) order by dateadded asc", $groupID)))
 			{
-				while ($frowcol = mysql_fetch_assoc($frescol))
+				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
-					$colID = $frowcol['ID'];
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 where ID = %d", $colID));
+					$colID = $rowcol['ID'];
+					//get the filecount
+					$binfiles = $db->queryOneRow(sprintf("SELECT count(ID) from binaries where collectionID = %d", $colID))
+					$binfiles = array_shift($binfiles);
+					$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 and totalFiles = %d where ID = %d", $binfiles, $colID));
 				}
 			}
 		}
