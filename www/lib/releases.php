@@ -1091,6 +1091,7 @@ class Releases
 		$colcount = 0;
 		$passcount = 0;
 		$minsizecount = 0;
+		$minfilecount = 0;
 		$dupecount = 0;
 		$n = "\n";
 		
@@ -1239,7 +1240,7 @@ class Releases
 					{
 						$colID = $rowcol['ID'];
 						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
-						$minsizecount ++;
+						$minfilecount ++;
 					}
 				}
 			}
