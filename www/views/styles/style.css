@@ -72,7 +72,7 @@ browse by category top menu
 #menulink ul li:hover ul, #menulink ul a:hover ul { visibility: visible; }
 #menusearchlink { padding-top:5px; float:right; }
 #menusearchlink input, #menusearchlink select { font-size: 0.9em; color:#555; }
-#menucontainer { width:85%; height:10px; }
+#menucontainer { height:10px; }
 
 select#headcat {width:120px; float:right; margin-left:5px; height:25px;}
 select#headcat option { padding-left: 10px; }
