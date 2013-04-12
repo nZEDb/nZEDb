@@ -250,7 +250,7 @@ class Binaries
 					//Original big regex, spliting to make it easier to read.
 					//$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\".+\"|\.(7z|\d{3}(?=(\s|"))|idx|mp4|nfo|nzb|par(\s?2|.+(rar|rev))|pdf|rar|r\d\d|sfv|srs|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $msg['Subject'])));
 					//Parts/files
-					$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-/i', '', $msg['Subject'])));
+					$cleansubject = utf8_encode(trim(preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-/i', '', $msg['Subject'])));
 					//Anything between the quotes, disabling for now, maybe I can catch everything without having to do this.
 					//$cleansubject = utf8_encode(trim(preg_replace('/\".+\"/i', '', $cleansubject)));
 					//File extensions
