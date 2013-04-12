@@ -142,21 +142,8 @@ $('#regexGroupSelect').change(function() {
   document.location="?group=" + $("#regexGroupSelect option:selected").attr('value');
 });
 
-$('.siteeditstyle').change(function() {
-  
-  if ($('.siteeditstyle option:selected').text() == "nzbsu" || $('.siteeditstyle option:selected').text() == "nzbsorg" || $('.siteeditstyle option:selected').text() == "nzbsdark")
-	  $('.siteeditmenuposition').val("2");
-  else
-  	$('.siteeditmenuposition').val("1");
-  
-});
-
 // misc
 $('.confirm_action').click(function(){ return confirm('Are you sure?'); });
-
-$('.compress_headers_warning').change(function(){
-	alert('Compressed headers only work reliably with astraweb.');
-});
 
 });
 

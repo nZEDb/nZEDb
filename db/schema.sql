@@ -297,20 +297,6 @@ CREATE TABLE `binaryblacklist` (
 
 INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (1, 'alt.binaries.*', '(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\\)]?( \\-)?[ \\-\\.]((19|20)\\d\\d|(480|720|1080)(i|p)|3d|5\\.1|dts|ac3|truehd|(bd|dvd|hd|sat|vhs|web)\\.?rip|(bd.)?(h|x).?2?64|divx|xvid|bluray|svcd|board|custom|"|(d|h|p|s)d?v?tv|m?dvd(-|sc)?r|int(ernal)?|nzb|par2|\\b(((dc|ld|md|ml|dl|hr|se)[.])|(anime\\.)|(fs|ws)|dsr|pal|ntsc|iso|complete|cracked|ebook|extended|dirfix|festival|proper|game|limited|read.?nfo|real|rerip|repack|remastered|retail|samplefix|scan|screener|theatrical|uncut|unrated|incl|winall)\\b|doku|doc|dub|sub|\\(uncut\\))', 1, 1, 0, 'Blacklists non-english releases.');
 
-DROP TABLE IF EXISTS `releaseregex`;
-CREATE TABLE `releaseregex` (
-  `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `groupname` VARCHAR(255) NULL,
-  `regex` VARCHAR(2000) NOT NULL,
-  `ordinal` INT(11) UNSIGNED NOT NULL,
-  `status` INT(11) UNSIGNED NOT NULL DEFAULT 1,
-  `description` VARCHAR(1000) NULL,
-  `categoryID` INT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=100000 ;
-
-INSERT INTO `releaseregex` (`ID`, `groupname`, `regex`, `ordinal`, `status`, `description`, `categoryID`) VALUES (1, NULL, '/^\\((?P<name>.*)\\).*?\\[(?P<parts>\\d{2,3}\\/\\d{2,3})/i', 52, 0, '', NULL);
-
 DROP TABLE IF EXISTS `tvrage`;
 CREATE TABLE `tvrage` 
 (
@@ -856,12 +842,9 @@ INSERT INTO `site`
 	('tandc', '<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
 	('registerstatus', 0),
 	('style', 'Default'),
-	('menuposition', 1),
 	('home_link', '/'),
 	('dereferrer_link', 'http://www.dereferer.ws/?'),
 	('nzbpath', '/your/path/to/nzbs/'),
-	('rawretentiondays', 2),
-	('attemptgroupbindays', 2),
 	('lookuptvrage', 1),
 	('lookupimdb', 1),
 	('lookupnfo', 1),
@@ -875,8 +858,8 @@ INSERT INTO `site`
 	('compressedheaders', 0),
 	('maxmssgs', 20000),
 	('newgroupscanmethod', 0),
-	('newgroupdaystoscan', 3),
-	('newgroupmsgstoscan', 50000),
+	('newgroupdaystoscan', 1),
+	('newgroupmsgstoscan', 200000),
 	('sabintegrationtype', 2),
 	('saburl', ''),
 	('sabapikey', ''),
@@ -885,9 +868,6 @@ INSERT INTO `site`
 	('storeuserips', 0),
 	('minfilestoformrelease', 1),
 	('minsizetoformrelease', 0),
-	('reqidurl', 'http://allfilled.newznab.com/query.php?t=[GROUP]&reqid=[REQID]'),
-	('latestregexurl', 'http://www.newznab.com/getregex.php'),
-	('latestregexrevision', 0),
 	('releaseretentiondays', 0),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
@@ -896,7 +876,6 @@ INSERT INTO `site`
 	('mediainfopath', ''),
 	('ffmpegpath', ''),
 	('tmpunrarpath', ''),
-	('newznabID', ''),
 	('adheader', ''),
 	('adbrowse', ''),
 	('addetail', '');
@@ -1117,17 +1096,6 @@ INSERT INTO `genres`
   ('JPop', 3000),
   ('SynthPop', 3000),
   ('Electronica', 3000);
-
-
-
-
-
-
-
-
-
-
-
 
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
