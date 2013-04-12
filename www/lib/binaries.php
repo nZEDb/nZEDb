@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/backfill.php");
 require_once(WWW_DIR."/lib/consoletools.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Binaries
 {	
