@@ -1,1 +1,0 @@
-update category set title = 'Mobile' where ID = 5050;

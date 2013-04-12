@@ -1,1 +1,0 @@
-ALTER TABLE  `tvrage` CHANGE  `tvdbID`  `tvdbID` INT( 11 ) NOT NULL DEFAULT  '0';

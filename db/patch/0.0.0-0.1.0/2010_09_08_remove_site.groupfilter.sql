@@ -1,1 +1,0 @@
-ALTER TABLE  `site` DROP  `groupfilter`;

@@ -1,1 +1,0 @@
-alter table users add musicview int not null default 1;

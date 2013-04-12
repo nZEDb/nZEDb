@@ -1,1 +1,0 @@
-alter table users add movieview int not null default 1;

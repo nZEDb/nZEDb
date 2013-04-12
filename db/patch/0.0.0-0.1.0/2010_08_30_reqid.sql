@@ -1,2 +1,0 @@
-ALTER TABLE binaries ADD reqID INT NULL;
-ALTER TABLE releases ADD reqID INT NULL;

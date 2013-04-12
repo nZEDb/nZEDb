@@ -1,1 +1,0 @@
-alter table users add resetguid varchar(50) null;

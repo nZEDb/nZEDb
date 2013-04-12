@@ -1,1 +1,0 @@
-INSERT INTO category (ID, title, parentID) VALUES (4050, 'Games', 4000);

@@ -1,1 +1,0 @@
-ALTER TABLE  `userseries` ADD  `categoryID` VARCHAR( 64 ) NULL DEFAULT NULL AFTER  `rageID`;

@@ -356,14 +356,6 @@
 </tr>
 
 <tr>
-	<td><label for="reqidurl">Allfilled Request Id Lookup URL</label>:</td>
-	<td>
-		<input class="long" id="reqidurl" name="reqidurl" type="text" value="{$fsite->reqidurl}" />
-		<div class="hint">The url to use to translate allfilled style reqid usenet posts into real release titles. Leave blank to not perform lookup.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="lookupnfo">Lookup Nfo</label>:</td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}

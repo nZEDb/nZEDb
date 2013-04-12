@@ -1,1 +1,0 @@
-INSERT INTO category (ID, title, parentID) VALUES (7030, 'Comics', 7000);

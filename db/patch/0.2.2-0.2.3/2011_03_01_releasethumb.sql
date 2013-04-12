@@ -1,1 +1,0 @@
-alter table releases add `haspreview` INT NOT NULL DEFAULT 0;

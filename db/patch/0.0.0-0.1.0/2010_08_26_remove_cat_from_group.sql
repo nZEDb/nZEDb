@@ -1,1 +1,0 @@
-alter table groups drop column categoryID;

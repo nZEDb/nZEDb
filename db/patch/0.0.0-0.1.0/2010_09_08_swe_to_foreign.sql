@@ -1,1 +1,0 @@
-update category set title = 'Foreign' where ID = 5020;

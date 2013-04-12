@@ -1,1 +1,0 @@
-INSERT INTO category (ID, title, parentID) VALUES (1080, 'PS3', 1000);

@@ -1,1 +1,0 @@
-DELETE from releases where name not like '%264%' and regexid = 89;
