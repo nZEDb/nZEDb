@@ -46,7 +46,8 @@
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}" /></td>
 			<td class="item">
-			<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a></label>
+			<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "|replace:"-":" "|replace:"[":" "|replace:"]":" "|truncate:150:"...":true}</a></label value="Searchname">
+			
 				
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/views/images/icons/lock.gif" alt="Passworded Rar Archive" />
@@ -54,8 +55,6 @@
 					<img title="Contains .cab/ace/rar Archive" src="{$smarty.const.WWW_TOP}/views/images/icons/lock.gif" alt="Contains .cab/ace/rar Archive" />
 				{/if}
 
-
-				
 				<div class="resextra">
 					<div class="btns">
 						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}

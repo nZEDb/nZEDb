@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 17:09:09
+<?php /* Smarty version Smarty3-SVN$Rev: 3286 $, created on 2013-04-11 22:17:22
          compiled from "/var/www/newznab/www/views/templates/frontend/browse.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:3655864175167267507ac63-93466468%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:136577440551676eb2c1d213-40199246%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '982b58ab54feeaf3ceee6c7590cce4bf96e3afae' => 
     array (
       0 => '/var/www/newznab/www/views/templates/frontend/browse.tpl',
-      1 => 1365714546,
+      1 => 1365732932,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '3655864175167267507ac63-93466468',
+  'nocache_hash' => '136577440551676eb2c1d213-40199246',
   'function' => 
   array (
   ),
@@ -21,6 +21,7 @@ $_smarty_tpl->decodeProperties(array (
 if (!is_callable('smarty_function_cycle')) include '/var/www/newznab/www/lib/smarty/plugins/function.cycle.php';
 if (!is_callable('smarty_modifier_strtotime')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.strtotime.php';
 if (!is_callable('smarty_modifier_replace')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.replace.php';
+if (!is_callable('smarty_modifier_truncate')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.truncate.php';
 if (!is_callable('smarty_modifier_daysago')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.daysago.php';
 if (!is_callable('smarty_modifier_timeago')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.timeago.php';
 if (!is_callable('smarty_modifier_fsize_format')) include '/var/www/newznab/www/lib/smarty/plugins/modifier.fsize_format.php';
@@ -119,8 +120,9 @@ if ($_smarty_tpl->_count($_from) > 0){
 "><a class="title" title="View details" href="<?php echo @WWW_TOP;?>
 /details/<?php echo $_smarty_tpl->tpl_vars['result']->value['guid'];?>
 /<?php echo smarty_modifier_escape($_smarty_tpl->tpl_vars['result']->value['searchname'],"htmlall");?>
-"><?php echo smarty_modifier_replace(smarty_modifier_escape($_smarty_tpl->tpl_vars['result']->value['searchname'],"htmlall"),"."," ");?>
-</a></label>
+"><?php echo smarty_modifier_truncate(smarty_modifier_replace(smarty_modifier_replace(smarty_modifier_replace(smarty_modifier_replace(smarty_modifier_escape($_smarty_tpl->tpl_vars['result']->value['searchname'],"htmlall"),"."," "),"-"," "),"["," "),"]"," "),150,"...",true);?>
+</a></label value="Searchname">
+			
 				
 				<?php if ($_smarty_tpl->tpl_vars['result']->value['passwordstatus']==1){?>
 					<img title="Passworded Rar Archive" src="<?php echo @WWW_TOP;?>
@@ -130,8 +132,6 @@ if ($_smarty_tpl->_count($_from) > 0){
 /views/images/icons/lock.gif" alt="Contains .cab/ace/rar Archive" />
 				<?php }?>
 
-
-				
 				<div class="resextra">
 					<div class="btns">
 						<?php if ($_smarty_tpl->tpl_vars['result']->value['nfoID']>0){?><a href="<?php echo @WWW_TOP;?>
