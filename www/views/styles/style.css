@@ -87,7 +87,7 @@ select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
 #logo ul li h2 {display:none;}
 #logo ul li ul li {float: left; margin-left: 1em; padding-right:5px;  }
 #logo ul li a {color:#333;}
-#logo ul ul {list-style-type: square;}
+#logo ul ul {list-style-type: disc;}
 
 /*
 data tables, most lists.

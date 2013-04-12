@@ -1140,6 +1140,7 @@ class Releases
 						{
 							$binID = $rowbins['ID'];
 							$binpartCnt = $rowbins['totalParts'];
+							$binpartCnt = $binpartCnt+1;
 							$partCnt = $db->queryOneRow(sprintf("SELECT count(ID) from parts where binaryID = %d", $binID));
 							$partCnt = array_shift($partCnt);
 							if($partCnt >= $binpartCnt)
@@ -1154,6 +1155,7 @@ class Releases
 					}
 					//Check if everything is complete. Set filecheck to 2.
 					$colFileCnt = $rowcol['totalFiles'];
+					$colFileCnt = $colFileCnt+1;
 					if($binFileCnt = $db->queryOneRow(sprintf("SELECT count(ID) from binaries where partcheck = 1 and collectionID = %d", $colID)))
 					{
 						$binFileCnt = array_shift($binFileCnt);
