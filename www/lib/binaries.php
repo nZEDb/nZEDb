@@ -307,11 +307,10 @@ class Binaries
 						$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($data['CollectionHash'])));
 						if(!$cres)
 						{
-							/* while testing leave subject as is to see where it screws up during hash
 							//File and part count.
 							$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-/i', '', $subject);
 							//Extensions.
-							$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|yEnc/i', '', $cleanerName);
+							$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|vol.+(par2)|zip)"?|\d{2,3}\.pdf|yEnc/i', '', $cleanerName);
 							//Size.
 							$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B/i', '', $cleanerName);
 							//Unwanted stuff.
@@ -320,8 +319,8 @@ class Binaries
 							$cleanerName = preg_replace('/\[|\]|<|>|"|=/i', '', $cleanerName);
 							//Replaces some characters and multiple spaces for a single space.
 							$cleanerName = preg_replace('/\-|\.|_|\s\s+/i', ' ', $cleanerName);
-							$cleanerName = trim($cleanerName);*/
-							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
+							$cleanerName = trim($cleanerName);
+							$csql = sprintf("INSERT INTO collections (name, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
 						}
 						else
