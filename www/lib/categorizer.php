@@ -260,7 +260,7 @@ class Categorizer
 
 	public function isMac($releasename)
 	{
-		if(preg_match('/osx|os\.x|\.mac\./i', $releasename))
+		if(preg_match('/mac(\.|\s)?osx/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_MAC;
 			return true;
@@ -270,7 +270,12 @@ class Categorizer
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/\-RELOADED|\-SKIDROW|PC GAME|FASDOX|games|v\d{1,3}.*?\-TE|RIP\-unleashed|Razor1911/i', $releasename))
+		if (preg_match('/FASDOX|games|v\d{1,3}.*?\-TE|PC GAME|RIP\-unleashed|Razor1911/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_PC_GAMES;
+			return true;
+		}
+		if (preg_match('\-(0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
@@ -378,7 +383,7 @@ class Categorizer
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
 			}
-			else if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $releasename))
+			if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
@@ -396,7 +401,7 @@ class Categorizer
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
-			else if (preg_match('/LIGHTFORCE|MiRiBS|(PLAY)?ASiA|PSN|SUXXORS|UMD(RIP)?|USA?/i', $releasename))
+			if (preg_match('/LIGHTFORCE|MiRiBS|(PLAY)?ASiA|PSN|SUXXORS|UMD(RIP)?|USA?/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
@@ -424,12 +429,12 @@ class Categorizer
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
 			}
-			else if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
+			if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
 			}
-			else if (preg_match('/ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT/i', $releasename))
+			if (preg_match('/ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
@@ -455,14 +460,14 @@ class Categorizer
 			$this->tmpCat = Category::CAT_GAME_XBOX360;
 			return true;
 		}
-		else if (preg_match('/x360/i', $releasename))
+		if (preg_match('/x360/i', $releasename))
 		{
 			if (preg_match('/Allstars|ASiA|CCCLX|COMPLEX|DAGGER|GLoBAL|iMARS|JAP|JPN|MULTi|NTSC|PAL|REPACK|RRoD|RF|SWAG|USA?/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_XBOX360;
 				return true;
 			}
-			else if (preg_match('/DAMNATION|GERMAN|GOTY|iNT|iTA|JTAG|KINECT|MARVEL|MUX360|RANT|SPARE|SPANISH|VATOS|XGD/i', $releasename))
+			if (preg_match('/DAMNATION|GERMAN|GOTY|iNT|iTA|JTAG|KINECT|MARVEL|MUX360|RANT|SPARE|SPANISH|VATOS|XGD/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_XBOX360;
 				return true;
@@ -500,7 +505,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 			return true;
 		}
-		else if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-(720P|x264)/i', $releasename))
+		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-(720P|x264)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 			return true;
