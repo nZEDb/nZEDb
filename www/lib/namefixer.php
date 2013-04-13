@@ -5,16 +5,17 @@ require_once(WWW_DIR."/lib/categorizer.php");
 
 class Namefixer
 {
-	private $tmpName = array();
+	private $tmpName = '';
+	private $newName = '';
+	private $relsID = '';
+	private $functionUsed = '';
 	//
 	//Attempts to fix release names using the release name.
 	//
-	public function fixNamesWithNames($time)
+	public function fixNamesWithNames($time, $echo)
 	{
-		//Fix releases which have never been fixed using the release name.
-		
 		$db = new DB();
-		$query = "SELECT name, ID from releases";
+		$query = "SELECT name, ID as releaseID from releases";
 		
 		//Do 24 hours or full DB.
 		if ($time == 1)
@@ -29,58 +30,60 @@ class Namefixer
 		
 		while ($relrow = mysql_fetch_array($relres))
 		{
-			$this->checkName($relrow);
+			$this->checkName($relrow, $echo);
 		}
 	}
 	
 	//
 	//Attempts to fix release names using the NFO.
 	//
-	public function fixNamesWithNfo($time)
+	public function fixNamesWithNfo($time, $echo)
 	{
-		//Fix releases in misc -> other using the NFO.
-		
 		$db = new DB();
-		$query = "SELECT ID from releases where categoryID = 7010 and categoryID = 2020 and categoryID = 5050";
+		//For testing do all cats//$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
+		$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
 		
 		//Do 24 hours or full DB.
 		if ($time == 1)
 		{
-			$nameres = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day)"));
+			$nfores = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day group by rel.ID"));
 		}
 		
 		if ($time == 2)
 		{
-			$nameres = $db->queryDirect($query);
+			$nfores = $db->queryDirect(sprintf($query,"group by rel.ID"));
 		}
 		
-		$nfo = $db->queryOneRow(sprintf("SELECT uncompress(nfo) as NFO from releasenfo where releaseID = %d", $nameres['ID']));
-		$this->checkName($nfo);
+		while ($nforow = mysql_fetch_array($nfores))
+		{
+			$this->checkName($nforow, $echo);
+		}
 	}
 	
 	//
 	//Attempts to fix release names using the File name.
 	//
-	public function fixNamesWithFiles($time)
+	public function fixNamesWithFiles($time, $echo)
 	{
-		//Fix releases in misc -> other using the file names.
-		
 		$db = new DB();
-		$query = "SELECT ID from releases where categoryID = 7010 and categoryID = 2020 and categoryID = 5050";
+		//$query = "SELECT relfiles.name as filename, relfiles.releaseID as fileID, rel.ID as relID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
+		$query = "SELECT relfiles.name as filename, relfiles.releaseID as fileID, rel.ID as relID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
 		
 		//Do 24 hours or full DB.
 		if ($time == 1)
 		{
-			$nameres = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day)"));
+			$fileres = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day group by rel.ID"));
 		}
 		
 		if ($time == 2)
 		{
-			$nameres = $db->queryDirect($query);
+			$fileres = $db->queryDirect(sprintf($query,"group by rel.ID"));
 		}
 		
-		$filename = $db->queryOneRow(sprintf("SELECT name as filename from releasefiles where releaseID = %d", $nameres['ID']));
-		$this->checkName($filename);
+		while ($filerow = mysql_fetch_array($fileres))
+		{
+			$this->checkName($filerow, $echo);
+		}
 	}
 	
 	//
@@ -95,15 +98,23 @@ class Namefixer
 	//
 	//Check the array using regex for a clean name.
 	//
-	public function checkName($array)
+	public function checkName($array, $echo)
 	{                          
 		if($this->tvCheck($array))
 		{ 
-			$this->updateRelease($ID, $name);
+			if ($echo == 1){}
+			else if ($echo == 2)
+			{
+			//$this->updateRelease($ID, $name);
+			}
 		}
 		if($this->movieCheck($array))
 		{ 
-			$this->updateRelease($ID, $name);
+			if ($echo == 1){}
+			else if ($echo == 2)
+			{
+			//$this->updateRelease($ID, $name);
+			}
 		}
 	}
 	
@@ -112,7 +123,18 @@ class Namefixer
 	//
 	public function tvCheck($array)
 	{
-		print_r($array);
+		foreach ($array as $searchname)
+		{
+			/*if (preg_match('/\w.+hdtv.+\w/i', $searchname, $result))
+			{
+				echo $result['0']."\n";
+			}*/
+			if (preg_match('/[a-z0-9.]+s\d{1,2}e\d{1,2}\.hdtv\.x264+[a-z0-9.-]+/i', $searchname, $result))
+			{
+				echo $result['0']."\n";
+			}
+			
+		}
 	}
 	
 	//

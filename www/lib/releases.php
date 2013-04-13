@@ -1309,13 +1309,13 @@ class Releases
 		echo $n."Stage 8 -> Categorize releases.".$n;
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect(sprintf("SELECT ID, name, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
+			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
 				$relID = $rowrel['ID'];
 				$groupID = $rowrel['groupID'];
 				$groupName = $groups->getByNameByID($groupID);
-				$catId = $cat->determineCategory($groupName, $rowrel["name"]);
+				$catId = $cat->determineCategory($groupName, $rowrel["searchname"]);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
 			}
 		}

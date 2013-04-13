@@ -33,11 +33,11 @@ if (isset($argv[1]))
 		$relcount = 0;
 		echo "Categorizing all releases in other-> misc using modified categorizer. This can take a while, be patient.\n";
 		
-		$relres = $db->queryDirect("SELECT name, ID from releases where categoryID = 7010");
+		$relres = $db->queryDirect("SELECT searchname, ID from releases where categoryID = 7010");
 		while ($relrow = mysql_fetch_assoc($relres))
 		{
 			$releaseID = $relrow['ID'];
-			$relname = $relrow['name'];
+			$relname = $relrow['searchname'];
 			$catID = $categorizer->Categorize($relname);
 			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d where ID = %d", $catID, $releaseID));
 			$relcount ++;
