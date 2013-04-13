@@ -533,7 +533,7 @@ class Categorizer
 	// 
 	public function isEBook($releasename)
 	{
-		if (preg_match('/Ebook|E?\-book|\) WW|\[Springer\]|Publishing/i', $releasename))
+		if (preg_match('/Ebook|E?\-book|\) WW|Publishing|\[Springer\]|Service\s?Manual|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC_EBOOK;
 			return true;
