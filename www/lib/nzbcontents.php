@@ -44,7 +44,13 @@ Class NZBcontents
 		
 		foreach ($nzbfile->file as $nzbcontents)
 		{
-			print_r($nzbcontents->attributes()->subject);
+			$subject = $nzbcontents->attributes()->subject;
+			//print_r($subject);
+			if (preg_match('/.r03/', $subject))
+			{
+				$segments = $nzbcontents->segments->segment;
+				print_r((string)$segments.$n);
+			}
 		}
 		
 	}
