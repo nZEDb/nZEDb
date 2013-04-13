@@ -54,10 +54,10 @@ else
 {
 	echo "ERROR: You must supply an argument.\n".
 			"php update_releases.php 1 ...: Categorizes new releases using unmodified nnplus category.php\n".
-			"php update_releases.php 3 ...: Categorizes new releases using modified categories.php\n".
+			"php update_releases.php 3 ...: Categorizes new releases using modified category.php (does a better job)\n".
 			"php update_releases.php 5 ...: Leaves new releases in other -> misc\n".
 			"php update_releases.php 7 ...: WARNING !! Moves ALL releases to other -> misc\n".
-			"php update_releases.php 9 ...: Categorizes releases in other -> misc using modified categories.php\n";
+			"php update_releases.php 9 ...: Categorizes releases in other -> misc using modified category.php\n";
 }
 
 ?>
