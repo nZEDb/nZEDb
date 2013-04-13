@@ -26,11 +26,22 @@ Class NZBcontents
 	{
 		$this->mediafileregex = 'AVI|VOB|MKV|MP4|TS|WMV|MOV|M4V|F4V|MPG|MPEG';
 	}
+	
 	//
-	// Retrieve the contents of an nzb.
+	// Retrieve the location of an nzb.
 	//
 	public function getNzbContents($guid)
 	{
+		$n = "\n";
+		$nzb = new NZB();
+		$nzbpath = $nzb->getNZBPath($guid);
+		echo $nzbpath.$n;
+		
+		$nzbpath = 'compress.zlib://'.$nzbpath;
+		
+		$nzbfile = simplexml_load_file($nzbpath);
+		
+		echo $nzbfile->head->meta.$n;
 		
 	}
 }
