@@ -172,6 +172,10 @@ class Categorizer
 
 	public function isSportTV($releasename)
 	{
+		if(preg_match('/s\d{1,2}[.-_ ]?e\d{1,2}/i', $releasename))
+		{
+			return false;
+		}
 		if(preg_match('/[\.\-_ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[\.\-_ ]liga|MMA|motogp|NFL|NCAA|PGA|red[\.\-_ ]bull.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SPORT;
@@ -182,7 +186,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|Poker|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
 		{	
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
