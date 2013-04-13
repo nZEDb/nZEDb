@@ -258,9 +258,14 @@ class Categorizer
 	//
 	public function isMovie($releasename)
 	{
-		if($this->isMovieForeign($releasename)){ return true; }
-		if($this->isMovieSD($releasename)){ return true; }
-		if($this->isMovieHD($releasename)){ return true; }
+		$looksLikeMovie = preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVDRip|XVID/i', $releasename);
+		
+		if($looksLikeMovie)
+		{
+			if($this->isMovieForeign($releasename)){ return true; }
+			if($this->isMovieSD($releasename)){ return true; }
+			if($this->isMovieHD($releasename)){ return true; }
+		}
 		
 		return false;
 	}
@@ -272,7 +277,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
 		}
-		else if(preg_match('/NLSubs|NL\-Subs|NLSub|\d{4} German|Deutsch| der /i', $releasename))
+		if(preg_match('/NLSubs|NL\-Subs|NLSub|\d{4} German|Deutsch| der /i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
