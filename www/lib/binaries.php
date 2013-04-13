@@ -254,7 +254,7 @@ class Binaries
 					//File extensions - If it was not quotes.
 					$cleansubject = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip)"?|\d{2,3}\.pdf|\d{2,3}\s\-\s.+\.mp3|\.part\d{1,4}\./i', '', $cleansubject);
 					//File Sizes - Non unique ones.
-					$cleansubject = preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(M|K)B\s(?=\-\s\d{1,3}\.\d{1,3}\s(G|M)B\s)|><\s\d{1,3}\/\d{1,3}\s\(.+><\s\d{1,3},\d{1,3}\s(G|M)B\s>|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?/i', '', $cleansubject);
+					$cleansubject = preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(M|K)B\s(?=\-\s\d{1,3}\.\d{1,3}\s(G|M)B\s)|><\s\d{1,3}\/\d{1,3}\s\(.+><\s\d{1,3},\d{1,3}\s(G|M)B\s>|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?/i', '', $cleansubject);
 					//Random stuff.
 					$cleansubject = preg_replace('/AutoRarPar\d{1,5}/i', '', $cleansubject);
 					$cleansubject = utf8_encode(trim($cleansubject));
