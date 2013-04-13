@@ -2,23 +2,36 @@
 
 require("config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/categorizer.php");
-$n = "\n";
+require_once(WWW_DIR."/lib/framework/namefixer.php");
 
-	public function fixUsingName()
-	{
-		
-	}
+$n = "\n";
+$namefixer = new Namefixer;
 
 if (isset($argv[1]))
 {
 	if ($argv[1] == 1)
 	{
-		$this->fixUsingName();
+		$namerfixer->fixNamesWithNames(1);
 	}
 	else if ($argv[1] == 2)
 	{
-		echo "Placeholder".$n;
+		$namerfixer->fixNamesWithNames(2);
+	}
+	else if ($argv[1] == 3)
+	{
+		$namerfixer->fixNamesWithNfo(1);
+	}
+	else if ($argv[1] == 4)
+	{
+		$namerfixer->fixNamesWithNfo(2);
+	}
+	else if ($argv[1] == 5)
+	{
+		$namerfixer->fixNamesWithFiles(1);
+	}
+	else if ($argv[1] == 6)
+	{
+		$namerfixer->fixNamesWithFiles(2);
 	}
 	else
 	{
@@ -28,8 +41,13 @@ if (isset($argv[1]))
 }
 else
 {
-	echo "ERROR: You must supply an argument.\n"."php fixReleaseNames.php 1 ...: Attempts to find a name from the name itself using strict rules.\n".
-	"php update_releases.php 2 ...: Placeholder - Will fix release names from files or nfo later on.".$n;
+	echo "ERROR: You must supply an argument.\n".
+			"php fixReleaseNames.php 1 ...: Fix release names, using the release names in the past 24 hours - on all categories.".$n
+			"php fixReleaseNames.php 2 ...: Fix release names, using the release names - on all categories.".$n.
+			"php fixReleaseNames.php 3 ...: Placeholder - fix release names in misc categories using NFO in the past 24 hours.".$n.
+			"php fixReleaseNames.php 4 ...: Placeholder - fix release names in misc categories using NFO.".$n.
+			"php fixReleaseNames.php 5 ...: Placeholder - fix release names in misc categories using File Name in the past 24 hours.".$n;
+			"php fixReleaseNames.php 6 ...: Placeholder - fix release names in misc categories using File Name.".$n;
 }
 
 ?>
