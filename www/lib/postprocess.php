@@ -158,8 +158,8 @@ class PostProcess {
 				//
 				// Go through the binaries for this release looking for a rar, a sample, and a mediafile
 				//
-				$cID = $db->queryOneRow(sprintf("select ID from collections where releaseID = %d", $rel["ID"]));
-				$sql = sprintf("select c.ID, binaries.name, groups.name as groupname from binaries inner join groups on groups.ID = binaries.groupID where collectionID = %d order by totalParts", $cID["ID"]);
+				$cID = $db->queryOneRow(sprintf("select ID, groupID from collections where releaseID = %d", $rel["ID"]));
+				$sql = sprintf("select binaries.ID, binaries.name, groups.name as groupname from binaries inner join groups on groups.ID = %d where collectionID = %d order by totalParts", $cID["groupID"], $cID["ID"]);
 				$binresult = $db->query($sql);
 				$msgid = array();
 				$samplemsgid = $mediamsgid = -1;
