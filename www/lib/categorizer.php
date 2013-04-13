@@ -146,12 +146,12 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -161,7 +161,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Vostfr[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Vostfr|xslidian[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -213,10 +213,23 @@ class Categorizer
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/dvdr|dvd5|dvd9|xvid/i', $releasename))
+		if (preg_match('/480p|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|xvid/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
+		}
+		if (preg_match('/((H|P)D[\.\-_ ]?TV|DSR|WebRip)[\.\-_ ]x264/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_SD;
+			return true;
+		}
+		if (preg_match('/s\d{1,2}[.-_ ]?e\d{1,2}|\s\d{3,4}\s/i', $releasename))
+		{
+			if (preg_match('/(H|P)D[\.\-_ ]?TV|BDRip[\.\-_ ]x264/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_SD;
+				return true;
+			}
 		}
 		
 		return false;
