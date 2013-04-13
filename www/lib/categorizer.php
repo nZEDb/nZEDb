@@ -360,7 +360,7 @@ class Categorizer
 	{
 		if (preg_match('/NDS|\.nds/', $releasename))
 		{
-			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|HOL|JP|NL|KS|USA?)\)/i', $releasename))
+			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
@@ -372,14 +372,14 @@ class Categorizer
 
 	public function isGamePS3($releasename)
 	{
-		if (preg_match('/PS3/', $releasename))
+		if (preg_match('/PS3/i', $releasename))
 		{
-			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR|Googlecus|GOTY|\-HR|iNSOMNi|JPN|KONDIOS|MULTi|PSN|SPLiT|STRiKE|USA?|ZRY/i', $releasename))
+			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JPN|KONDIOS|PSN/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
 			}
-			else if (preg_match('/AGENCY|APATHY|Caravan|NRP/i', $releasename))
+			else if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
@@ -393,7 +393,12 @@ class Categorizer
 	{
 		if (preg_match('/PSP/i', $releasename))
 		{
-			if (preg_match('/BAHAMUT|EUR|Googlecus|\-HR|JPN|KOR|(PLAY)?ASiA|PSN|US/i', $releasename))
+			if (preg_match('/BAHAMUT|Caravan|EMiNENT|EUR?|Googlecus|\-HR|JPN|KOR|NTSC|PAL/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_PSP;
+				return true;
+			}
+			else if (preg_match('/LIGHTFORCE|MiRiBS|(PLAY)?ASiA|PSN|SUXXORS|UMD(RIP)?|USA?/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
@@ -418,8 +423,21 @@ class Categorizer
 	{
 		if (preg_match('/WII/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_GAME_WII;
-			return true;
+			if (preg_match('/Allstars|BiOSHOCK|dumpTruck|DNi|iCON|JAP|NTSC|PAL|ProCiSiON|PROPER|RANT|REV0|SUNSHiNE|SUSHi|TMD|USA?/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_WII;
+				return true;
+			}
+			else if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_WII;
+				return true;
+			}
+			else if (preg_match('/ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_WII;
+				return true;
+			}
 		}
 		
 		return false;

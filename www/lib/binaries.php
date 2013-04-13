@@ -314,7 +314,7 @@ class Binaries
 							//Size.
 							$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B/i', '', $cleanerName);
 							//Unwanted stuff.
-							$cleanerName = preg_replace('/SECTIONED brings you|usenet-space-cowboys.info|<.+https:\/\/secretusenet\.com>|> USC <|/\[\d{1,}\]\-\[FULL\].+#a\.b.+\]\-/i|brothers-of-usenet.info(\/\.net)?|Partner von SSL-News.info/i', '', $cleanerName);
+							$cleanerName = preg_replace('/SECTIONED brings you|usenet-space-cowboys.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers-of-usenet.info(\/\.net)?|Partner von SSL-News.info/i', '', $cleanerName);
 							//Removes some characters.
 							$cleanerName = preg_replace('/\[|\]|<|>|"|=/i', '', $cleanerName);
 							//Replaces some characters with 1 space.
