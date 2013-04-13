@@ -42,8 +42,8 @@ if (isset($argv[1]))
 else
 {
 	echo "ERROR: You must supply an argument.\n".
-			"php fixReleaseNames.php 1 ...: Fix release names, using the release names in the past 24 hours - on all categories.".$n
-			"php fixReleaseNames.php 2 ...: Fix release names, using the release names - on all categories.".$n.
+			"php fixReleaseNames.php 1 ...: Fix release names, using the usenet subject in the past 24 hours - on all categories.".$n
+			"php fixReleaseNames.php 2 ...: Fix release names, using the usenet subject - on all categories.".$n.
 			"php fixReleaseNames.php 3 ...: Placeholder - fix release names in misc categories using NFO in the past 24 hours.".$n.
 			"php fixReleaseNames.php 4 ...: Placeholder - fix release names in misc categories using NFO.".$n.
 			"php fixReleaseNames.php 5 ...: Placeholder - fix release names in misc categories using File Name in the past 24 hours.".$n;
