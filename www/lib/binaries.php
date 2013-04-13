@@ -322,7 +322,7 @@ class Binaries
 							//Replace multiple spaces with 1 space
 							$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 							$cleanerName = trim($cleanerName);
-							$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
+							$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
 						}
 						else
