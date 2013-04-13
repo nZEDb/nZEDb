@@ -6,4 +6,4 @@ require_once(FS_ROOT."/../../www/lib/nzbcontents.php");
 
 $nzbcontents = new NZBContents();
 
-$nzbcontents->getNzbContents("516c7dff295adc2fcb61a410a186a915");
+$nzbcontents->getNzbContents("8f43fae6f523f919ef8d9c08539a3887");

@@ -33,15 +33,19 @@ Class NZBcontents
 	public function getNzbContents($guid)
 	{
 		$n = "\n";
+		// Fetch the NZB location using the GUID.
 		$nzb = new NZB();
 		$nzbpath = $nzb->getNZBPath($guid);
-		echo $nzbpath.$n;
-		
 		$nzbpath = 'compress.zlib://'.$nzbpath;
-		
+		// Fetch the NZB.
 		$nzbfile = simplexml_load_file($nzbpath);
 		
-		echo $nzbfile->head->meta.$n;
+		//print_r($nzbfile);
+		
+		foreach ($nzbfile->file as $nzbcontents)
+		{
+			print_r($nzbcontents->attributes()->subject);
+		}
 		
 	}
 }
