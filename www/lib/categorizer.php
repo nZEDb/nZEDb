@@ -205,7 +205,7 @@ class Categorizer
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(xvid|dvdscr|extrascene|dvdrip|r5|\.CAM|dvdr|dvd9|dvd5|divx)[\.\-]/i', $releasename))
+		if(preg_match('/(xvid|dvdscr|extrascene|dvdrip|r5|\.CAM|dvdr|dvd9|dvd5|divx)[\.\- ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -230,7 +230,7 @@ class Categorizer
 
 	public function isPhone($releasename)
 	{
-		if (preg_match('/[\.\-_](IPHONE|ITOUCH|ANDROID|COREPDA|symbian|xscale|wm5|wm6)[\.\-_]/i', $releasename))
+		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|ANDROID|COREPDA|symbian|xscale)[\.\-_ ]?/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_PHONE;
 			return true;

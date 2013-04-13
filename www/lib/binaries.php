@@ -316,9 +316,9 @@ class Binaries
 							//Unwanted stuff.
 							$cleanerName = preg_replace('/SECTIONED brings you|usenet-space-cowboys.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers-of-usenet.info(\/\.net)?|Partner von SSL-News.info/i', '', $cleanerName);
 							//Removes some characters.
-							$cleanerName = preg_replace('/\[|\]|<|>|"|=/i', '', $cleanerName);
+							$cleanerName = preg_replace('/<|>|"|=/i', '', $cleanerName);
 							//Replaces some characters with 1 space.
-							$cleanerName = preg_replace('/\-|\.|_/i', ' ', $cleanerName);
+							$cleanerName = preg_replace('/\.|_/i', ' ', $cleanerName);
 							//Replace multiple spaces with 1 space
 							$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 							$cleanerName = trim($cleanerName);
