@@ -118,7 +118,7 @@ class Categorizer
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 
 		//Anime
-		//$looksLikeSportTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[\.\-_ ]?e\d{1,2}|(H|D)DTV|WEB\-DL)[\.\-_ ]/i', $releasename);
+		//$looksLikeAnimeTV = preg_match('/[\.\-_ ]placeholder[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV)
 		{
@@ -135,6 +135,12 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_OTHER;
 			return true;
 		}
+		/*if ($looksLikeAnimeTV)
+		{
+			if($this->isAnimeTV($releasename)){ return true; }
+			$this->tmpCat = Category::CAT_TV_OTHER;
+			return true;
+		}*/
 
 		return false;
 	}
@@ -146,12 +152,12 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -202,7 +208,7 @@ class Categorizer
 
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720|h\.?264|web\-?dl/i', $releasename))
+		if (preg_match('/1080(i|p)|720|h[\.\-_ ]264|web[\.\-_ ]dl/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
@@ -230,6 +236,17 @@ class Categorizer
 				$this->tmpCat = Category::CAT_TV_SD;
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	public function isAnimeTV($releasename)
+	{
+		if (preg_match('/placeholder/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_ANIME;
+			return true;
 		}
 		
 		return false;
