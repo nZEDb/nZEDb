@@ -14,7 +14,7 @@ while :
 CURRTIME=`date +%s`
 cd ${NEWZNAB_PATH}
 /usr/bin/php5 ${NEWZNAB_PATH}/update_binaries.php
-/usr/bin/php5 ${NEWZNAB_PATH}/update_releases.php 1
+/usr/bin/php5 ${NEWZNAB_PATH}/update_releases.php 3
 
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
