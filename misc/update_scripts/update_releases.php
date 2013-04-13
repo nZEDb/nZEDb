@@ -1,6 +1,6 @@
 <?php
 
-require("config.php");
+require(dirname(__FILE__)."/config.php");
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/categorizer.php");
 require_once(WWW_DIR."/lib/framework/db.php");
