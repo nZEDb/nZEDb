@@ -1108,7 +1108,7 @@ class Releases
 		
 		$groupCnt = $groups->getActiveIDs();
 		
-		echo "Stage 1 -> Go over groups to find complete collections.".$n;
+		echo "\033[1;33mStage 1 -> Go over groups to find complete collections.\033[0m".$n;
 		foreach($groupCnt AS $groupID)
 		{
 			$groupID = array_shift($groupID);
@@ -1185,7 +1185,7 @@ class Releases
 			}
 		}
 		//Get part and file size.
-		echo $n."Stage 2 -> Get part and file sizes.".$n;
+		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
 		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1207,7 +1207,7 @@ class Releases
 			}
 		}
 		//Mark collections smaller than site settings.
-		echo $n."Stage 3 -> Delete collections smaller than minimum size group/site setting.".$n;
+		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size group/site setting.\033[0m".$n;
 		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
 		{
 			foreach($groupCnt AS $groupID)
@@ -1228,7 +1228,7 @@ class Releases
 		}
 		echo "Deleted ".$minsizecount." collections smaller than group/site settings.".$n;
 		//Mark with less files than site settings.
-		echo $n."Stage 4 -> Delete collections with less files than group/site setting.".$n;
+		echo $n."\033[1;33mStage 4 -> Delete collections with less files than group/site setting.\033[0m".$n;
 		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
 		{
 			foreach($groupCnt AS $groupID)
@@ -1249,7 +1249,7 @@ class Releases
 		}
 		echo "Deleted ".$minfilecount." collections with less files than group/site settings.".$n;
 		//Create releases.
-		echo $n."Stage 5 -> Create releases.".$n;
+		echo $n."\033[1;33mStage 5 -> Create releases.\033[0m".$n;
 		if($rescol = $db->queryDirect(sprintf("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded asc", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1270,7 +1270,7 @@ class Releases
 			}
 		}
 		//Look for NFOs.
-		echo $n."Stage 6 -> Mark releases that have an NFO.".$n;
+		echo $n."\033[1;33mStage 6 -> Mark releases that have an NFO.\033[0m".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1286,7 +1286,7 @@ class Releases
 			}
 		}
 		//Create NZB.
-		echo $n."Stage 7 -> Create the NZB, mark collections as ready for deletion.".$n;
+		echo $n."\033[1;33mStage 7 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1306,7 +1306,7 @@ class Releases
 			}
 		}
 		//Categorize releases.
-		echo $n."Stage 8 -> Categorize releases.".$n;
+		echo $n."\033[1;33mStage 8 -> Categorize releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1330,11 +1330,11 @@ class Releases
 			}
 		}
 		//Post processing
-		echo $n."Stage 9 -> Post processing.".$n;
+		echo $n."\033[1;33mStage 9 -> Post processing.\033[0m".$n;
 		$postprocess = new PostProcess(true);
 		$postprocess->processAll();
 		//Delete old releases and finished collections.
-		echo $n."Stage 10 -> Delete old releases, finished collections and passworded releases.".$n;
+		echo $n."\033[1;33mStage 10 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
 		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 8 hour) order by dateadded asc"))
 		{
