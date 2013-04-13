@@ -191,7 +191,7 @@ class PostProcess {
 							$mediamsgid = $mediapart["messageID"];
 						}
 					}
-					if (preg_match("/.*\W(?:\"[\w.\-\',;& ]|(?!\"[\w.\-\',;& ]+)[^.]+)\.(001|((?=10[ \"\)\]\-].+\(\d{1,3}\/\d{2,3})10|11)|r(01|ar)|part0+1)[ \"\)\]\-]/i", $binrow["name"]) && !preg_match("/[-_\.]sub/i", $binrow["name"]))
+					if (preg_match("/.*\W(?:part0*1|(?!part\d+)[^.]+)\.rar[ \"\)\]\-]|.*\W(?:\"[\w.\-\',;& ]|(?!\"[\w.\-\',;& ]+)[^.]+)\.(001|((?=10[ \"\)\]\-].+\(\d{1,3}\/\d{2,3})10|11)|r01|part01)[ \"\)\]\-]/i", $binrow["name"]) && !preg_match("/[-_\.]sub/i", $binrow["name"]))
 					{
 						echo "Detected RAR ".$binrow["name"]."\n";
 						$part = $db->queryOneRow(sprintf("select messageID from parts where binaryID = %d order by partnumber limit 1", $binrow["ID"]));
