@@ -481,37 +481,50 @@ class Categorizer
 		return false;
 	}
 
-
 	//
 	// Music
 	//
 	public function isMusic($releasename)
 	{
-		if($this->isMusicMP3($releasename)){ return true; }
+		if($this->isMusicVideo($releasename)){ return true; }
 		if($this->isMusicLossless($releasename)){ return true; }
+		if($this->isMusicMP3($releasename)){ return true; }
 		
 		return false;
 	}
 
 	public function isMusicMP3($releasename)
 	{
-		if (preg_match('/Greatest_Hits|VA?(\-|_)|WEB\-\d{4}/i', $releasename))
+		if (preg_match('/(720P|x264)\-(19|20)\d\d\-[a-z0-9]{1,12}/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_MUSIC_MP3;
+			$this->tmpCat = Category::CAT_MUSIC_VIDEO;
+			return true;
+		}
+		else if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-(720P|x264)/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 			return true;
 		}
 		
 		return false;
 	}
-
 	public function isMusicLossless($releasename)
 	{
-		if (preg_match('/Lossless|FLAC/i', $releasename))
+		if (preg_match('/FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 			return true;
 		}
 		
+		return false;
+	}
+	public function isMusicMP3($releasename)
+	{
+		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MUSIC_MP3;
+			return true;
+		}
 		return false;
 	}
 	
