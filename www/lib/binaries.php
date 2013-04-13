@@ -318,7 +318,7 @@ class Binaries
 							//Removes some characters.
 							$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
 							//Replaces some characters with 1 space.
-							$cleanerName = preg_replace('/\.|_/|\-/i', ' ', $cleanerName);
+							$cleanerName = preg_replace('/\.|\_|\-/i', ' ', $cleanerName);
 							//Replace multiple spaces with 1 space
 							$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 							$cleanerName = trim($cleanerName);
