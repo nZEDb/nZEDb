@@ -2,6 +2,7 @@
 
 require("config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/categorizer.php");
 $n = "\n";
 
 	public function fixUsingName()
@@ -9,12 +10,8 @@ $n = "\n";
 		
 	}
 
-
-
-
 if (isset($argv[1]))
 {
-	$releases = new Releases;
 	if ($argv[1] == 1)
 	{
 		$this->fixUsingName();
