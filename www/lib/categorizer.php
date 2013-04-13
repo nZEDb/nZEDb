@@ -80,7 +80,7 @@ class Categorizer
 	//
 	//   TV
 	//
-	public function isTV($releasename, $assumeTV=TRUE)
+	public function isTV2($releasename, $assumeTV=TRUE)
 	{
 
 		// check if it looks like TV
@@ -108,17 +108,17 @@ class Categorizer
 		return false;
 	}
 	
-	public function isTV2($releasename, $assumeTV=TRUE)
+	public function isTV($releasename, $assumeTV=TRUE)
 	{
 
 		// check if it looks like TV
 		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|DSR|(D|H|P)DTV|WEB\-DL)[\.\-_ ]/i', $releasename);
 		
 		// Sports
-		$looksLikeSportTV = preg_match('/[\.\-_ ](19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip[\.\-_ ]/i', $releasename);
+		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 
 		//Anime
-		$looksLikeSportTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[\.\-_ ]?e\d{1,2}|(H|D)DTV|WEB\-DL)[\.\-_ ]/i', $releasename);
+		//$looksLikeSportTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[\.\-_ ]?e\d{1,2}|(H|D)DTV|WEB\-DL)[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV)
 		{
@@ -161,7 +161,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Vostfr[\.\-_ ]|/i', $releasename))
+		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Vostfr[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -172,12 +172,22 @@ class Categorizer
 
 	public function isSportTV($releasename)
 	{
-		if(preg_match('/(epl|motogp|supercup|wtcc|red\.bull.*?race|bundesliga|la\.liga|uefa|EPL|ESPN|(WWE|MMA|Bellator|Strikeforce|Sengoku|UFC|FIA|PGA|NFL|NHL|NCAA)\W)/i', $releasename))
+		if(preg_match('/[\.\-_ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[\.\-_ ]liga|MMA|motogp|NFL|NCAA|PGA|red[\.\-_ ]bull.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
 		}
-		else if(preg_match('/WBA|Rugby\.|TNA\.|DTM\.|NASCAR|SBK|NBA\.|NHL\.|NRL\.|FIFA\.|netball\.anz|formula1|indycar|Superleague|V8\.Supercars/i', $releasename))
+		if(preg_match('/[\.\-_ ]?(DTM|FIFA|formula[\.\-_ ]1|indycar|Rugby|NASCAR|NBA|NHL|NRL|netball[\.\-_ ]anz|ROH|SBK|Superleague|The[\.\-_ ]Ultimate[\.\-_ ]Fighter|TNA|V8[\.\-_ ]Supercars|WBA|WrestleMania)[\.\-_ ]/i', $releasename))
+		{	
+			$this->tmpCat = Category::CAT_TV_SPORT;
+			return true;
+		}
+		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
+		{	
+			$this->tmpCat = Category::CAT_TV_SPORT;
+			return true;
+		}
+		if(preg_match('/[\.\-_ ]?(Horse)[\.\-_ ]Racing[\.\-_ ]/i', $releasename))
 		{	
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
