@@ -275,7 +275,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
-		if (preg_match('\-(0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
+		if (preg_match('/\-(0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
@@ -498,7 +498,7 @@ class Categorizer
 		return false;
 	}
 
-	public function isMusicMP3($releasename)
+	public function isMusicVideo($releasename)
 	{
 		if (preg_match('/(720P|x264)\-(19|20)\d\d\-[a-z0-9]{1,12}/i', $releasename))
 		{

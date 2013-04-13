@@ -5,6 +5,7 @@ require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/releaseregex.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/categorizer.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/zipfile.php");
@@ -1080,6 +1081,7 @@ class Releases
 	{
 		$db = new DB;
 		$cat = new Category;
+		$categorizer = new Categorizer;
 		$bin = new Binaries;
 		$nzb = new Nzb;
 		$nfo = new Nfo;
@@ -1313,6 +1315,16 @@ class Releases
 				$groupID = $rowrel['groupID'];
 				$groupName = $groups->getByNameByID($groupID);
 				$catId = $cat->determineCategory($groupName, $rowrel["name"]);
+				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
+			}
+		}
+		if ($categorize == 3)
+		{
+			$resrel = $db->queryDirect(sprintf("SELECT ID, name from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
+			while ($rowrel = mysql_fetch_assoc($resrel))
+			{
+				$relID = $rowrel['ID'];
+				$catId = $categorizer->Categorize($rowrel["name"]);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
 			}
 		}
