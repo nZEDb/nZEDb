@@ -570,7 +570,7 @@ class PostProcess {
 				{
 					echo "Getting Sample for {$samplefile}\n";
 					
-					$execstring = '"'.$ffmpeginfo.'" -loglevel quiet -vframes 300 -sameq -i "'.$samplefile.'" "'.$ramdrive.'zzzz%03d.jpg"';
+					$execstring = '"'.$ffmpeginfo.'" -q:v 0 -i "'.$samplefile.'" -loglevel quiet -vframes 300 "'.$ramdrive.'zzzz%03d.jpg"';
 					$output = runCmd($execstring);		
 					$all_files = scandir($ramdrive,1);
 					if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
