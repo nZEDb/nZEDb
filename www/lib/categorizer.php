@@ -358,15 +358,14 @@ class Categorizer
 
 	public function isGameNDS($releasename)
 	{
-		if (preg_match('/NDS|\.nds/', $releasename))
+		if (preg_match('/NDS|\.nds|nintendo.+3ds/', $releasename))
 		{
-			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
+			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -385,7 +384,6 @@ class Categorizer
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -393,7 +391,7 @@ class Categorizer
 	{
 		if (preg_match('/PSP/i', $releasename))
 		{
-			if (preg_match('/BAHAMUT|Caravan|EMiNENT|EUR?|Googlecus|\-HR|JPN|KOR|NTSC|PAL/i', $releasename))
+			if (preg_match('/BAHAMUT|Caravan|EBOOT|EMiNENT|EUR?|GAME|Googlecus|\-HR|JPN|KOR|NTSC|PAL/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
@@ -404,7 +402,6 @@ class Categorizer
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -415,7 +412,6 @@ class Categorizer
 			$this->tmpCat = Category::CAT_GAME_WIIWARE;
 			return true;
 		}
-		
 		return false;
 	}
 
@@ -428,7 +424,7 @@ class Categorizer
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
 			}
-			else if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
+			else if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
@@ -439,7 +435,6 @@ class Categorizer
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -450,18 +445,29 @@ class Categorizer
 			$this->tmpCat = Category::CAT_GAME_XBOX360DLC;
 			return true;
 		}
-		
 		return false;
 	}
 
 	public function isGameXBOX360($releasename)
 	{
-		if (preg_match('/XBOX360|x360/i', $releasename))
+		if (preg_match('/XBOX360/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_GAME_XBOX360;
 			return true;
 		}
-		
+		else if (preg_match('/x360/i', $releasename))
+		{
+			if (preg_match('/Allstars|ASiA|CCCLX|COMPLEX|DAGGER|GLoBAL|iMARS|JAP|JPN|MULTi|NTSC|PAL|REPACK|RRoD|RF|SWAG|USA?/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_XBOX360;
+				return true;
+			}
+			else if (preg_match('/DAMNATION|GERMAN|GOTY|iNT|iTA|JTAG|KINECT|MARVEL|MUX360|RANT|SPARE|SPANISH|VATOS|XGD/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_XBOX360;
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -472,7 +478,6 @@ class Categorizer
 			$this->tmpCat = Category::CAT_GAME_XBOX;
 			return true;
 		}
-		
 		return false;
 	}
 
