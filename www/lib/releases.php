@@ -1267,7 +1267,8 @@ class Releases
 		}
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
+//		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
@@ -1280,6 +1281,7 @@ class Releases
 				{
 					$colID = $rowcol['ID'];
 					$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
+					echo $relguid.".nzb.gz created\n";
 					$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
 				}

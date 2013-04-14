@@ -1,7 +1,7 @@
 <?php
 
 print "This is dangerous, comment this line out if you really want to reset your database\n";
-exit();
+//exit();
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../www/config.php");
