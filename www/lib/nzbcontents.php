@@ -18,7 +18,7 @@ Class NZBcontents
 	public function getNFOfromNZB()
 	{
 		$db = new DB();
-		$guids = $db->queryDirect("select ID, guid from releases where releases.ID not in (select releaseID from releasenfo)"); //add this to the end later : AND nfostatus between -1 and -6
+		$guids = $db->queryDirect("select ID, guid from releases where releases.ID not in (select releaseID from releasenfo) order by adddate asc limit 0,50"); //add this to the end later : AND nfostatus between -1 and -6
 		while ($relguid = mysql_fetch_assoc($guids))
 		{
 			$guid = $relguid["guid"];
