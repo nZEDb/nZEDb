@@ -616,18 +616,17 @@ class TvRage
 				}
 				
 				if ($this->echooutput)
-					echo 'No match found online.\n';
+					echo 'No match found online.'."\n";
 				return false;
 				
 			} else {
 				if ($this->echooutput)
-					echo 'Nothing returned from tvrage.\n';
+					echo 'Nothing returned from tvrage.'."\n";
 				return false;
 			}
 	
 		} else {
 			if ($this->echooutput)
-				echo 'Error connecting to tvrage.\n';
 			return -1;
 		}
 		
