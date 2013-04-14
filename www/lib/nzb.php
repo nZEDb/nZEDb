@@ -71,7 +71,6 @@ class NZB
 	//
 	function copyNZBforImport($relguid, $nzb, $echooutput=false)
 	{
-		$db = new DB();
 		$page = new Page;
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true)
 
