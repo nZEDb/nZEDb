@@ -147,7 +147,7 @@ class TvRage
 		foreach($countries as $country)
 		{
 			if ($this->echooutput)
-				echo 'Updating schedule for '.$country['country']."\n";
+				echo 'Updating schedule for '.$country['country'].".\n";
 				
 			$sched = getURL($this->xmlFullScheduleUrl.$country['country']);
 			if ($sched !== false && ($xml = @simplexml_load_string($sched)))
@@ -240,8 +240,8 @@ class TvRage
 							if ($this->echooutput)
 							{
 								echo $epInfo['showname']." (".$showId."):\n";
-								echo " -prev: {$prev_ep} - ".(isset($epInfo['prev']['day_time']) ? date("r",$epInfo['prev']['day_time']) : "")."\n";
-								echo " -next: {$next_ep} - ".(isset($epInfo['next']['day_time']) ? date("r",$epInfo['next']['day_time']) : "")."\n";
+								echo "Previous: {$prev_ep} - ".(isset($epInfo['prev']['day_time']) ? date("r",$epInfo['prev']['day_time']) : "").".\n";
+								echo "Next: {$next_ep} - ".(isset($epInfo['next']['day_time']) ? date("r",$epInfo['next']['day_time']) : "").".\n";
 							}
 							
 							// update info
@@ -259,7 +259,7 @@ class TvRage
 			{
 				// no response from tvrage
 				if ($this->echooutput)
-					echo "Schedule not found\n";
+					echo "Schedule not found.\n";
 			}
 		} // end foreach country		
 	}
@@ -347,7 +347,7 @@ class TvRage
 		$db = new Db;
 		
 		if ($this->echooutput)
-			echo "TV series - ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
+			echo "TV series: ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'').".\n";
 		
 		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "null";
 		
@@ -415,7 +415,6 @@ class TvRage
 		if ($this->echooutput)
 		{
 			echo "Processing TV for ".mysql_num_rows($result)." releases.\n";
-			//echo "Lookup tv rage from the web - ".($lookupTvRage?"Yes\n":"No\n");
 		}
 			
 		while ($arr = mysql_fetch_assoc($result)) 
@@ -571,7 +570,7 @@ class TvRage
 				if (isset($titleMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% match: "'.$titleMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% match: "'.$titleMatches[100][0]['title'].'"'.".\n";
 					return $titleMatches[100][0];
 				}
 				
@@ -579,7 +578,7 @@ class TvRage
 				if (isset($urlMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'.".\n";
 					return $urlMatches[100][0];
 				}
 				
@@ -587,7 +586,7 @@ class TvRage
 				if (isset($akaMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'.".\n";
 					return $akaMatches[100][0];
 				}
 				
@@ -600,7 +599,7 @@ class TvRage
 							continue;
 					
 					if ($this->echooutput)
-						echo 'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'."\n";
+						echo 'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'.".\n";
 					return $titleMatches[$mk][0];
 				}
 				
@@ -612,28 +611,28 @@ class TvRage
 							continue;
 					
 					if ($this->echooutput)
-						echo 'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'."\n";
+						echo 'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'.".\n";
 					return $akaMatches[$ak][0];
 				}
 				
 				if ($this->echooutput)
-					echo 'No match found online'."\n";
+					echo 'No match found online.\n';
 				return false;
 				
 			} else {
 				if ($this->echooutput)
-					echo 'Nothing returned from tvrage'."\n";
+					echo 'Nothing returned from tvrage.\n';
 				return false;
 			}
 	
 		} else {
 			if ($this->echooutput)
-				echo 'Error connecting to tvrage'."\n";
+				echo 'Error connecting to tvrage.\n';
 			return -1;
 		}
 		
 		if ($this->echooutput)
-			echo 'No match found online'."\n";
+			echo 'No match found online.\n';
 		return false;
 	}
 	
