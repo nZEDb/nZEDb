@@ -73,7 +73,7 @@ class Nfo
 				echo "Processing ".mysql_num_rows($res)." NFOs.\n";
 		
 			$nntp->doConnect();
-			while ($arr = mysql_fetch_assoc($res)) 
+			while ($arr = mysql_fetch_assoc($res))
 			{
 				$fetchedBinary = $nntp->getBinary($arr['binaryID'], true);
 				if ($fetchedBinary !== false) 
