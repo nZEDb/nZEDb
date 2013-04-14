@@ -206,7 +206,7 @@ class Nntp extends Net_NNTP_Client
 	        return $data;
 	        break;
 	    case 412: // 412, RFC2980: 'No news group current selected'
-	        //$this->throwError("No news group current selected ({$this->_currentStatusResponse()})", $response);
+	        $this->throwError("No news group current selected ({$this->_currentStatusResponse()})", $response);
 	        break;
 	    case 420: // 420, RFC2980: 'No article(s) selected'
 	        $this->throwError("No article(s) selected ({$this->_currentStatusResponse()})", $response);
@@ -218,7 +218,7 @@ class Nntp extends Net_NNTP_Client
 	        $this->throwError("XZver not supported ({$this->_currentStatusResponse()})", $response);
 	        break;
 	    default:
-	        //return $this->_handleUnexpectedResponse($response);
+	        return $this->_handleUnexpectedResponse($response);
 	    }
 	}
 	
