@@ -1206,72 +1206,9 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 			}
 		}
-		/*//Mark collections smaller than site settings.
-		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size group/site setting.\033[0m".$n;
-		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
-		{
-			foreach($groupCnt AS $groupID)
-			{
-				$groupID = array_shift($groupID);
-				$minfilesizeres = $db->queryOneRow(sprintf("SELECT coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g inner join ( select value as minsizetoformrelease from site where setting = 'minsizetoformrelease' ) s where g.ID = %d", $groupID));			
-				if ($minfilesizeres["minsizetoformrelease"] != 0)
-				{
-					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and filesize < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
-					while ($rowcol = mysql_fetch_assoc($rescol))
-					{
-						$colID = $rowcol['ID'];
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
-						$minsizecount ++;
-					}
-				}
-			}
-		}
-		echo "Deleted ".$minsizecount." collections smaller than group/site settings.".$n;
-		//Mark with less files than site settings.
-		echo $n."\033[1;33mStage 4 -> Delete collections with less files than group/site setting.\033[0m".$n;
-		if($db->queryDirect("select ID from collections where filecheck = 2 and filesize > 0"))
-		{
-			foreach($groupCnt AS $groupID)
-			{
-				$groupID = array_shift($groupID);
-				$minfilesres = $db->queryOneRow(sprintf("SELECT coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM  FROM groups g inner join ( select value as minfilestoformrelease from site where setting = 'minfilestoformrelease' ) s where g.ID = %d", $groupID));			
-				if ($minfilesres["minfilestoformrelease"] != 0)
-				{
-					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and totalFiles < %d", $groupID, $minfilesres["minfilestoformrelease"]));
-					while ($rowcol = mysql_fetch_assoc($rescol))
-					{
-						$colID = $rowcol['ID'];
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
-						$minfilecount ++;
-					}
-				}
-			}
-		}
-		echo "Deleted ".$minfilecount." collections with less files than group/site settings.".$n;
-		//Create releases.
-		echo $n."\033[1;33mStage 5 -> Create releases.\033[0m".$n;
-		if($rescol = $db->queryDirect(sprintf("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded asc", $groupID)))
-		{
-			while ($rowcol = mysql_fetch_assoc($rescol))
-			{
-				$colID = $rowcol['ID'];
-				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
-				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-				$relguid = md5(uniqid());
-				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010)", 
-							$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
-				{
-					//update collections table to say we inserted the release.
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $relID, $colID));
-					$retcount ++;
-					echo "Added release ".$cleanRelName.$n;
-				}
-			}
-		}*/
 		//Mark collections smaller than site settings.
-		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\nCreate releases in this stage as well.\033[0m".$n;
-		if($rescol = $db->queryDirect("select * from collections where filecheck = 2 and filesize > 0 order by dateadded asc"))
+		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\033[0m".$n;
+		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 		{
 			foreach($groupCnt AS $groupID)
 			{
@@ -1299,6 +1236,12 @@ class Releases
 					}
 				}
 			}
+		}
+		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
+		//Create releases.
+		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
+		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc"))
+		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
 				$colID = $rowcol['ID'];
@@ -1306,8 +1249,8 @@ class Releases
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$relguid = md5(uniqid());
-				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010)", 
-							$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"])/*, ($page->site->checkpasswordedrar == "1" ? -1 : 0)*/)));
+				///*, ($page->site->checkpasswordedrar == "1" ? -1 : 0)*/)));
+				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010)", $db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]))));
 				{
 					//update collections table to say we inserted the release.
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $relID, $colID));
@@ -1316,9 +1259,8 @@ class Releases
 				}
 			}
 		}
-		echo "Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
 		//Look for NFOs.
-		echo $n."\033[1;33mStage 4 -> Mark releases that have an NFO.\033[0m".$n;
+		echo $n."\033[1;33mStage 5 -> Mark releases that have an NFO.\033[0m".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1334,7 +1276,7 @@ class Releases
 			}
 		}
 		//Create NZB.
-		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+		echo $n."\033[1;33mStage 6 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1354,7 +1296,7 @@ class Releases
 			}
 		}
 		//Categorize releases.
-		echo $n."\033[1;33mStage 6 -> Categorize releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 7 -> Categorize releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1378,11 +1320,11 @@ class Releases
 			}
 		}
 		//Post processing
-		echo $n."\033[1;33mStage 7 -> Post processing.\033[0m".$n;
+		echo $n."\033[1;33mStage 8 -> Post processing.\033[0m".$n;
 		$postprocess = new PostProcess(true);
 		$postprocess->processAll();
 		//Delete old releases and finished collections.
-		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 9 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
 		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 8 hour) order by dateadded asc"))
 		{
