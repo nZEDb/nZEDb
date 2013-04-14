@@ -514,7 +514,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	return $this->throwError('Command not permitted / Access restriction / Permission denied', $code, $text);
     	    	break;
     	    default:
-    	    	return $this->throwError("Unexpected response: '$text'", $code, $text);
+    	    	//return $this->throwError("Unexpected response: '$text'", $code, $text);
     	}
     }
 

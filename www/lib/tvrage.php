@@ -415,7 +415,7 @@ class TvRage
 		if ($this->echooutput)
 		{
 			echo "Processing tv for ".mysql_num_rows($result)." releases\n";
-			echo "Lookup tv rage from the web - ".($lookupTvRage?"Yes\n":"No\n");
+			//echo "Lookup tv rage from the web - ".($lookupTvRage?"Yes\n":"No\n");
 		}
 			
 		while ($arr = mysql_fetch_assoc($result)) 
@@ -433,7 +433,7 @@ class TvRage
 				{
 					// if it doesnt exist locally and lookups are allowed lets try to get it
 					if ($this->echooutput)
-						echo 'didnt find rageid for "'.$show['cleanname'].'" in local db, checking web...'."\n";
+						echo 'Didn\'t find rageid for "'.$show['cleanname'].'" in local db, checking web...'."\n";
 					
 					$tvrShow = $this->getRageMatch($show);
 					if ($tvrShow !== false && is_array($tvrShow))
@@ -571,7 +571,7 @@ class TvRage
 				if (isset($titleMatches[100]))
 				{
 					if ($this->echooutput)
-						echo '-found 100% match: "'.$titleMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% match: "'.$titleMatches[100][0]['title'].'"'."\n";
 					return $titleMatches[100][0];
 				}
 				
@@ -579,7 +579,7 @@ class TvRage
 				if (isset($urlMatches[100]))
 				{
 					if ($this->echooutput)
-						echo '-found 100% url match: "'.$urlMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'."\n";
 					return $urlMatches[100][0];
 				}
 				
@@ -587,7 +587,7 @@ class TvRage
 				if (isset($akaMatches[100]))
 				{
 					if ($this->echooutput)
-						echo '-found 100% aka match: "'.$akaMatches[100][0]['title'].'"'."\n";
+						echo 'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'."\n";
 					return $akaMatches[100][0];
 				}
 				
@@ -600,7 +600,7 @@ class TvRage
 							continue;
 					
 					if ($this->echooutput)
-						echo '-found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'."\n";
+						echo 'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'."\n";
 					return $titleMatches[$mk][0];
 				}
 				
@@ -612,28 +612,28 @@ class TvRage
 							continue;
 					
 					if ($this->echooutput)
-						echo '-found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'."\n";
+						echo 'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'."\n";
 					return $akaMatches[$ak][0];
 				}
 				
 				if ($this->echooutput)
-					echo '-no match found online'."\n";
+					echo 'No match found online'."\n";
 				return false;
 				
 			} else {
 				if ($this->echooutput)
-					echo '-nothing returned from tvrage'."\n";
+					echo 'Nothing returned from tvrage'."\n";
 				return false;
 			}
 	
 		} else {
 			if ($this->echooutput)
-				echo '-error connecting to tvrage'."\n";
+				echo 'Error connecting to tvrage'."\n";
 			return -1;
 		}
 		
 		if ($this->echooutput)
-			echo '-no match found online'."\n";
+			echo 'No match found online'."\n";
 		return false;
 	}
 	
