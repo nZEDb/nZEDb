@@ -1316,9 +1316,9 @@ class Releases
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
-                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 ))");
-                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 )");
-                $db->queryDirect(sprintf("delete from collections where ID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 )");
+                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where ( filecheck = 4 OR dateadded < (now() - interval 12 hour))))"));
+                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where ( filecheck = 4 OR dateadded < (now() - interval 12 hour))))"));
+                $db->queryDirect(sprintf("delete from collections where ID IN ( SELECT ID from collections where ( filecheck = 4 OR dateadded < (now() - interval 12 hour))))"));
 
 //		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
 //		{
