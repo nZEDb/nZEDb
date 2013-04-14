@@ -1113,7 +1113,8 @@ class Releases
 		{
 			$groupID = array_shift($groupID);
 			//Look if we have all the files in a collection (which have the file count in the subject).
-			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 and filecheckdate < (now() - interval 15 minute) order by filecheckdate asc", $groupID)))
+			//if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 and filecheckdate < (now() - interval 15 minute) order by filecheckdate asc", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 order by dateadded asc limit 0,100", $groupID)))
 			{
 				//See if all the files are present in the binaries table.
 				while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1128,17 +1129,19 @@ class Releases
 					}
 					else
 					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheckdate = now() where ID = %d", $colID));
+						//$db->queryDirect(sprintf("UPDATE collections set filecheckdate = now() where ID = %d", $colID));
 					}
 				}
 			}
 			//Check if we have all parts for a file. Set partcheck to 1.
-			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 4 hour) order by dateadded asc", $groupID)))
+			//if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 4 hour) order by dateadded asc", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 2 hour) order by dateadded asc limit 0,100", $groupID)))
 			{
 				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
 					$colID = $rowcol['ID'];
-					if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0 and partcheckdate < (now() - interval 15 minute) order by partcheckdate asc", $colID)))
+					//if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0 and partcheckdate < (now() - interval 15 minute) order by partcheckdate asc", $colID)))
+					if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0", $colID)))
 					{
 						while ($rowbins = mysql_fetch_assoc($resbin))
 						{
@@ -1152,7 +1155,7 @@ class Releases
 							}
 							else
 							{
-								$db->queryDirect(sprintf("UPDATE binaries set partcheckdate = now() where ID = %d", $binID));
+								//$db->queryDirect(sprintf("UPDATE binaries set partcheckdate = now() where ID = %d", $binID));
 							}
 						}
 					}
@@ -1173,7 +1176,8 @@ class Releases
 			}
 		}
 		//If a collection has not been updated in 4 hours, set filecheck to 2.
-		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 4 hour) order by dateadded asc"))
+		//if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 4 hour) order by dateadded asc"))
+		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) order by dateadded asc limit 0,100"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1186,7 +1190,8 @@ class Releases
 		}
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
-		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc", $groupID)))
+		//if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc", $groupID)))
+		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc limit 0,100", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1240,7 +1245,8 @@ class Releases
 		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
-		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc"))
+		//if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc"))
+		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc limit 0,100"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1261,7 +1267,8 @@ class Releases
 		}
 		//Look for NFOs.
 		echo $n."\033[1;33mStage 5 -> Mark releases that have an NFO.\033[0m".$n;
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
+		//if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc limit 0,100"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
@@ -1329,7 +1336,7 @@ class Releases
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 9 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
-		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 8 hour) order by dateadded asc"))
+		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
 		{
 			while ($frowcol = mysql_fetch_assoc($frescol))
 			{
