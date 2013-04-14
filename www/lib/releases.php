@@ -1113,7 +1113,7 @@ class Releases
 		{
 			$groupID = array_shift($groupID);
 			//Look if we have all the files in a collection (which have the file count in the subject).
-			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 and filecheckdate < (now() - interval 10 minute) order by filecheckdate asc", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 and filecheckdate < (now() - interval 15 minute) order by filecheckdate asc", $groupID)))
 			{
 				//See if all the files are present in the binaries table.
 				while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1138,7 +1138,7 @@ class Releases
 				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
 					$colID = $rowcol['ID'];
-					if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0 and partcheckdate < (now() - interval 10 minute) order by partcheckdate asc", $colID)))
+					if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0 and partcheckdate < (now() - interval 15 minute) order by partcheckdate asc", $colID)))
 					{
 						while ($rowbins = mysql_fetch_assoc($resbin))
 						{
@@ -1270,9 +1270,8 @@ class Releases
 			}
 		}*/
 		//Mark collections smaller than site settings.
-		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\n
-					Create releases in this stage as well.\033[0m".$n;
-		if($db->queryDirect("select * from collections where filecheck = 2 and filesize > 0 order by dateadded asc"))
+		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\nCreate releases in this stage as well.\033[0m".$n;
+		if($rescol = $db->queryDirect("select * from collections where filecheck = 2 and filesize > 0 order by dateadded asc"))
 		{
 			foreach($groupCnt AS $groupID)
 			{
