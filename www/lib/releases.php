@@ -1213,7 +1213,7 @@ class Releases
 		}
 		//Mark collections smaller than site settings.
 		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\033[0m".$n;
-		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
+		if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 		{
 			foreach($groupCnt AS $groupID)
 			{
