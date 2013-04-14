@@ -53,7 +53,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
 		
-		$res = $db->queryDirect("SELECT rn.ID, r.guid, r.groupID, rn.releaseID FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND r.nfostatus between -5 and 0 order by adddate asc limit 0,50");
+		$res = $db->queryDirect("SELECT rn.ID, r.guid, r.groupID, rn.releaseID FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND r.nfostatus between -5 and 0 order by adddate desc limit 0,50");
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)
