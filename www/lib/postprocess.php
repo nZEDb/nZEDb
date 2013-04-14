@@ -136,7 +136,7 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate asc limit 0, 25
+			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate asc
 		", ($maxattemptstocheckpassworded + 1) * -1));
 		
 		$rescount = sizeof($result);
@@ -164,7 +164,6 @@ class PostProcess {
 				$groupID = $relres["groupID"];
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($groupID);
-				echo " ".$groupName." ";
 				$samplemsgid = $mediamsgid = -1;
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
