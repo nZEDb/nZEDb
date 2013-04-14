@@ -414,7 +414,7 @@ class TvRage
 		
 		if ($this->echooutput)
 		{
-			echo "Processing tv for ".mysql_num_rows($result)." releases\n";
+			echo "Processing TV for ".mysql_num_rows($result)." releases.\n";
 			//echo "Lookup tv rage from the web - ".($lookupTvRage?"Yes\n":"No\n");
 		}
 			

@@ -241,14 +241,14 @@ class Movie
 		$ri = new ReleaseImage();
 		
 		if ($this->echooutput)
-			echo "fetching imdb info from tmdb - ".$imdbId."\n";
+			echo "Fetching IMDB info from TMDB using IMDB ID: ".$imdbId."\n";
 		
 		//check themoviedb for imdb info
 		$tmdb = $this->fetchTmdbProperties($imdbId);
 		if (!$tmdb) 
 		{
 			if ($this->echooutput)
-				echo "not found in tmdb\n";
+				echo "Release not found in TMDB.\n";
 		}
 		
 		//check imdb for movie info
@@ -256,7 +256,7 @@ class Movie
 		if (!$imdb) 
 		{
 			if ($this->echooutput)
-				echo "unable to get movie info from imdb - ".$imdbId."\n";
+				echo "Unable to get movie information from IMDB ID: ".$imdbId."\n";
 		}
 										
 		if (!$imdb && !$tmdb) {
@@ -359,10 +359,10 @@ class Movie
 
 		if ($movieId) {
 			if ($this->echooutput)
-				echo "added/updated movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id']."\n";
+				echo "Added/updated movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
 		} else {
 			if ($this->echooutput)
-				echo "nothing to update for movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id']."\n";
+				echo "Nothing to update for movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id']."\n";
 		}
 		
 		return $movieId;
@@ -493,7 +493,7 @@ class Movie
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".mysql_num_rows($res)." movie releases\n";
+				echo "Processing ".mysql_num_rows($res)." movie releases.\n";
 		
 			while ($arr = mysql_fetch_assoc($res)) 
 			{				
@@ -512,7 +512,7 @@ class Movie
 						if ($imdbId !== false) 
 						{
 							if ($this->echooutput)
-								echo '- found '.$imdbId."\n";
+								echo 'Found '.$imdbId."\n";
 							
 							//update release with imdb id
 							$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));

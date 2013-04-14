@@ -125,10 +125,7 @@ class Nfo
 					}
 				} 
 				else 
-				{
-					if ($this->echooutput)
-						echo "NFO download failed for release ".$arr['releaseID']." on attempt ".($arr["attempts"]++).".\n";
-						
+				{	
 					//nfo download failed, increment attempts
 					$db->query(sprintf("UPDATE releasenfo SET attempts = attempts+1 WHERE ID = %d", $arr["ID"]));
 				}
