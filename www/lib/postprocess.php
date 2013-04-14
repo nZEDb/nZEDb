@@ -14,6 +14,7 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/console.php");
 require_once(WWW_DIR."/lib/nfo.php");
+require_once(WWW_DIR."/lib/groups.php");
 
 class PostProcess {
 	
@@ -136,7 +137,7 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0)			
+			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate asc limit 0, 25
 		", ($maxattemptstocheckpassworded + 1) * -1));
 		
 		$rescount = sizeof($result);
@@ -156,49 +157,62 @@ class PostProcess {
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
 				
 				//
-				// Go through the binaries for this release looking for a rar, a sample, and a mediafile
+				// Go through the nzb for this release looking for a rar, a sample, and a mediafile
 				//
-				$cID = $db->queryOneRow(sprintf("select ID, groupID from collections where releaseID = %d", $rel["ID"]));
-				$sql = sprintf("select binaries.ID, binaries.name, groups.name as groupname from binaries inner join groups on groups.ID = %d where collectionID = %d order by totalParts", $cID["groupID"], $cID["ID"]);
-				$binresult = $db->query($sql);
+				$relres = $db->queryOneRow(sprintf("select guid, groupID from releases where ID = %d", $rel["ID"]));
+				$guid = $relres["guid"];
 				$msgid = array();
+				$groupID = $relres["groupID"];
+				$groups = new Groups;
+				$groupName = $groups->getByNameByID($groupID);
 				$samplemsgid = $mediamsgid = -1;
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
-				echo "\n".$rel['name']." has ".sizeof($binresult)." binaries\n";
-				foreach ($binresult as $binrow)
+
+				// Fetch the NZB using the GUID.
+				$nzb = new NZB();
+				$nzbpath = $nzb->getNZBPath($guid);
+				$nzbpath = 'compress.zlib://'.$nzbpath;
+				$nzbfile = simplexml_load_file($nzbpath);
+				
+				foreach ($nzbfile->file as $nzbcontents)
 				{
-					if (preg_match("/\W\.r00/i",$binrow["name"])) {
+					$subject = $nzbcontents->attributes()->subject;
+					
+					if (preg_match("/\W\.r00/i",$subject)) {
 						$norar= 1;
 					}
-					if (preg_match("/sample/i",$binrow["name"]) && !preg_match("/\.par2|\.srs/i",$binrow["name"]))
+					if (preg_match("/sample/i",$subject) && !preg_match("/\.par2|\.srs/i",$subject))
 					{
-						echo "Detected sample file ".$binrow["name"]."\n";
-						$samplepart = $db->queryOneRow(sprintf("select messageID from parts where binaryID = %d order by partnumber limit 1", $binrow["ID"]));
-						if (isset($samplepart["messageID"]))
+						echo "Detected sample file ".$subject."\n";
+						$samplesegments = $nzbcontents->segments->segment;
+						$samplepart = (string)$samplesegments;
+						if (isset($samplepart))
 						{
-							$samplegroup = $binrow["groupname"];
-							$samplemsgid = $samplepart["messageID"];
+							$samplegroup = $groupName;
+							$samplemsgid = $samplepart;
 						}
 					}
-					if (preg_match('/\.('.$this->mediafileregex.')[\. "\)\]]/i',$binrow["name"]) && !preg_match("/\.par2|\.srs/i",$binrow["name"]))
+					if (preg_match('/\.('.$this->mediafileregex.')[\. "\)\]]/i',$subject) && !preg_match("/\.par2|\.srs/i",$subject))
 					{
-						$mediapart = $db->queryOneRow(sprintf("select messageID from parts where binaryID = %d order by partnumber limit 1", $binrow["ID"]));
-						if (isset($mediapart["messageID"]) && $mediapart['messageID'] != $samplemsgid)
+						$mediasegments = $nzbcontents->segments->segment;
+						$mediapart = (string)$mediasegments;
+						if (isset($mediapart) && $mediapart != $samplemsgid)
 						{
-							echo "Detected media file ".$binrow["name"]."\n";
-							$mediagroup = $binrow["groupname"];
-							$mediamsgid = $mediapart["messageID"];
+							echo "Detected media file ".$subject."\n";
+							$mediagroup = $groupName;
+							$samplemsgid = $samplepart;
 						}
 					}
-					if (preg_match("/.*\W(?:part0*1|(?!part\d+)[^.]+)\.rar[ \"\)\]\-]|.*\W(?:\"[\w.\-\',;& ]|(?!\"[\w.\-\',;& ]+)[^.]+)\.(001|((?=10[ \"\)\]\-].+\(\d{1,3}\/\d{2,3})10|11)|r01|part01)[ \"\)\]\-]/i", $binrow["name"]) && !preg_match("/[-_\.]sub/i", $binrow["name"]))
+					if (preg_match("/.*\W(?:part0*1|(?!part\d+)[^.]+)\.rar[ \"\)\]\-]|.*\W(?:\"[\w.\-\',;& ]|(?!\"[\w.\-\',;& ]+)[^.]+)\.(001|((?=10[ \"\)\]\-].+\(\d{1,3}\/\d{2,3})10|11)|part01)[ \"\)\]\-]/i", $subject) && !preg_match("/[-_\.]sub/i", $subject))
 					{
-						echo "Detected RAR ".$binrow["name"]."\n";
-						$part = $db->queryOneRow(sprintf("select messageID from parts where binaryID = %d order by partnumber limit 1", $binrow["ID"]));
-						if (isset($part["messageID"]))
+						echo "Detected RAR ".$subject."\n";
+						$rarsegments = $nzbcontents->segments->segment;
+						$rarpart = (string)$rarsegments;
+						if (isset($rarpart))
 						{
-							$bingroup = $binrow["groupname"];
-							$msgid[] = $part["messageID"];
+							$bingroup = $groupName;
+							$msgid[] = $rarpart;
 						}
 					}
 				}
