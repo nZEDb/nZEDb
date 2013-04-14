@@ -18,7 +18,7 @@ Class NZBcontents
 	public function getNFOfromNZB()
 	{
 		$db = new DB();
-		$guids = $db->queryDirect("select guid from releases where passwordstatus between -6 and -1 order by adddate");
+		$guids = $db->queryDirect("SELECT rn.*, guid, r.searchname FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL"); //add this to the end later : AND rn.attempts < 5
 		while ($relguid = mysql_fetch_assoc($guids))
 		{
 			$guid = $relguid["guid"];
