@@ -161,39 +161,58 @@ if (!empty($argc) || $page->isPostBack() )
 							
 					$totalParts = sizeof($file->segments->segment);
 					
+					
+					
+					
+					
 					//insert binary
 					$binaryHash = md5($name.$fromname.$groupID);
-					$binarySql = sprintf("INSERT INTO binaries (name, fromname, date, xref, totalParts, groupID, binaryhash, dateadded, importname) values (%s, %s, %s, %s, %s, %s, %s, NOW(), %s)", 
-							$db->escapeString($name), $db->escapeString($fromname), $db->escapeString($date),
-							$db->escapeString($xref), $db->escapeString($totalParts), $db->escapeString($groupID), $db->escapeString($binaryHash), $db->escapeString($nzbFile) );
+					//$binarySql = sprintf("INSERT INTO binaries (name, fromname, date, xref, totalParts, groupID, binaryhash, dateadded, importname) values (%s, %s, %s, %s, %s, %s, %s, NOW(), %s)", 
+							//$db->escapeString($name), $db->escapeString($fromname), $db->escapeString($date),
+							//$db->escapeString($xref), $db->escapeString($totalParts), $db->escapeString($groupID), $db->escapeString($binaryHash), $db->escapeString($nzbFile) );
 					
-					$binaryId = $db->queryInsert($binarySql);
+					//$binaryId = $db->queryInsert($binarySql);
 					
 					if ($usenzbname) 
 					{
 						$usename = str_replace('.nzb', '', ($viabrowser ? $browserpostednames[$nzbFile] : basename($nzbFile)));
 						
-						$db->query(sprintf("update binaries set relname = replace(%s, '_', ' '), relpart = %d, reltotalpart = %d, procstat=%d, categoryID=%s, where ID = %d", 
-							$db->escapeString($usename), 1, 1, 5, "null", $binaryId));
+						//$db->query(sprintf("update binaries set relname = replace(%s, '_', ' '), relpart = %d, reltotalpart = %d, procstat=%d, categoryID=%s, where ID = %d", 
+							//$db->escapeString($usename), 1, 1, 5, "null", $binaryId));
 					}
+					
+					$name = $db->escapeString($name);
+					echo $name.$n;
+					
+					
 					
 					//segments (i.e. parts)
 					if (count($file->segments->segment) > 0)
 					{
-						$partsSql = "INSERT INTO parts (binaryID, messageID, number, partnumber, size, dateadded) values ";
+						//$partsSql = "INSERT INTO parts (binaryID, messageID, number, partnumber, size, dateadded) values ";
 						foreach($file->segments->segment as $segment) 
 						{
 							$messageId = (string)$segment;
 							$partnumber = $segment->attributes()->number;
 							$size = $segment->attributes()->bytes;
 							
-							$partsSql .= sprintf("(%s, %s, 0, %s, %s, NOW()),", 
-									$db->escapeString($binaryId), $db->escapeString($messageId), $db->escapeString($partnumber), 
-									$db->escapeString($size));
+							//$partsSql .= sprintf("(%s, %s, 0, %s, %s, NOW()),", 
+									//$db->escapeString($binaryId), $db->escapeString($messageId), $db->escapeString($partnumber), 
+									//$db->escapeString($size));
 						}
-						$partsSql = substr($partsSql, 0, -1);
-						$partsQuery = $db->queryInsert($partsSql);
+						//$partsSql = substr($partsSql, 0, -1);
+						//$partsQuery = $db->queryInsert($partsSql);
 					}
+					
+					
+					
+					
+					
+					/*if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010)", $db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]))));
+					if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010)", $db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]))));
+					{
+						echo "Added release ".$cleanRelName.$n;
+					}*/
 
 				}
 				else
@@ -224,7 +243,7 @@ if (!empty($argc) || $page->isPostBack() )
 			if (!$importfailed)
 			{
 				$nzbCount++;
-				@unlink($nzbFile);
+				//@unlink($nzbFile);
 
 				if (!empty($argc))
 				{

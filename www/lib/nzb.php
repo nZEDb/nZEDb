@@ -72,9 +72,9 @@ class NZB
 	function copyNZBforImport($relguid, $nzb, $echooutput=false)
 	{
 		$page = new Page;
-		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true)
+		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true);
 
-		$fp = gzopen ($path, 'w');
+		$fp = gzopen($path, 'w');
 		if ($fp)
 		{
 			gzwrite ($fp, file_get_contents($nzb));
