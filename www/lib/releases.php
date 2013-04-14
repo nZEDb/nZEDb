@@ -1316,39 +1316,47 @@ class Releases
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
-		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
-		{
-			while ($frowcol = mysql_fetch_assoc($frescol))
-			{
-				$colID = $frowcol['ID'];
-				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-				while ($frowbin = mysql_fetch_assoc($fresbin))
-				{
-					$binID = $frowbin['ID'];
-					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
-				}
-				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
-				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
-				$colcount ++;
-			}
-		}
+                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 ))");
+                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 )");
+                $db->queryDirect(sprintf("delete from collections where ID IN ( SELECT ID from collections where dateadded < (now() - interval 12 hour) || filecheck = 4 )");
+
+//		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
+//		{
+//			while ($frowcol = mysql_fetch_assoc($frescol))
+//			{
+//				$colID = $frowcol['ID'];
+//				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
+//				while ($frowbin = mysql_fetch_assoc($fresbin))
+//				{
+//					$binID = $frowbin['ID'];
+//					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
+//				}
+//				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
+//				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
+//				$colcount ++;
+//			}
+//		}
 		//Finished collections.
-		if($frescol = $db->queryDirect("SELECT ID from collections where filecheck = 4 order by dateadded asc"))
-		{
-			while ($frowcol = mysql_fetch_assoc($frescol))
-			{
-				$colID = $frowcol['ID'];
-				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-				while ($frowbin = mysql_fetch_assoc($fresbin))
-				{
-					$binID = $frowbin['ID'];
-					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
-				}
-				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
-				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
-				$colcount ++;
-			}
-		}
+//                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 ))");
+//                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 )");
+//                $db->queryDirect(sprintf("delete from collections where ID IN ( SELECT ID from collections where filecheck = 4 )");
+
+//		if($frescol = $db->queryDirect("SELECT ID from collections where filecheck = 4 order by dateadded asc"))
+//		{
+//			while ($frowcol = mysql_fetch_assoc($frescol))
+//			{
+//				$colID = $frowcol['ID'];
+//				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
+//				while ($frowbin = mysql_fetch_assoc($fresbin))
+//				{
+//					$binID = $frowbin['ID'];
+//					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
+//				}
+//				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
+//				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
+//				$colcount ++;
+//			}
+//		}
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
