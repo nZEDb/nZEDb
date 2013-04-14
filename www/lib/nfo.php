@@ -13,23 +13,6 @@ class Nfo
 		$this->echooutput = $echooutput;
 	}
 	
-	public function determineReleaseNfo($relid)
-	{
-		$nfos = array();
-		$db = new DB();
-		$cresult = $db->queryDirect(sprintf("select ID from collections where releaseID = %d", $relid));
-		while ($crow = mysql_fetch_assoc($cresult))
-		{
-			$colID = $crow['ID'];
-			$bresult = $db->queryDirect(sprintf("select ID, name from binaries where collectionID = %d", $colID));
-			while ($brow = mysql_fetch_assoc($bresult)) 
-				if (preg_match('/.*\.nfo[ "\)\]\-]?/i', $brow['name'])) 
-					$nfos[$brow['name']] = $brow;
-		}
-		ksort($nfos);
-		return (is_array($nfos) && !empty($nfos)) ? array_shift($nfos) : false;
-	}
-	
 	public function addReleaseNfo($relid, $binid)
 	{
 		$db = new DB();
@@ -70,7 +53,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
 		
-		$res = $db->queryDirect("SELECT rn.ID, r.guid, r.groupID, rn.releaseID FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND r.nfostatus between -6 and -1 order by adddate asc limit 0,50");
+		$res = $db->queryDirect("SELECT rn.ID, r.guid, r.groupID, rn.releaseID FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND r.nfostatus between -5 and 0 order by adddate asc limit 0,50");
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)

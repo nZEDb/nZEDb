@@ -1265,28 +1265,8 @@ class Releases
 				}
 			}
 		}
-		//Look for NFOs.
-		echo $n."\033[1;33mStage 5 -> Mark releases that have an NFO.\033[0m".$n;
-		//if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc"))
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nfostatus = 0 order by adddate asc limit 0,100"))
-		{
-			while ($rowrel = mysql_fetch_assoc($resrel))
-			{
-				$relid = $rowrel['ID'];
-				$relnfo = $nfo->determineReleaseNfo($relid);
-				if ($relnfo !== false) 
-				{
-					$nfo->addReleaseNfo($relid, $relnfo['ID']);
-					$db->queryDirect(sprintf("UPDATE releases set nfostatus = 1 where ID = %d", $relid));
-				}
-				else
-				{
-					$db->queryDirect(sprintf("UPDATE releases set nfostatus = -1 where ID = %d", $relid));
-				}
-			}
-		}
 		//Create NZB.
-		echo $n."\033[1;33mStage 6 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1306,7 +1286,7 @@ class Releases
 			}
 		}
 		//Categorize releases.
-		echo $n."\033[1;33mStage 7 -> Categorize releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 6 -> Categorize releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1330,11 +1310,11 @@ class Releases
 			}
 		}
 		//Post processing
-		echo $n."\033[1;33mStage 8 -> Post processing.\033[0m".$n;
+		echo $n."\033[1;33mStage 7 -> Post processing.\033[0m".$n;
 		$postprocess = new PostProcess(true);
 		$postprocess->processAll();
 		//Delete old releases and finished collections.
-		echo $n."\033[1;33mStage 9 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
 		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
 		{
