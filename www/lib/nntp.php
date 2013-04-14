@@ -47,6 +47,7 @@ class Nntp extends Net_NNTP_Client
 		$body = $this->getBody('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body)) 
 		{
+		   //echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
 		   return false;
 		}
 		

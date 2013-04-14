@@ -1270,9 +1270,12 @@ class Releases
 				if ($relnfo !== false) 
 				{
 					$nfo->addReleaseNfo($relid, $relnfo['ID']);
+					$db->queryDirect(sprintf("UPDATE releases set nfostatus = 1 where ID = %d", $relid));
 				}
-				//Set nfostatus to 1, even if it fails.
-				$db->queryDirect(sprintf("UPDATE releases set nfostatus = 1 where ID = %d", $relid));
+				else
+				{
+					$db->queryDirect(sprintf("UPDATE releases set nfostatus = -1 where ID = %d", $relid));
+				}
 			}
 		}
 		//Create NZB.

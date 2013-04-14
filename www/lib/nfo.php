@@ -3,6 +3,8 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/tvrage.php");
+require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/nzbcontents.php");
 
 class Nfo 
 {
@@ -31,7 +33,7 @@ class Nfo
 	public function addReleaseNfo($relid, $binid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID, binaryID) VALUES (%d, %d)", $relid, $binid));		
+		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID) VALUES (%d)", $relid));		
 	}
 	
 	public function deleteReleaseNfo($relid)
@@ -65,17 +67,24 @@ class Nfo
 		$ret = 0;
 		$db = new DB();
 		$nntp = new Nntp();
+		$groups = new Groups();
+		$nzbcontents = new NZBcontents();
 		
-		$res = $db->queryDirect(sprintf("SELECT rn.*, r.searchname FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND rn.attempts < 1"));
+		$res = $db->queryDirect("SELECT rn.ID, r.guid, r.groupID, rn.releaseID FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND r.nfostatus between -6 and -1 order by adddate asc limit 0,50");
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".mysql_num_rows($res)." NFOs.\n";
+				echo "Processing ".mysql_num_rows($res)." NFO's.\n";
 		
 			$nntp->doConnect();
 			while ($arr = mysql_fetch_assoc($res))
 			{
-				$fetchedBinary = $nntp->getBinary($arr['binaryID'], true);
+				$guid = $arr['guid'];
+				$messageid = $nzbcontents->getNFOfromNZB($guid);
+				$groupID = $arr['groupID'];
+				$groupName = $groups->getByNameByID($groupID);
+				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
+				
 				if ($fetchedBinary !== false) 
 				{
 					//insert nfo into database
@@ -125,9 +134,9 @@ class Nfo
 					}
 				} 
 				else 
-				{	
+				{
 					//nfo download failed, increment attempts
-					$db->query(sprintf("UPDATE releasenfo SET attempts = attempts+1 WHERE ID = %d", $arr["ID"]));
+					$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["releaseID"]));
 				}
 				
 				if ($ret != 0 && $this->echooutput && ($ret % 5 == 0))
@@ -138,7 +147,11 @@ class Nfo
 		}
 		
 		//remove nfo that we cant fetch after 5 attempts
-		$db->query("DELETE FROM releasenfo WHERE nfo IS NULL AND attempts >= 5");
+		$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
+		while ($relrow = mysql_fetch_assoc($relres))
+		{
+			$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
+		}
 		
 		if ($this->echooutput)
 			echo "\n".$ret." NFO files processed\n";

@@ -8,40 +8,53 @@ require_once(WWW_DIR."/lib/nzb.php");
 */
 Class NZBcontents
 {
-	function NZBcontents()
-	{
-		
-	}
+
 	//
 	// Look for an NFO in the nzb, return the message-ID.
 	//
-	public function getNFOfromNZB()
+	public function getNFOfromNZB($guid)
 	{
-		$db = new DB();
-		$guids = $db->queryDirect("select ID, guid from releases where releases.ID not in (select releaseID from releasenfo) order by adddate asc limit 0,50"); //add this to the end later : AND nfostatus between -1 and -6
-		while ($relguid = mysql_fetch_assoc($guids))
-		{
-			$guid = $relguid["guid"];
-			$n = "\n";
-			// Fetch the NZB location using the GUID.
-			$nzb = new NZB();
-			$nzbpath = $nzb->getNZBPath($guid);
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			// Fetch the NZB.
-			$nzbfile = simplexml_load_file($nzbpath);
-			//print_r($nzbfile);
+		// Fetch the NZB location using the GUID.
+		$nzb = new NZB();
+		$nzbpath = $nzb->getNZBPath($guid);
+		$nzbpath = 'compress.zlib://'.$nzbpath;
+		// Fetch the NZB.
+		$nzbfile = simplexml_load_file($nzbpath);
 		
-			foreach ($nzbfile->file as $nzbcontents)
+		foreach ($nzbfile->file as $nzbcontents)
+		{
+			$subject = $nzbcontents->attributes()->subject;
+			if (preg_match('/\.nfo/', $subject))
 			{
-				$subject = $nzbcontents->attributes()->subject;
-				//print_r($subject);
-				if (preg_match('/\.nfo/', $subject))
-				{
-					print_r($subject);
-					$segments = $nzbcontents->segments->segment;
-					//print_r((string)$segments.$n);
-				}
+				$segments = $nzbcontents->segments->segment;
+				return $segments;
 			}
 		}
 	}
+	
+	//
+	// Look for an NFO in the nzb, return the message-ID.
+	// Look inside files (1/1) to see if they are a nfo.
+	//
+	// Not functional yet.
+	//
+	public function getNFOfromNZB2($guid, $releaseID)
+	{
+		// Fetch the NZB location using the GUID.
+		$nzb = new NZB();
+		$nzbpath = $nzb->getNZBPath($guid);
+		$nzbpath = 'compress.zlib://'.$nzbpath;
+		// Fetch the NZB.
+		$nzbfile = simplexml_load_file($nzbpath);
+		
+		foreach ($nzbfile->file as $nzbcontents)
+		if (preg_match('/\(1\/1\)\syEnc/', $subject))
+		{
+			$segments = $nzbcontents->segments->segment;
+			$nntp = new Nntp();
+			$groups = new Groups;
+			$groupName = $groups->getByNameByID($groupID);
+		}
+	}
 }
+
