@@ -18,7 +18,7 @@ Class NZBcontents
 	public function getNFOfromNZB()
 	{
 		$db = new DB();
-		$guids = $db->queryDirect("SELECT rn.*, guid, r.searchname FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL"); //add this to the end later : AND rn.attempts < 5
+		$guids = $db->queryDirect("select ID, guid from releases where releases.ID not in (select releaseID from releasenfo)"); //add this to the end later : AND nfostatus between -1 and -6
 		while ($relguid = mysql_fetch_assoc($guids))
 		{
 			$guid = $relguid["guid"];
