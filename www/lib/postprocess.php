@@ -161,7 +161,6 @@ class PostProcess {
 				//
 				$relres = $db->queryOneRow(sprintf("select guid, groupID from releases where ID = %d", $rel["ID"]));
 				$guid = $relres["guid"];
-				$msgid = array();
 				$groupID = $relres["groupID"];
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($groupID);
@@ -212,7 +211,7 @@ class PostProcess {
 						if (isset($rarpart))
 						{
 							$bingroup = $groupName;
-							$msgid[] = $rarpart;
+							$mid = $rarpart;
 						}
 					}
 				}
@@ -243,24 +242,41 @@ class PostProcess {
 					unset($sampleBinary);
 				}
 				
-				// attempt to process loose media file
-				if($mediamsgid != -1  && (($processSample && $blnTookSample === false) || $processMediainfo))
+				if (!empty($mid) && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
 				{
-					echo "Processing loose media file\n";
-					echo "-Fetching binary {$mediamsgid}\n";
-					$mediaBinary = $nntp->getMessage($mediagroup, $mediamsgid);
-					if ($mediaBinary === false) 
-					{
-						echo "-Couldnt fetch binary {$mediamsgid}\n";
-						$mediamsgid = -1;
-						// can't get the media so we'll try from the .rar
+					echo "Processing RAR files\n";
+					$mysqlkeepalive = 0;
+					echo "-Fetching binary ".$mid." (".++$mysqlkeepalive.")\n";
+					$fetchedBinary = $nntp->getMessage($bingroup, $mid);
+					if ($fetchedBinary === false) 
+					{			
+						echo "-Failed fetching binary\n";
+						$db->query(sprintf("update releases set passwordstatus = passwordstatus - 1 where ID = %d", $rel['ID']));
+						continue;
 					}
 					else
-					{						
-						$mediafile = $tmpPath.'sample.avi';
-						
-						file_put_contents($mediafile, $mediaBinary);
-						
+					{
+						$relFiles = $this->processReleaseFiles($fetchedBinary, $rel['ID']);
+							
+						if ($this->site->checkpasswordedrar > 0 && $processPasswords)
+						{
+							$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar);
+						}
+							
+						// we need to unrar the fetched binary if checkpasswordedrar wasnt 2
+						if ($this->site->checkpasswordedrar < 2 && $processPasswords)
+						{
+							$rarfile = $tmpPath.'rarfile.rar';
+					
+							file_put_contents($rarfile, $fetchedBinary);
+								
+							$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
+								
+							$output = runCmd($execstring);
+			
+							unlink($rarfile);
+						}
+							
 						if ($processSample && $blnTookSample === false)
 						{
 							$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
@@ -268,74 +284,20 @@ class PostProcess {
 								$this->updateReleaseHasPreview($rel['guid']);
 						}
 						
-						if ($processMediainfo)
+						if ($processMediainfo && $blnTookMediainfo === false)
+						{
 							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
+						}
 						
-						unlink($mediafile);
+						if ($mysqlkeepalive % 25 == 0)
+							$db->query("select 1");
 					}
-					unset($mediaBinary);
-				}
-				
-				if (!empty($msgid) && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
-				{
-					echo "Processing RAR files\n";
-					$mysqlkeepalive = 0;
-					foreach($msgid as $mid)
+					
+					//clean up all files
+					foreach(glob($tmpPath.'*') as $v)
 					{
-						echo "-Fetching binary ".$mid." (".++$mysqlkeepalive.")\n";
-						$fetchedBinary = $nntp->getMessage($bingroup, $mid);
-						if ($fetchedBinary === false) 
-						{			
-							echo "-Failed fetching binary\n";
-							$db->query(sprintf("update releases set passwordstatus = passwordstatus - 1 where ID = %d", $rel['ID']));
-							continue;
-						}
-						else
-						{
-							$relFiles = $this->processReleaseFiles($fetchedBinary, $rel['ID']);
-							
-							if ($this->site->checkpasswordedrar > 0 && $processPasswords)
-							{
-								$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar);
-							}
-							
-							// we need to unrar the fetched binary if checkpasswordedrar wasnt 2
-							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
-							{
-								$rarfile = $tmpPath.'rarfile.rar';
-					
-								file_put_contents($rarfile, $fetchedBinary);
-								
-								$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
-								
-								$output = runCmd($execstring);
-			
-								unlink($rarfile);
-							}
-							
-							if ($processSample && $blnTookSample === false)
-							{
-								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
-								if ($blnTookSample)
-									$this->updateReleaseHasPreview($rel['guid']);
-							}
-							
-							if ($processMediainfo && $blnTookMediainfo === false)
-							{
-								$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
-							}
-							
-							if ($mysqlkeepalive % 25 == 0)
-								$db->query("select 1");
-						}
-						
-						//clean up all files
-						foreach(glob($tmpPath.'*') as $v)
-						{
-							unlink($v);
-						}
-					
-					} //end foreach msgid					
+						unlink($v);
+					}				
 				} 
 				elseif(empty($msgid) && $norar == 1) 
 				{
