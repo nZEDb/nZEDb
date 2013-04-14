@@ -410,7 +410,7 @@ class TvRage
 		$db = new DB();
 		
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d )", Category::CAT_PARENT_TV));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit 0,100", Category::CAT_PARENT_TV));
 		
 		if ($this->echooutput)
 		{
