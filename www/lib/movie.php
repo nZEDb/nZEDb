@@ -489,7 +489,7 @@ class Movie
 		$db = new DB();
 		$nfo = new Nfo;
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d )", Category::CAT_PARENT_MOVIE));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit 0,50", Category::CAT_PARENT_MOVIE));
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)
