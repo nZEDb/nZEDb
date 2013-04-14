@@ -66,7 +66,7 @@ class Nfo
 		$db = new DB();
 		$nntp = new Nntp();
 		
-		$res = $db->queryDirect(sprintf("SELECT rn.*, r.searchname FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND rn.attempts < 5"));
+		$res = $db->queryDirect(sprintf("SELECT rn.*, r.searchname FROM releasenfo rn left outer join releases r ON r.ID = rn.releaseID WHERE rn.nfo IS NULL AND rn.attempts < 1"));
 		if (mysql_num_rows($res) > 0)
 		{	
 			if ($this->echooutput)

@@ -164,6 +164,7 @@ class PostProcess {
 				$groupID = $relres["groupID"];
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($groupID);
+				echo " ".$groupName." ";
 				$samplemsgid = $mediamsgid = -1;
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
