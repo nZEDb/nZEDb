@@ -67,6 +67,23 @@ class NZB
 	}
 	
 	//
+	// Compress a imported NZB and put it in the nzbfiles folder.
+	//
+	function copyNZBforImport($relguid, $nzb, $echooutput=false)
+	{
+		$db = new DB();
+		$page = new Page;
+		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true)
+
+		$fp = gzopen ($path, 'w');
+		if ($fp)
+		{
+			gzwrite ($fp, file_get_contents($nzb));
+		}
+		gzclose($fp);
+	}
+	
+	//
 	// builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
 	//
 	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false)
