@@ -1109,6 +1109,7 @@ class Releases
 		$groupCnt = $groups->getActiveIDs();
 		
 		echo "\033[1;33mStage 1 -> Go over groups to find complete collections.\033[0m".$n;
+		$stage1 = TIME();
 		foreach($groupCnt AS $groupID)
 		{
 			$groupID = array_shift($groupID);
@@ -1176,9 +1177,12 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $binfiles, $colID));
 			}
 		}
+        echo TIME() - $stage1." seconds\n";
+
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
-		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc limit 0,100", $groupID)))
+		$stage2 = TIME();
+		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc limit 0,500", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1198,8 +1202,11 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 			}
 		}
+        echo TIME() - $stage2." seconds";
+
 		//Mark collections smaller than site settings.
 		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\033[0m".$n;
+		$stage3 = TIME();
 		if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 		{
 			foreach($groupCnt AS $groupID)
@@ -1230,9 +1237,12 @@ class Releases
 			}
 		}
 		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
+        echo TIME() - $stage3." seconds";
+
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
-		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc limit 0,100"))
+		$stage4 = TIME();
+		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc limit 0,500"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1250,8 +1260,11 @@ class Releases
 				}
 			}
 		}
+        echo TIME() - $stage4." seconds";
+
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+		$stage5 = TIME();
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1265,13 +1278,17 @@ class Releases
 				{
 					$colID = $rowcol['ID'];
 					$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
+					//$db->queryDirect(sprintf("UPDATE releases r, collections c set r.nzbstatus = 1 c.filecheck = 4 where r.ID = %d and where c.ID = %d", $relid, $colID));
 					$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
 				}
 			}
 		}
+		echo TIME() - $stage5." seconds";
+
 		//Categorize releases.
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
+		$stage6 = TIME();
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, name from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1303,8 +1320,11 @@ class Releases
 		{
 			echo "Post-processing disabled.".$n;
 		}
+        echo TIME() - $stage6." seconds";
+
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
+		$stage7 = TIME();
 		//Old collections that were missed somehow.
 		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)))"));
 			$partscount = mysql_affected_rows();
@@ -1341,6 +1361,8 @@ class Releases
 				$dupecount ++;
 			}
 		}
+        echo TIME() - $stage7." seconds\n";
+
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
 		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n.$n;
