@@ -10,9 +10,9 @@ Class NZBcontents
 {
 
 	//
-	// Look for an NFO in the nzb, return the message-ID.
+	// Look for an .nfo file in the nzb, return the message-ID.
 	//
-	public function getNFOfromNZB($guid)
+	public function getNFOfromNZB($guid, $groupID)
 	{
 		// Fetch the NZB location using the GUID.
 		$nzb = new NZB();
@@ -27,9 +27,14 @@ Class NZBcontents
 				$subject = $nzbcontents->attributes()->subject;
 				if (preg_match('/\.nfo/', $subject))
 				{
-					$segments = $nzbcontents->segments->segment;
-					return $segments;
+					$messageid = $nzbcontents->segments->segment;
+					return $messageid;
 				}
+				/* Look for a nfo that does not end with .nfo
+				else
+				{
+					$this->getHiddenNFOfromNZB($guid, $groupID);
+				}*/
 			}
 		}
 		else
@@ -40,27 +45,37 @@ Class NZBcontents
 	}
 	
 	//
-	// Look for an NFO in the nzb, return the message-ID.
-	// Look inside files (1/1) to see if they are a nfo.
+	// Look for an NFO in the nzb which does not end in .nfo, return the message-ID.
 	//
-	// Not functional yet.
-	//
-	public function getNFOfromNZB2($guid, $releaseID)
+	public function getHiddenNFOfromNZB($guid, $groupID)
 	{
 		// Fetch the NZB location using the GUID.
 		$nzb = new NZB();
-		$nzbpath = $nzb->getNZBPath($guid);
-		$nzbpath = 'compress.zlib://'.$nzbpath;
-		// Fetch the NZB.
-		$nzbfile = simplexml_load_file($nzbpath);
-		
-		foreach ($nzbfile->file as $nzbcontents)
-		if (preg_match('/\(1\/1\)\syEnc/', $subject))
+		if ($nzbpath = $nzb->NZBPath($guid))
 		{
-			$segments = $nzbcontents->segments->segment;
-			$nntp = new Nntp();
-			$groups = new Groups;
-			$groupName = $groups->getByNameByID($groupID);
+			$nzbpath = 'compress.zlib://'.$nzbpath;
+			// Fetch the NZB.
+			$nzbfile = simplexml_load_file($nzbpath);
+		
+			foreach ($nzbfile->file as $nzbcontents)
+			{
+				$subject = $nzbcontents->attributes()->subject;
+				if (preg_match('/\.nfo/', $subject))
+				{
+					$messageid = $nzbcontents->segments->segment;
+					return $messageid;
+				}
+				/* Look for a nfo that does not end with .nfo
+				else if (preg_match('/\(1\/1\)\syEnc/', $subject))
+				{
+					$messageid = $nzbcontents->segments->segment;
+				}*/
+			}
+		}
+		else
+		{
+			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+			return false;
 		}
 	}
 }

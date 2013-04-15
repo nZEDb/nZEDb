@@ -65,7 +65,7 @@ class Nfo
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
-				if ($messageid = $nzbcontents->getNFOfromNZB($guid))
+				if ($messageid = $nzbcontents->getNFOfromNZB($guid, $groupID))
 				{
 					$this->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
