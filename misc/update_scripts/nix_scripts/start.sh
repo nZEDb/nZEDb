@@ -10,13 +10,18 @@ while :
 
 do
 
-cd ${NIX_PATH}
-if ! $SCREEN -list | grep -q "binaries"; then
-	cd $NIX_PATH && $SCREEN -dmS binaries $SCREEN sh $NIX_PATH/update.sh
+cd ${NEWZNAB_PATH}
+if ! $SCREEN -list | grep -q "POSTP"; then
+	cd $NEWZNAB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NEWZNAB_PATH/postprocess_releases.php
 fi
 
 cd ${NEWZNAB_PATH}
-$PHP ${NEWZNAB_PATH}/update_releases.php 1 true
+$PHP ${NEWZNAB_PATH}/update_releases.php 1 false
+
+cd ${NIX_PATH}
+if ! $SCREEN -list | grep -q "BINARIES"; then
+	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/update.sh
+fi
 
 echo "waiting ${NEWZNAB_SLEEP_TIME} seconds..."
 sleep ${NEWZNAB_SLEEP_TIME}
