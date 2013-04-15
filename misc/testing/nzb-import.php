@@ -145,7 +145,7 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "\033[1;33mBlacklisted binaries found in ".$nam."\033[0m";
+					$errorMessage = "\033[1;33mBlacklisted binaries found in ".$firstname['0']."\033[0m";
 				}
 				else
 				{
