@@ -83,7 +83,7 @@ class BasePage
 			elseif ($this->userdata["role"] == Users::ROLE_MODERATOR)
 				$this->smarty->assign('ismod',"true");
 			
-			$this->floodCheck(true, $this->userdata["role"]);
+			//$this->floodCheck(true, $this->userdata["role"]);
 		}
 		else
 		{
@@ -91,7 +91,7 @@ class BasePage
 			$this->smarty->assign('ismod',"false");
 			$this->smarty->assign('loggedin',"false");	
 
-			$this->floodCheck(false, "");
+			//$this->floodCheck(false, "");
 		}
 	}    
 	
