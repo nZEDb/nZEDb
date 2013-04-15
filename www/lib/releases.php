@@ -1113,7 +1113,6 @@ class Releases
 		{
 			$groupID = array_shift($groupID);
 			//Look if we have all the files in a collection (which have the file count in the subject).
-			//if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 and filecheckdate < (now() - interval 15 minute) order by filecheckdate asc", $groupID)))
 			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 order by dateadded asc limit 0,100", $groupID)))
 			{
 				//See if all the files are present in the binaries table.
@@ -1127,20 +1126,14 @@ class Releases
 					{
 						$db->queryDirect(sprintf("UPDATE collections set filecheck = 1 where ID = %d", $colID));
 					}
-					else
-					{
-						//$db->queryDirect(sprintf("UPDATE collections set filecheckdate = now() where ID = %d", $colID));
-					}
 				}
 			}
 			//Check if we have all parts for a file. Set partcheck to 1.
-			//if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 4 hour) order by dateadded asc", $groupID)))
 			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 2 hour) order by dateadded asc limit 0,100", $groupID)))
 			{
 				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
 					$colID = $rowcol['ID'];
-					//if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0 and partcheckdate < (now() - interval 15 minute) order by partcheckdate asc", $colID)))
 					if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and totalParts > 0 and partcheck = 0", $colID)))
 					{
 						while ($rowbins = mysql_fetch_assoc($resbin))
@@ -1152,10 +1145,6 @@ class Releases
 							if($partCnt >= $binpartCnt)
 							{
 								$db->queryDirect(sprintf("UPDATE binaries set partcheck = 1 where ID = %d", $binID));
-							}
-							else
-							{
-								//$db->queryDirect(sprintf("UPDATE binaries set partcheckdate = now() where ID = %d", $binID));
 							}
 						}
 					}
@@ -1176,7 +1165,6 @@ class Releases
 			}
 		}
 		//If a collection has not been updated in 4 hours, set filecheck to 2.
-		//if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 4 hour) order by dateadded asc"))
 		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) order by dateadded asc limit 0,100"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1190,7 +1178,6 @@ class Releases
 		}
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
-		//if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc", $groupID)))
 		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc limit 0,100", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1245,7 +1232,6 @@ class Releases
 		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
-		//if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc"))
 		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc limit 0,100"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1267,7 +1253,6 @@ class Releases
 		}
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
-//		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 and nfostatus <> 0 order by adddate asc"))
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
@@ -1281,7 +1266,6 @@ class Releases
 				{
 					$colID = $rowcol['ID'];
 					$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
-					//echo $relguid.".nzb.gz created\n";
 					$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
 				}
@@ -1325,52 +1309,10 @@ class Releases
 		//Old collections that were missed somehow.
                 $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)))"));
                 $partscount = mysql_affected_rows();
-		//echo mysql_num_rows($binIDrem)." parts deleted";
                 $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour))"));
                 $binscount = mysql_affected_rows();
-                //echo mysql_num_rows($colIDrem)." binaries deleted";
                 $db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)"));
 		$colcount = mysql_affected_rows();
-		//echo mysql_num_rows($colrem)." collections deleted";
-
-//		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
-//		{
-//			while ($frowcol = mysql_fetch_assoc($frescol))
-//			{
-//				$colID = $frowcol['ID'];
-//				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-//				while ($frowbin = mysql_fetch_assoc($fresbin))
-//				{
-//					$binID = $frowbin['ID'];
-//					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
-//				}
-//				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
-//				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
-//				$colcount ++;
-//			}
-//		}
-		//Finished collections.
-//                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 ))");
-//                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 )");
-//                $db->queryDirect(sprintf("delete from collections where filecheck = 4");
-
-//		if($frescol = $db->queryDirect("SELECT ID from collections where filecheck = 4 order by dateadded asc"))
-//		{
-//			while ($frowcol = mysql_fetch_assoc($frescol))
-//			{
-//				$colID = $frowcol['ID'];
-//				$fresbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-//				while ($frowbin = mysql_fetch_assoc($fresbin))
-//				{
-//					$binID = $frowbin['ID'];
-//					$db->queryDirect(sprintf("delete from parts where binaryID = %d", $binID));
-//				}
-//				$db->queryDirect(sprintf("delete from binaries where collectionID = %d", $colID));
-//				$db->queryDirect(sprintf("delete from collections where ID = %d", $colID));
-//				$colcount ++;
-//			}
-//		}
-		//Releases past retention.
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{

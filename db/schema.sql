@@ -11,7 +11,6 @@ CREATE TABLE `collections` (
 		`collectionhash` VARCHAR(255) NOT NULL DEFAULT '0',
 		`dateadded` DATETIME DEFAULT NULL,
 		`filecheck` INT(11) UNSIGNED NOT NULL DEFAULT '0',
-		`filecheckdate` DATETIME DEFAULT NULL,
 		`filesize` BIGINT UNSIGNED NOT NULL DEFAULT '0',
 		`releaseID` INT NULL,
 		PRIMARY KEY  (`ID`),
@@ -21,7 +20,6 @@ CREATE TABLE `collections` (
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_collection_filecheck ON collections (filecheck);
-CREATE INDEX ix_collection_filecheckdate ON collections (filecheckdate);
 CREATE INDEX ix_collection_dateadded ON collections (dateadded);
 CREATE INDEX ix_collection_collectionhash ON collections (collectionhash);
 
@@ -34,7 +32,6 @@ CREATE TABLE `binaries` (
 		`totalParts` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`binaryhash` VARCHAR(255) NOT NULL DEFAULT '0',
 		`partcheck` INT(11) UNSIGNED NOT NULL DEFAULT '0',
-		`partcheckdate` DATETIME DEFAULT NULL,
 		`partsize` BIGINT UNSIGNED NOT NULL DEFAULT '0',
 		`importname` VARCHAR(255) NULL,
 		PRIMARY KEY  (`ID`)
@@ -42,7 +39,6 @@ CREATE TABLE `binaries` (
 
 CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
 CREATE INDEX ix_binary_partcheck ON binaries (partcheck);
-CREATE INDEX ix_binary_partcheckdate ON binaries (partcheckdate);
 
 DROP TABLE IF EXISTS `releases`;
 CREATE TABLE `releases` 
