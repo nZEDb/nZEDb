@@ -1275,7 +1275,7 @@ class Releases
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect(sprintf("SELECT ID, name from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
+			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
 				$relID = $rowrel['ID'];
