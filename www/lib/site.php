@@ -43,7 +43,7 @@ class Sites
 		if ($site->nzbpath != "" && !file_exists($site->nzbpath))
 			return Sites::ERR_BADNZBPATH;		
 
-		if ($site->checkpasswordedrar == 2 && !is_file($site->unrarpath))
+		if ($site->checkpasswordedrar == 1 && !is_file($site->unrarpath))
 			return Sites::ERR_DEEPNOUNRAR;				
 			
 		if ($site->tmpunrarpath != "" && !file_exists($site->tmpunrarpath))
