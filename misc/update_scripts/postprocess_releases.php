@@ -17,7 +17,7 @@ while($i=1)
 	{
 		echo "$ppleft releases have to be post processed\n";
 		$postprocess = new PostProcess(true);
-		$postprocess->processAdditional();
+		$postprocess->processAll();
 	}
 	else 
 	{
