@@ -143,7 +143,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				
-				echo "Getting ".number_format($last-$first+1)." articles (".$first." to ".$last.") - ".number_format($grouplast - $last)." in queue".$n;
+				echo "Getting ".number_format($last-$first+1)." articles (".$first." to ".$last.") from ".str_replace('alt.binaries','a.b',$data["group"])." - ".number_format($grouplast - $last)." in queue".$n;
 				flush();
 				
 				//get headers from newsgroup

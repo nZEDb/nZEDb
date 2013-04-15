@@ -74,8 +74,8 @@ else
 			$fromname = (string)$file->attributes()->poster;
 			$postername[] = $fromname;
 			$unixdate = (string)$file->attributes()->date;
-			$totalFiles++;		
-			$date = date("Y-m-d H:i:s", (string)$file->attributes()->date);
+			$totalFiles++;
+			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			$subject = $firstname['0'];
 			//File and part count.
@@ -130,7 +130,7 @@ else
 				if ($res !== false)
 				{
 					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					//unlink($nzbFile);
+					unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -198,7 +198,7 @@ else
 						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 						{
 							$nzbsperhour = number_format( $nzbCount / $seconds * 3600 );
-							echo "\nAveraging ".$nzbsperhour." imports per hour\n";
+							echo "\n\033[38;5;".$color_blacklist."Averaging ".$nzbsperhour." imports per hour\n";
 						} else {
 							echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
 						}
