@@ -175,7 +175,7 @@ if (!empty($argc) || $page->isPostBack() )
 					{
 						if (!empty($argc))
 						{
-							echo "\033[1;33mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
+							echo "Skipping ".$cleanerName.", it already exists in your database.\n";
 							flush();
 						}
 						else
