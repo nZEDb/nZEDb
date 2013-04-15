@@ -130,13 +130,16 @@ class PostProcess {
 		$db = new DB;
 		$nntp = new Nntp;
 		
+		select r.ID, r.guid, r.name, c.disablepreview from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between %d and -1) or (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by adddate asc limit 25
+		
+		
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
 		//
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
-			where (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate asc limit 25", ($maxattemptstocheckpassworded + 1) * -1));
+			where nzbstatus = 1 (r.passwordstatus between %d and -1)
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit 25", ($maxattemptstocheckpassworded + 1) * -1));
 		
 		$rescount = sizeof($result);
 		echo "Additional post-processing on {$rescount} releases... ";
