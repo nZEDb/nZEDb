@@ -1304,14 +1304,14 @@ class Releases
 			echo "Post-processing disabled.".$n;
 		}
 		//Delete old releases and finished collections.
-		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
-                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)))"));
-                $partscount = mysql_affected_rows();
-                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour))"));
-                $binscount = mysql_affected_rows();
-                $db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)"));
-		$colcount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)))"));
+			$partscount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour))"));
+			$binscount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)"));
+			$colcount = mysql_affected_rows();
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{

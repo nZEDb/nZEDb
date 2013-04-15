@@ -392,7 +392,7 @@ class Binaries
 		
 		//get all parts in partrepair table
 		$db = new DB;
-		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT 30000", $groupArr['ID']));
+		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT 15000", $groupArr['ID']));
 		$partsRepaired = $partsFailed = 0;
 		
 		if (sizeof($missingParts) > 0)
