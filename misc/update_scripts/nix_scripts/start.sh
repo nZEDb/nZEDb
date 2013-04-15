@@ -16,7 +16,7 @@ if ! $SCREEN -list | grep -q "binaries"; then
 fi
 
 cd ${NEWZNAB_PATH}
-$PHP ${NEWZNAB_PATH}/update_releases.php 3 true
+$PHP ${NEWZNAB_PATH}/update_releases.php 1 true
 
 echo "waiting ${NEWZNAB_SLEEP_TIME} seconds..."
 sleep ${NEWZNAB_SLEEP_TIME}
