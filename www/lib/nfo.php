@@ -13,19 +13,6 @@ class Nfo
 		$this->echooutput = $echooutput;
 	}
 	
-	public function determineReleaseNfo($relid)
-	{
-		$nfos = array();
-		$db = new DB();
-		$result = $db->queryDirect(sprintf("select binaries.* from binaries where releaseID = %d order by relpart", $relid));		
-		while ($row = mysql_fetch_assoc($result)) 
-			if (preg_match('/.*\.nfo[ "\)\]\-]?/i', $row['name'])) 
-				$nfos[$row['name']] = $row;
-
-		ksort($nfos);
-		return (is_array($nfos) && !empty($nfos)) ? array_shift($nfos) : false;
-	}
-	
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
