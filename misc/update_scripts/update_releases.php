@@ -72,7 +72,7 @@ if (isset($argv[1]) && isset($argv[2]))
 			$releaseID = $relrow['ID'];
 			$groupID = $relrow['groupID'];
 			$groupName = $groups->getByNameByID($groupID);
-			$catId = $cat->determineCategory($groupName, $relrow["searchname"]);
+			$catID = $cat->determineCategory($groupName, $relrow["searchname"]);
 			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
 			$relcount ++;
 		} 

@@ -38,6 +38,7 @@ Class NZBcontents
 				else
 				{
 					//no nfo found
+					echo "false\n";
 					return false;
 				}
 			}
