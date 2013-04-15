@@ -253,14 +253,24 @@ if (!empty($argc) || $page->isPostBack() )
 				{
 					if($nzb->copyNZBforImport($relguid, $nzbFile))
 					{
-						echo "Imported NZB successfully. ";
-						echo "Subject: ".$firstname['0']."\n";
+						
+						$message = "Imported NZB successfully. ".
+							"Subject: ".$firstname['0']."\n";
 						/*echo "Poster: ".$postername['0']."\n";
 						echo "Added to usenet: ".$postdate['0']."\n";
 						echo "Amount of files: ".$totalFiles."\n";
 						echo "Release GUID: ".$relguid."\n";
 						echo "GroupID: ".$groupID."\n";
 						echo "Release size: ".number_format($totalsize / 1048576, 2)." MB"."\n\n";*/
+						if (!empty($argc))
+						{
+							echo ($message."\n");
+							flush();
+						}
+						else
+						{
+							$retval.= $Message."<br />";
+						}
 					}
 					else
 					{
