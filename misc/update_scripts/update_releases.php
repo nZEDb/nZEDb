@@ -65,11 +65,11 @@ if (isset($argv[1]) && isset($argv[2]))
 else
 {
 	echo "ERROR: You must supply an argument.\n".
-			"php update_releases.php 1 true ...: Categorizes new releases using unmodified nnplus category.php\n".
-			"php update_releases.php 3 true ...: Categorizes new releases using modified category.php (does a better job)\n".
+			"php update_releases.php 1 true ...: Categorizes new releases using modified category.php (does a better job)\n".
+			"php update_releases.php 3 true ...: Categorizes new releases using unmodified nnplus category.php\n".
 			"php update_releases.php 5 true ...: Leaves new releases in other -> misc\n".
 			"php update_releases.php 7 true ...: WARNING !! Moves ALL releases to other -> misc\n".
-			"php update_releases.php 9 true ...: Categorizes releases in other -> misc using modified category.php\n";
+			"php update_releases.php 9 true ...: Categorizes releases in other -> misc using modified category.php\n".
 			"\nYou have to pass a second argument wether to post process or not, true or false\n\n";
 }
 

@@ -63,7 +63,14 @@ class Nfo
 			while ($arr = mysql_fetch_assoc($res))
 			{
 				$guid = $arr['guid'];
-				$messageid = $nzbcontents->getNFOfromNZB($guid);
+				if ($messageid = $nzbcontents->getNFOfromNZB($guid))
+				{
+					continue;
+				}
+				else
+				{
+					break;
+				}
 				$groupID = $arr['groupID'];
 				$groupName = $groups->getByNameByID($groupID);
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);

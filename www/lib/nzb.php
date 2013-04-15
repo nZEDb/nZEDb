@@ -106,6 +106,30 @@ class NZB
 		
 		return $nzbpath.$releaseGuid.".nzb.gz";
 	}
+	
+	//
+	// Check if the NZB is there, returns path, else false.
+	//
+	function NZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false)
+	{
+		if ($sitenzbpath == "")
+		{
+			$s = new Sites;
+			$site = $s->get();
+			$sitenzbpath = $site->nzbpath;
+		}
+
+		$nzbpath = $sitenzbpath.substr($releaseGuid, 0, 1)."/";
+
+		if (!file_exists($nzbpath))
+		{
+			return false;
+		}
+		else
+		{
+			return $nzbpath.$releaseGuid.".nzb.gz";
+		}
+	}
     
 	function nzbFileList($nzb) 
 	{

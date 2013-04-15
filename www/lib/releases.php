@@ -1275,6 +1275,16 @@ class Releases
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
+			$resrel = $db->queryDirect(sprintf("SELECT ID, name from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
+			while ($rowrel = mysql_fetch_assoc($resrel))
+			{
+				$relID = $rowrel['ID'];
+				$catId = $categorizer->Categorize($rowrel["name"]);
+				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
+			}
+		}
+		if ($categorize == 3)
+		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
@@ -1282,16 +1292,6 @@ class Releases
 				$groupID = $rowrel['groupID'];
 				$groupName = $groups->getByNameByID($groupID);
 				$catId = $cat->determineCategory($groupName, $rowrel["searchname"]);
-				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
-			}
-		}
-		if ($categorize == 3)
-		{
-			$resrel = $db->queryDirect(sprintf("SELECT ID, name from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
-			while ($rowrel = mysql_fetch_assoc($resrel))
-			{
-				$relID = $rowrel['ID'];
-				$catId = $categorizer->Categorize($rowrel["name"]);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
 			}
 		}

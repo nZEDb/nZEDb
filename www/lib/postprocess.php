@@ -170,7 +170,16 @@ class PostProcess {
 
 				// Fetch the NZB using the GUID.
 				$nzb = new NZB();
-				$nzbpath = $nzb->getNZBPath($guid);
+				
+				if ($nzbpath = $nzb->NZBPath($guid))
+				{
+					continue;
+				}
+				else
+				{
+					echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+					break;
+				}
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				$nzbfile = simplexml_load_file($nzbpath);
 				

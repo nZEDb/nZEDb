@@ -16,19 +16,26 @@ Class NZBcontents
 	{
 		// Fetch the NZB location using the GUID.
 		$nzb = new NZB();
-		$nzbpath = $nzb->getNZBPath($guid);
-		$nzbpath = 'compress.zlib://'.$nzbpath;
-		// Fetch the NZB.
-		$nzbfile = simplexml_load_file($nzbpath);
-		
-		foreach ($nzbfile->file as $nzbcontents)
+		if ($nzbpath = $nzb->NZBPath($guid))
 		{
-			$subject = $nzbcontents->attributes()->subject;
-			if (preg_match('/\.nfo/', $subject))
+			$nzbpath = 'compress.zlib://'.$nzbpath;
+			// Fetch the NZB.
+			$nzbfile = simplexml_load_file($nzbpath);
+		
+			foreach ($nzbfile->file as $nzbcontents)
 			{
-				$segments = $nzbcontents->segments->segment;
-				return $segments;
+				$subject = $nzbcontents->attributes()->subject;
+				if (preg_match('/\.nfo/', $subject))
+				{
+					$segments = $nzbcontents->segments->segment;
+					return $segments;
+				}
 			}
+		}
+		else
+		{
+			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+			return false;
 		}
 	}
 	
