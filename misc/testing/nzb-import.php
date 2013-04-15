@@ -67,6 +67,21 @@ else
 			$totalFiles++;		
 			$date = date("Y-m-d H:i:s", (string)$file->attributes()->date);
 			$postdate[] = $date;
+			$subject = $firstname['0'];
+			//File and part count.
+			$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-|\s\d{2,3}(\\|\/)\d{2,3}\s/i', '', $subject);
+			//Size.
+			$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B|\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?/i', '', $cleanerName);
+			//Extensions.
+			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip)"?|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
+			//Unwanted stuff.
+			$cleanerName = preg_replace('/SECTIONED brings you|usenet\-space\-cowboys\.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers\-of\-usenet\.info(\/\.net)?|Partner von SSL\-News\.info|AutoRarPar\d{1,5}/i', '', $cleanerName);
+			//Removes some characters.
+			$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
+			//Replaces some characters with 1 space.
+			$cleanerName = preg_replace('/\.|\_|\-/i', ' ', $cleanerName);
+			//Replace multiple spaces with 1 space
+			$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 
 			// make a fake message object to use to check the blacklist
 			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
@@ -104,7 +119,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\033[1;33mSkipping ".$usename.", it already exists in your database.\n\033[0m";
+					echo "\033[1;33mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
 					flush();
 					$importfailed = true;
 					break;
@@ -145,11 +160,11 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "\033[1;33mBlacklisted binaries found in ".$firstname['0']."\033[0m";
+					$errorMessage = "\033[1;33mSubject is blacklisted: ".$cleanerName."\033[0m";
 				}
 				else
 				{
-					$errorMessage = "\033[1;33mNo group found for ".$name." (one of ".implode(', ', $groupArr)." are missing\033[0m";
+					$errorMessage = "\033[1;33mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
 				}
 				$importfailed = true;
 				echo $errorMessage."\n";
@@ -160,21 +175,6 @@ else
 		{
 		$relguid = md5(uniqid());
 		$nzb = new NZB();
-		$subject = $firstname['0'];
-		//File and part count.
-		$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-|\s\d{2,3}(\\|\/)\d{2,3}\s/i', '', $subject);
-		//Size.
-		$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B|\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?/i', '', $cleanerName);
-		//Extensions.
-		$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip)"?|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
-		//Unwanted stuff.
-		$cleanerName = preg_replace('/SECTIONED brings you|usenet\-space\-cowboys\.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers\-of\-usenet\.info(\/\.net)?|Partner von SSL\-News\.info|AutoRarPar\d{1,5}/i', '', $cleanerName);
-		//Removes some characters.
-		$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
-		//Replaces some characters with 1 space.
-		$cleanerName = preg_replace('/\.|\_|\-/i', ' ', $cleanerName);
-		//Replace multiple spaces with 1 space
-		$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 		
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010, -1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize))));
 			{
