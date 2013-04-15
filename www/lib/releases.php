@@ -1077,7 +1077,7 @@ class Releases
 		$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));		
 	}	
 	
-	public function processReleases($categorize)
+	public function processReleases($categorize, $postproc)
 	{
 		$db = new DB;
 		$cat = new Category;
@@ -1288,7 +1288,7 @@ class Releases
 			}
 		}
 		//Categorize releases.
-		echo $n."\033[1;33mStage 6 -> Categorize releases.\033[0m".$n;
+		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect(sprintf("SELECT ID, searchname, groupID from releases where relnamestatus = 0", $minfilesizeres["minsizetoformrelease"]));
@@ -1311,10 +1311,15 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
 			}
 		}
-		//Post processing
-		echo $n."\033[1;33mStage 7 -> Post processing.\033[0m".$n;
-		$postprocess = new PostProcess(true);
-		$postprocess->processAll();
+		if ($postproc == 1)
+		{
+			$postprocess = new PostProcess(true);
+			$postprocess->processAll();
+		}
+		else
+		{
+			echo "Post-processing disabled.".$n;
+		}
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
