@@ -25,7 +25,7 @@ page structure
 #header { width: 85%; 	margin: 0 auto; }
 #page { width: 85%; margin: 0 auto; padding: 50px 0px 0px 0px;}
 
-#logo { width: 85%; height: 47px; margin: 0 auto; padding-left:5px; margin-top:4px; background:url("../images/banner.jpg") no-repeat bottom left; }
+#logo { width: 85%; height: 63px; margin: 0 auto; padding-left:5px; margin-top:4px; background:url("../images/banner.jpg") no-repeat bottom left; }
 #logo h1, #logo p { display:none; margin: 0px; line-height: normal; text-transform: lowercase; font-weight: normal; color: #485459;}
 #logo p { margin-top: 2px; text-transform: lowercase; font-size: 13px; color: #A8A8A8;}
 #logo h1 { padding-top: 10px; font-size: 48px;}
