@@ -62,6 +62,7 @@ if (isset($argv[1]) && isset($argv[2]))
 	{
 		$db = new Db();
 		$cat = new Category();
+		$groups = new Groups;
 		$relcount = 0;
 		echo "Categorizing all releases in other-> misc using modified categorizer. This can take a while, be patient.\n";
 		

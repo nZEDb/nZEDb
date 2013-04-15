@@ -31,10 +31,15 @@ Class NZBcontents
 					return $messageid;
 				}
 				/* Look for a nfo that does not end with .nfo
+				else if ($messageid = $this->getHiddenNFOfromNZB($guid, $groupID))
+				{
+					return $messageid;
+				}*/
 				else
 				{
-					$this->getHiddenNFOfromNZB($guid, $groupID);
-				}*/
+					//no nfo found
+					return false;
+				}
 			}
 		}
 		else
