@@ -53,7 +53,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
 		
-		$res = $db->queryDirect("SELECT ID, guid, groupID FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate desc limit 0,50");
+		$res = $db->queryDirect("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate desc limit 0,50");
 		if (mysql_num_rows($res) >= 0)
 		{	
 			if ($this->echooutput)
@@ -101,7 +101,7 @@ class Nfo
 						if ($processTvrage == 1)
 						{
 							$tvrage = new Tvrage($this->echooutput);
-							$show = $tvrage->parseNameEpSeason($arr['searchname']);	
+							$show = $tvrage->parseNameEpSeason($arr['name']);	
 							if (is_array($show) && $show['name'] != '')
 							{	
 								// update release with season, ep, and airdate info (if available) from releasetitle

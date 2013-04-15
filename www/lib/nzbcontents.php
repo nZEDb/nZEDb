@@ -9,10 +9,26 @@ require_once(WWW_DIR."/lib/nfo.php");
 */
 Class NZBcontents
 {
+	public function getNfoFromNZB($guid, $relID, $groupID, $nntp)
+	{
+		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp))
+		{
+			return $fetchedBinary;
+		}
+		//else if ($fetchedBinary = $this->hiddenNFOfromNZB($guid, $relID, $groupID, $nntp))
+		//{
+		//	return $fetchedBinary;
+		//}
+		else
+		{
+			return false;
+		}
+	}
+	
 	//
 	// Look for an .nfo file in the nzb, return the message-ID.
 	//
-	public function getNFOfromNZB($guid, $relID, $groupID, $nntp)
+	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
 		// Fetch the NZB location using the GUID.
 		$db = new DB();
@@ -31,17 +47,13 @@ Class NZBcontents
 				$subject = $nzbcontents->attributes()->subject;
 				if (preg_match('/\.nfo/', $subject))
 				{
+					$messageid = $nzbcontents->segments->segment;
 					$foundnfo = true;
+					break;
 				}
-				/* Look for a nfo that does not end with .nfo
-				else if ($messageid = $this->getHiddenNFOfromNZB($subject, $nzbcontents, $nntp))
-				{
-					return $messageid;
-				}*/
 			}
 			if ($foundnfo !== false)
 			{
-				$messageid = $nzbcontents->segments->segment;
 				if ($messageid !== false)
 				{
 					$nfo->addReleaseNfo($relID);
@@ -53,6 +65,7 @@ Class NZBcontents
 				else
 				{
 					//Error fetching the message-ID from the nzb, increment attempts
+					echo "Error fetching the message-ID";
 					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 					return false;
 				}
@@ -72,10 +85,10 @@ Class NZBcontents
 		}
 	}
 	
-		//
-	// Look for an .nfo file in the nzb, return the message-ID.
 	//
-	public function getNFOfromNZB1($guid, $relID, $groupID, $nntp)
+	// Look for an NFO in the nzb which does not end in .nfo, return the message-ID.
+	//
+	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
 		// Fetch the NZB location using the GUID.
 		$db = new DB();
@@ -87,85 +100,48 @@ Class NZBcontents
 			$nzbpath = 'compress.zlib://'.$nzbpath;
 			// Fetch the NZB.
 			$nzbfile = simplexml_load_file($nzbpath);
-		
+			$foundnfo = false;
+			
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
-				echo $subject." ";
-				if (preg_match('/\.nfo/', $subject))
+				if (preg_match('/yEnc\s\(1\/1\)/', $subject) && !preg_match('/\.(doc|idx|jpg|mp3|nfo|txt|par2|sub|sfv)/', $subject))
 				{
 					$messageid = $nzbcontents->segments->segment;
-					if ($messageid !== false)
-					{
-						$nfo->addReleaseNfo($relID);
-						$groupName = $groups->getByNameByID($groupID);
-						$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-						echo ".+";
-						return $fetchedBinary;
-					}
-					else
-					{
-						//Error fetching the message-ID from the nzb, increment attempts
-						$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
-						return false;
-					}
+					$foundnfo = true;
+					break;
 				}
-				/* Look for a nfo that does not end with .nfo
-				else if ($messageid = $this->getHiddenNFOfromNZB($subject, $nzbcontents, $nntp))
+			}
+			if ($foundnfo !== false)
+			{
+				if ($messageid !== false)
 				{
-					return $messageid;
-				}*/
+					$nfo->addReleaseNfo($relID);
+					$groupName = $groups->getByNameByID($groupID);
+					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
+					echo ".+";
+					return $fetchedBinary;
+				}	
 				else
 				{
-					//No .nfo file in the NZB.
-					echo ".-";
-					$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+					//Error fetching the message-ID from the nzb, increment attempts
+					echo "Error fetching the message-ID";
+					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 					return false;
 				}
+			}
+			else
+			{
+				//No .nfo file in the NZB.
+				echo ".-";
+				$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+				return false;
 			}
 		}
 		else
 		{
 			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
 			return false;
-		}
-	}
-	
-	//
-	// Look for an NFO in the nzb which does not end in .nfo, return the message-ID.
-	//
-	public function getHiddenNFOfromNZB($subject, $nzbcontents, $nntp)
-	{
-		if(preg_match('/yEnc\s\(1\/1\)', $subject) && !preg_match('/\.(idx|jpg|sfv|mp3|txt|par2|sub)/'))
-		{
-			$messageid = $nzbcontents->segments->segment;
-			if ($messageid !== false)
-			{
-				$nfo->addReleaseNfo($relID);
-				$groupName = $groups->getByNameByID($groupID);
-				//retrive the binary
-				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				if ($fetchedBinary !== false)
-				{
-					//check if the binary is nfo
-					if ($fetchedBinary)
-					{
-						echo ".+";
-						return $fetchedBinary;
-					}
-				}
-				else
-				{
-					//nfo download failed, increment attempts
-					$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
-				}
-			}
-			else
-			{
-				//Error fetching the message-ID from the nzb, increment attempts
-				$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
-				return false;
-			}
 		}
 	}
 }
