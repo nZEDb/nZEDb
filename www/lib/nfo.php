@@ -146,7 +146,7 @@ class Nfo
 		}
 		
 		if ($this->echooutput)
-			echo "\n".$ret." NFO files processed\n";
+			echo $ret." NFO files processed\n";
 		
 		return $ret;
 	}
