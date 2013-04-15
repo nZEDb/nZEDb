@@ -85,7 +85,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo ("skipping ".$usename.", it already exists in your database\n");
+					echo "Skipping ".$usename.", it already exists in your database.\n");
 					flush();			
 					$importfailed = true;
 					break;
@@ -104,7 +104,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo ("skipping ".$usename.", it already exists in your database\n");
+					echo "Skipping ".$usename.", it already exists in your database.\n";
 					flush();			
 					$importfailed = true;
 					break;
@@ -145,14 +145,14 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "blacklisted binaries found in ".$name;
+					$errorMessage = "Blacklisted binaries found in ".$nam;
 				}
 				else
 				{
-					$errorMessage = "no group found for ".$name." (one of ".implode(', ', $groupArr)." are missing";
+					$errorMessage = "No group found for ".$name." (one of ".implode(', ', $groupArr)." are missing";
 				}
 				$importfailed = true;
-				echo ($errorMessage."\n");
+				echo $errorMessage."\n";
 				break;
 			}
 		}		
