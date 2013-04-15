@@ -135,7 +135,6 @@ class Nfo
 				}
 				else
 				{	//No .nfo file in the NZB.
-					echo "failed\n";
 					$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
 				}
 			}
