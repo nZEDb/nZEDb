@@ -20,7 +20,7 @@ $PHP ${NEWZNAB_PATH}/update_releases.php 1 false
 
 cd ${NIX_PATH}
 if ! $SCREEN -list | grep -q "BINARIES"; then
-	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/update.sh
+	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/binaries.sh
 fi
 
 echo "waiting ${NEWZNAB_SLEEP_TIME} seconds..."

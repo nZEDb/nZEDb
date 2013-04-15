@@ -51,6 +51,18 @@ class PostProcess {
 	}
 	
 	//
+	// Process nfo files
+	//
+	public function processNfos1()
+	{		
+		if ($this->site->lookupnfo == 1)
+		{
+			$nfo = new Nfo($this->echooutput);
+			$nfo->processNfoFiles1($this->site->lookupimdb, $this->site->lookuptvrage);
+		}
+	}
+	
+	//
 	// Lookup imdb if enabled
 	//
 	public function processMovies()

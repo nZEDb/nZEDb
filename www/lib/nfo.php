@@ -67,75 +67,64 @@ class Nfo
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
-				$messageid = $nzbcontents->getNFOfromNZB($guid, $groupID);
-				if ($messageid !== false)
+				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
+				if ($fetchedBinary !== false)
 				{
-					$this->addReleaseNfo($relID);
-					$groupName = $groups->getByNameByID($groupID);
-					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				
-					if ($fetchedBinary !== false) 
-					{
-						//insert nfo into database
-						$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
-						$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
-						$ret++;
+					//insert nfo into database
+					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
+					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
+					$ret++;
 					
-						$imdbId = $this->parseImdb($fetchedBinary);
-						if ($imdbId !== false) 
+					$imdbId = $this->parseImdb($fetchedBinary);
+					if ($imdbId !== false) 
+					{
+						//update release with imdb id
+						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+					
+						//if set scan for imdb info
+						if ($processImdb == 1)
 						{
-							//update release with imdb id
-							$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-						
-							//if set scan for imdb info
-							if ($processImdb == 1)
+							$movie = new Movie($this->echooutput);
+							//check for existing movie entry
+							$movCheck = $movie->getMovieInfo($imdbId);
+							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
 							{
-								$movie = new Movie($this->echooutput);
-								//check for existing movie entry
-								$movCheck = $movie->getMovieInfo($imdbId);
-								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-								{
-									$movieId = $movie->updateMovieInfo($imdbId);
-								}
+								$movieId = $movie->updateMovieInfo($imdbId);
 							}
 						}
-					
-						$rageId = $this->parseRageId($fetchedBinary);
-						if ($rageId !== false)
-						{	
-							//if set scan for tvrage info
-							if ($processTvrage == 1)
-							{
-								$tvrage = new Tvrage($this->echooutput);
-								$show = $tvrage->parseNameEpSeason($arr['searchname']);	
-								if (is_array($show) && $show['name'] != '')
-								{	
-									// update release with season, ep, and airdate info (if available) from releasetitle
-									$tvrage->updateEpInfo($show, $arr['ID']);
-								
-									$rid = $tvrage->getByRageID($rageId);
-									if (!$rid)
-									{
-										$tvrShow = $tvrage->getRageInfoFromService($rageId);
-										$tvrage->updateRageInfo($rageId, $show, $tvrShow, $arr['ID']);
-									}
-								}
-							}
-						}
-					} 
-					else 
-					{
-						//nfo download failed, increment attempts
-						$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
 					}
-					if ($ret != 0 && $this->echooutput && ($ret % 5 == 0))
-					{
-						echo $ret."..";
+				
+					$rageId = $this->parseRageId($fetchedBinary);
+					if ($rageId !== false)
+					{	
+						//if set scan for tvrage info
+						if ($processTvrage == 1)
+						{
+							$tvrage = new Tvrage($this->echooutput);
+							$show = $tvrage->parseNameEpSeason($arr['searchname']);	
+							if (is_array($show) && $show['name'] != '')
+							{	
+								// update release with season, ep, and airdate info (if available) from releasetitle
+								$tvrage->updateEpInfo($show, $arr['ID']);
+							
+								$rid = $tvrage->getByRageID($rageId);
+								if (!$rid)
+								{
+									$tvrShow = $tvrage->getRageInfoFromService($rageId);
+									$tvrage->updateRageInfo($rageId, $show, $tvrShow, $arr['ID']);
+								}
+							}
+						}
 					}
 				}
-				else
-				{	//No .nfo file in the NZB.
-					$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+				else 
+				{
+					//nfo download failed, increment attempts
+					$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
+				}
+				if ($ret != 0 && $this->echooutput && ($ret % 5 == 0))
+				{
+					echo $ret."..";
 				}
 			}
 			$nntp->doQuit();
@@ -147,12 +136,12 @@ class Nfo
 		{
 			$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
 		}
-		
+	
 		if ($this->echooutput)
 		{
 			echo $ret." NFO files processed\n";
 		}
-		
+	
 		return $ret;
 	}
 }
