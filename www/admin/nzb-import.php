@@ -8,13 +8,15 @@ require_once(WWW_DIR."/lib/page.php");
 
 $db = new DB();
 $binaries = new Binaries();
-$page = new Page;
 
-if (!isset($argv[1]))
-	exit("ERROR: You must supply a path as the first argument.\n");
+$page = new Page;
 
 if (empty($argc))
 	$page = new AdminPage();
+
+if (!empty($argc))
+	if (!isset($argv[1]))
+		exit("ERROR: You must supply a path as the first argument.\n");
 
 $filestoprocess = Array();
 $browserpostednames = Array();
