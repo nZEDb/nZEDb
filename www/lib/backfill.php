@@ -18,6 +18,14 @@ class Backfill
 	{
 		$n = $this->n;
 		$groups = new Groups;
+		$db = new DB();
+        $db->queryDirect(sprintf("SELECT ID from collections where filecheck < 2"));
+        $colcount = mysql_affected_rows();
+        if ( $colcount > 10000 )
+        {
+            echo "\nCollections that need to be processed has exceeded 10k, backfill exiting\n";
+			exit();
+        }
 		if ($groupName != '') {
 			$grp = $groups->getByName($groupName);
 			if ($grp)
@@ -25,7 +33,7 @@ class Backfill
 		} else {
 			$res = $groups->getActive();
 		}
-				
+
 		if ($res)
 		{
 			$nntp = new Nntp();
@@ -43,16 +51,16 @@ class Backfill
 			echo "No groups specified. Ensure groups are added to newznab's database for updating.$n";
 		}
 	}
-	
+
 	function backfillGroup($nntp, $groupArr)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		
+
 		echo 'Processing '.$groupArr['name'].$n;
-		
+
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
@@ -65,7 +73,7 @@ class Backfill
 			echo "Group ".$groupArr['name']." has invalid numbers.  Have you run update on it?  Have you set the backfill days amount?$n";
 			return;
 		}
-		
+
 		echo "Group ".$data["group"].": server has ".$data['first']." - ".$data['last'].", or ~";
 		echo((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400));
 		echo " days.".$n."Local first = ".$groupArr['first_record']." (";
@@ -95,6 +103,13 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
+			$colcount = $db->queryDirect(sprintf("SELECT ID from collections where filecheck < 2"));
+			if ( $colcount > 10000 )
+			{
+				break;
+				echo "\nCollections that need to be processed has exceeded 10k, backfill exiting";
+			}
+
 			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue)".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
@@ -115,6 +130,8 @@ class Backfill
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo "Group processed in $timeGroup seconds $n";
+		//increment the backfil target date
+		$db->query(sprintf("UPDATE groups set backfill_target=backfill_target + 1 where active=1 and backfill_target < 1000"));
 	}
 	
 	function postdate($nntp,$post,$debug=true) //returns single timestamp from a local article number
