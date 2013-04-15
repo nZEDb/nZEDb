@@ -4,9 +4,11 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
+require_once(FS_ROOT."/../../www/lib/page.php");
 
 $db = new DB();
 $binaries = new Binaries();
+$page = new Page;
 
 $filestoprocess = Array();
 $strTerminator = "\n";
