@@ -38,7 +38,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		$db->queryDirect("UPDATE releases set categoryID = 7010 where categoryID <> 7010");
 		echo "Moving all releases to other -> misc, this can take a while, be patient.\n";
 	}
-	else if ($argv[1] == 9 && ($argv[2] == 1 || $argv[2] == 2))
+	else if ($argv[1] == 9 && ($argv[2] == "true" || $argv[2] == "false"))
 	{
 		$db = new Db();
 		$categorizer = new Categorizer();
