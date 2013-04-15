@@ -65,7 +65,6 @@ Class NZBcontents
 				else
 				{
 					//Error fetching the message-ID from the nzb, increment attempts
-					echo "Error fetching the message-ID";
 					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 					return false;
 				}
@@ -120,7 +119,6 @@ Class NZBcontents
 					else
 					{
 						//Error fetching the message-ID from the nzb, increment attempts
-						echo "Error fetching the message-ID";
 						$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 						return false;
 					}
@@ -147,4 +145,3 @@ Class NZBcontents
 		}
 	}
 }
-
