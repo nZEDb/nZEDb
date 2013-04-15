@@ -104,8 +104,8 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "Skipping ".$usename.", it already exists in your database.\n";
-					flush();			
+					echo "\033[1;33mSkipping ".$usename.", it already exists in your database.\n\033[0m";
+					flush();
 					$importfailed = true;
 					break;
 				}
