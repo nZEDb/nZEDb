@@ -69,7 +69,7 @@ else
 			$postdate[] = $date;
 
 			// make a fake message object to use to check the blacklist
-			$msg = array("Subject" => $name, "From" => $fromname, "Message-ID" => "");
+			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
 			// if the release is in our DB already then don't bother importing it
 			if ($usenzbname and $skipCheck !== true)
@@ -145,7 +145,7 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "Blacklisted binaries found in ".$nam;
+					$errorMessage = "Blacklisted binaries found in ".$firstname['0'];
 				}
 				else
 				{
