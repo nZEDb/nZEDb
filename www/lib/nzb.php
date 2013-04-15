@@ -73,13 +73,18 @@ class NZB
 	{
 		$page = new Page;
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true);
-
 		$fp = gzopen($path, 'w');
 		if ($fp)
 		{
 			gzwrite ($fp, file_get_contents($nzb));
+			gzclose($fp);
+			return true;
 		}
-		gzclose($fp);
+		else
+		{
+			echo "ERROR: NZB already exists?\n";
+			return false;
+		}
 	}
 	
 	//

@@ -1,9 +1,9 @@
 <?php
 
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/binaries.php");
+define('FS_ROOT', realpath(dirname(__FILE__)));
+require_once(FS_ROOT."/../../www/config.php");
+require_once(FS_ROOT."/../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../www/lib/binaries.php");
 
 $db = new DB();
 $binaries = new Binaries();
