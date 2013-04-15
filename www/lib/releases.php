@@ -1113,7 +1113,7 @@ class Releases
 		{
 			$groupID = array_shift($groupID);
 			//Look if we have all the files in a collection (which have the file count in the subject).
-			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0 order by dateadded asc limit 0,500", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and totalFiles > 0 and filecheck = 0", $groupID)))
 			{
 				//See if all the files are present in the binaries table.
 				while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1129,7 +1129,7 @@ class Releases
 				}
 			}
 			//Check if we have all parts for a file. Set partcheck to 1.
-			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 2 hour) order by dateadded asc limit 0,500", $groupID)))
+			if($rescol = $db->queryDirect(sprintf("SELECT ID, totalFiles from collections where groupID = %d and filecheck = 1 and dateadded > (now() - interval 2 hour)", $groupID)))
 			{
 				while ($rowcol = mysql_fetch_assoc($rescol))
 				{
@@ -1165,7 +1165,7 @@ class Releases
 			}
 		}
 		//If a collection has not been updated in 4 hours, set filecheck to 2.
-		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) order by dateadded asc limit 0,100"))
+		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) and filecheck != 2"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
