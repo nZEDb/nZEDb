@@ -21,6 +21,7 @@ while($i=1)
 	}
 	else 
 	{
+		echo "No releases have to be post processed\n";
 		sleep(45);
 	}
 }
