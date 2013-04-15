@@ -212,8 +212,9 @@ if (!empty($argc) || $page->isPostBack() )
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
 				{
-					/*echo "\nImported NZB successfully.\n";
-					echo "\nSubject: ".$firstname['0']."\n";
+					echo "Imported NZB successfully. ";
+					echo "Subject: ".$firstname['0']."\n";
+					/*
 					echo "Poster: ".$postername['0']."\n";
 					echo "Added to usenet: ".$postdate['0']."\n";
 					echo "Amount of files: ".$totalFiles."\n";
@@ -234,16 +235,6 @@ if (!empty($argc) || $page->isPostBack() )
 			{
 				$nzbCount++;
 				@unlink($nzbFile);
-
-				if (!empty($argc))
-				{
-					echo ("imported ".$nzbFile."\n");
-					flush();
-				}
-				else
-				{
-					$retval.= "imported ".$nzbFile."<br />";
-				}
 			}
 		}
 	}
