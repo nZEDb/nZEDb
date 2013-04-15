@@ -187,7 +187,7 @@ else
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
 				{
-					echo "Imported NZB successfully. ";
+					echo "Imported #".$nzbCount." successfully. ";
 					echo "Name: ".$cleanerName."\n";
 					/*echo "Poster: ".$postername['0']."\n";
 					echo "Added to usenet: ".$postdate['0']."\n";
