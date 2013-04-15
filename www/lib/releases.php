@@ -1281,7 +1281,7 @@ class Releases
 				{
 					$colID = $rowcol['ID'];
 					$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
-					echo $relguid.".nzb.gz created\n";
+					//echo $relguid.".nzb.gz created\n";
 					$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
 				}
@@ -1319,8 +1319,14 @@ class Releases
 		echo $n."\033[1;33mStage 8 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		//Old collections that were missed somehow.
                 $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)))"));
+                $partscount = mysql_affected_rows();
+		//echo mysql_num_rows($binIDrem)." parts deleted";
                 $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 12 hour))"));
+                $binscount = mysql_affected_rows();
+                //echo mysql_num_rows($colIDrem)." binaries deleted";
                 $db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 12 hour)"));
+		$colcount = mysql_affected_rows();
+		//echo mysql_num_rows($colrem)." collections deleted";
 
 //		if($frescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 12 hour) order by dateadded asc"))
 //		{
@@ -1360,6 +1366,7 @@ class Releases
 //			}
 //		}
 		//Releases past retention.
+		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
 			$result = $db->query(sprintf("select ID from releases where postdate < now() - interval %d day", $page->site->releaseretentiondays)); 		
@@ -1390,11 +1397,11 @@ class Releases
 		}
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
-		echo "Removed: ".$colcount." collections, ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases.".$n.$n;
+		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n.$n;
 		$cremain = $db->queryOneRow("select count(ID) from collections");
 		$cremain = array_shift($cremain);
 		echo "Completed adding ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete).".$n;
-		return $retcount;	
+		return $retcount;
 	}
 
 	public function getTopDownloads()
