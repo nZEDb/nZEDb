@@ -3,6 +3,8 @@
 require(dirname(__FILE__)."/config.php");
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/categorizer.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 if (isset($argv[1]) && isset($argv[2]))
@@ -35,7 +37,7 @@ if (isset($argv[1]) && isset($argv[2]))
 	else if ($argv[1] == 7 && ($argv[2] == "true" || $argv[2] == "false"))
 	{
 		$db = new Db();
-		$db->queryDirect("UPDATE releases set categoryID = 7010 where categoryID <> 7010");
+		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0");
 		echo "Moving all releases to other -> misc, this can take a while, be patient.\n";
 	}
 	else if ($argv[1] == 9 && ($argv[2] == "true" || $argv[2] == "false"))
@@ -43,15 +45,34 @@ if (isset($argv[1]) && isset($argv[2]))
 		$db = new Db();
 		$categorizer = new Categorizer();
 		$relcount = 0;
-		echo "Categorizing all releases in other-> misc using modified categorizer. This can take a while, be patient.\n";
+		echo "Categorizing all reseted using modified categorizer. This can take a while, be patient.\n";
 		
-		$relres = $db->queryDirect("SELECT searchname, ID from releases where categoryID = 7010");
+		$relres = $db->queryDirect("SELECT name, ID from releases where categoryID = 7010 and relnamestatus = 0");
 		while ($relrow = mysql_fetch_assoc($relres))
 		{
 			$releaseID = $relrow['ID'];
-			$relname = $relrow['searchname'];
+			$relname = $relrow['name'];
 			$catID = $categorizer->Categorize($relname);
-			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d where ID = %d", $catID, $releaseID));
+			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
+			$relcount ++;
+		} 
+		echo "Finished categorizing ".$relcount." releases.\n";	
+	}
+	else if ($argv[1] == 11 && ($argv[2] == "true" || $argv[2] == "false"))
+	{
+		$db = new Db();
+		$cat = new Category();
+		$relcount = 0;
+		echo "Categorizing all releases in other-> misc using modified categorizer. This can take a while, be patient.\n";
+		
+		$relres = $db->queryDirect("SELECT searchname, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+		while ($relrow = mysql_fetch_assoc($relres))
+		{
+			$releaseID = $relrow['ID'];
+			$groupID = $relrow['groupID'];
+			$groupName = $groups->getByNameByID($groupID);
+			$catId = $cat->determineCategory($groupName, $relrow["searchname"]);
+			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
 			$relcount ++;
 		} 
 		echo "Finished categorizing ".$relcount." releases.\n";	
@@ -68,8 +89,10 @@ else
 			"php update_releases.php 1 true ...: Categorizes new releases using modified category.php (does a better job)\n".
 			"php update_releases.php 3 true ...: Categorizes new releases using unmodified nnplus category.php\n".
 			"php update_releases.php 5 true ...: Leaves new releases in other -> misc\n".
-			"php update_releases.php 7 true ...: WARNING !! Moves ALL releases to other -> misc\n".
-			"php update_releases.php 9 true ...: Categorizes releases in other -> misc using modified category.php\n".
+			"\nThe follow 3 options run by tem selves (does not create releases):\n".
+			"php update_releases.php 7 true ...: WARNING !! Resets category status on all releases\n".
+			"php update_releases.php 9 true ...: Categorizes all reseted releases using modified category.php\n".
+			"php update_releases.php 11 true ...: Categorizes all reseted releases using stock category.php\n".
 			"\nYou have to pass a second argument wether to post process or not, true or false\n\n";
 }
 

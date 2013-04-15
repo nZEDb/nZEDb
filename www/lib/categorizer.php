@@ -69,6 +69,7 @@ class Categorizer
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isEBook($releasename)){ return $this->tmpCat; }
+		if($this->isComic($releasename)){ return $this->tmpCat; }
 		
 		return Category::CAT_MISC;
 	}
@@ -626,6 +627,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
 		}
+		// hits[\.\-_ ]volume
 		return false;
 	}
 	
@@ -637,6 +639,20 @@ class Categorizer
 		if (preg_match('/Ebook|E?\-book|\) WW|Publishing|\[Springer\]|Service\s?Manual|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC_EBOOK;
+			return true;
+		}
+
+		return false;
+	}
+	
+	//
+	// Comics
+	// 
+	public function isComic($releasename)
+	{
+		if (preg_match('/\.cbr|\(c2c\)|\.cbz/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MISC_COMICS;
 			return true;
 		}
 
