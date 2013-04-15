@@ -1346,7 +1346,7 @@ class Releases
 		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n.$n;
 		$cremain = $db->queryOneRow("select count(ID) from collections");
 		$cremain = array_shift($cremain);
-		echo "Completed adding ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete).".$n;
+		echo "Completed adding ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $retcount;
 	}
 
