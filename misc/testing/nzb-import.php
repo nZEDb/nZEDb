@@ -74,7 +74,7 @@ else
 			// if the release is in our DB already then don't bother importing it
 			if ($usenzbname and $skipCheck !== true)
 			{
-				$usename = str_replace('.nzb', '', (basename($nzbFile)));
+				$usename = str_replace('.nzb', '', basename($nzbFile));
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -130,7 +130,7 @@ else
 			{
 				if ($usenzbname) 
 				{
-						$usename = str_replace('.nzb', '', (basename($nzbFile)));
+						$usename = str_replace('.nzb', '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0)
 				{
