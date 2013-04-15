@@ -104,8 +104,8 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "Skipping ".$usename.", it already exists in your database.\n";
-					flush();			
+					echo "\033[1;33mSkipping ".$usename.", it already exists in your database.\n\033[0m";
+					flush();
 					$importfailed = true;
 					break;
 				}
@@ -145,11 +145,15 @@ else
 			{
 				if ($isBlackListed)
 				{
+<<<<<<< HEAD
 					$errorMessage = "Blacklisted binaries found in ".$firstname['0'];
+=======
+					$errorMessage = "\033[1;33mBlacklisted binaries found in ".$nam."\033[0m";
+>>>>>>> 5d21408d16880657c069b573039b0784918b2bc1
 				}
 				else
 				{
-					$errorMessage = "No group found for ".$name." (one of ".implode(', ', $groupArr)." are missing";
+					$errorMessage = "\033[1;33mNo group found for ".$name." (one of ".implode(', ', $groupArr)." are missing\033[0m";
 				}
 				$importfailed = true;
 				echo $errorMessage."\n";
@@ -192,7 +196,7 @@ else
 				else
 				{
 					$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "Failed copying NZB, deleting release from DB.\n";
+					echo "\033[1;33mFailed copying NZB, deleting release from DB.\n\033[0m";
 					$importfailed = true;
 				}
 			}
