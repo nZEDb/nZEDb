@@ -46,7 +46,7 @@ class PostProcess {
 		if ($this->site->lookupnfo == 1)
 		{
 			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($this->site->lookupimdb, $this->site->lookuptvrage);		
+			$nfo->processNfoFiles($this->site->lookupimdb, $this->site->lookuptvrage);
 		}
 	}
 	
@@ -136,8 +136,7 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate desc limit 0, 25
-		", ($maxattemptstocheckpassworded + 1) * -1));
+			or (r.haspreview = -1 and c.disablepreview = 0)	order by adddate asc limit 25", ($maxattemptstocheckpassworded + 1) * -1));
 		
 		$rescount = sizeof($result);
 		echo "Additional post-processing on {$rescount} releases... ";
@@ -168,21 +167,26 @@ class PostProcess {
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
 
-				// Fetch the NZB using the GUID.
-				$nzb = new NZB();
-				
+                // Fetch the NZB using the GUID.
+                $nzb = new NZB();
+
 				if (!$nzbpath = $nzb->NZBPath($guid))
 				{
 					echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
 					break;
 				}
 				$nzbpath = 'compress.zlib://'.$nzbpath;
+				if (!$nzbpath)
+                {
+                    echo "ERROR: NZB file contents empty.\n";
+                    break;
+                }
 				$nzbfile = simplexml_load_file($nzbpath);
-				
+
 				foreach ($nzbfile->file as $nzbcontents)
 				{
 					$subject = $nzbcontents->attributes()->subject;
-					
+
 					if (preg_match("/\W\.r00/i",$subject)) {
 						$norar= 1;
 					}

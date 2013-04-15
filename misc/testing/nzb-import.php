@@ -74,8 +74,8 @@ else
 			$fromname = (string)$file->attributes()->poster;
 			$postername[] = $fromname;
 			$unixdate = (string)$file->attributes()->date;
-			$totalFiles++;		
-			$date = date("Y-m-d H:i:s", (string)$file->attributes()->date);
+			$totalFiles++;
+			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			$subject = $firstname['0'];
 			//File and part count.
@@ -130,6 +130,7 @@ else
 				if ($res !== false)
 				{
 					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -186,22 +187,23 @@ else
 			$relguid = md5(uniqid());
 			$nzb = new NZB();
 		
-			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $db->escapeString($totalsize))));
+			//if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $db->escapeString($totalsize))));
+			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
 				{
-					if ( $nzbCount % 25 == 0)
+					if ( $nzbCount % 50 == 0)
 					{
 						$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
 						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 						{
-							$nzbsperhour = number_format( $nzbCount / $seconds * 360 );
-							echo "\nAveraging ".$nzbsperhour." imports per hour\n";
+							$nzbsperhour = number_format( $nzbCount / $seconds * 3600 );
+							echo "\n\033[38;5;".$color_blacklist."Averaging ".$nzbsperhour." imports per hour\n";
 						} else {
 							echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
 						}
 					} else {
-						echo ".";
+						echo " .";
 					}
 					/*echo "Poster: ".$postername['0']."\n";
 					echo "Added to usenet: ".$postdate['0']."\n";

@@ -481,7 +481,7 @@ class Music
 		
 		$name = explode("-", $newName);
 		$name = array_map("trim", $name);
-		
+
 		if (preg_match('/^the /i', $name[0])) {
 				$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
 		}
