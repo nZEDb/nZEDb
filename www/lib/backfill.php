@@ -131,7 +131,6 @@ class Backfill
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo "Group processed in $timeGroup seconds $n";
 		//increment the backfil target date
-		$db->query(sprintf("UPDATE groups set backfill_target=backfill_target + 1 where active=1 and backfill_target < 1000"));
 	}
 	
 	function postdate($nntp,$post,$debug=true) //returns single timestamp from a local article number
