@@ -1278,7 +1278,7 @@ class Releases
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
 				$relID = $rowrel['ID'];
-				$catId = $categorizer->Categorize($rowrel["name"]);
+				$catId = $categorizer->Categorize($rowrel["searchname"]);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $relID));
 			}
 		}
