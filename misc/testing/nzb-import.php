@@ -16,7 +16,7 @@ $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
 
-$color1 = 190;
+$color1 = 11;
 $color2 = 35;
 $color3 = 36;
 $color4 = 31;
