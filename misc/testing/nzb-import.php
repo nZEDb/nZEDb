@@ -110,7 +110,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
+					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
 					flush();
 					$importfailed = true;
 					break;
@@ -129,7 +129,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
+					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
 					flush();
 					$importfailed = true;
 					break;
@@ -170,11 +170,11 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m";
+					$errorMessage = "\n\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m";
 				}
 				else
 				{
-					$errorMessage = "\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
+					$errorMessage = "\n\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
 				}
 				$importfailed = true;
 				echo $errorMessage."\n";
@@ -190,7 +190,13 @@ else
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
 				{
-					echo "Imported #".$nzbCount." - ".$cleanerName."\n";
+					if ( $nzbCount % 25 == 0)
+					{
+						$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
+						echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
+					} else {
+						echo ".";
+					}
 					/*echo "Poster: ".$postername['0']."\n";
 					echo "Added to usenet: ".$postdate['0']."\n";
 					echo "Amount of files: ".$totalFiles."\n";
