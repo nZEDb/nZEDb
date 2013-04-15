@@ -193,7 +193,13 @@ else
 					if ( $nzbCount % 25 == 0)
 					{
 						$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
-						echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
+						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
+						{
+							$nzbsperhour = number_format( $nzbCount / $seconds * 360 );
+							echo "\nAveraging ".$nzbsperhour." imports per hour\n";
+						} else {
+							echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
+						}
 					} else {
 						echo ".";
 					}
