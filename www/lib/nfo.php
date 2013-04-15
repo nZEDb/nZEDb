@@ -67,7 +67,8 @@ class Nfo
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
-				if ($messageid = $nzbcontents->getNFOfromNZB($guid, $groupID))
+				$messageid = $nzbcontents->getNFOfromNZB($guid, $groupID);
+				if ($messageid !== false)
 				{
 					$this->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
@@ -134,8 +135,8 @@ class Nfo
 				}
 				else
 				{	//No .nfo file in the NZB.
-					$db->queryOneRow("update releases set nfostatus = 0 where ID = %d", $relID);
-					break;
+					echo "failed\n";
+					$db->queryDirect("update releases set nfostatus = 0 where ID = %d", $relID);
 				}
 			}
 			$nntp->doQuit();
