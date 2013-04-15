@@ -53,7 +53,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
 		
-		$res = $db->queryDirect("SELECT ID, guid, groupID FROM releases WHERE nfostatus between -6 and -1 order by adddate desc limit 0,50");
+		$res = $db->queryDirect("SELECT ID, guid, groupID FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate desc limit 0,50");
 		if (mysql_num_rows($res) >= 0)
 		{	
 			if ($this->echooutput)
