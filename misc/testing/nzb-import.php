@@ -16,10 +16,10 @@ $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
 
-$color1 = 11;
-$color2 = 35;
-$color3 = 36;
-$color4 = 31;
+$color_skipped = 190;
+$color_blacklist = 11;
+$color_group = 1;
+$color_write_error = 9;
 
 $groups = $db->query("SELECT ID, name FROM groups");
 foreach ($groups as $group)
@@ -105,7 +105,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\033[38;5;".$color1."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
+					echo "\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
 					flush();
 					$importfailed = true;
 					break;
@@ -124,7 +124,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\033[38;5;".$color1."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
+					echo "\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\n\033[0m";
 					flush();
 					$importfailed = true;
 					break;
@@ -165,11 +165,11 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "\033[38;5;".$color2."mSubject is blacklisted: ".$cleanerName."\033[0m";
+					$errorMessage = "\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m";
 				}
 				else
 				{
-					$errorMessage = "\033[38;5;".$color3."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
+					$errorMessage = "\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
 				}
 				$importfailed = true;
 				echo $errorMessage."\n";
@@ -197,7 +197,7 @@ else
 				else
 				{
 					$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "\033[38;5;".$color4."mFailed copying NZB, deleting release from DB.\n\033[0m";
+					echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\n\033[0m";
 					$importfailed = true;
 				}
 			}
