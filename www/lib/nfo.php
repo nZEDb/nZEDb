@@ -58,7 +58,7 @@ class Nfo
 		{	
 			if ($this->echooutput)
 			{
-				echo "Processing ".mysql_num_rows($res)." NFO's.\n";
+				echo "Processing ".mysql_num_rows($res)." NFO's... ";
 			}
 		
 			$nntp->doConnect();
@@ -122,10 +122,6 @@ class Nfo
 					//nfo download failed, increment attempts
 					$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
 				}
-				if ($ret != 0 && $this->echooutput && ($ret % 5 == 0))
-				{
-					echo $ret."..";
-				}
 			}
 			$nntp->doQuit();
 		}
@@ -139,7 +135,7 @@ class Nfo
 	
 		if ($this->echooutput)
 		{
-			echo $ret." NFO files processed\n";
+			echo ". ...".$ret." NFO files processed.\n";
 		}
 	
 		return $ret;
