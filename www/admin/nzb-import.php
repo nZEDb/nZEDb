@@ -4,9 +4,14 @@ require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/binaries.php");
+require_once(WWW_DIR."/lib/page.php");
 
 $db = new DB();
 $binaries = new Binaries();
+$page = new Page;
+
+if (!isset($argv[1]))
+	exit("ERROR: You must supply a path as the first argument.\n");
 
 if (empty($argc))
 	$page = new AdminPage();
@@ -249,7 +254,7 @@ if (!empty($argc) || $page->isPostBack() )
 				$relguid = md5(uniqid());
 				$nzb = new NZB();
 			
-				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010, -1)", $db->escapeString($firstname['0']), $db->escapeString($firstname['0']), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize))));
+				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", $db->escapeString($firstname['0']), $db->escapeString($firstname['0']), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					if($nzb->copyNZBforImport($relguid, $nzbFile))
 					{

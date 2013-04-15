@@ -10,6 +10,9 @@ $db = new DB();
 $binaries = new Binaries();
 $page = new Page;
 
+if (!isset($argv[1]))
+	exit("ERROR: You must supply a path as the first argument.\n");
+
 $filestoprocess = Array();
 $strTerminator = "\n";
 $path = $argv[1];
