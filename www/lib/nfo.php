@@ -57,7 +57,9 @@ class Nfo
 		if (mysql_num_rows($res) >= 0)
 		{	
 			if ($this->echooutput)
+			{
 				echo "Processing ".mysql_num_rows($res)." NFO's.\n";
+			}
 		
 			$nntp->doConnect();
 			while ($arr = mysql_fetch_assoc($res))
@@ -125,10 +127,11 @@ class Nfo
 						//nfo download failed, increment attempts
 						$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
 					}
-				
 					if ($ret != 0 && $this->echooutput && ($ret % 5 == 0))
+					{
 						echo $ret."..";
 					}
+				}
 				else
 				{	//No .nfo file in the NZB.
 					$db->queryOneRow("update releases set nfostatus = 0 where ID = %d", $relID);
@@ -146,7 +149,9 @@ class Nfo
 		}
 		
 		if ($this->echooutput)
+		{
 			echo $ret." NFO files processed\n";
+		}
 		
 		return $ret;
 	}
