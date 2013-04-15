@@ -91,6 +91,25 @@ else
 					break;
 				}
 			}
+			if ($skipCheck !== true)
+			{
+				$usename = $db->escapeString($name);
+				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
+					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
+				$res = $db->queryOneRow($dupeCheckSql);
+					
+				// only check one binary per nzb, they should all be in the same release anyway
+				$skipCheck = true;
+				
+				// if the release is in the DB already then just skip this whole procedure
+				if ($res !== false)
+				{
+					echo ("skipping ".$usename.", it already exists in your database\n");
+					flush();			
+					$importfailed = true;
+					break;
+				}
+			}
 			//groups
 			$groupArr = array();
 			foreach($file->groups->group as $group) 
@@ -136,32 +155,32 @@ else
 				echo ($errorMessage."\n");
 				break;
 			}
-		}
-		$relguid = md5(uniqid());
-		$nzb = new NZB();
-			
-		if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010, -1)", $db->escapeString($firstname['0']), $db->escapeString($firstname['0']), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize))));
-		{
-			if($nzb->copyNZBforImport($relguid, $nzbFile))
-			{
-				echo "Imported NZB successfully. ";
-				echo "Subject: ".$firstname['0']."\n";
-				/*echo "Poster: ".$postername['0']."\n";
-				echo "Added to usenet: ".$postdate['0']."\n";
-				echo "Amount of files: ".$totalFiles."\n";
-				echo "Release GUID: ".$relguid."\n";
-				echo "GroupID: ".$groupID."\n";
-				echo "Release size: ".number_format($totalsize / 1048576, 2)." MB"."\n\n";*/
-			}
-			else
-			{
-				$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-				echo "Failed copying NZB, deleting release from DB.\n";
-				$importfailed = true;
-			}
 		}		
 		if (!$importfailed)
 		{
+		$relguid = md5(uniqid());
+		$nzb = new NZB();
+		
+			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, -1, 7010, -1)", $db->escapeString($firstname['0']), $db->escapeString($firstname['0']), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize))));
+			{
+				if($nzb->copyNZBforImport($relguid, $nzbFile))
+				{
+					echo "Imported NZB successfully. ";
+					echo "Subject: ".$firstname['0']."\n";
+					/*echo "Poster: ".$postername['0']."\n";
+					echo "Added to usenet: ".$postdate['0']."\n";
+					echo "Amount of files: ".$totalFiles."\n";
+					echo "Release GUID: ".$relguid."\n";
+					echo "GroupID: ".$groupID."\n";
+					echo "Release size: ".number_format($totalsize / 1048576, 2)." MB"."\n\n";*/
+				}
+				else
+				{
+					$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+					echo "Failed copying NZB, deleting release from DB.\n";
+					$importfailed = true;
+				}
+			}
 			$nzbCount++;
 			@unlink($nzbFile);
 		}
