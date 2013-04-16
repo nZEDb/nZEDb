@@ -18,7 +18,7 @@ class NZB
 		$catrow = $cat->getById($catId);
 		$site = new Sites();
 
-		$fp = gzopen($path, "w"); 
+		$fp = gzopen($path, 'w5'); 
 		if ($fp)
 		{
 			gzwrite($fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); 
@@ -73,7 +73,7 @@ class NZB
 	{
 		$page = new Page;
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true);
-		$fp = gzopen($path, 'w');
+		$fp = gzopen($path, 'w5');
 		if ($fp)
 		{
 			gzwrite ($fp, file_get_contents($nzb));

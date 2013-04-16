@@ -5,6 +5,7 @@ require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
+require_once(FS_ROOT."/../../www/lib/categorizer.php");
 require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
 
 $db = new DB();
@@ -26,6 +27,19 @@ $color_skipped = 190;
 $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
+
+function categorize() {
+    $db = new DB();
+	$categorizer = new Categorizer();
+    $relres = $db->queryDirect("SELECT name, ID from releases where categoryID = 7010 and relnamestatus = 0");
+    while ($relrow = mysql_fetch_assoc($relres))
+    {
+    	$releaseID = $relrow['ID'];
+        $relname = $relrow['name'];
+        $catID = $categorizer->Categorize($relname);
+        $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
+    }
+}
 
 function relativeTime($_time) {
 	$d[0] = array(1,"sec");
@@ -235,10 +249,11 @@ else
 						    trigger_error('mysqlBulk failed!', E_USER_ERROR);
 						} else {
 							unset($data);
-							foreach ($filenames as $value) {
- 								unlink($value);
-							}
+							//foreach ($filenames as $value) {
+ 								//unlink($value);
+							//}
 							unset($filenames);
+							categorize();
 	                        echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
 	                        echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 						}
