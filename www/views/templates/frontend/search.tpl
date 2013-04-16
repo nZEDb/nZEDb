@@ -11,11 +11,14 @@
 		<label for="search" style="display:none;">Search</label>
 		<input id="search" name="search" value="{$search|escape:'html'}" type="text"/>
 		<input id="search_search_button" type="submit" value="Name" />&nbsp;&nbsp;&nbsp;
-		<input id="subject" name="subject" value="{$subjectsearch|escape:'html'}" type="text"/>
+		<label for="subject" style="display:none;">Subject</label>
+		<input id="subject" name="subject" value="{$subject|escape:'html'}" type="text"/>
 		<input id="subject_search_button" type="submit" value="Subject" /><br/>
-		<input id="filename" name="filesearch" value="{$filesearch|escape:'html'}" type="text"/>
-		<input id="filename_search_button" type="submit" value="Filename" />&nbsp;&nbsp;&nbsp;
-		<input id="poster" name="posterearch" value="{$postersearch|escape:'html'}" type="text"/>
+		<label for="tvtitle" style="display:none;">TV Title</label>
+		<input id="tvtitle" name="tvtitle" value="{$tvtitle|escape:'html'}" type="text"/>
+		<input id="tvtitle_search_button" type="submit" value="TV Title" />&nbsp;&nbsp;&nbsp;
+		<label for="poster" style="display:none;">poster</label>
+		<input id="poster" name="poster" value="{$poster|escape:'html'}" type="text"/>
 		<input id="poster_search_button" type="submit" value="Poster" />
 		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
 		<input type="hidden" name="search_type" value="basic" id="search_type" />
@@ -65,9 +68,9 @@
 	</div>
 </form>
 
-{if $results|@count == 0 && $search != ""}
+{if $results|@count == 0 && ($search || $tvtitle || $subject || $poster) != ""}
 	<div class="nosearchresults">
-		Your search - <strong>{$search|escape:'htmlall'}</strong> - did not match any releases.
+		Your search did not match any releases.
 		<br/><br/>
 		Suggestions:
 		<br/><br/>
@@ -78,7 +81,7 @@
 		<li>Try fewer keywords.</li>
 		</ul>
 	</div>
-{elseif $search == ""}
+{elseif ($search || $subject || $tvtitle || $poster) == ""}
 {else}
 
 {$site->adbrowse}	
