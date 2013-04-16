@@ -36,20 +36,24 @@
 			<tr>
 				<th><label for="searchadvposter">Poster</label>:</th>
 				<td><input id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
-			</tr>				
+			</tr>	
+			<tr>
+				<th><label for="searchadvdaysold">Days old</label>:</th>
+				<td><input id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/></td>
+			</tr>		
 			<tr>
 				<th><label for="searchadvgroups">Group</label>:</th>
-				<td>{html_options id="searchadvgroups" name=searchadvgroups options=$grouplist selected=$selectedgroup}</td>
+				<td>{html_options id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}</td>
 			</tr>
 			<tr>
 				<th><label for="searchadvcat">Category</label>:</th>
-				<td>{html_options id="searchadvcat" name=searchadvcat options=$catlist selected=$selectedcat}</td>
+				<td>{html_options id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}</td>
 			</tr>
 			<tr>
 				<th><label for="searchadvsizefrom">Size Between</label>:</th>
 				<td>
-					{html_options id="searchadvsizefrom" name=searchadvsizefrom options=$sizelist selected=$selectedsizefrom}
-					and {html_options id="searchadvsizeto" name=searchadvsizeto options=$sizelist selected=$selectedsizeto}
+					{html_options id="searchadvsizefrom" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom}
+					and {html_options id="searchadvsizeto" name="searchadvsizeto" options=$sizelist selected=$selectedsizeto}
 				</td>
 			</tr>
 			<tr>
@@ -70,7 +74,7 @@
 	</div>
 </form>
 
-{if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom) != ""}
+{if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) != ""}
 	<center><div class="nosearchresults">
 		Your search did not match any releases.
 		<br/><br/>
@@ -83,7 +87,7 @@
 		<center><li>Try fewer keywords.</li></center>
 		</ul>
 	</div></center>
-{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 
 {$site->adbrowse}	
