@@ -1204,8 +1204,8 @@ class Releases
 		}
         echo TIME() - $stage2." seconds.";
 
-		//Mark collections smaller than site settings.
-		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\033[0m".$n;
+		//Mark collections smaller/larger than site settings.
+		echo $n."\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
 		$stage3 = TIME();
 		if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 		{
@@ -1223,6 +1223,17 @@ class Releases
 						$minsizecount ++;
 					}
 				}
+				$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");			
+				if ($maxfilesizeres["value"] != 0)
+				{
+					$rescol = $db->queryDirect(sprintf("SELECT ID from collections filecheck = 2 and filesize > %d", $groupID, $minfilesizeres["value"]));
+					while ($rowcol = mysql_fetch_assoc($rescol))
+					{
+						$colID = $rowcol['ID'];
+						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $colID));
+						$maxsizecount ++;
+					}
+				}
 				$minfilesres = $db->queryOneRow(sprintf("SELECT coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM  FROM groups g inner join ( select value as minfilestoformrelease from site where setting = 'minfilestoformrelease' ) s where g.ID = %d", $groupID));			
 				if ($minfilesres["minfilestoformrelease"] != 0)
 				{
@@ -1236,7 +1247,7 @@ class Releases
 				}
 			}
 		}
-		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
+		echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." collections smaller than group/site settings.".$n;
         echo TIME() - $stage3." seconds.";
 
 		//Create releases.

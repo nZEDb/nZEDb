@@ -327,7 +327,15 @@
 	<td><label for="minsizetoformrelease">Minimum File Size to Make a Release</label>:</td>
 	<td>
 		<input class="small" id="minsizetoformrelease" name="minsizetoformrelease" type="text" value="{$fsite->minsizetoformrelease}" />
-		<div class="hint">The minimum total size in bytes to make a release. If set to 0, then ignored.</div>
+		<div class="hint">The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxsizetoformrelease">Maximum File Size to Make a Release</label>:</td>
+	<td>
+		<input class="small" id="maxsizetoformrelease" name="maxsizetoformrelease" type="text" value="{$fsite->maxsizetoformrelease}" />
+		<div class="hint">The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
 	</td>
 </tr>
 
