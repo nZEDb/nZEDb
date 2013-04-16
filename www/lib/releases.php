@@ -690,6 +690,88 @@ class Releases
 			$groupIDsql.= sprintf(" and releases.groupID like %d ", $groupID);
 		}
 		
+		if ($sizefrom == "-1")
+		{
+			$sizefromsql.= ("");
+		}
+		if ($sizefrom == "1")
+		{
+			$sizefromsql.= (" and size > 104857600 ");
+		}
+		if ($sizefrom == "2")
+		{
+			$sizefromsql.= (" and size > 262144000 ");
+		}
+		if ($sizefrom == "3")
+		{
+			$sizefromsql.= (" and size > 524288000 ");
+		}
+		if ($sizefrom == "4")
+		{
+			$sizefromsql.= (" and size > 1073741824 ");
+		}
+		if ($sizefrom == "5")
+		{
+			$sizefromsql.= (" and size > 2147483648 ");
+		}
+		if ($sizefrom == "6")
+		{
+			$sizefromsql.= (" and size > 3221225472 ");
+		}
+		if ($sizefrom == "7")
+		{
+			$sizefromsql.= (" and size > 4294967296 ");
+		}
+		if ($sizefrom == "8")
+		{
+			$sizefromsql.= (" and size > 8589934592 ");
+		}
+		if ($sizefrom == "9")
+		{
+			$sizefromsql.= (" and size > 17179869184 ");
+		}
+		
+		if ($sizeto == "-1")
+		{
+			$sizetosql.= ("");
+		}
+		if ($sizeto == "1")
+		{
+			$sizetosql.= (" and size < 104857600 ");
+		}
+		if ($sizeto == "2")
+		{
+			$sizetosql.= (" and size < 262144000 ");
+		}
+		if ($sizeto == "3")
+		{
+			$sizetosql.= (" and size < 524288000 ");
+		}
+		if ($sizeto == "4")
+		{
+			$sizetosql.= (" and size < 1073741824 ");
+		}
+		if ($sizeto == "5")
+		{
+			$sizetosql.= (" and size < 2147483648 ");
+		}
+		if ($sizeto == "6")
+		{
+			$sizetosql.= (" and size < 3221225472 ");
+		}
+		if ($sizeto== "7")
+		{
+			$sizetosql.= (" and size < 4294967296 ");
+		}
+		if ($sizeto == "8")
+		{
+			$sizetosql.= (" and size < 8589934592 ");
+		}
+		if ($sizeto == "9")
+		{
+			$sizetosql.= (" and size < 17179869184 ");
+		}
+		
 		if ($maxage > 0)
 			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
 		else
@@ -707,7 +789,7 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
+		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
 		//echo $sql;
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");

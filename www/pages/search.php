@@ -177,12 +177,15 @@ $catlist = $c->getForSelect();
 $page->smarty->assign('catlist', $catlist);	
 
 $sizelist = array( -1 => '--Select--',
-					0 => '0 bytes',
-					0.5 => '500 mb',
-					1 => '1 gb',
-					2 => '2 gb', 
-					3	=> '3 gb',			
-					4	=> '4 gb'			
+					1 => '100 MB',
+					2 => '250 MB',
+					3 => '500 MB',
+					4 => '1 GB',
+					5 => '2 GB', 
+					6	=> '3 GB',			
+					7	=> '4 GB',	
+					8	=> '8 GB',
+					9	=> '16 GB'
 					) ;
 
 $page->smarty->assign('sizelist', $sizelist);
