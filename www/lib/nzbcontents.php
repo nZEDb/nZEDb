@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 
 /*
- * Returns information contained within the NFO.
+ * Returns information contained within the NZB. Used for finding NFO's for now.
 */
 Class NZBcontents
 {
@@ -61,12 +61,6 @@ Class NZBcontents
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 					echo ".+";
 					return $fetchedBinary;
-				}	
-				else
-				{
-					//Error fetching the message-ID from the nzb, increment attempts
-					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
-					return false;
 				}
 			}
 		}
@@ -115,12 +109,6 @@ Class NZBcontents
 								$foundnfo = true;
 							}
 						}
-					}
-					else
-					{
-						//Error fetching the message-ID from the nzb, increment attempts
-						$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
-						return false;
 					}
 				}
 			}
