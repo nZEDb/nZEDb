@@ -51,7 +51,13 @@
 					{html_options id="searchadvsizefrom" name=searchadvsizefrom options=$sizelist selected=$selectedsizefrom}
 					and {html_options id="searchadvsizeto" name=searchadvsizeto options=$sizelist selected=$selectedsizeto}
 				</td>
-			</tr>	
+			</tr>
+			<tr>
+				<th><label for="searchadvhasnfo">Has NFO?</label>:</th>
+				<td>
+					<input type="checkbox" name="searchadvhasnfo" value="1"/>
+				</td>
+			</tr>
 			<tr>
 				<th></th>
 				<td>
