@@ -35,7 +35,7 @@ if (isset($_REQUEST["id"]) || isset($_REQUEST["searchadvr"]))
 		if (isset($_REQUEST["t"]))
 			$categoryId = explode(",",$_REQUEST["t"]);
 		else
-			$categoryId[] = -1;		
+			$categoryId[] = -1;
 	
 		foreach($ordering as $ordertype) 
 		{
@@ -51,6 +51,7 @@ if (isset($_REQUEST["id"]) || isset($_REQUEST["searchadvr"]))
 	}
 	else
 	{
+		/*
 		$searchReleaseName = (string) $_REQUEST["searchadvr"];
 		$searchFileName = (string) $_REQUEST["searchadvf"];
 		$searchPoster = (string) $_REQUEST["searchadvposter"];
@@ -67,7 +68,29 @@ if (isset($_REQUEST["id"]) || isset($_REQUEST["searchadvr"]))
 		$page->smarty->assign('selectedsizefrom', $searchSizeFrom);
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
 
+		$results = $releases->searchadv($searchStr, $categoryId, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);  */
+		
+		
+		$searchStr = (string) $_REQUEST["searchadvr"];
+	
+		$categoryId = array();
+		if (isset($_REQUEST["searchadvcat"]))
+			$categoryId = explode(",",$_REQUEST["searchadvcat"]);
+		else
+			$categoryId[] = -1;
+	
+		foreach($ordering as $ordertype) 
+		{
+			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$ordertype);
+		}
+		
+		$page->smarty->assign('selectedcat', $categoryId);
+		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
+		$page->smarty->assign('searchadvr', $searchStr);
+
 		$results = $releases->searchadv($searchStr, $categoryId, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+		
+		//$results = $releases->searchadv($searchReleaseName, $searchFileName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 		
 	}
 	
