@@ -209,7 +209,7 @@ else
 							foreach ($filenames as $value) {
  								unlink($value);
 							}
-							unset($filename);
+							unset($filenames);
 	                        echo "\nImported #".$nzbCount." nzb's in ".$seconds." seconds";
 	                        echo "\nPrepared #".$nzbCount." for import in ".$seconds." seconds\t";
 						}
