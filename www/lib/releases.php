@@ -803,11 +803,15 @@ class Releases
 		{
 			$hascommentssql.= (" and releases.comments > 0 ");
 		}
-			
-		if ($daysold > 0)
-			$daysoldsql = sprintf(" and postdate > now() - interval %day ", $daysold);
+		
+		if ($daysold == "-1")
+		{
+			$daysoldsql.= ("");
+		}
 		else
-			$daysoldsql = "";
+		{
+			$daysoldsql.= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
+		}
 		
 		$exccatlist = "";
 		if (count($excludedcats) > 0)

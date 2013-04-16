@@ -121,7 +121,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$searchSearchName = (string) $_REQUEST["searchadvr"];
 		$searchUsenetName = (string) $_REQUEST["searchadvsubject"];
 		$searchPoster = (string) $_REQUEST["searchadvposter"];
-		$searchHasNFO = (string) $_REQUEST["searchadvdaysold"];
+		$searchdaysold = (string) $_REQUEST["searchadvdaysold"];
 		$searchGroups = (string) $_REQUEST["searchadvgroups"];
 		$searchCat = (string) $_REQUEST["searchadvcat"];
 		$searchSizeFrom = (string) $_REQUEST["searchadvsizefrom"];
