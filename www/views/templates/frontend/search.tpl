@@ -30,10 +30,6 @@
 			<tr>
 				<th><label for="searchadvsubject">Usenet Name</label>:</th>
 				<td><input id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
-			</tr>
-			<tr>
-				<th><label for="searchadvf">Filename</label>:</th>
-				<td><input id="searchadvf" name="searchadvf" value="{$searchadvf|escape:'html'}" type="text"/></td>
 			</tr>			
 			<tr>
 				<th><label for="searchadvposter">Poster</label>:</th>
@@ -66,7 +62,7 @@
 	</div>
 </form>
 
-{if $results|@count == 0 && ($search || $subject|| $searchadvr || $searchadvf || $searchadvsubject || $selectedgroup || $selectedsizefrom) != ""}
+{if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom) != ""}
 	<div class="nosearchresults">
 		Your search did not match any releases.
 		<br/><br/>
@@ -79,7 +75,7 @@
 		<li>Try fewer keywords.</li>
 		</ul>
 	</div>
-{elseif ($search || $subject || $searchadvr || $searchadvf || $searchadvsubject || $selectedgroup || $selectedsizefrom) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom) == ""}
 {else}
 
 {$site->adbrowse}	

@@ -567,12 +567,10 @@ class Releases
 		return $db->query($sql);
 	}	
 
-	public function searchadv($searchname, $usenetname, $filename, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
+	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
 	{	
 		$db = new DB();
 		$groups = new Groups();
-		
-		echo $searchname." Search, ".$usenetname." Origname, ".$filename." File, ".$postername." Poster, ".$groupname." Group, ".$cat." cat, ".$sizefrom." sizefrom, ".$sizeto." sizeto\n";
 		
 		if ($cat == "-1")
 		{
