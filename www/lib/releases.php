@@ -1248,7 +1248,7 @@ class Releases
 				}
 			}
 		}
-		echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." collections smaller than group/site settings.".$n;
+		echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." collections smaller/larger than group/site settings.".$n;
         echo TIME() - $stage3." seconds.";
 
 		//Create releases.

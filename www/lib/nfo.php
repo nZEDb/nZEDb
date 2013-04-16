@@ -58,7 +58,7 @@ class Nfo
 		{	
 			if ($this->echooutput)
 			{
-				echo "Processing ".mysql_num_rows($res)." NFO's, star means it found an hidden NFO... ";
+				echo "Processing ".mysql_num_rows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n";
 			}
 		
 			$nntp->doConnect();
