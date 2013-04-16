@@ -182,7 +182,7 @@ PRIMARY KEY  (`ID`)
 
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('search', 'Search', 
+VALUES ('search', 'Advanced Search', 
 	'Search for releases.', 1, 10);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
