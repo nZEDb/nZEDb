@@ -16,6 +16,7 @@ require_once(WWW_DIR."/lib/releaseextra.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
 require_once(WWW_DIR."/lib/releasecomments.php");
 require_once(WWW_DIR."/lib/postprocess.php");
+require_once(WWW_DIR."/lib/groups.php");
 
 class Releases
 {	
@@ -566,14 +567,16 @@ class Releases
 		return $db->query($sql);
 	}	
 
-	public function searchadv($searchname, $usenetname, $filename, $poster, $group, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
+	public function searchadv($searchname, $usenetname, $filename, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
 	{	
 		$db = new DB();
-		echo $searchname." Search, ".$usenetname." Origname, ".$filename." File, ".$poster." Poster, ".$group." Group, ".$cat." cat, ".$sizefrom." sizefrom, ".$sizeto." sizeto\n";
+		$groups = new Groups();
+		
+		echo $searchname." Search, ".$usenetname." Origname, ".$filename." File, ".$postername." Poster, ".$groupname." Group, ".$cat." cat, ".$sizefrom." sizefrom, ".$sizeto." sizeto\n";
 		
 		if ($cat == "-1")
 		{
-			$catsrch .= (" and (releases.categoryID != -1) ");
+			$catsrch .= ("");
 		}
 		else
 		{
@@ -621,12 +624,12 @@ class Releases
 		}
 		else
 		{
-			$words1 = explode(" ", $usenetname);
+			$words = explode(" ", $usenetname);
 			$usenetnamesql = "";
-			$intwordcount1 = 0;
-			if (count($words1) > 0)
+			$intwordcount = 0;
+			if (count($words) > 0)
 			{
-				foreach ($words1 as $word)
+				foreach ($words as $word)
 				{
 					if ($word != "")
 					{
@@ -640,10 +643,51 @@ class Releases
 						else
 							$usenetnamesql.= sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
 
-						$intwordcount1++;
+						$intwordcount++;
 					}
 				}
 			}
+		}
+		
+		if ($postername == "-1")
+		{
+			$posternamesql.= ("");
+		}
+		else
+		{
+			$words = explode(" ", $postername);
+			$posternamesql = "";
+			$intwordcount = 0;
+			if (count($words) > 0)
+			{
+				foreach ($words as $word)
+				{
+					if ($word != "")
+					{
+						//
+						// see if the first word had a caret, which indicates search must start with term
+						//
+						if ($intwordcount == 0 && (strpos($word, "^") === 0))
+							$posternamesql.= sprintf(" and releases.fromname like %s", $db->escapeString(substr($word, 1)."%"));
+						elseif (substr($word, 0, 2) == '--')
+							$posternamesql.= sprintf(" and releases.fromname not like %s", $db->escapeString("%".substr($word, 2)."%"));
+						else
+							$posternamesql.= sprintf(" and releases.fromname like %s", $db->escapeString("%".$word."%"));
+
+						$intwordcount++;
+					}
+				}
+			}
+		}
+		
+		if ($groupname == "-1")
+		{
+			$groupIDsql.= ("");
+		}
+		else
+		{
+			$groupID = $groups->getIDByName($db->escapeString($groupname));
+			$groupIDsql.= sprintf(" and releases.groupID like %d ", $groupID);
 		}
 		
 		if ($maxage > 0)
@@ -663,8 +707,8 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
-		echo $sql;
+		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
+		//echo $sql;
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);

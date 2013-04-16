@@ -64,6 +64,13 @@ class Groups
 		$res = $db->queryOneRow(sprintf("select name from groups where ID = %d ", $id));	
 		return $res["name"];	
 	}
+	
+	public function getIDByName($name)
+	{		
+		$db = new DB();
+		$res = $db->queryOneRow(sprintf("select ID from groups where name = %s", $name));	
+		return $res["ID"];	
+	}
 
 	public function getCount($groupname="")
 	{			

@@ -66,7 +66,7 @@
 	</div>
 </form>
 
-{if $results|@count == 0 && ($search || $subject|| $searchadvr || $searchadvsubject) != ""}
+{if $results|@count == 0 && ($search || $subject|| $searchadvr || $searchadvsubject || $selectedgroup) != ""}
 	<div class="nosearchresults">
 		Your search did not match any releases.
 		<br/><br/>
@@ -79,7 +79,7 @@
 		<li>Try fewer keywords.</li>
 		</ul>
 	</div>
-{elseif ($search || $subject || $searchadvr || $searchadvsubject) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup) == ""}
 {else}
 
 {$site->adbrowse}	

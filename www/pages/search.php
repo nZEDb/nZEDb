@@ -131,11 +131,15 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$searchSizeFrom = (string) $_REQUEST["searchadvsizefrom"];
 		$searchSizeTo = (string) $_REQUEST["searchadvsizeto"];
 		
-		if (!isset($_REQUEST["searchadvcat"]))
-			$searchCat[] = -1;
 		if (!isset($_REQUEST["searchadvr"]))
-			$searchCat[] = -1;
+			$searchSearchName[] = -1;
 		if (!isset($_REQUEST["searchadvsubject"]))
+			$searchUsenetName[] = -1;
+		if (!isset($_REQUEST["searchadvf"]))
+			$searchFileName[] = -1;
+		if (!isset($_REQUEST["searchadvposter"]))
+			$searchPoster[] = -1;
+		if (!isset($_REQUEST["searchadvcat"]))
 			$searchCat[] = -1;
 					
 		$page->smarty->assign('searchadvr', $searchSearchName);
