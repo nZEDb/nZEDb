@@ -1,12 +1,11 @@
   
 <h1>Search</h1>
-	
-	
-	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b></center>
 
 	<div><center>
 		<a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
 	</center></div><br/>
+	
+	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b></center>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
@@ -38,7 +37,7 @@
 				<td><input id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
 			</tr>	
 			<tr>
-				<th><label for="searchadvdaysold">Days old</label>:</th>
+				<th><label for="searchadvdaysold">Max Age</label>:</th>
 				<td><input id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/></td>
 			</tr>		
 			<tr>
@@ -57,9 +56,9 @@
 				</td>
 			</tr>
 			<tr>
-				<th><label for="searchadvhasnfo">Has NFO?</label>:</th>
+				<th><label for="searchadvhasnfo">NFO/Comments</label>:</th>
 				<td>
-					<input type="checkbox" name="searchadvhasnfo" value="1"/>
+					<input type="checkbox" name="searchadvhasnfo" value="1"/> <input type="checkbox" name="searchadvhascomments" value="1"/>
 				</td>
 			</tr>
 			<tr>

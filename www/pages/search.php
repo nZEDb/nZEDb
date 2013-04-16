@@ -126,6 +126,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$searchSizeFrom = (string) $_REQUEST["searchadvsizefrom"];
 		$searchSizeTo = (string) $_REQUEST["searchadvsizeto"];
 		$searchHasNFO = (string) $_REQUEST["searchadvhasnfo"];
+		$searchHasNFO = (string) $_REQUEST["searchadvhascomments"];
 		$searchHasNFO = (string) $_REQUEST["searchadvdaysold"];
 		
 		if (!isset($_REQUEST["searchadvr"]))
@@ -138,6 +139,8 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 			$searchCat[] = -1;
 		if (!isset($_REQUEST["searchadvhasnfo"]))
 			$searchHasNFO = -1;
+		if (!isset($_REQUEST["searchadvhascomments"]))
+			$searchHascomments = -1;
 		if (!isset($_REQUEST["searchadvdaysold"]))
 			$searchdaysold = -1;
 					
@@ -149,13 +152,14 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$page->smarty->assign('selectedsizefrom', $searchSizeFrom);
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
 		$page->smarty->assign('searchadvhasnfo', $searchHasNFO);
+		$page->smarty->assign('searchadvhascomments', $searchHascomments);
 		$page->smarty->assign('searchadvdaysold', $searchdaysold);
 		foreach($ordering as $ordertype) 
 		{
-			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&search_type=adv"."&amp;ob=".$ordertype);
+			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$ordertype);
 		}
-		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
-		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
+		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
+		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 	}
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
 	if (sizeof($results) > 0)

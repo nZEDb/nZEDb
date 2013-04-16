@@ -567,7 +567,7 @@ class Releases
 		return $db->query($sql);
 	}	
 
-	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
+	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
 	{	
 		$db = new DB();
 		$groups = new Groups();
@@ -794,6 +794,15 @@ class Releases
 		{
 			$hasnfosql.= (" and releases.nfostatus = 1 ");
 		}
+		
+		if ($hascomments == "-1")
+		{
+			$hascommentssql.= ("");
+		}
+		else
+		{
+			$hascommentssql.= (" and releases.comments > 0 ");
+		}
 			
 		if ($daysold > 0)
 			$daysoldsql = sprintf(" and postdate > now() - interval %day ", $daysold);
@@ -812,7 +821,7 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $catsrch, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
+		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
