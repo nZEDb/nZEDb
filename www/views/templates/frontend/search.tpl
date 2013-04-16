@@ -2,7 +2,7 @@
 <h1>Search</h1>
 	
 	
-	<center> <b>Put -- to exclude words, ^ indicates search must start with term.</b><center/>
+	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b><center/>
 
 	<div><center>
 		<a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
