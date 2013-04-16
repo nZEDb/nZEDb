@@ -1177,7 +1177,7 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $binfiles, $colID));
 			}
 		}
-        echo TIME() - $stage1." seconds\n";
+        echo TIME() - $stage1." seconds.";
 
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
@@ -1202,7 +1202,7 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 			}
 		}
-        echo TIME() - $stage2." seconds";
+        echo TIME() - $stage2." seconds.";
 
 		//Mark collections smaller than site settings.
 		echo $n."\033[1;33mStage 3 -> Delete collections smaller than minimum size/file count from group/site setting.\033[0m".$n;
@@ -1237,7 +1237,7 @@ class Releases
 			}
 		}
 		echo "...Deleted ".$minsizecount+$minfilecount." collections smaller than group/site settings.".$n;
-        echo TIME() - $stage3." seconds";
+        echo TIME() - $stage3." seconds.";
 
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
@@ -1260,7 +1260,7 @@ class Releases
 				}
 			}
 		}
-        echo TIME() - $stage4." seconds";
+        echo TIME() - $stage4." seconds.";
 
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
@@ -1284,7 +1284,7 @@ class Releases
 				}
 			}
 		}
-		echo TIME() - $stage5." seconds";
+		echo TIME() - $stage5." seconds.";
 
 		//Categorize releases.
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
@@ -1320,7 +1320,7 @@ class Releases
 		{
 			echo "Post-processing disabled.".$n;
 		}
-        echo TIME() - $stage6." seconds";
+        echo TIME() - $stage6." seconds.";
 
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
@@ -1361,7 +1361,7 @@ class Releases
 				$dupecount ++;
 			}
 		}
-        echo TIME() - $stage7." seconds\n";
+        echo TIME() - $stage7." seconds.";
 
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
