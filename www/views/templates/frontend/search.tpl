@@ -35,11 +35,15 @@
 			<tr>
 				<th><label for="searchadvposter">Poster</label>:</th>
 				<td><input id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
-			</tr>	
+			</tr>
 			<tr>
-				<th><label for="searchadvdaysold">Max Age</label>:</th>
+				<th><label for="searchadvdaysnew">Min days</label>:</th>
+				<td><input id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvdaysold">Max days</label>:</th>
 				<td><input id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/></td>
-			</tr>		
+			</tr>
 			<tr>
 				<th><label for="searchadvgroups">Group</label>:</th>
 				<td>{html_options id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}</td>
