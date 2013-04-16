@@ -10,6 +10,8 @@ while :
 
 do
 
+clear
+
 cd ${NEWZNAB_PATH}
 if ! $SCREEN -list | grep -q "POSTP"; then
 	cd $NEWZNAB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NEWZNAB_PATH/postprocess_releases.php
