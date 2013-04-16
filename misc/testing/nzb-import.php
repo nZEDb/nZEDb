@@ -27,6 +27,35 @@ $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
 
+function relativeTime($_time) {
+	$d[0] = array(1,"sec");
+	$d[1] = array(60,"min");
+	$d[2] = array(3600,"hr");
+	$d[3] = array(86400,"day");
+	$d[4] = array(31104000,"yr");
+
+	$w = array();
+
+	$return = "";
+	$now = TIME();
+	$diff = ($now-$_time);
+	$secondsLeft = $diff;
+
+	for($i=4;$i>-1;$i--)
+	{
+		$w[$i] = intval($secondsLeft/$d[$i][0]);
+		$secondsLeft -= ($w[$i]*$d[$i][0]);
+		if($w[$i]!=0)
+		{
+			//$return.= abs($w[$i]). " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
+			$return.= $w[$i]. " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
+		}
+	}
+
+	//$return .= ($diff>0)?"ago":"left";
+	return $return;
+}
+
 $groups = $db->query("SELECT ID, name FROM groups");
 foreach ($groups as $group)
 	$siteGroups[$group["name"]] = $group["ID"];
@@ -47,7 +76,8 @@ else
 	//
 	if (count($filestoprocess) == 0)
 		$filestoprocess = glob($path."*.nzb");
-	$start=date('Y-m-d H:i:s');
+
+	$time = TIME();
 
 	foreach($filestoprocess as $nzbFile)
 	{
@@ -191,12 +221,11 @@ else
 			$relguid = md5(uniqid());
 			$nzb = new NZB();
 
-			$data[] = array('name' => $db->escapeString($subject), 'searchname' => $db->escapeString($cleanerName), 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => TIME(), 'guid' => $db->escapeString($relguid), 'rageID' => '-1', 'postdate' => $db->escapeString($postdate['0']), 'fromname' => $db->escapeString($postername['0']), 'size' => $db->escapeString($totalsize), 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
+			$data[] = array('name' => $db->escapeString($subject), 'searchname' => $db->escapeString($cleanerName), 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $db->escapeString($relguid), 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $db->escapeString($postername['0']), 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
 			if($nzb->copyNZBforImport($relguid, $nzbFile))
 			{
 				if ( $nzbCount % 100 == 0)
 				{
-					$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
                         echo "\nImporting #".$nzbCount." nzb's";
@@ -210,11 +239,11 @@ else
  								unlink($value);
 							}
 							unset($filenames);
-	                        echo "\nImported #".$nzbCount." nzb's in ".$seconds." seconds";
-	                        echo "\nPrepared #".$nzbCount." for import in ".$seconds." seconds\t";
+	                        echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
+	                        echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 						}
 					} else {
-						echo "\nPrepared #".$nzbCount." for import in ".$seconds." seconds\t";
+						echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 					}
 				} else {
 					echo ".";
@@ -245,7 +274,7 @@ else
 	}
 }
 $seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
-echo 'Processed '.$nzbCount.' nzbs in '.$seconds.' second(s)'."\n";
+echo "Processed ".$nzbCount." nzbs in ".relativeTime($time)."\n";
 die();
 
 ?>
