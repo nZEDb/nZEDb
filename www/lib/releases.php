@@ -1536,7 +1536,7 @@ class Releases
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
 		$stage2 = TIME();
-		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0 order by dateadded asc limit 0,500", $groupID)))
+		if($rescol = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2 and filesize = 0", $groupID)))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1607,7 +1607,7 @@ class Releases
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 order by dateadded desc limit 0,500"))
+		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{

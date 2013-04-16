@@ -15,7 +15,7 @@ class Binaries
 	function Binaries() 
 	{
 		$this->n = "\n";
-			
+
 		$s = new Sites();
 		$site = $s->get();
 		$this->compressedHeaders = ($site->compressedheaders == "1") ? true : false;	
@@ -33,7 +33,6 @@ class Binaries
 		$n = $this->n;
 		$groups = new Groups;
 		$res = $groups->getActive();
-		
 		$s = new Sites();
 
 		if ($res)
@@ -165,7 +164,7 @@ class Binaries
 			$last_record_postdate = $backfill->postdate($nntp,$last,false);
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo "Group processed in $timeGroup seconds $n $n";
+			echo str_replace('alt.binaries','a.b',$data["group"])." processed in $timeGroup seconds $n $n";
 		}
 		else
 		{

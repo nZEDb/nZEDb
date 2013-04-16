@@ -19,11 +19,11 @@ class Backfill
 		$n = $this->n;
 		$groups = new Groups;
 		$db = new DB();
-        $db->queryDirect(sprintf("SELECT ID from collections where filecheck < 2"));
+        $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
         $colcount = mysql_affected_rows();
-        if ( $colcount > 10000 )
+        if ( $colcount > 200 )
         {
-            echo "\nCollections that need to be processed has exceeded 10k, backfill exiting\n";
+            echo "\nCollections = ".$colcount.", backfill exiting\n";
 			exit();
         }
 		if ($groupName != '') {
@@ -103,11 +103,11 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			$colcount = $db->queryDirect(sprintf("SELECT ID from collections where filecheck < 2"));
+			$colcount = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
 			if ( $colcount > 10000 )
 			{
-				break;
-				echo "\nCollections that need to be processed has exceeded 10k, backfill exiting";
+				echo "\nCollections = ".$colcount.", backfill exiting\n";
+	            exit();
 			}
 
 			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue)".$n;

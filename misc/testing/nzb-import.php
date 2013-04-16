@@ -5,6 +5,7 @@ require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
+require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
 
 $db = new DB();
 $binaries = new Binaries();
@@ -17,7 +18,7 @@ $filestoprocess = Array();
 $strTerminator = "\n";
 $path = $argv[1];
 $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
-	
+
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
 
@@ -30,29 +31,32 @@ $groups = $db->query("SELECT ID, name FROM groups");
 foreach ($groups as $group)
 	$siteGroups[$group["name"]] = $group["ID"];
 
+$data = array();
+$filenames = array();;
+
 if (!isset($groups) || count($groups) == 0)
 {
-	echo "no groups specified\n";	
+	echo "no groups specified\n";
 }
 else
 {
 	$nzbCount = 0;
-	
+
 	//
 	// read from the path, if no files submitted via the browser
-	//		
+	//
 	if (count($filestoprocess) == 0)
-		$filestoprocess = glob($path."*.nzb"); 
+		$filestoprocess = glob($path."*.nzb");
 	$start=date('Y-m-d H:i:s');
-		
-	foreach($filestoprocess as $nzbFile) 
+
+	foreach($filestoprocess as $nzbFile)
 	{
 		$isBlackListed = FALSE;
 		$importfailed = false;
 		$nzb = file_get_contents($nzbFile);
-			
+
 		$xml = @simplexml_load_string($nzb);
-		if (!$xml || strtolower($xml->getName()) != 'nzb') 
+		if (!$xml || strtolower($xml->getName()) != 'nzb')
 		{
 			continue;
 		}
@@ -64,8 +68,8 @@ else
 		$postdate = [];
 		$totalFiles = 0;
 		$totalsize = 0;
-			
-		foreach($xml->file as $file) 
+
+		foreach($xml->file as $file)
 		{
 			//file info
 			$groupID = -1;
@@ -103,10 +107,10 @@ else
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
-					
+
 				// only check one binary per nzb, they should all be in the same release anyway
 				$skipCheck = true;
-				
+
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
@@ -122,10 +126,10 @@ else
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
-					
+
 				// only check one binary per nzb, they should all be in the same release anyway
 				$skipCheck = true;
-				
+
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
@@ -146,7 +150,7 @@ else
 					$groupID = $siteGroups[$group];
 				}
 				$groupArr[] = $group;
-				
+
 				if ($binaries->isBlacklisted($msg, $group))
 				{
 					$isBlackListed = TRUE;
@@ -181,47 +185,63 @@ else
 				echo $errorMessage."\n";
 				break;
 			}
-		}		
+		}
 		if (!$importfailed)
 		{
 			$relguid = md5(uniqid());
 			$nzb = new NZB();
-		
-			//if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $db->escapeString($totalsize))));
-			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+
+			$data[] = array('name' => $db->escapeString($subject), 'searchname' => $db->escapeString($cleanerName), 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => TIME(), 'guid' => $db->escapeString($relguid), 'rageID' => '-1', 'postdate' => $db->escapeString($postdate['0']), 'fromname' => $db->escapeString($postername['0']), 'size' => $db->escapeString($totalsize), 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
+			if($nzb->copyNZBforImport($relguid, $nzbFile))
 			{
-				if($nzb->copyNZBforImport($relguid, $nzbFile))
+				if ( $nzbCount % 100 == 0)
 				{
-					if ( $nzbCount % 50 == 0)
+					$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
+					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
-						$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
-						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
-						{
-							$nzbsperhour = number_format( $nzbCount / $seconds * 3600 );
-							echo "\n\033[38;5;".$color_blacklist."Averaging ".$nzbsperhour." imports per hour\n";
+                        echo "\nImporting #".$nzbCount." nzb's";
+						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array(
+						    'query_handler' => 'mysql_query'
+						)))) {
+						    trigger_error('mysqlBulk failed!', E_USER_ERROR);
 						} else {
-							echo "\nImported #".$nzbCount." in ".$seconds." seconds\t";
+							unset($data);
+							foreach ($filenames as $value) {
+ 								unlink($value);
+							}
+							unset($filename);
+	                        echo "\nImported #".$nzbCount." nzb's in ".$seconds." seconds";
+	                        echo "\nPrepared #".$nzbCount." for import in ".$seconds." seconds\t";
 						}
 					} else {
-						echo " .";
+						echo "\nPrepared #".$nzbCount." for import in ".$seconds." seconds\t";
 					}
-					/*echo "Poster: ".$postername['0']."\n";
-					echo "Added to usenet: ".$postdate['0']."\n";
-					echo "Amount of files: ".$totalFiles."\n";
-					echo "Release GUID: ".$relguid."\n";
-					echo "GroupID: ".$groupID."\n";
-					echo "Release size: ".number_format($totalsize / 1048576, 2)." MB"."\n\n";*/
-				}
-				else
-				{
-					$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\n\033[0m";
-					$importfailed = true;
+				} else {
+					echo ".";
 				}
 			}
+			else
+			{
+				$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\n\033[0m";
+				$importfailed = true;
+			}
+			$filenames[] = $nzbFile;
 			$nzbCount++;
-			@unlink($nzbFile);
 		}
+	}
+
+	if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array(
+		'query_handler' => 'mysql_query'
+	)))) {
+		trigger_error('mysqlBulk failed!', E_USER_ERROR);
+	} else {
+		unset($data);
+	    foreach ($filenames as $value) {
+    		unlink($value);
+	    }
+    	unset($filename);
+	    echo ".\n";
 	}
 }
 $seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
