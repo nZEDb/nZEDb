@@ -117,10 +117,6 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 
 	if ($searchtype !== "basic")
 	{
-		foreach($ordering as $ordertype) 
-		{
-			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search/".htmlentities($searchSearchName)."?t=".(implode(',',$searchCat))."&amp;ob=".$ordertype);
-		}
 		
 		$searchSearchName = (string) $_REQUEST["searchadvr"];
 		$searchUsenetName = (string) $_REQUEST["searchadvsubject"];
@@ -146,6 +142,10 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$page->smarty->assign('selectedcat', $searchCat);
 		$page->smarty->assign('selectedsizefrom', $searchSizeFrom);
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
+		foreach($ordering as $ordertype) 
+		{
+			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&search_type=adv"."&amp;ob=".$ordertype);
+		}
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
 		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 	}
