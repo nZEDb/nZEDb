@@ -18,8 +18,6 @@ $results = array();
 $searchtype = "basic";
 $searchStr = "";
 
-//print_r($_REQUEST);
-
 if (isset($_REQUEST["search_type"]) && $_REQUEST["search_type"] == "adv")
 	$searchtype = "advanced";
 
@@ -124,7 +122,8 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$ordertype);
 		}
 		
-		$searchReleaseName = (string) $_REQUEST["searchadvr"];
+		$searchSearchName = (string) $_REQUEST["searchadvr"];
+		$searchUsenetName = (string) $_REQUEST["searchadvsubject"];
 		$searchFileName = (string) $_REQUEST["searchadvf"];
 		$searchPoster = (string) $_REQUEST["searchadvposter"];
 		$searchGroups = (string) $_REQUEST["searchadvgroups"];
@@ -134,8 +133,13 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		
 		if (!isset($_REQUEST["searchadvcat"]))
 			$searchCat[] = -1;
-		
-		$page->smarty->assign('searchadvr', $searchReleaseName);
+		if (!isset($_REQUEST["searchadvr"]))
+			$searchCat[] = -1;
+		if (!isset($_REQUEST["searchadvsubject"]))
+			$searchCat[] = -1;
+					
+		$page->smarty->assign('searchadvr', $searchSearchName);
+		$page->smarty->assign('searchadvsubject', $searchUsenetName);
 		$page->smarty->assign('searchadvf', $searchFileName);
 		$page->smarty->assign('searchadvposter', $searchPoster);
 		$page->smarty->assign('selectedgroup', $searchGroups);
@@ -144,7 +148,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
 
-		$results = $releases->searchadv($searchReleaseName, $searchFileName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchFileName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 
 	}
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);

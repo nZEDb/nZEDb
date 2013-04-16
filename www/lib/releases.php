@@ -566,10 +566,10 @@ class Releases
 		return $db->query($sql);
 	}	
 
-	public function searchadv($search, $filename, $poster, $group, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
+	public function searchadv($searchname, $usenetname, $filename, $poster, $group, $cat=array(-1), $sizefrom, $sizeto, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
 	{	
 		$db = new DB();
-		echo $search." ;Search, ".$filename." ;File, ".$poster." ;Poster, ".$group." ;Group, ".$cat." ;cat, ".$sizefrom." ,sizefrom, ".$sizeto." ;sizeto\n";
+		echo $searchname." Search, ".$usenetname." Origname, ".$filename." File, ".$poster." Poster, ".$group." Group, ".$cat." cat, ".$sizefrom." sizefrom, ".$sizeto." sizeto\n";
 		
 		if ($cat == "-1")
 		{
@@ -584,26 +584,64 @@ class Releases
 		// if the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word
 		//
-		$words = explode(" ", $search);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
+		if ($searchname == "-1")
 		{
-			foreach ($words as $word)
+			$searchnamesql.= ("");
+		}
+		else
+		{
+			$words = explode(" ", $searchname);
+			$searchnamesql = "";
+			$intwordcount = 0;
+			if (count($words) > 0)
 			{
-				if ($word != "")
+				foreach ($words as $word)
 				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
+					if ($word != "")
+					{
+						//
+						// see if the first word had a caret, which indicates search must start with term
+						//
+						if ($intwordcount == 0 && (strpos($word, "^") === 0))
+							$searchnamesql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
+						elseif (substr($word, 0, 2) == '--')
+							$searcnamehsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
+						else
+							$searchnamesql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
 
-					$intwordcount++;
+						$intwordcount++;
+					}
+				}
+			}
+		}
+		
+		if ($usenetname == "-1")
+		{
+			$usenetnamesql.= ("");
+		}
+		else
+		{
+			$words1 = explode(" ", $usenetname);
+			$usenetnamesql = "";
+			$intwordcount1 = 0;
+			if (count($words1) > 0)
+			{
+				foreach ($words1 as $word)
+				{
+					if ($word != "")
+					{
+						//
+						// see if the first word had a caret, which indicates search must start with term
+						//
+						if ($intwordcount == 0 && (strpos($word, "^") === 0))
+							$usenetnamesql.= sprintf(" and releases.name like %s", $db->escapeString(substr($word, 1)."%"));
+						elseif (substr($word, 0, 2) == '--')
+							$usenetnamesql.= sprintf(" and releases.name not like %s", $db->escapeString("%".substr($word, 2)."%"));
+						else
+							$usenetnamesql.= sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
+
+						$intwordcount1++;
+					}
 				}
 			}
 		}
@@ -625,7 +663,8 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
+		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
+		echo $sql;
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
