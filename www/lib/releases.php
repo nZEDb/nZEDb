@@ -566,9 +566,9 @@ class Releases
 		$sql = sprintf('update releases set '.implode(', ', $updateSql).' where guid in (%s)', implode(', ', $updateGuids));
 		return $db->query($sql);
 	}	
-
+	
 	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
-	{	
+	{
 		$db = new DB();
 		$groups = new Groups();
 		
@@ -786,7 +786,7 @@ class Releases
 			$sizetosql.= (" and size < 68719476736 ");
 		}
 		
-		if ($hasnfo == "-1")
+		if ($hasnfo == "0")
 		{
 			$hasnfosql.= ("");
 		}
@@ -795,7 +795,7 @@ class Releases
 			$hasnfosql.= (" and releases.nfostatus = 1 ");
 		}
 		
-		if ($hascomments == "-1")
+		if ($hascomments == "0")
 		{
 			$hascommentssql.= ("");
 		}

@@ -57,9 +57,8 @@
 			</tr>
 			<tr>
 				<th><label for="searchadvhasnfo">NFO/Comments</label>:</th>
-				<td>
-					<input type="checkbox" name="searchadvhasnfo" value="1"/> <input type="checkbox" name="searchadvhascomments" value="1"/>
-				</td>
+				<td><input type="hidden" name="searchadvhasnfo" value="0" /> <input type="checkbox" name="searchadvhasnfo" value="1" />
+				<input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/></td>
 			</tr>
 			<tr>
 				<th></th>

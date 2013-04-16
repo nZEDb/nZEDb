@@ -121,13 +121,13 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$searchSearchName = (string) $_REQUEST["searchadvr"];
 		$searchUsenetName = (string) $_REQUEST["searchadvsubject"];
 		$searchPoster = (string) $_REQUEST["searchadvposter"];
+		$searchHasNFO = (string) $_REQUEST["searchadvdaysold"];
 		$searchGroups = (string) $_REQUEST["searchadvgroups"];
 		$searchCat = (string) $_REQUEST["searchadvcat"];
 		$searchSizeFrom = (string) $_REQUEST["searchadvsizefrom"];
 		$searchSizeTo = (string) $_REQUEST["searchadvsizeto"];
 		$searchHasNFO = (string) $_REQUEST["searchadvhasnfo"];
-		$searchHasNFO = (string) $_REQUEST["searchadvhascomments"];
-		$searchHasNFO = (string) $_REQUEST["searchadvdaysold"];
+		$searchHascomments = (string) $_REQUEST["searchadvhascomments"];
 		
 		if (!isset($_REQUEST["searchadvr"]))
 			$searchSearchName[] = -1;
@@ -135,29 +135,26 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 			$searchUsenetName[] = -1;
 		if (!isset($_REQUEST["searchadvposter"]))
 			$searchPoster[] = -1;
-		if (!isset($_REQUEST["searchadvcat"]))
-			$searchCat[] = -1;
-		if (!isset($_REQUEST["searchadvhasnfo"]))
-			$searchHasNFO = -1;
-		if (!isset($_REQUEST["searchadvhascomments"]))
-			$searchHascomments = -1;
 		if (!isset($_REQUEST["searchadvdaysold"]))
 			$searchdaysold = -1;
-					
+		if (!isset($_REQUEST["searchadvcat"]))
+			$searchCat[] = -1;
+		
 		$page->smarty->assign('searchadvr', $searchSearchName);
 		$page->smarty->assign('searchadvsubject', $searchUsenetName);
 		$page->smarty->assign('searchadvposter', $searchPoster);
+		$page->smarty->assign('searchadvdaysold', $searchdaysold);
 		$page->smarty->assign('selectedgroup', $searchGroups);
 		$page->smarty->assign('selectedcat', $searchCat);
 		$page->smarty->assign('selectedsizefrom', $searchSizeFrom);
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
 		$page->smarty->assign('searchadvhasnfo', $searchHasNFO);
 		$page->smarty->assign('searchadvhascomments', $searchHascomments);
-		$page->smarty->assign('searchadvdaysold', $searchdaysold);
 		foreach($ordering as $ordertype) 
 		{
 			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$ordertype);
 		}
+		
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
 		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 	}
