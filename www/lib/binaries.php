@@ -324,7 +324,7 @@ class Binaries
 							//Replace multiple spaces with 1 space
 							$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 							$cleanerName = trim($cleanerName);
-							$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded, filecheckdate) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now(), now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
+							$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
 							$collectionID = $db->queryInsert($csql);
 						}
 						else
@@ -338,7 +338,7 @@ class Binaries
 						$bres = $db->queryOneRow(sprintf("SELECT ID FROM binaries WHERE binaryhash = %s", $db->escapeString($binaryHash)));
 						if(!$bres)
 						{
-							$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionID, totalParts, filenumber, partcheckdate) VALUES (%s, %s, %d, %s, %s, now())", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+							$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionID, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 							$binaryID = $db->queryInsert($bsql);
 						}
 						else
