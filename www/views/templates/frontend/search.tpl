@@ -14,12 +14,6 @@
 		<label for="subject" style="display:none;">Subject</label>
 		<input id="subject" name="subject" value="{$subject|escape:'html'}" type="text"/>
 		<input id="subject_search_button" type="submit" value="Subject" /><br/>
-		<label for="tvtitle" style="display:none;">TV Title</label>
-		<input id="tvtitle" name="tvtitle" value="{$tvtitle|escape:'html'}" type="text"/>
-		<input id="tvtitle_search_button" type="submit" value="TV Title" />&nbsp;&nbsp;&nbsp;
-		<label for="poster" style="display:none;">poster</label>
-		<input id="poster" name="poster" value="{$poster|escape:'html'}" type="text"/>
-		<input id="poster_search_button" type="submit" value="Poster" />
 		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
 		<input type="hidden" name="search_type" value="basic" id="search_type" />
 	</div>
@@ -32,6 +26,10 @@
 			<tr>
 				<th><label for="searchadvr">Release Name</label>:</th>
 				<td><input id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvsubject">Usenet Name</label>:</th>
+				<td><input id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
 				<th><label for="searchadvf">Filename</label>:</th>
@@ -68,7 +66,7 @@
 	</div>
 </form>
 
-{if $results|@count == 0 && ($search || $tvtitle || $subject || $poster) != ""}
+{if $results|@count == 0 && ($search || $subject|| $searchadvr || $searchadvsubject) != ""}
 	<div class="nosearchresults">
 		Your search did not match any releases.
 		<br/><br/>
@@ -81,7 +79,7 @@
 		<li>Try fewer keywords.</li>
 		</ul>
 	</div>
-{elseif ($search || $subject || $tvtitle || $poster) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject) == ""}
 {else}
 
 {$site->adbrowse}	
