@@ -1343,7 +1343,7 @@ class Releases
 		//Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			echo "Determining any passworded releases to be deleted".$n.$n;
+			echo "Determining any passworded releases to be deleted".$n;
 			$result = $db->query("select ID from releases where passwordstatus > 0"); 		
 			foreach ($result as $row)
 			{
@@ -1361,7 +1361,7 @@ class Releases
 				$dupecount ++;
 			}
 		}
-        echo TIME() - $stage7." seconds.";
+        echo TIME() - $stage7." seconds.".$n;
 
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
