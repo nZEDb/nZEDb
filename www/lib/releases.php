@@ -567,7 +567,7 @@ class Releases
 		return $db->query($sql);
 	}	
 	
-	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
+	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat, $sizefrom, $sizeto, $hasnfo, $hascomments, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
 	{
 		$db = new DB();
 		$groups = new Groups();
@@ -694,47 +694,47 @@ class Releases
 		}
 		if ($sizefrom == "1")
 		{
-			$sizefromsql.= (" and size > 104857600 ");
+			$sizefromsql.= (" and releases.size > 104857600 ");
 		}
 		if ($sizefrom == "2")
 		{
-			$sizefromsql.= (" and size > 262144000 ");
+			$sizefromsql.= (" and releases.size > 262144000 ");
 		}
 		if ($sizefrom == "3")
 		{
-			$sizefromsql.= (" and size > 524288000 ");
+			$sizefromsql.= (" and releases.size > 524288000 ");
 		}
 		if ($sizefrom == "4")
 		{
-			$sizefromsql.= (" and size > 1073741824 ");
+			$sizefromsql.= (" and releases.size > 1073741824 ");
 		}
 		if ($sizefrom == "5")
 		{
-			$sizefromsql.= (" and size > 2147483648 ");
+			$sizefromsql.= (" and releases.size > 2147483648 ");
 		}
 		if ($sizefrom == "6")
 		{
-			$sizefromsql.= (" and size > 3221225472 ");
+			$sizefromsql.= (" and releases.size > 3221225472 ");
 		}
 		if ($sizefrom == "7")
 		{
-			$sizefromsql.= (" and size > 4294967296 ");
+			$sizefromsql.= (" and releases.size > 4294967296 ");
 		}
 		if ($sizefrom == "8")
 		{
-			$sizefromsql.= (" and size > 8589934592 ");
+			$sizefromsql.= (" and releases.size > 8589934592 ");
 		}
 		if ($sizefrom == "9")
 		{
-			$sizefromsql.= (" and size > 17179869184 ");
+			$sizefromsql.= (" and releases.size > 17179869184 ");
 		}
 		if ($sizefrom == "10")
 		{
-			$sizefromsql.= (" and size > 34359738368 ");
+			$sizefromsql.= (" and releases.size > 34359738368 ");
 		}
 		if ($sizefrom == "11")
 		{
-			$sizefromsql.= (" and size > 68719476736 ");
+			$sizefromsql.= (" and releases.size > 68719476736 ");
 		}
 		
 		if ($sizeto == "-1")
@@ -743,47 +743,47 @@ class Releases
 		}
 		if ($sizeto == "1")
 		{
-			$sizetosql.= (" and size < 104857600 ");
+			$sizetosql.= (" and releases.size < 104857600 ");
 		}
 		if ($sizeto == "2")
 		{
-			$sizetosql.= (" and size < 262144000 ");
+			$sizetosql.= (" and releases.size < 262144000 ");
 		}
 		if ($sizeto == "3")
 		{
-			$sizetosql.= (" and size < 524288000 ");
+			$sizetosql.= (" and releases.size < 524288000 ");
 		}
 		if ($sizeto == "4")
 		{
-			$sizetosql.= (" and size < 1073741824 ");
+			$sizetosql.= (" and releases.size < 1073741824 ");
 		}
 		if ($sizeto == "5")
 		{
-			$sizetosql.= (" and size < 2147483648 ");
+			$sizetosql.= (" and releases.size < 2147483648 ");
 		}
 		if ($sizeto == "6")
 		{
-			$sizetosql.= (" and size < 3221225472 ");
+			$sizetosql.= (" and releases.size < 3221225472 ");
 		}
 		if ($sizeto== "7")
 		{
-			$sizetosql.= (" and size < 4294967296 ");
+			$sizetosql.= (" and releases.size < 4294967296 ");
 		}
 		if ($sizeto == "8")
 		{
-			$sizetosql.= (" and size < 8589934592 ");
+			$sizetosql.= (" and releases.size < 8589934592 ");
 		}
 		if ($sizeto == "9")
 		{
-			$sizetosql.= (" and size < 17179869184 ");
+			$sizetosql.= (" and releases.size < 17179869184 ");
 		}
 		if ($sizeto == "10")
 		{
-			$sizetosql.= (" and size < 34359738368 ");
+			$sizetosql.= (" and releases.size < 34359738368 ");
 		}
 		if ($sizeto == "11")
 		{
-			$sizetosql.= (" and size < 68719476736 ");
+			$sizetosql.= (" and releases.size < 68719476736 ");
 		}
 		
 		if ($hasnfo == "0")

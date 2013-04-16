@@ -128,18 +128,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		$searchSizeTo = (string) $_REQUEST["searchadvsizeto"];
 		$searchHasNFO = (string) $_REQUEST["searchadvhasnfo"];
 		$searchHascomments = (string) $_REQUEST["searchadvhascomments"];
-		
-		if (!isset($_REQUEST["searchadvr"]))
-			$searchSearchName[] = -1;
-		if (!isset($_REQUEST["searchadvsubject"]))
-			$searchUsenetName[] = -1;
-		if (!isset($_REQUEST["searchadvposter"]))
-			$searchPoster[] = -1;
-		if (!isset($_REQUEST["searchadvdaysold"]))
-			$searchdaysold = -1;
-		if (!isset($_REQUEST["searchadvcat"]))
-			$searchCat[] = -1;
-		
+			
 		$page->smarty->assign('searchadvr', $searchSearchName);
 		$page->smarty->assign('searchadvsubject', $searchUsenetName);
 		$page->smarty->assign('searchadvposter', $searchPoster);
@@ -156,6 +145,16 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["sub
 		}
 		
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
+		if ($_REQUEST["searchadvr"] == "")
+			$searchSearchName = -1;
+		if ($_REQUEST["searchadvsubject"] == "")
+			$searchUsenetName = -1;
+		if ($_REQUEST["searchadvposter"] == "")
+			$searchPoster = -1;
+		if ($_REQUEST["searchadvdaysold"] == "")
+			$searchdaysold = -1;
+		if ($_REQUEST["searchadvcat"] == "")
+			$searchCat = -1;
 		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 	}
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
