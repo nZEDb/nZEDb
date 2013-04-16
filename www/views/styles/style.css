@@ -17,8 +17,11 @@ a img { border: none; }
 img.left { float: left; margin: 7px 30px 0 0; }
 img.right { float: right; margin: 7px 0 0 30px; }
 hr { display: none; }
+.searchdaysinput { width: 73.5px; }
+.searchadv { width: 160px; }
+.searchadvbtns { width: 170px; }
 input[type=text], input[type=password], textarea, select { background: #fff; background: -webkit-gradient(linear, left top, left 25, from(#fff), color-stop(4%, #f0f0f0), to(#fff)); border: 1px solid #ccc; border-bottom-color: #999; border-right-color: #999; margin: 0; padding: 4px; color: #444; font-size: 100%; outline: none; }
-.groovy { width: 20px; }
+
 
 /*
 page structure
