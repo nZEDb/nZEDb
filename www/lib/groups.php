@@ -144,9 +144,9 @@ class Groups
 		foreach ($rels as $rel)
 			$releases->delete($rel["ID"]);
 
-		$bins = $db->query(sprintf("select ID from binaries where groupID = %d", $id));
-		foreach ($bins as $bin)
-			$binaries->delete($bin["ID"]);
+		$cols = $db->query(sprintf("select ID from collections where groupID = %d", $id));
+		foreach ($cols as $col)
+			$binaries->delete($col["ID"]);
 	}		
 	
 	public function update($group)

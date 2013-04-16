@@ -640,8 +640,11 @@ class Binaries
 	public function delete($id)
 	{			
 		$db = new DB();
-		$db->query(sprintf("delete from parts where binaryID = %d", $id));
-		$db->query(sprintf("delete from binaries where ID = %d", $id));
+		$bins = $db->query(sprintf("select ID from binaries where collectionID = %d", $id));
+		foreach ($bins as $bin)
+			$db->query(sprintf("delete from parts where binaryID = %d", $bin["ID"]));
+		$db->query(sprintf("delete from binaries where collectionID = %d", $id));
+		$db->query(sprintf("delete from collections where ID = %d", $id));
 	}	
 }
 ?>

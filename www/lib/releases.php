@@ -1094,6 +1094,7 @@ class Releases
 		$passcount = 0;
 		$minsizecount = 0;
 		$minfilecount = 0;
+		$maxsizecount = 0;
 		$dupecount = 0;
 		$n = "\n";
 		
