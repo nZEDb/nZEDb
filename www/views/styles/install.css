@@ -17,7 +17,7 @@ input[type=text], input[type=password], textarea, select { background: #fff; bac
 page layout
 */
 #logo {	margin-left: 200px;	margin-top: 30px;	margin-bottom: 30px; }
-.content {	border: 1px solid #515151;	width: 600px;	padding: 30px; margin-left: auto;	margin-right: auto; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; }
+.content {	border: 1px solid #515151;	width: 35%;	padding: 30px; margin-left: auto;	margin-right: auto; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; }
 .footer {	font-size: 10px;	text-align: center; }
 
 /*

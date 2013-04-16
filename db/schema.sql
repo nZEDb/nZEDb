@@ -229,6 +229,10 @@ VALUES ('cart', 'My Cart',
 	'Your Nzb cart.', 1, 75);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('myshows', 'My Shows', 
+	'Your TV shows.', 1, 77);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('mymovies', 'My Movies', 
 	'Your Movie Wishlist.', 1, 78);
 
