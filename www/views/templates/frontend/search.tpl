@@ -38,11 +38,11 @@
 			</tr>
 			<tr>
 				<th><label for="searchadvdaysnew">Min days</label>:</th>
-				<td><input id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/></td>
+				<td><input class="groovy" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
 				<th><label for="searchadvdaysold">Max days</label>:</th>
-				<td><input id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/></td>
+				<td><input class="groovy" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
 				<th><label for="searchadvgroups">Group</label>:</th>
