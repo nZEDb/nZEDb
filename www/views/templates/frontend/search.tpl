@@ -2,11 +2,11 @@
 <h1>Search</h1>
 	
 	
-	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b><center/>
+	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b></center>
 
 	<div><center>
 		<a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
-	<center/></div><br/>
+	</center></div><br/>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
@@ -65,18 +65,18 @@
 </form>
 
 {if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom) != ""}
-	<div class="nosearchresults">
+	<center><div class="nosearchresults">
 		Your search did not match any releases.
 		<br/><br/>
 		Suggestions:
 		<br/><br/>
 		<ul>
-		<li>Make sure all words are spelled correctly.</li>
-		<li>Try different keywords.</li>
-		<li>Try more general keywords.</li>
-		<li>Try fewer keywords.</li>
+		<center><li>Make sure all words are spelled correctly.</li></center>
+		<center><li>Try different keywords.</li></center>
+		<center><li>Try more general keywords.</li></center>
+		<center><li>Try fewer keywords.</li></center>
 		</ul>
-	</div>
+	</div></center>
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom) == ""}
 {else}
 

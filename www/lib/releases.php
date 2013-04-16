@@ -728,6 +728,14 @@ class Releases
 		{
 			$sizefromsql.= (" and size > 17179869184 ");
 		}
+		if ($sizefrom == "10")
+		{
+			$sizefromsql.= (" and size > 34359738368 ");
+		}
+		if ($sizefrom == "11")
+		{
+			$sizefromsql.= (" and size > 68719476736 ");
+		}
 		
 		if ($sizeto == "-1")
 		{
@@ -768,6 +776,14 @@ class Releases
 		if ($sizeto == "9")
 		{
 			$sizetosql.= (" and size < 17179869184 ");
+		}
+		if ($sizeto == "10")
+		{
+			$sizetosql.= (" and size < 34359738368 ");
+		}
+		if ($sizeto == "11")
+		{
+			$sizetosql.= (" and size < 68719476736 ");
 		}
 		
 		if ($maxage > 0)

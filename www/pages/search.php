@@ -176,10 +176,12 @@ $sizelist = array( -1 => '--Select--',
 					3 => '500 MB',
 					4 => '1 GB',
 					5 => '2 GB', 
-					6	=> '3 GB',			
-					7	=> '4 GB',	
-					8	=> '8 GB',
-					9	=> '16 GB'
+					6 => '3 GB',			
+					7 => '4 GB',	
+					8 => '8 GB',
+					9 => '16 GB',
+					10 => '32GB',
+					11 => '64GB'
 					) ;
 
 $page->smarty->assign('sizelist', $sizelist);
