@@ -25,6 +25,16 @@ elseif (isset($_GET['action']) && $_GET['action'] == "4")
 		$group->purge($id);	
 		print "Group $id purged.";
 }
+elseif (isset($_GET['action']) && $_GET['action'] == "5")
+{
+		$group->resetall();	
+		print "All groups reset.";
+}
+elseif (isset($_GET['action']) && $_GET['action'] == "6")
+{
+		$group->purgeall();	
+		print "All groups purged.";
+}
 else
 {
 	if (isset($_GET['group_id']))

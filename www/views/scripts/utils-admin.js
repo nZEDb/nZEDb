@@ -107,10 +107,57 @@ function ajax_group_purge(id)
 		  $('#grouprow-'+id).fadeTo(2000, 0.5);
 		  $('#message').fadeOut(5000);
 	  },
-	  error: function(xhr,err,e) { alert( "Error in ajax_group_reset: " + err ); }
+	  error: function(xhr,err,e) { alert( "Error in ajax_group_purge: " + err ); }
 	});
 }
 
+/**
+ * ajax_all_reset()
+ *
+ * 
+ */
+function ajax_all_reset()
+{
+    // no caching of results
+    var rand_no = Math.random();
+	$.ajax({
+	  url       : WWW_TOP + '/admin/ajax_group-edit.php?action=5&rand=' + rand_no,
+	  data      : { group_id: id},
+	  dataType  : "html",
+	  success   : function(data)
+	  {
+		  $('div#message').html(data);
+		  $('div#message').show('fast', function() {});
+		  $('#grouprow-'+id).fadeTo(2000, 0.5);
+		  $('#message').fadeOut(5000);
+	  },
+	  error: function(xhr,err,e) { alert( "Error in ajax_all_reset: " + err ); }
+	});
+}
+
+/**
+ * ajax_all_purge()
+ *
+ * 
+ */
+function ajax_group_purge(id)
+{
+    // no caching of results
+    var rand_no = Math.random();
+	$.ajax({
+	  url       : WWW_TOP + '/admin/ajax_group-edit.php?action=6&rand=' + rand_no,
+	  data      : { group_id: id},
+	  dataType  : "html",
+	  success   : function(data)
+	  {
+		  $('div#message').html(data);
+		  $('div#message').show('fast', function() {});
+		  $('#grouprow-'+id).fadeTo(2000, 0.5);
+		  $('#message').fadeOut(5000);
+	  },
+	  error: function(xhr,err,e) { alert( "Error in ajax_all_purge: " + err ); }
+	});
+}
 
 /**
  * ajax_binaryblacklist_delete()

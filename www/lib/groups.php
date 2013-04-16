@@ -75,7 +75,31 @@ class Groups
 		
 		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s", $grpsql));		
 		return $res["num"];
-	}	
+	}
+	
+	public function getCountActive($groupname="")
+	{			
+		$db = new DB();
+		
+		$grpsql = '';
+		if ($groupname != "")
+			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		
+		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s and active = 1", $grpsql));		
+		return $res["num"];
+	}
+	
+	public function getCountInactive($groupname="")
+	{			
+		$db = new DB();
+		
+		$grpsql = '';
+		if ($groupname != "")
+			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		
+		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s and active = 0", $grpsql));		
+		return $res["num"];
+	}
 	
 	public function getRange($start, $num, $groupname="")
 	{		
@@ -97,7 +121,51 @@ class Groups
 							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
 							) rel ON rel.groupID = groups.ID WHERE 1=1 %s ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);		
-	}	
+	}
+	
+	public function getRangeActive($start, $num, $groupname="")
+	{		
+		$db = new DB();
+		
+		if ($start === false)
+			$limit = "";
+		else
+			$limit = " LIMIT ".$start.",".$num;
+		
+		$grpsql = '';
+		if ($groupname != "")
+			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+				
+		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
+							FROM groups
+							LEFT OUTER JOIN
+							(
+							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
+							) rel ON rel.groupID = groups.ID WHERE 1=1 %s and active = 1 ORDER BY groups.name ".$limit, $grpsql);
+		return $db->query($sql);		
+	}
+	
+	public function getRangeInactive($start, $num, $groupname="")
+	{		
+		$db = new DB();
+		
+		if ($start === false)
+			$limit = "";
+		else
+			$limit = " LIMIT ".$start.",".$num;
+		
+		$grpsql = '';
+		if ($groupname != "")
+			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+				
+		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
+							FROM groups
+							LEFT OUTER JOIN
+							(
+							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
+							) rel ON rel.groupID = groups.ID WHERE 1=1 %s and active = 0 ORDER BY groups.name ".$limit, $grpsql);
+		return $db->query($sql);		
+	}
 	
 	public function add($group)
 	{			
@@ -130,7 +198,13 @@ class Groups
 	{			
 		$db = new DB();
 		return $db->query(sprintf("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null where ID = %d", $id));		
-	}		
+	}
+	
+	public function resetall()
+	{			
+		$db = new DB();
+		return $db->query("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null");		
+	}
 	
 	public function purge($id)
 	{	
@@ -145,6 +219,23 @@ class Groups
 			$releases->delete($rel["ID"]);
 
 		$cols = $db->query(sprintf("select ID from collections where groupID = %d", $id));
+		foreach ($cols as $col)
+			$binaries->delete($col["ID"]);
+	}
+	
+	public function purgeall()
+	{	
+		$db = new DB();
+		$releases = new Releases();		
+		$binaries = new Binaries();
+		
+		$this->resetall();
+
+		$rels = $db->query("select ID from releases");
+		foreach ($rels as $rel)
+			$releases->delete($rel["ID"]);
+
+		$cols = $db->query("select ID from collections");
 		foreach ($cols as $col)
 			$binaries->delete($col["ID"]);
 	}		
