@@ -5,26 +5,25 @@
 		<p>
 			Below is a list of all usenet groups available to be indexed. Click 'Activate' to start indexing a group.
 		</p>
+    
+	{if $grouplist}
+    <div style="position:relative;margin-bottom:5px;">
+        <center><td class="less" id="alldel">
+            <form name="groupsearch" action="" style="margin-bottom:5px;">
+                <label for="groupname">Group</label>
+                <input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
+                &nbsp;&nbsp;
+                <input type="submit" value="Go" />
+            </form>
 
-
-    {if $grouplist}
-	
-	
-	{$pager}
-	
-	<center><td class="less" id="alldel">
-        <form name="groupsearch" action="">
-            <label for="groupname">Group</label>
-            <input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
-            &nbsp;&nbsp;
-            <input type="submit" value="Go" />
-        </form>
-		<br/ >
+        <div style="position:absolute;">
+            {$pager}
+        </div>
 		<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | <a href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a> \\// <a href="{$smarty.const.WWW_TOP}/group-list-active.php">Active Groups</a> | <a href="{$smarty.const.WWW_TOP}/group-list-inactive.php">Inactive Groups</a> | <a href="{$smarty.const.WWW_TOP}/group-list.php">All Groups</a>
-   </td><center/>
-	
-	<br/ >
-	
+
+        </td><center/>
+    </div>
+
     <div id="message">msg</div>
     <table style="width:100%;" class="data highlight">
 
@@ -60,22 +59,22 @@
         {/foreach}
 
     </table>
-    <br />
-    <center><td class="less" id="alldel">
-        <form name="groupsearch" action="">
-            <label for="groupname">Group</label>
-            <input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
-            &nbsp;&nbsp;
-            <input type="submit" value="Go" />
-        </form>
-        <br/ >
-		<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | <a href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a> \\// <a href="javascript:ajax_all_active()" class="all_active" >Active Groups</a> | <a href="javascript:ajax_all_inactive()" class="all_inactive" >Inactive Groups</a> | <a href="javascript:ajax_all_groups()" class="all_groups" >All Groups</a>
-	</td><center/>
+	<div style="position:relative;margin-top:5px;">
+	    <div style="position:absolute;">
+	  	    {$pager}
+	    </div>
 
-    <div style="float:left;">
-        {$pager}
-    </div>
-	
+	    <center><td class="less" id="alldel">
+    	    <form name="groupsearch" action="" style="margin-bottom:5px;">
+        	    <label for="groupname">Group</label>
+            	<input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
+	            &nbsp;&nbsp;
+    	        <input type="submit" value="Go" />
+        	</form>
+			<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | <a href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a> \\// <a href="javascript:ajax_all_active()" class="all_active" >Active Groups</a> | <a href="javascript:ajax_all_inactive()" class="all_inactive" >Inactive Groups</a> | <a href="javascript:ajax_all_groups()" class="all_groups" >All Groups</a>
+		</td><center/>
+	</div>
+
     {else}
     <p>No groups available (eg. none have been added).</p>
     {/if}
