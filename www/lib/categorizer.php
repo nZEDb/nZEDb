@@ -127,6 +127,7 @@ class Categorizer
 			if($this->isSportTV($releasename)){ return true; }
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
+			if($this->isAnimeTV($releasename)){ return true; }
 			$this->tmpCat = Category::CAT_TV_OTHER;
 			return true;
 		}
@@ -244,7 +245,7 @@ class Categorizer
 	
 	public function isAnimeTV($releasename)
 	{
-		if (preg_match('/placeholder/i', $releasename))
+		if (preg_match('/^\(\[AST\]\s|\[HorribleSubs\]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_ANIME;
 			return true;
@@ -342,7 +343,7 @@ class Categorizer
 
 	public function is0day($releasename)
 	{
-		if(preg_match('/[\.\-_ ](x32|x64|x86|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win2kxp2k3|keygen|regged|keymaker|winall|win32|template|Patch|GAMEGUiDE|unix|irix|solaris|freebsd|hpux|linux|windows|multilingual|software|Pro v\d{1,3})[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](32bit|64bit|x32|x64|x86|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win2kxp2k3|keygen|regged|keymaker|winall|win32|template|Patch|GAMEGUiDE|unix|irix|solaris|freebsd|hpux|linux|windows|multilingual|software|Pro v\d{1,3})[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
@@ -386,7 +387,7 @@ class Categorizer
 	//
 	public function isXxx($releasename)
 	{
-		if(preg_match('/XXX/', $releasename))
+		if(preg_match('/XXX|PORNOLATiON/', $releasename))
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
