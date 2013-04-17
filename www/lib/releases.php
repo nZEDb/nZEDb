@@ -1445,7 +1445,7 @@ class Releases
 		echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
 		$stage1 = TIME();
 		//Look if we have all the files in a collection (which have the file count in the subject).
-		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where totalFiles > 0 and filecheck = 0 limit 500"))
+		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where totalFiles > 0 and filecheck = 0 limit 200"))
 		{
 			//See if all the files are present in the binaries table.
 			while ($rowcol = mysql_fetch_assoc($rescol))
@@ -1521,13 +1521,12 @@ class Releases
 		$stage2 = TIME();
 		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 1000"))
 		{
+			$filesize = 0;
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
 				$colID = $rowcol['ID'];
 				//Update binaries size.
 				$resbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-				
-				$filesize = 0;
 				
 				while ($rowbin = mysql_fetch_assoc($resbin))
 				{
@@ -1544,8 +1543,8 @@ class Releases
 				//$resbinsize = array_shift($resbinsize);
 				//$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 				
-				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $filesize, $colID));
 			}
+			$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $filesize, $colID));
 		}
         echo TIME() - $stage2." second(s).";
 
