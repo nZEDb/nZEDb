@@ -120,7 +120,7 @@ class NZB
 		}
 
 		$nzbpath = $sitenzbpath.substr($releaseGuid, 0, 1)."/";
-
+		
 		if (!file_exists($nzbpath))
 		{
 			return false;

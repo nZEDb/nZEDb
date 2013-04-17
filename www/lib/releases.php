@@ -455,6 +455,7 @@ class Releases
 		$users = new Users();
 		$s = new Sites();
 		$nfo = new Nfo();
+		$nzb = new NZB();
 		$site = $s->get();
 		$rf = new ReleaseFiles();
 		$re = new ReleaseExtra();
@@ -469,10 +470,13 @@ class Releases
 			//
 			// delete from disk.
 			//
-			$rel = ($isGuid) ? $this->getByGuid($identifier) : $this->getById($identifier);
-
-			if ($rel && file_exists($site->nzbpath.$rel["guid"].".nzb.gz")) 
-				unlink($site->nzbpath.$rel["guid"].".nzb.gz");
+			$rel = $this->getById($identifier);
+			$nzbpath = $nzb->getNZBPath($rel["guid"]);
+			
+			if ($rel && file_exists($nzbpath))
+			{
+				unlink($nzbpath);
+			}
 			
 			$nfo->deleteReleaseNfo($rel['ID']);
 			$rc->deleteCommentsForRelease($rel['ID']);
@@ -1290,7 +1294,7 @@ class Releases
 	}
 	
 	public function getByGuid($guid)
-	{			
+	{
 		$db = new DB();
 		if (is_array($guid))
 		{
