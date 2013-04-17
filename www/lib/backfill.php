@@ -34,6 +34,7 @@ class Backfill
 			$res = $groups->getActive();
 		}
 
+		$counter = 1;
 		if ($res)
 		{
 			$nntp = new Nntp();
@@ -41,7 +42,9 @@ class Backfill
 
 			foreach($res as $groupArr)
 			{
+				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
 				$this->backfillGroup($nntp, $groupArr);
+				$counter++;
 			}
 
 			$nntp->doQuit();

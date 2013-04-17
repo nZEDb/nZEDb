@@ -34,6 +34,7 @@ class Binaries
 		$groups = new Groups;
 		$res = $groups->getActive();
 		$s = new Sites();
+		$counter = 1;
 
 		if ($res)
 		{	
@@ -46,7 +47,9 @@ class Binaries
 			foreach($res as $groupArr) 
 			{
 				$this->message = array();
+                echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
 				$this->updateGroup($nntp, $groupArr);
+				$counter++;
 			}
 			
 			$nntp->doQuit();
