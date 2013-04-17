@@ -208,18 +208,6 @@ jQuery(function($){
 		return false;
 	});
 
-	// searchraw.tpl
-	$('#searchraw_search_button').click(function(){
-		if ($('#search').val())
-			document.location=WWW_TOP + "/searchraw/" + $('#search').val();
-		return false;
-	});
-	$('#searchraw_download_selected').click(function(){
-		if ($('#dl input:checked').length)
-			$('#dl').trigger('submit');
-		return false;
-	});
-
 	// login.tpl, register.tpl, search.tpl, searchraw.tpl
 	if ($('#username').length)
 		$('#username').focus();
