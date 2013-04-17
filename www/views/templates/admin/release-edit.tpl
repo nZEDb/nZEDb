@@ -100,13 +100,6 @@
 </tr>
 
 <tr>
-	<td>Regex ID:</td>
-	<td>
-		{$release.regexID}
-	</td>
-</tr>
-
-<tr>
 	<td><label for="size">Size</label>:</td>
 	<td>
 		<input id="size" class="long" name="size" type="text" value="{$release.size}" />

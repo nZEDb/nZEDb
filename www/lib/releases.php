@@ -3,7 +3,6 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
-require_once(WWW_DIR."/lib/releaseregex.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/categorizer.php");
 require_once(WWW_DIR."/lib/nzb.php");
@@ -19,46 +18,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/groups.php");
 
 class Releases
-{	
-	//
-	// initial binary state after being added from usenet
-	const PROCSTAT_NEW = 0;
-
-	//
-	// after a binary has matched a releaseregex
-	const PROCSTAT_TITLEMATCHED = 5;
-
-	//
-	// after a binary has been confirmed as having the right number of parts
-	const PROCSTAT_READYTORELEASE = 1;
-	
-	//
-	// after a binary has has been attempted to be matched for x days and 
-	// still has the wrong number of parts
-	const PROCSTAT_WRONGPARTS = 2;
-	
-	//
-	// binary that has finished and successfully made it into a release
-	const PROCSTAT_RELEASED = 4;
-	
-	//
-	// binary that is identified as already being part of another release 
-	//(with the same name posted in a similar date range)
-	const PROCSTAT_DUPLICATE = 6;
-
-	//
-	// after a series of attempts to lookup the allfilled style reqid
-	// to get a name, its given up
-	const PROCSTAT_NOREQIDNAMELOOKUPFOUND = 7;
-
-	//
-	// the release is below the minimum size specified in site table
-	const PROCSTAT_MINRELEASESIZE = 8;
-
-	//
-	// the release is inside a category that is disabled
-	const PROCSTAT_CATDISABLED = 9;
-
+{
 	//
 	// passworded indicator
 	//
@@ -1542,7 +1502,7 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $binfiles, $colID));
 			}
 		}
-        echo TIME() - $stage1." seconds.";
+        echo TIME() - $stage1." second(s).";
 
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
@@ -1567,7 +1527,7 @@ class Releases
 				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
 			}
 		}
-        echo TIME() - $stage2." seconds.";
+        echo TIME() - $stage2." second(s).";
 
 		//Mark collections smaller/larger than site settings.
 		echo $n."\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
@@ -1613,7 +1573,7 @@ class Releases
 			}
 		}
 		echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." collections smaller/larger than group/site settings.".$n;
-        echo TIME() - $stage3." seconds.";
+        echo TIME() - $stage3." second(s).";
 
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
@@ -1636,7 +1596,7 @@ class Releases
 				}
 			}
 		}
-        echo TIME() - $stage4." seconds.";
+        echo TIME() - $stage4." second(s).";
 
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
@@ -1660,7 +1620,7 @@ class Releases
 				}
 			}
 		}
-		echo TIME() - $stage5." seconds.";
+		echo TIME() - $stage5." second(s).";
 
 		//Categorize releases.
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
@@ -1696,7 +1656,7 @@ class Releases
 		{
 			echo "Post-processing disabled.".$n;
 		}
-        echo TIME() - $stage6." seconds.";
+        echo TIME() - $stage6." second(s).";
 
 		//Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
@@ -1737,14 +1697,14 @@ class Releases
 				$dupecount ++;
 			}
 		}
-        echo TIME() - $stage7." seconds.".$n;
+        echo TIME() - $stage7." second(s).".$n;
 
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
 		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n.$n;
 		$cremain = $db->queryOneRow("select count(ID) from collections");
 		$cremain = array_shift($cremain);
-		echo "Completed adding ".$retcount." releases in ".$timeUpdate." seconds. ".$cremain." collections waiting to be created (still incomplete or in queue for creation).".$n;
+		echo "Completed adding ".$retcount." releases in ".$timeUpdate." second(s). ".$cremain." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $retcount;
 	}
 

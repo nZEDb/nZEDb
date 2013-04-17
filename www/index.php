@@ -21,7 +21,6 @@ switch($page->page) {
 	case 'browse':
 	case 'browsegroup':
 	case 'search':
-	case 'searchraw':
 	case 'apihelp':
 	case 'movies':
 	case 'movie':
