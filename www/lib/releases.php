@@ -1574,7 +1574,7 @@ class Releases
 					//update collections table to say we inserted the release.
 					while ($rowrel = mysql_fetch_assoc($resrel))
 					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $rowrel['ID'] $rowcol['ID']));
+						$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $rowrel['ID'], $rowcol['ID']));
 					}
 					$retcount ++;
 					echo "Added release ".$cleanRelName.$n;
