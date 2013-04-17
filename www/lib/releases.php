@@ -1554,6 +1554,7 @@ class Releases
 	public function processReleasesStage4()
 	{
 		$db = new DB;
+		$page = new Page();
 		$n = "\n";
                 $retcount = 0;
 
