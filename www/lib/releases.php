@@ -1662,9 +1662,12 @@ class Releases
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
-		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)))"));
-		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour))"));
-		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)"));
+                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)))"));
+                        $partscount = mysql_affected_rows();
+                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour))"));
+                        $binscount = mysql_affected_rows();
+                $db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)"));
+                        $colcount = mysql_affected_rows();
 		
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
@@ -1696,10 +1699,9 @@ class Releases
 				$dupecount ++;
 			}
 		}
+		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n;
         echo TIME() - $stage7." second(s).".$n;
         
-        $deletecount = $remcount+$passcount+$dupecount;
-        return $deletecount;
 	}
 
 	public function processReleases($categorize, $postproc)
@@ -1733,9 +1735,8 @@ class Releases
 		
 		//Print amount of added releases and time it took.
 		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
-		echo "Removed: ".$deletedCount." releases that were past retention, passworded or crossposted.".$n.$n;
 		$cremain = $db->queryOneRow("select count(ID) from collections");
-		echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate." second(s). ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
+		echo $n."Completed adding ".$releasesAdded." releases in ".$timeUpdate." second(s). ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $releasesAdded;
 	}
 
