@@ -636,7 +636,7 @@ class Categorizer
 	// 
 	public function isEBook($releasename)
 	{
-		if (preg_match('/Ebook|E?\-book|\) WW|Publishing|\[Springer\]|Service\s?Manual|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])/i', $releasename))
+		if (preg_match('/Ebook|E?\-book|\) WW|Publishing|\[Springer\]|Service\s?Manual|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])|\.(epub|mobi)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC_EBOOK;
 			return true;
@@ -650,7 +650,7 @@ class Categorizer
 	// 
 	public function isComic($releasename)
 	{
-		if (preg_match('/\.cbr|\(c2c\)|\.cbz/i', $releasename))
+		if (preg_match('/\.(cbr|cbz)|\(c2c\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC_COMICS;
 			return true;

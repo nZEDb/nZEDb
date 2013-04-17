@@ -1698,7 +1698,7 @@ class Releases
 			}
 		}
 		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n;
-        echo TIME() - $stage7." second(s).".$n;
+		echo TIME() - $stage7." second(s).".$n;
         
 	}
 
