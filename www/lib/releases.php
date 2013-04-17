@@ -1519,7 +1519,7 @@ class Releases
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
 		$stage2 = TIME();
-		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 1000"))
+		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 700"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1608,7 +1608,7 @@ class Releases
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 limit 1000"))
+		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 limit 700"))
 		{
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
@@ -1635,10 +1635,10 @@ class Releases
 
 
 
-		//Create NZB.
+		/*//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 1000"))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 700"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
@@ -1657,9 +1657,27 @@ class Releases
 				}
 			}
 		}
+		echo TIME() - $stage5." second(s).";*/
+
+
+
+		//Create NZB.
+		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+		$stage5 = TIME();
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 700"))
+		{
+			while ($rowrel = mysql_fetch_assoc($resrel))
+			{
+				$relid = $rowrel['ID'];
+				$relguid = $rowrel['guid'];
+				$cleanRelName = $rowrel['name'];
+				$catId = $rowrel['categoryID'];
+				$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
+				$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
+				$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $relID));
+			}
+		}
 		echo TIME() - $stage5." second(s).";
-
-
 
 
 
