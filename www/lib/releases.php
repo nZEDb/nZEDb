@@ -463,7 +463,7 @@ class Releases
 		
 		if (!is_array($id))
 			$id = array($id);
-				
+			
 		foreach($id as $identifier)
 		{
 			//

@@ -204,13 +204,13 @@ class Groups
 	public function reset($id)
 	{			
 		$db = new DB();
-		return $db->query(sprintf("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null where ID = %d", $id));		
+		return $db->query(sprintf("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, active = 0, last_updated=null where ID = %d", $id));		
 	}
 	
 	public function resetall()
 	{			
 		$db = new DB();
-		return $db->query("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null");		
+		return $db->query("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null, active = 0");		
 	}
 	
 	public function purge($id)
