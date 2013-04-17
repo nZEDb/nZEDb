@@ -28,16 +28,16 @@ $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
 
-function categorize() {
+function categorize() 
+{
     $db = new DB();
 	$categorizer = new Categorizer();
-    $relres = $db->queryDirect("SELECT name, ID from releases where categoryID = 7010 and relnamestatus = 0");
+    $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
     while ($relrow = mysql_fetch_assoc($relres))
     {
-    	$releaseID = $relrow['ID'];
         $relname = $relrow['name'];
-        $catID = $categorizer->Categorize($relname);
-        $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
+        $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID'];);
+        $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
     }
 }
 
@@ -243,11 +243,12 @@ else
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
                         echo "\nImporting #".$nzbCount." nzb's";
-						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array(
-						    'query_handler' => 'mysql_query'
-						)))) {
-						    trigger_error('mysqlBulk failed!', E_USER_ERROR);
-						} else {
+						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => 'mysql_query')))) 
+						{
+							trigger_error('mysqlBulk failed!', E_USER_ERROR);
+						} 
+						else
+						{
 							unset($data);
 							//foreach ($filenames as $value) {
  								//unlink($value);
@@ -257,10 +258,14 @@ else
 	                        echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
 	                        echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 						}
-					} else {
+					}
+					else 
+					{
 						echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 					}
-				} else {
+				}
+				else
+				{
 					echo ".";
 				}
 			}
@@ -275,13 +280,15 @@ else
 		}
 	}
 
-	if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array(
-		'query_handler' => 'mysql_query'
-	)))) {
+	if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => 'mysql_query'))))
+	{
 		trigger_error('mysqlBulk failed!', E_USER_ERROR);
-	} else {
+	}
+	else
+	{
 		unset($data);
-	    //foreach ($filenames as $value) {
+	    //foreach ($filenames as $value) 
+	    //{
     	//	unlink($value);
 	    //}
     	unset($filename);
