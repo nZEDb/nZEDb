@@ -281,14 +281,13 @@ else
 		trigger_error('mysqlBulk failed!', E_USER_ERROR);
 	} else {
 		unset($data);
-	    foreach ($filenames as $value) {
-    		unlink($value);
-	    }
+	    //foreach ($filenames as $value) {
+    	//	unlink($value);
+	    //}
     	unset($filename);
 	    echo ".\n";
 	}
 }
-$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
 echo "Processed ".$nzbCount." nzbs in ".relativeTime($time)."\n";
 die();
 

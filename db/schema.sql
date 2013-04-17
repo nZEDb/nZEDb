@@ -39,6 +39,7 @@ CREATE TABLE `binaries` (
 
 CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
 CREATE INDEX ix_binary_partcheck ON binaries (partcheck);
+CREATE INDEX ix_binary_collection ON binaries (collectionID);
 
 DROP TABLE IF EXISTS `releases`;
 CREATE TABLE `releases` 
