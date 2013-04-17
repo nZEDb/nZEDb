@@ -1542,9 +1542,8 @@ class Releases
 				//$resbinsize = $db->queryOneRow(sprintf("SELECT sum(partsize) from binaries where collectionID = %d", $colID));
 				//$resbinsize = array_shift($resbinsize);
 				//$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $resbinsize, $colID));
-				
+				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $filesize, $colID));
 			}
-			$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $filesize, $colID));
 		}
         echo TIME() - $stage2." second(s).";
 
