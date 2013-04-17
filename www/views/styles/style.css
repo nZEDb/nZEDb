@@ -20,8 +20,8 @@ hr { display: none; }
 .searchdaysinput { width: 73.5px; }
 .searchadv { width: 160px; }
 .searchadvbtns { width: 170px; }
+.outercheckbox { width: 23px; }
 input[type=text], input[type=password], textarea, select { background: #fff; background: -webkit-gradient(linear, left top, left 25, from(#fff), color-stop(4%, #f0f0f0), to(#fff)); border: 1px solid #ccc; border-bottom-color: #999; border-right-color: #999; margin: 0; padding: 4px; color: #444; font-size: 100%; outline: none; }
-
 
 /*
 page structure
@@ -251,6 +251,12 @@ div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor
 
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 table.data td.icons div.icon { opacity:.20; }
+.browseicons { width: 41px; opacity:.70; }
+.browsestats { width: 50px; text-align:right; font-size:0.9em; }
+.browsefiles { width: 35px; text-align:right; font-size:0.9em; }
+.browsesize { width: 57px; text-align:right; font-size:0.9em; }
+.browseposted { width: 43px; text-align:right; font-size:0.9em; }
+.browsecategory { width: 70px; text-align:right; font-size:0.9em; }
 div.icon_cart			{ background-image:url('../images/icons/cartup.png'); }
 div.icon_cart_clicked	{ background-image:url('../images/icons/cartdown.png'); }
 div.icon_nzb			{ background-image:url('../images/icons/nzbup.png'); }
