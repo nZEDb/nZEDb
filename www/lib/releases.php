@@ -1638,7 +1638,7 @@ class Releases
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0"))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 1000"))
 		{
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
