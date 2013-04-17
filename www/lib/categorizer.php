@@ -78,6 +78,10 @@ class Categorizer
 		return Category::CAT_MISC;
 	}
 	
+	//
+	// Beginning of functions to determine category by release name
+	//
+	
 	public function byGroup($releasename, $groupID)
 	{
 		$groups = new groups();
@@ -87,29 +91,28 @@ class Categorizer
 		{
 			if (preg_match('/alt\.binaries\.0day\.stuffz/', $groupRes["name"]))
 			{
-				if($this->isPC($releasename)){ return $this->tmpCat; }
 				if($this->isEBook($releasename)){ return $this->tmpCat; }
+				if($this->isPC($releasename)){ return $this->tmpCat; }
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
-				return Category::CAT_PARENT_PC;
+				$this->tmpCat = Category::CAT_PARENT_PC;
+				return true;
 			}
 			
 			if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
-				return Category::CAT_TV_ANIME;
+				$this->tmpCat = Category::CAT_TV_ANIME;
+				return true;
 			}
 			
 			if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
-				return Category::CAT_MUSIC_LOSSLESS;
+				$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+				return true;
 			}
 		}
 	}
-	
-	//
-	// Beginning of functions to determine category by release name
-	//
 
 	//
 	// TV
@@ -202,7 +205,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Vostfr|xslidian[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -312,13 +315,11 @@ class Categorizer
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
 		}
-		if(preg_match('/NLSubs|NL\-Subs|NLSub|\d{4} German|Deutsch| der /i', $releasename))
+		if(preg_match('/ der |Deutsch|\d{4} German|\(German\)|NLSubs|NL\-Subs|NLSub/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
-		}   
-		
-		/*if(preg_match('/[\.\-_ ](TRUEFRENCH|VOSTFR)[\.\-_ ]/i', $releasename))*/    
+		} 
 		
 		return false;
 	}
@@ -351,10 +352,13 @@ class Categorizer
 	//
 	public function isPC($releasename)
 	{
-		if($this->isPhone($releasename)){ return true; }
-		if($this->isMac($releasename)){ return true; }
-		if($this->isPCGame($releasename)){ return true; }
-		if($this->is0day($releasename)){ return true; }
+		if(!preg_match('/PDTV|x264/i', $releasename))
+		{
+			if($this->isPhone($releasename)){ return true; }
+			if($this->isMac($releasename)){ return true; }
+			if($this->isPCGame($releasename)){ return true; }
+			if($this->is0day($releasename)){ return true; }
+		}
 		
 		return false;
 	}
@@ -381,7 +385,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
 		}
-		else if (preg_match('/\-SUNiSO|Adobe|CYGNUS|GERMAN\-|v\d{1,3}.*?Pro|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|DIGERATI|\-UNION/i', $releasename))
+		else if (preg_match('/\-SUNiSO|Adobe|CYGNUS|GERMAN\-|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|DIGERATI|\-UNION/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
@@ -401,7 +405,7 @@ class Categorizer
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/FASDOX|games|v\d{1,3}.*?\-TE|PC GAME|RIP\-unleashed|Razor1911/i', $releasename))
+		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
