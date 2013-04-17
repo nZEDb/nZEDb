@@ -1505,6 +1505,7 @@ class Releases
 		$minsizecount = 0;
 		$maxsizecount = 0;
 		$minfilesize = 0;
+		$minfilecount = 0;
 		
 		//Mark collections smaller/larger than site settings.
 		echo $n."\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
@@ -1554,7 +1555,8 @@ class Releases
 	{
 		$db = new DB;
 		$n = "\n";
-		
+                $retcount = 0;
+
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
@@ -1651,7 +1653,7 @@ class Releases
 		$n = "\n";
 		$remcount = 0;
 		$passcount = 0;
-		$dupecoubt = 0;
+                $dupecount = 0;
 		
 		
 		//Delete old releases and finished collections.
