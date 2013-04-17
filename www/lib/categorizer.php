@@ -94,7 +94,14 @@ class Categorizer
 				if($this->isEBook($releasename)){ return $this->tmpCat; }
 				if($this->isPC($releasename)){ return $this->tmpCat; }
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
-				$this->tmpCat = Category::CAT_PARENT_PC;
+				$this->tmpCat = Category::CAT_PC_0DAY;
+				return $this->tmpCat;
+			}
+			
+			if (preg_match('/alt\.binaries\.audio\.warez/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat = Category::CAT_PC_0DAY;
 				return true;
 			}
 			
