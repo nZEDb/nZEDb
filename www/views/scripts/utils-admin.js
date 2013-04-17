@@ -122,9 +122,9 @@ function ajax_all_reset()
     var rand_no = Math.random();
 	$.ajax({
 	  url       : WWW_TOP + '/admin/ajax_group-edit.php?action=5&rand=' + rand_no,
-	  data      : "All groups reset.",
+	  data      :  "All groups reset.",
 	  dataType  : "html",
-	  success   : function()
+	  success   : function(data)
 	  {
 		  $('div#message').html(data);
 		  $('div#message').show('fast', function() {});
@@ -146,9 +146,9 @@ function ajax_all_purge()
     var rand_no = Math.random();
 	$.ajax({
 	  url       : WWW_TOP + '/admin/ajax_group-edit.php?action=6&rand=' + rand_no,
-	  data      : "All groups purged.",
+	  data      : "All groups purged",
 	  dataType  : "html",
-	  success   : function()
+	  success   : function(data)
 	  {
 		  $('div#message').html(data);
 		  $('div#message').show('fast', function() {});
