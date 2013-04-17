@@ -3,7 +3,6 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
-require_once(WWW_DIR."/lib/releaseregex.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/categorizer.php");
 require_once(WWW_DIR."/lib/nzb.php");

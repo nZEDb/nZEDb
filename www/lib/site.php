@@ -92,12 +92,6 @@ class Sites
 		return $obj;
 	}
 	
-	public function updateLatestRegexRevision($rev)
-	{
-		$db = new DB();
-		return $db->query(sprintf("update site set value = %d where setting = 'latestregexrevision'", $rev));
-	}
-	
 	public function getLicense($html=false)
 	{
 		$n = "\r\n";
