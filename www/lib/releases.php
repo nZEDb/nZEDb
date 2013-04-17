@@ -1674,7 +1674,7 @@ class Releases
 				$catId = $rowrel['categoryID'];
 				$nzb->writeNZBforReleaseId($relid, $relguid, $cleanRelName, $catId, $nzb->getNZBPath($relguid, $page->site->nzbpath, true));
 				$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $relid));
-				$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $relID));
+				$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $relid));
 			}
 		}
 		echo TIME() - $stage5." second(s).";
