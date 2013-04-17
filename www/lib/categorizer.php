@@ -1,6 +1,7 @@
 <?php
 
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/groups.php");
 
 class Categorizer
 {
@@ -52,17 +53,19 @@ class Categorizer
 	const STATUS_DISABLED = 2;
 
 	private $tmpCat = 0;
-
+	
 	//
 	// Work out which category is applicable for either a group or a binary.
 	// returns -1 if no category is appropriate from the group name.
 	//
-	function Categorize($releasename = "")
+	public function Categorize($releasename = "", $groupID)
 	{     
 		//                       
 		//Try against all functions, if still nothing, return Cat Misc.
 		//
-		if($this->isPC($releasename)){ return $this->tmpCat; }                            
+		
+		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
+		if($this->isPC($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
 		if($this->isXXX($releasename)){ return $this->tmpCat; }
@@ -70,16 +73,46 @@ class Categorizer
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isEBook($releasename)){ return $this->tmpCat; }
 		if($this->isComic($releasename)){ return $this->tmpCat; }
+		if($this->isHashed($releasename)){ return $this->tmpCat; }
 		
 		return Category::CAT_MISC;
 	}
-
+	
+	public function byGroup($releasename, $groupID)
+	{
+		$groups = new groups();
+		$groupRes = $groups->getByID($groupID);
+		
+		foreach ($groupRes as $groupRows)
+		{
+			if (preg_match('/alt\.binaries\.0day\.stuffz/', $groupRes["name"]))
+			{
+				if($this->isPC($releasename)){ return $this->tmpCat; }
+				if($this->isEBook($releasename)){ return $this->tmpCat; }
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				return Category::CAT_PARENT_PC;
+			}
+			
+			if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				return Category::CAT_TV_ANIME;
+			}
+			
+			if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				return Category::CAT_MUSIC_LOSSLESS;
+			}
+		}
+	}
+	
 	//
 	// Beginning of functions to determine category by release name
 	//
 
 	//
-	//   TV
+	// TV
 	//
 	public function isTV2($releasename, $assumeTV=TRUE)
 	{
@@ -654,6 +687,20 @@ class Categorizer
 		if (preg_match('/\.(cbr|cbz)|\(c2c\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC_COMICS;
+			return true;
+		}
+
+		return false;
+	}
+	
+	//
+	// Hashed - all hashed go in other misc.
+	//
+	public function isHashed($releasename)
+	{
+		if (preg_match('/[a-z0-9]{25,}/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MISC;
 			return true;
 		}
 

@@ -1618,10 +1618,10 @@ class Releases
 		$stage6 = TIME();
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect("SELECT ID, name from releases where relnamestatus = 0");
+			$resrel = $db->queryDirect("SELECT ID, name, groupID from releases where relnamestatus = 0");
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
-				$catId = $categorizer->Categorize($rowrel["name"]);
+				$catId = $categorizer->Categorize($rowrel["name"], $rowrel["groupID"]);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $rowrel['ID']));
 			}
 		}

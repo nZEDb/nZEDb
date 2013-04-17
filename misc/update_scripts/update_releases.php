@@ -47,13 +47,11 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relcount = 0;
 		echo "Categorizing all reseted using modified categorizer. This can take a while, be patient.\n";
 		
-		$relres = $db->queryDirect("SELECT name, ID from releases where categoryID = 7010 and relnamestatus = 0");
+		$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
 		while ($relrow = mysql_fetch_assoc($relres))
 		{
-			$releaseID = $relrow['ID'];
-			$relname = $relrow['name'];
-			$catID = $categorizer->Categorize($relname);
-			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
+			$catID = $categorizer->Categorize($relrow['name'], $relrow['groupID']);
+			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
 			$relcount ++;
 		} 
 		echo "Finished categorizing ".$relcount." releases.\n";	
@@ -69,11 +67,9 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relres = $db->queryDirect("SELECT searchname, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
 		while ($relrow = mysql_fetch_assoc($relres))
 		{
-			$releaseID = $relrow['ID'];
-			$groupID = $relrow['groupID'];
-			$groupName = $groups->getByNameByID($groupID);
+			$groupName = $groups->getByNameByID($relrow['groupID']);
 			$catID = $cat->determineCategory($groupName, $relrow["searchname"]);
-			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $releaseID));
+			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
 			$relcount ++;
 		} 
 		echo "Finished categorizing ".$relcount." releases.\n";	
