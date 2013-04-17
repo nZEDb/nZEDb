@@ -1521,13 +1521,12 @@ class Releases
 		$stage2 = TIME();
 		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 1000"))
 		{
-			$filesize = 0;
 			while ($rowcol = mysql_fetch_assoc($rescol))
 			{
 				$colID = $rowcol['ID'];
 				//Update binaries size.
 				$resbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $colID));
-				
+				$filesize = 0;
 				while ($rowbin = mysql_fetch_assoc($resbin))
 				{
 					$binID = $rowbin['ID'];
