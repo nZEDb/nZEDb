@@ -206,7 +206,7 @@ class Category
 	
 	public function byGroup($releasename, $groupID)
 	{
-		$groups = new groups();
+		$groups = new Groups();
 		$groupRes = $groups->getByID($groupID);
 		
 		foreach ($groupRes as $groupRows)
