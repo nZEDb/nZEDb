@@ -220,35 +220,52 @@ else
 		{
 			$relguid = md5(uniqid());
 			$nzb = new NZB();
-		
-			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+
+			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
+			if($nzb->copyNZBforImport($relguid, $nzbFile))
 			{
-				if($nzb->copyNZBforImport($relguid, $nzbFile))
+				if ( $nzbCount % 100 == 0)
 				{
-					if ( $nzbCount % 100 == 0)
+					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
-						$seconds = TIME() - $time;
-						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
+						if (false === (mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 						{
+							trigger_error('mysqlBulk failed!', E_USER_ERROR);
+						} 
+						else
+						{
+							unset($data);
+							//foreach ($filenames as $value) {
+ 								//unlink($value);
+							//}
+							//unset($filenames);
+							categorize();
+							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
+							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
+							$seconds = TIME() - $time;
 							$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
 							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour\033[0m".$n;
-						} else {
-							categorize();
-							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
 						}
-					} else {
-						echo ".";
+					}
+					else 
+					{
+						echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 					}
 				}
 				else
 				{
-					$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m".$n;
-					$importfailed = true;
+					if ( $nzbCount % 2 == 0)
+						echo ".";
 				}
-				$nzbCount++;
-				///@unlink($nzbFile);
 			}
+			else
+			{
+				$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m".$n;
+				$importfailed = true;
+			}
+			//$filenames[] = $nzbFile;
+			$nzbCount++;
 		}
 	}
 }

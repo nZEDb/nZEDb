@@ -10,9 +10,10 @@ foreach($tables as $row)
     {
 	$tbl = $row['Tables_in_'.DB_NAME];
 	printf("Converting $tbl\n");
-        $sql = "ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC";
+        $sql = "ALTER TABLE $tbl ENGINE=MYISAM";
         $db->query($sql);
     }
 
 
 ?>
+
