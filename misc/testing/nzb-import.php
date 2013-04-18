@@ -14,10 +14,10 @@ $binaries = new Binaries();
 $page = new Page;
 
 if (!isset($argv[1]))
-	exit("ERROR: You must supply a path as the first argument.\n");
+	exit("ERROR: You must supply a path as the first argument.".$n);
 
 $filestoprocess = Array();
-$strTerminator = "\n";
+$n = "\n";
 $path = $argv[1];
 $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 
@@ -79,32 +79,28 @@ $filenames = array();;
 
 if (!isset($groups) || count($groups) == 0)
 {
-	echo "no groups specified\n";
+	echo "no groups specified".$n;
 }
 else
 {
 	$nzbCount = 0;
+	$time = TIME();
 
 	//
 	// read from the path, if no files submitted via the browser
 	//
-	if (count($filestoprocess) == 0)
-		$filestoprocess = glob($path."*.nzb");
-
-	$time = TIME();
-
-	foreach($filestoprocess as $nzbFile)
+	//if (count($filestoprocess) == 0)
+		//$filestoprocess = glob($path."*.nzb");
+	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+	foreach($objects as $filestoprocess => $nzbfile)
 	{
-		$isBlackListed = FALSE;
-		$importfailed = false;
-		$nzb = file_get_contents($nzbFile);
-
-		$xml = @simplexml_load_string($nzb);
-		if (!$xml || strtolower($xml->getName()) != 'nzb')
+		if(!$nzbfile->getExtension() == "nzb")
 		{
 			continue;
 		}
 
+		$isBlackListed = FALSE;
+		$importfailed = false;
 		$skipCheck = false;
 		$i=0;
 		$firstname = [];
@@ -113,6 +109,9 @@ else
 		$totalFiles = 0;
 		$totalsize = 0;
 
+		$nzb = file_get_contents($filestoprocess);
+		$xml = @simplexml_load_string($nzb);
+		
 		foreach($xml->file as $file)
 		{
 			//file info
@@ -146,7 +145,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
 					flush();
 					$importfailed = true;
 					break;
@@ -165,8 +164,8 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo "\n\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					unlink($nzbFile);
+					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
+					//unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -207,14 +206,14 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = "\n\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m";
+					$errorMessage = $n."\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m";
 				}
 				else
 				{
-					$errorMessage = "\n\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
+					$errorMessage = $n."\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m";
 				}
 				$importfailed = true;
-				echo $errorMessage."\n";
+				echo $errorMessage."".$n;
 				break;
 			}
 		}
@@ -230,7 +229,7 @@ else
 				{
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
-						echo "\nImporting #".$nzbCount." nzb's";
+						echo $n."Importing #".$nzbCount." nzb's";
 						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 						{
 							trigger_error('mysqlBulk failed!', E_USER_ERROR);
@@ -243,13 +242,13 @@ else
 							//}
 							unset($filenames);
 							categorize();
-							echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
-							echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
+							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
+							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 						}
 					}
 					else 
 					{
-						echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
+						echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 					}
 				}
 				else
@@ -280,10 +279,10 @@ else
 		//	unlink($value);
 		//}
 		unset($filename);
-		echo ".\n";
+		echo ".".$n;
 	}
 }
-echo "Processed ".$nzbCount." nzbs in ".relativeTime($time)."\n";
+echo "Processed ".$nzbCount." nzbs in ".relativeTime($time).$n;
 die();
 
 ?>
