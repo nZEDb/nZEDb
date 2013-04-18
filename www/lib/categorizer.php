@@ -18,6 +18,8 @@ class Categorizer
 	const CAT_MOVIE_OTHER = 2020;
 	const CAT_MOVIE_SD = 2030;
 	const CAT_MOVIE_HD = 2040;
+	const CAT_MOVIE_3D = 2050;
+	const CAT_MOVIE_BLURAY = 2060;
 	const CAT_MUSIC_MP3 = 3010;
 	const CAT_MUSIC_VIDEO = 3020;
 	const CAT_MUSIC_AUDIOBOOK = 3030;
@@ -298,6 +300,7 @@ class Categorizer
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
+			if($this->isMovieBluRay($releasename)){ return true; }
 			if($this->isMovieHD($releasename)){ return true; }
 		}
 		
@@ -329,10 +332,21 @@ class Categorizer
 		
 		return false;
 	}
-
+	
+	public function isMovieBluRay($releasename)
+	{
+		if(preg_match('/bluray\-|bd?25|bd?50|blu-ray/i', $releasename))
+		{
+			$this->tmpCat = Categorizer::CAT_MOVIE_BLURAY;
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/x264|bluray\-|wmvhd|web\-dl|bd?25|bd?50|blu-ray|VC1|VC\-1|AVC|XvidHD/i', $releasename))
+		if(preg_match('/x264|wmvhd|web\-dl|VC1|VC\-1|AVC|XvidHD/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_MOVIE_HD;
 			return true;
@@ -433,7 +447,17 @@ class Categorizer
 	//
 	public function isXxx($releasename)
 	{
-		if(preg_match('/XXX|PORNOLATiON/', $releasename))
+		if(preg_match('/[\.\-_ ](XXX|PORNOLATiON)/', $releasename))
+		{
+			if($this->isXxx264($releasename)){ return true; }
+			if($this->isXxxXvid($releasename)){ return true; }
+			if($this->isXxxWMV($releasename)){ return true; }
+			if($this->isXxxDVD($releasename)){ return true; }
+			if($this->isXxxOther($releasename)){ return true; }
+			$this->tmpCat = Categorizer::CAT_XXX_OTHER;
+			return true;
+		}
+		else if(preg_match('/Imageset|Lesbian|Squirt|Transsexual/i', $releasename))
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
@@ -445,33 +469,33 @@ class Categorizer
 		}
 		return false;
 	}
-
+	
 	public function isXxx264($releasename)
 	{
-		if (preg_match('/x264/i', $releasename))
+		if (preg_match('/720p|1080p|x264/i', $releasename) && !preg_match('/wmv/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_XXX_X264;
 			return true;
 		}
 		return false;
 	}
-
-	public function isXxxXvid($releasename)
+	
+	public function isXxxWMV($releasename)
 	{
-		if (preg_match('/xvid|dvdrip|bdrip|brrip|pornolation|swe6|nympho|detoxication|tesoro/i', $releasename))
+		if (preg_match('/wmv|pack\-|mp4|f4v|flv|mov|mpeg|isom|realmedia|multiformat|(e\d{2,})|(\d{2}\.\d{2}\.\d{2})|uhq|(issue\.\d{2,})/i', $releasename))
 		{
-			$this->tmpCat = Categorizer::CAT_XXX_XVID;
+			$this->tmpCat = Categorizer::CAT_XXX_WMV;
 			return true;
 		}
 		
 		return false;
 	}
 
-	public function isXxxWMV($releasename)
+	public function isXxxXvid($releasename)
 	{
-		if (preg_match('/wmv|pack\-|mp4|f4v|flv|mov|mpeg|isom|realmedia|multiformat|(e\d{2,})|(\d{2}\.\d{2}\.\d{2})|uhq|(issue\.\d{2,})/i', $releasename))
+		if (preg_match('/dvdrip|bdrip|brrip|detoxication|divx|nympho|pornolation|swe6|tesoro|xvid/i', $releasename))
 		{
-			$this->tmpCat = Categorizer::CAT_XXX_WMV;
+			$this->tmpCat = Categorizer::CAT_XXX_XVID;
 			return true;
 		}
 		
@@ -490,7 +514,7 @@ class Categorizer
 	}
 	public function isXxxOther($releasename)
 	{
-		if (preg_match('/Transsexual/i', $releasename))
+		if (preg_match('/Imageset|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_XXX_OTHER;
 			return true;
