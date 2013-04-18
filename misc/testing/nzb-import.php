@@ -23,7 +23,7 @@ $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
-
+	
 $color_skipped = 190;
 $color_blacklist = 11;
 $color_group = 1;
@@ -31,14 +31,14 @@ $color_write_error = 9;
 
 function categorize() 
 {
-    $db = new DB();
-	$categorizer = new Category();
-    $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
-    while ($relrow = $db->fetchAssoc($relres))
-    {
-        $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID']);
-        $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
-    }
+	$db = new DB();
+	$cat = new Category();
+	$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+	while ($relrow = $db->fetchAssoc($relres))
+	{
+		$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
+		$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
+	}
 }
 
 function relativeTime($_time) {
@@ -230,7 +230,7 @@ else
 				{
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
-                        echo "\nImporting #".$nzbCount." nzb's";
+						echo "\nImporting #".$nzbCount." nzb's";
 						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 						{
 							trigger_error('mysqlBulk failed!', E_USER_ERROR);
@@ -243,8 +243,8 @@ else
 							//}
 							unset($filenames);
 							categorize();
-	                        echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
-	                        echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
+							echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
+							echo "\nPrepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 						}
 					}
 					else 
@@ -275,12 +275,12 @@ else
 	else
 	{
 		unset($data);
-	    //foreach ($filenames as $value) 
-	    //{
-    	//	unlink($value);
-	    //}
-    	unset($filename);
-	    echo ".\n";
+		//foreach ($filenames as $value) 
+		//{
+		//	unlink($value);
+		//}
+		unset($filename);
+		echo ".\n";
 	}
 }
 echo "Processed ".$nzbCount." nzbs in ".relativeTime($time)."\n";
