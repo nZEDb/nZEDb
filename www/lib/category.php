@@ -548,7 +548,7 @@ class Category
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename))
+		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[\.\-_ ]PSP/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
@@ -673,7 +673,7 @@ class Category
 
 	public function isGameNDS($releasename)
 	{
-		if (preg_match('/NDS|\.nds|nintendo.+3ds/', $releasename))
+		if (preg_match('/NDS|nds|nintendo.+3ds/', $releasename))
 		{
 			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
 			{
@@ -706,18 +706,17 @@ class Category
 	{
 		if (preg_match('/PSP/i', $releasename))
 		{
-			if (preg_match('/BAHAMUT|Caravan|EBOOT|EMiNENT|EUR?|GAME|Googlecus|\-HR|JPN|KOR|NTSC|PAL/i', $releasename))
+			if (preg_match('/[\.\-_ ](BAHAMUT|Caravan|EBOOT|EMiNENT|EUR?|EvoX|GAME|GHS|Googlecus|HandHeld|\-HR|JAP|JPN|KLOTEKLAPPERS|KOR|NTSC|PAL)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
-			if (preg_match('/LIGHTFORCE|MiRiBS|(PLAY)?ASiA|PSN|SUXXORS|UMD(RIP)?|USA?/i', $releasename))
+			if (preg_match('/[\.\-_ ](Dynarox|HAZARD|ITALIAN|KLB|KuDoS|LIGHTFORCE|MiRiBS|POPSTATiON|(PLAY)?ASiA|PSN|SPANiSH|SUXXORS|UMD(RIP)?|USA?|YARR)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
 		}
-		return false;
 	}
 
 	public function isGameWiiWare($releasename)
