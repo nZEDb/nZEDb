@@ -412,9 +412,9 @@ class Category
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
+			if($this->isMovie3D($releasename)){ return true; }
 			if($this->isMovieBluRay($releasename)){ return true; }
 			if($this->isMovieHD($releasename)){ return true; }
-			//if($this->isMovie3D($releasename)){ return true; }
 		}
 		
 		return false;
@@ -441,6 +441,17 @@ class Category
 		return false;
 	}
 	
+	public function isMovie3D($releasename)
+	{
+		if(preg_match('/[\.\-_ ]3D\s\[?Bluray\s|[\.\-_ ]3D[\.\-_ ]Blu[\.\-_ ]?ray[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_3D;
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function isMovieBluRay($releasename)
 	{
 		if(preg_match('/bluray\-|bd?25|bd?50|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
@@ -457,16 +468,6 @@ class Category
 		if(preg_match('/x264|wmvhd|web\-dl|VC1|VC\-1|AVC|XvidHD/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
-			return true;
-		}
-		
-		return false;
-	}
-	public function isMovie3D($releasename)
-	{
-		if(preg_match('//i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_MOVIE_3D;
 			return true;
 		}
 		
