@@ -32,7 +32,7 @@ class NZB
 			gzwrite($fp, "</head>\n\n"); 
 	
 			$result = $db->queryDirect(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
-			while ($binrow = mysql_fetch_assoc($result)) 
+			while ($binrow = $db->fetchAssoc($result)) 
 			{				
 				$groups = array();
 				$groupsRaw = explode(' ', $binrow['xref']);
@@ -44,7 +44,7 @@ class NZB
 					$groups[] = $binrow["groupname"];
 				
 				$result2 = $db->queryDirect(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d", $binrow["ID"]));
-				while ($binrow2 = mysql_fetch_assoc($result2))
+				while ($binrow2 = $db->fetchAssoc($result2))
 				{
 					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$binrow["unixdate"]."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalParts"].")\">\n"); 
 					gzwrite($fp, " <groups>\n"); 
@@ -54,7 +54,7 @@ class NZB
 					gzwrite($fp, " <segments>\n"); 
 					
 					$resparts = $db->queryDirect(sprintf("SELECT DISTINCT(messageID), size, partnumber FROM parts WHERE binaryID = %d ORDER BY partnumber", $binrow2["ID"]));
-					while ($partsrow = mysql_fetch_assoc($resparts)) 
+					while ($partsrow = $db->fetchAssoc($resparts)) 
 					{				
 						gzwrite($fp, "  <segment bytes=\"".$partsrow["size"]."\" number=\"".$partsrow["partnumber"]."\">".htmlspecialchars($partsrow["messageID"], ENT_QUOTES, 'utf-8')."</segment>\n"); 
 					}

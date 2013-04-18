@@ -412,7 +412,7 @@ class Binaries
 				$sql = sprintf("SELECT pr.ID, pr.numberID, p.number from partrepair pr LEFT JOIN parts p ON p.number = pr.numberID WHERE pr.groupID=%d AND pr.numberID IN (%s) ORDER BY pr.numberID ASC", $groupArr['ID'], $articles);
 				
 				$result = $db->queryDirect($sql);
-				while ($r = mysql_fetch_assoc($result)) 
+				while ($r = $db->fetchAssoc($result)) 
 				{
 					if (isset($r['number']) && $r['number'] == $r['numberID'])
 					{

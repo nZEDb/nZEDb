@@ -1416,7 +1416,7 @@ class Releases
 		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where totalFiles > 0 and filecheck = 0 limit 200"))
 		{
 			//See if all the files are present in the binaries table.
-			while ($rowcol = mysql_fetch_assoc($rescol))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$binFileCnt = array_shift($db->queryOneRow(sprintf("SELECT count(*) from binaries where collectionID = %d", $rowcol['ID'])));
 				if($binFileCnt >= $rowcol['totalFiles'])
@@ -1429,11 +1429,11 @@ class Releases
 		//Check if we have all parts for a file. Set partcheck to 1.
 		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where filecheck = 1"))
 		{
-			while ($rowcol = mysql_fetch_assoc($rescol))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and partcheck = 0", $rowcol['ID'])))
 				{
-					while ($rowbins = mysql_fetch_assoc($resbin))
+					while ($rowbins = $db->fetchAssoc($resbin))
 					{
 						$partCnt = $db->queryOneRow(sprintf("SELECT count(*) from parts where binaryID = %d", $rowbins['ID']));
 						
@@ -1458,7 +1458,7 @@ class Releases
 		//If a collection has not been updated in 2 hours, set filecheck to 2.
 		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) and filecheck != 2 limit 500"))
 		{
-			while ($rowcol = mysql_fetch_assoc($rescol))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				//get the filecount
 				$binfiles = $db->queryOneRow(sprintf("SELECT count(*) as binfiles from binaries where collectionID = %d", $rowcol['ID']));
@@ -1480,12 +1480,12 @@ class Releases
 		$stage2 = TIME();
 		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 700"))
 		{
-			while ($rowcol = mysql_fetch_assoc($rescol))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				//Update file size.
 				$filesize = 0;
 				$resbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $rowcol['ID']));
-				while ($rowbin = mysql_fetch_assoc($resbin))
+				while ($rowbin = $db->fetchAssoc($resbin))
 				{
 					$filesize = $filesize+array_shift($db->queryOneRow(sprintf("SELECT sum(size) from parts where binaryID = %d", $rowbin['ID'])));
 				}
@@ -1518,7 +1518,7 @@ class Releases
 				if ($minfilesizeres["minsizetoformrelease"] != 0)
 				{
 					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and filesize < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
-					while ($rowcol = mysql_fetch_assoc($rescol))
+					while ($rowcol = $db->fetchAssoc($rescol))
 					{
 						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $rowcol['ID']));
 						$minsizecount ++;
@@ -1528,7 +1528,7 @@ class Releases
 				if ($maxfilesizeres["value"] != 0)
 				{
 					$rescol = $db->queryDirect(sprintf("SELECT ID from collections filecheck = 2 and filesize > %d", $groupID, $minfilesizeres["value"]));
-					while ($rowcol = mysql_fetch_assoc($rescol))
+					while ($rowcol = $db->fetchAssoc($rescol))
 					{
 						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d",$rowcol['ID']));
 						$maxsizecount ++;
@@ -1538,7 +1538,7 @@ class Releases
 				if ($minfilesres["minfilestoformrelease"] != 0)
 				{
 					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and totalFiles < %d", $groupID, $minfilesres["minfilestoformrelease"]));
-					while ($rowcol = mysql_fetch_assoc($rescol))
+					while ($rowcol = $db->fetchAssoc($rescol))
 					{
 						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $rowcol['ID']));
 						$minfilecount ++;
@@ -1562,7 +1562,7 @@ class Releases
 		$stage4 = TIME();
 		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 limit 700"))
 		{
-			while ($rowcol = mysql_fetch_assoc($rescol))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
@@ -1570,7 +1570,7 @@ class Releases
 				$relguid = md5(uniqid());
 				if($db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
-					$relid = mysql_insert_id();
+					$relid = $db->getInsertID();
 					//update collections table to say we inserted the release.
 					$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
@@ -1594,7 +1594,7 @@ class Releases
 		$stage5 = TIME();
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 700"))
 		{
-			while ($rowrel = mysql_fetch_assoc($resrel))
+			while ($rowrel = $db->fetchAssoc($resrel))
 			{
 				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
 				$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $rowrel['ID']));
@@ -1616,7 +1616,7 @@ class Releases
 		if ($categorize == 1)
 		{
 			$resrel = $db->queryDirect("SELECT ID, name, groupID from releases where relnamestatus = 0");
-			while ($rowrel = mysql_fetch_assoc($resrel))
+			while ($rowrel = $db->fetchAssoc($resrel))
 			{
 				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $rowrel['ID']));
@@ -1648,11 +1648,11 @@ class Releases
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
 		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)))"));
-			$partscount = mysql_affected_rows();
+			$partscount = $db->getAffectedRows();
 		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour))"));
-			$binscount = mysql_affected_rows();
+			$binscount = $db->getAffectedRows();
 		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)"));
-			$colcount = mysql_affected_rows();
+			$colcount = $db->getAffectedRows();
 		
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)

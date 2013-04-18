@@ -200,11 +200,11 @@ class AniDB
 
 		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d )", Category::CAT_TV_ANIME));
 
-		if (mysql_num_rows($results) > 0) {
+		if ($db->getNumRows($results) > 0) {
 			if ($this->echooutput)
-				echo "Processing ".mysql_num_rows($results)." anime releases\n";
+				echo "Processing ".$db->getNumRows($results)." anime releases\n";
 
-			while ($arr = mysql_fetch_assoc($results)) {
+			while ($arr = $db->fetchAssoc($results)) {
 
 				$cleanFilename = $this->cleanFilename($arr['searchname']);
 				$anidbID = $this->getanidbID($cleanFilename['title']);
@@ -261,7 +261,7 @@ class AniDB
 			}
 
 			if ($this->echooutput)
-				echo "Processed ".mysql_num_rows($results)." anime releases.\n";
+				echo "Processed ".$db->getNumRows($results)." anime releases.\n";
 		}
 	}
 

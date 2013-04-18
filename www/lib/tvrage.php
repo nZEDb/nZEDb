@@ -414,10 +414,10 @@ class TvRage
 		
 		if ($this->echooutput)
 		{
-			echo "Processing TV for ".mysql_num_rows($result)." releases.\n";
+			echo "Processing TV for ".$db->getNumRows($result)." releases.\n";
 		}
 			
-		while ($arr = mysql_fetch_assoc($result)) 
+		while ($arr = $db->fetchAssoc($result)) 
 		{
 			$show = $this->parseNameEpSeason($arr['searchname']);			
 			if (is_array($show) && $show['name'] != '')

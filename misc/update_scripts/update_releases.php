@@ -39,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		echo "Categorizing all non-categorized releases in other->misc. This can take a while, be patient.\n";
 		
 		$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
-		while ($relrow = mysql_fetch_assoc($relres))
+		while ($relrow = $db->fetchAssoc($relres))
 		{
 			$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
 			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));

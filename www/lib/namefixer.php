@@ -28,7 +28,7 @@ class Namefixer
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($relrow = mysql_fetch_array($relres))
+		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo);
 		}
@@ -54,7 +54,7 @@ class Namefixer
 			$nfores = $db->queryDirect(sprintf($query,"group by rel.ID"));
 		}
 		
-		while ($nforow = mysql_fetch_array($nfores))
+		while ($nforow = $db->fetchArray($nfores))
 		{
 			$this->checkName($nforow, $echo);
 		}
@@ -80,7 +80,7 @@ class Namefixer
 			$fileres = $db->queryDirect(sprintf($query,"group by rel.ID"));
 		}
 		
-		while ($filerow = mysql_fetch_array($fileres))
+		while ($filerow = $db->fetchArray($fileres))
 		{
 			$this->checkName($filerow, $echo);
 		}

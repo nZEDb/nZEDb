@@ -490,12 +490,12 @@ class Movie
 		$nfo = new Nfo;
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit 0,50", Category::CAT_PARENT_MOVIE));
-		if (mysql_num_rows($res) > 0)
+		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".mysql_num_rows($res)." movie releases.\n";
+				echo "Processing ".$db->getNumRows($res)." movie releases.\n";
 		
-			while ($arr = mysql_fetch_assoc($res)) 
+			while ($arr = $db->fetchAssoc($res)) 
 			{				
 				$moviename = $this->parseMovieName($arr['searchname']);
 				if ($moviename !== false)
