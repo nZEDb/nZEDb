@@ -612,6 +612,7 @@ INSERT INTO category (ID, title) VALUES (4000, 'PC');
 INSERT INTO category (ID, title) VALUES (5000, 'TV');
 INSERT INTO category (ID, title) VALUES (6000, 'XXX');
 INSERT INTO category (ID, title) VALUES (7000, 'Other');
+INSERT INTO category (ID, title) VALUES (8000, 'Books');
 
 INSERT INTO category (ID, title, parentID) VALUES (1010, 'NDS', 1000);
 INSERT INTO category (ID, title, parentID) VALUES (1020, 'PSP', 1000);
@@ -621,16 +622,20 @@ INSERT INTO category (ID, title, parentID) VALUES (1050, 'Xbox 360', 1000);
 INSERT INTO category (ID, title, parentID) VALUES (1060, 'WiiWare/VC', 1000);
 INSERT INTO category (ID, title, parentID) VALUES (1070, 'XBOX 360 DLC', 1000);
 INSERT INTO category (ID, title, parentID) VALUES (1080, 'PS3', 1000);
+INSERT INTO category (ID, title, parentID) VALUES (1090, 'Other', 1000);
 
 INSERT INTO category (ID, title, parentID) VALUES (2010, 'Foreign', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2020, 'Other', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2030, 'SD', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2040, 'HD', 2000);
+INSERT INTO category (ID, title, parentID) VALUES (2050, '3D', 2000);
+INSERT INTO category (ID, title, parentID) VALUES (2060, 'BluRay', 2000);
 
 INSERT INTO category (ID, title, parentID) VALUES (3010, 'MP3', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3020, 'Video', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3030, 'Audiobook', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3040, 'Lossless', 3000);
+INSERT INTO category (ID, title, parentID) VALUES (3050, 'Other', 3000);
 
 INSERT INTO category (ID, title, parentID) VALUES (4010, '0day', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4020, 'ISO', 4000);
@@ -644,15 +649,22 @@ INSERT INTO category (ID, title, parentID) VALUES (5040, 'HD', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5050, 'Other', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5060, 'Sport', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5070, 'Anime', 5000);
+INSERT INTO category (ID, title, parentID) VALUES (5080, 'Documentary', 5000);
 
 INSERT INTO category (ID, title, parentID) VALUES (6010, 'DVD', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6020, 'WMV', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6030, 'XviD', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6040, 'x264', 6000);
+INSERT INTO category (ID, title, parentID) VALUES (6050, 'Other', 6000);
 
 INSERT INTO category (ID, title, parentID) VALUES (7010, 'Misc', 7000);
 INSERT INTO category (ID, title, parentID) VALUES (7020, 'Ebook', 7000);
 INSERT INTO category (ID, title, parentID) VALUES (7030, 'Comics', 7000);
+
+INSERT INTO category (ID, title, parentID) VALUES (8010, 'Ebook', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 
 
 DROP TABLE IF EXISTS `users`;

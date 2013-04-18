@@ -36,6 +36,7 @@ class Categorizer
 	const CAT_XXX_WMV = 6020;
 	const CAT_XXX_XVID = 6030;
 	const CAT_XXX_X264 = 6040;
+	const CAT_XXX_Other = 6050;
 	const CAT_MISC = 7010;
 	const CAT_MISC_EBOOK = 7020;
 	const CAT_MISC_COMICS = 7030;
@@ -139,47 +140,18 @@ class Categorizer
 				$this->tmpCat =  Category::CAT_MUSIC_MP3;
 				return true;
 			}
+			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_MISC_EBOOK;
+				return true;
+			}
 		}
-	}
-
-	//
-	// TV
-	//
-	public function isTV2($releasename, $assumeTV=TRUE)
-	{
-
-		// check if it looks like TV
-		$looksLikeTV = preg_match('/\W+((S\d[\dE._ -])|(\d\d?x)|(\d{4}\W+\d\d\W+\d\d)|((part|pt)[\._ -]?(\d|[ivx])(?!.*(19|20)\d{2}))|(Season\W+\d+\W+)|(E(p?(isode)?[\._ -]*?)\d+\W+)).*/i', $releasename);
-
-		// anything dsr|pdtv,
-		$knownTVSources = preg_match('/(dsr|pdtv)/i', $releasename);
-
-		// hdtv, commonly also movies
-		$possibleTVSources = preg_match('/hdtv/i', $releasename);
-
-		// if it looks like a TV episode
-		// or if it's from a TV source
-		// or if it's possibly TV and we have reason to believe it really is
-		if ($looksLikeTV || $knownTVSources || ($possibleTVSources && ($assumeTV || $looksLikeTV)))
-		{
-			if($this->isForeignTV($releasename)){ return true; }
-			if($this->isSportTV($releasename)){ return true; }
-			if($this->isHDTV($releasename)){ return true; }
-			if($this->isSDTV($releasename)){ return true; }
-			$this->tmpCat = Category::CAT_TV_OTHER;
-			return true;
-		}
-
-		return false;
 	}
 	
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
-
-		// check if it looks like TV
 		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
-		
-		// Sports
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV)
@@ -309,7 +281,6 @@ class Categorizer
 		return false;
 	}
 
-
 	//
 	//  Movie
 	//
@@ -334,7 +305,12 @@ class Categorizer
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
 		}
-		if(preg_match('/ der |Deutsch|\d{4} German|\(German\)|\/German\/|NLSubs|NL\-Subs|NLSub/i', $releasename))
+		if(preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl\.?subbed|nl\.?sub|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+			return true;
+		}
+		if(preg_match('/Castellano/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
@@ -369,7 +345,6 @@ class Categorizer
 		
 		return false;
 	}
-
 
 	//
 	//  PC
@@ -447,7 +422,6 @@ class Categorizer
 		return false;
 	}
 
-
 	//
 	//   XXX
 	//
@@ -459,6 +433,7 @@ class Categorizer
 			if($this->isXxxXvid($releasename)){ return true; }
 			if($this->isXxxWMV($releasename)){ return true; }
 			if($this->isXxxDVD($releasename)){ return true; }
+			if($this->isXxxOther($releasename)){ return true; }
 			$this->tmpCat = Category::CAT_XXX_XVID;
 			return true;
 		}
@@ -507,6 +482,16 @@ class Categorizer
 		
 		return false;
 	}
+	/*public function isXxxOther($releasename)
+	{
+		if (preg_match('/Transsexual/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_XXX_OTHER;
+			return true;
+		}
+		
+		return false;
+	}*/
 
 	//
 	//  Console
