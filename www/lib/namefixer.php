@@ -52,7 +52,7 @@ class Namefixer
 	{
 		$db = new DB();
 		//For testing do all cats//$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.name, rel.categoryID, rel.searchname, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -87,7 +87,7 @@ class Namefixer
 	public function fixNamesWithFiles($time, $echo, $cats)
 	{
 		$db = new DB();
-		$query = "SELECT relfiles.name as filename, rel.categoryID, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
+		$query = "SELECT relfiles.name as filename, rel.categoryID, rel.name, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
