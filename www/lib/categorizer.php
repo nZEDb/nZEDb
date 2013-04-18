@@ -197,12 +197,12 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Seizoen|Sub(bed|s)?|Web[\.\-_ ]?Rip).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -212,7 +212,7 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
 		}
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -303,7 +303,7 @@ class Categorizer
 	//
 	public function isMovie($releasename)
 	{
-		$looksLikeMovie = preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVDRip|XVID/i', $releasename);
+		$looksLikeMovie = preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|XVID/i', $releasename);
 		
 		if($looksLikeMovie)
 		{
@@ -317,16 +317,21 @@ class Categorizer
 
 	public function isMovieForeign($releasename)
 	{
-		if(preg_match('/(danish|flemish|Deutsch|dutch|nl\.?subbed|nl\.?sub|\.NL|norwegian|swedish|swesub|french|german|spanish)[\.\-_ ]/i', $releasename))
+		if(preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl\.?subbed|nl\.?sub|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
 		}
-		if(preg_match('/ der |Deutsch|\d{4} German|\(German\)|NLSubs|NL\-Subs|NLSub/i', $releasename))
+		if(preg_match('/ der |Deutsch|\d{4} German|\(German\)|\/German\/|NLSubs|NL\-Subs|NLSub/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
-		} 
+		}
+		if(preg_match('/(AC3|DIVX|DVD(5|9|RIP|R)|XVID)[\.\-_ ](Dutch|French|German|ITA)|(Dutch|French|German|ITA)[\.\-_ ](AC3|DIVX|DVD(5|9|RIP|R)|XVID)/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+			return true;
+		}
 		
 		return false;
 	}
@@ -344,7 +349,7 @@ class Categorizer
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(xvid|dvdscr|extrascene|dvdrip|r5|\.CAM|dvdr|dvd9|dvd5|divx)[\.\-_ ]/i', $releasename))
+		if(preg_match('/(dvdr|dvd9|dvd5|divx|dvdscr|extrascene|dvdrip|r5|\.CAM|xvid)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -667,7 +672,7 @@ class Categorizer
 	}
 	public function isMusicMP3($releasename)
 	{
-		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320/i', $releasename))
+		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320|\s\dCDs/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
