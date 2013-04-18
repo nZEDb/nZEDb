@@ -15,7 +15,7 @@
 function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) {
 	// Default options
 	if (!isset($options['query_handler'])) {
-		$options['query_handler'] = 'mysql_query';
+		$options['query_handler'] = 'mysqli_query';
 	}
 	if (!isset($options['trigger_errors'])) {
 		$options['trigger_errors'] = true;

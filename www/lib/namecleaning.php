@@ -49,6 +49,9 @@
 			return $cleanerName;
 		}
 		
+		//
+		//	Cleans release name for the namefixer class.
+		//
 		public function fixerCleaner($name)
 		{
 			//Extensions.
