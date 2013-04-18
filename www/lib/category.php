@@ -408,7 +408,7 @@ class Category
 	//
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|[\.\-_ ]TVrip|VHSRip|XVID/i', $releasename) && !preg_match('/XXX/', $releasename))
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
@@ -441,6 +441,17 @@ class Category
 		return false;
 	}
 	
+	public function isMovieSD($releasename)
+	{
+		if(preg_match('/(dvdr|dvd9|dvd5|divx|dvdscr|extrascene|dvdrip|r5|\.CAM|xvid)[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_SD;
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function isMovie3D($releasename)
 	{
 		if(preg_match('/[\.\-_ ]3D\s?[\.\-_\[ ](1080p|(19|20)\d\d|AVC|BD(25|50)|Blu[\.\-_ ]?ray|CEE|Complete|GER|MVC|MULTi|SBS)[\.\-_ ]/i', $releasename))
@@ -465,20 +476,9 @@ class Category
 	
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/x264|wmvhd|web\-dl|VC1|VC\-1|AVC|XvidHD/i', $releasename))
+		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
-			return true;
-		}
-		
-		return false;
-	}
-
-	public function isMovieSD($releasename)
-	{
-		if(preg_match('/(dvdr|dvd9|dvd5|divx|dvdscr|extrascene|dvdrip|r5|\.CAM|xvid)[\.\-_ ]/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
 		}
 		
@@ -688,7 +688,7 @@ class Category
 	{
 		if (preg_match('/PS3/i', $releasename))
 		{
-			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JPN|KONDIOS|PSN/i', $releasename))
+			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JPN|KONDIOS|\[PS3\]|PSN/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
