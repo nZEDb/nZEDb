@@ -582,13 +582,13 @@ class Category
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[\.\-_ ]PSP|WII/i', $releasename))
+		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[\.\-_ ]PSP|WII|XBOX/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
 		
-		if (preg_match('/\-(0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
+		if (preg_match('/[\.\-_ ]((0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
