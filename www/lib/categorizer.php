@@ -97,25 +97,40 @@ class Categorizer
 				$this->tmpCat = Category::CAT_PC_0DAY;
 				return $this->tmpCat;
 			}
-			
 			if (preg_match('/alt\.binaries\.audio\.warez/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
 				$this->tmpCat = Category::CAT_PC_0DAY;
 				return true;
 			}
-			
 			if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
 				$this->tmpCat = Category::CAT_TV_ANIME;
 				return true;
 			}
-			
+			if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_PC_0DAY;
+				return true;
+			}
 			if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
 				$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+				return true;
+			}
+			if (preg_match('/alt\.binaries\.comics\.dcp/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_MISC_COMICS;
+				return true;
+			}
+			if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_GAME_PS3;
 				return true;
 			}
 		}
@@ -156,13 +171,10 @@ class Categorizer
 	{
 
 		// check if it looks like TV
-		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|DSR|(D|H|P)DTV|WEB\-DL)[\.\-_ ]/i', $releasename);
+		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL)[\.\-_ ]/i', $releasename);
 		
 		// Sports
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
-
-		//Anime
-		//$looksLikeAnimeTV = preg_match('/[\.\-_ ]placeholder[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV)
 		{
@@ -180,12 +192,6 @@ class Categorizer
 			$this->tmpCat = Category::CAT_TV_OTHER;
 			return true;
 		}
-		/*if ($looksLikeAnimeTV)
-		{
-			if($this->isAnimeTV($releasename)){ return true; }
-			$this->tmpCat = Category::CAT_TV_OTHER;
-			return true;
-		}*/
 
 		return false;
 	}
@@ -264,7 +270,7 @@ class Categorizer
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/480p|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|xvid/i', $releasename))
+		if (preg_match('/480p|Complete[\.\-_ ]Season|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|TVRip|xvid/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
@@ -392,12 +398,17 @@ class Categorizer
 
 	public function is0day($releasename)
 	{
-		if(preg_match('/[\.\-_ ](32bit|64bit|x32|x64|x86|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win2kxp2k3|keygen|regged|keymaker|winall|win32|template|Patch|GAMEGUiDE|unix|irix|solaris|freebsd|hpux|linux|windows|multilingual|software|Pro v\d{1,3})[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ](utorrent|Virtualbox)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
 		}
-		else if (preg_match('/\-SUNiSO|Adobe|CYGNUS|GERMAN\-|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|DIGERATI|\-UNION/i', $releasename))
+		if(preg_match('/[\.\-_ ](32bit|64bit|x32|x64|x86|i\d86|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win2kxp2k3|keygen|regged|keymaker|winall|win32|template|Patch|GAMEGUiDE|unix|irix|solaris|freebsd|hpux|linux|windows|multilingual|software|Pro v\d{1,3})[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_PC_0DAY;
+			return true;
+		}
+		else if (preg_match('/\(x(64|86)\)|\-SUNiSO|Adobe|CYGNUS|\.deb|DIGERATI|GERMAN\-|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|\-UNION/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
