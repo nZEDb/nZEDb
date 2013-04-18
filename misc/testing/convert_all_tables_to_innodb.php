@@ -10,7 +10,7 @@ foreach($tables as $row)
     {
 	$tbl = $row['Tables_in_newznab'];
 	printf("Converting $tbl\n");
-        $sql = "ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED";
+        $sql = "ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC";
         $db->query($sql);
     }
 
