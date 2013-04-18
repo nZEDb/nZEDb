@@ -3,6 +3,7 @@ require_once(SMARTY_DIR.'Smarty.class.php');
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once(WWW_DIR."/lib/framework/db.php");
 
 class BasePage 
 {
@@ -39,10 +40,16 @@ class BasePage
         // set site variable
 		$s = new Sites();
 		$this->site = $s->get();
+		$db = new DB();
+		$theme = $db->query("select value from site where setting = 'style'");
+		$theme = array_shift($theme);
+		if($theme["value"] == "/")
+		{
+			$theme["value"] = "Default";
+		}
 		
 		$this->smarty = new Smarty();
-		
-		$this->smarty->template_dir = WWW_DIR.'templates/Default/templates/'.$this->template_dir;
+		$this->smarty->template_dir = WWW_DIR.'templates/'.$theme["value"].'/templates/'.$this->template_dir;
 		$this->smarty->compile_dir = SMARTY_DIR.'templates_c/';
 		$this->smarty->config_dir = SMARTY_DIR.'configs/';
 		$this->smarty->cache_dir = SMARTY_DIR.'cache/';	
