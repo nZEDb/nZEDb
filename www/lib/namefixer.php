@@ -108,9 +108,9 @@ class Namefixer
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($filerow = $db->fetchArray($fileres))
+		while ($relrow = $db->fetchArray($relres))
 		{
-			$this->checkName($filerow, $echo, $type);
+			$this->checkName($relrow, $echo, $type);
 		}
 	}
 	
