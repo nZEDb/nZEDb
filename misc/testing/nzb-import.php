@@ -11,7 +11,6 @@ require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
-$namecleaner = new nameCleaning();
 $page = new Page;
 
 if (!isset($argv[1]))
@@ -37,7 +36,7 @@ function categorize()
     $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
     while ($relrow = mysql_fetch_assoc($relres))
     {
-        $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID'];);
+        $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID']);
         $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
     }
 }
@@ -127,6 +126,7 @@ else
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			$subject = $firstname['0'];
+			$namecleaning = new nameCleaning();
 			$cleanerName = $namecleaning->releaseCleaner($subject);
 
 			// make a fake message object to use to check the blacklist
