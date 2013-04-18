@@ -155,7 +155,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 }
 else
 {
-	exit("ERROR: You must supply 2 arguments.".$n.
+	exit("ERROR: You must supply 3 arguments.".$n.
 			"php fixReleaseNames.php 1 false other ...: Fix release names, using the usenet subject in the past 24 hours.".$n.
 			"php fixReleaseNames.php 2 false other ...: Fix release names, using the usenet subject.".$n.
 			"php fixReleaseNames.php 3 false other ...: Fix release names using NFO in the past 24 hours.".$n.
