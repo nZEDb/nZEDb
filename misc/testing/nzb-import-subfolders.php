@@ -5,7 +5,7 @@ require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
-require_once(FS_ROOT."/../../www/lib/categorizer.php");
+require_once(FS_ROOT."/../../www/lib/category.php");
 require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
 require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
@@ -74,7 +74,7 @@ function relativeTime($_time) {
 function categorize() 
 {
     $db = new DB();
-    $categorizer = new Categorizer();
+    $categorizer = new Category();
     $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
     while ($relrow = mysql_fetch_assoc($relres))
     {

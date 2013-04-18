@@ -1,7 +1,7 @@
 <?php
 
 require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/categorizer.php");
+require_once(WWW_DIR."/lib/category.php");
 
 class Namefixer
 {
@@ -102,18 +102,24 @@ class Namefixer
 	{                          
 		if($this->tvCheck($array))
 		{ 
-			if ($echo == 1){}
+			if ($echo == 1)
+			{
+			
+			}
 			else if ($echo == 2)
 			{
-			//$this->updateRelease($ID, $name);
+				//$this->updateRelease($ID, $name);
 			}
 		}
 		if($this->movieCheck($array))
 		{ 
-			if ($echo == 1){}
+			if ($echo == 1)
+			{
+			
+			}
 			else if ($echo == 2)
 			{
-			//$this->updateRelease($ID, $name);
+				//$this->updateRelease($ID, $name);
 			}
 		}
 	}

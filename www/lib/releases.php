@@ -4,7 +4,6 @@ require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/categorizer.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/zipfile.php");
@@ -1609,8 +1608,6 @@ class Releases
 	{
 		$db = new DB;
 		$cat = new Category;
-		$categorizer = new Categorizer;
-		$groups = new Groups;
 		$n = "\n";
 		
 		//Categorize releases.
@@ -1621,17 +1618,7 @@ class Releases
 			$resrel = $db->queryDirect("SELECT ID, name, groupID from releases where relnamestatus = 0");
 			while ($rowrel = mysql_fetch_assoc($resrel))
 			{
-				$catId = $categorizer->Categorize($rowrel["name"], $rowrel["groupID"]);
-				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $rowrel['ID']));
-			}
-		}
-		if ($categorize == 3)
-		{
-			$resrel = $db->queryDirect("SELECT ID, searchname, groupID from releases where relnamestatus = 0");
-			while ($rowrel = mysql_fetch_assoc($resrel))
-			{
-				$groupName = $groups->getByNameByID($rowrel['groupID']);
-				$catId = $cat->determineCategory($groupName, $rowrel["searchname"]);
+				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
 				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $rowrel['ID']));
 			}
 		}
@@ -1660,12 +1647,12 @@ class Releases
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
-                $db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)))"));
-                        $partscount = mysql_affected_rows();
-                $db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 24 hour))"));
-                        $binscount = mysql_affected_rows();
-                $db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 24 hour)"));
-                        $colcount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)))"));
+			$partscount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour))"));
+			$binscount = mysql_affected_rows();
+		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)"));
+			$colcount = mysql_affected_rows();
 		
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
@@ -1689,9 +1676,9 @@ class Releases
 		}
 		
 		//Crossposted releases.
-		if($resrel = $db->queryDirect("select ID, name from releases where adddate > (now() - interval 2 hour) group by name having count(name) > 1"))
+		if($resrel = $db->query("select ID, name from releases where adddate > (now() - interval 2 hour) group by name having count(name) > 1"))
 		{
-			while ($rowrel = mysql_fetch_assoc($resrel))
+			foreach ($resrel as $rowrel)
 			{
 				$this->delete($rowrel['ID']);
 				$dupecount ++;

@@ -5,9 +5,9 @@ require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
-require_once(FS_ROOT."/../../www/lib/categorizer.php");
+require_once(FS_ROOT."/../../www/lib/category.php");
 require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
@@ -33,11 +33,10 @@ $color_write_error = 9;
 function categorize() 
 {
     $db = new DB();
-	$categorizer = new Categorizer();
+	$categorizer = new Category();
     $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
     while ($relrow = mysql_fetch_assoc($relres))
     {
-        $relname = $relrow['name'];
         $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID'];);
         $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
     }
