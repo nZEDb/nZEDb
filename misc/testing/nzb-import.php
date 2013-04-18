@@ -32,11 +32,11 @@ $color_write_error = 9;
 function categorize() 
 {
     $db = new DB();
-	$categorizer = new Category();
+	$cat = new Category();
     $relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
     while ($relrow = mysql_fetch_assoc($relres))
     {
-        $catID = $categorizer->Categorize($relrow['name'], $relrow['groupID']);
+        $catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
         $db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
     }
 }
