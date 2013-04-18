@@ -106,7 +106,7 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			$colcount = $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
+			$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
 			if ( $colcount > 10000 )
 			{
 				echo "\nCollections = ".$colcount.", backfill exiting\n";
