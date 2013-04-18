@@ -25,13 +25,13 @@ if (isset($argv[1]) && isset($argv[2]))
 	{
 		$releases->processReleases(2, 2);
 	}
-	else if ($argv[1] == 3 && ($argv[2] == "true" || $argv[2] == "false"))
+	else if ($argv[1] == 4 && ($argv[2] == "true" || $argv[2] == "false"))
 	{
 		$db = new Db();
 		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0");
 		echo "Moving all releases to other -> misc, this can take a while, be patient.\n";
 	}
-	else if ($argv[1] == 4 && ($argv[2] == "true" || $argv[2] == "false"))
+	else if ($argv[1] == 5 && ($argv[2] == "true" || $argv[2] == "false"))
 	{
 		$db = new Db();
 		$cat = new Category();
