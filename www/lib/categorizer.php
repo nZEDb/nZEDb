@@ -162,7 +162,7 @@ class Categorizer
 		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
-		if ($looksLikeTV)
+		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|mp3)[\.\-_ ]/i', $releasename))
 		{
 			if($this->isForeignTV($releasename)){ return true; }
 			if($this->isSportTV($releasename)){ return true; }
@@ -294,9 +294,7 @@ class Categorizer
 	//
 	public function isMovie($releasename)
 	{
-		$looksLikeMovie = preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|[\.\-_ ]TVrip|XVID/i', $releasename);
-		
-		if($looksLikeMovie)
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|[\.\-_ ]TVrip|XVID/i', $releasename) && !preg_match('/XXX/', $releasename))
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
@@ -409,7 +407,7 @@ class Categorizer
 			$this->tmpCat = Categorizer::CAT_PC_0DAY;
 			return true;
 		}
-		else if (preg_match('/\(x(64|86)\)|\-SUNiSO|Adobe|CYGNUS|\.deb|DIGERATI|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|\-UNION/i', $releasename))
+		if (preg_match('/\(x(64|86)\)|\-SUNiSO|Adobe|CYGNUS|\.deb|DIGERATI|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|\-UNION/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_PC_0DAY;
 			return true;
@@ -451,6 +449,7 @@ class Categorizer
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
+			if($this->isXxxImageset($releasename)){ return true; }
 			if($this->isXxxWMV($releasename)){ return true; }
 			if($this->isXxxDVD($releasename)){ return true; }
 			if($this->isXxxOther($releasename)){ return true; }
@@ -461,6 +460,7 @@ class Categorizer
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
+			if($this->isXxxImageset($releasename)){ return true; }
 			if($this->isXxxWMV($releasename)){ return true; }
 			if($this->isXxxDVD($releasename)){ return true; }
 			if($this->isXxxOther($releasename)){ return true; }
@@ -512,9 +512,19 @@ class Categorizer
 		
 		return false;
 	}
+	public function isXxxImageset($releasename)
+	{
+		if (preg_match('/IMAGESET/i', $releasename))
+		{
+			$this->tmpCat = Categorizer::CAT_XXX_OTHER;
+			return true;
+		}
+		
+		return false;
+	}
 	public function isXxxOther($releasename)
 	{
-		if (preg_match('/Imageset|Transsexual/i', $releasename))
+		if (preg_match('/Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_XXX_OTHER;
 			return true;
@@ -694,7 +704,7 @@ class Categorizer
 	}
 	public function isMusicLossless($releasename)
 	{
-		if (preg_match('/FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}/i', $releasename))
+		if (preg_match('/FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_MUSIC_LOSSLESS;
 			return true;
@@ -704,9 +714,23 @@ class Categorizer
 	}
 	public function isMusicMP3($releasename)
 	{
-		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320|\s\dCDs/i', $releasename))
+		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320|\s\dCDs|MP3\-\d{3}kbps|\.(m3u|mp3)"|\(320\)\.|\-\((Bootleg|Promo)\)|\-\sMP3\s(19|20)\d\d/i', $releasename))
 		{
 			$this->tmpCat = Categorizer::CAT_MUSIC_MP3;
+			return true;
+		}
+		if (preg_match('/\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)/i', $releasename))
+		{
+			$this->tmpCat = Categorizer::CAT_MUSIC_MP3;
+			return true;
+		}
+		return false;
+	}
+	public function isMusicOther($releasename)
+	{
+		if (preg_match('/Discography|Reggaeton/i', $releasename))
+		{
+			$this->tmpCat = Categorizer::CAT_MUSIC_OTHER;
 			return true;
 		}
 		return false;
