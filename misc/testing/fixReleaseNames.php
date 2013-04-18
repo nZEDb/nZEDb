@@ -8,7 +8,7 @@ require_once(FS_ROOT."/../../www/lib/namefixer.php");
 $n = "\n";
 $namefixer = new Namefixer;
 
-if (isset($argv[1]) && isset($argv[2]) && isset($argv[3])
+if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 {
 	if ($argv[2] == "true")
 	{
