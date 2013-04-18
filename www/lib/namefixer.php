@@ -156,6 +156,8 @@ class Namefixer
 	{                       
 		$this->tvCheck($release, $echo, $type);
 		$this->movieCheck($release, $echo, $type);
+		$this->gameCheck($release, $echo, $type);
+		$this->appCheck($release, $echo, $type);
 	}
 	
 	//
@@ -190,6 +192,10 @@ class Namefixer
 		if (preg_match('/\w[\w.\-\',;& ]+((19|20)\d\d)(\.|_|\-| )((s\d{1,2}(\.|_|\-| )?(b|d|e)\d{1,2})|\d{1,2}x\d{2}|ep(\.|_|\-| )?\d{2})(\.|_|\-| )(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)[\w.\-\',;& ]+\w/i', $release["name"], $result))
 		{
 			$this->updateRelease($release, $result["0"], $methdod="tvCheck: Title.year.###(season/episode).source.group", $echo, $type);
+		}
+		if (preg_match('/\w(19|20)\d\d(\.|_|\-| )\d{2}(\.|_|\-| )\d{2}(\.|_|\-| )(IndyCar|NBA|NCW(T|Y)S|NNS|NSCS?)((\.|_|\-| )(19|20)\d\d)?[\w.\-\',;& ]+\w/i', $release["name"], $result))
+		{
+			$this->updateRelease($release, $result["0"], $methdod="tvCheck: Sports", $echo, $type);
 		}
 	}
 	
@@ -276,7 +282,7 @@ class Namefixer
 		{
 			$this->updateRelease($release, $result["0"], $methdod="appCheck: Apps 1", $echo, $type);
 		}
-		if (preg_match('/\w[\w.\-\',;& ]+(\d){1,8}(\.|_|\-| )(winall-freeware)[\w.\-\',;& ]+\wi', $release["name"], $result))
+		if (preg_match('/\w[\w.\-\',;& ]+(\d){1,8}(\.|_|\-| )(winall-freeware)[\w.\-\',;& ]+\w/i', $release["name"], $result))
 		{
 			$this->updateRelease($release, $result["0"], $methdod="appCheck: Apps 2", $echo, $type);
 		}
