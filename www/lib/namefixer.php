@@ -13,22 +13,22 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "Release Name, ";
-		$query = "SELECT name, searchname, categoryID, groupID, ID as releaseID from releases";
+		$query = "SELECT name, searchname, categoryID, groupID, ID as releaseID from releases where categoryID != 5070";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." where adddate > (now() - interval 1 day)");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day)");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
+			$relres = $db->queryDirect($query." and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
@@ -50,22 +50,22 @@ class Namefixer
 		$db = new DB();
 		$type = "NFO, ";
 		//For testing do all cats//$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.name, rel.categoryID, rel.searchname, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.name, rel.categoryID, rel.searchname, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
@@ -86,22 +86,22 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name as filename, rel.categoryID, rel.name, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
+		$query = "SELECT relfiles.name as filename, rel.categoryID, rel.name, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." where (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
