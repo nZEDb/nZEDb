@@ -658,8 +658,6 @@ INSERT INTO category (ID, title, parentID) VALUES (6040, 'x264', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6050, 'Other', 6000);
 
 INSERT INTO category (ID, title, parentID) VALUES (7010, 'Misc', 7000);
-INSERT INTO category (ID, title, parentID) VALUES (7020, 'Ebook', 7000);
-INSERT INTO category (ID, title, parentID) VALUES (7030, 'Comics', 7000);
 
 INSERT INTO category (ID, title, parentID) VALUES (8010, 'Ebook', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
