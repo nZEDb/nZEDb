@@ -562,7 +562,7 @@ class Category
 			return true;
 		}
 		
-		if (preg_match('/\(x(64|86)\)|\-SUNiSO|Adobe|CYGNUS|\.deb|DIGERATI|v\d{1,3}.*?Pro|v\d{1,3}.*?\-TE|MULTiLANGUAGE|Cracked|lz0|\-BEAN|MultiOS|\-iNViSiBLE|\-SPYRAL|WinAll|Keymaker|Keygen|Lynda\.com|FOSI|Keyfilemaker|\-UNION/i', $releasename))
+		if (preg_match('/Adobe|\-BEAN|Cracked|CYGNUS|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|v\d{1,3}.*?|WinAll|\(x(64|86)\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
@@ -582,7 +582,7 @@ class Category
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[\.\-_ ]PSP/i', $releasename))
+		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[\.\-_ ]PSP|WII/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
@@ -759,7 +759,7 @@ class Category
 
 	public function isGameWiiWare($releasename)
 	{
-		if (preg_match('/WIIWARE|WII.*?VC|VC.*?WII|WII.*?DLC|DLC.*?WII|WII.*?CONSOLE|CONSOLE.*?WII/i', $releasename))
+		if (preg_match('/(Console|DLC|VC).+[\.\-_ ]WII|(Console|DLC|VC)[\.\-_ ]WII|WII[\.\-_ ].+(Console|DLC|VC)|WII[\.\-_ ](Console|DLC|VC)|WIIWARE/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_GAME_WIIWARE;
 			return true;
@@ -771,17 +771,17 @@ class Category
 	{
 		if (preg_match('/WII/i', $releasename))
 		{
-			if (preg_match('/Allstars|BiOSHOCK|dumpTruck|DNi|iCON|JAP|NTSC|PAL|ProCiSiON|PROPER|RANT|REV0|SUNSHiNE|SUSHi|TMD|USA?/i', $releasename))
+			if (preg_match('/[\.\-_ ](Allstars|BiOSHOCK|dumpTruck|DNi|iCON|JAP|NTSC|PAL|ProCiSiON|PROPER|RANT|REV0|SUNSHiNE|SUSHi|TMD|USA?)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
 			}
-			if (preg_match('/APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0/i', $releasename))
+			if (preg_match('/[\.\-_ ](APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
 			}
-			if (preg_match('/ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT/i', $releasename))
+			if (preg_match('/[\.\-_ ](ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|KOR|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_WII;
 				return true;
