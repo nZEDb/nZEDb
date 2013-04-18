@@ -49,8 +49,7 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "NFO, ";
-		//For testing do all cats//$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.name, rel.categoryID, rel.searchname, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.name, rel.categoryID, rel.searchname, uncompress(nfo) as NFO, rel.ID as releaseID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
