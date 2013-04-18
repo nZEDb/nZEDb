@@ -420,12 +420,12 @@ class Music
 		$db = new DB();
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, Music::NUMTOPROCESSPERTIME));
-		if (mysql_num_rows($res) > 0)
+		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".mysql_num_rows($res)." music releases\n";
+				echo "Processing ".$db->getNumRows($res)." music releases\n";
 						
-			while ($arr = mysql_fetch_assoc($res)) 
+			while ($arr = $db->fetchAssoc($res)) 
 			{				
 				$album = $this->parseArtist($arr['searchname']);
 				if ($album !== false)

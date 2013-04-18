@@ -54,15 +54,15 @@ class Nfo
 		$nzbcontents = new NZBcontents();
 		
 		$res = $db->queryDirect("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate desc limit 0,50");
-		if (mysql_num_rows($res) >= 0)
+		if ($db->getNumRows($res) >= 0)
 		{	
 			if ($this->echooutput)
 			{
-				echo "Processing ".mysql_num_rows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n..";
+				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n..";
 			}
 		
 			$nntp->doConnect();
-			while ($arr = mysql_fetch_assoc($res))
+			while ($arr = $db->fetchAssoc($res))
 			{
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
@@ -128,7 +128,7 @@ class Nfo
 		
 		//remove nfo that we cant fetch after 5 attempts
 		$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
-		while ($relrow = mysql_fetch_assoc($relres))
+		while ($relrow = $db->fetchAssoc($relres))
 		{
 			$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
 		}

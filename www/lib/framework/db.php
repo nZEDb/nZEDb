@@ -3,35 +3,35 @@
 class DB
 {
 	private static $initialized = false;
+	private static $db = null;
 
 	function DB()
 	{
 		if (DB::$initialized === false)
 		{
 			// initialize db connection
-			if (defined("DB_PCONNECT") && DB_PCONNECT)
+			if (defined("DB_PORT"))
 			{
-				mysql_pconnect(DB_HOST, DB_USER, DB_PASSWORD)
-				or die("fatal error: could not connect to database! Check your config.");
+				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
 			}
 			else
 			{
-				mysql_connect(DB_HOST, DB_USER, DB_PASSWORD)
-				or die("fatal error: could not connect to database! Check your config.");
+				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 			}
 			
-			mysql_select_db(DB_NAME)
-			or die("fatal error: could not select database! Check your config.");
+			if (DB::$db->connect_errno) {
+				printf("Failed to connect to MySQL: (" . DB::$db->connect_errno . ") " . DB::$db->connect_error);
+				exit();
+			}
 			
-			mysql_set_charset('utf8');
-			
+			DB::$db->set_charset('utf8');
 			DB::$initialized = true;
 		}			
 	}	
 				
 	public function escapeString($str)
 	{
-		return "'".mysql_real_escape_string($str)."'";
+		return "'".DB::$db->real_escape_string($str)."'";
 	}		
 
 	public function makeLookupTable($rows, $keycol)
@@ -44,8 +44,21 @@ class DB
 	
 	public function queryInsert($query, $returnlastid=true)
 	{
-		$result = mysql_query($query);
-		return ($returnlastid) ? mysql_insert_id() : $result;
+		if ($query=="")
+			return false;
+			
+		$result = DB::$db->query($query);
+		return ($returnlastid) ? DB::$db->insert_id : $result;
+	}
+	
+	public function getInsertID()
+	{
+		return DB::$db->insert_id;
+	}
+	
+	public function getAffectedRows()
+	{
+		return DB::$db->affected_rows;
 	}
 	
 	public function queryOneRow($query)
@@ -55,33 +68,43 @@ class DB
 		if (!$rows)
 			return false;
 		
-		if ($rows)
-			return $rows[0];
-		else
-			return $rows;		
+		return ($rows) ? $rows[0] : $rows;		
 	}	
 		
 	public function query($query)
 	{
-		$result = mysql_query($query);
+		if ($query=="")
+			return false;
+
+		$result = DB::$db->query($query);
 		
 		if ($result === false || $result === true)
 			return array();
 		
 		$rows = array();
 
-		while ($row = mysql_fetch_assoc($result)) 
+		while ($row = $this->fetchAssoc($result))
 			$rows[] = $row;	
 		
-		mysql_free_result($result);
+		$result->free_result();
 		return $rows;
 	}	
 	
 	public function queryDirect($query)
 	{
-		return mysql_query($query);
+		return ($query=="") ? false : DB::$db->query($query);
 	}	
 
+	public function fetchAssoc($result)
+	{
+		return (is_null($result) ? null : $result->fetch_assoc());
+	}
+	
+	public function fetchArray($result)
+	{
+		return (is_null($result) ? null : $result->fetch_array());
+	}
+	
 	public function optimise() 
 	{
 		$ret = array();
@@ -95,6 +118,21 @@ class DB
 		}
 			
 		return $ret;
+	}
+	
+    public function getNumRows($result)
+    {
+        return (is_null($result)) ? 0 : $result->num_rows;
+    }	
+	
+	public function Prepare($query)
+	{
+		return DB::$db->prepare($query);
+	}	
+	
+	public function Error()
+	{
+		return DB::$db->error;
 	}
 }
 ?>

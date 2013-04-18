@@ -20,7 +20,7 @@ class Backfill
 		$groups = new Groups;
 		$db = new DB();
         $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
-        $colcount = mysql_affected_rows();
+        $colcount = $db->getAffectedRows();
         if ( $colcount > 200 )
         {
             echo "\nCollections = ".$colcount.", backfill exiting\n";

@@ -34,7 +34,7 @@ function categorize()
 	$db = new DB();
 	$cat = new Category();
 	$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
-	while ($relrow = mysql_fetch_assoc($relres))
+	while ($relrow = $db->fetchAssoc($relres))
 	{
 		$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
 		$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
@@ -231,7 +231,7 @@ else
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
 						echo "\nImporting #".$nzbCount." nzb's";
-						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => 'mysql_query')))) 
+						if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 						{
 							trigger_error('mysqlBulk failed!', E_USER_ERROR);
 						} 
@@ -268,7 +268,7 @@ else
 		}
 	}
 
-	if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => 'mysql_query'))))
+	if (false === ($qps = mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 	{
 		trigger_error('mysqlBulk failed!', E_USER_ERROR);
 	}

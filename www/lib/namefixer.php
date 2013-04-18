@@ -39,7 +39,7 @@ class Namefixer
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($relrow = mysql_fetch_assoc($relres))
+		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo);
 		}
@@ -75,7 +75,7 @@ class Namefixer
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($relrow = mysql_fetch_array($relres))
+		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo);
 		}
@@ -110,7 +110,7 @@ class Namefixer
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($filerow = mysql_fetch_array($fileres))
+		while ($filerow = $db->fetchArray($fileres))
 		{
 			$this->checkName($filerow, $echo);
 		}

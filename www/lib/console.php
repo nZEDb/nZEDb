@@ -497,12 +497,12 @@ class Console
 		$db = new DB();
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, Console::NUMTOPROCESSPERTIME));
-		if (mysql_num_rows($res) > 0)
+		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "\nProcessing ".mysql_num_rows($res)." console releases\n";
+				echo "\nProcessing ".$db->getNumRows($res)." console releases\n";
 				
-			while ($arr = mysql_fetch_assoc($res)) 
+			while ($arr = $db->fetchAssoc($res)) 
 			{				
 				$gameInfo = $this->parseTitle($arr['searchname']);
 				if ($gameInfo !== false)
