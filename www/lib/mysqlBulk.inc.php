@@ -17,6 +17,9 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 	if (!isset($options['query_handler'])) {
 		$options['query_handler'] = 'mysqli_query';
 	}
+	if (!isset($options['error_handler'])) {
+		$options['error_handler'] = 'mysqli_error';
+	}
 	if (!isset($options['trigger_errors'])) {
 		$options['trigger_errors'] = true;
 	}
@@ -64,7 +67,7 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 	}
 
 	if (!function_exists('__exe')) {
-		function __exe ($sql, $query_handler, $trigger_errors, $link_identifier = null) {
+		function __exe ($sql, $query_handler, $error_handler, $trigger_errors, $link_identifier = null) {
 			if ($link_identifier === null) {
 				$x = call_user_func($query_handler, $sql);
 			} else {
@@ -72,9 +75,10 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 			}
 			if (!$x) {
 				if ($trigger_errors) {
+					$error_msg = call_user_func($error_handler);
 					trigger_error(sprintf(
 						'Query failed. %s [sql: %s]',
-						mysql_error($link_identifier),
+						$error_msg,
 						$sql
 					), E_USER_ERROR);
 					return false;
@@ -149,11 +153,11 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 			}
 
 			if ($method === 'loaddata_unsafe') {
-				if (!__exe("SET UNIQUE_CHECKS=0", $query_handler, $trigger_errors, $link_identifier)) return false;
-				if (!__exe("set foreign_key_checks=0", $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe("SET UNIQUE_CHECKS=0", $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe("set foreign_key_checks=0", $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 				// Only works for SUPER users:
-				#if (!__exe("set sql_log_bin=0", $query_handler, $trigger_error)) return false;
-				if (!__exe("set unique_checks=0", $query_handler, $trigger_errors, $link_identifier)) return false;
+				#if (!__exe("set sql_log_bin=0", $query_handler, $error_handler, $trigger_error)) return false;
+				if (!__exe("set unique_checks=0", $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			}
 
 			if (!__exe("
@@ -162,7 +166,7 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 				FIELDS TERMINATED BY ':::,'
 				LINES TERMINATED BY '^^^\\n'
 				(${fields})
-			", $query_handler, $trigger_errors, $link_identifier)) return false;
+			", $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 
 			break;
 		case 'transaction':
@@ -170,35 +174,35 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 		case 'transaction_nokeys':
 			// Max 26% gain, but good for data integrity
 			if ($method == 'transaction_lock') {
-				if (!__exe('SET autocommit = 0', $query_handler, $trigger_errors, $link_identifier)) return false;
-				if (!__exe('LOCK TABLES '.$table.' READ', $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe('SET autocommit = 0', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe('LOCK TABLES '.$table.' READ', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			} else if ($method == 'transaction_keys') {
-				if (!__exe('ALTER TABLE '.$table.' DISABLE KEYS', $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe('ALTER TABLE '.$table.' DISABLE KEYS', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			}
 
-			if (!__exe('START TRANSACTION', $query_handler, $trigger_errors, $link_identifier)) return false;
+			if (!__exe('START TRANSACTION', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 
 			foreach ($data as $query) {
-				if (!__exe($query, $query_handler, $trigger_errors, $link_identifier)) {
-					__exe('ROLLBACK', $query_handler, $trigger_errors, $link_identifier);
+				if (!__exe($query, $query_handler, $error_handler, $trigger_errors, $link_identifier)) {
+					__exe('ROLLBACK', $query_handler, $error_handler, $trigger_errors, $link_identifier);
 					if ($method == 'transaction_lock') {
-						__exe('UNLOCK TABLES '.$table.'', $query_handler, $trigger_errors, $link_identifier);
+						__exe('UNLOCK TABLES '.$table.'', $query_handler, $error_handler, $trigger_errors, $link_identifier);
 					}
 					return false;
 				}
 			}
 
-			__exe('COMMIT', $query_handler, $trigger_errors, $link_identifier);
+			__exe('COMMIT', $query_handler, $error_handler, $trigger_errors, $link_identifier);
 
 			if ($method == 'transaction_lock') {
-				if (!__exe('UNLOCK TABLES', $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe('UNLOCK TABLES', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			} else if ($method == 'transaction_keys') {
-				if (!__exe('ALTER TABLE '.$table.' ENABLE KEYS', $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe('ALTER TABLE '.$table.' ENABLE KEYS', $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			}
 			break;
 		case 'none':
 			foreach ($data as $query) {
-				if (!__exe($query, $query_handler, $trigger_errors, $link_identifier)) return false;
+				if (!__exe($query, $query_handler, $error_handler, $trigger_errors, $link_identifier)) return false;
 			}
 
 			break;
