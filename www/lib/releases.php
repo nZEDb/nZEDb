@@ -1413,62 +1413,50 @@ class Releases
 		echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
 		$stage1 = TIME();
 		//Look if we have all the files in a collection (which have the file count in the subject).
-		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where totalFiles > 0 and filecheck = 0 limit 200"))
-		{
-			//See if all the files are present in the binaries table.
-			while ($rowcol = $db->fetchAssoc($rescol))
-			{
-				$binFileCnt = array_shift($db->queryOneRow(sprintf("SELECT count(*) from binaries where collectionID = %d", $rowcol['ID'])));
-				if($binFileCnt >= $rowcol['totalFiles'])
-				{
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 1 where ID = %d", $rowcol['ID']));
-				}
-			}
-		}
+		$db->query("UPDATE collections 
+					SET filecheck = 1 
+					WHERE ID IN 
+					(
+						SELECT ID 
+						FROM 
+						(
+							SELECT c.ID 
+							FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID 
+							WHERE c.totalFiles > 0 AND c.filecheck = 0
+							GROUP BY c.ID, c.totalFiles
+							HAVING count(b.ID) >= c.totalFiles
+						) as tmpTable
+					)");
 		
 		//Check if we have all parts for a file. Set partcheck to 1.
-		if($rescol = $db->queryDirect("SELECT ID, totalFiles from collections where filecheck = 1"))
+		$db->query("UPDATE collections 
+					SET filecheck = 2 
+					WHERE ID IN 
+					(
+						SELECT ID 
+						FROM 
+						(
+							SELECT c.ID
+							FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID LEFT JOIN parts p ON p.binaryID = b.ID
+							WHERE c.filecheck = 1 AND b.partcheck = 0
+							GROUP BY c.ID, c.totalFiles, b.ID, b.totalParts
+						) as tmpTable
+					)");		
+		
+		//If a collection has not been updated in 2 hours, set filecheck to 2.
+		if($rescol = $db->queryDirect( "SELECT c.ID, count(b.ID) as binfiles
+										FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID 
+										WHERE c.dateadded < (now() - interval 2 hour) and c.filecheck != 2
+										GROUP BY c.ID"))
 		{
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
-				if($resbin = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and partcheck = 0", $rowcol['ID'])))
-				{
-					while ($rowbins = $db->fetchAssoc($resbin))
-					{
-						$partCnt = $db->queryOneRow(sprintf("SELECT count(*) from parts where binaryID = %d", $rowbins['ID']));
-						
-						if(array_shift($partCnt) >= $rowbins['totalParts'])
-						{
-							$db->queryDirect(sprintf("UPDATE binaries set partcheck = 1 where ID = %d", $rowbins['ID']));
-						}
-					}
-				}
-				
-				//Check if everything is complete. Set filecheck to 2.
-				if($binFileCnt = $db->queryOneRow(sprintf("SELECT count(*) from binaries where partcheck = 1 and collectionID = %d", $rowcol['ID'])))
-				{
-					if(array_shift($binFileCnt) >= $rowcol['totalFiles'])
-					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 where ID = %d", $rowcol['ID']));
-					}
-				}
+				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $rowcol['binfiles'], $rowcol['ID']));
 			}
 		}
 		
-		//If a collection has not been updated in 2 hours, set filecheck to 2.
-		if($rescol = $db->queryDirect("SELECT ID from collections where dateadded < (now() - interval 2 hour) and filecheck != 2 limit 500"))
-		{
-			while ($rowcol = $db->fetchAssoc($rescol))
-			{
-				//get the filecount
-				$binfiles = $db->queryOneRow(sprintf("SELECT count(*) as binfiles from binaries where collectionID = %d", $rowcol['ID']));
-				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $binfiles['binfiles'], $rowcol['ID']));
-			}
-		}
         echo TIME() - $stage1." second(s).";
 	}
-	
-	
 	
 	public function processReleasesStage2()
 	{
@@ -1647,6 +1635,7 @@ class Releases
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
+		
 		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)))"));
 			$partscount = $db->getAffectedRows();
 		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour))"));
