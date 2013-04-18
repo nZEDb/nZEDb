@@ -7,9 +7,11 @@ require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
 require_once(FS_ROOT."/../../www/lib/categorizer.php");
 require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
+require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
+$namecleaning = new nameCleaning();
 $page = new Page;
 
 if (!isset($argv[1]))
@@ -140,20 +142,7 @@ foreach($subdirs AS $subdir)
 					$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 					$postdate[] = $date;
 					$subject = $firstname['0'];
-					//File and part count.
-					$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-|\s\d{2,3}(\|\/)\d{2,3}\s|^\[\d{1,3}\/\d{1,3}\s/i', '', $subject);
-					//Size.
-					$cleanerName = preg_replace('/\[\d+(\/|(\s|_)of(\s|_)|\-)\d+\]|\(\d+(\/|\sof\s|\-)\d+\)|File\s\d+\sof\s\d{1,4}|\-\s\d{1,3}\/\d{1,3}\s\-|\d{1,3}\/\d{1,3}\]\s\-|\s\d{2,3}(\|\/)\d{2,3}\s|^\[\d{1,3}\/\d{1,3}\s/i', '', $subject);
-					//Extensions.
-					$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|jpg|mobi|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
-					//Unwanted stuff.
-					$cleanerName = preg_replace('/SECTIONED brings you|usenet\-space\-cowboys\.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers\-of\-usenet\.info(\/\.net)?|Partner von SSL\-News\.info|AutoRarPar\d{1,5}/i', '', $cleanerName);
-					//Removes some characters.
-					$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
-					//Replaces some characters with 1 space.
-					$cleanerName = preg_replace('/\.|\_|\-|\|/i', ' ', $cleanerName);
-					//Replace multiple spaces with 1 space
-					$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
+					$cleanerName = $namecleaning->releaseCleaner($subject);
 
 					// make a fake message object to use to check the blacklist
 					$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
