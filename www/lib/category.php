@@ -673,7 +673,7 @@ class Category
 
 	public function isGameNDS($releasename)
 	{
-		if (preg_match('/NDS|nds|nintendo.+3ds/', $releasename))
+		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds/', $releasename))
 		{
 			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
 			{
