@@ -443,7 +443,7 @@ class Category
 	
 	public function isMovie3D($releasename)
 	{
-		if(preg_match('/[\.\-_ ]3D\s\[?Bluray\s|[\.\-_ ]3D[\.\-_ ]Blu[\.\-_ ]?ray[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]3D\s?[\.\-_\[ ](1080p|(19|20)\d\d|AVC|BD(25|50)|Blu[\.\-_ ]?ray|CEE|Complete|GER|MVC|MULTi|SBS)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_3D;
 			return true;
