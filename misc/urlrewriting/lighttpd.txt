@@ -1,0 +1,9 @@
+url.rewrite-once = (
+	"^/.*\.(css|jpg|jpeg|gif|png|js|ico)" => "$0",
+	"^/(admin|install).*$" => "$0",
+	"^/([^/\.]+)/?(?:\?(.*))$" => "index.php?page=$1&$2",
+	"^/([^/\.]+)/?$" => "index.php?page=$1",
+	"^/([^/\.]+)/([^/]+)/?(?:\?(.*))$" => "index.php?page=$1&id=$2&$3",
+	"^/([^/\.]+)/([^/]+)/?$" => "index.php?page=$1&id=$2",
+	"^/([^/\.]+)/([^/]+)/([^/]+)/?$" => "index.php?page=$1&id=$2&subpage=$3"
+)
