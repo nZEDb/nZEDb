@@ -1,6 +1,7 @@
 <?php
 
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/groups.php");
 
 class Category
 {
