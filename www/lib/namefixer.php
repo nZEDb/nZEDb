@@ -2,6 +2,7 @@
 
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
 {
@@ -12,23 +13,33 @@ class Namefixer
 	//
 	//Attempts to fix release names using the release name.
 	//
-	public function fixNamesWithNames($time, $echo)
+	public function fixNamesWithNames($time, $echo, $cats)
 	{
 		$db = new DB();
-		$query = "SELECT name, ID as releaseID from releases";
+		$query = "SELECT name, searchname, ID as releaseID from releases";
 		
-		//Do 24 hours or full DB.
-		if ($time == 1)
+		//24 hours, other cats
+		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect(sprintf($query,"where adddate > (now() - interval 1 day)"));
+			$relres = $db->queryDirect($query." where adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
 		}
-		
-		if ($time == 2)
+		//24 hours, all cats
+		if ($time == 1 && $cats == 2)
+		{
+			$relres = $db->queryDirect($query." where adddate > (now() - interval 1 day)");
+		}
+		//other cats
+		if ($time == 2 && $cats == 1)
+		{
+			$relres = $db->queryDirect($query." where (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
+		}
+		//all cats
+		if ($time == 2 && $cats == 2)
 		{
 			$relres = $db->queryDirect($query);
 		}
 		
-		while ($relrow = mysql_fetch_array($relres))
+		while ($relrow = mysql_fetch_assoc($relres))
 		{
 			$this->checkName($relrow, $echo);
 		}
@@ -41,22 +52,32 @@ class Namefixer
 	{
 		$db = new DB();
 		//For testing do all cats//$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
-		$query = "SELECT uncompress(nfo) as NFO, nfo.releaseID as nfoID, rel.ID as relID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
+		$query = "SELECT nfo.releaseID as nfoID, uncompress(nfo) as NFO, rel.ID as releaselID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID)";
 		
-		//Do 24 hours or full DB.
-		if ($time == 1)
+		//24 hours, other cats
+		if ($time == 1 && $cats == 1)
 		{
-			$nfores = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day group by rel.ID"));
+			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+		}
+		//24 hours, all cats
+		if ($time == 1 && $cats == 2)
+		{
+			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) group by rel.ID");
+		}
+		//other cats
+		if ($time == 2 && $cats == 1)
+		{
+			$relres = $db->queryDirect($query." where (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+		}
+		//all cats
+		if ($time == 2 && $cats == 2)
+		{
+			$relres = $db->queryDirect($query);
 		}
 		
-		if ($time == 2)
+		while ($relrow = mysql_fetch_array($relres))
 		{
-			$nfores = $db->queryDirect(sprintf($query,"group by rel.ID"));
-		}
-		
-		while ($nforow = mysql_fetch_array($nfores))
-		{
-			$this->checkName($nforow, $echo);
+			$this->checkName($relrow, $echo);
 		}
 	}
 	
@@ -67,17 +88,27 @@ class Namefixer
 	{
 		$db = new DB();
 		//$query = "SELECT relfiles.name as filename, relfiles.releaseID as fileID, rel.ID as relID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where rel.categoryID = 7010 and rel.categoryID = 2020 and categoryID = 5050";
-		$query = "SELECT relfiles.name as filename, relfiles.releaseID as fileID, rel.ID as relID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
+		$query = "SELECT relfiles.name as filename, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID)";
 		
-		//Do 24 hours or full DB.
-		if ($time == 1)
+		//24 hours, other cats
+		if ($time == 1 && $cats == 1)
 		{
-			$fileres = $db->queryDirect(sprintf($query,"and adddate > (now() - interval 1 day group by rel.ID"));
+			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
 		}
-		
-		if ($time == 2)
+		//24 hours, all cats
+		if ($time == 1 && $cats == 2)
 		{
-			$fileres = $db->queryDirect(sprintf($query,"group by rel.ID"));
+			$relres = $db->queryDirect($query." where rel.adddate > (now() - interval 1 day) group by rel.ID");
+		}
+		//other cats
+		if ($time == 2 && $cats == 1)
+		{
+			$relres = $db->queryDirect($query." where (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+		}
+		//all cats
+		if ($time == 2 && $cats == 2)
+		{
+			$relres = $db->queryDirect($query);
 		}
 		
 		while ($filerow = mysql_fetch_array($fileres))
@@ -89,57 +120,45 @@ class Namefixer
 	//
 	//Update the release with the new information.
 	//
-	public function updateRelease($ID, $name)
+	public function updateRelease($release, $name, $method, $echo)
 	{
-		$db = new DB();
-		$db->queryDirect(sprintf("UPDATE releases set searchname = %s where ID = %d", $ID, $name));
+		$n = "\n";
+		$namecleaning = new nameCleaning();
+		$newname = $namecleaning->fixerCleaner($name);
+		
+		if ($echo == 1)
+		{
+			echo	"New name: ".$newname.$n.
+					"Old name: ".$release["searchname"].$n.
+					"Method:   ".$method.$n.$n;
+			$db = new DB();
+			$db->queryDirect(sprintf("UPDATE releases set searchname = %s where ID = %d", $release["releaseID"], $newname));
+		}
+		if ($echo == 2)
+		{
+			echo	"New name: ".$newname.$n.
+					"Old name: ".$release["searchname"].$n.
+					"Method:   ".$method.$n.$n;
+		}
 	}
 	
 	//
 	//Check the array using regex for a clean name.
 	//
-	public function checkName($array, $echo)
-	{                          
-		if($this->tvCheck($array))
-		{ 
-			if ($echo == 1)
-			{
-			
-			}
-			else if ($echo == 2)
-			{
-				//$this->updateRelease($ID, $name);
-			}
-		}
-		if($this->movieCheck($array))
-		{ 
-			if ($echo == 1)
-			{
-			
-			}
-			else if ($echo == 2)
-			{
-				//$this->updateRelease($ID, $name);
-			}
-		}
+	public function checkName($release, $echo)
+	{                       
+		$this->tvCheck($release, $echo);
+		//$this->movieCheck($array, $echo);
 	}
 	
 	//
 	//Look for a TV name.
 	//
-	public function tvCheck($array)
+	public function tvCheck($release, $echo)
 	{
-		foreach ($array as $searchname)
+		if (preg_match('/\w[\w.\-\',;& ]+((s\d{1,2}(\.|_|\-| )?(b|d|e)\d{1,2})|\d{1,2}x\d{2}|ep(\.|_|\-| )?\d{2})[\w.\-\',;& ]+(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)(\.|_|\-| )(DivX|(H|X)(\.|_|\-| )?264|MPEG2|XviD(HD)?|WMV)[\w.\-\',;& ]+\w/i', $release["name"], $result))
 		{
-			/*if (preg_match('/\w.+hdtv.+\w/i', $searchname, $result))
-			{
-				echo $result['0']."\n";
-			}*/
-			if (preg_match('/[a-z0-9.]+s\d{1,2}e\d{1,2}\.hdtv\.x264+[a-z0-9.-]+/i', $searchname, $result))
-			{
-				echo $result['0']."\n";
-			}
-			
+			$this->updateRelease($release, $result["0"], $methdod="tvCheck: Title.SxxEx.EpTitle.source.vcodec.group", $echo);
 		}
 	}
 	
