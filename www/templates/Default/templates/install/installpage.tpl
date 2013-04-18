@@ -3,12 +3,12 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<title>{$page->title}</title>
-	<link href="../views/styles/install.css" rel="stylesheet" type="text/css" media="screen" />
-	<link rel="shortcut icon" type="image/ico" href="../views/images/favicon.ico"/>
+	<link href="../templates/Default/styles/install.css" rel="stylesheet" type="text/css" media="screen" />
+	<link rel="shortcut icon" type="image/ico" href="../templates/images/favicon.ico"/>
 	{$page->head}
 </head>
 <body>
-	<h1 id="logo"><img alt="nZEDb" src="../views/images/banner.jpg" /></h1>
+	<h1 id="logo"><img alt="nZEDb" src="../templates/Default/images/banner.jpg" /></h1>
 	<div class="content">	
 		<h2>{$page->title}</h2>
 		{$page->content}
