@@ -2,7 +2,6 @@
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/namefixer.php");
 
 $n = "\n";
@@ -40,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 			}
 			else
 			{
-				exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+				exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			}
 		}
 		else if ($argv[3] == "all")
@@ -71,12 +70,12 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 			}
 			else
 			{
-				exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+				exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			}
 		}
 		else
 		{
-			exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 		}
 	}
 	else if ($argv[2] == "false")
@@ -109,7 +108,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 			}
 			else
 			{
-				exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+				exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			}
 		}
 		else if ($argv[3] == "all")
@@ -140,17 +139,17 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 			}
 			else
 			{
-				exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+				exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			}
 		}
 		else
 		{
-			exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 		}
 	}
 	else
 	{
-		exit("ERROR: Wrong argument, type php update_releases.php to see a list of valid arguments.".$n);
+		exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 	}
 }
 else
