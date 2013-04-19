@@ -172,7 +172,7 @@ class Backfill
 		
 		if (!$groupname)
 		{
-			exit("No groups to backfill, they are all at the target date".$targetdate.".".$n);
+			exit("No groups to backfill, they are all at the target date ".$targetdate.".".$n);
 		}
 		else
 		{
@@ -203,21 +203,19 @@ class Backfill
 		$counter = 1;
 		if (@$res)
 		{
-			// No compression.
+			
+			// We do not use interval here, so use a compressed connection only - testing.
+			
 			$nntp = new Nntp();
-			$nntp->doConnectNC();
-			// Compression.
-			$nntpc = new Nntp();
-			$nntpc->doConnect();
+			$nntp->doConnect();
 			
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillPostGroup($nntp, $nntpc, $groupArr, $articles);
+				$this->backfillPostGroup($nntp, $groupArr, $articles);
 				$counter++;
 			}
 			$nntp->doQuit();
-			$nntpc->doQuit();
 		}
 		else
 		{
@@ -225,7 +223,7 @@ class Backfill
 		}
 	}
 
-	function backfillPostGroup($nntp, $nntpc, $groupArr, $articles = '')
+	function backfillPostGroup($nntp, $groupArr, $articles = '')
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -233,14 +231,6 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		echo 'Processing '.$groupArr['name'].$n;
-		// Compression.
-		$datac = $nntpc->selectGroup($groupArr['name']);
-		if(PEAR::isError($datac))
-		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
-		}
-		// No compression.
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
@@ -258,12 +248,17 @@ class Backfill
 				" days old). Our backfill target is article ".$targetpost." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 		
+		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
+		{
+			echo "You need to run update_binaries on the group. Otherwise the group is dead, you must disable it.".$n;
+			return "";
+		}
 		// Check if we are grabbing further than the server has.
 		if($targetpost < $data['first'])
 		{
 			$groups = new Groups;
 			$groups->disableForPost($groupArr['name']);
-			echo "WARNING: Backfill came back before server's first article, setting the postdate very high so it gets skipped next run.".$n."Skipping Group:".$n;
+			echo "WARNING: Attempting to backfill further than usenet's first article, setting our first article date very high so safe backfill can skip it.".$n."Skipping Group:".$n;
 			return "";
 		}
 		// If our estimate comes back with stuff we already have, finish.
@@ -287,15 +282,15 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
+			/*$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
 			if ( $colcount > 0 )
 			{
-				 exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
-			}
+				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
+			}*/
 
 			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
 			flush();
-			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
+			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
 			$db->query(sprintf("UPDATE groups SET first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)
