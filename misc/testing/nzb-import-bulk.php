@@ -163,7 +163,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
 					//unlink($nzbFile);
 					flush();
 					$importfailed = true;
