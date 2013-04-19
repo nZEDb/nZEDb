@@ -303,9 +303,6 @@ class Binaries
 				else
 					die("couldn't prepare parts insert statement!");
 					
-//				$collectionHashes = array();
-//				$binaryHashes = array();
-
 				$lastCollectionHash = "";
 				$lastCollectionID = -1;
 				$lastBinaryHash = "";
@@ -317,11 +314,6 @@ class Binaries
 					{
 						$collectionHash = $data['CollectionHash'];
 						
-//						if (!empty($collectionHashes[$collectionHash]))
-//						{
-//							$collectionID = $collectionHashes[$collectionHash];
-//						}
-//						else
 						if ($lastCollectionHash == $collectionHash)
 						{
 							$collectionID = $lastCollectionID;
@@ -346,14 +338,9 @@ class Binaries
 							}
 							
 							$lastCollectionID = $collectionID;
-//							$collectionHashes[$collectionHash] = $collectionID;
 						}
 						$binaryHash = md5($subject.$data['From'].$groupArr['ID']);
-//						if (!empty($binaryHashes[$binaryHash]))
-//						{
-//							$binaryID = $binaryHashes[$binaryHash];
-//						}
-//						else
+
 						if (!$lastBinaryHash == $binaryHash)
 						{
 							$binaryID = $lastBinaryID;
@@ -374,7 +361,6 @@ class Binaries
 							}
 							
 							$lastBinaryID = $binaryID;
-//							$binaryHashes[$binaryHash] = $binaryID;
 						}
 						
 						foreach($data['Parts'] AS $partdata)
