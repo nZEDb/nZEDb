@@ -49,27 +49,34 @@ class Groups
 	public function getActiveIDs()
 	{			
 		$db = new DB();
-		return $db->query("SELECT ID FROM groups WHERE active = 1 ORDER BY name");		
+		return $db->query("SELECT ID FROM groups WHERE active = 1 ORDER BY name");
 	}
 	
 	public function getByName($grp)
 	{			
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from groups where name = '%s' ", $grp));		
+		return $db->queryOneRow(sprintf("select * from groups where name = '%s' ", $grp));
 	}
 	
 	public function getByNameByID($id)
 	{			
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select name from groups where ID = %d ", $id));	
+		$res = $db->queryOneRow(sprintf("select name from groups where ID = %d ", $id));
 		return $res["name"];	
 	}
 	
 	public function getIDByName($name)
 	{		
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select ID from groups where name = %s", $name));	
+		$res = $db->queryOneRow(sprintf("select ID from groups where name = %s", $name));
 		return $res["ID"];	
+	}
+	
+	// Set the first_record_postdate very high when the group is dead.
+	public function disableForPost($name)
+	{		
+		$db = new DB();
+		$db->queryOneRow(sprintf("update groups set first_record_postdate = %s where name = %s", $db->escapeString("2000-00-00 00:00:00"), $name));
 	}
 
 	public function getCount($groupname="")
@@ -80,7 +87,7 @@ class Groups
 		if ($groupname != "")
 			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
 		
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s", $grpsql));		
+		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s", $grpsql));
 		return $res["num"];
 	}
 	

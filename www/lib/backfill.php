@@ -162,17 +162,10 @@ class Backfill
 	//
 	// Update all active groups categories and descriptions using article numbers instead of date.
 	//
-	function backfillPostAllGroups($groupName='')
+	function backfillPostAllGroups($groupName='', $articles = '')
 	{
 		$n = $this->n;
 		$groups = new Groups;
-		$db = new DB();
-        $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
-        $colcount = $db->getAffectedRows();
-        if ( $colcount > 0 )
-        {
-			exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
-        }
 		if ($groupName != '') 
 		{
 			$grp = $groups->getByName($groupName);
@@ -199,7 +192,7 @@ class Backfill
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillGroup($nntp, $nntpc, $groupArr);
+				$this->backfillGroup($nntp, $nntpc, $groupArr, $articles);
 				$counter++;
 			}
 			$nntp->doQuit();
@@ -211,7 +204,7 @@ class Backfill
 		}
 	}
 
-	function backfillPostGroup($nntp, $nntpc, $groupArr)
+	function backfillPostGroup($nntp, $nntpc, $groupArr, $articles = '')
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -233,19 +226,22 @@ class Backfill
 			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
 			return;
 		}
+		
 		// Get targetpost based on days target.
-		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);
+		$targetpost =  round($groupArr['first_record']-$articles);
+		
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
 		{
 			echo "Group ".$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?".$n;
 			return;
 		}
-
-		echo "Group ".$data["group"].": server has ".$data['first']." - ".$data['last'].", or ~".
+		
+		echo "Group ".$data["group"]."'s first article is ".$data['first'].", newest: ".$data['last'].". Its retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
-				" days.".$n."Local first = ".$groupArr['first_record']." (".
+				" days.".$n."Our oldest article is: ".$groupArr['first_record']." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
+				" days old). Our backfill target is article ".$targetpost."which is ".(($this->postdate($nntp,$targetpost,FALSE))/86400).$n.
+				" days old).".$n;
 		
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
@@ -256,7 +252,9 @@ class Backfill
 		// Get first and last part numbers from newsgroup.
 		if($targetpost < $data['first'])
 		{
-			echo "WARNING: Backfill came back as before server's first.  Setting targetpost to server first".$n."Skipping Group:".$n;
+			$groups = new Groups;
+			$groups->disableForPost($groupArr['name']);
+			echo "WARNING: Backfill came back before server's first article, setting the postdate very high so it gets skipped next run.".$n."Skipping Group:".$n;
 			return "";
 		}
 		// Calculate total number of parts.
@@ -354,7 +352,7 @@ class Backfill
 		$pddebug = false;
 		if ($debug)
 		{
-			echo "INFO: daytopost finding post for $group $days days back.".$n;
+			echo "INFO: Finding article for ".$group.$days." days back.".$n;
 		}
 		
 		$data = $nntp->selectGroup($group);
@@ -370,7 +368,7 @@ class Backfill
 		$lowerbound = $data['first'];
 		if ($debug)
 		{
-			echo "Total Articles: ".$totalnumberofarticles.$n."Upper: ".$upperbound.$n."Lower: ".$lowerbound.$n."Goal: ".date("r", $goaldate)." ($goaldate).".$n;
+			echo "Total Articles: ".$totalnumberofarticles." Newest: ".$upperbound." Oldest: ".$lowerbound.$n."Goal: ".date("r", $goaldate)." ($goaldate).".$n;
 		}
 		if ($data['last'] == PHP_INT_MAX)
 		{
