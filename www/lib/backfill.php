@@ -251,11 +251,11 @@ class Backfill
 		// Get targetpost based on days target.
 		$targetpost =  round($groupArr['first_record']-$articles);
 		
-		echo "Group ".$data["group"]."'s first article is ".$data['first'].", newest: ".$data['last'].". Its retention is: ".
+		echo "Group ".$data["group"]."'s oldest article is ".$data['first'].", newest is ".$data['last'].". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
 				" days.".$n."Our oldest article is: ".$groupArr['first_record']." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days old). Our backfill target is article ".$targetpost."which is ".(($this->postdate($nntp,$targetpost,FALSE))/86400).$n.
+				" days old). Our backfill target is article ".$targetpost." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 		
 		// If our estimate comes back with stuff we already have, finish.
