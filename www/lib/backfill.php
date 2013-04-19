@@ -43,10 +43,10 @@ class Backfill
 		{
 			// No compression.
 			$nntp = new Nntp();
-			$nntp->doConnect();
+			$nntp->doConnectNC();
 			// Compression.
 			$nntpc = new Nntp();
-			$nntpc->doConnectNC();
+			$nntpc->doConnect();
 			
 			foreach($res as $groupArr)
 			{
@@ -64,6 +64,154 @@ class Backfill
 	}
 
 	function backfillGroup($nntp, $nntpc, $groupArr)
+	{
+		$db = new DB();
+		$binaries = new Binaries();
+		$n = $this->n;
+		$this->startGroup = microtime(true);
+
+		echo 'Processing '.$groupArr['name'].".".$n;
+		// Compression.
+		$datac = $nntpc->selectGroup($groupArr['name']);
+		if(PEAR::isError($datac))
+		{
+			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
+			return;
+		}
+		// No compression.
+		$data = $nntp->selectGroup($groupArr['name']);
+		if(PEAR::isError($data))
+		{
+			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
+			return;
+		}
+		// Get targetpost based on days target.
+		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);
+		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
+		{
+			echo "Group ".$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?".$n;
+			return;
+		}
+
+		echo "Group ".$data["group"].": server has ".$data['first']." - ".$data['last'].", or ~".
+				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
+				" days.".$n."Local first = ".$groupArr['first_record']." (".
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
+				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
+		
+		// If our estimate comes back with stuff we already have, finish.
+		if($targetpost >= $groupArr['first_record'])
+		{
+			echo "Nothing to do, we already have the target post".$n.$n;
+			return "";
+		}
+		// Get first and last part numbers from newsgroup.
+		if($targetpost < $data['first'])
+		{
+			echo "WARNING: Backfill came back as before server's first.  Setting targetpost to server first".$n."Skipping Group:".$n;
+			return "";
+		}
+		// Calculate total number of parts.
+		$total = $groupArr['first_record'] - $targetpost;
+		$done = false;
+		// Set first and last, moving the window by maxxMssgs.
+		$last = $groupArr['first_record'] - 1;
+		// Set the initial "chunk".
+		$first = $last - $binaries->messagebuffer + 1;
+		// Just in case this is the last chunk we needed.
+		if($targetpost > $first)
+		{
+			$first = $targetpost;
+		}
+		while($done === false)
+		{
+			$binaries->startLoop = microtime(true);
+			$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
+			if ( $colcount > 0 )
+			{
+				 exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
+			}
+
+			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
+			flush();
+			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
+
+			$db->query(sprintf("UPDATE groups SET first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+			if($first==$targetpost)
+				$done = true;
+			else
+			{
+				//Keep going: set new last, new first, check for last chunk.
+				$last = $first - 1;
+				$first = $last - $binaries->messagebuffer + 1;
+				if($targetpost > $first)
+				{
+					$first = $targetpost;
+				}
+			}
+		}
+		$first_record_postdate = $this->postdate($nntp,$first,false);
+		// Set group's first postdate.
+		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
+
+		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
+		echo "Group processed in ".$timeGroup." seconds.".$n;
+		// Increment the backfil target date.
+	}
+	
+	//
+	// Update all active groups categories and descriptions using article numbers instead of date.
+	//
+	function backfillPostAllGroups($groupName='')
+	{
+		$n = $this->n;
+		$groups = new Groups;
+		$db = new DB();
+        $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
+        $colcount = $db->getAffectedRows();
+        if ( $colcount > 0 )
+        {
+			exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
+        }
+		if ($groupName != '') 
+		{
+			$grp = $groups->getByName($groupName);
+			if ($grp)
+			{
+				$res = array($grp);
+			}
+		} 
+		else 
+		{
+			$res = $groups->getActive();
+		}
+
+		$counter = 1;
+		if ($res)
+		{
+			// No compression.
+			$nntp = new Nntp();
+			$nntp->doConnectNC();
+			// Compression.
+			$nntpc = new Nntp();
+			$nntpc->doConnect();
+			
+			foreach($res as $groupArr)
+			{
+				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
+				$this->backfillGroup($nntp, $nntpc, $groupArr);
+				$counter++;
+			}
+			$nntp->doQuit();
+			$nntpc->doQuit();
+		}
+		else
+		{
+			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
+		}
+	}
+
+	function backfillPostGroup($nntp, $nntpc, $groupArr)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
