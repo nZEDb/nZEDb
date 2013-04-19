@@ -70,6 +70,12 @@ class Binaries
 		$n = $this->n;
 		$this->startGroup = microtime(true);
 		
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			$nntp->doConnect();
+		}
+		
 		echo 'Processing '.$groupArr['name'].$n;
 		
 		// Connect to server
