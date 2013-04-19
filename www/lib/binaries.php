@@ -312,6 +312,8 @@ class Binaries
 				$lastBinaryHash = "";
 				$lastBinaryID = -1;
 				
+				$db->setAutoCommit(false);
+				
 				foreach($this->message AS $subject => $data)
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
@@ -391,6 +393,8 @@ class Binaries
 					echo 'WARNING: '.sizeof($msgsnotinserted).' parts failed to insert'.$n;
 					$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
 				}
+				$db->Commit();
+				$db->setAutoCommit(true);
 			}	
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
@@ -409,7 +413,6 @@ class Binaries
 			echo "Skipping group".$n;
 			return false;
 		}
-
 	}
 	
 	private function partRepair($nntp, $groupArr)

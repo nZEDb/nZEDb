@@ -134,5 +134,20 @@ class DB
 	{
 		return DB::$db->error;
 	}
+	
+	public function setAutoCommit($enabled)
+	{
+		return DB::$db->autocommit($enabled);
+	}
+	
+	public function Commit()
+	{
+		return DB::$db->commit();
+	}
+	
+	public function Rollback()
+	{
+		return DB::$db->rollback();
+	}
 }
 ?>
