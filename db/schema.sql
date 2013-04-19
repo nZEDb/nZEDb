@@ -568,6 +568,7 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.anime', 'This group contains mostly Anime Television.', NULL, '30000000');
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime.repost', 'This group contains Anime Television.', NULL, '30000000');
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.0day.stuffz', 'This group contains mostly 0day software.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.triballs', 'This group contains various.', 2, NULL);
 
 DROP TABLE IF EXISTS `parts`;
 CREATE TABLE `parts` (
