@@ -5,5 +5,6 @@ require_once(WWW_DIR."/lib/tvrage.php");
 
 $tvrage = new TVRage(true);
 $tvrage->updateSchedule();
+exit ("Updated the TVRage schedule succesfully.\n");
 
 ?>

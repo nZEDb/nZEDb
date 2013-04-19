@@ -5,5 +5,6 @@ require_once(WWW_DIR."/lib/movie.php");
 
 $m = new Movie(true);
 $m->updateUpcoming();
+exit ("Updated upcoming movies succesfully.\n");
 
 ?>

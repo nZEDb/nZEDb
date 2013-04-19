@@ -5,5 +5,6 @@ require_once(WWW_DIR."/lib/framework/db.php");
 
 $db = new DB;
 $db->optimise();
+exit ("Optimised the MYSQL tables succesfuly.\n");
 
 ?>
