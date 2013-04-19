@@ -105,18 +105,21 @@ Class NZBcontents
 							$pNFOsize = strlen($possibleNFO);
 							if ($pNFOsize < 40000)
 							{
-								/*if ($pNFOsize > 20)
+								// exif_imagetype needs a minimum size or else it doesn't work
+								if ($pNFOsize > 13)
 								{
 									//Check if it's an image.
-									
+									if (exif_imagetype($possibleNFO) == false)
+									{
+										$fetchedBinary = $possibleNFO;
+										$foundnfo = true;
+									}
 								}
 								else
 								{
 									$fetchedBinary = $possibleNFO;
 									$foundnfo = true;
-								}*/
-								$fetchedBinary = $possibleNFO;
-								$foundnfo = true;
+								}
 							}
 						}
 					}
