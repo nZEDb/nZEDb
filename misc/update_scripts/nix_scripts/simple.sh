@@ -10,7 +10,7 @@ while :
 CURRTIME=`date +%s`
 cd ${NZEDB_PATH}
 /usr/bin/php5 ${NZEDB_PATH}/update_binaries.php
-/usr/bin/php5 ${NZEDB_PATH}/update_releases.php
+/usr/bin/php5 ${NZEDB_PATH}/update_releases.php 1 true 
 
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]

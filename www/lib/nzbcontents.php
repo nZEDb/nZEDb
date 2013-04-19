@@ -105,6 +105,16 @@ Class NZBcontents
 							$pNFOsize = strlen($possibleNFO);
 							if ($pNFOsize < 40000)
 							{
+								/*if ($pNFOsize > 20)
+								{
+									//Check if it's an image.
+									
+								}
+								else
+								{
+									$fetchedBinary = $possibleNFO;
+									$foundnfo = true;
+								}*/
 								$fetchedBinary = $possibleNFO;
 								$foundnfo = true;
 							}
