@@ -1557,7 +1557,7 @@ class Releases
 					}
 					else
 					{
-						echo "Error Inserting Release: " . $cleanRelName . ": " . $db->Error() . $n;
+						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanRelName . ": " . $db->Error() . $n;
 					}
 				}
 			}
