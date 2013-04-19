@@ -89,7 +89,7 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if(PEAR::isError($data))
 			{
-				echo "Failed to reconnect to usenet, skipping group".$n;
+				echo "Failed to reconnect to usenet, skipping group.".$n;
 				return;
 			}
 		}
