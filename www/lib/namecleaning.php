@@ -19,8 +19,7 @@
 			//File Sizes - Non unique ones.
 			$cleansubject = preg_replace('/\-\s\d{1,3}\.\d{1,3}\s(M|K)B\s(?=\-\s\d{1,3}\.\d{1,3}\s(G|M)B\s)|><\s\d{1,3}\/\d{1,3}\s\(.+><\s\d{1,3},\d{1,3}\s(G|M)B\s>|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $cleansubject);
 			//Random stuff.
-			$cleansubject = preg_replace('/AutoRarPar\d{1,5}/i', '', $cleansubject);
-			$cleansubject = utf8_encode(trim($cleansubject));
+			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}/i', '', $cleansubject)));
 			
 			return $cleansubject;
 		}
@@ -39,12 +38,13 @@
 			//Unwanted stuff.
 			$cleanerName = preg_replace('/SECTIONED brings you|usenet\-space\-cowboys\.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers\-of\-usenet\.info(\/\.net)?|Partner von SSL\-News\.info|AutoRarPar\d{1,5}/i', '', $cleanerName);
 			//Removes some characters.
-			$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
+			$crap = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
+			$cleanerName = str_replace($crap, "", $cleanerName);
 			//Replaces some characters with 1 space.
-			$cleanerName = preg_replace('/\.|\_|\-|\|/i', ' ', $cleanerName);
+			$commonchars = array(".", "_", '-', "|");
+			$cleanerName = str_replace($commonchars, " ", $cleanerName);
 			//Replace multiple spaces with 1 space
-			$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
-			$cleanerName = trim($cleanerName);
+			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
 			
 			return $cleanerName;
 		}
@@ -57,13 +57,19 @@
 			//Extensions.
 			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|exe|idx|jpg|mobi|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $name);
 			//Removes some characters.
-			$cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
+			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
+			$cleanerName = str_replace($craphars, "", $cleanerName);
 			//Replaces some characters with 1 space.
-			$cleanerName = preg_replace('/\.|\_|\-|\|/i', ' ', $cleanerName);
+			$commonchars = array(".", "_", '-', "|");
+			$cleanerName = str_replace($commonchars, " ", $cleanerName);
 			//Replace multiple spaces with 1 space
-			$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
-			$cleanerName = trim($cleanerName);
+			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
 			
 			return $cleanerName;
 		}
+		
+		/* Old stuff.
+		 * $cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
+		 * $cleanerName = preg_replace('/\.|\_|\-|\|/i', ' ', $cleanerName); 
+		 */
 	}
