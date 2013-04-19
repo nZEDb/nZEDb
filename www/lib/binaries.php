@@ -215,7 +215,7 @@ class Binaries
 			return false;
 		}
 	
-		//$this->startUpdate = microtime(true);
+		$this->startCleaning = microtime(true);
 		if (is_array($msgs))
 		{	
 			// Loop articles, figure out files/parts.
@@ -271,6 +271,7 @@ class Binaries
 					}
 				}
 			}
+			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg);
 			unset($msgs);
 			$maxnum = $last;
@@ -396,7 +397,7 @@ class Binaries
 			
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
 			}
 			unset($this->message);
 			unset($data);
