@@ -5,29 +5,29 @@ require_once(WWW_DIR."/lib/backfill.php");
 
 $n = "\n";
 	
-if (isset($argv[1]) && $argv[1] == "all" && !is_numeric($argv[1]) && !isset($argv[2]))
+if (isset($argv[1]) && $argv[1] == "all" && $argv[1] !== "safe" && !is_numeric($argv[1]) && !isset($argv[2]))
 {
 	$backfill = new Backfill();
 	$groupName = '';
 	$backfill->backfillAllGroups($groupName);
 }
-else if (isset($argv[1]) && $argv[1] !== "all" && !is_numeric($argv[1]) && is_numeric($argv[2]) && isset($argv[2]))
+else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] !== "safe" && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
 	$backfill = new Backfill();
 	$backfill->backfillPostAllGroups($argv[1], $argv[2]);
 }
-else if (isset($argv[1]) && $argv[1] !== "all" && !is_numeric($argv[1]) && !isset($argv[2]))
+else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] !== "safe" && !is_numeric($argv[1]) && !isset($argv[2]))
 {
 	$backfill = new Backfill();
 	$backfill->backfillAllGroups($argv[1]);
 }
-else if (isset($argv[1]) && $argv[1] !== "all" && is_numeric($argv[1]) && !isset($argv[2]))
+else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] !== "safe" && is_numeric($argv[1]) && !isset($argv[2]))
 {
 	$backfill = new Backfill();
 	$groupName = '';
 	$backfill->backfillPostAllGroups($groupName, $argv[1]);
 }
-else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] == "safe" && !is_numeric($argv[1]) && is_numeric($argv[2]) && isset($argv[2]))
+else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] == "safe" && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
 	$backfill = new Backfill();
 	$backfill->safeBackfill($argv[1], $argv[2]);

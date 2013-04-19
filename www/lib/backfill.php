@@ -39,7 +39,7 @@ class Backfill
 		}
 
 		$counter = 1;
-		if ($res)
+		if (@$res)
 		{
 			// No compression.
 			$nntp = new Nntp();
@@ -168,15 +168,15 @@ class Backfill
 		$n = $this->n;
 		
 		$targetdate = "2012-06-24";
-		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (active = 1) order by name desc"), $db-escapeString($targetdate));
+		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (active = 1) order by name asc", $db->escapeString($targetdate)));
 		
 		if (!$groupname)
 		{
-			exit("No groups to backfill, they are all at the target date".$targetdate.".");
+			exit("No groups to backfill, they are all at the target date".$targetdate.".".$n);
 		}
 		else
 		{
-			$this->backfillPostAllGroups($groupname, $articles);
+			$this->backfillPostAllGroups($groupname["name"], $articles);
 		}
 	}
 	
@@ -201,7 +201,7 @@ class Backfill
 		}
 
 		$counter = 1;
-		if ($res)
+		if (@$res)
 		{
 			// No compression.
 			$nntp = new Nntp();
