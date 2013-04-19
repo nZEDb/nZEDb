@@ -481,27 +481,37 @@ class Music
 		
 		$name = explode("-", $newName);
 		$name = array_map("trim", $name);
-
-		if (preg_match('/^the /i', $name[0])) {
-				$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
+		
+		if (isset($name[1]))
+		{
+			if (preg_match('/^the /i', $name[0])) 
+			{
+					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
+			}
+			if (preg_match('/deluxe edition|single|nmrVBR|READ NFO/i', $name[1], $albumType)) 
+			{
+					$name[1] = preg_replace('/'.$albumType[0].'/i', '', $name[1]);
+			}
+			$result['artist'] = trim($name[0]);
+			$result['album'] = trim($name[1]);
+		
+			//make sure we've actually matched an album name
+			if (preg_match('/^(nmrVBR|VBR|WEB|SAT|20\d{2}|19\d{2}|CDM|EP)$/i', $result['album']))
+			{
+				$result['album'] = '';
+			}
+		
+			preg_match('/((?:19|20)\d{2})/i', $releasename, $year);
+			$result['year'] = (isset($year[1]) && !empty($year[1])) ? $year[1] : '';
+		
+			$result['releasename'] = $releasename;
+		
+			return (!empty($result['artist']) && !empty($result['album'])) ? $result : false;
 		}
-		if (preg_match('/deluxe edition|single|nmrVBR|READ NFO/i', $name[1], $albumType)) {
-				$name[1] = preg_replace('/'.$albumType[0].'/i', '', $name[1]);
+		else
+		{
+			return false;
 		}
-		$result['artist'] = trim($name[0]);
-		$result['album'] = trim($name[1]);
-		
-		//make sure we've actually matched an album name
-		if (preg_match('/^(nmrVBR|VBR|WEB|SAT|20\d{2}|19\d{2}|CDM|EP)$/i', $result['album'])) {
-			$result['album'] = '';
-		}
-		
-		preg_match('/((?:19|20)\d{2})/i', $releasename, $year);
-		$result['year'] = (isset($year[1]) && !empty($year[1])) ? $year[1] : '';
-		
-		$result['releasename'] = $releasename;
-		
-		return (!empty($result['artist']) && !empty($result['album'])) ? $result : false;
 	}
 
 	public function getGenres($activeOnly=false)

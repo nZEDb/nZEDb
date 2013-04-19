@@ -1547,7 +1547,7 @@ class Releases
 					if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) 
 												VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", 
 												$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), 
-												$db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+												$db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 					{
 						$relid = $db->getInsertID();
 						//update collections table to say we inserted the release.
