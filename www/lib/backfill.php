@@ -213,7 +213,7 @@ class Backfill
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillGroup($nntp, $nntpc, $groupArr, $articles);
+				$this->backfillPostGroup($nntp, $nntpc, $groupArr, $articles);
 				$counter++;
 			}
 			$nntp->doQuit();
