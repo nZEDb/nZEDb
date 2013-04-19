@@ -1635,13 +1635,11 @@ class Releases
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
-		
-		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)))"));
-			$partscount = $db->getAffectedRows();
-		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour))"));
-			$binscount = $db->getAffectedRows();
-		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)"));
-			$colcount = $db->getAffectedRows();
+	
+		$db->queryDirect("DELETE parts, binaries, collections 
+						  FROM parts LEFT JOIN binaries ON parts.binaryID = binaries.ID LEFT JOIN collections ON binaries.collectionID = collections.ID
+						  WHERE collections.filecheck = 4 || collections.dateadded < (now() - interval 72 hour)");
+		$reccount = $db->getAffectedRows();
 		
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
@@ -1673,9 +1671,10 @@ class Releases
 				$dupecount ++;
 			}
 		}
-		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n;
-		echo TIME() - $stage7." second(s).".$n;
-        
+		// echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$partscount." parts, ".$binscount." binaries, ".$colcount." collections.".$n;
+		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$reccount." records from parts/binaries/collections.".$n;
+		
+		echo TIME() - $stage7." second(s).".$n;        
 	}
 
 	public function processReleases($categorize, $postproc)
