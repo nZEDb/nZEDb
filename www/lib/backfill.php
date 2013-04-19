@@ -162,10 +162,22 @@ class Backfill
 	//
 	// Safe backfill using posts.
 	//
-	function safeBackfill()
+	function safeBackfill($articles='')
 	{
 		$db = new DB();
 		$n = $this->n;
+		
+		$targetdate = "2012-06-24";
+		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (active = 1) order by name desc"), $db-escapeString($targetdate));
+		
+		if (!$groupname)
+		{
+			exit("No groups to backfill, they are all at the target date".$targetdate.".");
+		}
+		else
+		{
+			$this->backfillPostAllGroups($groupname, $articles);
+		}
 	}
 	
 	//
@@ -183,7 +195,7 @@ class Backfill
 				$res = array($grp);
 			}
 		} 
-		else 
+		else
 		{
 			$res = $groups->getActive();
 		}
