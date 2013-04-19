@@ -23,7 +23,7 @@ class Backfill
         $colcount = $db->getAffectedRows();
         if ( $colcount > 0 )
         {
-			exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
+			exit($n."Collections = ".$colcount.$n)/*", backfill exiting.".$n);*/
         }
 		if ($groupName != '') 
 		{
