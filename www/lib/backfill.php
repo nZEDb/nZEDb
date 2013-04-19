@@ -251,12 +251,6 @@ class Backfill
 		// Get targetpost based on days target.
 		$targetpost =  round($groupArr['first_record']-$articles);
 		
-		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
-		{
-			echo "Group ".$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?".$n;
-			return;
-		}
-		
 		echo "Group ".$data["group"]."'s first article is ".$data['first'].", newest: ".$data['last'].". Its retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
 				" days.".$n."Our oldest article is: ".$groupArr['first_record']." which is (".
