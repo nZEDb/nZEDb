@@ -184,21 +184,14 @@ class Binaries
 		$namecleaning = new nameCleaning();
 		$n = $this->n;
 		$this->startHeaders = microtime(true);
-		
-		if ($this->compressedHeaders)
-			$msgs = $nntp->getXOverview($first."-".$last, true, false);
-		else
-			$msgs = $nntp->getOverview($first."-".$last, true, false);
+		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
-			if ($this->compressedHeaders)
-				$msgs = $nntp->getXOverview($first."-".$last, true, false);
-			else
-				$msgs = $nntp->getOverview($first."-".$last, true, false);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
 		}
 		
 		$rangerequested = range($first, $last);
@@ -216,7 +209,7 @@ class Binaries
 			return false;
 		}
 	
-////////		$this->startUpdate = microtime(true);
+		//$this->startUpdate = microtime(true);
 		if (is_array($msgs))
 		{	
 			//loop articles, figure out files/parts

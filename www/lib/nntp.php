@@ -1,13 +1,20 @@
 <?php
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/Net_NNTP/NNTP/Client.php");
 
 class Nntp extends Net_NNTP_Client
-{    
+{
+	public $Compression = false;
+	
 	function doConnect() 
 	{
 		$enc = false;
+		$db = new DB();
+		$compressionstatus = $db->queryOneRow('select value from site where setting = "compressedheaders"');
+		$compressionstatus = array_shift($compressionstatus);
+		
 		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
 
@@ -26,6 +33,11 @@ class Nntp extends Net_NNTP_Client
 				die();
 			}
 		}
+		if($compressionstatus == "1")
+		{
+			$this->enableCompression();
+		}
+		
 	}
 	
 	function doQuit() 
@@ -108,121 +120,6 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 	
-	function getXOverview($range, $_names = true, $_forceNames = true)
-    {
-    	// Fetch overview from server
-    	$overview = $this->cmdXZver($range);
-    	if (PEAR::isError($overview)) {
-    	    return $overview;
-    	}
-
-    	// Use field names from overview format as keys?
-    	if ($_names) 
-    	{
-    	    // Already cached?
-    	    if (is_null($this->_overviewFormatCache)) {
-    	    	// Fetch overview format
-    	        $format = $this->getOverviewFormat($_forceNames, true);
-    	        if (PEAR::isError($format)){
-    	            return $format;
-    	        }
-				
-    	    	// Prepend 'Number' field
-    	    	$format = array_merge(array('Number' => false), $format);
-				
-    	    	// Cache format
-    	        $this->_overviewFormatCache = $format;
-    	    } 
-    	    else 
-    	    {
-    	        $format = $this->_overviewFormatCache;
-    	    }
-			
-    	    // Loop through all articles
-            foreach ($overview as $key => $article) 
-            {	
-            	if (sizeof($format) == sizeof($article))
-            	{
-            		//Replace overview using $format as keys, $article as values
-					$overview[$key] = array_combine(array_keys($format), $article);
-					
-					// If article prefixed by field name, remove it
-					foreach($format as $fkey=>$fval) 
-					{
-						if ($fval === true) 
-						{
-							$overview[$key][$fkey] = trim(str_replace($fkey.':', '', $overview[$key][$fkey]));
-						}
-					}
-				}
-    	    }
-    	}
-
-    	switch (true)
-    	{
-    	    // Expect one article
-    	    case is_null($range);
-    	    case is_int($range);
-            case is_string($range) && ctype_digit($range):
-    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-    	        if (count($overview) == 0) {
-    	    	    return false;
-    	    	} else {
-    	    	    return reset($overview);
-    	    	}
-    	    	break;
-
-    	    // Expect multiple articles
-    	    default:
-    	    	return $overview;
-    	}
-    }
-	
-	function cmdXZver($range = NULL)
-	{
-	    if (is_null($range)) 
-	        $command = 'XZVER';
-	    else 
-	        $command = 'XZVER ' . $range;
-	
-	    $response = $this->_sendCommand($command);
-
-	    switch ($response) {
-	    case 224: // 224, RFC2980: 'Overview information follows'
-	        $data = $this->_getTextResponse();
-
-			//de-yenc
-			$dec = $this->decodeYenc(implode("\r\n", $data));
-			if (!$dec) 
-			{
-				$this->throwError("yenc decode failure");
-			}
-			
-			//inflate deflated string
-			$data = explode("\r\n", gzinflate($dec));
-
-	        foreach ($data as $key => $value) 
-	            $data[$key] = explode("\t", ltrim($value));
-	
-	        return $data;
-	        break;
-	    case 412: // 412, RFC2980: 'No news group current selected'
-	        $this->throwError("No news group current selected ({$this->_currentStatusResponse()})", $response);
-	        break;
-	    case 420: // 420, RFC2980: 'No article(s) selected'
-	        $this->throwError("No article(s) selected ({$this->_currentStatusResponse()})", $response);
-	        break;
-	    case 502: // 502 RFC2980: 'no permission'
-	        $this->throwError("No permission ({$this->_currentStatusResponse()})", $response);
-	        break;
-	    case 500: // 500  RFC2980: 'unknown command'
-	        $this->throwError("XZver not supported ({$this->_currentStatusResponse()})", $response);
-	        break;
-	    default:
-	        return $this->_handleUnexpectedResponse($response);
-	    }
-	}
-	
 	function decodeYenc($yencodedvar)
 	{
 		$input = array();
@@ -238,6 +135,143 @@ class Nntp extends Net_NNTP_Client
 			return $ret;
 		}
 		return false;
-	}	
+	}
+	
+	/*
+	* Code by Wafflehouse : http://pastebin.com/A3YypDAJ
+	* Enable XFeature compression support for the current connection.
+	*/
+	function enableCompression()
+	{
+		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
+
+		if (PEAR::isError($response) || $response != 290) 
+		{
+			return false;
+		}
+
+		$this->Compression = true;
+		return true;
+	}
+
+	/**
+	 * Override to intercept any Xfeature compressed responses.
+	 */
+	function _getTextResponse()
+	{
+		if ($this->Compression && isset($this->_currentStatusResponse[1]) && stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false)
+		{
+			return $this->_getXfeatureTextResponse();
+		}
+
+		return parent::_getTextResponse();
+	}
+
+	function _getXfeatureTextResponse()
+	{
+		$tries 				= 0;
+		$bytesreceived 		= 0;
+		$totalbytesreceived = 0;
+		$completed			= false;
+		$data 				= null;
+		// Build binary array that represents zero results basically a compressed empty string terminated with .(period) char(13) char(10)		
+		$emptyreturnend 	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
+		$emptyreturn  		= chr(0x78).chr(0x9C).$emptyreturnend;
+		$emptyreturn2 		= chr(0x78).chr(0x01).$emptyreturnend;
+		$emptyreturn3 		= chr(0x78).chr(0x5e).$emptyreturnend;
+		$emptyreturn4 		= chr(0x78).chr(0xda).$emptyreturnend;
+		
+		while (!feof($this->_socket))
+		{
+			$completed = false;
+			// Get data from the stream.
+			$buffer = fgets($this->_socket);
+			// Get byte count and update total bytes.
+			$bytesreceived = strlen($buffer);
+			// If we got no bytes at all try one more time to pull data.
+			if ($bytesreceived == 0)
+			{
+				$buffer = fgets($this->_socket);
+			}
+			// Get any socket error codes.
+			 $errorcode = socket_last_error();
+			
+			// If the buffer is zero it's zero...
+			if ($bytesreceived === 0)
+				return $this->throwError('No data returned.', 1000);
+			// Did we have any socket errors?	
+			if ($errorcode === 0)
+			{
+				// Append buffer to final data object.
+				 $data .= $buffer;
+				 $totalbytesreceived = $totalbytesreceived+$bytesreceived;
+				 
+				 // Output byte count in real time once we have 1MB of data.
+				if ($totalbytesreceived > 10240)
+				if ($totalbytesreceived%128 == 0)
+				{
+					echo $totalbytesreceived." bytes.\r";
+				}
+				
+				// Check to see if we have the magic terminator on the byte stream.
+				$b1 = null;
+				if ($bytesreceived > 2)
+				if (ord($buffer[$bytesreceived-3]) == 0x2e && ord($buffer[$bytesreceived-2]) == 0x0d && ord($buffer[$bytesreceived-1]) == 0x0a)
+				{
+					// Check if the returned binary string is 11 bytes long generally and indicator of an compressed empty string.
+					if ($totalbytesreceived==11)
+					{
+						// Compare the data to the empty string if the data is a compressed empty string. Throw an error, else return the data.
+						if (($data === $emptyreturn)||($data === $emptyreturn2)||($data === $emptyreturn3)||($data === $emptyreturn4))
+						{
+							echo "Empty gzip stream, the server did not return any data.\n";
+							return $this->throwError('No data returned.', 1000);
+						}
+					}
+					else
+					{
+						echo "\n";
+						$completed = true;
+					}				
+				}
+			 }
+			 else
+			 {
+				 echo "Failed to read line from socket.\n";
+				 return $this->throwError('Failed to read line from socket.', 1000);
+			 }
+		
+			if ($completed)
+			{
+				// Check if the header is valid for a gzip stream.
+				if(ord($data[0]) == 0x78 && in_array(ord($data[1]),array(0x01,0x5e,0x9c,0xda)))
+				{
+					$decomp = @gzuncompress(mb_substr ( $data , 0 ,-3, '8bit' ));
+				}
+				else
+				{
+					echo "Invalid header on gzip stream.\n";
+					return $this->throwError('Invalid gzip stream.', 1000);
+				}
+
+				if ($decomp != false)
+				{
+					$decomp = explode("\r\n", trim($decomp));
+					return $decomp;
+				}
+				else
+				{
+					$tries++;
+					echo "Decompression failed. Retry number: $tries\n";
+				}
+			}
+		}
+		// Throw an error if we get out of the loop.
+		if (!feof($this->_socket)) 
+		{
+			return "Error: unexpected fgets() fail.\n";
+		}
+		return $this->throwError('Decompression Failed, connection closed.', 1000);
+	}
 }
 ?>
