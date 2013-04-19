@@ -161,7 +161,7 @@ class Namefixer
 		// Just for NFOs.
 		if ($type == "NFO, ")
 		{
-			$this->nfoCheck($release, $echo, $type);
+			$this->nfoCheckTY($release, $echo, $type);
 		}
 		
 		// Just for filenames.
@@ -310,256 +310,100 @@ class Namefixer
 	}
 	
 	//
-	//	Just for NFOS.
+	//	Just for NFOS. does Title (year)
 	//
-	/*public function nfoCheck($release, $echo, $type)
+	public function nfoCheckTY($release, $echo, $type)
 	{
 		//Title(year)
-		if(preg_match('/(\w[\w`~!@#$%^&*()_+\-={}|"<>?\[\]\\;\',.\/ ]+\s?\((19|20)\d\d\))/i', $release["textstring"], $result) && $foundName == "" && !preg_match('/\.pdf|Audio\s?Book/i', $release["textstring"]))
+		if(preg_match('/(\w[\w`~!@#$%^&*()_+\-={}|"<>?\[\]\\;\',.\/ ]+\s?\((19|20)\d\d\))/i', $release["textstring"], $result) && !preg_match('/\.pdf|Audio\s?Book/i', $release["textstring"]))
 		{
-			$release = $result[0];					
-			if(preg_match('/(idiomas|lang|language|langue|sprache).*?\b(Brazilian|Chinese|Croatian|Danish|DE|Deutsch|Dutch|Estonian|ES|English|Englisch|Finnish|Flemish|Francais|French|FR|German|Greek|Hebrew|Icelandic|Italian|Japenese|Japan|Japanese|Korean|Latin|Nordic|Norwegian|Polish|Portuguese|Russian|Serbian|Slovenian|Swedish|Spanisch|Spanish|Thai|Turkish)\b/i',$nfo,$matches))
+			$releasename = $result[0];			
+			if(preg_match('/(idiomas|lang|language|langue|sprache).*?\b(Brazilian|Chinese|Croatian|Danish|DE|Deutsch|Dutch|Estonian|ES|English|Englisch|Finnish|Flemish|Francais|French|FR|German|Greek|Hebrew|Icelandic|Italian|Japenese|Japan|Japanese|Korean|Latin|Nordic|Norwegian|Polish|Portuguese|Russian|Serbian|Slovenian|Swedish|Spanisch|Spanish|Thai|Turkish)\b/i', $release["textstring"], $result))
 			{
-				if($result[2] == 'DE') {$result[2] = 'DUTCH';}
-				if($result[2] == 'Englisch') {$result[2] = 'English';}
-				if($result[2] == 'FR') {$result[2] = 'FRENCH';}
-				if($result[2] == 'ES') {$result[2] = 'SPANISH';}
-				$release = $release.".".$result[2];
+				if($result[2] == 'DE') 		{$result[2] = 'DUTCH';}
+				if($result[2] == 'Englisch'){$result[2] = 'English';}
+				if($result[2] == 'FR') 		{$result[2] = 'FRENCH';}
+				if($result[2] == 'ES') 		{$result[2] = 'SPANISH';}
+				$releasename = $releasename.".".$result[2];
 			}					
-			if(preg_match('/(frame size|res|resolution|video|video res).*?(272|336|480|494|528|608|640|\(640|688|704|720x480|816|820|1080|1 080|1280 @|1280|1920|1 920|1920x1080)/i',$nfo,$matches))
+			if(preg_match('/(frame size|res|resolution|video|video res).*?(272|336|480|494|528|608|640|\(640|688|704|720x480|816|820|1080|1 080|1280 @|1280|1920|1 920|1920x1080)/i', $release["textstring"], $result))
 			{
-				if($result[2] == '272') {
-					$result[2] = '272p';
-						}
-						if($result[2] == '336')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '480')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '494')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '608')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '640')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '\(640')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '688')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '704')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '720x480')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '816')
-						{
-							$result[2] = '1080p';
-						}
-						if($result[2] == '820')
-						{
-							$result[2] = '1080p';
-						}	
-						if($result[2] == '1080')
-						{
-							$result[2] = '1080p';
-						}
-						if($result[2] == '1280x720')
-						{
-							$result[2] = '720p';
-						}
-						if($result[2] == '1280 @')
-						{
-							$result[2] = '720p';
-						}
-						if($result[2] == '1280')
-						{
-							$result[2] = '720p';
-						}
-						if($result[2] == '1920')
-						{
-							$result[2] = '1080p';
-						}	
-						if($result[2] == '1 920')
-						{
-							$result[2] = '1080p';
-						}	
-						if($result[2] == '1 080')
-						{
-							$result[2] = '1080p';
-						}
-						if($result[2] == '1920x1080')
-						{
-							$result[2] = '1080p';
-						}
-						$foundName = $foundName.".".$result[2];
-					}
-					if(preg_match('/(largeur|width).*?(640|\(640|688|704|720|1280 @|1280|1920|1 920)/i',$nfo,$matches))
-					{
-						if($result[2] == '640')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '\(640')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '688')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '704')
-						{
-							$result[2] = '480p';
-						}
-						if($result[2] == '1280 @')
-						{
-							$result[2] = '720p';
-						}
-						if($result[2] == '1280')
-						{
-							$result[2] = '720p';
-						}
-						if($result[2] == '1920')
-						{
-							$result[2] = '1080p';
-						}	
-						if($result[2] == '1 920')
-						{
-							$result[2] = '1080p';
-						}		
-						if($result[2] == '720')
-						{
-							$result[2] = '480p';
-						}
-						$foundName = $foundName.".".$result[2];
-					}
-					if(preg_match('/source.*?\b(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)\b/i',$nfo,$matches))
-					{	
-						if($result[1] == 'BD')
-						{
-							$result[1] = 'Bluray.x264';
-						}
-						if($result[1] == 'CAMRIP')
-						{
-							$result[1] = 'CAM';
-						}
-						if($result[1] == 'DBrip')
-						{
-							$result[1] = 'BDRIP';
-						}
-						if($result[1] == 'DVD R1')
-						{
-							$result[1] = 'DVD';
-						}
-						if($result[1] == 'HD')
-						{
-							$result[1] = 'HDTV';
-						}
-						if($result[1] == 'NTSC')
-						{
-							$result[1] = 'DVD';
-						}
-						if($result[1] == 'PAL')
-						{
-							$result[1] = 'DVD';
-						}
-						if($result[1] == 'Ripped ')
-						{
-							$result[1] = 'DVDRIP';
-						}
-						if($result[1] == 'VOD')
-						{
-							$result[1] = 'DVD';
-						}
-						$foundName = $foundName.".".$result[1];
-					}
-					if(preg_match('/(codec|codec name|codec code|format|MPEG-4 Visual|original format|res|resolution|video|video codec|video format|video res|tv system|type|writing library).*?\b(AVC|AVI|DBrip|DIVX|\(Divx|DVD|(H|X)(\.|_|\-| )?264|NTSC|PAL|WMV|XVID)\b/i',$nfo,$matches))
-					{
-						if($result[2] == 'AVI')
-						{
-							$result[2] = 'DVDRIP';
-						}
-						if($result[2] == 'DBrip')
-						{
-							$result[2] = 'BDRIP';
-						}
-						if($result[2] == '(Divx')
-						{
-							$result[2] = 'DIVX';
-						}
-						 if($result[2] == 'h.264')
-						{
-							$result[2] = 'H264';
-						}
-						if($result[2] == 'MPEG-4 Visual')
-						{
-							$result[2] = 'x264';
-						}
-						if($result[1] == 'NTSC')
-						{
-							$result[1] = 'DVD';
-						}
-						if($result[1] == 'PAL')
-						{
-							$result[1] = 'DVD';
-						}
-						if($result[2] == 'x.264')
-						{
-							$result[2] = 'x264';
-						}
-						$foundName = $foundName.".".$result[2];
-					}
-					if(preg_match('/(audio|audio format|codec|codec name|format).*?\b(0x0055 MPEG-1 Layer 3|AAC( LC)?|AC-?3|\(AC3|DD5(.1)?|(A_)?DTS(-)?(HD)?|Dolby(\s?TrueHD)?|TrueHD|FLAC|MP3)\b/i',$nfo,$matches))
-					{
-						if($result[2] == '0x0055 MPEG-1 Layer 3')
-						{
-							$result[2] = 'MP3';
-						}
-						if($result[2] == 'AC-3')
-						{
-							$result[2] = 'AC3';
-						}
-						if($result[2] == '(AC3')
-						{
-							$result[2] = 'AC3';
-						}
-						if($result[2] == 'AAC LC')
-						{
-							$result[2] = 'AAC';
-						}
-						if($result[2] == 'A_DTS')
-						{
-							$result[2] = 'DTS';
-						}
-						if($result[2] == 'DTS-HD')
-						{
-							$result[2] = 'DTS';
-						}
-						 if($result[2] == 'DTSHD')
-						{
-							$result[2] = 'DTS';
-						}
-						$foundName = $foundName.".".$result[2];
-					}
-					$methodused = "Nfo Title (Year)";
-					$foundName = $foundName."-NoGroup";
-	*/
+				if($result[2] == '272')		{$result[2] = '272p';}
+				if($result[2] == '336') 	{$result[2] = '480p';}
+				if($result[2] == '480') 	{$result[2] = '480p';}
+				if($result[2] == '494') 	{$result[2] = '480p';}
+				if($result[2] == '608') 	{$result[2] = '480p';}
+				if($result[2] == '640') 	{$result[2] = '480p';}
+				if($result[2] == '\(640')	{$result[2] = '480p';}
+				if($result[2] == '688')		{$result[2] = '480p';}
+				if($result[2] == '704')		{$result[2] = '480p';}
+				if($result[2] == '720x480') {$result[2] = '480p';}
+				if($result[2] == '816')		{$result[2] = '1080p';}
+				if($result[2] == '820')		{$result[2] = '1080p';}	
+				if($result[2] == '1080')	{$result[2] = '1080p';}
+				if($result[2] == '1280x720'){$result[2] = '720p';}
+				if($result[2] == '1280 @')	{$result[2] = '720p';}
+				if($result[2] == '1280')	{$result[2] = '720p';}
+				if($result[2] == '1920')	{$result[2] = '1080p';}	
+				if($result[2] == '1 920')	{$result[2] = '1080p';}	
+				if($result[2] == '1 080')	{$result[2] = '1080p';}
+				if($result[2] == '1920x1080'){$result[2] = '1080p';}
+				$releasename = $releasename.".".$result[2];
+			}
+			if(preg_match('/(largeur|width).*?(640|\(640|688|704|720|1280 @|1280|1920|1 920)/i', $release["textstring"], $result))
+			{
+				if($result[2] == '640')		{$result[2] = '480p';}
+				if($result[2] == '\(640')	{$result[2] = '480p';}
+				if($result[2] == '688')		{$result[2] = '480p';}
+				if($result[2] == '704')		{$result[2] = '480p';}
+				if($result[2] == '1280 @')	{$result[2] = '720p';}
+				if($result[2] == '1280')	{$result[2] = '720p';}
+				if($result[2] == '1920')	{$result[2] = '1080p';}	
+				if($result[2] == '1 920')	{$result[2] = '1080p';}		
+				if($result[2] == '720')		{$result[2] = '480p';}
+				$releasename = $releasename.".".$result[2];
+			}
+			if(preg_match('/source.*?\b(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)\b/i', $release["textstring"], $result))
+			{	
+				if($result[1] == 'BD')		{$result[1] = 'Bluray.x264';}
+				if($result[1] == 'CAMRIP')	{$result[1] = 'CAM';}
+				if($result[1] == 'DBrip')	{$result[1] = 'BDRIP';}
+				if($result[1] == 'DVD R1')	{$result[1] = 'DVD';}
+				if($result[1] == 'HD')		{$result[1] = 'HDTV';}
+				if($result[1] == 'NTSC')	{$result[1] = 'DVD';}
+				if($result[1] == 'PAL')		{$result[1] = 'DVD';}
+				if($result[1] == 'Ripped ')	{$result[1] = 'DVDRIP';}
+				if($result[1] == 'VOD')		{$result[1] = 'DVD';}
+				$releasename = $releasename.".".$result[1];
+			}
+			if(preg_match('/(codec|codec name|codec code|format|MPEG-4 Visual|original format|res|resolution|video|video codec|video format|video res|tv system|type|writing library).*?\b(AVC|AVI|DBrip|DIVX|\(Divx|DVD|(H|X)(\.|_|\-| )?264|NTSC|PAL|WMV|XVID)\b/i', $release["textstring"], $result))
+			{
+				if($result[2] == 'AVI')				{$result[2] = 'DVDRIP';}
+				if($result[2] == 'DBrip')			{$result[2] = 'BDRIP';}
+				if($result[2] == '(Divx')			{$result[2] = 'DIVX';}
+				if($result[2] == 'h.264')			{$result[2] = 'H264';}
+				if($result[2] == 'MPEG-4 Visual')	{$result[2] = 'x264';}
+				if($result[1] == 'NTSC')			{$result[1] = 'DVD';}
+				if($result[1] == 'PAL')				{$result[1] = 'DVD';}
+				if($result[2] == 'x.264')			{$result[2] = 'x264';}
+				$releasename = $releasename.".".$result[2];
+			}
+			if(preg_match('/(audio|audio format|codec|codec name|format).*?\b(0x0055 MPEG-1 Layer 3|AAC( LC)?|AC-?3|\(AC3|DD5(.1)?|(A_)?DTS(-)?(HD)?|Dolby(\s?TrueHD)?|TrueHD|FLAC|MP3)\b/i', $release["textstring"], $result))
+			{
+				if($result[2] == '0x0055 MPEG-1 Layer 3'){$result[2] = 'MP3';}
+				if($result[2] == 'AC-3')	{$result[2] = 'AC3';}
+				if($result[2] == '(AC3')	{$result[2] = 'AC3';}
+				if($result[2] == 'AAC LC')	{$result[2] = 'AAC';}
+				if($result[2] == 'A_DTS')	{$result[2] = 'DTS';}
+				if($result[2] == 'DTS-HD')	{$result[2] = 'DTS';}
+				if($result[2] == 'DTSHD')	{$result[2] = 'DTS';}
+				$releasename = $releasename.".".$result[2];
+			}
+			$releasename = $releasename."-NoGroup";
+			$this->updateRelease($release, $releasename, $methdod="nfoCheck: Title (Year)", $echo, $type);
+		}
+	}
+					
 	//
 	//	Just for filenames.
 	//
