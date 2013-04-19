@@ -1641,14 +1641,6 @@ class Releases
 						  WHERE collections.filecheck = 4 || collections.dateadded < (now() - interval 72 hour)");
 		$reccount = $db->getAffectedRows();
 		
-		
-//		$db->queryDirect(sprintf("delete from parts where binaryID IN ( SELECT ID from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)))"));
-//			$partscount = $db->getAffectedRows();
-//		$db->queryDirect(sprintf("delete from binaries where collectionID IN ( SELECT ID from collections where filecheck = 4 || dateadded < (now() - interval 72 hour))"));
-//			$binscount = $db->getAffectedRows();
-//		$db->queryDirect(sprintf("delete from collections where filecheck = 4 || dateadded < (now() - interval 72 hour)"));
-//			$colcount = $db->getAffectedRows();
-		
 		//Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
