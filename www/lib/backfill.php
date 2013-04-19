@@ -83,7 +83,15 @@ class Backfill
 		if(PEAR::isError($data))
 		{
 			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
+			echo "Retrying to connect to usenet".$n;
+			$nntp->doQuit();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if(PEAR::isError($data))
+			{
+				echo "Failed to reconnect to usenet, skipping group".$n;
+				return;
+			}
 		}
 		// Get targetpost based on days target.
 		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);

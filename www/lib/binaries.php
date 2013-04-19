@@ -409,7 +409,7 @@ class Binaries
 	{
 		$n = $this->n;
 		
-		//get all parts in partrepair table
+		// Get all parts in partrepair table.
 		$db = new DB;
 		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT 15000", $groupArr['ID']));
 		$partsRepaired = $partsFailed = 0;
@@ -418,7 +418,7 @@ class Binaries
 		{
 			echo 'Attempting to repair '.sizeof($missingParts).' parts...'.$n;
 			
-			//loop through each part to group into ranges
+			// Loop through each part to group into ranges.
 			$ranges = array();
 			$lastnum = $lastpart = 0;
 			foreach($missingParts as $part)
@@ -435,7 +435,7 @@ class Binaries
 			$num_attempted = 0;
 			$consoleTools = new ConsoleTools();
 			
-			//download missing parts in ranges
+			// Download missing parts in ranges.
 			foreach($ranges as $partfrom=>$partto)
 			{
 				$this->startLoop = microtime(true);
@@ -443,10 +443,10 @@ class Binaries
 				$num_attempted += $partto - $partfrom + 1;
 				$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
 				
-				//get article from newsgroup
+				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair');
 				
-				//check if the articles were added
+				// Check if the articles were added.
 				$articles = implode(',', range($partfrom, $partto));
 				$sql = sprintf("SELECT pr.ID, pr.numberID, p.number from partrepair pr LEFT JOIN parts p ON p.number = pr.numberID WHERE pr.groupID=%d AND pr.numberID IN (%s) ORDER BY pr.numberID ASC", $groupArr['ID'], $articles);
 				
@@ -457,14 +457,14 @@ class Binaries
 					{
 						$partsRepaired++;
 						
-						//article was added, delete from partrepair
+						// Article was added, delete from partrepair.
 						$db->query(sprintf("DELETE FROM partrepair WHERE ID=%d", $r['ID']));
 					} 
 					else 
 					{
 						$partsFailed++;
 						
-						//article was not added, increment attempts
+						// Article was not added, increment attempts.
 						$db->query(sprintf("UPDATE partrepair SET attempts=attempts+1 WHERE ID=%d", $r['ID']));
 					}
 				}
@@ -475,7 +475,7 @@ class Binaries
 			echo $partsRepaired.' parts repaired.'.$n;
 		}
 		
-		//remove articles that we cant fetch after 5 attempts
+		// Remove articles that we cant fetch after 5 attempts.
 		$db->query(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupID = %d", $groupArr['ID']));
 			
 	}
