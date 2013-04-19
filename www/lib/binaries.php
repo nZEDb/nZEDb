@@ -307,7 +307,7 @@ class Binaries
 				$lastCollectionID = -1;
 				$lastBinaryHash = "";
 				$lastBinaryID = -1;
-					
+				
 				foreach($this->message AS $subject => $data)
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
@@ -321,6 +321,8 @@ class Binaries
 						else
 						{
 							$lastCollectionHash = $collectionHash;
+							$lastBinaryHash = "";
+							$lastBinaryID = -1;							
 							
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
@@ -341,7 +343,7 @@ class Binaries
 						}
 						$binaryHash = md5($subject.$data['From'].$groupArr['ID']);
 
-						if (!$lastBinaryHash == $binaryHash)
+						if ($lastBinaryHash == $binaryHash)
 						{
 							$binaryID = $lastBinaryID;
 						}
