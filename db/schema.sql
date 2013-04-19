@@ -25,7 +25,7 @@ CREATE INDEX ix_collection_collectionhash ON collections (collectionhash);
 
 DROP TABLE IF EXISTS `binaries`;
 CREATE TABLE `binaries` (
-		`ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		`name` VARCHAR(255) NOT NULL DEFAULT '',
 		`collectionID` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`filenumber` INT UNSIGNED NOT NULL DEFAULT '0',
@@ -68,12 +68,12 @@ CREATE TABLE `releases`
 `anidbID` INT NULL,
 `grabs` INT UNSIGNED NOT NULL DEFAULT '0',
 `comments` INT NOT NULL DEFAULT 0,
-`passwordstatus` INT NOT NULL DEFAULT 0,
+`passwordstatus` TINYINT NOT NULL DEFAULT 0,
 `rarinnerfilecount` INT NOT NULL DEFAULT 0,
-`haspreview` INT NOT NULL DEFAULT 0,
-`nzbstatus` INT NOT NULL DEFAULT 0,
-`nfostatus` INT NOT NULL DEFAULT 0,
-`relnamestatus` INT NOT NULL DEFAULT 0,
+`haspreview` TINYINT NOT NULL DEFAULT 0,
+`nzbstatus` TINYINT NOT NULL DEFAULT 0,
+`nfostatus` TINYINT NOT NULL DEFAULT 0,
+`relnamestatus` TINYINT NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -355,14 +355,14 @@ CREATE TABLE `movieinfo`
  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `imdbID` mediumint(7) unsigned zerofill NOT NULL,
   `tmdbID` int(10) unsigned DEFAULT NULL,
-  `title` varchar(128) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `tagline` VARCHAR(1024) NOT NULL,
   `rating` varchar(4) NOT NULL,
   `plot` varchar(1024) NOT NULL,
   `year` varchar(4) NOT NULL,
   `genre` varchar(64) NOT NULL,
   `director` VARCHAR(64) NOT NULL,
-  `actors` VARCHAR(1024) NOT NULL,
+  `actors` VARCHAR(2000) NOT NULL,
   `language` VARCHAR(64) NOT NULL,
   `cover` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0',
   `backdrop` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0',
@@ -388,7 +388,7 @@ CREATE TABLE `anidb`
 (
   `ID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `anidbID` INT(7) UNSIGNED NOT NULL,
-  `title` VARCHAR(128) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
   `type` VARCHAR(32) NOT NULL,
   `startdate` DATE NOT NULL,
   `enddate` DATE NOT NULL,
@@ -571,8 +571,8 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 
 DROP TABLE IF EXISTS `parts`;
 CREATE TABLE `parts` (
-  `ID` INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `binaryID` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `binaryID` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
   `messageID` VARCHAR(255) NOT NULL DEFAULT '',
   `number` BIGINT UNSIGNED NOT NULL DEFAULT '0',
   `partnumber` INT UNSIGNED NOT NULL DEFAULT '0',
@@ -672,7 +672,7 @@ CREATE TABLE `users` (
   `email` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `role` INT NOT NULL DEFAULT 1,
-  `host` VARCHAR(15) NULL,
+  `host` VARCHAR(40) NULL,
   `grabs` INT NOT NULL DEFAULT 0,
   `rsstoken` VARCHAR(32) NOT NULL,
   `createddate` DATETIME NOT NULL,
@@ -902,7 +902,7 @@ INSERT INTO `site`
 DROP TABLE IF EXISTS `consoleinfo`;
 CREATE TABLE `consoleinfo` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `asin` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `url` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `salesrank` int(10) unsigned DEFAULT NULL,
@@ -911,7 +911,7 @@ CREATE TABLE `consoleinfo` (
   `genreID` INT( 10 ) NULL DEFAULT NULL,
   `esrb` VARCHAR( 255 ) NULL DEFAULT NULL,
   `releasedate` datetime DEFAULT NULL,
-  `review` varchar(2000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `review` varchar(3000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cover` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `createddate` datetime NOT NULL,
   `updateddate` datetime NOT NULL,
@@ -922,17 +922,17 @@ DROP TABLE IF EXISTS `musicinfo`;
 CREATE TABLE `musicinfo` 
 (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(128) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `asin` varchar(128) NULL,
   `url` varchar(1000) NULL,
   `salesrank` int(10) unsigned NULL,
   `artist` varchar(255) NULL,
   `publisher` varchar(255) NULL,
   `releasedate` datetime NULL,
-  `review` varchar(2000) NULL,
+  `review` varchar(3000) NULL,
   `year` varchar(4) NOT NULL,
   `genreID` int(10) NULL,
-  `tracks` varchar(2000) NULL,
+  `tracks` varchar(3000) NULL,
   `cover` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0',
   `createddate` datetime NOT NULL,
   `updateddate` datetime NOT NULL,
