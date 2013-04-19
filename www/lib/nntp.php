@@ -289,6 +289,11 @@ class Nntp extends Net_NNTP_Client
 				{
 					$tries++;
 					echo "Decompression failed. Retry number: $tries\n";
+					if ($tries > 10)
+					{
+						echo "10 tries and it still failed, so skipping";
+						return $this->throwError('Decompression Failed, connection closed.', 1000);
+					}
 				}
 			}
 		}
