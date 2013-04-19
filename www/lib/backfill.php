@@ -70,7 +70,7 @@ class Backfill
 		$n = $this->n;
 		$this->startGroup = microtime(true);
 
-		echo 'Processing '.$groupArr['name'].".".$n;
+		echo 'Processing '.$groupArr['name'].$n;
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if(PEAR::isError($datac))
@@ -211,7 +211,7 @@ class Backfill
 		$n = $this->n;
 		$this->startGroup = microtime(true);
 
-		echo 'Processing '.$groupArr['name'].".".$n;
+		echo 'Processing '.$groupArr['name'].$n;
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if(PEAR::isError($datac))
