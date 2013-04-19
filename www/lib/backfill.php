@@ -41,16 +41,21 @@ class Backfill
 		$counter = 1;
 		if ($res)
 		{
+			// No compression.
 			$nntp = new Nntp();
 			$nntp->doConnect();
-
+			// Compression.
+			$nntpc = new Nntp();
+			$nntpc->doConnectNC();
+			
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillGroup($nntp, $groupArr);
+				$this->backfillGroup($nntp, $nntpc, $groupArr);
 				$counter++;
 			}
 			$nntp->doQuit();
+			$nntpc->doQuit();
 		}
 		else
 		{
@@ -58,7 +63,7 @@ class Backfill
 		}
 	}
 
-	function backfillGroup($nntp, $groupArr)
+	function backfillGroup($nntp, $nntpc, $groupArr)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -66,7 +71,14 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		echo 'Processing '.$groupArr['name'].".".$n;
-
+		// Compression.
+		$datac = $nntpc->selectGroup($groupArr['name']);
+		if(PEAR::isError($datac))
+		{
+			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
+			return;
+		}
+		// No compression.
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
@@ -122,7 +134,7 @@ class Backfill
 
 			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
 			flush();
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
 			$db->query(sprintf("UPDATE groups SET first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)

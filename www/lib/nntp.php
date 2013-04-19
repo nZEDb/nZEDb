@@ -37,7 +37,32 @@ class Nntp extends Net_NNTP_Client
 		{
 			$this->enableCompression();
 		}
-		
+	}
+	
+	//
+	//	No compression.
+	//
+	function doConnectNC() 
+	{
+		$enc = false;
+		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
+			$enc = 'ssl';
+
+		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+		if(PEAR::isError($ret))
+		{
+			echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
+			die();
+		}
+		if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
+		{
+			$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
+			if(PEAR::isError($ret2)) 
+			{
+				echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
+				die();
+			}
+		}
 	}
 	
 	function doQuit() 
