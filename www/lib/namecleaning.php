@@ -58,7 +58,7 @@
 			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|exe|idx|jpg|mobi|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $name);
 			//Removes some characters.
 			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
-			$cleanerName = str_replace($craphars, "", $cleanerName);
+			$cleanerName = str_replace($crapchars, "", $cleanerName);
 			//Replaces some characters with 1 space.
 			$commonchars = array(".", "_", '-', "|");
 			$cleanerName = str_replace($commonchars, " ", $cleanerName);
@@ -67,9 +67,4 @@
 			
 			return $cleanerName;
 		}
-		
-		/* Old stuff.
-		 * $cleanerName = preg_replace('/<|>|"|=|\[|\]|\(|\)|\{|\}/i', '', $cleanerName);
-		 * $cleanerName = preg_replace('/\.|\_|\-|\|/i', ' ', $cleanerName); 
-		 */
 	}
