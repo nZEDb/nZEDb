@@ -212,28 +212,32 @@ class Binaries
 		//$this->startUpdate = microtime(true);
 		if (is_array($msgs))
 		{	
-			//loop articles, figure out files/parts
+			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
 					continue;
 				
 				$msgsreceived[] = $msg['Number'];
-			
+				
+				// For part count.
 				$pattern = '/\((\d+)\/(\d+)\)$/i';
-				if (!isset($msg['Subject']) || !preg_match($pattern, $msg['Subject'], $matches)) // not a binary post most likely.. continue
+				
+				// Not a binary post most likely.. continue.
+				if (!isset($msg['Subject']) || !preg_match($pattern, $msg['Subject'], $matches))
 				{
 					$msgsignored[] = $msg['Number'];
 					continue;
 				}
 				
-				//Filter subject based on black/white list
+				// Filter subject based on black/white list.
 				if ($this->isBlackListed($msg, $groupArr['name'])) 
 				{
 					$msgsblacklisted[] = $msg['Number'];
 					continue;
 				}
-	
+				
+				// Attempt to get file count.
 				if (!preg_match('/(\[|\()(\d+)(\/|(\s|_)of(\s|_)|\-)(\d+)(\]|\))(?!"?$)/i', $msg['Subject'], $filecnt))
 				{
 					$filecnt[2] = "0";
@@ -289,12 +293,12 @@ class Binaries
 			if(isset($this->message) && count($this->message))
 			{
 				$maxnum = $first;
-				//insert binaries and parts into database. when binary already exists; only insert new parts
+				// Insert binaries and parts into database. when binary already exists; only insert new parts.
 
 				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryID, number, messageID, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
 					$insPartsStmt->bind_param('dssss', $pBinaryID, $pNumber, $pMessageID, $pPartNumber, $pSize);
 				else
-					die("couldn't prepare parts insert statement!");
+					die("Couldn't prepare parts insert statement!");
 					
 				$lastCollectionHash = "";
 				$lastCollectionID = -1;
