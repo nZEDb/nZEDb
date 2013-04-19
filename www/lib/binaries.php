@@ -211,7 +211,7 @@ class Binaries
 		if(PEAR::isError($msgs))
 		{
 			echo "Error {$msgs->code}: {$msgs->message}";
-			echo "Skipping group or partrepair.$n";
+			echo " Skipping group or partrepair.$n";
 			return false;
 		}
 	
