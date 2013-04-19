@@ -206,7 +206,7 @@ class Nntp extends Net_NNTP_Client
 				 $data .= $buffer;
 				 $totalbytesreceived = $totalbytesreceived+$bytesreceived;
 				 
-				 // Output byte count in real time once we have 1MB of data.
+				 // Output byte count in real time once we have 10KB of data.
 				if ($totalbytesreceived > 10240)
 				if ($totalbytesreceived%128 == 0)
 				{
@@ -251,7 +251,7 @@ class Nntp extends Net_NNTP_Client
 				}
 				else
 				{
-					echo "Invalid header on gzip stream.\n";
+					echo "Invalid header on the gzip stream.\n";
 					return $this->throwError('Invalid gzip stream.', 1000);
 				}
 
