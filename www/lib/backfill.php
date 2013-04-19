@@ -160,6 +160,15 @@ class Backfill
 	}
 	
 	//
+	// Safe backfill using posts.
+	//
+	function safeBackfill()
+	{
+		$db = new DB();
+		$n = $this->n;
+	}
+	
+	//
 	// Update all active groups categories and descriptions using article numbers instead of date.
 	//
 	function backfillPostAllGroups($groupName='', $articles = '')
