@@ -209,7 +209,7 @@ else
 				}
 				else
 				{
-					$errorMessage = $n."\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing\033[0m".$n;
+					$errorMessage = $n."\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing)\033[0m".$n;
 				}
 				$importfailed = true;
 				echo $errorMessage.$n;
