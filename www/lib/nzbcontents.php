@@ -106,10 +106,10 @@ Class NZBcontents
 							if ($pNFOsize < 40000)
 							{
 								// exif_imagetype needs a minimum size or else it doesn't work
-								if ($pNFOsize > 13)
+								if ($pNFOsize > 20)
 								{
 									//Check if it's an image.
-									if (exif_imagetype($possibleNFO) == false)
+									if (@exif_imagetype($possibleNFO) == false)
 									{
 										$fetchedBinary = $possibleNFO;
 										$foundnfo = true;
