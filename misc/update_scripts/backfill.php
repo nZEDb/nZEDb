@@ -30,7 +30,7 @@ else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] !== "safe" && is_nume
 else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] == "safe" && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
 	$backfill = new Backfill();
-	$backfill->safeBackfill($argv[1], $argv[2]);
+	$backfill->safeBackfill($argv[2]);
 }
 else
 {

@@ -74,9 +74,9 @@ class Groups
 	
 	// Set the first_record_postdate very high when the group is dead.
 	public function disableForPost($name)
-	{		
+	{
 		$db = new DB();
-		$db->queryOneRow(sprintf("update groups set first_record_postdate = %s where name = %s", $db->escapeString("2000-00-00 00:00:00"), $name));
+		$db->queryOneRow(sprintf("update groups set first_record_postdate = %s where name = %s", $db->escapeString("2000-00-00 00:00:00"), $db->escapeString($name)));
 	}
 
 	public function getCount($groupname="")

@@ -258,18 +258,18 @@ class Backfill
 				" days old). Our backfill target is article ".$targetpost." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 		
-		// If our estimate comes back with stuff we already have, finish.
-		if($targetpost >= $groupArr['first_record'])
-		{
-			echo "Nothing to do, we already have the target post".$n.$n;
-			return "";
-		}
-		// Get first and last part numbers from newsgroup.
+		// Check if we are grabbing further than the server has.
 		if($targetpost < $data['first'])
 		{
 			$groups = new Groups;
 			$groups->disableForPost($groupArr['name']);
 			echo "WARNING: Backfill came back before server's first article, setting the postdate very high so it gets skipped next run.".$n."Skipping Group:".$n;
+			return "";
+		}
+		// If our estimate comes back with stuff we already have, finish.
+		if($targetpost >= $groupArr['first_record'])
+		{
+			echo "Nothing to do, we already have the target post".$n.$n;
 			return "";
 		}
 		// Calculate total number of parts.
