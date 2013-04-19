@@ -1555,6 +1555,10 @@ class Releases
 						$retcount ++;
 						echo "Added release ".$cleanRelName.$n;
 					}
+					else
+					{
+						echo "Error Inserting Release: " . $cleanRelName . ": " . $db->Error() . $n;
+					}
 				}
 			}
 		} while ($start_rescount <> $retcount);
