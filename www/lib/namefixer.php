@@ -317,6 +317,26 @@ class Namefixer
 	 */
 	
 	//
+	//	Games.
+	//
+	public function nfoCheckG($release, $echo, $type)
+	{
+		if(preg_match('/ALiAS|BAT-TEAM|\FAiRLiGHT|Game Type|HI2U|iTWINS|JAGUAR|LARGEISO|MAZE|MEDIUMISO|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"]))
+		{
+			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\(c\)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
+			{
+				$releasename = str_replace("(c)","(PC GAMES) (c)", $result['0']);
+				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games (c)", $echo, $type);
+			}
+			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\*ISO\*/i', $release["textstring"], $result))
+			{
+				$releasename = str_replace("*ISO*","*ISO* (PC GAMES)", $result['0']);
+				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games *ISO*", $echo, $type);
+			}
+		}
+	}
+	
+	//
 	//	Title (year)
 	//
 	public function nfoCheckTY($release, $echo, $type)
@@ -412,22 +432,37 @@ class Namefixer
 	}
 	
 	//
-	//	Games.
+	//	Misc.
 	//
-	public function nfoCheckG($release, $echo, $type)
+	public function nfoCheckMisc($release, $echo, $type)
 	{
-		if(preg_match('/ALiAS|BAT-TEAM|\FAiRLiGHT|Game Type|HI2U|iTWINS|JAGUAR|LARGEISO|MAZE|MEDIUMISO|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"]))
+		if(preg_match('/Supplier.+?IGUANA/i', $release["textstring"]))
 		{
-			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\(c\)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
+			if(preg_match('/\w[\w`~!@#$%^&*()_+\-={}|:"<>?\[\]\\;\',.\/ ]+\s\((19|20)\d\d\)/i', $release["textstring"], $result))
 			{
-				$releasename = str_replace("(c)","(PC GAMES) (c)", $result['0']);
-				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games (c)", $echo, $type);
+				$releasename = $result[0];
 			}
-			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\*ISO\*/i', $release["textstring"], $result))
+			if(preg_match('/\s\[\*\] (English|Dutch|French|German|Spanish)\b/i', $release["textstring"], $result))
 			{
-				$releasename = str_replace("*ISO*","*ISO* (PC GAMES)", $result['0']);
-				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games *ISO*", $echo, $type);
+				$releasename = $releasename.".".$result[1];
 			}
+			if(preg_match('/\s\[\*\] (DTS 6(\.|_|\-| )1|DS 5(\.|_|\-| )1|DS 2(\.|_|\-| )0|DS 2(\.|_|\-| )0 MONO)\b/i', $release["textstring"], $result))
+			{
+				$releasename = $releasename.".".$result[2];
+			}
+			if(preg_match('/Format.+(DVD(5|9|R)?|(h|x)(\.|_|\-| )?264)\b/i', $release["textstring"], $result))
+			{
+				$releasename = $releasename.".".$result[1];
+			}
+			if(preg_match('/\[(640x.+|1280x.+|1920x.+)\] Resolution\b/i', $release["textstring"], $result))
+			{
+				if($result[1] == '640x.+') {$result[1] = '480p';}
+				if($result[1] == '1280x.+'){$result[1] = '720p';}
+				if($result[1] == '1920x.+'){$result[1] = '1080p';}
+				$releasename = $releasename.".".$result[1];
+			}
+			$releasename = $releasename.".IGUANA";
+			$this->updateRelease($release, $result, $methdod="nfoCheck: IGUANA", $echo, $type);
 		}
 	}
 	
