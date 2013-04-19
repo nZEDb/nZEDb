@@ -21,9 +21,9 @@ class Backfill
 		$db = new DB();
         $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
         $colcount = $db->getAffectedRows();
-        if ( $colcount > 200 )
+        if ( $colcount > 0 )
         {
-			exit($n."Collections = ".$colcount.", backfill exiting.".$n);
+			exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
         }
 		if ($groupName != '') 
 		{
@@ -127,9 +127,9 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 			$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
-			if ( $colcount > 10000 )
+			if ( $colcount > 0 )
 			{
-				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
+				 exit($n."Collections = ".$colcount.";//, backfill exiting.".$n);
 			}
 
 			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;

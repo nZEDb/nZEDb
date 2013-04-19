@@ -1444,17 +1444,10 @@ class Releases
 					)");		
 		
 		//If a collection has not been updated in 2 hours, set filecheck to 2.
-		if($rescol = $db->queryDirect( "SELECT c.ID, count(b.ID) as binfiles
-										FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID 
-										WHERE c.dateadded < (now() - interval 2 hour) and c.filecheck != 2
-										GROUP BY c.ID"))
-		{
-			while ($rowcol = $db->fetchAssoc($rescol))
-			{
-				$db->queryDirect(sprintf("UPDATE collections set filecheck = 2, totalFiles = %s where ID = %d", $rowcol['binfiles'], $rowcol['ID']));
-			}
-		}
-		
+		$db->query("UPDATE collections c
+					SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID)
+					WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2");
+	
         echo TIME() - $stage1." second(s).";
 	}
 	
@@ -1466,20 +1459,10 @@ class Releases
 		//Get part and file size.
 		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
 		$stage2 = TIME();
-		if($rescol = $db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize = 0 limit 700"))
-		{
-			while ($rowcol = $db->fetchAssoc($rescol))
-			{
-				//Update file size.
-				$filesize = 0;
-				$resbin = $db->queryDirect(sprintf("SELECT ID from binaries where collectionID = %d", $rowcol['ID']));
-				while ($rowbin = $db->fetchAssoc($resbin))
-				{
-					$filesize = $filesize+array_shift($db->queryOneRow(sprintf("SELECT sum(size) from parts where binaryID = %d", $rowbin['ID'])));
-				}
-				$db->queryDirect(sprintf("UPDATE collections set filesize = %d where ID = %d", $filesize, $rowcol['ID']));
-			}
-		}
+		$db->query("UPDATE collections c
+					SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID)
+					WHERE c.filecheck = 2 AND c.filesize = 0");
+
         echo TIME() - $stage2." second(s).";
 	}
 	
@@ -1499,40 +1482,39 @@ class Releases
 		$stage3 = TIME();
 		if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 		{
-			foreach($groupCnt AS $groupID)
+			$db->query("UPDATE collections c 
+						LEFT JOIN (
+									SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease 
+									FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s 
+								  ) g ON g.ID = c.groupID
+						SET c.filecheck = 4
+						WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease");
+						
+			$minsizecount = $db->getAffectedRows();
+			if ($minsizecount < 0)
+				$minsizecount = 0;
+
+			$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");			
+			if ($maxfilesizeres["value"] != 0)
 			{
-				$groupID = array_shift($groupID);
-				$minfilesizeres = $db->queryOneRow(sprintf("SELECT coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g inner join ( select value as minsizetoformrelease from site where setting = 'minsizetoformrelease' ) s where g.ID = %d", $groupID));			
-				if ($minfilesizeres["minsizetoformrelease"] != 0)
-				{
-					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and filesize < %d", $groupID, $minfilesizeres["minsizetoformrelease"]));
-					while ($rowcol = $db->fetchAssoc($rescol))
-					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $rowcol['ID']));
-						$minsizecount ++;
-					}
-				}
-				$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");			
-				if ($maxfilesizeres["value"] != 0)
-				{
-					$rescol = $db->queryDirect(sprintf("SELECT ID from collections filecheck = 2 and filesize > %d", $groupID, $minfilesizeres["value"]));
-					while ($rowcol = $db->fetchAssoc($rescol))
-					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d",$rowcol['ID']));
-						$maxsizecount ++;
-					}
-				}
-				$minfilesres = $db->queryOneRow(sprintf("SELECT coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM  FROM groups g inner join ( select value as minfilestoformrelease from site where setting = 'minfilestoformrelease' ) s where g.ID = %d", $groupID));			
-				if ($minfilesres["minfilestoformrelease"] != 0)
-				{
-					$rescol = $db->queryDirect(sprintf("SELECT ID from collections where groupID = %d and filecheck = 2 and totalFiles < %d", $groupID, $minfilesres["minfilestoformrelease"]));
-					while ($rowcol = $db->fetchAssoc($rescol))
-					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where ID = %d", $rowcol['ID']));
-						$minfilecount ++;
-					}
-				}
+				$db->query(sprintf("UPDATE collections SET filecheck = 4 WHERE filecheck = 2 AND filesize > %d", $minfilesizeres["value"]));
+				
+				$maxsizecount = $db->getAffectedRows();
+				if ($maxsizecount < 0)
+					$maxsizecount = 0;
 			}
+
+			$db->query("UPDATE collections c 
+						LEFT JOIN (
+									SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease 
+									FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s 
+								  ) g ON g.ID = c.groupID
+						SET c.filecheck = 4
+						WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease");
+
+			$minfilecount = $db->getAffectedRows();
+			if ($minfilecount < 0)
+				$minfilecount = 0;
 		}
 		echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." collections smaller/larger than group/site settings.".$n;
         echo TIME() - $stage3." second(s).";
@@ -1548,25 +1530,34 @@ class Releases
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * from collections where filecheck = 2 and filesize > 0 limit 700"))
+		do
 		{
-			while ($rowcol = $db->fetchAssoc($rescol))
+			$start_rescount = $retcount;
+			if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 2 AND filesize > 0 LIMIT 1000"))
 			{
-				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
-				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-				$relguid = md5(uniqid());
-				if($db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), $db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				while ($rowcol = $db->fetchAssoc($rescol))
 				{
-					$relid = $db->getInsertID();
-					//update collections table to say we inserted the release.
-					$db->queryDirect(sprintf("UPDATE collections set filecheck = 3, releaseID = %d where ID = %d", $relid, $rowcol['ID']));
-					$retcount ++;
-					echo "Added release ".$cleanRelName.$n;
+					$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
+					$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
+					$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
+					$relguid = md5(uniqid());
+					if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) 
+												VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", 
+												$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), 
+												$db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+					{
+						$relid = $db->getInsertID();
+						//update collections table to say we inserted the release.
+						$db->queryDirect(sprintf("UPDATE collections SET filecheck = 3, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
+						$retcount ++;
+						echo "Added release ".$cleanRelName.$n;
+					}
 				}
 			}
-		}
-        echo TIME() - $stage4." second(s).";
+		} while ($start_rescount <> $retcount);
+		
+		$timing = TIME() - $stage4;
+        echo $retcount . " Releases added in " . $timing . " second(s).";
         return $retcount;
 	}
 	
@@ -1576,20 +1567,28 @@ class Releases
 		$nzb = new Nzb;
 		$page = new Page;
 		$n = "\n";
+		$nzbcount = 0;
 		
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 700"))
+		do
 		{
-			while ($rowrel = $db->fetchAssoc($resrel))
+			$start_nzbcount = $nzbcount;
+			if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 limit 1000"))
 			{
-				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
-				$db->queryDirect(sprintf("UPDATE releases set nzbstatus = 1 where ID = %d", $rowrel['ID']));
-				$db->queryDirect(sprintf("UPDATE collections set filecheck = 4 where releaseID = %d", $rowrel['ID']));
+				while ($rowrel = $db->fetchAssoc($resrel))
+				{
+					$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
+					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
+					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %d", $rowrel['ID']));
+					$nzbcount++;
+				}
 			}
-		}
-		echo TIME() - $stage5." second(s).";
+		} while ($start_nzbcount <> $nzbcount);
+		
+		$timing = TIME() - $stage5;
+		echo $nzbcount . " NZBs created in " . $timing ." second(s). ";
 	}
 	
 	public function processReleasesStage6($categorize, $postproc)
@@ -1603,11 +1602,11 @@ class Releases
 		$stage6 = TIME();
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect("SELECT ID, name, groupID from releases where relnamestatus = 0");
+			$resrel = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE relnamestatus = 0");
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
 				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
-				$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catId, $rowrel['ID']));
+				$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
 			}
 		}
 		if ($postproc == 1)
