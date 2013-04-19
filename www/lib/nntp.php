@@ -210,7 +210,8 @@ class Nntp extends Net_NNTP_Client
 				if ($totalbytesreceived > 10240)
 				if ($totalbytesreceived%128 == 0)
 				{
-					echo $totalbytesreceived." bytes.\r";
+					$kb = 1024;
+					echo "Receiving ".round($totalbytesreceived/$kb)."KB\r";
 				}
 				
 				// Check to see if we have the magic terminator on the byte stream.
