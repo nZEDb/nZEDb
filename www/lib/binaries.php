@@ -205,7 +205,6 @@ class Binaries
 		$msgsreceived = array();
 		$msgsblacklisted = array();
 		$msgsignored = array();
-		$msgsinserted = array();
 		$msgsnotinserted = array();
 		
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
@@ -304,35 +303,80 @@ class Binaries
 				else
 					die("couldn't prepare parts insert statement!");
 					
+//				$collectionHashes = array();
+//				$binaryHashes = array();
+
+				$lastCollectionHash = "";
+				$lastCollectionID = -1;
+				$lastBinaryHash = "";
+				$lastBinaryID = -1;
+					
 				foreach($this->message AS $subject => $data)
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
 					{
-						$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($data['CollectionHash'])));
-						if(!$cres)
+						$collectionHash = $data['CollectionHash'];
+						
+//						if (!empty($collectionHashes[$collectionHash]))
+//						{
+//							$collectionID = $collectionHashes[$collectionHash];
+//						}
+//						else
+						if ($lastCollectionHash == $collectionHash)
 						{
-							$cleanerName = $namecleaning->releaseCleaner($subject);
-							$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($data['CollectionHash']));
-							$collectionID = $db->queryInsert($csql);
+							$collectionID = $lastCollectionID;
 						}
 						else
 						{
-							$collectionID = $cres["ID"];
-							//Update the collection table with the last seen date for the collection.
-							$cusql = sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID);
-							$db ->queryDirect($cusql);
+							$lastCollectionHash = $collectionHash;
+							
+							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
+							if(!$cres)
+							{
+								$cleanerName = $namecleaning->releaseCleaner($subject);
+								$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$collectionID = $db->queryInsert($csql);
+							}
+							else
+							{
+								$collectionID = $cres["ID"];
+								//Update the collection table with the last seen date for the collection.
+								$cusql = sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID);
+								$db ->queryDirect($cusql);
+							}
+							
+							$lastCollectionID = $collectionID;
+//							$collectionHashes[$collectionHash] = $collectionID;
 						}
 						$binaryHash = md5($subject.$data['From'].$groupArr['ID']);
-						$bres = $db->queryOneRow(sprintf("SELECT ID FROM binaries WHERE binaryhash = %s", $db->escapeString($binaryHash)));
-						if(!$bres)
+//						if (!empty($binaryHashes[$binaryHash]))
+//						{
+//							$binaryID = $binaryHashes[$binaryHash];
+//						}
+//						else
+						if (!$lastBinaryHash == $binaryHash)
 						{
-							$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionID, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
-							$binaryID = $db->queryInsert($bsql);
+							$binaryID = $lastBinaryID;
 						}
 						else
 						{
-							$binaryID = $bres["ID"];
+							$lastBinaryHash = $binaryHash;
+							
+							$bres = $db->queryOneRow(sprintf("SELECT ID FROM binaries WHERE binaryhash = %s", $db->escapeString($binaryHash)));
+							if(!$bres)
+							{
+								$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionID, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+								$binaryID = $db->queryInsert($bsql);
+							}
+							else
+							{
+								$binaryID = $bres["ID"];
+							}
+							
+							$lastBinaryID = $binaryID;
+//							$binaryHashes[$binaryHash] = $binaryID;
 						}
+						
 						foreach($data['Parts'] AS $partdata)
 						{
 							$pBinaryID = $binaryID;
@@ -342,16 +386,10 @@ class Binaries
 							$pSize = $partdata['size'];
 							
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
-							$insPartsStmt->execute();
-//							$pidata = $db->queryInsert(sprintf("INSERT INTO parts (binaryID, number, messageID, partnumber, size) VALUES (%d, %s, %s, %s, %s)", $binaryID, $db->escapeString($partdata['number']), $db->escapeString($partdata['Message-ID']), $db->escapeString(round($partdata['part'])), $db->escapeString($partdata['size'])), false);
-//							if (!$pidata) 
-							if ($insPartsStmt->affected_rows == 0)
+							
+							if (!$insPartsStmt->execute())
 							{
 								$msgsnotinserted[] = $partdata['number'];
-							} 
-							else 
-							{
-								$msgsinserted[] = $partdata['number'];
 							}
 						}
 					}
