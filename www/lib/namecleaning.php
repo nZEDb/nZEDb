@@ -1,7 +1,7 @@
 <?php
 
 	//
-	//	Cleans names for collections/releases/imports.
+	//	Cleans names for collections/releases/imports/namefixer.
 	//
 	class nameCleaning
 	{
@@ -25,7 +25,7 @@
 		}
 		
 		//
-		//	Cleans a usenet subject before inserting, used for searchname.
+		//	Cleans a usenet subject before inserting, used for searchname. Also used for imports.
 		//
 		public function releaseCleaner($subject)
 		{
@@ -38,8 +38,8 @@
 			//Unwanted stuff.
 			$cleanerName = preg_replace('/SECTIONED brings you|usenet\-space\-cowboys\.info|<.+https:\/\/secretusenet\.com>|> USC <|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|brothers\-of\-usenet\.info(\/\.net)?|Partner von SSL\-News\.info|AutoRarPar\d{1,5}/i', '', $cleanerName);
 			//Removes some characters.
-			$crap = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
-			$cleanerName = str_replace($crap, "", $cleanerName);
+			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
+			$cleanerName = str_replace($crapchars, "", $cleanerName);
 			//Replaces some characters with 1 space.
 			$commonchars = array(".", "_", '-', "|");
 			$cleanerName = str_replace($commonchars, " ", $cleanerName);
