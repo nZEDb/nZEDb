@@ -162,6 +162,7 @@ class Namefixer
 		if ($type == "NFO, ")
 		{
 			$this->nfoCheckTY($release, $echo, $type);
+			$this->nfoCheckG($release, $echo, $type);
 		}
 		
 		// Just for filenames.
@@ -309,8 +310,14 @@ class Namefixer
 		}
 	}
 	
+	/*
+	 * 
+	 * Just for NFOS.
+	 * 
+	 */
+	
 	//
-	//	Just for NFOS. does Title (year)
+	//	Title (year)
 	//
 	public function nfoCheckTY($release, $echo, $type)
 	{
@@ -403,7 +410,27 @@ class Namefixer
 			$this->updateRelease($release, $releasename, $methdod="nfoCheck: Title (Year)", $echo, $type);
 		}
 	}
-					
+	
+	//
+	//	Games.
+	//
+	public function nfoCheckG($release, $echo, $type)
+	{
+		if(preg_match('/ALiAS|BAT-TEAM|\FAiRLiGHT|Game Type|HI2U|iTWINS|JAGUAR|LARGEISO|MAZE|MEDIUMISO|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"]))
+		{
+			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\(c\)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
+			{
+				$releasename = str_replace("(c)","(PC GAMES) (c)", $result['0']);
+				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games (c)", $echo, $type);
+			}
+			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\*ISO\*/i', $release["textstring"], $result))
+			{
+				$releasename = str_replace("*ISO*","*ISO* (PC GAMES)", $result['0']);
+				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games *ISO*", $echo, $type);
+			}
+		}
+	}
+	
 	//
 	//	Just for filenames.
 	//
