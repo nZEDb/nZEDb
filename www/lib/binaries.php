@@ -27,6 +27,7 @@ class Binaries
 		
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
+		$this->blackListLoaded = false;
 	}
 	
 	function updateAllGroups() 
@@ -216,7 +217,7 @@ class Binaries
 			return false;
 		}
 	
-		$this->startUpdate = microtime(true);
+////////		$this->startUpdate = microtime(true);
 		if (is_array($msgs))
 		{	
 			//loop articles, figure out files/parts
@@ -292,10 +293,17 @@ class Binaries
 					echo 'Server did not return article numbers '.implode(',', $rangenotreceived).".".$n;
 			}
 			
+			$this->startUpdate = microtime(true);
 			if(isset($this->message) && count($this->message))
 			{
 				$maxnum = $first;
 				//insert binaries and parts into database. when binary already exists; only insert new parts
+
+				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryID, number, messageID, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
+					$insPartsStmt->bind_param('dssss', $pBinaryID, $pNumber, $pMessageID, $pPartNumber, $pSize);
+				else
+					die("couldn't prepare parts insert statement!");
+					
 				foreach($this->message AS $subject => $data)
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
@@ -327,9 +335,17 @@ class Binaries
 						}
 						foreach($data['Parts'] AS $partdata)
 						{
+							$pBinaryID = $binaryID;
+							$pMessageID = $partdata['Message-ID']; 
+							$pNumber = $partdata['number'];
+							$pPartNumber = round($partdata['part']);
+							$pSize = $partdata['size'];
+							
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
-							$pidata = $db->queryInsert(sprintf("INSERT INTO parts (binaryID, number, messageID, partnumber, size) VALUES (%d, %s, %s, %s, %s)", $binaryID, $db->escapeString($partdata['number']), $db->escapeString($partdata['Message-ID']), $db->escapeString(round($partdata['part'])), $db->escapeString($partdata['size'])), false);
-							if (!$pidata) 
+							$insPartsStmt->execute();
+//							$pidata = $db->queryInsert(sprintf("INSERT INTO parts (binaryID, number, messageID, partnumber, size) VALUES (%d, %s, %s, %s, %s)", $binaryID, $db->escapeString($partdata['number']), $db->escapeString($partdata['Message-ID']), $db->escapeString(round($partdata['part'])), $db->escapeString($partdata['size'])), false);
+//							if (!$pidata) 
+							if ($insPartsStmt->affected_rows == 0)
 							{
 								$msgsnotinserted[] = $partdata['number'];
 							} 
@@ -456,9 +472,10 @@ class Binaries
 	
 	public function retrieveBlackList() 
 	{
-		if (is_array($this->blackList) && !empty($this->blackList)) { return $this->blackList; }
+		if ($this->blackListLoaded) { return $this->blackList; }
 		$blackList = $this->getBlacklist(true);
 		$this->blackList = $blackList;
+		$this->blackListLoaded = true;
 		return $blackList;
 	}
 	
