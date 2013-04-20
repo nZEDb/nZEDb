@@ -58,7 +58,7 @@ Class Trakttv
 	// Fetches information from trakt.tv for the movie.
 	// Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
 	//
-	public function trakttMovieLookup($movie='')
+	public function traktMovielookup($movie='')
 	{
 		$chars = array(' ', '_', '.');
 		$movie = str_replace($chars, '-', $movie);
