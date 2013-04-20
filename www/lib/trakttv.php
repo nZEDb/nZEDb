@@ -47,7 +47,7 @@ Class Trakttv
 	//
 	public function traktTVDBlookup($tvdbid='')
 	{
-		$TVurl = 'http://api.trakt.tv/show/episode/summary.json/'.$this->APIKEY.'/'.$tvdbid;
+		$TVurl = 'http://api.trakt.tv/show/summary.json/'.$this->APIKEY.'/'.$tvdbid;
 		$TVjson = file_get_contents($TVurl, 0, null, null);
 		$TVarray = json_decode($TVjson, true);
 		
