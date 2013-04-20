@@ -90,7 +90,7 @@ Class Trakttv
 	}
 	
 	//
-	// Fetches information from trakt.tv for the TV show using the title/season/episode.
+	// Fetches summary from trakt.tv for the TV show using the title/season/episode.
 	//
 	public function traktTVSEsummary($showtitle='', $season='', $ep='')
 	{
@@ -141,7 +141,7 @@ Class Trakttv
 	}
 	
 	//
-	// Fetches information from trakt.tv for the TV show using a TVDB ID.
+	// Fetches summary from trakt.tv for the TV show using a TVDB ID.
 	//
 	public function traktTVDBsummary($tvdbid='')
 	{
@@ -160,8 +160,9 @@ Class Trakttv
 	}
 	
 	//
-	// Fetches information from trakt.tv for the movie.
+	// Fetches summary from trakt.tv for the movie.
 	// Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
+	// Returns array, or IMDBid.
 	//
 	public function traktMoviesummary($movie='', $type='')
 	{

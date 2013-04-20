@@ -19,7 +19,7 @@ class Binaries
 
 		$s = new Sites();
 		$site = $s->get();
-		$this->compressedHeaders = ($site->compressedheaders == "1") ? true : false;	
+		$this->compressedHeaders = ($site->compressedheaders == "1") ? true : false;
 		$this->messagebuffer = (!empty($site->maxmssgs)) ? $site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($site->newgroupscanmethod == "1") ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
