@@ -428,6 +428,13 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="partrepair">Part repair</label>:</td>
+	<td>
+		{html_radios class="$compress_headers_warning" id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
+		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+	</td>
+</tr>
 
 <tr>
 	<td><label for="maxmssgs">Max Messages</label>:</td>

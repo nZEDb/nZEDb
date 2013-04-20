@@ -875,6 +875,7 @@ INSERT INTO `site`
 	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
 	('trakttvkey', ''),
 	('compressedheaders', 0),
+	('partrepair', 1),
 	('maxmssgs', 20000),
 	('newgroupscanmethod', 0),
 	('newgroupdaystoscan', 1),
