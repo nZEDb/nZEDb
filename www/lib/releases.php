@@ -1580,25 +1580,25 @@ class Releases
 		//Create NZB.
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
-		do
+		$start_nzbcount = $nzbcount;
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where ))
 		{
-			$start_nzbcount = $nzbcount;
-			if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID from releases where nzbstatus = 0 " . $where . " limit 1000"))
+			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				while ($rowrel = $db->fetchAssoc($resrel))
-				{
-					$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
-					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
-					$db->queryDirect(sprintf("DELETE parts, binaries, collections 
-												FROM parts LEFT JOIN binaries ON parts.binaryID = binaries.ID LEFT JOIN collections ON binaries.collectionID = collections.ID
-												WHERE (collections.releaseID = %d)", $rowrel['ID']));
-					$nzbcount++;
-				}
+				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
+				$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
+				$db->queryDirect(sprintf("DELETE collections, binaries, parts
+											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+											WHERE (collections.releaseID = %d)", $rowrel['ID']));
+				echo ".";
+				$nzbcount++;
+				if ($nzbcount % 50 == 0)
+					echo $n;
 			}
-		} while ($start_nzbcount <> $nzbcount);
+		}
 		
 		$timing = TIME() - $stage5;
-		echo $nzbcount . " NZBs created in " . $timing ." second(s). ";
+		echo $n . $nzbcount . " NZBs created in " . $timing ." second(s). ";
 	}
 	
 	public function processReleasesStage6($categorize, $postproc, $groupID)
@@ -1647,8 +1647,8 @@ class Releases
 		$stage7 = TIME();
 		//Old collections that were missed somehow.
 	
-		$db->queryDirect("DELETE parts, binaries, collections 
-						  FROM parts LEFT JOIN binaries ON parts.binaryID = binaries.ID LEFT JOIN collections ON binaries.collectionID = collections.ID
+		$db->queryDirect("DELETE collections, binaries, parts
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 						  WHERE (collections.dateadded < (now() - interval 72 hour)) " . $where);
 		$reccount = $db->getAffectedRows();
 		
