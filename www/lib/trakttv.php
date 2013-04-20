@@ -14,10 +14,64 @@ Class Trakttv
 		$this->APIKEY = $site->trakttvkey;
 	}
 	
+	public function traktSearchShow($title='')
+	{
+		$title = str_replace(array("_", " ", '.'), '-', $title);
+		$url = 'http://api.trakt.tv/search/shows.json/'.$this->APIKEY.'/'.$title;
+		$json = file_get_contents($url, 0, null, null);
+		
+		if($json === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$tarray = json_decode($json, true);
+			$preg_title = str_replace('-', ' ', $title);
+			// Check if the name matches.
+			if(preg_match("/".$tarray["0"]["title"]."/i", $preg_title))
+			{	
+				print_r($tarray);
+			}
+			// Try the second name as a last ditched effort.
+			else if(preg_match("/".$tarray["1"]["title"]."/i", $preg_title))
+			{
+				print_r($tarray);
+			}
+		}
+	}
+	
+	public function traktSearchMovie($title='')
+	{
+		$title = str_replace(array("_", " ", '.'), '-', $title);
+		$url = 'http://api.trakt.tv/search/movies.json/'.$this->APIKEY.'/'.$title;
+		$json = file_get_contents($TVurl, 0, null, null);
+		
+		if($json === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$marray = json_decode($json, true);
+			$preg_title = str_replace('-', ' ', $title);
+			// Check if the name matches.
+			if(preg_match("/".$marray["0"]["title"]."/i", $preg_title))
+			{
+				print_r($tarray);
+			}
+			// Try the second name as a last ditched effort.
+			else if(preg_match("/".$marray["1"]["title"]."/i", $preg_title))
+			{
+				print_r($tarray);
+			}
+		}
+	}
+	
 	//
-	// Fetches information from trakt.tv for the TV show using the title.
+	// Fetches summarty from trakt.tv for the TV show using the title.
 	//
-	public function traktTVlookup($showtitle='')
+	public function traktTVsummary($showtitle='')
 	{
 		$chars = array(' ', '_', '.');
 		$showtitle = str_replace($chars, '-', $showtitle);
@@ -38,7 +92,7 @@ Class Trakttv
 	//
 	// Fetches information from trakt.tv for the TV show using the title/season/episode.
 	//
-	public function traktTVSElookup($showtitle='', $season='', $ep='')
+	public function traktTVSEsummary($showtitle='', $season='', $ep='')
 	{
 		$chars = array(' ', '_', '.');
 		$showtitle = str_replace($chars, '-', $showtitle);
@@ -89,7 +143,7 @@ Class Trakttv
 	//
 	// Fetches information from trakt.tv for the TV show using a TVDB ID.
 	//
-	public function traktTVDBlookup($tvdbid='')
+	public function traktTVDBsummary($tvdbid='')
 	{
 		$TVurl = 'http://api.trakt.tv/show/summary.json/'.$this->APIKEY.'/'.$tvdbid;
 		$TVjson = @file_get_contents($TVurl, 0, null, null);
@@ -109,7 +163,7 @@ Class Trakttv
 	// Fetches information from trakt.tv for the movie.
 	// Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
 	//
-	public function traktMovielookup($movie='')
+	public function traktMoviesummary($movie='')
 	{
 		$chars = array(' ', '_', '.');
 		$movie = str_replace($chars, '-', $movie);

@@ -6,22 +6,22 @@ require_once(FS_ROOT."/../../www/lib/trakttv.php");
 if(isset($argv[1]) && $argv[1] == "showtitle" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
-	$trakttv->traktTVlookup($argv[2]);
+	$trakttv->traktTVsummary($argv[2]);
 }
 else if(isset($argv[1]) && $argv[1] == "movie" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
-	$trakttv->traktMovielookup($argv[2]);
+	$trakttv->traktMoviesummary($argv[2]);
 }
 else if(isset($argv[1]) && $argv[1] == "tvdb" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
-	$trakttv->traktTVDBlookup($argv[2]);
+	$trakttv->traktTVDBsummary($argv[2]);
 }
 else if(isset($argv[1]) && $argv[1] == "show" && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
 	$trakttv = new Trakttv();
-	$trakttv->traktTVSElookup($argv[2], $argv[3], $argv[4]);
+	$trakttv->traktTVSEsummary($argv[2], $argv[3], $argv[4]);
 }
 else
 {
@@ -34,4 +34,10 @@ else
 		"php traktTV.php movie the-walking-dead\n\n".
 		"The title must have - . or _ between the words.\n");
 }
+
+/*
+ * $trakttv = new Trakttv();
+ * $trakttv->traktSearchShow($argv[1]);
+ */
+
 ?>
