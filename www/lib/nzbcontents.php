@@ -135,7 +135,7 @@ Class NZBcontents
 			{
 				//No .nfo file in the NZB.
 				echo ".-";
-				$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+				$db->queryDirect(sprintf(" update releases set nfostatus = 0 where nfostatus not between -6 and -1 and ID = %d", $relID));
 				return false;
 			}
 		}

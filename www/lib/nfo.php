@@ -52,15 +52,15 @@ class Nfo
 		$nntp = new Nntp();
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
-		
-		$res = $db->queryDirect("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate desc limit 50");
+
+		$res = $db->queryDirect("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit 50");
 		if ($db->getNumRows($res) >= 0)
-		{	
+		{
 			if ($this->echooutput)
 			{
 				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n..";
 			}
-		
+
 			$nntp->doConnect();
 			while ($arr = $db->fetchAssoc($res))
 			{
@@ -74,13 +74,13 @@ class Nfo
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
-					
+
 					$imdbId = $this->parseImdb($fetchedBinary);
-					if ($imdbId !== false) 
+					if ($imdbId !== false)
 					{
 						//update release with imdb id
 						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-					
+
 						//if set scan for imdb info
 						if ($processImdb == 1)
 						{
@@ -93,20 +93,20 @@ class Nfo
 							}
 						}
 					}
-				
+
 					$rageId = $this->parseRageId($fetchedBinary);
 					if ($rageId !== false)
-					{	
+					{
 						//if set scan for tvrage info
 						if ($processTvrage == 1)
 						{
 							$tvrage = new Tvrage($this->echooutput);
-							$show = $tvrage->parseNameEpSeason($arr['name']);	
+							$show = $tvrage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '')
-							{	
+							{
 								// update release with season, ep, and airdate info (if available) from releasetitle
 								$tvrage->updateEpInfo($show, $arr['ID']);
-							
+
 								$rid = $tvrage->getByRageID($rageId);
 								if (!$rid)
 								{
@@ -117,27 +117,27 @@ class Nfo
 						}
 					}
 				}
-				else 
+				else
 				{
 					//nfo download failed, increment attempts
-					$db->query(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
+					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
 				}
 			}
 			$nntp->doQuit();
 		}
-		
+
 		//remove nfo that we cant fetch after 5 attempts
 		$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
 		while ($relrow = $db->fetchAssoc($relres))
 		{
 			$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
 		}
-	
+
 		if ($this->echooutput)
 		{
 			echo ". ...".$ret." NFO files processed.\n";
 		}
-	
+
 		return $ret;
 	}
 }

@@ -7,7 +7,7 @@ tmux selectp -t 0
 tmux splitw -h -p 67 'printf "\033]2;update_binaries\033\\"'
 
 tmux selectp -t 0
-tmux splitw -v -p 70 'printf "\033]2;postprocessing\033\\"'
+tmux splitw -v -p 67 'printf "\033]2;postprocessing\033\\"'
 tmux splitw -v -p 50 'printf "\033]2;postprocessing\033\\"'
 
 tmux selectp -t 3

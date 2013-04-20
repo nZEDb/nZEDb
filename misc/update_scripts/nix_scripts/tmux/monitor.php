@@ -2,7 +2,7 @@
 
 require(dirname(__FILE__)."/../../../../www/config.php");
 require(WWW_DIR.'/lib/postprocess.php');
-$version="0.1r111";
+$version="0.1r112";
 
 $db = new DB();
 
@@ -18,7 +18,7 @@ $proc = "SELECT ( SELECT COUNT( groupID ) AS cnt from releases where consoleinfo
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work, 
 			( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
 			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus in ( 0, 1 )) AS nfo,
-			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 ) AS nforemains,
+			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd, 
 			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
@@ -376,7 +376,11 @@ while( $i > 0 )
 
     //run postprocess_releases
     $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.2 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_releases.php' 2>&1 1> /dev/null");
+    shell_exec("tmux respawnp -t nZEDb:1.1 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_nfos.php' 2>&1 1> /dev/null");
+
+    //run postprocess_releases
+    $color = get_color();
+    shell_exec("tmux respawnp -t nZEDb:1.2 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_all.php' 2>&1 1> /dev/null");
 
 	//run update_binaries
 	$color = get_color();
