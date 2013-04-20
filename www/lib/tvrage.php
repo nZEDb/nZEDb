@@ -2,6 +2,7 @@
 require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/trakttv.php");
 
 class TvRage
 {	
@@ -404,13 +405,58 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
+	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
+	{
+		$db = new Db;
+		
+		// try and get the episode specific info from tvrage
+		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
+		if ($epinfo !== false)
+		{
+			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
+			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
+
+			$db->query(sprintf("update releases set tvtitle=trim(%s), tvairdate=%s, rageID = %d where ID = %d", $tvtitle, $tvairdate, $traktArray['show']['tvrage_id'], $relid));
+		} else {
+			$db->query(sprintf("update releases set rageID = %d where ID = %d", $traktArray['show']['tvrage_id'], $relid));
+		}
+		
+		$genre = '';
+		if (isset($traktArray['show']['genres']) && is_array($traktArray['show']['genres']) && !empty($traktArray['show']['genres']))
+			$genre = $traktArray['show']['genres']['0'];
+		
+		$country = '';
+		if (isset($traktArray['show']['country']) && !empty($traktArray['show']['country']))
+			$country = $traktArray['show']['country'];
+		
+		$rInfo = $this->getRageInfoFromPage($rageid);
+		$desc = '';
+		if (isset($rInfo['desc']) && !empty($rInfo['desc']))
+			$desc = $rInfo['desc'];
+			
+		$imgbytes = '';
+		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl']))
+		{
+			$img = getUrl($rInfo['imgurl']);
+			if ($img !== false)
+			{
+				$im = @imagecreatefromstring($img);
+				if($im !== false)
+					$imgbytes = $img;
+			}
+		}	
+		
+		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
+	}
+	
 	public function processTvReleases($lookupTvRage=true)
 	{
 		$ret = 0;
 		$db = new DB();
+		$trakt = new Trakttv();
 		
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit 0,75", Category::CAT_PARENT_TV));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit 75", Category::CAT_PARENT_TV));
 		
 		if ($this->echooutput)
 		{
@@ -442,10 +488,23 @@ class TvRage
 					}
 					elseif ($tvrShow === false)
 					{
-						// no match
-						//add to tvrage with rageID = -2 and $show['cleanname'] title only
-						$this->add(-2, $show['cleanname'], '', '', '', '');
-						
+						// If tvrage fails, try trakt
+						$traktArray = $trakt->traktTVSEsummary($show['name'], $show['season'], $show['episode']);
+						if ($traktArray !== false)
+						{
+							if(isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0)
+							{
+								if ($this->echooutput)
+									echo 'Found rageID on trakt :'.$traktArray['show']['tvrage_id']."\n";
+								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['ID']);
+							}
+						}
+						else
+						{
+							// no match
+							//add to tvrage with rageID = -2 and $show['cleanname'] title only
+							$this->add(-2, $show['cleanname'], '', '', '', '');
+						}
 					}
 					else
 					{
@@ -616,7 +675,7 @@ class TvRage
 				}
 				
 				if ($this->echooutput)
-					echo 'No match found online.'."\n";
+					echo 'No match found online, trying trakt.'."\n";
 				return false;
 				
 			} else {

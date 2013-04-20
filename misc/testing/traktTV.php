@@ -37,8 +37,8 @@ else
 
 
 $trakttv = new Trakttv();
-$imdbID = $trakttv->traktMoviesummary($argv[1], "imdbid");
+$tvarray = $trakttv->traktTVsummary($argv[1], "array");
 
-echo $imdbID;
+print_r($tvarray);
 
 ?>

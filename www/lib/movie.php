@@ -510,7 +510,7 @@ class Movie
 					{
 						$traktimdbid = str_replace('tt', '', $traktimdbid);
 						if ($this->echooutput)
-							echo 'Tratkt Found IMDBid: '.$traktimdbid."\n";
+							echo 'Tratkt Found IMDBid: tt'.$traktimdbid."\n";
 						
 						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($traktimdbid), $arr["ID"]));
 						
