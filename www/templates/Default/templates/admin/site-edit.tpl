@@ -174,7 +174,7 @@
 	<td style="width:160px;"><label for="tmdbkey">TMDB Key</label>:</td>
 	<td>
 		<input id="tmdbkey" class="long" name="tmdbkey" type="text" value="{$fsite->tmdbkey}" />
-		<div class="hint">The api key used for access to tmdb</div>
+		<div class="hint">The api key used for access to tmdb.</div>
 	</td>
 </tr>
 
@@ -182,7 +182,7 @@
 	<td style="width:160px;"><label for="rottentomatokey">Rotten Tomatoes Key</label>:</td>
 	<td>
 		<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$fsite->rottentomatokey}" />
-		<div class="hint">The api key used for access to rotten tomatoes</div>
+		<div class="hint">The api key used for access to rotten tomatoes.</div>
 	</td>
 </tr>
 
@@ -199,6 +199,14 @@
 	<td>
 		<input id="amazonprivkey" class="long" name="amazonprivkey" type="text" value="{$fsite->amazonprivkey}" />
 		<div class="hint">The amazon private api key. Used for music lookups.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="trakttvkey">Trakt.tv API key</label>:</td>
+	<td>
+		<input id="trakttvkey" class="long" name="amazonprivkey" type="text" value="{$fsite->trakttvkey}" />
+		<div class="hint">The trakt.tv api key. Used for movie and tv lookups.</div>
 	</td>
 </tr>
 

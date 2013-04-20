@@ -873,6 +873,7 @@ INSERT INTO `site`
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
 	('tmdbkey', '9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
+	('trakttvkey', ''),
 	('compressedheaders', 0),
 	('maxmssgs', 20000),
 	('newgroupscanmethod', 0),
