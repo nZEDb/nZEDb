@@ -24,6 +24,7 @@ class Binaries
 		$this->NewGroupScanByDays = ($site->newgroupscanmethod == "1") ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
+		$this->DoPartRepair = ($site->partrepair == "0") ? false : true;
 		
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
@@ -87,7 +88,15 @@ class Binaries
 		}
 		
 		//Attempt to repair any missing parts before grabbing new ones
-		$this->partRepair($nntp, $groupArr);
+		if ($this->DoPartRepair)
+		{
+			echo "Part Repair Enabled... Repairing..." . $n;
+			$this->partRepair($nntp, $groupArr);
+		}
+		else
+		{
+			echo "Part Repair Disabled... Skipping..." . $n;
+		}
 
 		//Get first and last part numbers from newsgroup
 		$last = $grouplast = $data['last'];
@@ -210,8 +219,8 @@ class Binaries
 		
 		if(PEAR::isError($msgs))
 		{
-			echo "Error {$msgs->code}: {$msgs->message}";
-			echo " Skipping group or partrepair.$n";
+			echo "Error {$msgs->code}: {$msgs->message}$n";
+			echo "Skipping group$n";
 			return false;
 		}
 	
@@ -289,7 +298,8 @@ class Binaries
 					case 'partrepair':
 					case 'update':
 					default:
-						$this->addMissingParts($rangenotreceived, $groupArr['ID']);
+						if ($this->DoPartRepair) 
+							$this->addMissingParts($rangenotreceived, $groupArr['ID']);
 					break;
 				}
 				if ($type != 'partrepair')
@@ -391,7 +401,8 @@ class Binaries
 				if (sizeof($msgsnotinserted) > 0)
 				{
 					echo 'WARNING: '.sizeof($msgsnotinserted).' parts failed to insert'.$n;
-					$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
+					if ($this->DoPartRepair) 
+						$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
 				}
 				$db->Commit();
 				$db->setAutoCommit(true);
