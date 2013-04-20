@@ -52,7 +52,36 @@ Class Trakttv
 		else
 		{
 			$TVarray = json_decode($TVjson, true);
-			print_r($TVarray);
+			
+			// Common Show stuff.
+			$Title =		$TVarray['show']['title'];
+			$Runtime =		$TVarray['show']['runtime'];
+			$Network =		$TVarray['show']['network'];
+			$IMDBid	=		$TVarray['show']['imdb_id'];
+			$TVRageid =		$TVarray['show']['tvrage_id'];
+			$Genre =		$TVarray['show']['genres']['0'];
+			$Background =	$TVarray['show']['images']['fanart'];
+			$Banner =		$TVarray['show']['images']['banner'];
+			
+			// Episode specific stuff.
+			$EpTitle =		$TVarray['episode']['title'];
+			$EpOverview =	$TVarray['episode']['overview'];
+			$EpTVDBid =		$TVarray['episode']['tvdb_id'];
+			$EpURL =		$TVarray['episode']['url'];
+			$EpDate =		$TVarray['episode']['first_aired'];
+			$EpScreen =		$TVarray['episode']['images']['screen'];
+			$EpRating =		$TVarray['episode']['ratings']['percentage'];
+			$EpNumber =		$TVarray['episode']['number'];
+			$EpSeason = 	$TVarray['episode']['season'];
+			$EpDate = 		gmdate("Y-m-d H:i:s", $EpDate);
+			
+			exit($Title.", Season".$EpSeason." Episode".$EpNumber.". ".$EpTitle.
+					"\n\nEpisode overview: ".$EpOverview.
+					"\n\nAir date: ".$EpDate." Network: ".$Network.
+					"\nRun time: ".$Runtime." minutes. Genre: ".$Genre.
+					"\nEpisode Rating: ".$EpRating.". IMDB: ".$IMDBid.
+					"\nTVRage: ".$TVRageid.", TVDB: ".$EpTVDBid.
+					"\nTrakt.tv URL: ".$EpURL."\n");
 		}
 			
 	}
