@@ -22,10 +22,17 @@ Class Trakttv
 		$chars = array(' ', '_', '.');
 		$showtitle = str_replace($chars, '-', $showtitle);
 		$TVurl = 'http://api.trakt.tv/show/summary.json/'.$this->APIKEY.'/'.$showtitle;
-		$TVjson = file_get_contents($TVurl, 0, null, null);
-		$TVarray = json_decode($TVjson, true);
+		$TVjson = @file_get_contents($TVurl, 0, null, null);
 		
-		print_r($TVarray);
+		if($TVjson === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$TVarray = json_decode($TVjson, true);
+			print_r($TVarray);
+		}
 	}
 	
 	//
@@ -36,10 +43,18 @@ Class Trakttv
 		$chars = array(' ', '_', '.');
 		$showtitle = str_replace($chars, '-', $showtitle);
 		$TVurl = 'http://api.trakt.tv/show/episode/summary.json/'.$this->APIKEY.'/'.$showtitle.'/'.$season.'/'.$ep;
-		$TVjson = file_get_contents($TVurl, 0, null, null);
-		$TVarray = json_decode($TVjson, true);
+		$TVjson = @file_get_contents($TVurl, 0, null, null);
 		
-		print_r($TVarray);
+		if($TVjson === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$TVarray = json_decode($TVjson, true);
+			print_r($TVarray);
+		}
+			
 	}
 	
 	//
@@ -48,10 +63,17 @@ Class Trakttv
 	public function traktTVDBlookup($tvdbid='')
 	{
 		$TVurl = 'http://api.trakt.tv/show/summary.json/'.$this->APIKEY.'/'.$tvdbid;
-		$TVjson = file_get_contents($TVurl, 0, null, null);
-		$TVarray = json_decode($TVjson, true);
+		$TVjson = @file_get_contents($TVurl, 0, null, null);
 		
-		print_r($TVarray);
+		if($TVjson === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$TVarray = json_decode($TVjson, true);
+			print_r($TVarray);
+		}
 	}
 	
 	//
@@ -64,8 +86,15 @@ Class Trakttv
 		$movie = str_replace($chars, '-', $movie);
 		$Movieurl = 'http://api.trakt.tv/movie/summary.json/'.$this->APIKEY.'/'.$movie;
 		$Moviejson = file_get_contents($Movieurl, 0, null, null);
-		$Moviearray = json_decode($Moviejson, true);
 		
-		print_r($Moviearray);
+		if($Moviejson === false)
+		{
+			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+		}
+		else
+		{
+			$Moviearray = json_decode($Moviejson, true);
+			print_r($Moviearray);
+		}
 	}
 }

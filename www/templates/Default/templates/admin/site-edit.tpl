@@ -205,7 +205,7 @@
 <tr>
 	<td><label for="trakttvkey">Trakt.tv API key</label>:</td>
 	<td>
-		<input id="trakttvkey" class="long" name="amazonprivkey" type="text" value="{$fsite->trakttvkey}" />
+		<input id="trakttvkey" class="long" name="trakttvkey" type="text" value="{$fsite->trakttvkey}" />
 		<div class="hint">The trakt.tv api key. Used for movie and tv lookups.</div>
 	</td>
 </tr>
