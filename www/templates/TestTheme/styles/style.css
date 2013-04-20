@@ -26,10 +26,10 @@ input[type=text], input[type=password], textarea, select { background: #fff; bac
 /*
 page structure
 */
-#header { width: 85%; 	margin: 0 auto; }
-#page { width: 85%; margin: 0 auto; padding: 50px 0px 0px 0px;}
+#header { width: 940px; 	margin: 0 auto; }
+#page { width: 940px; margin: 0 auto; padding: 50px 0px 0px 0px;}
 
-#logo { width: 85%; height: 65px; margin: 0 auto; padding-left:5px; margin-top:5px; background:url("../images/logo.png") no-repeat bottom left; }
+#logo { width: 940px; height: 65px; margin: 0 auto; padding-left:5px; margin-top:5px; background:url("../images/logo.png") no-repeat bottom left; }
 #logo h1, #logo p { display:none; margin: 0px; line-height: normal; text-transform: lowercase; font-weight: normal; color: #485459;}
 #logo p { margin-top: 2px; text-transform: lowercase; font-size: 13px; color: #A8A8A8;}
 #logo h1 { padding-top: 10px; font-size: 48px;}
@@ -38,7 +38,7 @@ page structure
 #logo img { margxin-top:15px; }
 #logo h1 a { text-decoration: none; color: #485459;}
 
-#statusbar { width:85%; margin: 0 auto; text-align:right; padding:5px 10px 0 0;}
+#statusbar { width:940px; margin: 0 auto; text-align:right; padding:5px 10px 0 0;}
 #statusbar a { text-decoration: none; color: #515151;}
 
 #content { float: right; width: 100%;}

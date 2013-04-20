@@ -10,7 +10,6 @@
 
 	<link href="{$smarty.const.WWW_TOP}/templates/TestTheme/styles/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_TOP}/templates/TestTheme/styles/bootstrap-responsive.css" rel="stylesheet" type="text/css" media="screen" />
-	<link href="{$smarty.const.WWW_TOP}/templates/TestTheme/styles/style.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_TOP}/templates/TestTheme/styles/jquery.qtip.css" rel="stylesheet" type="text/css" media="screen" />
 {if $site->google_adsense_acc != ''}	<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" type="text/css" media="screen" />
 {/if}
