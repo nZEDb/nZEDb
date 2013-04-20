@@ -62,7 +62,7 @@ Class Trakttv
 	{
 		$chars = array(' ', '_', '.');
 		$movie = str_replace($chars, '-', $movie);
-		$Movieurl = 'http://api.trakt.tv/show/movie/summary.json/'.$this->APIKEY.'/'.$movie;
+		$Movieurl = 'http://api.trakt.tv/movie/summary.json/'.$this->APIKEY.'/'.$movie;
 		$Moviejson = file_get_contents($Movieurl, 0, null, null);
 		$Moviearray = json_decode($Moviejson, true);
 		
