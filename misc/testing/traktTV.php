@@ -3,22 +3,22 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/trakttv.php");
 
-if($argv[1] == "showtitle" && isset($argv[1]) && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
+if(isset($argv[1]) && $argv[1] == "showtitle" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
 	$trakttv->traktTVlookup($argv[2]);
 }
-else if($argv[1] == "movie" && isset($argv[1]) && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
+else if(isset($argv[1]) && $argv[1] == "movie" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
 	$trakttv->traktMovielookup($argv[2]);
 }
-else if($argv[1] == "tvdb" && isset($argv[1]) && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
+else if(isset($argv[1]) && $argv[1] == "tvdb" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
 	$trakttv->traktTVDBlookup($argv[2]);
 }
-else if($argv[1] == "show" && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
+else if(isset($argv[1]) && $argv[1] == "show" && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
 	$trakttv = new Trakttv();
 	$trakttv->traktTVSElookup($argv[2], $argv[3], $argv[4]);
