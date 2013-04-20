@@ -423,7 +423,7 @@
 <tr>
 	<td><label for="compressedheaders">Use Compressed Headers</label>:</td>
 	<td>
-		{html_radios class="$compress_headers_warning" id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
+		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
 		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.</div>
 	</td>
 </tr>
@@ -431,7 +431,7 @@
 <tr>
 	<td><label for="partrepair">Part repair</label>:</td>
 	<td>
-		{html_radios class="$compress_headers_warning" id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
+		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
 		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 	</td>
 </tr>
