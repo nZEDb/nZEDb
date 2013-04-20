@@ -23,7 +23,7 @@ Class Trakttv
 		if($json === false)
 		{
 			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
-			return false
+			return false;
 		}
 		else
 		{
@@ -51,7 +51,7 @@ Class Trakttv
 		if($json === false)
 		{
 			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
-			return false
+			return false;
 		}
 		else
 		{
