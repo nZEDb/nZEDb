@@ -2,7 +2,7 @@
 
 require(dirname(__FILE__)."/../../../../www/config.php");
 require(WWW_DIR.'/lib/postprocess.php');
-$version="0.1r110";
+$version="0.1r111";
 
 $db = new DB();
 
@@ -16,6 +16,9 @@ $proc = "SELECT ( SELECT COUNT( groupID ) AS cnt from releases where consoleinfo
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)))) AS pc, 
 			( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv, 
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work, 
+			( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
+			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus in ( 0, 1 )) AS nfo,
+			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 ) AS nforemains,
 			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd, 
 			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
@@ -381,11 +384,18 @@ while( $i > 0 )
 
     //run backfill
     $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
+	if ( $i == 1 )
+	{
+	    shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
+	}
+	else
+	{
+        shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
+    }
 
     //run import-nzb-bulk
     $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.5 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/testing/nzb-import-bulk.php /import/nzbs' 2>&1 1> /dev/null");
+    //shell_exec("tmux respawnp -t nZEDb:1.5 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/testing/nzb-import-bulk.php /import/nzbs' 2>&1 1> /dev/null");
 
     //run update_releases
     $color = get_color();
