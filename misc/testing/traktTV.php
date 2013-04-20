@@ -6,7 +6,7 @@ require_once(FS_ROOT."/../../www/lib/trakttv.php");
 if(isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 {
 	$trakttv = new Trakttv();
-	$trakttv->trakTVlookup($argv[1], $argv[2], $argv[3]);
+	$trakttv->traktTVlookup($argv[1], $argv[2], $argv[3]);
 }
 else
 {
