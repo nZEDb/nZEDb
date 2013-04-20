@@ -7,6 +7,7 @@ require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
 require_once(WWW_DIR."/lib/rottentomato.php");
+require_once(WWW_DIR."/lib/trakttv.php");
 
 class Movie
 {
@@ -482,12 +483,13 @@ class Movie
         }
         return false;
     }
-    
-    public function processMovieReleases()
+	
+	public function processMovieReleases()
 	{
 		$ret = 0;
 		$db = new DB();
 		$nfo = new Nfo;
+		$trakt = new Trakttv();
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit 50", Category::CAT_PARENT_MOVIE));
 		if ($db->getNumRows($res) > 0)
@@ -502,39 +504,62 @@ class Movie
 				{
 					if ($this->echooutput)
 						echo 'Looking up: '.$moviename.' ['.$arr['searchname'].']'."\n";
-		
-					$buffer = getUrl("http://www.google.com/search?source=ig&hl=en&rlz=&btnG=Google+Search&aq=f&oq=&q=".urlencode($moviename.' imdb'));
-	
-			        // make sure we got some data
-			        if ($buffer !== false && strlen($buffer))
-			        {
-						$imdbId = $nfo->parseImdb($buffer);
-						if ($imdbId !== false) 
-						{
-							if ($this->echooutput)
-								echo 'Found '.$imdbId."\n";
-							
-							//update release with imdb id
-							$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-							
-							//check for existing movie entry
-							$movCheck = $this->getMovieInfo($imdbId);
-							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-							{
-								$movieId = $this->updateMovieInfo($imdbId);
-							}
-
-						} else {
-							//no imdb id found, set to all zeros so we dont process again
-							$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-						}
+					
+					$traktimdbid = $trakt->traktMoviesummary($moviename, "imdbid");
+					if ($traktimdbid !== false)
+					{
+						$traktimdbid = str_replace('tt', '', $traktimdbid);
+						if ($this->echooutput)
+							echo 'Tratkt Found IMDBid: '.$traktimdbid."\n";
 						
-					} else {
-						//url fetch failed, will try next run
+						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($traktimdbid), $arr["ID"]));
+						
+						$movCheck = $this->getMovieInfo($traktimdbid);
+						if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+						{
+							$movieId = $this->updateMovieInfo($traktimdbid);
+						}
+					}
+					else
+					{
+						$buffer = getUrl("http://www.google.com/search?source=ig&hl=en&rlz=&btnG=Google+Search&aq=f&oq=&q=".urlencode($moviename.' imdb'));
+	
+						// make sure we got some data
+						if ($buffer !== false && strlen($buffer))
+						{
+							$imdbId = $nfo->parseImdb($buffer);
+							if ($imdbId !== false) 
+							{
+								if ($this->echooutput)
+									echo 'Google found IMDBid: tt'.$imdbId."\n";
+							
+								//update release with imdb id
+								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+							
+								//check for existing movie entry
+								$movCheck = $this->getMovieInfo($imdbId);
+								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+								{
+									$movieId = $this->updateMovieInfo($imdbId);
+								}
+
+							}
+							else 
+							{
+								//no imdb id found, set to all zeros so we dont process again
+								$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+							}
+						
+						}
+						else 
+						{
+							//url fetch failed, will try next run
+						}
 					}
 				
-				
-				} else {
+				}
+				else
+				{
 					//no valid movie name found, set to all zeros so we dont process again
 					$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
 				}

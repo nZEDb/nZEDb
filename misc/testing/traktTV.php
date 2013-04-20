@@ -3,7 +3,7 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../www/config.php");
 require_once(FS_ROOT."/../../www/lib/trakttv.php");
 
-if(isset($argv[1]) && $argv[1] == "showtitle" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
+/*if(isset($argv[1]) && $argv[1] == "showtitle" && isset($argv[2]) && !isset($argv[3]) && !isset($argv[4]))
 {
 	$trakttv = new Trakttv();
 	$trakttv->traktTVsummary($argv[2]);
@@ -33,11 +33,12 @@ else
 		"php traktTV.php movie 27115			;; TMDB\n".
 		"php traktTV.php movie the-walking-dead\n\n".
 		"The title must have - . or _ between the words.\n");
-}
+}*/
 
-/*
- * $trakttv = new Trakttv();
- * $trakttv->traktSearchShow($argv[1]);
- */
+
+$trakttv = new Trakttv();
+$imdbID = $trakttv->traktMoviesummary($argv[1], "imdbid");
+
+echo $imdbID;
 
 ?>

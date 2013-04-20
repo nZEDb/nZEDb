@@ -163,21 +163,37 @@ Class Trakttv
 	// Fetches information from trakt.tv for the movie.
 	// Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
 	//
-	public function traktMoviesummary($movie='')
+	public function traktMoviesummary($movie='', $type='')
 	{
 		$chars = array(' ', '_', '.');
 		$movie = str_replace($chars, '-', $movie);
 		$Movieurl = 'http://api.trakt.tv/movie/summary.json/'.$this->APIKEY.'/'.$movie;
-		$Moviejson = file_get_contents($Movieurl, 0, null, null);
+		$Moviejson = @file_get_contents($Movieurl, 0, null, null);
 		
 		if($Moviejson === false)
 		{
 			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
+			return false;
 		}
 		else
 		{
 			$Moviearray = json_decode($Moviejson, true);
-			print_r($Moviearray);
+			
+			if ($type == "imdbid")
+			{
+				if (isset($Moviearray["imdb_id"]))
+				{
+					return $Moviearray["imdb_id"];
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else if ($type == "array")
+			{
+				return $Moviearray;
+			}
 		}
 	}
 }
