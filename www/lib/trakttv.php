@@ -75,10 +75,10 @@ Class Trakttv
 			$EpSeason = 	$TVarray['episode']['season'];
 			$EpDate = 		gmdate("Y-m-d H:i:s", $EpDate);
 			
-			exit($Title.", Season".$EpSeason." Episode".$EpNumber.". ".$EpTitle.
-					"\n\nEpisode overview: ".$EpOverview.
+			exit($Title.", Season ".$EpSeason." Episode ".$EpNumber.". ".$EpTitle.
+					".\n\nEpisode overview: ".$EpOverview.
 					"\n\nAir date: ".$EpDate." Network: ".$Network.
-					"\nRun time: ".$Runtime." minutes. Genre: ".$Genre.
+					".\nRun time: ".$Runtime." minutes. Genre: ".$Genre.
 					"\nEpisode Rating: ".$EpRating.". IMDB: ".$IMDBid.
 					"\nTVRage: ".$TVRageid.", TVDB: ".$EpTVDBid.
 					"\nTrakt.tv URL: ".$EpURL."\n");
