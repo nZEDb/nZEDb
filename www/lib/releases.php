@@ -1587,12 +1587,13 @@ class Releases
 			{
 				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
 				$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
-				$db->queryDirect(sprintf("DELETE collections, binaries, parts
-											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
-											WHERE (collections.releaseID = %d)", $rowrel['ID']));
+				$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %s", $rowrel['ID']));
+//				$db->queryDirect(sprintf("DELETE collections, binaries, parts
+//											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+//											WHERE (collections.releaseID = %d)", $rowrel['ID']));
 				echo ".";
 				$nzbcount++;
-				if ($nzbcount % 50 == 0)
+				if ($nzbcount % 100 == 0)
 					echo $n;
 			}
 		}
@@ -1649,7 +1650,7 @@ class Releases
 	
 		$db->queryDirect("DELETE collections, binaries, parts
 						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
-						  WHERE (collections.dateadded < (now() - interval 72 hour)) " . $where);
+						  WHERE (collections.filecheck = 4 OR (collections.dateadded < (now() - interval 72 hour))) " . $where);
 		$reccount = $db->getAffectedRows();
 		
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
