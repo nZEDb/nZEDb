@@ -1533,39 +1533,43 @@ class Releases
 		//Create releases.
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		do
+		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 2 AND filesize > 0 " . $where . " LIMIT 1000"))
 		{
-			$start_rescount = $retcount;
-			if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 2 AND filesize > 0 " . $where . " LIMIT 1000"))
+			while ($rowcol = $db->fetchAssoc($rescol))
 			{
-				while ($rowcol = $db->fetchAssoc($rescol))
+				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
+				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
+				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
+				$relguid = md5(uniqid());
+				if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) 
+											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", 
+											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), 
+											$db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
-					$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-					$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
-					$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-					$relguid = md5(uniqid());
-					if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus) 
-												VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1)", 
-												$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid), 
-												$db->escapeString($rowcol["date"]), $db->escapeString($rowcol["fromname"]), $db->escapeString($rowcol["filesize"]), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
-					{
-						$relid = $db->getInsertID();
-						//update collections table to say we inserted the release.
-						$db->queryDirect(sprintf("UPDATE collections SET filecheck = 3, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
-						$retcount ++;
-						echo "Added release ".$cleanRelName.$n;
-					}
-					else
-					{
-						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanRelName . ": " . $db->Error() . $n;
-					}
+					$relid = $db->getInsertID();
+					//update collections table to say we inserted the release.
+					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 3, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
+					$retcount ++;
+					echo "Added release ".$cleanRelName.$n;
+				}
+				else
+				{
+					echo "\033[01;31mError Inserting Release: \033[0m" . $cleanRelName . ": " . $db->Error() . $n;
 				}
 			}
-		} while ($start_rescount <> $retcount);
+		}
 		
 		$timing = TIME() - $stage4;
         echo $retcount . " Releases added in " . $timing . " second(s).";
         return $retcount;
+	}
+	
+	public function processReleasesStage4_loop($groupID)
+	{
+		do
+		{
+			$retcount = processReleasesStage4($groupID);
+		} while ($retcount > 0);
 	}
 	
 	public function processReleasesStage5($groupID)
@@ -1581,7 +1585,7 @@ class Releases
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
 		$start_nzbcount = $nzbcount;
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where ))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT 1000"))
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
@@ -1600,6 +1604,15 @@ class Releases
 		
 		$timing = TIME() - $stage5;
 		echo $n . $nzbcount . " NZBs created in " . $timing ." second(s). ";
+		return $nzbcount;
+	}
+	
+	public function processReleasesStage5_loop($groupID)
+	{
+		do
+		{
+			$nzbcount = processReleasesStage5($groupID);
+		} while ($nzbcount > 0);
 	}
 	
 	public function processReleasesStage6($categorize, $postproc, $groupID)
