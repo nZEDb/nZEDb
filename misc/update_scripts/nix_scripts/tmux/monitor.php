@@ -2,7 +2,7 @@
 
 require(dirname(__FILE__)."/../../../../www/config.php");
 require(WWW_DIR.'/lib/postprocess.php');
-$version="0.1r116";
+$version="0.1r117";
 
 $db = new DB();
 
@@ -416,15 +416,17 @@ while( $i > 0 )
 
 	//run update_binaries
 	$color = get_color();
-	shell_exec("tmux respawnp -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
+	if ( $collections_3 < 1000 ) {
+		shell_exec("tmux respawnp -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
+	}
 
     //run backfill
 	$color = get_color();
-	if ( $i == 1 )
+	if (( $i == 1 ) && ( $collections_3 < 1000 ))
 	{
 	    shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
 	}
-	else
+	elseif ( $collections_3 < 1000 )
 	{
         shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
     }
