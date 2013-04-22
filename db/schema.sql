@@ -1142,6 +1142,36 @@ INSERT INTO `genres`
   ('SynthPop', 3000),
   ('Electronica', 3000);
 
+CREATE TABLE `tmux` (
+  
+	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  
+	`setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  
+	`value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  
+	`updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+PRIMARY KEY (`ID`),
+  
+UNIQUE KEY `setting` (`setting`)
+
+) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900');
+INSERT INTO tmux (setting, value) values ('MONITOR_DELAY','30');
+INSERT INTO tmux (setting, value) values ('COLLECTIONS','1000');
+INSERT INTO tmux (setting, value) values ('TMUX_SESSION','nZEDb');
+INSERT INTO tmux (setting, value) values ('BACKFILL_DELAY','30');
+INSERT INTO tmux (setting, value) values ('NICENESS','19');
+INSERT INTO tmux (setting, value) values ('BINARIES','FALSE');
+INSERT INTO tmux (setting, value) values ('BACKFILL','FALSE');
+INSERT INTO tmux (setting, value) values ('IMPORT','FALSE');
+INSERT INTO tmux (setting, value) values ('NZBS','/path/to/nzbs');
+INSERT INTO tmux (setting, value) values ('RUNNING','FALSE');
+INSERT INTO tmux (setting, value) values ('NFOS','FALSE');
+INSERT INTO tmux (setting, value) values ('POST','FALSE');
+INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
