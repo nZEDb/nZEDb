@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r131";
+$version="0.1r134";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -211,8 +211,8 @@ printf($mask, "Movie(2000)","$movie_releases_proc_formatted($movie_diff)","$movi
 printf($mask, "Audio(3000)","$music_releases_proc_formatted($music_diff)","$music_releases_now_formatted($music_percent%)");
 printf($mask, "PC(4000)","$pc_releases_proc_formatted($pc_diff)","$pc_releases_now_formatted($pc_percent%)");
 printf($mask, "TVShows(5000)","$tvrage_releases_proc_formatted($tvrage_diff)","$tvrage_releases_now_formatted($tvrage_percent%)");
-printf($mask, "Books(7000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
-printf($mask, "Misc(8000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
+printf($mask, "Misc(7000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
+printf($mask, "Books(8000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
 printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
 
 $i = 1;
@@ -307,8 +307,8 @@ while( $i > 0 )
 	if ( @$initquery['3000'] != NULL ) { $music_releases_now = $initquery['3000']; }
 	if ( @$initquery['4000'] != NULL ) { $pc_releases_now = $initquery['4000']; }
 	if ( @$initquery['5000'] != NULL ) { $tvrage_releases_now = $initquery['5000']; }
-	if ( @$initquery['7000'] != NULL ) { $book_releases_now = $initquery['7000']; }
-	if ( @$initquery['8000'] != NULL ) { $misc_releases_now = $initquery['8000']; }
+	if ( @$initquery['8000'] != NULL ) { $book_releases_now = $initquery['8000']; }
+	if ( @$initquery['7000'] != NULL ) { $misc_releases_now = $initquery['7000']; }
 
 	//get values from $proc
 	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc = $proc_result[0]['console']; }
@@ -425,12 +425,10 @@ while( $i > 0 )
 	printf($mask, "Audio(3000)","$music_releases_proc_formatted($music_diff)","$music_releases_now_formatted($music_percent%)");
 	printf($mask, "PC(4000)","$pc_releases_proc_formatted($pc_diff)","$pc_releases_now_formatted($pc_percent%)");
 	printf($mask, "TVShows(5000)","$tvrage_releases_proc_formatted($tvrage_diff)","$tvrage_releases_now_formatted($tvrage_percent%)");
-	printf($mask, "Books(7000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
-	printf($mask, "Misc(8000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
+	printf($mask, "Misc(7000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
+	printf($mask, "Books(8000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
 	printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
 
-	echo $DIR;
-	
 	//get microtime at end of queries
 	if ( $runloop == "true" )
 	{
@@ -458,7 +456,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/postprocess_nfos.php' 2>&1 1> /dev/null");
-		} 
+		}
 		else
 		{
 			$color = get_color();
@@ -493,17 +491,17 @@ while( $i > 0 )
 		$color = get_color();
 		if (( $i == 1 ) && ( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 20000' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
 		}
 		elseif (( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 20000' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
 		}
 		elseif ( $backfill != "TRUE" )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been terminated by Backfill\"'");
-		}		
+		}
 
 		//run import-nzb-bulk
 		if ( $import == "TRUE" )
@@ -515,7 +513,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\n$panes1[5] has been terminated by Import\"'");
-		}		
+		}
 
 		//run update_releases
 		if ( $releases == "TRUE" )
@@ -527,12 +525,12 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\n$panes1[6] has been terminated by Releases\"'");
-		}		
-		
+		}
+
 	}
 	else
 	{
-		for ($g=1; $g<=7; $g++)
+		for ($g=1; $g<=6; $g++)
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.$g 'echo \"\033[38;5;\"$color\"m\n$panes1[$g] has been terminated by Running\"'");
