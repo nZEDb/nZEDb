@@ -46,6 +46,12 @@ class Groups
 		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");		
 	}
 	
+    public function getActiveByDate()
+    {
+        $db = new DB();
+        return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY first_record_postdate DESC");
+    }
+
 	public function getActiveIDs()
 	{			
 		$db = new DB();

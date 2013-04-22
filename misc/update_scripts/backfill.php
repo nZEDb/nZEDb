@@ -25,7 +25,7 @@ else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] !== "safe" && is_nume
 {
 	$backfill = new Backfill();
 	$groupName = '';
-	$backfill->backfillPostAllGroups($groupName, $argv[1]);
+	$backfill->backfillPostAllGroupsByDate($groupName, $argv[1]);
 }
 else if (isset($argv[1]) && $argv[1] !== "all" && $argv[1] == "safe" && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {

@@ -15,5 +15,8 @@ foreach ($arr as &$value) {
 }
 unset($value);
 
+$db->query("delete from releases where nzbstatus = 0");
+echo $db->getAffectedRows()." releases had no nzb, deleted.";
+
 ?>
 

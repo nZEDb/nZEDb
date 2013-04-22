@@ -2,7 +2,7 @@
 
 require(dirname(__FILE__)."/../../../../www/config.php");
 require(WWW_DIR.'/lib/postprocess.php');
-$version="0.1r113";
+$version="0.1r116";
 
 $db = new DB();
 
@@ -21,6 +21,8 @@ $proc = "SELECT
 			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus in ( 0, 1 )) AS nfo,
 			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
+            ( SELECT COUNT( groupID ) from collections ) collections,
+			( SELECT COUNT( groupID ) from collections where filecheck = 3 ) collections_3,
 			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -121,6 +123,8 @@ $book_releases_now = 0;
 $nfo_remaining_now = 0;
 $nfo_now = 0;
 $releases_now = 0;
+$collections = 0;
+$collections_3 = 0;
 
 $console_releases_proc = 0;
 $movie_releases_proc = 0;
@@ -167,6 +171,12 @@ printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
+printf("\033[1;33m\n");
+printf($mask, "Tables", "Total", "Watched");
+printf($mask, "====================", "====================", "====================");
+printf("\033[38;5;214m");
+printf($mask, "Collections", "$collections", "$collections_3");
+
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
@@ -291,6 +301,8 @@ while( $i > 0 )
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows_unformatted = $proc_result[0]['parts']; }
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = number_format($proc_result[0]['parts']); }
 	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
+    if ( @$proc_result[0]['collections'] != NULL ) { $collections = $proc_result[0]['collections']; }
+    if ( @$proc_result[0]['collections_3'] != NULL ) { $collections_3 = $proc_result[0]['collections_3']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows_unformatted = $proc_result[0]['binaries']; }
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = number_format($proc_result[0]['binaries']); }
@@ -356,6 +368,13 @@ while( $i > 0 )
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
 
+	$mask = "%-15.15s %22.22s %22.22s\n";
+	printf("\033[1;33m\n");
+	printf($mask, "Tables", "Total", "Watched");
+	printf($mask, "====================", "====================", "====================");
+	printf("\033[38;5;214m");
+	printf($mask, "Collections", "$collections", "$collections_3");
+
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
@@ -375,6 +394,18 @@ while( $i > 0 )
 		$query_timer = microtime_float()-$query_timer_start;
 	}
 
+	//get list of panes by name
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t  nZEDb:1 -F '#{pane_title}'`");
+	$panes1 = str_replace("\n", '', explode(" ", $panes_win_1));
+
+	//kill update_binaries.php backfill.php if collections_3 exceeded
+	if ( $collections_3 > 1000 ) {
+		$color = get_color();
+		shell_exec("tmux respawnp -k -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] Killed by Collections\"'");
+		$color = get_color();
+		shell_exec("tmux respawnp -k -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] Killed by Collections\"'");
+	}
+
     //run postprocess_releases
     $color = get_color();
     shell_exec("tmux respawnp -t nZEDb:1.1 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_nfos.php' 2>&1 1> /dev/null");
@@ -388,7 +419,7 @@ while( $i > 0 )
 	shell_exec("tmux respawnp -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
 
     //run backfill
-    $color = get_color();
+	$color = get_color();
 	if ( $i == 1 )
 	{
 	    shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");

@@ -7,12 +7,12 @@ tmux selectp -t 0
 tmux splitw -h -p 67 'printf "\033]2;update_binaries\033\\"'
 
 tmux selectp -t 0
-tmux splitw -v -p 67 'printf "\033]2;postprocessing\033\\"'
-tmux splitw -v -p 50 'printf "\033]2;postprocessing\033\\"'
+tmux splitw -v -p 67 'printf "\033]2;postprocess_nfos\033\\"'
+tmux splitw -v -p 50 'printf "\033]2;postprocess_all\033\\"'
 
 tmux selectp -t 3
 tmux splitw -v -p 75 'printf "\033]2;backfill\033\\"'
-tmux splitw -v -p 67 'printf "\033]2;backfill\033\\"'
+tmux splitw -v -p 67 'printf "\033]2;nzb-import-bulk\033\\"'
 tmux splitw -v -p 50 'printf "\033]2;update_releases\033\\"'
 
 tmux select-window -tnZEDb:1
