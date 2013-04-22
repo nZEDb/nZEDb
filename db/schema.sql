@@ -22,6 +22,7 @@ CREATE TABLE `collections` (
 CREATE INDEX ix_collection_filecheck ON collections (filecheck);
 CREATE INDEX ix_collection_dateadded ON collections (dateadded);
 CREATE INDEX ix_collection_collectionhash ON collections (collectionhash);
+CREATE INDEX ix_collection_releaseID ON collections (releaseID);
 
 DROP TABLE IF EXISTS `binaries`;
 CREATE TABLE `binaries` (
