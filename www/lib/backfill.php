@@ -221,17 +221,12 @@ class Backfill
 		{
 
 			// We do not use interval here, so use a compressed connection only - testing.
-
-			$nntp = new Nntp();
-			$nntp->doConnect();
-
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillPostGroup($nntp, $groupArr, $articles);
+				$this->backfillPostGroup($groupArr, $articles);
 				$counter++;
 			}
-			$nntp->doQuit();
 		}
 		else
 		{
@@ -239,10 +234,12 @@ class Backfill
 		}
 	}
 	
-	function backfillPostGroup($nntp, $groupArr, $articles = '')
+	function backfillPostGroup($groupArr, $articles = '')
 	{
 		$db = new DB();
 		$binaries = new Binaries();
+		$nntp = new Nntp();
+		$nntp->doConnect();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
 
@@ -323,6 +320,7 @@ class Backfill
 			}
 		}
 		$first_record_postdate = $this->postdate($nntp,$first,false);
+		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 
