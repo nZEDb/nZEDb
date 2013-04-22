@@ -7,7 +7,7 @@
 {/if}
 
 <fieldset>
-<legend>Main Tmux Settings, HTML Layout, Tags</legend>
+<legend>Tmux Settings</legend>
 <table class="input">
 
 <tr>
