@@ -192,7 +192,7 @@ class Backfill
 	//
 	// Update all active groups categories and descriptions using article numbers instead of date.
 	//
-	function backfillPostAllGroups($groupName='', $articles = '')
+	function backfillPostAllGroups($groupName='', $articles = '', $type='')
 	{
 		$n = $this->n;
 		$groups = new Groups;
@@ -206,7 +206,14 @@ class Backfill
 		}
 		else
 		{
-			$res = $groups->getActive();
+			if($type == "normal")
+			{
+				$res = $groups->getActive();
+			}
+			else if($type == "date")
+			{
+				$res = $groups->getActiveByDate();
+			}
 		}
 
 		$counter = 1;
@@ -231,47 +238,7 @@ class Backfill
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
 		}
 	}
-
-    function backfillPostAllGroupsByDate($groupName='', $articles = '')
-    {
-        $n = $this->n;
-        $groups = new Groups;
-        if ($groupName != '')
-        {
-            $grp = $groups->getByName($groupName);
-            if ($grp)
-            {
-                $res = array($grp);
-            }
-        }
-        else
-        {
-            $res = $groups->getActiveByDate();
-        }
-
-        $counter = 1;
-        if (@$res)
-        {
-
-            // We do not use interval here, so use a compressed connection only - testing.
-
-            $nntp = new Nntp();
-            $nntp->doConnect();
-
-            foreach($res as $groupArr)
-            {
-                echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-                $this->backfillPostGroup($nntp, $groupArr, $articles);
-                $counter++;
-            }
-            $nntp->doQuit();
-        }
-        else
-        {
-            echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
-        }
-    }
-
+	
 	function backfillPostGroup($nntp, $groupArr, $articles = '')
 	{
 		$db = new DB();
