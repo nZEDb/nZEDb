@@ -25,7 +25,7 @@
     </div>
 
     <div id="message">msg</div>
-    <table style="width:100%;" class="data highlight">
+    <table style="width:100%;" class="data highlight Sortable">
 
         <tr>
             <th>group</th>
