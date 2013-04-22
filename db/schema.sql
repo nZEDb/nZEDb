@@ -1160,7 +1160,6 @@ UNIQUE KEY `setting` (`setting`)
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900');
 INSERT INTO tmux (setting, value) values ('MONITOR_DELAY','30');
-INSERT INTO tmux (setting, value) values ('COLLECTIONS','1000');
 INSERT INTO tmux (setting, value) values ('TMUX_SESSION','nZEDb');
 INSERT INTO tmux (setting, value) values ('BACKFILL_DELAY','30');
 INSERT INTO tmux (setting, value) values ('NICENESS','19');
