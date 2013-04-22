@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r140";
+$version="0.1r141";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -197,7 +197,7 @@ printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
-printf($mask, "Tables", "Total", "Watched");
+printf($mask, "Tables", "Not Ready", "Ready");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
 printf($mask, "Collections", "$collections", "$collections_3");
@@ -411,7 +411,7 @@ while( $i > 0 )
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
-	printf($mask, "Tables", "Total", "Watched");
+	printf($mask, "Tables", "Not Ready", "Ready");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "Collections", "$collections", "$collections_3");
@@ -443,15 +443,6 @@ while( $i > 0 )
 	if ( $running  == "TRUE" )
 	{
 
-		//kill update_binaries.php backfill.php if collections_3 exceeded
-		if ( $collections_3 > $backfill )
-		{
-			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] Killed by Collections\"'");
-			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] Killed by Collections\"'");
-		}
-
 		//run postprocess_releases
 		if ( $nfos == "TRUE" )
 		{
@@ -478,11 +469,11 @@ while( $i > 0 )
 
 		//run update_binaries
 		$color = get_color();
-		if (( $collections_3 < 1000 ) && ( $binaries == "TRUE" ))
+		if ( $binaries == "TRUE" )
 		{
 			shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
 		}
-		elseif ( $binaries != "TRUE" )
+		else
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been terminated by Binaries\"'");
@@ -490,15 +481,15 @@ while( $i > 0 )
 
 		//run backfill
 		$color = get_color();
-		if (( $i == 1 ) && ( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
+		if (( $i == 1 ) && ( $backfill == "TRUE" ))
 		{
 			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
 		}
-		elseif (( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
+		elseif ( $backfill == "TRUE" )
 		{
 			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
 		}
-		elseif ( $backfill != "TRUE" )
+		else
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been terminated by Backfill\"'");

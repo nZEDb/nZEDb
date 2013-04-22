@@ -107,14 +107,6 @@
 </tr>
 
 <tr>
-    <td style="width:160px;"><label for="COLLECTIONS">Collections Stop</label>:</td>
-    <td>
-        <input id="COLLECTIONS" class="text" type="text" value="{$ftmux->COLLECTIONS}" />
-        <div class="hint">It is possible to overwhelm the collections table to the point that update_releases can not complete a loop in a timely manner. As a precaution, set this to keep update_binaries and backfill from running</div>
-    </td>
-</tr>
-
-<tr>
     <td><label for="TMUX_SESSION">Tmux Session</label>:</td>
     <td>
         <input id="TMUX_SESSION" class="long" type="text" value="{$ftmux->TMUX_SESSION}" />
