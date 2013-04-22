@@ -1,11 +1,13 @@
 <?php
 
-require(dirname(__FILE__)."/../../../../www/config.php");
-require(WWW_DIR.'/lib/postprocess.php');
-$version="0.1r117";
+require_once(dirname(__FILE__)."/../../../../www/config.php");
+require_once(WWW_DIR."/lib/postprocess.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+
+$version="0.1r131";
 
 $db = new DB();
-
+$DIR = WWW_DIR."/..";
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE parentID IS NOT NULL GROUP BY parentID";
 
@@ -23,6 +25,21 @@ $proc = "SELECT
 			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
             ( SELECT COUNT( groupID ) from collections ) collections,
 			( SELECT COUNT( groupID ) from collections where filecheck = 3 ) collections_3,
+			( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
+			( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
+			( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill,
+			( SELECT value from tmux where setting = 'COLLECTIONS' ) collections_kill,
+			( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
+			( SELECT value from tmux where setting = 'NICENESS' ) niceness,
+			( SELECT value from tmux where setting = 'RUNNING' ) running,
+			( SELECT value from tmux where setting = 'BINARIES' ) binaries_run,
+			( SELECT value from tmux where setting = 'BACKFILL' ) backfill,
+			( SELECT value from tmux where setting = 'IMPORT' ) import,
+			( SELECT value from tmux where setting = 'NZBS' ) nzbs,
+			( SELECT value from tmux where setting = 'NFOS' ) nfos,
+			( SELECT value from tmux where setting = 'POST' ) post,
+			( SELECT value from tmux where setting = 'RELEASES' ) releases_run,
+			( SELECT value from tmux where setting = 'MYSQL_PROC' ) process_list,
 			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -161,6 +178,13 @@ $console_releases_proc_formatted = 0;
 $nfo_now_formatted = 0;
 $nfo_remaining_now_formatted = 0;
 
+$defrag = 900;
+$monitor = 15;
+$backfill = 30;
+$collections_kill = 1000;
+
+$running = true;
+
 //create initial display
 passthru('clear');
 //printf("\033[1;31m  First insert:\033[0m ".relativeTime("$firstdate")."\n");
@@ -201,13 +225,13 @@ while( $i > 0 )
 	$getdate = gmDate("Ymd");
 
 	//defrag the query cache every 15 minutes
-	if (( TIME() - $time18 >= 90 ) || ( $i == 1 ))
+	if (( TIME() - $time18 >= $defrag ) || ( $i == 1 ))
 	{
 		$result = @$db->query($qcache);
 		printf($mask2, "Query cache cleaned", "", "");
 	}
 
-	if ((( TIME() - $time19 ) >= 30 ) || ( $i == 1 )) {
+	if ((( TIME() - $time19 ) >= $monitor ) || ( $i == 1 )) {
 		//get microtime to at start of queries
 		$query_timer_start=microtime_float();
 		$result = @$db->query($qry);
@@ -224,7 +248,7 @@ while( $i > 0 )
 	}
 
 	//run queries
-	if ((( TIME() - $time19 ) >= 30 ) || ( $i == 1 )) {
+	if ((( TIME() - $time19 ) >= $monitor ) || ( $i == 1 )) {
 		//get microtime to at start of queries
 		$query_timer_start=microtime_float();
 		$result = @$db->query($qry);
@@ -304,10 +328,26 @@ while( $i > 0 )
     if ( @$proc_result[0]['collections'] != NULL ) { $collections = $proc_result[0]['collections']; }
     if ( @$proc_result[0]['collections_3'] != NULL ) { $collections_3 = $proc_result[0]['collections_3']; }
 
+    if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
+    if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
+    if ( @$proc_result[0]['monitor'] != NULL ) { $monitor = $proc_result[0]['monitor']; }
+    if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
+    if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
+
+    if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
+    if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
+    if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
+    if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
+    if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
+    if ( @$proc_result[0]['nfos'] != NULL ) { $nfos = $proc_result[0]['nfos']; }
+    if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
+    if ( @$proc_result[0]['releases_run'] != NULL ) { $releases = $proc_result[0]['releases_run']; }
+    if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
+
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows_unformatted = $proc_result[0]['binaries']; }
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = number_format($proc_result[0]['binaries']); }
-        if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total_unformatted = $proc_result[0]['binaries_total']; }
-        if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = number_format($proc_result[0]['binaries_total']); }
+	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total_unformatted = $proc_result[0]['binaries_total']; }
+	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = number_format($proc_result[0]['binaries_total']); }
 
 	if ( @$proc_result[0]['binariessize'] != NULL ) { $binaries_size_gb = $proc_result[0]['binariessize']; }
 
@@ -389,57 +429,116 @@ while( $i > 0 )
 	printf($mask, "Misc(8000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
 	printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
 
+	echo $DIR;
+	
 	//get microtime at end of queries
-	if ( $runloop == "true" ) {
+	if ( $runloop == "true" )
+	{
 		$query_timer = microtime_float()-$query_timer_start;
 	}
 
 	//get list of panes by name
-	$panes_win_1 = shell_exec("echo `tmux list-panes -t  nZEDb:1 -F '#{pane_title}'`");
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t  $tmux_session:1 -F '#{pane_title}'`");
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_1));
 
-	//kill update_binaries.php backfill.php if collections_3 exceeded
-	if ( $collections_3 > 1000 ) {
-		$color = get_color();
-		shell_exec("tmux respawnp -k -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] Killed by Collections\"'");
-		$color = get_color();
-		shell_exec("tmux respawnp -k -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] Killed by Collections\"'");
-	}
-
-    //run postprocess_releases
-    $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.1 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_nfos.php' 2>&1 1> /dev/null");
-
-    //run postprocess_releases
-    $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.2 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/postprocess_all.php' 2>&1 1> /dev/null");
-
-	//run update_binaries
-	$color = get_color();
-	if ( $collections_3 < 1000 ) {
-		shell_exec("tmux respawnp -t nZEDb:1.3 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
-	}
-
-    //run backfill
-	$color = get_color();
-	if (( $i == 1 ) && ( $collections_3 < 1000 ))
+	if ( $running  == "TRUE" )
 	{
-	    shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
+
+		//kill update_binaries.php backfill.php if collections_3 exceeded
+		if ( $collections_3 > $backfill )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] Killed by Collections\"'");
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] Killed by Collections\"'");
+		}
+
+		//run postprocess_releases
+		if ( $nfos == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/postprocess_nfos.php' 2>&1 1> /dev/null");
+		} 
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\n$panes1[1] has been terminated by Postrocess Nfos\"'");
+		}
+
+		//run postprocess_releases
+		if ( $post == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/postprocess_all.php' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been terminated by Postprocess All Others\"'");
+		}
+
+		//run update_binaries
+		$color = get_color();
+		if (( $collections_3 < 1000 ) && ( $binaries == "TRUE" ))
+		{
+			shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
+		}
+		elseif ( $binaries != "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been terminated by Binaries\"'");
+		}
+
+		//run backfill
+		$color = get_color();
+		if (( $i == 1 ) && ( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
+		{
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 20000' 2>&1 1> /dev/null");
+		}
+		elseif (( $collections_3 < $collections_kill ) && ( $backfill == "TRUE" ))
+		{
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/backfill.php date 20000' 2>&1 1> /dev/null");
+		}
+		elseif ( $backfill != "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been terminated by Backfill\"'");
+		}		
+
+		//run import-nzb-bulk
+		if ( $import == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/testing/nzb-import-bulk.php /import/nzbs' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\n$panes1[5] has been terminated by Import\"'");
+		}		
+
+		//run update_releases
+		if ( $releases == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/update_releases.php 1 false' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\n$panes1[6] has been terminated by Releases\"'");
+		}		
+		
 	}
-	elseif ( $collections_3 < 1000 )
+	else
 	{
-        shell_exec("tmux respawnp -t nZEDb:1.4 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/backfill.php 20000' 2>&1 1> /dev/null");
-    }
-
-    //run import-nzb-bulk
-    $color = get_color();
-    //shell_exec("tmux respawnp -t nZEDb:1.5 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/testing/nzb-import-bulk.php /import/nzbs' 2>&1 1> /dev/null");
-
-    //run update_releases
-    $color = get_color();
-    shell_exec("tmux respawnp -t nZEDb:1.6 'echo \"\033[38;5;\"$color\"m\" && php /var/www/nzedb/misc/update_scripts/update_releases.php 1 false' 2>&1 1> /dev/null");
-
-	sleep(5);
+		for ($g=1; $g<=7; $g++)
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.$g 'echo \"\033[38;5;\"$color\"m\n$panes1[$g] has been terminated by Running\"'");
+		}
+	}
 	$i++;
+	sleep(5);
 }
 ?>
