@@ -3,6 +3,8 @@
 
 <p>
 	Binaries can be prevented from being added to the index at all if they match a regex provided in the blacklist. They can also be included only if they match a regex (whitelist).
+	
+	<br>CLICK ON THE BLACKLIST TO ENABLE/DISABLE.</br>
 </p>
 
 <div id="message"></div>
