@@ -58,7 +58,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 			{
-				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n..";
+				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n";
 			}
 
 			$nntp->doConnect();
@@ -100,7 +100,7 @@ class Nfo
 						//if set scan for tvrage info
 						if ($processTvrage == 1)
 						{
-							$tvrage = new Tvrage($this->echooutput);
+							$tvrage = new Tvrage();
 							$show = $tvrage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '')
 							{
@@ -135,7 +135,7 @@ class Nfo
 
 		if ($this->echooutput)
 		{
-			echo ". ...".$ret." NFO files processed.\n";
+			echo " ...".$ret." NFO files processed.\n";
 		}
 
 		return $ret;

@@ -59,7 +59,7 @@ Class NZBcontents
 					$nfo->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-					echo ".+";
+					echo "+";
 					return $fetchedBinary;
 				}
 			}
@@ -128,13 +128,13 @@ Class NZBcontents
 			if ($foundnfo !== false)
 			{
 				$nfo->addReleaseNfo($relID);
-				echo ".*";
+				echo "*";
 				return $fetchedBinary;
 			}
 			if ($foundnfo == false)
 			{
 				//No .nfo file in the NZB.
-				echo ".-";
+				echo "-";
 				$db->queryDirect(sprintf(" update releases set nfostatus = 0 where nfostatus not between -6 and -1 and ID = %d", $relID));
 				return false;
 			}
