@@ -45,7 +45,7 @@
 <tr>
 	<td><label for="NZBS">Nzbs</label>:</td>
 	<td>
-		<input id="NZBS" class="long" type="text" value="{$ftmux->NZBS}" />
+		<input id="NZBS" class="long" name="NZBS" type="text" value="{$ftmux->NZBS}" />
 		<div class="hint">Set the path to the nzb dump you downloaded from torrents, this is the path to bulk files folder of nzbs this does not recurse through subfolders, unless you set NZB_THREADS to true</div>
 	</td>
 </tr>
@@ -77,7 +77,7 @@
 <tr>
 	<td style="width:160px;"><label for="NICENESS">Niceness</label>:</td>
 	<td>
-		<input id="NICENESS" type="text" value="{$ftmux->NICENESS}" />
+		<input id="NICENESS" name="NICENESS" type="text" value="{$ftmux->NICENESS}" />
 		<div class="hint">these scripts set the 'nice'ness of each script, default is 19, the lowest, the highest is -20 anything between -1 and -20 require root/sudo to run</div>
 	</td>
 </tr>
@@ -85,7 +85,7 @@
 <tr>
     <td style="width:160px;"><label for="MONITOR_DELAY">Monitor Loop Timer</label>:</td>
     <td>
-        <input id="MONITOR_DELAY" class="text" type="text" value="{$ftmux->MONITOR_DELAY}" />
+        <input id="MONITOR_DELAY" name="MONITOR_DELAY" class="text" type="text" value="{$ftmux->MONITOR_DELAY}" />
         <div class="hint">The time between query refreshes of monitor information, in seconds. The lower the number, the more often it queries the database for numbers.</div>
     </td>
 </tr>
@@ -93,7 +93,7 @@
 <tr>
     <td style="width:160px;"><label for="BACKFILL_DELAY">Backfill Delay</label>:</td>
     <td>
-        <input id="BACKFILL_DELAY" class="text" type="text" value="{$ftmux->BACKFILL_DELAY}" />
+        <input id="BACKFILL_DELAY" name="BACKFILL_DELAY" class="text" type="text" value="{$ftmux->BACKFILL_DELAY}" />
         <div class="hint">If backfill is run on a new group before update_binaries has ran, it will result in error. This is the time, in seconds, between the script starting and the first time backfill runs. this is not a spleep timer between loops.</div>
     </td>
 </tr>
@@ -101,7 +101,7 @@
 <tr>
     <td style="width:160px;"><label for="DEFRAG_CACHE">Defrag Query Cache</label>:</td>
     <td>
-        <input id="DEFRAG_CACHE" class="text" type="text" value="{$ftmux->DEFRAG_CACHE}" />
+        <input id="DEFRAG_CACHE" name="DEFRAG_CACHE" class="text" type="text" value="{$ftmux->DEFRAG_CACHE}" />
         <div class="hint">The mysql query cache gets frogmented over time. Enter the time, in seconds, to defrag the query cache. <br/ >cmd: FLUSH QUERY CACHE;</div>
     </td>
 </tr>
@@ -109,7 +109,7 @@
 <tr>
     <td><label for="TMUX_SESSION">Tmux Session</label>:</td>
     <td>
-        <input id="TMUX_SESSION" class="long" type="text" value="{$ftmux->TMUX_SESSION}" />
+        <input id="TMUX_SESSION" name="TMUX_SESSION" class="long" type="text" value="{$ftmux->TMUX_SESSION}" />
         <div class="hint">Enter the session name to be used by tmux, no spaces allowed in the name, this can be changed after scripts start if you are running multiple servers, you could put your hostname here</div>
     </td>
 </tr>
