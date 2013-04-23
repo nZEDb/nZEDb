@@ -45,7 +45,7 @@ con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], c
 
 # The group names.
 cur = con.cursor()
-cur.execute("SELECT name from groups where active = 1")
+cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
 datas = cur.fetchall()
 
 class WorkerThread(threading.Thread):
