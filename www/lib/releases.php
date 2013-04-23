@@ -535,23 +535,14 @@ class Releases
 		$db = new DB();
 		$groups = new Groups();
 		
-		if ($cat == "-1")
-		{
-			$catsrch .= ("");
-		}
-		else
-		{
-			$catsrch .= sprintf(" and (releases.categoryID = %d) ", $cat);
-		}
+		if ($cat == "-1"){$catsrch .= ("");}
+		else{$catsrch .= sprintf(" and (releases.categoryID = %d) ", $cat);}
 		
 		//
 		// if the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word
 		//
-		if ($searchname == "-1")
-		{
-			$searchnamesql.= ("");
-		}
+		if ($searchname == "-1"){$searchnamesql.= ("");}
 		else
 		{
 			$words = explode(" ", $searchname);
@@ -579,10 +570,7 @@ class Releases
 			}
 		}
 		
-		if ($usenetname == "-1")
-		{
-			$usenetnamesql.= ("");
-		}
+		if ($usenetname == "-1"){$usenetnamesql.= ("");}
 		else
 		{
 			$words = explode(" ", $usenetname);
@@ -610,10 +598,7 @@ class Releases
 			}
 		}
 		
-		if ($postername == "-1")
-		{
-			$posternamesql.= ("");
-		}
+		if ($postername == "-1"){$posternamesql.= ("");}
 		else
 		{
 			$words = explode(" ", $postername);
@@ -641,161 +626,60 @@ class Releases
 			}
 		}
 		
-		if ($groupname == "-1")
-		{
-			$groupIDsql.= ("");
-		}
+		if ($groupname == "-1"){$groupIDsql.= ("");}
 		else
 		{
 			$groupID = $groups->getIDByName($db->escapeString($groupname));
 			$groupIDsql.= sprintf(" and releases.groupID = %d ", $groupID);
 		}
 		
-		if ($sizefrom == "-1")
-		{
-			$sizefromsql.= ("");
-		}
-		if ($sizefrom == "1")
-		{
-			$sizefromsql.= (" and releases.size > 104857600 ");
-		}
-		if ($sizefrom == "2")
-		{
-			$sizefromsql.= (" and releases.size > 262144000 ");
-		}
-		if ($sizefrom == "3")
-		{
-			$sizefromsql.= (" and releases.size > 524288000 ");
-		}
-		if ($sizefrom == "4")
-		{
-			$sizefromsql.= (" and releases.size > 1073741824 ");
-		}
-		if ($sizefrom == "5")
-		{
-			$sizefromsql.= (" and releases.size > 2147483648 ");
-		}
-		if ($sizefrom == "6")
-		{
-			$sizefromsql.= (" and releases.size > 3221225472 ");
-		}
-		if ($sizefrom == "7")
-		{
-			$sizefromsql.= (" and releases.size > 4294967296 ");
-		}
-		if ($sizefrom == "8")
-		{
-			$sizefromsql.= (" and releases.size > 8589934592 ");
-		}
-		if ($sizefrom == "9")
-		{
-			$sizefromsql.= (" and releases.size > 17179869184 ");
-		}
-		if ($sizefrom == "10")
-		{
-			$sizefromsql.= (" and releases.size > 34359738368 ");
-		}
-		if ($sizefrom == "11")
-		{
-			$sizefromsql.= (" and releases.size > 68719476736 ");
-		}
+		if ($sizefrom == "-1"){$sizefromsql.= ("");}
+		if ($sizefrom == "1"){$sizefromsql.= (" and releases.size > 104857600 ");}
+		if ($sizefrom == "2"){$sizefromsql.= (" and releases.size > 262144000 ");}
+		if ($sizefrom == "3"){$sizefromsql.= (" and releases.size > 524288000 ");}
+		if ($sizefrom == "4"){$sizefromsql.= (" and releases.size > 1073741824 ");}
+		if ($sizefrom == "5"){$sizefromsql.= (" and releases.size > 2147483648 ");}
+		if ($sizefrom == "6"){$sizefromsql.= (" and releases.size > 3221225472 ");}
+		if ($sizefrom == "7"){$sizefromsql.= (" and releases.size > 4294967296 ");}
+		if ($sizefrom == "8"){$sizefromsql.= (" and releases.size > 8589934592 ");}
+		if ($sizefrom == "9"){$sizefromsql.= (" and releases.size > 17179869184 ");}
+		if ($sizefrom == "10"){$sizefromsql.= (" and releases.size > 34359738368 ");}
+		if ($sizefrom == "11"){$sizefromsql.= (" and releases.size > 68719476736 ");}
 		
-		if ($sizeto == "-1")
-		{
-			$sizetosql.= ("");
-		}
-		if ($sizeto == "1")
-		{
-			$sizetosql.= (" and releases.size < 104857600 ");
-		}
-		if ($sizeto == "2")
-		{
-			$sizetosql.= (" and releases.size < 262144000 ");
-		}
-		if ($sizeto == "3")
-		{
-			$sizetosql.= (" and releases.size < 524288000 ");
-		}
-		if ($sizeto == "4")
-		{
-			$sizetosql.= (" and releases.size < 1073741824 ");
-		}
-		if ($sizeto == "5")
-		{
-			$sizetosql.= (" and releases.size < 2147483648 ");
-		}
-		if ($sizeto == "6")
-		{
-			$sizetosql.= (" and releases.size < 3221225472 ");
-		}
-		if ($sizeto== "7")
-		{
-			$sizetosql.= (" and releases.size < 4294967296 ");
-		}
-		if ($sizeto == "8")
-		{
-			$sizetosql.= (" and releases.size < 8589934592 ");
-		}
-		if ($sizeto == "9")
-		{
-			$sizetosql.= (" and releases.size < 17179869184 ");
-		}
-		if ($sizeto == "10")
-		{
-			$sizetosql.= (" and releases.size < 34359738368 ");
-		}
-		if ($sizeto == "11")
-		{
-			$sizetosql.= (" and releases.size < 68719476736 ");
-		}
+		if ($sizeto == "-1"){$sizetosql.= ("");}
+		if ($sizeto == "1"){$sizetosql.= (" and releases.size < 104857600 ");}
+		if ($sizeto == "2"){$sizetosql.= (" and releases.size < 262144000 ");}
+		if ($sizeto == "3"){$sizetosql.= (" and releases.size < 524288000 ");}
+		if ($sizeto == "4"){$sizetosql.= (" and releases.size < 1073741824 ");}
+		if ($sizeto == "5"){$sizetosql.= (" and releases.size < 2147483648 ");}
+		if ($sizeto == "6"){$sizetosql.= (" and releases.size < 3221225472 ");}
+		if ($sizeto == "7"){$sizetosql.= (" and releases.size < 4294967296 ");}
+		if ($sizeto == "8"){$sizetosql.= (" and releases.size < 8589934592 ");}
+		if ($sizeto == "9"){$sizetosql.= (" and releases.size < 17179869184 ");}
+		if ($sizeto == "10"){$sizetosql.= (" and releases.size < 34359738368 ");}
+		if ($sizeto == "11"){$sizetosql.= (" and releases.size < 68719476736 ");}
 		
-		if ($hasnfo == "0")
-		{
-			$hasnfosql.= ("");
-		}
-		else
-		{
-			$hasnfosql.= (" and releases.nfostatus = 1 ");
-		}
+		if ($hasnfo == "0"){$hasnfosql.= ("");}
+		else{$hasnfosql.= (" and releases.nfostatus = 1 ");}
 		
-		if ($hascomments == "0")
-		{
-			$hascommentssql.= ("");
-		}
-		else
-		{
-			$hascommentssql.= (" and releases.comments > 0 ");
-		}
+		if ($hascomments == "0"){$hascommentssql.= ("");}
+		else{$hascommentssql.= (" and releases.comments > 0 ");}
 		
-		if ($daysnew == "-1")
-		{
-			$daysnewsql.= ("");
-		}
-		else
-		{
-			$daysnewsql.= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);
-		}
+		if ($daysnew == "-1"){$daysnewsql.= ("");}
+		else{$daysnewsql.= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);}
 		
-		if ($daysold == "-1")
-		{
-			$daysoldsql.= ("");
-		}
-		else
-		{
-			$daysoldsql.= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
-		}
+		if ($daysold == "-1"){$daysoldsql.= ("");}
+		else{$daysoldsql.= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);}
 		
 		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
+		if (count($excludedcats) > 0){$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";}
 
 		if ($orderby == "")
 		{
 			$order[0] = " postdate ";
 			$order[1] = " desc ";
 		}	
-		else
-			$order = $this->getBrowseOrder($orderby);
+		else{$order = $this->getBrowseOrder($orderby);}
 
 		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
@@ -804,8 +688,7 @@ class Releases
 
 		$countres = $db->queryOneRow($sqlcount);
 		$res = $db->query($sql);
-		if (count($res) > 0)
-			$res[0]["_totalrows"] = $countres["num"];
+		if (count($res) > 0){$res[0]["_totalrows"] = $countres["num"];}
 		
 		return $res;
 	}

@@ -91,7 +91,7 @@ class Nntp extends Net_NNTP_Client
 		$message = $this->decodeYenc($body);
 		if (!$message) 
 		{
-			echo "Yenc decode failure";
+			//echo "Yenc decode failure";
 			return false;
 		}
 
