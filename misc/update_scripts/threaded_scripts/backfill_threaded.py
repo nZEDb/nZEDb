@@ -11,7 +11,7 @@ import re
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 def readConfig():
-        Configfile = pathname+"/../../www/config.php"
+        Configfile = pathname+"/../../../www/config.php"
         file = open( Configfile, "r")
 
         # Match a config line

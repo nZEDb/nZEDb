@@ -11,7 +11,7 @@ import re
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 def readConfig():
-        Configfile = pathname+"/../../www/config.php"
+        Configfile = pathname+"/../../../www/config.php"
         file = open( Configfile, "r")
 
         # Match a config line
@@ -58,7 +58,7 @@ class WorkerThread(threading.Thread):
     def run(self):
         while not self.stoprequest.isSet():
             try:
-                subprocess.call(["php", pathname+"/update_binaries.php", ""+self.dir_q.get(True, 0.05)])
+                subprocess.call(["php", pathname+"/../update_binaries.php", ""+self.dir_q.get(True, 0.05)])
                 self.result_q.put(self.dir_q.get)
             except Queue.Empty:
                 continue
