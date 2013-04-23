@@ -140,9 +140,9 @@ class PostProcess {
 			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d", ($maxattemptstocheckpassworded + 1) * -1, $this->addqty));
 		
 		$rescount = sizeof($result);
-		echo "Additional post-processing on {$rescount} releases... ";
 		if ($rescount > 0)
 		{
+			echo "Additional post-processing on {$rescount} releases: ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)
@@ -151,7 +151,7 @@ class PostProcess {
 				$passStatus = array(Releases::PASSWD_NONE);
 				$blnTookMediainfo = false;
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false; //only attempt sample if not disabled
-				echo $rescount--."..";
+				echo $rescount--.".";
 				
 				if ($blnTookSample)
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));

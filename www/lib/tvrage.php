@@ -464,7 +464,9 @@ class TvRage
 		
 		if ($this->echooutput)
 		{
-			echo "Processing TV for ".$db->getNumRows($result)." releases.\n";
+			$tvremain = $db->getNumRows($result);
+			if ($tvremain > 0)
+				echo "Processing TV for ".$tvremain." releases.\n";
 		}
 			
 		while ($arr = $db->fetchAssoc($result)) 
