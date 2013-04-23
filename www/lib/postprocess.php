@@ -142,7 +142,7 @@ class PostProcess {
 		$rescount = sizeof($result);
 		if ($rescount > 0)
 		{
-			echo "Additional post-processing on {$rescount} releases: ";
+			echo "Additional post-processing on {$rescount} release(s): ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)

@@ -466,7 +466,7 @@ class TvRage
 		{
 			$tvremain = $db->getNumRows($result);
 			if ($tvremain > 0)
-				echo "Processing TV for ".$tvremain." releases.\n";
+				echo "Processing TV for ".$tvremain." release(s).\n";
 		}
 			
 		while ($arr = $db->fetchAssoc($result)) 
@@ -484,7 +484,7 @@ class TvRage
 				{
 					// if it doesnt exist locally and lookups are allowed lets try to get it
 					if ($this->echooutput)
-						echo 'Didn\'t find rageid for "'.$show['cleanname'].'" in local db, checking web...'."\n";
+						echo 'TVRage ID for "'.$show['cleanname'].'" not found in local db, checking web...'."\n";
 					
 					$tvrShow = $this->getRageMatch($show);
 					if ($tvrShow !== false && is_array($tvrShow))
@@ -501,7 +501,7 @@ class TvRage
 							if(isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0)
 							{
 								if ($this->echooutput)
-									echo 'Found rageID on trakt :'.$traktArray['show']['tvrage_id']."\n";
+									echo 'Found TVRage ID on trakt :'.$traktArray['show']['tvrage_id']."\n";
 								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['ID']);
 							}
 						}
