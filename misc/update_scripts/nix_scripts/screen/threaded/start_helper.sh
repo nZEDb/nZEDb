@@ -1,7 +1,9 @@
 #!/bin/sh
 
 export NZEDB_PATH="/var/www/nzedb/misc/update_scripts"
+export THREAD_PATH="/var/www/nzedb/misc/update_scripts/threaded_scripts"
 export PHP="$(which php5)"
+export PYTHON="$(which python)"
 export SCREEN="$(which screen)"
 export NZEDB_SLEEP_TIME="60"
 	   LASTOPTIMIZE=`date +%s`
@@ -9,8 +11,8 @@ export NZEDB_SLEEP_TIME="60"
 	   
 	while :
 	do
-		cd ${NZEDB_PATH}
-		$PHP ${NZEDB_PATH}/update_binaries.php
+		cd ${THREAD_PATH}
+		$PYTHON ${THREAD_PATH}/binaries_threaded.py
 	
 	CURRTIME=`date +%s`
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
@@ -18,6 +20,7 @@ export NZEDB_SLEEP_TIME="60"
 	then
 		LASTOPTIMIZE=`date +%s`
 		echo "Optimizing DB..."
+		cd ${NZEDB_PATH}
 		$PHP ${NZEDB_PATH}/optimise_db.php
 	fi
 
@@ -25,7 +28,6 @@ export NZEDB_SLEEP_TIME="60"
 	if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
 	then
 		LASTOPTIMIZE1=`date +%s`
-		cd ${NZEDB_PATH}
 		$PHP ${NZEDB_PATH}/update_tvschedule.php
 		$PHP ${NZEDB_PATH}/update_theaters.php
 	fi
