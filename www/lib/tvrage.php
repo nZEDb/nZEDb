@@ -11,6 +11,10 @@ class TvRage
 	
 	function TvRage($echooutput=false)
 	{
+		$s = new Sites();
+		$site = $s->get();
+		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
+		
 		$this->echooutput = $echooutput;
 		
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
@@ -456,7 +460,7 @@ class TvRage
 		$trakt = new Trakttv();
 		
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit 75", Category::CAT_PARENT_TV));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_TV, $this->rageqty));
 		
 		if ($this->echooutput)
 		{

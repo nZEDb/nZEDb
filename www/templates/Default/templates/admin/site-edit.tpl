@@ -356,6 +356,14 @@
 </tr>
 
 <tr>
+	<td><label for="maxaddprocessed">Maximum to check per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
+		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="deletepasswordedrelease">Delete Passworded Releases</label>:</td>
 	<td>
 		{html_radios id="deletepasswordedrelease" name='deletepasswordedrelease' values=$yesno_ids output=$yesno_names selected=$fsite->deletepasswordedrelease separator='<br />'}
@@ -372,13 +380,20 @@
 </tr>
 
 <tr>
-	<td><label for="lookupnfo">Lookup Nfo</label>:</td>
+	<td><label for="lookupnfo">Lookup NFO</label>:</td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
 		<div class="hint">Whether to attempt to retrieve the an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
 	</td>
 </tr>
 
+<tr>
+	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
+		<div class="hint">The maximum amount of NFO files to process per run.</div>
+	</td>
+</tr>
 
 <tr>
 	<td><label for="lookuptvrage">Lookup TV Rage</label>:</td>
@@ -389,10 +404,26 @@
 </tr>
 
 <tr>
+	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
+		<div class="hint">The maximum amount of TV shows to process with TVRage per run.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookupimdb">Lookup Movies</label>:</td>
 	<td>
 		{html_radios id="lookupimdb" name='lookupimdb' values=$yesno_ids output=$yesno_names selected=$fsite->lookupimdb separator='<br />'}
 		<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
+	<td>
+		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
+		<div class="hint">The maximum amount of movies to process with IMDB per run.</div>
 	</td>
 </tr>
 

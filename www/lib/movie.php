@@ -23,6 +23,7 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
+		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 	}
@@ -491,7 +492,7 @@ class Movie
 		$nfo = new Nfo;
 		$trakt = new Trakttv();
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit 50", Category::CAT_PARENT_MOVIE));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)

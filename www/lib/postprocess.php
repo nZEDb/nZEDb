@@ -23,6 +23,7 @@ class PostProcess {
 		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$this->site = $s->get();
+		$this-> addqty = (!empty($site->maxaddprocessed)) ? $site->maxaddprocessed : 25;
 		
 		$this->mediafileregex = 'AVI|VOB|MKV|MP4|TS|WMV|MOV|M4V|F4V|MPG|MPEG';
 	}
@@ -136,7 +137,7 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit 25", ($maxattemptstocheckpassworded + 1) * -1));
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d", ($maxattemptstocheckpassworded + 1) * -1, $this->addqty));
 		
 		$rescount = sizeof($result);
 		echo "Additional post-processing on {$rescount} releases... ";

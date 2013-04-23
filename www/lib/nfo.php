@@ -10,6 +10,9 @@ class Nfo
 {
 	function Nfo($echooutput=false) 
 	{
+		$s = new Sites();
+		$site = $s->get();
+		$this-> nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
 		$this->echooutput = $echooutput;
 	}
 	
@@ -53,7 +56,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents();
 
-		$res = $db->queryDirect("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit 500");
+		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d", $this->nzbs));
 		if ($db->getNumRows($res) >= 0)
 		{
 			if ($this->echooutput)
