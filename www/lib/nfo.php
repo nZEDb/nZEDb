@@ -84,7 +84,7 @@ class Nfo
 						//if set scan for imdb info
 						if ($processImdb == 1)
 						{
-							$movie = new Movie($this->echooutput);
+							$movie = new Movie();
 							//check for existing movie entry
 							$movCheck = $movie->getMovieInfo($imdbId);
 							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))

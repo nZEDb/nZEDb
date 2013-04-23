@@ -35,7 +35,6 @@ class Backfill
 		} 
 		else 
 		{
-			echo "here";
 			$res = $groups->getActive();
 		}
 
