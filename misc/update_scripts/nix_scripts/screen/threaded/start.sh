@@ -13,12 +13,11 @@ do
 clear
 
 cd ${NZEDB_PATH}
-if ! $SCREEN -list | grep -q "POSTP"; then
-	cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess_releases.php
-fi
-
-cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_releases.php 1 false
+
+if ! $SCREEN -list | grep -q "POSTP"; then
+	cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php all
+fi
 
 cd ${NIX_PATH}
 if ! $SCREEN -list | grep -q "BINARIES"; then
