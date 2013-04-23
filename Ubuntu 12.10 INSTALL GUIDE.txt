@@ -2,13 +2,17 @@ Guide based on newznab 11.10 guide.
 
 From a command line:
 
-0. Apparmor :
+0. Misc :
 
 	Apparmor interferes with some of our files, here is how to disable it:
 
 	sudo /etc/init.d/apparmor stop
 	sudo /etc/init.d/apparmor teardown
 	sudo update-rc.d -f apparmor remove
+
+	For the threaded scripts you will require the Python MySQLdb module:
+
+	sudo apt-get install python-mysqldb
 
 1. Update/upgrade :
 
