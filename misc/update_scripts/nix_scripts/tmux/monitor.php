@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r145";
+$version="0.1r146";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -471,7 +471,7 @@ while( $i > 0 )
 		$color = get_color();
 		if ( $binaries == "TRUE" )
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness python $DIR/misc/update_scripts/threader.py $DIR/misc/update_scripts/update_binaries.php' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness python $DIR/misc/update_scripts/update_binaries_threaded.py' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -483,11 +483,11 @@ while( $i > 0 )
 		$color = get_color();
 		if (( $i == 1 ) && ( $backfill == "TRUE" ))
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness python $DIR/misc/update_scripts/threader.py $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && echo \"Sleeping 30 to ensure the first group has finished update_binaries\" && sleep 30 && nice -n$niceness python $DIR/misc/update_scripts/backfill_threaded.py' 2>&1 1> /dev/null");
 		}
 		elseif ( $backfill == "TRUE" )
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness python $DIR/misc/update_scripts/threader.py $DIR/misc/update_scripts/backfill.php date 10000' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness python $DIR/misc/update_scripts/backfill_threaded.py' 2>&1 1> /dev/null");
 		}
 		else
 		{
