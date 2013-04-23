@@ -61,7 +61,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 			{
-				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO.\n";
+				echo "Processing ".$db->getNumRows($res)." NFO's. * = hidden NFO, + = NFO, - = no NFO.\n";
 			}
 
 			$nntp->doConnect();
