@@ -74,6 +74,6 @@ else
 		."php postprocess.php anime	...: Processes anime.\n"
 		."php postprocess.php tv		...: Processes tv.\n"
 		."php postprocess.php additional	...: Processes previews/mediainfo/etc...\n"
-		."php postprocess.php allinf		...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"
+		."php postprocess.php allinf	...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"
 		."php postprocess.php tmux	...: Processes all but NFO files.\n\n");
 }
