@@ -58,7 +58,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 			{
-				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO...\n";
+				echo "Processing ".$db->getNumRows($res)." NFO's, * = hidden NFO, + = NFO , - = no NFO.\n";
 			}
 
 			$nntp->doConnect();
@@ -135,7 +135,7 @@ class Nfo
 
 		if ($this->echooutput)
 		{
-			echo " ...".$ret." NFO files found/processed.\n";
+			echo "\n".$ret." NFO files found/processed.\n";
 		}
 
 		return $ret;

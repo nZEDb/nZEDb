@@ -22,7 +22,7 @@ $PHP ${NZEDB_PATH}/update_releases.php 1 false
 
 cd ${NIX_PATH}
 if ! $SCREEN -list | grep -q "BINARIES"; then
-	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/start_helper.sh
+	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/helper.sh
 fi
 
 echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
