@@ -217,11 +217,14 @@ class Binaries
 		
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
 		
-		if(PEAR::isError($msgs))
+		if ($type != 'partrepair')
 		{
-			echo "Error {$msgs->code}: {$msgs->message}$n";
-			echo "Skipping group$n";
-			return false;
+			if(PEAR::isError($msgs))
+			{
+				echo "Error {$msgs->code}: {$msgs->message}$n";
+				echo "Skipping group$n";
+				return false;
+			}
 		}
 	
 		$this->startCleaning = microtime(true);
@@ -420,9 +423,12 @@ class Binaries
 		}
 		else
 		{
-			echo "Error: Can't get parts from server (msgs not array)".$n;
-			echo "Skipping group".$n;
-			return false;
+			if ($type != 'partrepair')
+			{
+				echo "Error: Can't get parts from server (msgs not array)".$n;
+				echo "Skipping group".$n;
+				return false;
+			}
 		}
 	}
 	
