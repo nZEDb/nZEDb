@@ -1325,6 +1325,7 @@ class Releases
 							FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID LEFT JOIN parts p ON p.binaryID = b.ID
 							WHERE c.filecheck = 1 AND b.partcheck = 0 " . $where . "
 							GROUP BY c.ID, c.totalFiles, b.ID, b.totalParts
+							HAVING count(p.ID) >= b.totalParts
 						) as tmpTable
 					)");		
 		
@@ -1449,10 +1450,14 @@ class Releases
 	
 	public function processReleasesStage4_loop($groupID)
 	{
+		$tot_retcount = 0;
 		do
 		{
-			$retcount = processReleasesStage4($groupID);
+			$retcount = $this->processReleasesStage4($groupID);
+			$tot_retcount = $tot_retcount + $retcount;
 		} while ($retcount > 0);
+		
+		return $tot_retcount;
 	}
 	
 	public function processReleasesStage5($groupID)
@@ -1492,10 +1497,14 @@ class Releases
 	
 	public function processReleasesStage5_loop($groupID)
 	{
+		$tot_nzbcount = 0;
 		do
 		{
-			$nzbcount = processReleasesStage5($groupID);
+			$nzbcount = $this->processReleasesStage5($groupID);
+			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 		} while ($nzbcount > 0);
+		
+		return $tot_nzbcount;
 	}
 	
 	public function processReleasesStage6($categorize, $postproc, $groupID)
@@ -1615,9 +1624,9 @@ class Releases
 		
 		$this->processReleasesStage3($groupID);
 		
-		$releasesAdded = $this->processReleasesStage4($groupID);
+		$releasesAdded = $this->processReleasesStage4_loop($groupID);
 		
-		$this->processReleasesStage5($groupID);
+		$this->processReleasesStage5_loop($groupID);
 		
 		$this->processReleasesStage6($categorize, $postproc, $groupID);
 		
