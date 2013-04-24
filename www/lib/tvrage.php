@@ -504,6 +504,12 @@ class TvRage
 									echo 'Found TVRage ID on trakt :'.$traktArray['show']['tvrage_id']."\n";
 								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['ID']);
 							}
+							else
+							{
+								// no match
+								//add to tvrage with rageID = -2 and $show['cleanname'] title only
+								$this->add(-2, $show['cleanname'], '', '', '', '');
+							}
 						}
 						else
 						{
