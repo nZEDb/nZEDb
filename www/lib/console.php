@@ -480,17 +480,17 @@ class Console
 	
 	public function fetchAmazonProperties($title, $node)
 	{
-  	$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
-    try
-    {
-    	$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);
-    }
-    catch(Exception $e)
-    {
-    	$result = false;
-    }
-    return $result;
-  }
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->addtag);
+		try
+		{
+			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);
+		}
+		catch(Exception $e)
+		{
+			$result = false;
+		}
+		return $result;
+	}
   
 	public function processConsoleReleases()
 	{
