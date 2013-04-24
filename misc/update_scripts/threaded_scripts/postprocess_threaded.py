@@ -22,8 +22,10 @@ class WorkerThread(threading.Thread):
     def run(self):
         while not self.stoprequest.isSet():
             try:
-                subprocess.call(["php", pathname+"/../postprocess.php", ""+self.dir_q.get(True, 0.05)])
-                self.result_q.put(self.dir_q.get)
+                dirname = self.dir_q.get(True, 0.05)
+                print '\n%s: Postprocess %s started.' % (self.name, dirname)
+                subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
+                self.result_q.put((self.name, dirname))
             except Queue.Empty:
                 continue
 
@@ -54,6 +56,7 @@ def main(args):
     while work_count > 0:
         # Blocking 'get' from a Queue.
         result = result_q.get()
+        print '\n%s: Postprocess %s finished.' % (result[0], result[1])
         work_count -= 1
 
     # Ask threads to die and wait for them to do it

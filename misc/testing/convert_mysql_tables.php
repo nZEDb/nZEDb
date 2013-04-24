@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 $sql = "SHOW tables";
 $db = new DB();
 
-if (isset($argv[1] && $argv[1] == "myisam" && $argv[1] !== "dinnodb" && $argv[1] !== "cinnodb")
+if (isset($argv[1]) && $argv[1] == "myisam")
 { 
 	$tables = $db->query($sql);
 	foreach($tables as $row)
@@ -16,7 +16,7 @@ if (isset($argv[1] && $argv[1] == "myisam" && $argv[1] !== "dinnodb" && $argv[1]
 			$db->query($sql);
 		}
 }
-else if (isset($argv[1] && $argv[1] !== "myisam" && $argv[1] == "dinnodb" && $argv[1] !== "cinnodb")
+else if (isset($argv[1]) && $argv[1] == "dinnodb")
 { 
 	$tables = $db->query($sql);
 	foreach($tables as $row)
@@ -27,7 +27,7 @@ else if (isset($argv[1] && $argv[1] !== "myisam" && $argv[1] == "dinnodb" && $ar
 			$db->query($sql);
 		}
 }
-else if (isset($argv[1] && $argv[1] !== "myisam" && $argv[1] !== "dinnodb" && $argv[1] == "cinnodb")
+else if (isset($argv[1]) && $argv[1] == "cinnodb")
 { 
 	$tables = $db->query($sql);
 	foreach($tables as $row)
@@ -44,5 +44,6 @@ else
 		."php convert_mysql_tables.php myisam	...: Converts all the tables to Myisam Dynamic.\n"
 		."php convert_mysql_tables.php dinnodb	...: Converts all the tables to InnoDB Dynamic.\n"
 		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n\n");
+}
 
 ?>
