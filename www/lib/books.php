@@ -86,7 +86,7 @@ require_once(WWW_DIR."/lib/site.php");
 					else
 					{
 						// Could not parse release title.
-						//$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+						$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 					}
 				}
 			}
