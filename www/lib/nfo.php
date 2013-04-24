@@ -136,7 +136,7 @@ class Nfo
 			if ($nfocount > 0)
 				echo "\n";
 			if ($ret > 0)
-				echo $ret." NFO file(s) found/processed.";
+				echo $ret." NFO file(s) found/processed.\n";
 		}
 
 		return $ret;
