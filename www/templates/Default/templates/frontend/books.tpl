@@ -1,7 +1,7 @@
  
-<h1>Browse Console</h1>
+<h1>Browse Books</h1>
 
-<form name="browseby" action="console">
+<form name="browseby" action="books">
 <table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<th class="left"><label for="title">Title</label></th>
@@ -70,11 +70,11 @@
 			<td class="mid">
 				<div class="movcover">
 				<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/books/{if $result.cover == 1}{$result.booksinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
 				</a>
 				<div class="movextra">
 					{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.booksinfoID}" title="View amazon page">Amazon</a>
 					<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 				</div>
 				</div>
@@ -88,7 +88,7 @@
 				{if $result.review != ""}<b>Review:</b> {$result.review|escape:'htmlall'}<br />{/if}
 				<br />
 				<div class="movextra">
-					<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
+					<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn" href="{$smarty.const.WWW_TOP}/books?platform={$result.platform}" title="View similar nzbs">Similar</a>
 					{if $isadmin}
 						<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
 					{/if}

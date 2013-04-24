@@ -768,7 +768,7 @@ INSERT INTO `userroles` (`ID`, `name`, `apirequests`, `downloadrequests`, `defau
 (2, 'User', 10, 10, 1, 1, 0),
 (3, 'Admin', 1000, 1000, 1000, 0, 1),
 (4, 'Disabled', 0, 0, 0, 0, 0),
-(5, 'Moderator', 1000, 1000, 1000, 0, 1);
+(5, 'Moderator', 1000, 1000, 1000, 0, 1),
 (6, 'Friend', 100, 100, 5, 0, 1);
 
 UPDATE  `userroles` SET  `ID` =  `ID`-1;
