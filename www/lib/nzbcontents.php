@@ -9,6 +9,11 @@ require_once(WWW_DIR."/lib/nfo.php");
 */
 Class NZBcontents
 {
+	function NZBcontents($echooutput=false)
+	{
+		$this->echooutput = $echooutput;
+	}
+	
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp)
 	{
 		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp))
@@ -59,7 +64,8 @@ Class NZBcontents
 					$nfo->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-					echo "+";
+					if ($this->echooutput)
+						echo "+";
 					return $fetchedBinary;
 				}
 			}
@@ -128,13 +134,15 @@ Class NZBcontents
 			if ($foundnfo !== false)
 			{
 				$nfo->addReleaseNfo($relID);
-				echo "*";
+				if ($this->echooutput)
+					echo "*";
 				return $fetchedBinary;
 			}
 			if ($foundnfo == false)
 			{
 				//No .nfo file in the NZB.
-				echo "-";
+				if ($this->echooutput)
+					echo "-";
 				$db->queryDirect(sprintf(" update releases set nfostatus = 0 where nfostatus not between -6 and -1 and ID = %d", $relID));
 				return false;
 			}
