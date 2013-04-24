@@ -18,6 +18,7 @@ class Music
 		$site = $s->get();
 		$this->pubkey = $site->amazonpubkey;
 		$this->privkey = $site->amazonprivkey;
+		$this->asstag = $site->$site->amazonassociatetag;
 		
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
@@ -393,7 +394,7 @@ class Music
 	
 	public function fetchAmazonProperties($title)
 	{
-    $obj = new AmazonProductAPI($this->pubkey, $this->privkey);
+    $obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
     try
     {
          $result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");

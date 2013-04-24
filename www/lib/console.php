@@ -18,6 +18,7 @@ class Console
 		$site = $s->get();
 		$this->pubkey = $site->amazonpubkey;
 		$this->privkey = $site->amazonprivkey;
+		$this->addtag = $site->amazonassociatetag;
 		
 		$this->imgSavePath = WWW_DIR.'covers/console/';
 	}
@@ -479,7 +480,7 @@ class Console
 	
 	public function fetchAmazonProperties($title, $node)
 	{
-  	$obj = new AmazonProductAPI($this->pubkey, $this->privkey);
+  	$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
     try
     {
     	$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);

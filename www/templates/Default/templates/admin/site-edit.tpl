@@ -190,7 +190,7 @@
 	<td><label for="amazonpubkey">Amazon Public Key</label>:</td>
 	<td>
 		<input id="amazonpubkey" class="long" name="amazonpubkey" type="text" value="{$fsite->amazonpubkey}" />
-		<div class="hint">The amazon public api key. Used for music lookups.</div>
+		<div class="hint">The amazon public api key. Used for music/book lookups.</div>
 	</td>
 </tr>
 
@@ -198,7 +198,15 @@
 	<td><label for="amazonprivkey">Amazon Private Key</label>:</td>
 	<td>
 		<input id="amazonprivkey" class="long" name="amazonprivkey" type="text" value="{$fsite->amazonprivkey}" />
-		<div class="hint">The amazon private api key. Used for music lookups.</div>
+		<div class="hint">The amazon private api key. Used for music/book lookups.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="amazonassociatetag">Amazon Associate Tag</label>:</td>
+	<td>
+		<input id="amazonassociatetag" class="long" name="amazonassociatetag" type="text" value="{$fsite->amazonassociatetag}" />
+		<div class="hint">The amazon associate tag. Used for music/book lookups.</div>
 	</td>
 </tr>
 

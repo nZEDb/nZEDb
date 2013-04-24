@@ -7,8 +7,8 @@ function searchBook($title)
 {
 	$s = new Sites();
 	$site = $s->get();
-	$amazon = new AmazonProductAPI($site->amazonpubkey, $site->amazonprivkey);
-	$result = $amazon->searchProducts($title, AmazonProductAPI::MP3, "MUSIC");
+	$amazon = new AmazonProductAPI($site->amazonpubkey, $site->amazonprivkey, $site->amazonassociatetag);
+	$result = $amazon->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
 	print_r($result);
 }
 

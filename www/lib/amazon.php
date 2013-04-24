@@ -49,6 +49,13 @@
          */
         private $private_key    = "";
         
+         /**
+         * Your Amazon Secret Associate Tag
+         * @access private
+         * @var string
+         */
+        private $associate_tag    = "";
+        
         /**
          * Constants for product types
          * @access public
@@ -67,10 +74,11 @@
         const BOOKS = "Books";
         
 
-				public function __construct($pubk, $privk)
+				public function __construct($pubk, $privk, $associatetag)
 				{
 					$this->public_key = (string) $pubk;
 					$this->private_key = (string) $privk;
+					$this->associate_tag = (string) $associatetag;
 				}
         
         /**
@@ -109,7 +117,7 @@
          */
         private function queryAmazon($parameters)
         {
-            return aws_signed_request("com", $parameters, $this->public_key, $this->private_key);
+            return aws_signed_request("com", $parameters, $this->public_key, $this->private_key, $this->associate_tag);
         }
         
         
@@ -221,7 +229,7 @@
     }
 		
 
-	function  aws_signed_request($region,$params,$public_key,$private_key)
+	function  aws_signed_request($region,$params,$public_key,$private_key,$associate_tag)
 	{
 
 		$method = "GET";
@@ -231,6 +239,7 @@
 		
 		$params["Service"]          = "AWSECommerceService";
 		$params["AWSAccessKeyId"]   = $public_key;
+		$params["AssociateTag"]		= $associate_tag;
 		$params["Timestamp"]        = gmdate("Y-m-d\TH:i:s\Z");
 		$params["Version"]          = "2009-03-31";
 
@@ -264,7 +273,6 @@
 		
 		/* create request */
 		$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
-		echo $request;
 		/* I prefer using CURL */
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$request);
