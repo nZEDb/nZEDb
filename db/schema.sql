@@ -1191,6 +1191,7 @@ INSERT INTO tmux (setting, value) values ('RUNNING','FALSE');
 INSERT INTO tmux (setting, value) values ('NFOS','FALSE');
 INSERT INTO tmux (setting, value) values ('POST','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
+INSERT INTO tmux (setting, value) values ('FIX_NAMES','FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
