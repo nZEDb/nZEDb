@@ -61,10 +61,10 @@ require_once(WWW_DIR."/lib/site.php");
 					if ($bookInfo !== false)
 					{
 						if ($this->echooutput)
-							echo 'Looking up: '.$bookInfo["author"]." - ".$bookInfo["title"].' ['.$arr['name'].']'."\n";
+							echo 'Looking up: '.$bookInfo['author']." - ".$bookInfo['title']."\n";
 						
 						// Check for existing book entry.
-						$bookCheck = $this->getBookInfoByName($bookInfo["author"], $bookInfo["title"]);
+						$bookCheck = $this->getBookInfoByName($bookInfo['author'], $bookInfo['title']);
 						
 						if ($bookCheck === false)
 						{
@@ -98,7 +98,7 @@ require_once(WWW_DIR."/lib/site.php");
 			
 			// Get name and author of the book from the search name
 			
-			if(preg_match('/"(?P<author>.+)(?P<spacer>\s\-\s)(?P<title>.+)\s(\(|\[).+"/i', $releasename, $matches))
+			if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\s(\(|\[).+"/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
@@ -118,7 +118,7 @@ require_once(WWW_DIR."/lib/site.php");
 			
 				return (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author'])) ? $result : false;
 			}
-			else if(preg_match('/"(?P<author>.+)(?P<spacer>\s\-\s)(?P<title>.+)\.[\w]+"/i', $releasename, $matches))
+			else if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\.[\w]+"/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
@@ -188,9 +188,16 @@ require_once(WWW_DIR."/lib/site.php");
 			if ($book['pages'] == "")
 				$book['pages'] = 'null';
 				
-			$book['overview'] = (string) $amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content;
-			if ($book['overview'] == "")
+			if(isset($amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content))
+			{
+				$book['overview'] = (string) $amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content;
+				if ($book['overview'] == "")
+					$book['overview'] = 'null';
+			}
+			else
+			{
 				$book['overview'] = 'null';
+			}
 			
 			$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
 			if ($book['coverurl'] != "")
@@ -210,10 +217,8 @@ require_once(WWW_DIR."/lib/site.php");
 			$book['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover']);
 			
 			$bookId = $db->queryInsert($query);
-			
-			$consoleId = $db->queryInsert($query);
 
-			if ($consoleId) 
+			if ($bookId) 
 			{
 				if ($this->echooutput)
 					echo "Added/updated book: ".$book['author']." - ".$book['title'].".\n";
@@ -225,6 +230,6 @@ require_once(WWW_DIR."/lib/site.php");
 				if ($this->echooutput)
 					echo "Nothing to update: ".$book['author']." - ".$book['title'].".\n";
 			}
-			return $consoleId;
+			return $bookId;
 		}
 	}
