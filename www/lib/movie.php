@@ -472,9 +472,9 @@ class Movie
             }
             
             //directors
-			if (preg_match('/Directors?:[\s]+?<\/h4>(.+)<\/div>/sU', $buffer, $hit))
+			if (preg_match('/Directors?:([\s]+)?<\/h4>(.+)<\/div>/sU', $buffer, $hit))
 			{
-				if (preg_match_all('/<a.*?>(.*?)<\/a>/is', $hit[0], $results, PREG_PATTERN_ORDER))
+				if (preg_match_all('/"name"(.*?)<\/span>/is', $hit[0], $results, PREG_PATTERN_ORDER))
 				{
 					$ret['director'] = $results[1];
 				} 
