@@ -139,7 +139,7 @@ class Nfo
 		if ($this->echooutput)
 		{
 			if ($ret > 0)
-				echo $ret." NFO files found/processed.\n";
+				echo $ret." NFO files found/processed.";
 			if ($nfocount > 0)
 				echo "\n";
 		}
