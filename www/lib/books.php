@@ -80,13 +80,13 @@ require_once(WWW_DIR."/lib/site.php");
 						}
 						
 						// Update release.
-						$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", $bookId, $arr["ID"]));
+						//$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", $bookId, $arr["ID"]));
 						
 					}
 					else
 					{
 						// Could not parse release title.
-						$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+						//$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 					}
 				}
 			}
@@ -115,8 +115,11 @@ require_once(WWW_DIR."/lib/site.php");
 			
 				$result['release'] = $releasename;
 				array_map("trim", $result);
-			
-				return (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author'])) ? $result : false;
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
 			}
 			else if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\.[\w]+"/i', $releasename, $matches))
 			{
@@ -136,8 +139,13 @@ require_once(WWW_DIR."/lib/site.php");
 				$result['release'] = $releasename;
 				array_map("trim", $result);
 			
-				return (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author'])) ? $result : false;
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
 			}
+			else
+				return false;
 		}
 
 		public function updateBookInfo($bookInfo)
