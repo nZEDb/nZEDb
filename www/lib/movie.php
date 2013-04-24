@@ -432,7 +432,7 @@ class Movie
         );
         
         $imdb_regex_multi = array(
-        	'genre'    => '/href="\/genre\/(.*?)"/i',
+        	'genre'    => '/href="\/genre\/(.*?)\?/i',
         	'language' => '/<a href="\/language\/[a-z]+">(.*?)<\/a>/i'
         );
 
