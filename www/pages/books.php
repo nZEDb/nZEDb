@@ -1,39 +1,37 @@
 <?php
-require_once(WWW_DIR."/lib/console.php");
+require_once(WWW_DIR."/lib/books.php");
 require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/genres.php");
 
-$console = new Console;
+$book = new Books;
 $cat = new Category;
-$gen = new Genres;
 
 if (!$users->isLoggedIn())
 	$page->show403();
 
 
-$concats = $cat->getChildren(Category::CAT_PARENT_GAME);
-$ctmp = array();
-foreach($concats as $ccat) {
-	$ctmp[$ccat['ID']] = $ccat;
+$boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
+$btmp = array();
+foreach($boocats as $bcat) {
+	$btmp[$bcat['ID']] = $bcat;
 }
-$category = Category::CAT_PARENT_GAME;
-if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $ctmp))
+$category = Category::CAT_PARENT_BOOKS;
+if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $btmp))
 	$category = $_REQUEST["t"] + 0;
 	
 $catarray = array();
 $catarray[] = $category;	
 
-$page->smarty->assign('catlist', $ctmp);
+$page->smarty->assign('catlist', $btmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $console->getConsoleCount($catarray, -1, $page->userdata["categoryexclusions"]);
+$browsecount = $book->getBookCount($catarray, -1, $page->userdata["categoryexclusions"]);
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
-$ordering = $console->getConsoleOrdering();
+$ordering = $book->getBookOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
-$results = $consoles = array();
-$results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $books = array();
+$results = $book->getBookRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
 foreach($results as $result) {	
@@ -44,30 +42,21 @@ foreach($results as $result) {
 			$result['review'] = implode(' ', $newwords).'...';	
 		}
 	}
-	$consoles[] = $result;
+	$books[] = $result;
 }
 
-$platform = (isset($_REQUEST['platform']) && !empty($_REQUEST['platform'])) ? stripslashes($_REQUEST['platform']) : '';
-$page->smarty->assign('platform', $platform);
+$author = (isset($_REQUEST['author']) && !empty($_REQUEST['author'])) ? stripslashes($_REQUEST['author']) : '';
+$page->smarty->assign('author', $author);
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
 $page->smarty->assign('title', $title);
 
-$genres = $gen->getGenres(Genres::CONSOLE_TYPE, true);
-$tmpgnr = array();
-foreach($genres as $gn) {
-	$tmpgnr[$gn['ID']] = $gn['title'];
-}
-$genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
-$page->smarty->assign('genres', $genres);
-$page->smarty->assign('genre', $genre);
-
-$browseby_link = '&amp;title='.$title.'&amp;platform='.$platform;
+$browseby_link = '&amp;title='.$title.'&amp;author='.$author;
 
 $page->smarty->assign('pagertotalitems',$browsecount);
 $page->smarty->assign('pageroffset',$offset);
 $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP."/console?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP."/books?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
 $pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
@@ -86,13 +75,13 @@ else
 }
 
 foreach($ordering as $ordertype) 
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/console?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
+	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/books?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
 
-$page->smarty->assign('results',$consoles);		
+$page->smarty->assign('results',$books);		
 
-$page->meta_title = "Browse Console";
-$page->meta_keywords = "browse,nzb,console,games,description,details";
-$page->meta_description = "Browse for Games";
+$page->meta_title = "Browse Books";
+$page->meta_keywords = "browse,nzb,books,description,details";
+$page->meta_description = "Browse for Books";
 	
 $page->content = $page->smarty->fetch('books.tpl');
 $page->render();

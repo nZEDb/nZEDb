@@ -5,25 +5,15 @@
 <table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<th class="left"><label for="title">Title</label></th>
-		<th class="left"><label for="platform">Platform</label></th>
-		<th class="left"><label for="genre">Genre</label></th>
 		<th class="left"><label for="category">Category</label></th>
 		<th></th>
 	</tr>
 	<tr>
 		<td><input id="title" type="text" name="title" value="{$title}" size="15" /></td>
-		<td><input id="platform" type="text" name="platform" value="{$platform}" size="15" /></td>
-		<td>
-			<select id="genre" name="genre">
-			<option class="grouping" value=""></option>
-			{foreach from=$genres item=gen}
-				<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title}</option>
-			{/foreach}
-			</select>
-		</td>
+		<td><input id="author" type="text" name="author value="{$author}" size="15" /></td>
 		<td>
 			<select id="category" name="t">
-			<option class="grouping" value="1000"></option>
+			<option class="grouping" value="8000"></option>
 			{foreach from=$catlist item=ct}
 				<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
 			{/foreach}
@@ -56,9 +46,7 @@
 	<tr>
 		<th width="130"><input type="checkbox" class="nzb_check_all" /></th>
 		<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-		<th>platform<br/><a title="Sort Descending" href="{$orderbyplatform_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-		<th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-		<th>release date<br/><a title="Sort Descending" href="{$orderbyreleasedate_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+		<th>author<br/><a title="Sort Descending" href="{$orderbyauthor_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyauthor_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img src="{$smarty.const.WWW_TOP}/templates/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
@@ -68,24 +56,22 @@
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
-				<div class="movcover">
+				<div class="bookcover">
 				<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/books/{if $result.cover == 1}{$result.booksinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
 				</a>
 				<div class="movextra">
 					{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.booksinfoID}" title="View amazon page">Amazon</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.bookinfoID}" title="View amazon page">Amazon</a>
 					<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 				</div>
 				</div>
 			</td>
 			<td colspan="8" class="left" id="guid{$result.guid}">
-				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|escape:"htmlall"} - {$result.platform|escape:"htmlall"}</a></h2>
-				{if $result.genre != ""}<b>Genre:</b> {$result.genre}<br />{/if}
-				{if $result.esrb != ""}<b>Rating:</b> {$result.esrb}<br />{/if}
+				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}</a></h2>
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher}<br />{/if}
-				{if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br />{/if}
-				{if $result.review != ""}<b>Review:</b> {$result.review|escape:'htmlall'}<br />{/if}
+				{if $result.publishdate != ""}<b>Released:</b> {$result.publishdate|date_format}<br />{/if}
+				{if $result.overview != "null"}<b>Overview:</b> {$result.overview|escape:'htmlall'}<br />{/if}
 				<br />
 				<div class="movextra">
 					<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn" href="{$smarty.const.WWW_TOP}/books?platform={$result.platform}" title="View similar nzbs">Similar</a>

@@ -24,10 +24,192 @@ require_once(WWW_DIR."/lib/site.php");
 			$this->imgSavePath = WWW_DIR.'covers/book/';
 		}
 		
+		public function getBookInfo($id)
+		{
+			$db = new DB();
+			return $db->queryOneRow(sprintf("SELECT bookinfo.*, FROM bookinfo where bookinfo.ID = %d ", $id));
+		}
+		
 		public function getBookInfoByName($author, $title)
 		{
 			$db = new DB();
 			return $db->queryOneRow(sprintf("SELECT * FROM bookinfo where author like %s and title like %s", $db->escapeString("%".$author."%"),  $db->escapeString("%".$title."%")));
+		}
+		
+		public function getRange($start, $num)
+		{		
+			$db = new DB();
+		
+			if ($start === false)
+				$limit = "";
+			else
+				$limit = " LIMIT ".$start.",".$num;
+		
+			return $db->query(" SELECT * FROM bookinfo ORDER BY createddate DESC".$limit);		
+		}
+		
+		public function getCount()
+		{			
+			$db = new DB();
+			$res = $db->queryOneRow("select count(ID) as num from bookinfo");		
+			return $res["num"];
+		}
+		
+		public function getBookCount($cat, $maxage=-1, $excludedcats=array())
+		{
+			$db = new DB();
+		
+			$browseby = $this->getBrowseBy();
+		
+			$catsrch = "";
+			if (count($cat) > 0 && $cat[0] != -1)
+			{
+				$catsrch = " (";
+				foreach ($cat as $category)
+				{
+					if ($category != -1)
+					{
+						$categ = new Category();
+						if ($categ->isParent($category))
+						{
+							$children = $categ->getChildren($category);
+							$chlist = "-99";
+							foreach ($children as $child)
+								$chlist.=", ".$child["ID"];
+
+							if ($chlist != "-99")
+									$catsrch .= " r.categoryID in (".$chlist.") or ";
+						}
+						else
+						{
+							$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						}
+					}
+				}
+				$catsrch.= "1=2 )";
+			}			
+
+			if ($maxage > 0)
+				$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			else
+				$maxage = "";		
+		
+			$exccatlist = "";
+			if (count($excludedcats) > 0)
+				$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+		
+			$sql = sprintf("select count(r.ID) as num from releases r inner join bookinfo b on b.ID = r.bookinfoID and b.title != '' where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+			$res = $db->queryOneRow($sql);		
+			return $res["num"];	
+		}
+		
+		public function getBookRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
+		{	
+			$db = new DB();
+		
+			$browseby = $this->getBrowseBy();
+		
+			if ($start === false)
+				$limit = "";
+			else
+				$limit = " LIMIT ".$start.",".$num;
+		
+			$catsrch = "";
+			if (count($cat) > 0 && $cat[0] != -1)
+			{
+				$catsrch = " (";
+				foreach ($cat as $category)
+				{
+					if ($category != -1)
+					{
+						$categ = new Category();
+						if ($categ->isParent($category))
+						{
+							$children = $categ->getChildren($category);
+							$chlist = "-99";
+							foreach ($children as $child)
+								$chlist.=", ".$child["ID"];
+
+							if ($chlist != "-99")
+								$catsrch .= " r.categoryID in (".$chlist.") or ";
+						}
+						else
+						{
+							$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						}
+					}
+				}
+				$catsrch.= "1=2 )";
+			}	
+		
+			$maxage = "";
+			if ($maxage > 0)
+				$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+
+			$exccatlist = "";
+			if (count($excludedcats) > 0)
+				$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			
+			$order = $this->getBookOrder($orderby);
+			$sql = sprintf(" SELECT r.*, r.ID as releaseID, boo.*, groups.name as group_name, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, rn.ID as nfoID from releases r left outer join groups on groups.ID = r.groupID inner join bookinfo boo on boo.ID = r.bookinfoID left outer join releasenfo rn on rn.releaseID = r.ID and rn.nfo is not null left outer join category c on c.ID = r.categoryID left outer join category cp on cp.ID = c.parentID where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s order by %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+			return $db->query($sql);		
+		}
+		
+		public function getBookOrder($orderby)
+		{
+			$order = ($orderby == '') ? 'r.postdate' : $orderby;
+			$orderArr = explode("_", $order);
+			switch($orderArr[0]) {
+				case 'title':
+					$orderfield = 'boo.title';
+				break;
+				case 'author':
+					$orderfield = 'boo.title';
+				break;
+				case 'publishdate':
+					$orderfield = 'boo.publishdate';
+				break;
+				case 'size':
+					$orderfield = 'r.size';
+				break;
+				case 'files':
+					$orderfield = 'r.totalpart';
+				break;
+				case 'stats':
+					$orderfield = 'r.grabs';
+				break;
+				case 'posted': 
+				default:
+					$orderfield = 'r.postdate';
+				break;
+		}
+		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
+		return array($orderfield, $ordersort);
+	}
+		
+		public function getBookOrdering()
+		{
+			return array('title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'releasedate_asc', 'releasedate_desc', 'author_asc', 'author_desc');
+		}
+		
+		public function getBrowseByOptions()
+		{
+			return array('author'=>'author', 'title'=>'title');
+		}
+		
+		public function getBrowseBy()
+		{
+			$db = new Db;
+		
+			$browseby = ' ';
+			$browsebyArr = $this->getBrowseByOptions();
+			foreach ($browsebyArr as $bbk=>$bbv) {
+				if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
+					$bbs = stripslashes($_REQUEST[$bbk]);
+					$browseby .= "boo.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').") AND ";
+				}
+			}
+			return $browseby;
 		}
 		
 		public function fetchAmazonProperties($title)
