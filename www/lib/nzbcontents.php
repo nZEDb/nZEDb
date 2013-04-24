@@ -131,12 +131,12 @@ Class NZBcontents
 									}
 								}
 							}
-							else
-							{
+						}
+						else
+						{
 								//nfo download failed, increment attempts
-								$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
+								$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 								$failed = true;
-							}
 						}
 					}
 				}
