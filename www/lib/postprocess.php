@@ -154,8 +154,7 @@ class PostProcess {
 				$blnTookMediainfo = false;
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false; //only attempt sample if not disabled
 				$procleft = $rescount--;
-				$procdone = $procstart++;
-				$consoleTools->overWrite($consoleTools->percentString($procdone,$rescount+1).": ".$procleft." left.");
+				$consoleTools->overWrite($procleft." left.");
 				
 				if ($blnTookSample)
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
