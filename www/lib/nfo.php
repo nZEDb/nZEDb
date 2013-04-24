@@ -62,7 +62,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO's. * = hidden NFO, + = NFO, - = no NFO.\n";
+					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO.\n";
 
 			$nntp->doConnect();
 			while ($arr = $db->fetchAssoc($res))
@@ -141,7 +141,7 @@ class Nfo
 			if ($nfocount > 0)
 				echo "\n";
 			if ($ret > 0)
-				echo $ret." NFO files found/processed.";
+				echo $ret." NFO file(s) found/processed.";
 		}
 
 		return $ret;
