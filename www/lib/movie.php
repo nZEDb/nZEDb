@@ -465,7 +465,7 @@ class Movie
             //actors
             if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit))
             {
-				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/">([^<]+)<\/a>/', $hit[0], $results, PREG_PATTERN_ORDER))
+				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER))
 				{
 					$ret['actors'] = $results[2];
 				} 
