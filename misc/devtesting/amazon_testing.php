@@ -8,8 +8,8 @@ function searchBook($title)
 	$s = new Sites();
 	$site = $s->get();
 	$amazon = new AmazonProductAPI($site->amazonpubkey, $site->amazonprivkey, $site->amazonassociatetag);
-	$result = $amazon->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
+	$result = $amazon->searchProducts($title, AmazonProductAPI::BOOKS, "TITLE");
 	print_r($result);
 }
 
-searchBook("Dimmu Borgir - The Serpentine Offering");
+searchBook("Skin Shows: The Tattoo Bible");
