@@ -14,7 +14,7 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/console.php");
 require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/consoletools.php");
 
 class PostProcess {
 	
@@ -130,6 +130,7 @@ class PostProcess {
 		
 		$db = new DB;
 		$nntp = new Nntp;
+		$consoleTools = new ConsoleTools();
 		
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
@@ -140,6 +141,7 @@ class PostProcess {
 			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d", ($maxattemptstocheckpassworded + 1) * -1, $this->addqty));
 		
 		$rescount = sizeof($result);
+		$procstart = 0;
 		if ($rescount > 0)
 		{
 			echo "Additional post-processing on {$rescount} release(s): ";
@@ -151,7 +153,9 @@ class PostProcess {
 				$passStatus = array(Releases::PASSWD_NONE);
 				$blnTookMediainfo = false;
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false; //only attempt sample if not disabled
-				echo $rescount--.".";
+				$procleft = $rescount--;
+				$procdone = $procstart++;
+				$consoleTools->overWrite($consoleTools->percentString($procdone,$rescount).": ".$procleft." left.");
 				
 				if ($blnTookSample)
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
