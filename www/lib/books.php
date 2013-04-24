@@ -210,10 +210,10 @@ require_once(WWW_DIR."/lib/site.php");
 			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())
 				ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", 
 			$db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']),
-			$db->escapeString($book['ean']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['url']),
+			$db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']),
 			$book['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover'], 
 			$db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']),
-			$db->escapeString($book['ean']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['url']),
+			$db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']),
 			$book['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover']);
 			
 			$bookId = $db->queryInsert($query);
