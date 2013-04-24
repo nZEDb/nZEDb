@@ -681,7 +681,7 @@ class TvRage
 				}
 				
 				if ($this->echooutput)
-					echo 'No match found online, trying trakt.'."\n";
+					echo 'No match found on TVRage, trying Trakt.'."\n";
 				return false;
 				
 			} else {
