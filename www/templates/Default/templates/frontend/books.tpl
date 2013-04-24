@@ -5,6 +5,7 @@
 <table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<th class="left"><label for="title">Title</label></th>
+		<th class="left"><label for="author">Author</label></th>
 		<th class="left"><label for="category">Category</label></th>
 		<th></th>
 	</tr>
@@ -71,6 +72,8 @@
 				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}</a></h2>
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher}<br />{/if}
 				{if $result.publishdate != ""}<b>Released:</b> {$result.publishdate|date_format}<br />{/if}
+				{if $result.pages != ""}<b>Pages:</b> {$result.pages}<br />{/if}
+				{if $result.salesrank != ""}<b>Amazon Rank:</b> {$result.salesrank}<br />{/if}
 				{if $result.overview != "null"}<b>Overview:</b> {$result.overview|escape:'htmlall'}<br />{/if}
 				<br />
 				<div class="movextra">
