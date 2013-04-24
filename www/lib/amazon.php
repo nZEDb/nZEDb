@@ -64,6 +64,7 @@
         const MP3 = "MP3Downloads"; //this could be DigitalDownloads as well
         const DVD   = "DVD";
         const GAMES = "VideoGames";
+        const BOOKS = "Books";
         
 
 				public function __construct($pubk, $privk)
@@ -263,7 +264,7 @@
 		
 		/* create request */
 		$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
-
+		echo $request;
 		/* I prefer using CURL */
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$request);
