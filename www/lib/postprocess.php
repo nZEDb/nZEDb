@@ -15,6 +15,7 @@ require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/console.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/consoletools.php");
+require_once(WWW_DIR."/lib/books.php");
 
 class PostProcess {
 	
@@ -36,6 +37,7 @@ class PostProcess {
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
+		$this->processBooks();
 		$this->processAdditional();
 	}
 	
@@ -109,6 +111,18 @@ class PostProcess {
 		{
 			$tvrage = new TVRage($this->echooutput);
 			$tvrage->processTvReleases(($this->site->lookuptvrage==1));
+		}
+	}
+	
+	//
+	// Process books using amazon.com
+	//
+	public function processBooks()
+	{
+		if ($this->site->lookupbooks == 1) 
+		{
+			$books = new Books($this->echooutput);
+			$books->processBookReleases();
 		}
 	}
 	

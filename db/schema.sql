@@ -66,6 +66,7 @@ CREATE TABLE `releases`
 `imdbID` MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
 `musicinfoID` INT NULL,
 `consoleinfoID` INT NULL,
+`bookinfoID` INT NULL,
 `anidbID` INT NULL,
 `grabs` INT UNSIGNED NOT NULL DEFAULT '0',
 `comments` INT NOT NULL DEFAULT 0,
@@ -893,6 +894,7 @@ INSERT INTO `site`
 	('lookupnfo', 1),
 	('lookupmusic', 1),
 	('lookupgames', 1),
+	('lookupbooks', 1),
 	('lookupanidb', 0),
 	('maxaddprocessed', 25),
 	('maxnfoprocessed', 100),
@@ -945,6 +947,26 @@ CREATE TABLE `consoleinfo` (
   `esrb` VARCHAR( 255 ) NULL DEFAULT NULL,
   `releasedate` datetime DEFAULT NULL,
   `review` varchar(3000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cover` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `createddate` datetime NOT NULL,
+  `updateddate` datetime NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+DROP TABLE IF EXISTS `bookinfo`;
+CREATE TABLE `bookinfo` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `author` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `asin` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `isbn` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ean` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `url` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `salesrank` int(10) unsigned DEFAULT NULL,
+  `publisher` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `publishdate` datetime DEFAULT NULL,
+  `pages` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `overview` varchar(3000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cover` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `createddate` datetime NOT NULL,
   `updateddate` datetime NOT NULL,

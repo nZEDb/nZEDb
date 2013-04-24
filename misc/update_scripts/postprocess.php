@@ -3,7 +3,7 @@
 require("config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -15,7 +15,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "all" && $argv[1] !=
 	}
 	$postprocess->processAll();
 }
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] == "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] == "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -32,7 +32,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] =
 		sleep(15);
 	}
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] == "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] == "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -47,9 +47,10 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	$postprocess->processGames();
 	$postprocess->processAnime();
 	$postprocess->processTv();
+	$postprocess->processBooks();
 	$postprocess->processAdditional();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] == "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] == "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -61,7 +62,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processNfos();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] == "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] == "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -73,7 +74,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processMovies();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] == "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] == "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -85,7 +86,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processMusic();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] == "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] == "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -97,7 +98,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processGames();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] == "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] == "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -109,7 +110,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processAnime();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] == "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] == "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -121,7 +122,19 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv
 	}
 	$postprocess->processTV();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] == "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] == "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
+{
+	if ($argv[2] == "true")
+	{
+		$postprocess = new PostProcess(true);
+	}
+	else if ($argv[2] == "false")
+	{
+		$postprocess = new PostProcess();
+	}
+	$postprocess->processBooks();
+}
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] == "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {
 	if ($argv[2] == "true")
 	{
@@ -141,6 +154,7 @@ else
 		."php postprocess.php movies true		...: Processes movies.\n"
 		."php postprocess.php music true		...: Processes music.\n"
 		."php postprocess.php games true		...: Processes games.\n"
+		."php postprocess.php book true		...: Processes books.\n"
 		."php postprocess.php anime true		...: Processes anime.\n"
 		."php postprocess.php tv true		...: Processes tv.\n"
 		."php postprocess.php additional true	...: Processes previews/mediainfo/etc...\n"

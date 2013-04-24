@@ -465,14 +465,14 @@ class Console
 		if ($consoleId) 
 		{
 			if ($this->echooutput)
-				echo "added/updated game: ".$con['title']." ".$con['platform']."\n";
+				echo "Added/updated game: ".$con['title']." ".$con['platform'].".\n";
 
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} 
 		else 
 		{
 			if ($this->echooutput)
-				echo "nothing to update: ".$con['title']." (".$con['platform'].")\n";
+				echo "Nothing to update: ".$con['title']." (".$con['platform'].").\n";
 		}
 
 		return $consoleId;

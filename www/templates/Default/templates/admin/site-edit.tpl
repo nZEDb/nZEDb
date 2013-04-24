@@ -460,6 +460,14 @@
 </tr>
 
 <tr>
+	<td><label for="lookupbooks">Lookup Books</label>:</td>
+	<td>
+		{html_radios id="lookupbooks" name='lookupbooks' values=$yesno_ids output=$yesno_names selected=$fsite->lookupbooks separator='<br />'}
+		<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="compressedheaders">Use Compressed Headers</label>:</td>
 	<td>
 		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
