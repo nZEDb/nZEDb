@@ -27,6 +27,7 @@ switch($page->page) {
 	case 'series':
 	case 'anime':
 	case 'music':
+	case 'books':
 	case 'musicmodal':
 	case 'consolemodal':
 	case 'console':
