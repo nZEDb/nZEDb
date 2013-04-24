@@ -423,17 +423,17 @@ class Movie
     public function fetchImdbProperties($imdbId)
     {
         $imdb_regex = array(
-            'title'    => '/<title>(.*?)\(.*?<\/title>/i',
+            'title'    => '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline'  => '/taglines:<\/h4>\s([^<]+)/i',
 			'plot'     => '/<p>\s<p>(.*?)\s<\/p>\s<\/p>/i',
-            'rating'   => '/<span class="rating\-rating">([0-9]{1,2}\.[0-9]{1,2})<span>/i',
+            'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
 			'year'     => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
 			'cover'    => '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
         );
         
         $imdb_regex_multi = array(
         	'genre'    => '/href="\/genre\/(.*?)\?/i',
-        	'language' => '/<a href="\/language\/[a-z]+">(.*?)<\/a>/i'
+        	'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
         );
 
         $buffer = getUrl("http://akas.imdb.com/title/tt$imdbId/");
