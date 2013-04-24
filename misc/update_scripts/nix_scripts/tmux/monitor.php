@@ -1,10 +1,10 @@
-<?php
+$groupID<?php
 
 require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r202";
+$version="0.1r206";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -21,7 +21,7 @@ $proc = "SELECT
 			( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 			( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
-			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus in ( 0, 1 )) AS nfo,
+			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
 			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
             ( SELECT COUNT( groupID ) from collections ) collections,
@@ -443,6 +443,18 @@ while( $i > 0 )
 	if ( $running  == "TRUE" )
 	{
 
+		//fix names
+		if ( $fix_names = "TRUE" )
+		{
+            $color = get_color();
+            shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php misc/testing/fixReleaseNames.php 4 true other yes && nice -n$niceness php misc/testing/fixReleaseNames.php 6 true other yes && nice -n$niceness php misc/testing/fixReleaseNames.php 2 true other yes' 2>&1 1> /dev/null");
+        }
+        else
+        {
+            $color = get_color();
+            shell_exec("tmux respawnp -k -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\n$panes1[1] has been terminated by Fix Release Names\"'");
+        }
+
 		//run postprocess_releases
 		if ( $post == "TRUE" )
 		{
@@ -452,7 +464,7 @@ while( $i > 0 )
 		else
 		{
 			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been terminated by Postprocess All Others\"'");
+			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been terminated by Postprocess\"'");
 		}
 
 		//run update_binaries
@@ -499,7 +511,7 @@ while( $i > 0 )
 		if ( $releases == "TRUE" )
 		{
 			$color = get_color();
-			shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/update_releases.php 1 false' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && nice -n$niceness php $DIR/misc/update_scripts/threaded_scripts/update_releases.php 1 false' 2>&1 1> /dev/null");
 		}
 		else
 		{

@@ -59,15 +59,15 @@
 </tr>
 
 <tr>
-	<td><label for="NFOS">Postprocess Nfos</label>:</td>
+	<td><label for="NFOS">Fix Release Names</label>:</td>
 	<td>
-		{html_radios id="NFOS" name='NFOS' values=$truefalse_names output=$truefalse_names selected=$ftmux->NFOS}
-		<div class="hint">Choose to postprocess nfos true/false</div>
+		{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES}
+		<div class="hint">Choose to try to fix releases names  true/false</div>
 	</td>
 </tr>
 
 <tr>
-	<td><label for="POST">Postprocess All Others</label>:</td>
+	<td><label for="POST">Postprocess All</label>:</td>
 	<td>
 		{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST}
 		<div class="hint">Choose to postprocess movies, music, etc true/false</div>

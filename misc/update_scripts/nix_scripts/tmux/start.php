@@ -10,6 +10,10 @@ $DIR = WWW_DIR."/..";
 $tmux = new Tmux;
 $session = $tmux->get()->TMUX_SESSION;
 
+//reset collections dateadded to now
+print("Resetting expired collections dateadded to now. This could take a minute or two.");
+$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1.5 hour)");
+
 //create tmux
 shell_exec("tmux -f $DIR/misc/update_scripts/nix_scripts/tmux/tmux.conf new-session -d -s $session -n Monitor 'printf \"\033]2;Monitor\033\\\"'");
 shell_exec("tmux selectp -t 0 && tmux splitw -h -p 67 'printf \"\033]2;update_binaries\033\\\"'");
