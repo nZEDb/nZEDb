@@ -18,7 +18,7 @@ class Music
 		$site = $s->get();
 		$this->pubkey = $site->amazonpubkey;
 		$this->privkey = $site->amazonprivkey;
-		$this->asstag = $site->$site->amazonassociatetag;
+		$this->asstag = $site->amazonassociatetag;
 		
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
