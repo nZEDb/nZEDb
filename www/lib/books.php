@@ -57,11 +57,11 @@ require_once(WWW_DIR."/lib/site.php");
 				
 				while ($arr = $db->fetchAssoc($res)) 
 				{
-					$bookInfo = $this->parseTitle($arr['searchname']);
+					$bookInfo = $this->parseTitle($arr['name']);
 					if ($bookInfo !== false)
 					{
 						if ($this->echooutput)
-							echo 'Looking up: '.$bookInfo["author"]." - ".$bookInfo["title"].' ['.$arr['searchname'].']'."\n";
+							echo 'Looking up: '.$bookInfo["author"]." - ".$bookInfo["title"].' ['.$arr['name'].']'."\n";
 						
 						// Check for existing book entry.
 						$bookCheck = $this->getBookInfoByName($bookInfo["author"], $bookInfo["title"]);
@@ -146,7 +146,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$ri = new ReleaseImage();
 		
 			$book = array();
-			$amaztitle = $bookInfo['autor']." - ".$bookInfo['title'];
+			$amaztitle = $bookInfo['author']." ".$bookInfo['title'];
 			$amaz = $this->fetchAmazonProperties($amaztitle);
 			if (!$amaz) 
 				return false;
@@ -204,7 +204,7 @@ require_once(WWW_DIR."/lib/site.php");
 				ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", 
 			$db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']),
 			$db->escapeString($book['ean']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['url']),
-			$con['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover'], 
+			$book['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover'], 
 			$db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']),
 			$db->escapeString($book['ean']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['url']),
 			$book['publishdate'], $book['pages'], $db->escapeString($book['overview']), $book['cover']);
@@ -223,7 +223,7 @@ require_once(WWW_DIR."/lib/site.php");
 			else 
 			{
 				if ($this->echooutput)
-					echo "Nothing to update: ".$book['Author']." - ".$book['title'].".\n";
+					echo "Nothing to update: ".$book['author']." - ".$book['title'].".\n";
 			}
 			return $consoleId;
 		}
