@@ -120,11 +120,6 @@ class Nfo
 						}
 					}
 				}
-				else
-				{
-					//nfo download failed, increment attempts
-					$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
-				}
 			}
 			$nntp->doQuit();
 		}

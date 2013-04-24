@@ -95,6 +95,7 @@ Class NZBcontents
 			// Fetch the NZB.
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
+			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
 			
 			foreach ($nzbfile->file as $nzbcontents)
@@ -106,44 +107,57 @@ Class NZBcontents
 					if ($messageid !== false)
 					{
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if (!preg_match($notin, $possibleNFO))
+						if ($possibleNFO !== false)
 						{
-							$pNFOsize = strlen($possibleNFO);
-							if ($pNFOsize < 40000)
+							if (!preg_match($notin, $possibleNFO))
 							{
-								// exif_imagetype needs a minimum size or else it doesn't work
-								if ($pNFOsize > 20)
+								$pNFOsize = strlen($possibleNFO);
+								if ($pNFOsize < 40000)
 								{
-									//Check if it's an image.
-									if (@exif_imagetype($possibleNFO) == false)
+									// exif_imagetype needs a minimum size or else it doesn't work
+									if ($pNFOsize > 20)
+									{
+										//Check if it's an image.
+										if (@exif_imagetype($possibleNFO) == false)
+										{
+											$fetchedBinary = $possibleNFO;
+											$foundnfo = true;
+										}
+									}
+									else
 									{
 										$fetchedBinary = $possibleNFO;
 										$foundnfo = true;
 									}
 								}
-								else
-								{
-									$fetchedBinary = $possibleNFO;
-									$foundnfo = true;
-								}
+							}
+							else
+							{
+								//nfo download failed, increment attempts
+								$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $arr["ID"]));
+								$failed = true;
 							}
 						}
 					}
 				}
 			}
-			if ($foundnfo !== false)
+			if ($foundnfo !== false && $failed == false)
 			{
 				$nfo->addReleaseNfo($relID);
 				if ($this->echooutput)
 					echo "*";
 				return $fetchedBinary;
 			}
-			if ($foundnfo == false)
+			if ($foundnfo == false && $failed == false)
 			{
 				//No .nfo file in the NZB.
 				if ($this->echooutput)
 					echo "-";
-				$db->queryDirect(sprintf(" update releases set nfostatus = 0 where nfostatus not between -6 and -1 and ID = %d", $relID));
+				$db->queryDirect(sprintf("update releases set nfostatus = 0 where nfostatus not between -6 and -1 and ID = %d", $relID));
+				return false;
+			}
+			if ($failed == true)
+			{
 				return false;
 			}
 		}
