@@ -57,12 +57,12 @@ class Nfo
 		$nzbcontents = new NZBcontents($this->echooutput);
 
 		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d", $this->nzbs));
-		if ($db->getNumRows($res) >= 0)
+		$nfocount = $db->getNumRows($res);
+		if ($nfocount >= 0)
 		{
 			if ($this->echooutput)
-			{
-				echo "Processing ".$db->getNumRows($res)." NFO's. * = hidden NFO, + = NFO, - = no NFO.\n";
-			}
+				if ($nfocount > 0)
+					echo "Processing ".$nfocount." NFO's. * = hidden NFO, + = NFO, - = no NFO.\n";
 
 			$nntp->doConnect();
 			while ($arr = $db->fetchAssoc($res))
@@ -138,7 +138,8 @@ class Nfo
 
 		if ($this->echooutput)
 		{
-			echo "\n".$ret." NFO files found/processed.\n";
+			if ($ret > 0)
+				echo "\n".$ret." NFO files found/processed.\n";
 		}
 
 		return $ret;
