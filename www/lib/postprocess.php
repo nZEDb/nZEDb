@@ -143,7 +143,7 @@ class PostProcess {
 		$rescount = sizeof($result);
 		if ($rescount > 0)
 		{
-			echo "Additional post-processing on {$rescount} release(s): ";
+			echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s): ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)
@@ -152,7 +152,7 @@ class PostProcess {
 				$passStatus = array(Releases::PASSWD_NONE);
 				$blnTookMediainfo = false;
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false; //only attempt sample if not disabled
-				$consoleTools->overWrite($rescount--." left.");
+				$consoleTools->overWrite($rescount--." left..");
 				
 				if ($blnTookSample)
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
