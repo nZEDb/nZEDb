@@ -158,6 +158,8 @@ Class NZBcontents
 			}
 			if ($failed == true)
 			{
+				if ($this->echooutput)
+					echo "f";
 				return false;
 			}
 		}

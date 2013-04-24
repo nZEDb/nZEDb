@@ -62,7 +62,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO.\n";
+					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			while ($arr = $db->fetchAssoc($res))
