@@ -43,7 +43,6 @@ Class NZBcontents
 		if ($nzbpath = $nzb->NZBPath($guid))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
-			// Fetch the NZB.
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			
@@ -92,7 +91,6 @@ Class NZBcontents
 		if ($nzbpath = $nzb->NZBPath($guid))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
-			// Fetch the NZB.
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			$failed = false;
@@ -114,7 +112,7 @@ Class NZBcontents
 								$pNFOsize = strlen($possibleNFO);
 								if ($pNFOsize < 40000)
 								{
-									// exif_imagetype needs a minimum size or else it doesn't work
+									// exif_imagetype needs a minimum size or else it doesn't work.
 									if ($pNFOsize > 20)
 									{
 										//Check if it's an image.
@@ -134,7 +132,7 @@ Class NZBcontents
 						}
 						else
 						{
-								//nfo download failed, increment attempts
+								// NFO download failed, increment attempts.
 								$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 								$failed = true;
 						}
@@ -150,7 +148,7 @@ Class NZBcontents
 			}
 			if ($foundnfo == false && $failed == false)
 			{
-				//No .nfo file in the NZB.
+				// No NFO file in the NZB.
 				if ($this->echooutput)
 					echo "-";
 				$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
@@ -170,3 +168,4 @@ Class NZBcontents
 		}
 	}
 }
+?>
