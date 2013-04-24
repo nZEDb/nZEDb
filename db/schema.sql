@@ -190,11 +190,7 @@ VALUES ('search', 'Advanced Search',
 	'Search for releases.', 1, 10);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('browse', 'Browse', 
-	'Browse all the releases.', 1, 20);
-
-INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('browsegroup', 'Browse Groups', 
+VALUES ('browsegroup', 'Groups List', 
 	'Browse by Group.', 1, 25);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
@@ -225,6 +221,10 @@ VALUES ('console', 'Console',
 	'Browse Games.', 1, 65);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('books', 'Books', 
+	'Browse Books.', 1, 67);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('admin', 'Admin', 
 	'Admin', 2, 70);
 
@@ -249,20 +249,12 @@ VALUES ('rss', 'RSS',
 	'RSS Feeds.', 1, 80);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`, `menueval` )
-VALUES ('queue', 'My Queue', 
+VALUES ('queue', 'Sab Queue', 
 	'View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('forum', 'Forum', 
 	'Browse Forum.', 1, 85);
-
-INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('profile', 'Profile', 
-	'View your profile.', 1, 90);
-
-INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('logout', 'Logout', 
-	'Logout.', 1, 95);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('login', 'Login', 
