@@ -6,9 +6,14 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
 {
-	const fixed = 0;
-	const checked = 0;
-	const relid = 0;
+	
+	function Namefixer()
+	{
+		$this->relid = 0;
+		$this->fixed = 0;
+		$this->checked = 0;
+	}
+	
 	//
 	//	Attempts to fix release names using the release name.
 	//
@@ -39,15 +44,21 @@ class Namefixer
 			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
-		while ($relrow = $db->fetchArray($relres))
-		{
-			$this->checkName($relrow, $echo, $type, $namestatus);
-			$this->checked++;
-			if ($this->checked % 200 == 0)
-				echo $this->checked." names processed.\n\n";
-		}
+		$rowcount = $db->getAffectedRows();
 		
-		echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
+		if ($rowcount > 0)
+		{
+			while ($relrow = $db->fetchArray($relres))
+			{
+				$this->checkName($relrow, $echo, $type, $namestatus);
+				$this->checked++;
+				if ($this->checked % 200 == 0)
+					echo $this->checked." names processed.\n\n";
+			}
+			echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
+		}
+		else
+			echo "Nothing to fix.\n";
 	}
 	
 	//
@@ -80,15 +91,21 @@ class Namefixer
 			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
-		while ($relrow = $db->fetchArray($relres))
-		{
-			$this->checkName($relrow, $echo, $type, $namestatus);
-			$this->checked++;
-			if ($this->checked % 200 == 0)
-				echo $this->checked." NFOs processed.\n\n";
-		}
+		$rowcount = $db->getAffectedRows();
 		
-		echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
+		if ($rowcount > 0)
+		{
+			while ($relrow = $db->fetchArray($relres))
+			{
+				$this->checkName($relrow, $echo, $type, $namestatus);
+				$this->checked++;
+				if ($this->checked % 200 == 0)
+					echo $this->checked." NFOs processed.\n\n";
+			}
+			echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
+		}
+		else
+			echo "Nothing to fix.\n";
 	}
 	
 	//
@@ -121,15 +138,21 @@ class Namefixer
 			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
-		while ($relrow = $db->fetchArray($relres))
-		{
-			$this->checkName($relrow, $echo, $type, $namestatus);
-			$this->checked++;
-			if ($this->checked % 200 == 0)
-				echo $this->checked." files processed.\n\n";
-		}
+		$rowcount = $db->getAffectedRows();
 		
-		echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
+		if ($rowcount > 0)
+		{
+			while ($relrow = $db->fetchArray($relres))
+			{
+				$this->checkName($relrow, $echo, $type, $namestatus);
+				$this->checked++;
+				if ($this->checked % 200 == 0)
+					echo $this->checked." files processed.\n\n";
+			}
+			echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
+		}
+		else
+			echo "Nothing to fix.\n";
 	}
 	
 	//
