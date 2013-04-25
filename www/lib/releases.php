@@ -1380,10 +1380,10 @@ class Releases
 			if ($minsizecount < 0)
 				$minsizecount = 0;
 
-			$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");			
+			$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
 			if ($maxfilesizeres["value"] != 0)
 			{
-				$db->query(sprintf("UPDATE collections SET filecheck = 4 WHERE filecheck = 2 AND filesize > %d " . $where, $minfilesizeres["value"]));
+				$db->query(sprintf("UPDATE collections SET filecheck = 4 WHERE filecheck = 2 AND filesize > %d " . $where, $maxfilesizeres["value"]));
 				
 				$maxsizecount = $db->getAffectedRows();
 				if ($maxsizecount < 0)
