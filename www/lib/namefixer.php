@@ -6,12 +6,12 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
 {
-	const fixed = 0;
-	const checked = 0;
 	
 	function Namefixer()
 	{
 		$this->relid = 0;
+		$this->fixed = 0;
+		$this->checked = 0;
 	}
 	
 	//
