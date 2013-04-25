@@ -35,11 +35,11 @@ $results = $book->getBookRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1,
 
 $maxwords = 50;
 foreach($results as $result) {	
-	if (!empty($result['review'])) {
-		$words = explode(' ', $result['review']);
+	if (!empty($result['overview'])) {
+		$words = explode(' ', $result['overview']);
 		if (sizeof($words) > $maxwords) {
 			$newwords = array_slice($words, 0, $maxwords);
-			$result['review'] = implode(' ', $newwords).'...';	
+			$result['overview'] = implode(' ', $newwords).'...';	
 		}
 	}
 	$books[] = $result;
