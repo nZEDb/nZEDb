@@ -306,7 +306,7 @@ class Binaries
 					break;
 				}
 				if ($type != 'partrepair')
-					echo 'Server did not return article numbers '.implode(',', $rangenotreceived).".".$n;
+					echo 'Server did not return '.sizeof($rangenotreceived)." articles.".$n;
 			}
 			
 			$this->startUpdate = microtime(true);
