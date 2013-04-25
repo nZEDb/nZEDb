@@ -8,6 +8,7 @@ class Namefixer
 {
 	const fixed = 0;
 	const checked = 0;
+	const relid = 0;
 	//
 	//	Attempts to fix release names using the release name.
 	//
@@ -20,22 +21,22 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day)");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day)"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")");
+			$relres = $db->queryDirect($query." and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query);
+			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
 		while ($relrow = $db->fetchArray($relres))
@@ -61,22 +62,22 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query);
+			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
 		while ($relrow = $db->fetchArray($relres))
@@ -102,22 +103,22 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID");
+			$relres = $db->queryDirect($query." and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query);
+			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
 		while ($relrow = $db->fetchArray($relres))
@@ -140,41 +141,45 @@ class Namefixer
 		$namecleaning = new nameCleaning();
 		$newname = $namecleaning->fixerCleaner($name);
 		
-		if ($newname !== $release["searchname"])
+		if ($this->relid !== $release["releaseID"])
 		{
-			$category = new Category();
-			$determinedcat = $category->determineCategory($newname, $release["groupID"]);
-			$this->fixed ++;
-			if ($echo == 1)
+			if ($newname !== $release["searchname"])
 			{
-				echo	"New name: ".$newname.$n.
-						"Old name: ".$release["searchname"].$n.
-						"New cat:  ".$determinedcat.$n.
-						"Old cat:  ".$release["categoryID"].$n.
-						"RelID:    ".$release["releaseID"].$n.
-						"GroupID:  ".$release["groupID"].$n.
-						"Method:   ".$type.$method.$n.$n;
+				$this->relid = $release["releaseID"];
+				$category = new Category();
+				$determinedcat = $category->determineCategory($newname, $release["groupID"]);
+				$this->fixed ++;
+				if ($echo == 1)
+				{
+					echo	"New name: ".$newname.$n.
+							"Old name: ".$release["searchname"].$n.
+							"New cat:  ".$determinedcat.$n.
+							"Old cat:  ".$release["categoryID"].$n.
+							"RelID:    ".$release["releaseID"].$n.
+							"GroupID:  ".$release["groupID"].$n.
+							"Method:   ".$type.$method.$n.$n;
 				
-				if ($namestatus == 1)
-				{
-					$db = new DB();
-					$db->queryDirect(sprintf("UPDATE releases set searchname = %s, relnamestatus = 2 where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+					if ($namestatus == 1)
+					{
+						$db = new DB();
+						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, relnamestatus = 2 where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+					}
+					else
+					{
+						$db = new DB();
+						$db->queryDirect(sprintf("UPDATE releases set searchname = %s where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+					}
 				}
-				else
+				if ($echo == 2)
 				{
-					$db = new DB();
-					$db->queryDirect(sprintf("UPDATE releases set searchname = %s where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+					echo	"New name: ".$newname.$n.
+							"Old name: ".$release["searchname"].$n.
+							"New cat:  ".$determinedcat.$n.
+							"Old cat:  ".$release["categoryID"].$n.
+							"RelID:    ".$release["releaseID"].$n.
+							"GroupID:  ".$release["groupID"].$n.
+							"Method:   ".$type.$method.$n.$n;
 				}
-			}
-			if ($echo == 2)
-			{
-				echo	"New name: ".$newname.$n.
-						"Old name: ".$release["searchname"].$n.
-						"New cat:  ".$determinedcat.$n.
-						"Old cat:  ".$release["categoryID"].$n.
-						"RelID:    ".$release["releaseID"].$n.
-						"GroupID:  ".$release["groupID"].$n.
-						"Method:   ".$type.$method.$n.$n;
 			}
 		}
 	}
