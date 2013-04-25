@@ -326,8 +326,9 @@ class PostProcess {
 				$db->query($sql);				
 			}
 			$nntp->doQuit();
+			if ($this->echooutput)
+				echo "\n";
 		}
-		echo "\n";
 	}
 	
 	public function processReleaseFiles($fetchedBinary, $relid)
