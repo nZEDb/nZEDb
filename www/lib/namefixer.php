@@ -16,7 +16,7 @@ class Namefixer
 	}
 	
 	//
-	//	Attempts to fix release names using the release name.
+	// Attempts to fix release names using the release name.
 	//
 	public function fixNamesWithNames($time, $echo, $cats, $namestatus)
 	{
