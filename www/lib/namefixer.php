@@ -8,7 +8,12 @@ class Namefixer
 {
 	const fixed = 0;
 	const checked = 0;
-	const relid = 0;
+	
+	function Namefixer()
+	{
+		$this->relid = 0;
+	}
+	
 	//
 	//	Attempts to fix release names using the release name.
 	//
