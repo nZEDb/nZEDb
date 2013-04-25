@@ -113,16 +113,20 @@ Class NZBcontents
 								if ($pNFOsize < 40000)
 								{
 									// exif_imagetype needs a minimum size or else it doesn't work.
-									if ($pNFOsize > 20)
+									if ($pNFOsize > 15)
 									{
 										// Check if it's a picture - EXIF.
 										if (@exif_imagetype($possibleNFO) == false)
 										{
-											$fetchedBinary = $possibleNFO;
-											$foundnfo = true;
+											// Check if it's a picture - JFIF.
+											if ($this->check_JFIF($possibleNFO) == false)
+											{
+												$fetchedBinary = $possibleNFO;
+												$foundnfo = true;
+											}
 										}
 									}
-									// It's smaller than 20 bytes so it's probably not a picture.
+									// It's smaller than 15 bytes so it's probably not a picture.
 									else
 									{
 										$fetchedBinary = $possibleNFO;
@@ -168,6 +172,33 @@ Class NZBcontents
 			return false;
 		}
 	}
-
+	
+	//
+	//	Check if the possible NFo is a JFIF.
+	//
+    function check_JFIF($filename)
+    {
+		$fp = @fopen($filename, 'r');
+		if ($fp) 
+		{
+			// JFIF often (but not always) starts at offset 6.
+			if (fseek($fp, 6) == 0) 
+			{
+				// JFIF header is 16 bytes.
+				if (($bytes = fread($fp, 16)) !== false)
+				{
+					// Make sure it is JFIF header.
+					if (substr($bytes, 0, 4) == "JFIF")
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
 }
 ?>
