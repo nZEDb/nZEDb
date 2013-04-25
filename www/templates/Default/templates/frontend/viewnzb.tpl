@@ -79,9 +79,15 @@
 	
 	{if $boo}
 	<tr><th>Book Info:</th><td>
-		<strong>{$boo.author|escape:"htmlall"} {$boo.title|escape:"htmlall"} ({$con.releasedate|date_format:"%Y"})</strong><br />
+		<strong>{$boo.title|escape:"htmlall"} ({$boo.publishdate|date_format:"%Y"})</strong><br />
+		{if $boo.author != ""}<strong>Author:</strong> {$boo.author|escape:"htmlall"}<br />{/if}
 		{if $boo.publisher != ""}<strong>Publisher:</strong> {$boo.publisher|escape:"htmlall"}<br />{/if}
-		{if $boo.publishdate != ""}<strong>Released:</strong> {$boo.publishdate|date_format}{/if}
+		{if $boo.publishdate != ""}<strong>Released:</strong> {$boo.publishdate|date_format}<br />{/if}
+		{if $boo.pages != ""}<strong>Pages:</strong> {$boo.pages|escape:"htmlall"}<br />{/if}
+		{if $boo.salesrank != ""}<strong>Amazon Rank:</strong> {$boo.salesrank|escape:"htmlall"}<br />{/if}
+		{if $boo.asin != ""}<strong>ASIN:</strong> {$boo.asin|escape:"htmlall"}<br />{/if}
+		{if $boo.isbn != ""}<strong>ISBN:</strong> {$boo.isbn|escape:"htmlall"}<br />{/if}
+		{if $boo.ean != ""}<strong>EAN:</strong> {$boo.ean|escape:"htmlall"}{/if}
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$con.url}/" title="View book at Amazon">Amazon</a>
 		</div>
