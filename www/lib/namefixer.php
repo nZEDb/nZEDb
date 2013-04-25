@@ -6,6 +6,8 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
 {
+	const fixed = 0;
+	const checked = 0;
 	//
 	//	Attempts to fix release names using the release name.
 	//
@@ -14,7 +16,6 @@ class Namefixer
 		$db = new DB();
 		$type = "Release Name, ";
 		$query = "SELECT name as textstring, searchname, categoryID, groupID, ID as releaseID from releases where categoryID != 5070 and relnamestatus = 1";
-		$nameschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -40,10 +41,12 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
-			$nameschecked++;
-			if ($nameschecked % 200 == 0)
-				echo $nameschecked." NFOs processed.\n\n";
+			$this->checked++;
+			if ($this->checked % 200 == 0)
+				echo $this->checked." names processed.\n\n";
 		}
+		
+		echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
 	}
 	
 	//
@@ -54,7 +57,6 @@ class Namefixer
 		$db = new DB();
 		$type = "NFO, ";
 		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
-		$nfoschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -80,10 +82,12 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
-			$nfoschecked++;
-			if ($nfoschecked % 200 == 0)
-				echo $nfoschecked." NFOs processed.\n\n";
+			$this->checked++;
+			if ($this->checked % 200 == 0)
+				echo $this->checked." NFOs processed.\n\n";
 		}
+		
+		echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
 	}
 	
 	//
@@ -94,7 +98,6 @@ class Namefixer
 		$db = new DB();
 		$type = "Filenames, ";
 		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
-		$fileschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -120,10 +123,12 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
-			$fileschecked++;
-			if ($fileschecked % 200 == 0)
-				echo $fileschecked." files processed.\n\n";
+			$this->checked++;
+			if ($this->checked % 200 == 0)
+				echo $this->checked." files processed.\n\n";
 		}
+		
+		echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
 	}
 	
 	//
@@ -136,15 +141,18 @@ class Namefixer
 		$newname = $namecleaning->fixerCleaner($name);
 		
 		if ($newname !== $release["searchname"])
-		{ 
+		{
 			$category = new Category();
 			$determinedcat = $category->determineCategory($newname, $release["groupID"]);
+			$this->fixed ++;
 			if ($echo == 1)
 			{
 				echo	"New name: ".$newname.$n.
 						"Old name: ".$release["searchname"].$n.
 						"New cat:  ".$determinedcat.$n.
 						"Old cat:  ".$release["categoryID"].$n.
+						"RelID:    ".$release["releaseID"].$n.
+						"GroupID:  ".$release["groupID"].$n.
 						"Method:   ".$type.$method.$n.$n;
 				
 				if ($namestatus == 1)
@@ -164,6 +172,8 @@ class Namefixer
 						"Old name: ".$release["searchname"].$n.
 						"New cat:  ".$determinedcat.$n.
 						"Old cat:  ".$release["categoryID"].$n.
+						"RelID:    ".$release["releaseID"].$n.
+						"GroupID:  ".$release["groupID"].$n.
 						"Method:   ".$type.$method.$n.$n;
 			}
 		}
