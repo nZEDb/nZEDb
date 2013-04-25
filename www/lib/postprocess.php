@@ -200,6 +200,7 @@ class PostProcess {
                     echo "ERROR: NZB file contents empty.\n";
                     break;
                 }
+
 				$nzbfile = simplexml_load_file($nzbpath);
 
 				foreach ($nzbfile->file as $nzbcontents)
