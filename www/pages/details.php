@@ -100,6 +100,13 @@ if (isset($_GET["id"]))
 		$con = $c->getConsoleInfo($data['consoleinfoID']);
 	}		
 	
+	$boo = '';
+	if ($data['bookinfoID'] != '') {
+		require_once(WWW_DIR."/lib/books.php");
+		$b = new Books();
+		$boo = $b->getBookInfo($data['bookinfoID']);
+	}
+	
 	$rf = new ReleaseFiles;
 	$releasefiles = $rf->get($data["ID"]);
 	
@@ -114,6 +121,7 @@ if (isset($_GET["id"]))
 	$page->smarty->assign('anidb',$AniDBAPIArray);
 	$page->smarty->assign('music',$mus);
 	$page->smarty->assign('con',$con);
+	$page->smarty->assign('boo',$boo);
 	$page->smarty->assign('comments',$comments);
 	$page->smarty->assign('similars',$similars);
 	$page->smarty->assign('searchname',$releases->getSimilarName($data['searchname']));

@@ -21,7 +21,7 @@ $searchStr = "";
 if (isset($_REQUEST["search_type"]) && $_REQUEST["search_type"] == "adv")
 	$searchtype = "advanced";
 
-if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && ($_REQUEST["subject"] == ""))
+if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["subject"]))
 {
 	$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
@@ -66,7 +66,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && ($_REQUEST["sub
 
 }
 
-if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && ($_REQUEST["id"] == ""))
+if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]))
 {
 	$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
@@ -109,7 +109,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && ($_REQUEST
 	$page->smarty->assign('pager', $pager);
 }
 
-if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && ($_REQUEST["subject"] == "" ))
+if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUEST["subject"]))
 {
 	$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
