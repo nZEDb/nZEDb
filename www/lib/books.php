@@ -235,7 +235,7 @@ require_once(WWW_DIR."/lib/site.php");
 			if ($db->getNumRows($res) > 0)
 			{
 				if ($this->echooutput)
-					echo "\nProcessing ".$db->getNumRows($res)." book releases.\n";
+					echo "Processing ".$db->getNumRows($res)." book releases.\n";
 				
 				while ($arr = $db->fetchAssoc($res)) 
 				{
