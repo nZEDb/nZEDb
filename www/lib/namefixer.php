@@ -56,7 +56,10 @@ class Namefixer
 				if ($this->checked % 500 == 0)
 					echo $this->checked." names processed.\n\n";
 			}
-			echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
+			if ($echo == 1)
+				echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
+			else
+				echo $this->fixed." releases could have their names changed. ".$this->checked." release names were checked.\n";
 		}
 		else
 			echo "Nothing to fix.\n";
@@ -103,7 +106,10 @@ class Namefixer
 				if ($this->checked % 500 == 0)
 					echo $this->checked." NFOs processed.\n\n";
 			}
-			echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
+			if($echo ==1)
+				echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
+			else
+				echo $this->fixed." releases could have their names changed. ".$this->checked." NFO's were checked.\n";
 		}
 		else
 			echo "Nothing to fix.\n";
@@ -150,7 +156,10 @@ class Namefixer
 				if ($this->checked % 500 == 0)
 					echo $this->checked." files processed.\n\n";
 			}
-			echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
+			if($echo == 1)
+				echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
+			else
+				echo $this->fixed." releases could have their names changed. ".$this->checked." files were checked.\n";
 		}
 		else
 			echo "Nothing to fix.\n";
