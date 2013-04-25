@@ -52,7 +52,7 @@ class Namefixer
 			{
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
-				if ($this->checked % 200 == 0)
+				if ($this->checked % 500 == 0)
 					echo $this->checked." names processed.\n\n";
 			}
 			echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
@@ -99,7 +99,7 @@ class Namefixer
 			{
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
-				if ($this->checked % 200 == 0)
+				if ($this->checked % 500 == 0)
 					echo $this->checked." NFOs processed.\n\n";
 			}
 			echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
@@ -146,7 +146,7 @@ class Namefixer
 			{
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
-				if ($this->checked % 200 == 0)
+				if ($this->checked % 500 == 0)
 					echo $this->checked." files processed.\n\n";
 			}
 			echo $this->fixed." releases have had their names changed out of: ".$this->checked." files.\n";
