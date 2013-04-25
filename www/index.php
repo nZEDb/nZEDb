@@ -30,6 +30,7 @@ switch($page->page) {
 	case 'books':
 	case 'musicmodal':
 	case 'consolemodal':
+	case 'bookmodal':
 	case 'console':
 	case 'nfo':
 	case 'details':

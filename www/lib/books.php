@@ -278,7 +278,7 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
-			// Get name and author of the book from the search name
+			// Get name and author of the book from the name
 			
 			if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\s(\(|\[).+"/i', $releasename, $matches))
 			{
