@@ -2,6 +2,7 @@
 
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
@@ -169,10 +170,15 @@ class Namefixer
 			if ($newname !== $release["searchname"])
 			{
 				$this->relid = $release["releaseID"];
+				
 				$category = new Category();
 				$determinedcat = $category->determineCategory($newname, $release["groupID"]);
 				$oldcatname = $category->getNameByID($release["categoryID"]);
 				$newcatname = $category->getNameByID($determinedcat);
+				
+				$groups = new Groups();
+				$groupname = $groups->getByNameByID($release["groupID"]);
+				
 				$this->fixed ++;
 				if ($echo == 1)
 				{
@@ -180,7 +186,7 @@ class Namefixer
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
-							"GroupID:  ".$release["groupID"].$n.
+							"Group:    ".$groupname.$n.
 							"Method:   ".$type.$method.$n.$n;
 				
 					if ($namestatus == 1)
@@ -200,7 +206,7 @@ class Namefixer
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
-							"GroupID:  ".$release["groupID"].$n.
+							"Group:    ".$groupname.$n.
 							"Method:   ".$type.$method.$n.$n;
 				}
 			}
