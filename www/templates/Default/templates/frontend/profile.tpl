@@ -38,7 +38,8 @@
 		<td>
 			{if $user.movieview == "1"}View movie covers{else}View standard movie category{/if}<br/>
 			{if $user.musicview == "1"}View music covers{else}View standard music category{/if}<br/>
-			{if $user.consoleview == "1"}View console covers{else}View standard console category{/if}
+			{if $user.consoleview == "1"}View console covers{else}View standard console category{/if}<br/>
+			{if $user.bookview == "1"}View book covers{else}View standard book category{/if}
 		</td>
 	</tr>
 	{if $user.ID==$userdata.ID || $userdata.role==2}<tr><th title="Not public">Excluded Categories:</th><td>{$exccats|replace:",":"<br/>"}</td></tr>{/if}

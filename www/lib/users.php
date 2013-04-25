@@ -147,7 +147,7 @@ class Users
 			$db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby));		
 	}	
 	
-	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
+	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
 	{			
 		$db = new DB();
 
@@ -180,6 +180,7 @@ class Users
 		$sql[] = sprintf('movieview = %d', $movieview);
 		$sql[] = sprintf('musicview = %d', $musicview);
 		$sql[] = sprintf('consoleview = %d', $consoleview);
+		$sql[] = sprintf('bookview = %d', $bookview);
 		
 		if ($saburl !== false)
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));

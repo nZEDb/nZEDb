@@ -30,6 +30,14 @@
 				{/foreach}
 				</ul>
 			</li>
+			{elseif ($parentcat.ID == 8000 && $userdata.bookview=="1")}
+			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
+				<ul>
+					{foreach from=$parentcat.subcatlist item=subcat}
+						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.ID}">{$subcat.title}</a></li>
+					{/foreach}
+				</ul>
+			</li>
 			{else}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">{$parentcat.title}</a>
 				<ul>

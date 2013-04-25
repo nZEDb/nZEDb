@@ -703,6 +703,7 @@ CREATE TABLE `users` (
   `movieview` int not null default 1,
   `musicview` int not null default 1,
   `consoleview` int not null default 1,
+  `bookview` int not null default 1,
   `saburl` VARCHAR(255) NULL DEFAULT NULL,  
   `sabapikey` VARCHAR(255) NULL DEFAULT NULL,
   `sabapikeytype` TINYINT(1) NULL DEFAULT NULL,
