@@ -10,7 +10,7 @@ import re
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # The array.
-datas = ['additional','nfo','movies','music','games','anime','tv','book']
+datas = ['additional','nfos','movies','music','games','anime','tv','books']
 
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):

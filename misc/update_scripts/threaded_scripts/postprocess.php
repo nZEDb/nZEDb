@@ -3,7 +3,7 @@
 require(dirname(__FILE__)."/../config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "nfo")
+if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "nfos")
 {
 	$postprocess = new PostProcess(false);
 	$postprocess->processNfos();
@@ -38,7 +38,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "additional")
 	$postprocess = new PostProcess(false);
 	$postprocess->processAdditional();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "book")
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "books")
 {
     $postprocess = new PostProcess(false);
     $postprocess->processBooks();
