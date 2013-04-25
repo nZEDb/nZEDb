@@ -10,7 +10,7 @@ import re
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # The array.
-datas = ['nfo','movies','music','games','anime','tv','additional']
+datas = ['additional','nfo','movies','music','games','anime','tv','book']
 
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
@@ -24,7 +24,7 @@ class WorkerThread(threading.Thread):
             try:
                 dirname = self.dir_q.get(True, 0.05)
                 print '\n%s: Postprocess %s started.' % (self.name, dirname)
-                subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
+                output=subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
             except Queue.Empty:
                 continue

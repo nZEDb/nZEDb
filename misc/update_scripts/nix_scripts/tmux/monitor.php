@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r206";
+$version="0.1r222";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -20,6 +20,7 @@ $proc = "SELECT
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
 			( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
 			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+			( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and categoryID BETWEEN 8000 AND 8999 ) as book,
 			( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
 			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
 			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
