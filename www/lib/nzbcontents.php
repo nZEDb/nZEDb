@@ -88,7 +88,7 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if ($nzbpath = $nzb->NZBPath($guid))
+		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
 			$nzbfile = simplexml_load_file($nzbpath);
