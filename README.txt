@@ -1,7 +1,4 @@
-
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
-
-We use the theme by pironic : https://github.com/WritheM/newznab-plusplus/
 
 Original Newznab readme:
 
