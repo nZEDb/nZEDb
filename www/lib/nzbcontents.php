@@ -115,13 +115,18 @@ Class NZBcontents
 									// exif_imagetype needs a minimum size or else it doesn't work.
 									if ($pNFOsize > 20)
 									{
-										//Check if it's an image.
+										// Check if it's a picture - EXIF.
 										if (@exif_imagetype($possibleNFO) == false)
 										{
-											$fetchedBinary = $possibleNFO;
-											$foundnfo = true;
+											// Check if it's a JFIF.
+											if  (@get_JFXX($possibleNFO) == false)
+											{
+												$fetchedBinary = $possibleNFO;
+												$foundnfo = true;
+											}
 										}
 									}
+									// It's smaller than 20 bytes so it's probably not a picture.
 									else
 									{
 										$fetchedBinary = $possibleNFO;
@@ -166,6 +171,28 @@ Class NZBcontents
 			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
 			return false;
 		}
+	}
+	
+	//
+	//	Looks for a JFIF header in a jpeg file, code by http://ozhiker.com/electronics/pjmt/
+	//
+	function get_JFXX( $jpeg_header_data )
+	{
+        //Cycle through the header segments
+        for( $i = 0; $i < count( $jpeg_header_data ); $i++ )
+        {
+                // If we find an APP0 header,
+                if ( strcmp ( $jpeg_header_data[$i]['SegName'], "APP0" ) == 0 )
+                {
+                        // And if it has the JFIF label,
+                        if( strncmp ( $jpeg_header_data[$i]['SegData'], "JFXX\x00", 5) == 0 )
+                        {
+                                // Found a JPEG File Interchange Format Extension (JFXX) Block
+                                return TRUE;
+                        }
+                }
+        }
+        return FALSE;
 	}
 }
 ?>
