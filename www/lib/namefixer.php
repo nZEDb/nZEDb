@@ -16,7 +16,7 @@ class Namefixer
 	}
 	
 	//
-	//	Attempts to fix release names using the release name.
+	// Attempts to fix release names using the release name.
 	//
 	public function fixNamesWithNames($time, $echo, $cats, $namestatus)
 	{
@@ -341,13 +341,9 @@ class Namefixer
 	public function gameCheck($release, $echo, $type, $namestatus)
 	{
 		if (preg_match('/\w[\w.\-\',;& ]+(ASIA|DLC|EUR|GOTY|JPN|KOR|MULTI\d{1}|NTSCU?|PAL|RF|Region(\.|_|-|( ))?Free|USA|XBLA)(\.|_|\-| )(DLC(\.|_|\-| )Complete|FRENCH|GERMAN|MULTI\d{1}|PROPER|PSN|READ(\.|_|-|( ))?NFO|UMD)?(\.|_|\-| )?(GC|NDS|NGC|PS3|PSP|WII|XBOX(360)?)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="gameCheck: Videogames 1", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\w[\w.\-\',;& ]+(GC|NDS|NGC|PS3|WII|XBOX(360)?)(\.|_|\-| )(DUPLEX|iNSOMNi|OneUp|STRANGE|SWAG|SKY)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="gameCheck: Videogames 2", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\w[A-Za-z0-9._\-\',;].+-OUTLAWS/i', $release["textstring"], $result))
 		{
 			$result = str_replace("OUTLAWS","PC GAME OUTLAWS",$result['0']);
@@ -366,13 +362,9 @@ class Namefixer
 	public function appCheck($release, $echo, $type, $namestatus)
 	{
 		if (preg_match('/\w[\w.\-\',;& ]+(\d{1,10}|Linux|UNIX)(\.|_|\-| )(RPM)?(\.|_|\-| )?(X64)?(\.|_|\-| )?(Incl)(\.|_|\-| )(Keygen)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="appCheck: Apps 1", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\w[\w.\-\',;& ]+(\d){1,8}(\.|_|\-| )(winall-freeware)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="appCheck: Apps 2", $echo, $type, $namestatus);
-		}
 	}
 	
 	/*
@@ -504,21 +496,13 @@ class Namefixer
 		if(preg_match('/Supplier.+?IGUANA/i', $release["textstring"]))
 		{
 			if(preg_match('/\w[\w`~!@#$%^&*()_+\-={}|:"<>?\[\]\\;\',.\/ ]+\s\((19|20)\d\d\)/i', $release["textstring"], $result))
-			{
 				$releasename = $result[0];
-			}
 			if(preg_match('/\s\[\*\] (English|Dutch|French|German|Spanish)\b/i', $release["textstring"], $result))
-			{
 				$releasename = $releasename.".".$result[1];
-			}
 			if(preg_match('/\s\[\*\] (DTS 6(\.|_|\-| )1|DS 5(\.|_|\-| )1|DS 2(\.|_|\-| )0|DS 2(\.|_|\-| )0 MONO)\b/i', $release["textstring"], $result))
-			{
 				$releasename = $releasename.".".$result[2];
-			}
 			if(preg_match('/Format.+(DVD(5|9|R)?|(h|x)(\.|_|\-| )?264)\b/i', $release["textstring"], $result))
-			{
 				$releasename = $releasename.".".$result[1];
-			}
 			if(preg_match('/\[(640x.+|1280x.+|1920x.+)\] Resolution\b/i', $release["textstring"], $result))
 			{
 				if($result[1] == '640x.+') {$result[1] = '480p';}
@@ -542,9 +526,7 @@ class Namefixer
 			$this->updateRelease($release, $result, $methdod="fileCheck: R&C", $echo, $type, $namestatus);
 		}
 		if (preg_match('/\w[\w.\-\',;& ]+((s\d{1,2}(\.|_|\-| )?(b|d|e)\d{1,2})|\d{1,2}x\d{2}|ep(\.|_|\-| )?\d{2})(\.|_|\-| )(480|720|1080)(i|p)(\.|_|\-| )(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)(\.|_|\-| )nSD(\.|_|\-| )(DivX|(H|X)(\.|_|\-| )?264|MPEG2|XviD(HD)?|WMV)(\.|_|\-| )NhaNC3[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: NhaNc3", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\wtvp-[\w.\-\',;]+((s\d{1,2}(\.|_|\-| )?(b|d|e)\d{1,2})|\d{1,2}x\d{2}|ep(\.|_|\-| )?\d{2})(\.|_|\-| )(720p|1080p|xvid)(?=\.(avi|mkv))/i', $release["textstring"], $result))
 		{
 			$result = str_replace("720p","720p.HDTV.X264",$result['0']);
@@ -553,20 +535,12 @@ class Namefixer
 			$this->updateRelease($release, $result, $methdod="fileCheck: tvp", $echo, $type, $namestatus);
 		}
 		if (preg_match('/\w[\w.\-\',;& ]+\d{3,4}\.hdtv-lol\.(avi|mp4|mkv|ts|nfo|nzb)/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title.211.hdtv-lol.extension", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\w[\w.\-\',;& ]+-S\d{1,2}E\d{1,2}-XVID-DL.avi/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title-SxxExx-XVID-DL.avi", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\S.*[\w.\-\',;]+\s\-\ss\d{2}e\d{2}\s\-\s[\w.\-\',;].+\./i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus);
-		}
 		if (preg_match('/\w.+\)\.nds/i', $release["textstring"], $result))
-		{
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus);
-		}
 	}
 }
