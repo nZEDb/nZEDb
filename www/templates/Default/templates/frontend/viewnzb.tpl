@@ -77,6 +77,17 @@
 	</td></tr>
 	{/if}
 	
+	{if $boo}
+	<tr><th>Book Info:</th><td>
+		<strong>{$boo.author|escape:"htmlall"} {$boo.title|escape:"htmlall"} ({$con.releasedate|date_format:"%Y"})</strong><br />
+		{if $boo.publisher != ""}<strong>Publisher:</strong> {$boo.publisher|escape:"htmlall"}<br />{/if}
+		{if $boo.publishdate != ""}<strong>Released:</strong> {$boo.publishdate|date_format}{/if}
+		<div style="margin-top:10px;">
+			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$con.url}/" title="View book at Amazon">Amazon</a>
+		</div>
+	</td></tr>
+	{/if}
+	
 	{if $music}
 	<tr><th>Music Info:</th><td>
 		<strong>{$music.title|escape:"htmlall"} {if $music.year != ""}({$music.year}){/if}</strong><br />

@@ -27,7 +27,7 @@ require_once(WWW_DIR."/lib/site.php");
 		public function getBookInfo($id)
 		{
 			$db = new DB();
-			return $db->queryOneRow(sprintf("SELECT bookinfo.*, FROM bookinfo where bookinfo.ID = %d ", $id));
+			return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo where bookinfo.ID = %d ", $id));
 		}
 		
 		public function getBookInfoByName($author, $title)
