@@ -23,6 +23,7 @@ class PostProcess {
 	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();
+		$site = $s->get();
 		$this->site = $s->get();
 		$this-> addqty = (!empty($site->maxaddprocessed)) ? $site->maxaddprocessed : 25;
 		
