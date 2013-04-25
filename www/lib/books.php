@@ -326,6 +326,29 @@ require_once(WWW_DIR."/lib/site.php");
 				else
 					return false;
 			}
+			else if(preg_match('/"(?P<title>.+)(\.|\s)by(\.|\s)(?P<author>.+)(\[|\().+"/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+			
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
 			else
 				return false;
 		}
