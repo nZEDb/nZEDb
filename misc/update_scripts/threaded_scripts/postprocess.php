@@ -38,7 +38,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "additional")
 	$postprocess = new PostProcess(false);
 	$postprocess->processAdditional();
 }
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "bookl")
+else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "book")
 {
     $postprocess = new PostProcess(false);
     $postprocess->processBooks();
