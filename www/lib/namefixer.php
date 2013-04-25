@@ -14,6 +14,7 @@ class Namefixer
 		$db = new DB();
 		$type = "Release Name, ";
 		$query = "SELECT name as textstring, searchname, categoryID, groupID, ID as releaseID from releases where categoryID != 5070 and relnamestatus = 1";
+		$nameschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -39,6 +40,9 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
+			$nameschecked++;
+			if ($nameschecked % 200 == 0)
+				echo $nameschecked." NFOs processed.\n\n";
 		}
 	}
 	
@@ -50,6 +54,7 @@ class Namefixer
 		$db = new DB();
 		$type = "NFO, ";
 		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$nfoschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -75,6 +80,9 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
+			$nfoschecked++;
+			if ($nfoschecked % 200 == 0)
+				echo $nfoschecked." NFOs processed.\n\n";
 		}
 	}
 	
@@ -86,6 +94,7 @@ class Namefixer
 		$db = new DB();
 		$type = "Filenames, ";
 		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$fileschecked = 0;
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -111,6 +120,9 @@ class Namefixer
 		while ($relrow = $db->fetchArray($relres))
 		{
 			$this->checkName($relrow, $echo, $type, $namestatus);
+			$fileschecked++;
+			if ($fileschecked % 200 == 0)
+				echo $fileschecked." files processed.\n\n";
 		}
 	}
 	
