@@ -162,27 +162,27 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,1);
+					$namefixer->fixNamesWithNames(1,2,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,1);
+					$namefixer->fixNamesWithNames(2,2,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
-					$namefixer->fixNamesWithNfo(1,2,2,1);
+					$namefixer->fixNamesWithNfo(1,2,1,1);
 				}
 				else if ($argv[1] == 4)
 				{
-					$namefixer->fixNamesWithNfo(2,2,2,1);
+					$namefixer->fixNamesWithNfo(2,2,1,1);
 				}
 				else if ($argv[1] == 5)
 				{
-					$namefixer->fixNamesWithFiles(1,2,2,1);
+					$namefixer->fixNamesWithFiles(1,2,1,1);
 				}
 				else if ($argv[1] == 6)
 				{
-					$namefixer->fixNamesWithFiles(2,2,2,1);
+					$namefixer->fixNamesWithFiles(2,2,1,1);
 				}
 				else
 				{
@@ -193,27 +193,27 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,2);
+					$namefixer->fixNamesWithNames(1,2,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,2);
+					$namefixer->fixNamesWithNames(2,2,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
-					$namefixer->fixNamesWithNfo(1,2,2,2);
+					$namefixer->fixNamesWithNfo(1,2,1,2);
 				}
 				else if ($argv[1] == 4)
 				{
-					$namefixer->fixNamesWithNfo(2,2,2,2);
+					$namefixer->fixNamesWithNfo(2,2,1,2);
 				}
 				else if ($argv[1] == 5)
 				{
-					$namefixer->fixNamesWithFiles(1,2,2,2);
+					$namefixer->fixNamesWithFiles(1,2,1,2);
 				}
 				else if ($argv[1] == 6)
 				{
-					$namefixer->fixNamesWithFiles(2,2,2,2);
+					$namefixer->fixNamesWithFiles(2,2,1,2);
 				}
 				else
 				{

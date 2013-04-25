@@ -26,7 +26,7 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and categoryID = 2020 and categoryID = 3050 and categoryID = 6050 and categoryID = 5050 and categoryID = 7010 and categoryID = 8050"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
