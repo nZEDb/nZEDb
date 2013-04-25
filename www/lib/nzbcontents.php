@@ -29,7 +29,7 @@ Class NZBcontents
 			return false;
 		}
 	}
-	
+
 	//
 	// Look for an .nfo file in the nzb, return the nfo.
 	//
@@ -40,12 +40,12 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if ($nzbpath = $nzb->NZBPath($guid))
+		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
-			
+
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
@@ -75,7 +75,7 @@ Class NZBcontents
 			return false;
 		}
 	}
-	
+
 	//
 	// Look for an NFO in the nzb which does not end in .nfo, return the nfo.
 	//
