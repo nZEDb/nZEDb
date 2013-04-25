@@ -171,14 +171,15 @@ class Namefixer
 				$this->relid = $release["releaseID"];
 				$category = new Category();
 				$determinedcat = $category->determineCategory($newname, $release["groupID"]);
+				$oldcatname = $category->getNameByID($release["categoryID"]);
+				$newcatname = $category->getNameByID($determinedcat);
 				$this->fixed ++;
 				if ($echo == 1)
 				{
 					echo	"New name: ".$newname.$n.
 							"Old name: ".$release["searchname"].$n.
-							"New cat:  ".$determinedcat.$n.
-							"Old cat:  ".$release["categoryID"].$n.
-							"RelID:    ".$release["releaseID"].$n.
+							"New cat:  ".$newcatname.$n.
+							"Old cat:  ".$oldcatname.$n.
 							"GroupID:  ".$release["groupID"].$n.
 							"Method:   ".$type.$method.$n.$n;
 				
@@ -197,9 +198,8 @@ class Namefixer
 				{
 					echo	"New name: ".$newname.$n.
 							"Old name: ".$release["searchname"].$n.
-							"New cat:  ".$determinedcat.$n.
-							"Old cat:  ".$release["categoryID"].$n.
-							"RelID:    ".$release["releaseID"].$n.
+							"New cat:  ".$newcatname.$n.
+							"Old cat:  ".$oldcatname.$n.
 							"GroupID:  ".$release["groupID"].$n.
 							"Method:   ".$type.$method.$n.$n;
 				}
