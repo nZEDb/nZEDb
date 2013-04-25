@@ -424,7 +424,7 @@ class Music
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." music releases\n";
+				echo "Processing ".$db->getNumRows($res)." music release(s).\n";
 						
 			while ($arr = $db->fetchAssoc($res)) 
 			{				
