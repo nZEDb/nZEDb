@@ -599,6 +599,8 @@ class Movie
   {
 		$s = new Sites();
 		$site = $s->get();
+		if ($this->echooutput)
+			echo "Updating movie schedule using rotten tomatoes.\n";
 		if (isset($site->rottentomatokey))
 		{
 			$rt = new RottenTomato($site->rottentomatokey);  	
@@ -622,13 +624,14 @@ class Movie
 	  	$ret = $rt->getDVDReleases();
 	  	if ($ret != "")
 	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
+	  	if ($this->echooutput)
+			echo "Updated successfully.\n";
 	  }
   }
 	
 	public function updateInsUpcoming($source, $type, $info)
 	{
-  	$db = new DB();
-
+		$db = new DB();
 		$sql = sprintf("INSERT into upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
 				ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
 		$db->query($sql);
