@@ -1,3 +1,6 @@
+MYSQL Patches for nZEDb can be found here for now : https://github.com/nZEDb/Patches-for-nZEDb
+
+------------------------------------------------------------------------------------------------
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
 
 Some of the differences between that version of newznab and our indexer are:
