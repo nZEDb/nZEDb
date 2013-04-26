@@ -8,7 +8,7 @@ echo "Optimizing MYSQL tables, this can take a while...\n";
 $tablecnt = $db->optimise();
 if ($tablecnt > 0)
 {
-	exit ("Optimised ".$tablecnt." MYSQL tables succesfuly.\n");
+	exit ("Optimized ".$tablecnt." MYSQL tables succesfuly.\n");
 }
 else
 {
