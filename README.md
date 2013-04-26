@@ -57,6 +57,8 @@ Post-Installation:
 	
 	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
 
+	To clean up the release names, check out fixReleaseNames.php in misc/testing.
+
 Original Newznab readme:
 
 ABOUT
