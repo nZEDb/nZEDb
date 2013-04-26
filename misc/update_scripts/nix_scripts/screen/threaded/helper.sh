@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export NZEDB_PATH="/var/www/nzedb/misc/update_scripts"
-export THREAD_PATH="/var/www/nzedb/misc/update_scripts/threaded_scripts"
+export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
+export THREAD_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
 export PHP="$(which php5)"
 export PYTHON="$(which python)"
 export SCREEN="$(which screen)"

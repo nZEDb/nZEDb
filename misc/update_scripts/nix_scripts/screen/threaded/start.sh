@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export NZEDB_PATH="/var/www/nzedb/misc/update_scripts"
-export NIX_PATH="/var/www/nzedb/misc/update_scripts/nix_scripts/screen/threaded"
+export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
+export NIX_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
 export NZEDB_SLEEP_TIME="60"
 export PHP="$(which php5)"
 export SCREEN="$(which screen)"
