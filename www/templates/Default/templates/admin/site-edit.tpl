@@ -439,7 +439,15 @@
 	<td><label for="lookupanidb">Lookup AniDB</label>:</td>
 	<td>
 		{html_radios id="lookupanidb" name='lookupanidb' values=$yesno_ids output=$yesno_names selected=$fsite->lookupanidb separator='<br />'}
-		<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries.</div>
+		<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
+		<div class="hint">The maximum amount of anime to process with anidb per run.</div>
 	</td>
 </tr>
 
@@ -452,6 +460,14 @@
 </tr>
 
 <tr>
+	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
+		<div class="hint">The maximum amount of music to process with amazon per run.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookupgames">Lookup Games</label>:</td>
 	<td>
 		{html_radios id="lookupgames" name='lookupgames' values=$yesno_ids output=$yesno_names selected=$fsite->lookupgames separator='<br />'}
@@ -460,10 +476,26 @@
 </tr>
 
 <tr>
+	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
+		<div class="hint">The maximum amount of games to process with amazon per run.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookupbooks">Lookup Books</label>:</td>
 	<td>
 		{html_radios id="lookupbooks" name='lookupbooks' values=$yesno_ids output=$yesno_names selected=$fsite->lookupbooks separator='<br />'}
 		<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
+		<div class="hint">The maximum amount of books to process with amazon per run.</div>
 	</td>
 </tr>
 

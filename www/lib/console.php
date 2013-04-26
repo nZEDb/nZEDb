@@ -9,8 +9,6 @@ require_once(WWW_DIR."/lib/releaseimage.php");
 
 class Console
 {
-	const NUMTOPROCESSPERTIME = 125;
-	
 	function Console($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
@@ -19,6 +17,7 @@ class Console
 		$this->pubkey = $site->amazonpubkey;
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
+		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		
 		$this->imgSavePath = WWW_DIR.'covers/console/';
 	}
@@ -497,7 +496,7 @@ class Console
 		$ret = 0;
 		$db = new DB();
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, Console::NUMTOPROCESSPERTIME));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)

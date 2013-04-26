@@ -9,8 +9,6 @@ require_once(WWW_DIR."/lib/releaseimage.php");
 
 class Music
 {
-	const NUMTOPROCESSPERTIME = 125;
-	
 	function Music($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
@@ -19,6 +17,7 @@ class Music
 		$this->pubkey = $site->amazonpubkey;
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
+		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
@@ -420,7 +419,7 @@ class Music
 		$ret = 0;
 		$db = new DB();
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, Music::NUMTOPROCESSPERTIME));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
