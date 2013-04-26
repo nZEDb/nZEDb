@@ -9,6 +9,7 @@ require_once(FS_ROOT."/../../www/lib/framework/db.php");
 
 $db = new Db;
 
+$rel = $db->query("DELETE FROM collections");
 $rel = $db->query("DELETE FROM binaries");
 $rel = $db->query("DELETE FROM parts");
 $rel = $db->query("DELETE FROM partrepair");

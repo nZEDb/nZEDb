@@ -107,17 +107,17 @@ class DB
 	
 	public function optimise() 
 	{
-		$ret = array();
-		$alltables = $this->query("SHOW TABLES"); 
-
+		$alltables = $this->query("show table status where Data_free > 0"); 
+		$tablecnt = sizeof($alltables);
+		
 		foreach ($alltables as $tablename) 
 		{
-			$ret[] = $tablename['Tables_in_'.DB_NAME];
-			$this->queryDirect("REPAIR TABLE `".$tablename['Tables_in_'.DB_NAME]."`"); 
-			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Tables_in_'.DB_NAME]."`"); 
+			$name = $tablename['Name'];
+			echo "Optimizing table: ".$name.".\n";
+			$this->queryDirect("REPAIR TABLE `".$name."`"); 
+			$this->queryDirect("OPTIMIZE TABLE `".$name."`");
 		}
-			
-		return $ret;
+		return $tablecnt;
 	}
 	
     public function getNumRows($result)

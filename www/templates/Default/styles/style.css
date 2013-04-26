@@ -62,12 +62,25 @@ page structure
 /*
 browse by category top menu
 */
-#menu { height:33px; float: left; width: 100%; background-color:#e5e5e5; }
-#menu { padding:0 4px 0 4px; margin-right:1px; border:1px #CCC solid; background-color:#e5e5e5; -moz-border-radius: 4px;  -webkit-border-radius: 4px;}
+#menu 
+{
+	height:33px;
+	float: left;
+	width: 100%;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border:2px #AAA solid;
+	background-color:#e5e5e5;
+}
 
 .menupic {padding-left:15px;}
 
-#menulink { float: left; }
+#menulink 
+{
+	float: left;
+	margin-left: 5px;
+}
 #menulink ul { list-style-type: none; padding: 0; margin: 0; }
 #menulink li { float: left; position: relative; z-index: 100; }
 #menulink a, #menulink :visited {height:32px; display: block; font-size: 0.9em; width: 80px; padding: 1px 0px 0px 5px; color: #000; background-color: #e5e5e5; text-decoration: none; text-align: left; vertical-align: middle; }

@@ -55,11 +55,11 @@ if (isset($argv[1]) && isset($argv[2]))
 }
 else
 {
-		exit("ERROR: You must supply an argument.\n\n".
+		exit("ERROR: You must supply arguments.\n\n".
 			"php update_releases.php 1 true alt.binaries.ath	...: Creates releases and attempts to categorize new releases\n".
 			"php update_releases.php 2 true alt.binaries.ath	...: Creates releases and leaves new releases in other -> misc\n".
 			"\nThe following 2 does not create releases:\n".
-			"php update_releases.php 4 true alt.binaries.ath ...: Puts all releases in other-> misc (also resets to look like they have never been categorized)\n".
+			"php update_releases.php 4 true			...: Puts all releases in other-> misc (also resets to look like they have never been categorized)\n".
 			"php update_releases.php 5 true			...: Categorizes all releases in other-> misc (which have not been categorized already)\n".
 			"\nYou must to pass a second argument wether to post process or not, true or false\n\n");
 }
