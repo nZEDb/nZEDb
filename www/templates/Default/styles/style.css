@@ -62,8 +62,17 @@ page structure
 /*
 browse by category top menu
 */
-#menu { height:33px; float: left; width: 100%; background-color:#e5e5e5; }
-#menu { padding:0 4px 0 4px; margin-right:1px; border:1px #CCC solid; background-color:#e5e5e5; -moz-border-radius: 4px;  -webkit-border-radius: 4px;}
+#menu 
+{
+	height:33px;
+	float: left;
+	width: 100%;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border:2px #AAA solid;
+	background-color:#e5e5e5;
+}
 
 .menupic {padding-left:15px;}
 
