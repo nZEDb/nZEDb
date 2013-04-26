@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r269";
+$version="0.1r1010";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -443,7 +443,7 @@ while( $i > 0 )
 
 	$_php = "time nice -n$niceness php";
 	$_python = "time nice -n$niceness python";
-	
+
 	if ( $running  == "TRUE" )
 	{
 
