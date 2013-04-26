@@ -11,6 +11,9 @@ class AniDB
 
 	function AniDB($echooutput=false)
 	{
+		$s = new Sites();
+		$site = $s->get();
+		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = WWW_DIR.'covers/anime/';
 	}
@@ -198,7 +201,7 @@ class AniDB
 		$db = new DB();
 		$ri = new ReleaseImage();
 
-		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d )", Category::CAT_TV_ANIME));
+		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d limit %d )", Category::CAT_TV_ANIME, $this->aniqty));
 
 		if ($db->getNumRows($results) > 0) {
 			if ($this->echooutput)
