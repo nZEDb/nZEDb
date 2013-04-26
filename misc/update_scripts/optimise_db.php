@@ -4,7 +4,15 @@ require("config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 $db = new DB;
-$db->optimise();
-exit ("Optimised the MYSQL tables succesfuly.\n");
+echo "Optimizing MYSQL tables, this can take a while...\n";
+$tablecnt = $db->optimise();
+if ($tablecnt > 0)
+{
+	exit ("Optimised ".$tablecnt." MYSQL tables succesfuly.\n");
+}
+else
+{
+	exit ("No MYSQL tables to optimize.\n");
+}
 
 ?>
