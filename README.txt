@@ -3,44 +3,59 @@ nZEDb is a fork of the open source usenet indexer newznab plus : https://github.
 Some of the differences between that version of newznab and our indexer are:
 
 	The ability to create releases without the user having to create a regex.
-	
 	Using the NZB file for post processing and fetching NFO files.
-	
 	Finding NFO files without a .nfo extension.
-	
 	Having both a subject name and a "clean" name and the ability to search either.
-
 	Advanced search, which is able to search by name, subject, poster, date, etc..
-	
 	Importing NZB files directly to the NZB folder and the releases table.
-	
 	Importing NZB files using the mysql load into file command.
-	
 	Threading update_binaries, backfill and post processing using python. (soon update_releases)
-	
 	Custom tmux and screen scripts.
-	
 	Changing to php mysqli.
-	
 	Using autocommit/rollback features of mysqli for innodb.
-	
 	Postprocessing books, a book page (with book covers and book searching).
-	
 	Fixing most of the post processing issues.
-	
 	Using trakt.tv API to find missing IMDB and TVRage ID's.
-	
 	Adding the amazon associate tag for fetching covers and xml information.
-	
 	Script to fix release names using NFO's, file names and release names.
-	
 	Better categorization of releases.
-	
 	Most of the scripts in misc/update_scripts have been overhauled to have more options / better output.
-	
 	Changes to the website. (too many to list)
-	
+	XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ
 	Etc.. (see the commits to see a full list of changes). More to come.
+
+Installation:
+
+	Please view one of the two installation files in this folder.
+	If you are on windows, you can attempt to use a newznab guide.
+
+Post-Installation:
+
+	(After you have installed nZEDb, went through the install steps and are on the admin page...)
+	
+	Most of the default settings are fine, I will mention the ones worth changing.
+	
+	The 2 amazon keys and the associate tag are needed to fetch anything from amazon. The trakt.tv key is optional,
+	but it can help fetching extra information when tvrage and the NFO fails.
+	
+	Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for getting names out of releases
+	and finding passwords in releases.
+	
+	If you have set the path to unrar, deep rar inspection is recommended.
+	
+	Compressed headers is recommended if your provider supports XFeature gzip compression.
+	
+	----
+	
+	Once you have set all the options, you can enable groups, start with a few groups then
+	over the course of a few days you can enable more. I don't recommend enabling all the groups unless you have
+	good hardware and mysql knowledge.
+	
+	At this point you are ready to use the scripts, try the scripts in misc/update_scripts,
+	update_binaries.php downloads usenet articles into the mysql database,
+	update_releases.php attempts to group these articles into releases and create NZB files.
+	
+	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
 
 Original Newznab readme:
 
