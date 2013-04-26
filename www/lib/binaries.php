@@ -44,15 +44,18 @@ class Binaries
 			$alltime = microtime(true);	
 			echo $n.'Updating: '.sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No').$n;
 			
+			$nntp = new Nntp();
+			$nntp->doConnect();
 			
 			foreach($res as $groupArr) 
 			{
 				$this->message = array();
                 echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
-				$this->updateGroup($groupArr);
+				$this->updateGroup($nntp, $groupArr);
 				$counter++;
 			}
 			
+			$nntp->doQuit();
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
 		}
 		else
@@ -61,15 +64,12 @@ class Binaries
 		}		
 	}
 	
-	function updateGroup($groupArr)
+	function updateGroup($nntp, $groupArr)
 	{
 		$db = new DB();
 		$backfill = new Backfill();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		
-		$nntp = new Nntp();
-		$nntp->doConnect();
 		
 		if (!isset($nntp))
 		{
@@ -182,7 +182,6 @@ class Binaries
 			}
 			
 			$last_record_postdate = $backfill->postdate($nntp,$last,false);
-			$nntp->doQuit();
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo str_replace('alt.binaries','a.b',$data["group"])." processed in $timeGroup seconds $n $n";
