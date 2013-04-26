@@ -85,7 +85,6 @@ class Binaries
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
-			$nntp = new Nntp();
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
