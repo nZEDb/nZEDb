@@ -2,7 +2,7 @@ nZEDb is a fork of the open source usenet indexer newznab plus : https://github.
 
 Some of the differences between that version of newznab and our indexer are:
 
-	The ability to create releases without the user having to create a regex.
+	The ability to create releases without the user having to create a regex. (That old version of newznab did not have updated regex.)
 	Using the NZB file for post processing and fetching NFO files.
 	Finding NFO files without a .nfo extension.
 	Having both a subject name and a "clean" name and the ability to search either.
