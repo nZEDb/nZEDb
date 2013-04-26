@@ -113,6 +113,7 @@ class DB
 		foreach ($alltables as $tablename) 
 		{
 			$name = $tablename['Name'];
+			echo "Optimizing table: ".$name.".\n";
 			$this->queryDirect("REPAIR TABLE `".$name."`"); 
 			$this->queryDirect("OPTIMIZE TABLE `".$name."`");
 		}
