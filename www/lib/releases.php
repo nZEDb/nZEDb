@@ -25,6 +25,13 @@ class Releases
 	const PASSWD_RAR = 1;
 	const PASSWD_POTENTIAL = 2;	
 	
+	function Releases()
+	{
+		$s = new Sites();
+		$site = $s->get();
+		$this->stage5limit = (!empty($site->maxnzbsprocessed)) ? $site->maxnzbsprocessed : 1000;
+	}
+	
 	public function get()
 	{			
 		$db = new DB();
@@ -1637,7 +1644,7 @@ class Releases
 		echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
 		$stage5 = TIME();
 		$start_nzbcount = $nzbcount;
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT 1000"))
+		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{

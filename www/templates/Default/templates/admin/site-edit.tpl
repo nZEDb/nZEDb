@@ -535,6 +535,21 @@
 </fieldset>
 
 <fieldset>
+<legend>Advanced Settings - For advanced users</legend>
+<table class="input">
+
+<tr>
+	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
+	<td>
+		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
+		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
 <legend>User Settings</legend>
 <table class="input">
 
