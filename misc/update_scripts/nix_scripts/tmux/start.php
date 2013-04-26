@@ -12,7 +12,7 @@ $session = $tmux->get()->TMUX_SESSION;
 
 //reset collections dateadded to now
 passthru("clear");
-print("Resetting expired collections dateadded to now. This could take a minute or two.\n");
+print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
 $db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1.5 hour)");
 
 //create tmux
