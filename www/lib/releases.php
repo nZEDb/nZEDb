@@ -1350,13 +1350,7 @@ class Releases
 			{
 				if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 				{
-					$db->query("UPDATE collections c 
-								LEFT JOIN (
-											SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease 
-											FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s 
-										) g ON g.ID = c.groupID
-								SET c.filecheck = 4
-								WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease AND groupID = ".$groupID["ID"]);
+					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease AND groupID = ".$groupID["ID"]);
 						
 					$minsizecount = $db->getAffectedRows();
 					if ($minsizecount < 0)
@@ -1374,13 +1368,7 @@ class Releases
 						$maxsizecounts = $maxsizecount+$maxsizecounts;
 					}
 
-					$db->query("UPDATE collections c 
-								LEFT JOIN (
-											SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease 
-											FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s 
-										) g ON g.ID = c.groupID
-								SET c.filecheck = 4
-								WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID["ID"]);
+					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID["ID"]);
 
 					$minfilecount = $db->getAffectedRows();
 					if ($minfilecount < 0)
@@ -1393,13 +1381,7 @@ class Releases
         {
 			if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 			{
-				$db->query("UPDATE collections c 
-							LEFT JOIN (
-										SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease 
-										FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s 
-									) g ON g.ID = c.groupID
-							SET c.filecheck = 4
-							WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease AND groupID = ".$groupID);
+				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease AND groupID = ".$groupID);
 						
 				$minsizecount = $db->getAffectedRows();
 				if ($minsizecount < 0)
@@ -1417,13 +1399,7 @@ class Releases
 					$maxsizecounts = $maxsizecount+$maxsizecounts;
 				}
 
-				$db->query("UPDATE collections c 
-							LEFT JOIN (
-										SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease 
-										FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s 
-									) g ON g.ID = c.groupID
-							SET c.filecheck = 4
-							WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
+				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
 
 				$minfilecount = $db->getAffectedRows();
 				if ($minfilecount < 0)
@@ -1695,8 +1671,8 @@ class Releases
 		$stage7 = TIME();
 		// Old collections that were missed somehow.
 	
-		$db->queryDirect("DELETE collections, binaries, parts
-						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+		$db->queryDirect("DELETE collections, binaries, parts 
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID 
 						  WHERE (collections.filecheck = 4 OR (collections.dateadded < (now() - interval 72 hour))) " . $where);
 		$reccount = $db->getAffectedRows();
 		
