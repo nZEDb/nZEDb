@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export NZEDB_PATH="/var/www/nzedb/misc/update_scripts"
+export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 
