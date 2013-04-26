@@ -897,6 +897,7 @@ INSERT INTO `site`
 	('maxmusicprocessed', 150),
 	('maxgamesprocessed', 150),
 	('maxbooksprocessed', 300),
+	('maxnzbsprocessed', 1000),
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
 	('amazonassociatetag', ''),
@@ -928,7 +929,8 @@ INSERT INTO `site`
 	('tmpunrarpath', ''),
 	('adheader', ''),
 	('adbrowse', ''),
-	('addetail', '');
+	('addetail', ''),
+	('sqlpatch', '2');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
