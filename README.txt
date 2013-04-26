@@ -1,5 +1,47 @@
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
 
+Some of the differences between that version of newznab and our indexer are:
+
+	The ability to create releases without the user having to create a regex.
+	
+	Using the NZB file for post processing and fetching NFO files.
+	
+	Finding NFO files without a .nfo extension.
+	
+	Having both a subject name and a "clean" name and the ability to search either.
+
+	Advanced search, which is able to search by name, subject, poster, date, etc..
+	
+	Importing NZB files directly to the NZB folder and the releases table.
+	
+	Importing NZB files using the mysql load into file command.
+	
+	Threading update_binaries, backfill and post processing using python. (soon update_releases)
+	
+	Custom tmux and screen scripts.
+	
+	Changing to php mysqli.
+	
+	Using autocommit/rollback features of mysqli for innodb.
+	
+	Postprocessing books, a book page (with book covers and book searching).
+	
+	Fixing most of the post processing issues.
+	
+	Using trakt.tv API to find missing IMDB and TVRage ID's.
+	
+	Adding the amazon associate tag for fetching covers and xml information.
+	
+	Script to fix release names using NFO's, file names and release names.
+	
+	Better categorization of releases.
+	
+	Most of the scripts in misc/update_scripts have been overhauled to have more options / better output.
+	
+	Changes to the website. (too many to list)
+	
+	Etc.. (see the commits to see a full list of changes). More to come.
+
 Original Newznab readme:
 
 ABOUT
