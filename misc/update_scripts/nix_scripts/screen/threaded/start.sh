@@ -1,29 +1,49 @@
 #!/bin/sh
 
 export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
-export NIX_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
-export NZEDB_SLEEP_TIME="60"
+export HELP_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
+export THREAD_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
 export PHP="$(which php5)"
+export PYTHON="$(which python)"
 export SCREEN="$(which screen)"
-
+export NZEDB_SLEEP_TIME="60"
+	   LASTOPTIMIZE=`date +%s`
+	   LASTOPTIMIZE1=`date +%s`
+	   
 while :
-
 do
+	
+	cd ${NZEDB_PATH}
+	if ! $SCREEN -list | grep -q "POSTP"; then
+		cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true
+	fi
+	
+	cd ${THREAD_PATH}
+	$PYTHON ${THREAD_PATH}/binaries_threaded.py
+	
+	cd ${HELP_PATH}
+	if ! $SCREEN -list | grep -q "RELEASES"; then
+		cd $HELP_PATH && $SCREEN -dmS RELEASES $SCREEN sh $HELP_PATH/helper.sh
+	fi
+	
+	CURRTIME=`date +%s`
+	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
+	if [ "$DIFF" -gt 7200 ] || [ "$DIFF" -lt 1 ]
+	then
+		LASTOPTIMIZE=`date +%s`
+		echo "Optimizing DB..."
+		$PHP ${NZEDB_PATH}/optimise_db.php
+	fi
 
-clear
+	DIFF=$(($CURRTIME-$LASTOPTIMIZE1))
+	if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
+	then
+		LASTOPTIMIZE1=`date +%s`
+		$PHP ${NZEDB_PATH}/update_tvschedule.php
+		$PHP ${NZEDB_PATH}/update_theaters.php
+	fi
 
-cd ${NZEDB_PATH}
-$PHP ${NZEDB_PATH}/update_releases.php 1 false
+	echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
+	sleep ${NZEDB_SLEEP_TIME}
 
-if ! $SCREEN -list | grep -q "POSTP"; then
-	cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true
-fi
-
-cd ${NIX_PATH}
-if ! $SCREEN -list | grep -q "BINARIES"; then
-	cd $NIX_PATH && $SCREEN -dmS BINARIES $SCREEN sh $NIX_PATH/helper.sh
-fi
-
-echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
-sleep ${NZEDB_SLEEP_TIME}
 done
