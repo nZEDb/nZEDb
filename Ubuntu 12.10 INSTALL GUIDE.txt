@@ -60,7 +60,7 @@ From a command line:
 	date.timezone = Europe/London
 
 	Create the site config:
-	sudo nano /etc/apache2/sites-available/nzedb
+	sudo nano /etc/apache2/sites-available/nZEDb
 
 	Pate the following:
 
@@ -69,7 +69,7 @@ From a command line:
     ServerName localhost
 
     # These paths should be fine
-    DocumentRoot /var/www/nzedb/www
+    DocumentRoot /var/www/nZEDb/www
     ErrorLog /var/log/apache2/error.log
     LogLevel warn
 </VirtualHost>
@@ -77,7 +77,7 @@ From a command line:
 	Enable the site/etc:
 
 	sudo a2dissite default
-	sudo a2ensite nzedb
+	sudo a2ensite nZEDb
 	sudo a2enmod rewrite
 	sudo service apache2 restart
 
@@ -95,7 +95,7 @@ From a command line:
 	sudo apt-get update
 	sudo apt-get install mediainfo ffmpeg x264
 
-6. Git clone the nzedb source.
+6. Git clone the nZEDb source.
 
 	(if the folder doesn't exist, make it)
 	cd /var/www/
@@ -117,12 +117,12 @@ From a command line:
 
 	git clone (git repo goes here)
 
-	sudo chmod 777 nzedb
-	sudo chmod 777 /var/www/nzedb/www/lib/smarty/templates_c
-	sudo chmod -R 777 /var/www/nzedb/www/covers
-	sudo chmod 777 /var/www/nzedb/www
-	sudo chmod 777 /var/www/nzedb/www/install
-	sudo chmod -R 777 /var/www/nzedb/nzbfiles
+	sudo chmod 777 nZEDb
+	sudo chmod 777 /var/www/nZEDb/www/lib/smarty/templates_c
+	sudo chmod -R 777 /var/www/nZEDb/www/covers
+	sudo chmod 777 /var/www/nZEDb/www
+	sudo chmod 777 /var/www/nZEDb/www/install
+	sudo chmod -R 777 /var/www/nZEDb/nzbfiles
 
 7. Run the installer.
 
