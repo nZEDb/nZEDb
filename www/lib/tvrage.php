@@ -266,7 +266,9 @@ class TvRage
 				if ($this->echooutput)
 					echo "Schedule not found.\n";
 			}
-		} // end foreach country		
+		} // end foreach country
+		if ($this->echooutput)
+			echo "Updated the TVRage schedule succesfully.\n";
 	}
 	
 	public function getEpisodeInfo($rageid, $series, $episode)
