@@ -11,8 +11,6 @@ require_once(WWW_DIR."/lib/site.php");
 	 
 	 class Books
 	 {
-		 const NUMTOPROCESSPERTIME = 125;
-		 
 		 function Books($echooutput=false)
 		 {
 			$this->echooutput = $echooutput;
@@ -21,6 +19,8 @@ require_once(WWW_DIR."/lib/site.php");
 			$this->pubkey = $site->amazonpubkey;
 			$this->privkey = $site->amazonprivkey;
 			$this->asstag = $site->amazonassociatetag;
+			$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
+			
 			$this->imgSavePath = WWW_DIR.'covers/book/';
 		}
 		
@@ -231,7 +231,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$ret = 0;
 			$db = new DB();
 			
-			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_BOOKS, Books::NUMTOPROCESSPERTIME));
+			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_BOOKS, $this->bookqty));
 			if ($db->getNumRows($res) > 0)
 			{
 				if ($this->echooutput)
