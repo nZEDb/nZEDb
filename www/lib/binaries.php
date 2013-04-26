@@ -83,8 +83,15 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntp = new Nntp();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
+				return;
+			}
 		}
 		
 		//Attempt to repair any missing parts before grabbing new ones
