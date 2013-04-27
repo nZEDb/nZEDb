@@ -69,33 +69,39 @@ $s = new Sites();
 $site = $s->get();
 $currentversion = $site->sqlpatch;
 $patched = 0;
+$patches = array();
 
-echo "Patching process started, DO NOT stop this script!\n";
-
-if ($handle = @opendir(FS_ROOT.'/../../../db/patches'))
+// Open the patch folder.
+if ($handle = @opendir(FS_ROOT.'/../../../db/patches')) 
 {
-	$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
-	while (false !== ($entry = readdir($handle))) 
-	{
-        if (preg_match('/\.sql$/i', $entry))
-        {
-			$filepath = $patchpath.$entry;
-			$file = fopen($filepath, "r");
-			$patch = fread($file, filesize($filepath));
-			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
-			{
-				if ($patchnumber['1'] > $currentversion)
-				{
-					SplitSQL($filepath);
-					$patched++;
-				}
-			}
-		}
+    while (false !== ($patch = readdir($handle))) 
+    {
+        $patches[] = $patch;
     }
+    closedir($handle);
 }
 else
 	exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
 
+$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
+sort($patches);
+foreach($patches as $patch)
+{
+    if (preg_match('/\.sql$/i', $patch))
+    {
+		$filepath = $patchpath.$patch;
+		$file = fopen($filepath, "r");
+		$patch = fread($file, filesize($filepath));
+		if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
+		{
+			if ($patchnumber['1'] > $currentversion)
+			{
+				SplitSQL($filepath);
+				$patched++;
+			}
+		}
+	}
+}
 if ($patched > 0)
 	exit($patched." patch(es) applied. Now you need to delete the files inside of the www/lib/smarty/templates_c folder.\n");
 if ($patched == 0)
