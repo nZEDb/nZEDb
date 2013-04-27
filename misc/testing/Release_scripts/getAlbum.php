@@ -1,10 +1,10 @@
 <?php
-//This script will update all records in the movieinfo table
+//This script will update all records in the musicinfo table
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/music.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../../www/lib/music.php");
 
 $music = new Music(true);
 

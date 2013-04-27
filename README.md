@@ -1,4 +1,4 @@
-We have made a patcher for MYSQL, in misc/testing (patchmysql.php), please look out for patches as we add new features and run this script.
+We have made a patcher for MYSQL, in misc/testing/DB_scripts (patchmysql.php), please look out for patches as we add new features and run this script.
 
 ------------------------------------------------------------------------------------------------
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
