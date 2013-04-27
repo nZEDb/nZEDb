@@ -127,8 +127,9 @@ foreach($patches as $patch)
     if (preg_match('/\.sql$/i', $patch))
     {
 		$filepath = $patchpath.$patch;
-		$patchfile = fopen($filepath, "r");
-		if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patchfile, $patchnumber))
+		$file = fopen($filepath, "r");
+		$patch = fread($file, filesize($filepath));
+		if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
 		{
 			if ($patchnumber['1'] > $currentversion)
 			{
