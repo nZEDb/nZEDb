@@ -1294,7 +1294,6 @@ class Releases
 		$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));		
 	}	
 	
-	
 	public function processReleasesStage1($groupID)
 	{
 		$db = new DB();
@@ -1307,41 +1306,23 @@ class Releases
 		//Look if we have all the files in a collection (which have the file count in the subject).
 		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
 		
-		/*//Check if we have all parts for a file. Set filecheck to 2.
-		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID LEFT JOIN parts p ON p.binaryID = b.ID WHERE c.filecheck = 1 AND b.partcheck = 0".$where." GROUP BY c.ID, c.totalFiles, b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmpTable)");*/
-		
-		// Put back this slow part temporarily while we attempt to debug the other way.
-		//Check if we have all parts for a file. Set partcheck to 1.
-		if($cres = $db->queryDirect("SELECT ID, totalFiles from collections where filecheck = 1"))
+		if (empty($groupID))
 		{
-			while ($crow = $db->fetchAssoc($cres))
-			{
-				if($bres = $db->queryDirect(sprintf("SELECT ID, totalParts from binaries where collectionID = %d and partcheck = 0", $crow['ID'])))
-				{
-					while ($brow = $db->fetchAssoc($bres))
-					{
-						if(array_shift($db->queryOneRow(sprintf("SELECT count(*) from parts where binaryID = %d", $brow['ID']))) >= $brow['totalParts'])
-						{
-							$db->queryDirect(sprintf("UPDATE binaries set partcheck = 1 where ID = %d", $brow['ID']));
-						}
-					}
-				}
-				//Check if everything is complete. Set filecheck to 2.
-				if($fileCnt = $db->queryOneRow(sprintf("SELECT count(*) from binaries where partcheck = 1 and collectionID = %d", $crow['ID'])))
-				{
-					if(array_shift($fileCnt) >= $crow['totalFiles'])
-					{
-						$db->queryDirect(sprintf("UPDATE collections set filecheck = 2 where ID = %d", $crow['ID']));
-					}
-				}
-			}
+			$db->query("UPDATE binaries SET partcheck = 1 WHERE ID IN (SELECT ID FROM (SELECT b.ID FROM binaries b LEFT JOIN parts p ON b.ID = p.binaryID WHERE b.partcheck = 0 GROUP BY b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmp)");
 		}
+		else
+		{
+			$db->query("UPDATE binaries SET partcheck = 1 WHERE ID IN (SELECT ID FROM (SELECT b.ID FROM binaries b LEFT JOIN parts p ON b.ID = p.binaryID LEFT JOIN collections c ON c.ID = b.collectionID WHERE b.partcheck = 0 AND c.groupID = ". $groupID . " GROUP BY b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmp)");
+		}
+
+		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck = 1 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
+		
 		//If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2 ".$where);
 	
         echo TIME() - $stage1." second(s).";
 	}
-	
+	 
 	public function processReleasesStage2($groupID)
 	{
 		$db = new DB;
