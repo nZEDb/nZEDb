@@ -151,7 +151,7 @@ class NZB
 
 			$result[$i]['title'] = "$title";
 			
-			if (preg_match('/\.(\d{3}|7z|ace|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|cue|deb|divx|doc|dot|eml|enc|exe|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|jpg|js|lua|m|m3u|mm|mov|mp3|mpg|nfo|nzb|odc|odf|odg|odi|odp|ods|odt|ogg|par2|parity|pdf|pgp|php|pl|png|ppt|ps|py|r\d{2,3}|ram|rar|rb|rm|rpm|rtf|sfv|sig|sql|srs|swf|sxc|sxd|sxi|sxw|tar|tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|zip)[" ](?!(\)|\-))/i', $file->attributes()->subject, $ext))
+			if (preg_match('/\.(\d{2,3}|7z|ace|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|cue|deb|divx|doc|dot|eml|enc|exe|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|jpg|js|lua|m|m3u|mm|mov|mp3|mpg|nfo|nzb|odc|odf|odg|odi|odp|ods|odt|ogg|par2|parity|pdf|pgp|php|pl|png|ppt|ps|py|r\d{2,3}|ram|rar|rb|rm|rpm|rtf|sfv|sig|sql|srs|swf|sxc|sxd|sxi|sxw|tar|tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|zip)[" ](?!(\)|\-))/i', $file->attributes()->subject, $ext))
 			{
 				if (preg_match('/\.(r\d{2,3})/i', $ext[0], $extrar))
 					$ext[1] = "rar";
