@@ -406,7 +406,7 @@ class Category
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/(360|480p|576)|Complete[\.\-_ ]Season|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|TVRip|xvid/i', $releasename))
+		if (preg_match('/(360|480|576)p|Complete[\.\-_ ]Season|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|TVRip|xvid/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
