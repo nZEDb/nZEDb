@@ -2,6 +2,9 @@
 require(dirname(__FILE__)."/../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
+print "This is dangerous so it is disabled, open the scripts in a text editor and type // in front of the exit(); then save, and run the script.\n";
+exit();
+
 $db = new DB;
 
 
