@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r676";
+$version="0.1r749";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -527,7 +527,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
-					$_php $DIR/misc/update_scripts/threaded_scripts/update_releases.php 1 false && sleep 10' 2>&1 1> /dev/null");
+					$_php $DIR/misc/update_scripts/update_releases.php 1 false && sleep 10' 2>&1 1> /dev/null");
 		}
 		else
 		{
