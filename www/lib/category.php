@@ -301,7 +301,7 @@ class Category
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
 		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
-		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
+		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|NECW[\.\-_ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|mp3)[\.\-_ ]/i', $releasename))
 		{
@@ -350,7 +350,7 @@ class Category
 			return true;
 		}
 		
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_FOREIGN;
 			return true;
@@ -378,7 +378,7 @@ class Category
 			return true;
 		}
 		
-		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|Poker|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|NECW|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|Poker|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
 		{	
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
@@ -406,7 +406,7 @@ class Category
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/480p|Complete[\.\-_ ]Season|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|TVRip|xvid/i', $releasename))
+		if (preg_match('/(360|480p|576)|Complete[\.\-_ ]Season|dvdr|dvd5|dvd9|SD[\.\-_ ]TV|TVRip|xvid/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
