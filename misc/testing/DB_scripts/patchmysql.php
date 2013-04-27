@@ -72,9 +72,9 @@ $patched = 0;
 
 echo "Patching process started, DO NOT stop this script!\n";
 
-if ($handle = @opendir(FS_ROOT.'/../../db/patches'))
+if ($handle = @opendir(FS_ROOT.'/../../../db/patches'))
 {
-	$patchpath = preg_replace('/\/misc\/testing/i', '/db/patches/', FS_ROOT);
+	$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
 	while (false !== ($entry = readdir($handle))) 
 	{
         if (preg_match('/\.sql$/i', $entry))
