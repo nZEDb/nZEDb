@@ -19,7 +19,7 @@ def readConfig():
 
         # The config object
         config = {}
-
+        config['DB_PORT']=3306
         for line in file.readlines():
                 match = m.search( line )
                 if match:
