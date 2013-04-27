@@ -1,11 +1,15 @@
 <?php
 
+//
+//	This script removes all releases, nzb files, truncates all article tables, resets groups.
+//
+
 if (isset($argv[1]) && $argv[1] === "true")
 {
 	define('FS_ROOT', realpath(dirname(__FILE__)));
-	require_once(FS_ROOT."/../../www/config.php");
-	require_once(FS_ROOT."/../../www/lib/framework/db.php");
-	require_once(FS_ROOT."/../../www/lib/releases.php");
+	require_once(FS_ROOT."/../../../www/config.php");
+	require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+	require_once(FS_ROOT."/../../../www/lib/releases.php");
 
 	$db = new Db;
 	$timestart = TIME();

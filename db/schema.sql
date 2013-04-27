@@ -898,6 +898,11 @@ INSERT INTO `site`
 	('maxgamesprocessed', 150),
 	('maxbooksprocessed', 300),
 	('maxnzbsprocessed', 1000),
+
+    ('binarythreads', 4),
+    ('backfillthreads', 4),
+    ('postthreads', 4),
+
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
 	('amazonassociatetag', ''),
@@ -931,7 +936,7 @@ INSERT INTO `site`
 	('adheader', ''),
 	('adbrowse', ''),
 	('addetail', ''),
-	('sqlpatch', '4');
+	('sqlpatch', '5');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

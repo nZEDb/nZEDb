@@ -5,9 +5,9 @@
  */
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/site.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../../www/lib/site.php");
 
 //
 // Function from : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
@@ -72,9 +72,9 @@ $patched = 0;
 
 echo "Patching process started, DO NOT stop this script!\n";
 
-if ($handle = @opendir(FS_ROOT.'/../../db/patches'))
+if ($handle = @opendir(FS_ROOT.'/../../../db/patches'))
 {
-	$patchpath = preg_replace('/\/misc\/testing/i', '/db/patches/', FS_ROOT);
+	$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
 	while (false !== ($entry = readdir($handle))) 
 	{
         if (preg_match('/\.sql$/i', $entry))

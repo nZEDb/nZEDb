@@ -46,6 +46,8 @@ con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], c
 cur = con.cursor()
 cur.execute("SELECT name from groups where active = 1")
 datas = cur.fetchall()
+cur.execute("select value from site where setting = 'binarythreads'");
+run_threads = cur.fetchone();
 
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
@@ -74,7 +76,7 @@ def main(args):
     result_q = Queue.Queue()
 
     # Create the "thread pool"
-    pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(4)]
+    pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(int(run_threads[0]))]
 
     # Start all threads
     for thread in pool:
