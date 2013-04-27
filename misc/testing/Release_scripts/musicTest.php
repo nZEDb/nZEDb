@@ -1,9 +1,9 @@
 <?php
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/music.php");
-require_once(FS_ROOT."/../../www/lib/category.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../../www/lib/music.php");
+require_once(FS_ROOT."/../../../www/lib/category.php");
 
 $music = new Music(true);
 $db = new Db;

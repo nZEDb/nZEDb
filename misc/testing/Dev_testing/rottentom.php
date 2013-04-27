@@ -1,8 +1,8 @@
 <?php
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/rottentomato.php");
-require_once(FS_ROOT."/../../www/lib/site.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/rottentomato.php");
+require_once(FS_ROOT."/../../../www/lib/site.php");
 
 $s = new Sites();
 $site = $s->get();
