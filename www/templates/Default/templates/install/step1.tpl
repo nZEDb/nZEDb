@@ -60,11 +60,11 @@
 		<td>{if $cfg->timezoneCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking max_execution_time:{if !$cfg->timelimitCheck}<br /><span class="warn">Your PHP installation's max_execution_time setting is low, please consider increasing it >= 60</span>{/if}</td>
+		<td>Checking max_execution_time:{if !$cfg->timelimitCheck}<br /><span class="warn">Your PHP installation's max_execution_time setting is low, please consider increasing it >= 120</span>{/if}</td>
 		<td>{if $cfg->timelimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking PHP's memory_limit:{if !$cfg->memlimitCheck}<br /><span class="warn">Your PHP installation's memory_limit setting is low, please consider increasing it >= 256MB.</span>{/if}</td>
+		<td>Checking PHP's memory_limit:{if !$cfg->memlimitCheck}<br /><span class="warn">Your PHP installation's memory_limit setting is low, please consider increasing it >= 1024M.</span>{/if}</td>
 		<td>{if $cfg->memlimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="alt">
