@@ -110,7 +110,7 @@ class NZB
 	//
 	// Check if the NZB is there, returns path, else false.
 	//
-	function NZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false)
+	function NZBPath($releaseGuid, $sitenzbpath = "")
 	{
 		if ($sitenzbpath == "")
 		{
