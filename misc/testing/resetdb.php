@@ -1,5 +1,9 @@
 <?php
 
+//
+//	This script removes all releases, nzb files, truncates all article tables, resets groups.
+//
+
 if (isset($argv[1]) && $argv[1] === "true")
 {
 	define('FS_ROOT', realpath(dirname(__FILE__)));

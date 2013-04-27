@@ -2,6 +2,10 @@
 require(dirname(__FILE__)."/../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
+//
+//	This scripts removes releases with no nfos, resets all groups, truncates article tables. All other releases are left alone.
+//
+
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	
