@@ -13,15 +13,19 @@
 			<td><label for="host">Hostname:</label></td>
 			<td><input type="text" name="host" id="host" value="{$cfg->DB_HOST}" /></td>
 		</tr>
-		<tr class="alt">
+        <tr class="alt">
+            <td><label for="sql_port">Port Number:</label></td>
+            <td><input type="text" name="sql_port" id="sql_port" value="{$cfg->DB_PORT}" /></td>
+        </tr>
+		<tr class="">
 			<td><label for="user">Username:</label></td>
 			<td><input type="text" name="user" id="user" value="{$cfg->DB_USER}" /></td>
 		</tr>
-		<tr class="">
+		<tr class="alt">
 			<td><label for="pass">Password:</label></td>
 			<td><input type="text" name="pass" id="pass" value="{$cfg->DB_PASSWORD}" /></td>
 		</tr>
-		<tr class="alt">
+		<tr class="">
 			<td><label for="db">Database:</label></td>
 			<td><input type="text" name="db" id="db" value="{$cfg->DB_NAME}" /></td>
 		</tr>
