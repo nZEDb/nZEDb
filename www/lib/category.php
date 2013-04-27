@@ -300,8 +300,8 @@ class Category
 	
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
-		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,2}|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
-		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|NECW[\.\-_ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
+		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,3}|C4TV|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL|WEBRip)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
+		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|Indy[\.\-_ ]?Car|(iMPACT|Smoky[\.\-_ ]Mountain|Texas)[\.\-_ ]Wrestling|Moto[\.\-_ ]?GP|NSCS[\.\-_ ]ROUND|NECW[\.\-_ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|mp3)[\.\-_ ]/i', $releasename))
 		{
@@ -378,7 +378,7 @@ class Category
 			return true;
 		}
 		
-		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|NECW|(iMPACT|Smoky[\.\-_ ]Mountain)[\.\-_ ]Wrestling|Poker|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ]?(AFL|Grand Prix|Indy[\.\-_ ]Car|(iMPACT|Smoky[\.\-_ ]Mountain|Texas)[\.\-_ ]Wrestling|Moto[\.\-_ ]?GP|NSCS[\.\-_ ]ROUND|NECW|Poker|PWX|Rugby|WCW)[\.\-_ ]/i', $releasename))
 		{	
 			$this->tmpCat = Category::CAT_TV_SPORT;
 			return true;
@@ -447,7 +447,7 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|DIVX|DVD-?(5|9|R|Rip)?|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|DVD-?(5|9|R|Rip)?|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
@@ -599,7 +599,7 @@ class Category
 			return true;
 		}
 		
-		if (preg_match('/[\.\-_ ](0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLTCOGENT|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
+		if (preg_match('/[\.\-_ ](0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLT([\.\-_ ]|COGENT)|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
@@ -693,7 +693,8 @@ class Category
 	}
 	public function isXxxOther($releasename)
 	{
-		if (preg_match('/Transsexual/i', $releasename))
+		// If nothing else matches, then try these words.
+		if (preg_match('/She[\.\-_ ]?Male|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
@@ -875,7 +876,7 @@ class Category
 	
 	public function isMusicLossless($releasename)
 	{
-		if (preg_match('/FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"/i', $releasename))
+		if (preg_match('/\[(19|20)\d\d\][\.\-_ ]\[FLAC\]|FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 			return true;
