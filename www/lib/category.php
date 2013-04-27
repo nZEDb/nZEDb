@@ -613,7 +613,7 @@ class Category
 	
 	public function isXxx($releasename)
 	{
-		if(preg_match('/[\.\-_ ](XXX|PORNOLATiON|)/', $releasename))
+		if(preg_match('/[\.\-_ ](XXX|PORNOLATiON)/', $releasename))
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
