@@ -332,6 +332,14 @@
 </tr>
 
 <tr>
+	<td><label for="releasecompletion">Release Completion</label>:</td>
+	<td>
+		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
+		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="minfilestoformrelease">Minimum Files to Make a Release</label>:</td>
 	<td>
 		<input class="tiny" id="minfilestoformrelease" name="minfilestoformrelease" type="text" value="{$fsite->minfilestoformrelease}" />

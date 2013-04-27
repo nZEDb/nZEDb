@@ -30,6 +30,7 @@ class Releases
 		$s = new Sites();
 		$site = $s->get();
 		$this->stage5limit = (!empty($site->maxnzbsprocessed)) ? $site->maxnzbsprocessed : 1000;
+		$this->completion = (!empty($site->releasecompletion)) ? $site->releasecompletion : 0;
 	}
 	
 	public function get()
@@ -1671,6 +1672,7 @@ class Releases
 		$passcount = 0;
 		$dupecount = 0;
 		$relsizecount = 0;
+		$completioncount = 0;
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 		
 		// Delete old releases and finished collections.
@@ -1684,7 +1686,7 @@ class Releases
 		$reccount = $db->getAffectedRows();
 		
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
-		//Releases past retention.
+		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
 			$result = $db->query(sprintf("SELECT ID FROM releases WHERE postdate < now() - interval %d day " . $where, $page->site->releaseretentiondays)); 		
@@ -1693,7 +1695,7 @@ class Releases
 				$remcount ++;
 		}
 		
-		//Passworded releases.
+		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
 			echo "Determining any passworded releases to be deleted".$n;
@@ -1705,7 +1707,7 @@ class Releases
 			}
 		}
 		
-		//Crossposted releases.
+		// Crossposted releases.
 		if($resrel = $db->query("SELECT ID FROM releases WHERE adddate > (now() - interval 2 hour) " . $where . " GROUP BY name HAVING count(name) > 1"))
 		{
 			foreach ($resrel as $rowrel)
@@ -1715,7 +1717,24 @@ class Releases
 			}
 		}
 		
-		echo "Removed: ".$remcount." releases past retention, ".$passcount." passworded releases, ".$dupecount." crossposted releases, ".$reccount." records from parts/binaries/collections.".$n;
+		// Releases below completion %.
+		if($this->completion > 0)
+		{
+			if($resrel = $db->query(sprintf("SELECT ID FROM releases WHERE completion < %d and completion > 0", $this->completion)))
+			{
+				foreach ($resrel as $rowrel)
+				{
+					$this->delete($rowrel['ID']);
+					$completioncount ++;
+				}
+			}
+		}
+		
+		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted";
+		if($this->completion > 0)
+			echo ", ".$completioncount." under ".$this->completion."% completion. Removed ".$reccount." parts/binaries/collection rows.".$n;
+		else
+			echo ". Removed ".$reccount." parts/binaries/collection rows.".$n;
 		
 		echo TIME() - $stage7." second(s).".$n;        
 	}
