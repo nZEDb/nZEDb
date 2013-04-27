@@ -5,8 +5,8 @@ require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 
 /*
- * Returns information contained within the NZB. Used for finding NFO's for now.
-*/
+ * Gets information contained within the NZB.
+ */
 Class NZBcontents
 {
 	function NZBcontents($echooutput=false)
@@ -31,7 +31,7 @@ Class NZBcontents
 	}
 
 	//
-	// Look for an .nfo file in the nzb, return the nfo.
+	// Look for an .nfo file in the nzb, return the nfo. Also sets the completion while we are here.
 	//
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
@@ -45,20 +45,36 @@ Class NZBcontents
 			$nzbpath = 'compress.zlib://'.$nzbpath;
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
-
+			$actualParts = 0;
+			$knownParts = 0;
+			$messageid = "";
+			
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
+				
+				// Get the completion while we are here...
+				foreach($nzbcontents->segments->segment as $segment)
+				{
+					$knownParts++;
+				}
+			
+				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
+				$actualParts = $actualParts+$parts['total'];
+				
 				if (preg_match('/\.nfo/', $subject))
 				{
 					$messageid = $nzbcontents->segments->segment;
 					$foundnfo = true;
-					break;
 				}
 			}
+			
+			$completion = ($actualParts/$knownParts)*100;
+			$this->updateCompletion($completion, $relID);
+			
 			if ($foundnfo !== false)
 			{
-				if ($messageid !== false)
+				if ($messageid !== "")
 				{
 					$nfo->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
@@ -199,6 +215,15 @@ Class NZBcontents
 				}
 			}
 		}
+	}
+	
+	//
+	//	Update the releases completion.
+	//
+	function updateCompletion($completion, $relID)
+	{
+		$db = new DB();
+		$db->queryDirect(sprintf("update releases set completion = %d where ID = %d", $completion, $relID));
 	}
 }
 ?>
