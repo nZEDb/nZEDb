@@ -25,7 +25,7 @@ if (!$cfg->error) {
 	<link rel="shortcut icon" type="image/ico" href="../templates/Default/images/favicon.ico"/>
 </head>
 <body>
-	<h1 id="logo"><img alt="nZEDb" src="../templates/Default/images/banner.jpg" /></h1>
+	<h1 id="logo"><img alt="nZEDb" src="../templates/Default/images/logo.png" /></h1>
 	<div class="content">	
 		<h2>Index Usenet. Now.</h2>
 
