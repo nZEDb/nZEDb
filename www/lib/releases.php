@@ -1322,7 +1322,7 @@ class Releases
 	
         echo TIME() - $stage1." second(s).";
 	}
-	
+	 
 	public function processReleasesStage2($groupID)
 	{
 		$db = new DB;
