@@ -923,6 +923,7 @@ INSERT INTO `site`
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
 	('deletepasswordedrelease', 0),
+	('releasecompletion', 0),
 	('unrarpath', ''),
 	('mediainfopath', ''),
 	('ffmpegpath', ''),
@@ -930,7 +931,7 @@ INSERT INTO `site`
 	('adheader', ''),
 	('adbrowse', ''),
 	('addetail', ''),
-	('sqlpatch', '2');
+	('sqlpatch', '4');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
