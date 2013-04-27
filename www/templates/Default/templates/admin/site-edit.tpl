@@ -372,14 +372,6 @@
 </tr>
 
 <tr>
-	<td><label for="maxaddprocessed">Maximum to check per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
-		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="deletepasswordedrelease">Delete Passworded Releases</label>:</td>
 	<td>
 		{html_radios id="deletepasswordedrelease" name='deletepasswordedrelease' values=$yesno_ids output=$yesno_names selected=$fsite->deletepasswordedrelease separator='<br />'}
@@ -404,26 +396,10 @@
 </tr>
 
 <tr>
-	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
-		<div class="hint">The maximum amount of NFO files to process per run.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="lookuptvrage">Lookup TV Rage</label>:</td>
 	<td>
 		{html_radios id="lookuptvrage" name='lookuptvrage' values=$yesno_ids output=$yesno_names selected=$fsite->lookuptvrage separator='<br />'}
 		<div class="hint">Whether to attempt to lookup tv rage ids on the web when processing binaries.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
-		<div class="hint">The maximum amount of TV shows to process with TVRage per run.</div>
 	</td>
 </tr>
 
@@ -436,26 +412,10 @@
 </tr>
 
 <tr>
-	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
-	<td>
-		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
-		<div class="hint">The maximum amount of movies to process with IMDB per run.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="lookupanidb">Lookup AniDB</label>:</td>
 	<td>
 		{html_radios id="lookupanidb" name='lookupanidb' values=$yesno_ids output=$yesno_names selected=$fsite->lookupanidb separator='<br />'}
 		<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
-		<div class="hint">The maximum amount of anime to process with anidb per run.</div>
 	</td>
 </tr>
 
@@ -468,26 +428,10 @@
 </tr>
 
 <tr>
-	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
-		<div class="hint">The maximum amount of music to process with amazon per run.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="lookupgames">Lookup Games</label>:</td>
 	<td>
 		{html_radios id="lookupgames" name='lookupgames' values=$yesno_ids output=$yesno_names selected=$fsite->lookupgames separator='<br />'}
 		<div class="hint">Whether to attempt to lookup game information from Amazon when processing binaries.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
-		<div class="hint">The maximum amount of games to process with amazon per run.</div>
 	</td>
 </tr>
 
@@ -500,26 +444,10 @@
 </tr>
 
 <tr>
-	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
-		<div class="hint">The maximum amount of books to process with amazon per run.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="compressedheaders">Use Compressed Headers</label>:</td>
 	<td>
 		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
 		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="partrepair">Part Repair</label>:</td>
-	<td>
-		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
-		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 	</td>
 </tr>
 
@@ -530,6 +458,7 @@
 		<div class="hint">The maximum number of messages to fetch at a time from the server.</div>
 	</td>
 </tr>
+
 <tr>
 	<td><label for="newgroupscanmethod">Where to start new groups</label>:</td>
 	<td>
@@ -547,6 +476,94 @@
 <table class="input">
 
 <tr>
+	<td><label for="maxaddprocessed">Maximum add PP per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
+		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
+		<div class="hint">The maximum amount of NFO files to process per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
+		<div class="hint">The maximum amount of TV shows to process with TVRage per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
+	<td>
+		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
+		<div class="hint">The maximum amount of movies to process with IMDB per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
+		<div class="hint">The maximum amount of anime to process with anidb per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
+		<div class="hint">The maximum amount of music to process with amazon per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
+		<div class="hint">The maximum amount of games to process with amazon per run.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
+		<div class="hint">The maximum amount of books to process with amazon per run.</div>
+	</td>
+</tr>
+
+<tr>
+    <td><label for="postthreads">Postprocessing Threads</label>:</td>
+    <td>
+        <input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+        <div class="hint">The number of threads for postprocessing.</div>
+    </td>
+</tr>
+
+<tr>
+    <td><label for="binarythreads">Update Binaries Threads</label>:</td>
+    <td>
+        <input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+        <div class="hint">The number of threads for update_binaries.</div>
+    </td>
+</tr>
+
+<tr>
+    <td><label for="backfillthreads">Backfill Threads</label>:</td>
+    <td>
+        <input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+        <div class="hint">The number of threads for backfill.</div>
+    </td>
+</tr>
+
+<tr>
 	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
 	<td>
 		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
@@ -555,25 +572,11 @@
 </tr>
 
 <tr>
-    <td><label for="postthreads">Postprocessing Threads</label>:</td>
-    <td>
-        <input class="small" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-        <div class="hint">The number of threads for postprocessing.</div>
-    </td>
-</tr>
-<tr>
-    <td><label for="binarythreads">Update Binaries Threads</label>:</td>
-    <td>
-        <input class="small" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-        <div class="hint">The number of threads for update_binaries.</div>
-    </td>
-</tr>
-<tr>
-    <td><label for="backfillthreads">Backfill Threads</label>:</td>
-    <td>
-        <input class="small" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-        <div class="hint">The number of threads for backfill.</div>
-    </td>
+	<td><label for="partrepair">Part Repair</label>:</td>
+	<td>
+		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
+		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+	</td>
 </tr>
 
 </table>
