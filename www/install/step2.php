@@ -17,11 +17,12 @@ $cfg = $cfg->getSession();
 if  ($page->isPostBack()) {
 	$cfg->doCheck = true;
 	$cfg->DB_HOST = trim($_POST['host']);
+    $cfg->DB_PORT = trim($_POST['sql_port']);
 	$cfg->DB_USER = trim($_POST['user']);
 	$cfg->DB_PASSWORD = trim($_POST['pass']);
 	$cfg->DB_NAME = trim($_POST['db']);
 	
-	$cfg->dbConnCheck = @mysql_connect($cfg->DB_HOST, $cfg->DB_USER, $cfg->DB_PASSWORD);
+	$cfg->dbConnCheck = @mysql_connect($cfg->DB_HOST, $cfg->DB_USER, $cfg->DB_PASSWORD, $cfg->DB_PORT);
 	if ($cfg->dbConnCheck === false) {
 		$cfg->error = true;
 	}
