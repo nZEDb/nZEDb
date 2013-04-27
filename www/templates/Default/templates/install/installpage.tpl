@@ -8,7 +8,7 @@
 	{$page->head}
 </head>
 <body>
-	<h1 id="logo"><img alt="nZEDb" src="../templates/Default/images/banner.jpg" /></h1>
+	<h1 id="logo"><img alt="nZEDb" src="../templates/Default/images/logo.png" /></h1>
 	<div class="content">	
 		<h2>{$page->title}</h2>
 		{$page->content}
