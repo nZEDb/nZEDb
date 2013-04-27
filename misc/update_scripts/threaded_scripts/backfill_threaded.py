@@ -19,7 +19,7 @@ def readConfig():
 
         # The config object
         config = {}
-
+        config['DB_PORT']=3306
         for line in file.readlines():
                 match = m.search( line )
                 if match:
@@ -41,7 +41,7 @@ config = readConfig()
 
 con = None
 # The MYSQL connection.
-con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME']);
+con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
 
 # The group names.
 cur = con.cursor()
