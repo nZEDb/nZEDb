@@ -87,7 +87,7 @@ def main(args):
     work_count = 0
     for gnames in datas:
         work_count += 1
-        dir_q.put(gnames[0])
+        dir_q.put(gnames)
 
     print 'Assigned %s Postprocesses to workers' % work_count
 
