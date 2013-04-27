@@ -151,7 +151,7 @@ class NZB
 
 			$result[$i]['title'] = "$title";
 			
-			if (preg_match('/\.(7z|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|deb|divx|doc|dot|eml|enc|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|jpg|js|lua|m|mm|mov|mp3|mpg|odc|odf|odg|odi|odp|ods|odt|ogg|pdf|pgp|php|pl|png|ppt|ps|py|ram|rar|rb|rm|rpm|rtf|sig|sql|swf|sxc|sxd|sxi|sxw|tar|tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|rar|par2|mp3|exe|zip|ace|nzb|r\d{2,3}|jpg|txt|nfo|sfv|cue|m3u)[" ]/i', $file->attributes()->subject, $ext))
+			if (preg_match('/\.(7z|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|deb|divx|doc|dot|eml|enc|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|jpg|js|lua|m|mm|mov|mp3|mpg|odc|odf|odg|odi|odp|ods|odt|ogg|pdf|pgp|php|pl|png|ppt|ps|py|ram|rar|rb|rm|rpm|rtf|sig|sql|swf|sxc|sxd|sxi|sxw|tar|tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|rar|par2|mp3|exe|zip|ace|nzb|r\d{2,3}|jpg|txt|nfo|sfv|cue|m3u)[" ](?!\))/i', $file->attributes()->subject, $ext))
 			{
 				if (preg_match('/\.(r\d{2,3})/i', $ext[0], $extrar))
 					$ext[1] = "rar";
