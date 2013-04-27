@@ -25,6 +25,7 @@ class Binaries
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
 		$this->DoPartRepair = ($site->partrepair == "0") ? false : true;
+		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
@@ -445,7 +446,7 @@ class Binaries
 		
 		// Get all parts in partrepair table.
 		$db = new DB;
-		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT 15000", $groupArr['ID']));
+		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 		
 		if (sizeof($missingParts) > 0)

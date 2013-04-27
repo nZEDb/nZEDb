@@ -572,6 +572,14 @@
 </tr>
 
 <tr>
+	<td><label for="maxpartrepair">Maximum repair per run</label>:</td>
+	<td>
+		<input class="small" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
+		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="partrepair">Part Repair</label>:</td>
 	<td>
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
