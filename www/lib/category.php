@@ -625,7 +625,7 @@ class Category
 			return true;
 		}
 		
-		else if(preg_match('/Imageset|Lesbian|Squirt|Transsexual/i', $releasename))
+		else if(preg_match('/a\.b\.erotica|Imageset|Lesbian|Squirt|Transsexual/i', $releasename))
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }
@@ -694,7 +694,7 @@ class Category
 	public function isXxxOther($releasename)
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/She[\.\-_ ]?Male|Transsexual/i', $releasename))
+		if (preg_match('/North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
