@@ -10,7 +10,7 @@
 	<tr>
 		<th>#</th>
 		<th>filename</th>
-		<th style="text-align:right;">ext</th>
+		<th style="text-align:left;">Type</th>
 		<th style="text-align:right;">completion</th>
 		<th style="text-align:right;">size</th>
 	</tr>
