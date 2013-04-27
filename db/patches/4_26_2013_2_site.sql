@@ -1,4 +1,4 @@
-INSERT INTO `site`
+INSERT IGNORE INTO `site`
 	(`setting`, `value`)
 	VALUES
 	('maxnzbsprocessed', 1000);
