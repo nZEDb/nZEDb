@@ -1,6 +1,6 @@
 <?php
 
-require("../../www/config.php");
+require("../../../www/config.php");
 require_once(WWW_DIR."/lib/backfill.php");
 $nntp = new nntp;
 $nntp->doConnect();

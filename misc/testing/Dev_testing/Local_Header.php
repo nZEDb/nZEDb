@@ -1,6 +1,6 @@
 <?php
 //To troubleshoot what's actually on usenet.
-require("../../www/config.php");
+require("../../../www/config.php");
 require_once(WWW_DIR."/lib/nzb.php");
 $nntp = new nntp;
 $nntp->doConnect();

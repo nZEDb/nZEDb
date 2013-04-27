@@ -1,5 +1,5 @@
 <?php
-require(dirname(__FILE__)."/../../www/config.php");
+require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 $sql = "SHOW tables";
