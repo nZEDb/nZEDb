@@ -27,6 +27,7 @@ if  ($page->isPostBack()) {
 		$cfg->error = true;
 	}
 	$cfg->dbNameCheck = mysql_select_db($cfg->DB_NAME);
+
 	if ($cfg->dbNameCheck === false) 
 	{
 		$result = @mysql_query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");	
@@ -36,7 +37,16 @@ if  ($page->isPostBack()) {
 			$cfg->error = true;
 		}
 	}
-	
+	else
+	{
+		$result = @mysql_query("DROP DATABASE ".$cfg->DB_NAME);
+        $result = @mysql_query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+        $cfg->dbNameCheck = mysql_select_db($cfg->DB_NAME);
+        if ($cfg->dbNameCheck === false)
+        {
+            $cfg->error = true;
+        }
+	}
 	if (!$cfg->error) {
 		$cfg->setSession();
 	

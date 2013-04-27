@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-$version="0.1r763";
+$version="0.1r765";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
