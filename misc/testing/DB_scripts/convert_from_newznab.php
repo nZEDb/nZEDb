@@ -27,17 +27,17 @@ function convertTable($db, $nZEDbschema, $tableName, $sql, $runQueries)
 	
 	if (!runQuery($db, $renameSQL, $runQueries))
 	{
-		die("Unable to rename table Running the following SQL: " . $renameSQL . ": " . $db->Error() . "\n");
+		die("Unable to rename table Running the following SQL: " . $renameSQL . ": " . $db->Error() . "\nConversion Stopped....\n");
 	}
 
 	if (!runQuery($db, $createSQL, $runQueries))
 	{
-		die("Unable to create table Running the following SQL: " . $createSQL . ": " . $db->Error() . "\n");
+		die("Unable to create table Running the following SQL: " . $createSQL . ": " . $db->Error() . "\nConversion Stopped....\n");
 	}
 
 	if (!runQuery($db, $sql, $runQueries))
 	{
-		die("Unable to move the data... Running: " . $sql . "\n " . $db->Error() . "\n");
+		die("Unable to move the data... Running: " . $sql . "\n " . $db->Error() . "\nConversion Stopped....\n");
 	}
 	
 	if ($runQueries)
@@ -48,7 +48,7 @@ function truncateTable($db, $tableName, $runQueries)
 {
 	if (!runQuery($db, "TRUNCATE TABLE " . $tableName, $runQueries))
 	{	
-		die("Unable to truncate: " . $tableName . ": " . $db->Error() . "\n");
+		die("Unable to truncate: " . $tableName . ": " . $db->Error() . "\nConversion Stopped....\n");
 	}
 }
 
@@ -61,7 +61,7 @@ function truncateTable($db, $tableName, $runQueries)
 		echo "newznab_schema: Schema where your newznab install is located.  The current user in your config.php file must have access to this schema\n";
 		echo "nZEDB_schema: Schema where you want the newznab data converted too.  The schema must be populated and will be wiped clean except the sites and categories tables\n";
 		echo "true/false: false = Show the queries but do not run.  true means you understand the risks and want to convert the data (Your old data will not be touched\n\n";
-		echo "NOTE: This is experimental and there is a possibility that this will work correctly.  Please let us know if it doesn’t work correctly, but we are not responsible for any lost data.\n";
+		echo "NOTE: This is experimental and there is a possibility that this will not work correctly.  Please let us know if it doesn’t work correctly, but we are not responsible for any lost data.\n";
 		echo "      You will have to start any backfilling and processing over again since we use a different mechanism for processing releases\n";
 		exit(1);
 	}
