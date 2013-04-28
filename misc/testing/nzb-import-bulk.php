@@ -23,7 +23,7 @@ $usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
-	
+
 $color_skipped = 190;
 $color_blacklist = 11;
 $color_group = 1;
