@@ -86,6 +86,7 @@ CREATE INDEX ix_releases_rageID ON releases (`rageID`);
 CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
+CREATE INDEX ix_release_name ON releases('name');
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -942,7 +943,7 @@ INSERT INTO `site`
 	('adbrowse', ''),
 	('addetail', ''),
 	('grabstatus', 1),
-	('sqlpatch', '10');
+	('sqlpatch', '11');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
