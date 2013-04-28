@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r819";
+$version="0.1r853";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -489,7 +489,7 @@ while( $i > 0 )
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
-						$_php $DIR/misc/testing/nzb-import-bulk.php $nzbs' 2>&1 1> /dev/null");
+						$_python $DIR/misc/update_scripts/threaded_scripts/import_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -528,7 +528,6 @@ while( $i > 0 )
 				$color = get_color();
 				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Binaries\"'");
 			}
-		
 		}
 		else
 		{
@@ -570,7 +569,7 @@ while( $i > 0 )
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\" && \
-						$_php $DIR/misc/testing/nzb-import-bulk.php $nzbs' 2>&1 1> /dev/null");
+						$_python $DIR/misc/update_scripts/threaded_scripts/import_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			else
 			{
