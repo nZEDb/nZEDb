@@ -45,19 +45,10 @@ con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], c
 
 # The group names.
 cur = con.cursor()
-cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
-seq = cur.fetchone();
-if seq[0] == "TRUE":
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 20")
-	datas = cur.fetchall()
-else:
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
-	datas = cur.fetchall()
-cur.execute("select value from site where setting = 'backfillthreads'");
+cur.execute("SELECT name from groups where active = 1")
+datas = cur.fetchall()
+cur.execute("select value from site where setting = 'releasethreads'");
 run_threads = cur.fetchone();
-
-
-
 
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
@@ -70,8 +61,8 @@ class WorkerThread(threading.Thread):
         while not self.stoprequest.isSet():
             try:
                 dirname = self.dir_q.get(True, 0.05)
-                print '\n%s: Backfill %s started.' % (self.name, dirname)
-                subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
+                print '\n%s: Releases on %s started.' % (self.name, dirname)
+                subprocess.call(["php", pathname+"/update_releases.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
             except Queue.Empty:
                 continue
@@ -103,7 +94,7 @@ def main(args):
     while work_count > 0:
         # Blocking 'get' from a Queue.
         result = result_q.get()
-        print '\n%s: Backfill on %s finished.' % (result[0], result[1])
+        print '\n%s: Releases on %s finished.' % (result[0], result[1])
         work_count -= 1
 
     # Ask threads to die and wait for them to do it

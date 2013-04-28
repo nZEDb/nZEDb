@@ -3,11 +3,15 @@
 require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r782";
+$version="0.1r819";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
+
+$tmux = new Tmux;
+$seq = $tmux->get()->SEQUENTIAL;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE parentID IS NOT NULL GROUP BY parentID";
@@ -41,6 +45,7 @@ $proc = "SELECT
 			( SELECT value from tmux where setting = 'FIX_NAMES' ) fix_names,
 			( SELECT value from tmux where setting = 'POST' ) post,
 			( SELECT value from tmux where setting = 'RELEASES' ) releases_run,
+			( SELECT value from tmux where setting = 'RELEASES_THREADED' ) releases_threaded,
 			( SELECT value from tmux where setting = 'MYSQL_PROC' ) process_list,
 			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
@@ -336,7 +341,8 @@ while( $i > 0 )
     if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
     if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
     if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
-    if ( @$proc_result[0]['releases_run'] != NULL ) { $releases = $proc_result[0]['releases_run']; }
+    if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
+    if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
     if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows_unformatted = $proc_result[0]['binaries']; }
@@ -476,65 +482,121 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been disabled/terminated by Postprocess All\"'");
 		}
 
-		//run update_binaries
-		$color = get_color();
-		if ( $binaries == "TRUE" )
+		if ( $seq == "TRUE" )
 		{
-			shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
-					$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			//run import-nzb-bulk
+			if ( $import == "TRUE" )
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
+						$_php $DIR/misc/testing/nzb-import-bulk.php $nzbs' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Import\"'");
+			}
+
+			//run update_binaries
+			$color = get_color();
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ))
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
+						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ))
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
+						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ))
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
+						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			elseif ( $releases_run == "TRUE" )
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Binaries\"'");
+			}
+		
 		}
 		else
 		{
+			//run update_binaries
 			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Binaries\"'");
-		}
+			if ( $binaries == "TRUE" )
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Binaries\"'");
+			}
 
-		//run backfill
-		$color = get_color();
-		if (( $i == 1 ) && ( $backfill == "TRUE" ))
-		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
-					echo \"Sleeping $backfill_delay seconds to ensure the first group has finished update_binaries\" && \
-					sleep $backfill_delay && \
-					$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-		}
-		elseif ( $backfill == "TRUE" )
-		{
-			shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
-					$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-		}
-		else
-		{
+			//run backfill
 			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Backfill\"'");
-		}
+			if (( $i == 1 ) && ( $backfill == "TRUE" ))
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						echo \"Sleeping $backfill_delay seconds to ensure the first group has finished update_binaries\" && \
+						sleep $backfill_delay && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			elseif ( $backfill == "TRUE" )
+			{
+				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Backfill\"'");
+			}
 
-		//run import-nzb-bulk
-		if ( $import == "TRUE" )
-		{
-			$color = get_color();
-			shell_exec("tmux respawnp -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\" && \
-					$_php $DIR/misc/testing/nzb-import-bulk.php $nzbs' 2>&1 1> /dev/null");
-		}
-		else
-		{
-			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\n$panes1[5] has been disabled/terminated by Import\"'");
-		}
+			//run import-nzb-bulk
+			if ( $import == "TRUE" )
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\" && \
+						$_php $DIR/misc/testing/nzb-import-bulk.php $nzbs' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\n$panes1[5] has been disabled/terminated by Import\"'");
+			}
 
-		//run update_releases
-		if ( $releases == "TRUE" )
-		{
-			$color = get_color();
-			shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
-					$_php $DIR/misc/update_scripts/update_releases.php 1 false && sleep 10' 2>&1 1> /dev/null");
+			//run update_releases
+			if (( $releases_run == "TRUE" ) && ( $releases_threaded == "TRUE" ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			elseif (( $releases_run == "TRUE" ) && ( $releases_threaded != "TRUE" ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
+						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\n$panes1[6] has been disabled/terminated by Releases\"'");
+			}
 		}
-		else
-		{
-			$color = get_color();
-			shell_exec("tmux respawnp -k -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\n$panes1[6] has been disabled/terminated by Releases\"'");
-		}
-
 	}
 	else
 	{
