@@ -41,26 +41,38 @@ if (isset($argv[1]) && $argv[1] == true)
 		$delcount = deleteReleases($sql);
 		return $delcount;
 	}
+	
+	// 5 or less letters/numbers.
+	function deleteShort()
+	{
+		$db = new Db;
+		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$'");
+		$delcount = deleteReleases($sql);
+		return $delcount;
+	}
 
 	$totalDeleted = 0;
 
 	$gibberishDeleted = deleteGibberish();
 	$hashedDeleted = deleteHashed();
+	$shortDeleted = deleteShort();
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted;
 
 	if ($totalDeleted > 0)
 	{
 		echo "Total Removed: ".$totalDeleted."\n";
 		if($gibberishDeleted > 0)
-			echo "Gibberish : ".$gibberishDeleted."\n";
+			echo "Gibberish    : ".$gibberishDeleted."\n";
 		if($hashedDeleted > 0)
 			echo "Hashed       : ".$hashedDeleted."\n";
+		if($shortDeleted > 0)
+			echo "Short        : ".$shortDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
 }
 else
-	exit("If you are sure you want to run this script, type php removeCrapReleases.php true\n");
+	exit("Run fixReleaseNames.php first. If you are sure you want to run this script, type php removeCrapReleases.php true\n");
 
 ?>
