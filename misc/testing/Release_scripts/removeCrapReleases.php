@@ -74,12 +74,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 		return $delcount;
 	}
 	
-	// Anything that is 1 part and smaller than 1MB
+	// Anything that is 1 part and smaller than 1MB and not in MP3/books.
 	function deleteSize()
 	{
 		$type = "Size";
 		$db = new Db;
-		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000');
+		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050, 3010, 3030, 3050)');
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -161,7 +161,7 @@ else if (isset($argv[1]) && $argv[1] == "false")
 		."short deletes releases where the name is only numbers or letters and is 5 characters or less\n"
 		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
 		."passwordurl deletes releases which contain a password.url file\n"
-		."size deletes releases smaller than 1MB and has only 1 file\n"
+		."size deletes releases smaller than 1MB and has only 1 file not in mp3/books\n"
 		."sample deletes releases smaller than 40MB and has more than 1 file and has sample in the name\n"
 		."php removeCrapReleases.php true runs all the above\n"
 		."php removeCrapReleases.php true gibberish runs only this type\n");
