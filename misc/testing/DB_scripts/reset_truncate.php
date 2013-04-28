@@ -3,7 +3,7 @@ require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 //
-//	This scripts removes releases with no nfos, resets all groups, truncates article tables. All other releases are left alone.
+//	This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.
 //
 
 if(isset($argv[1]) && $argv[1] == "true")
@@ -27,7 +27,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 }
 else
 {
-	exit("This is dangerous. If you are sure you want to run it, type php reset_truncate.php true.\n");
+	exit("This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.\nIf you are sure you want to run it, type php reset_truncate.php true\n");
 }
 ?>
 
