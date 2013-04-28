@@ -73,6 +73,16 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
+	
+	// Anything that is 1 part and smaller than 1MB
+	function deleteSize()
+	{
+		$type = "Size";
+		$db = new Db;
+		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000');
+		$delcount = deleteReleases($sql, $type);
+		return $delcount;
+	}
 
 	$totalDeleted = 0;
 	$gibberishDeleted = 0;
@@ -80,6 +90,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	$shortDeleted = 0;
 	$exeDeleted = 0;
 	$PURLDeleted = 0;
+	$NFODeleted = 0;
 	
 	if (isset($argv[2]))
 	{
@@ -93,6 +104,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$exeDeleted = deleteExe();
 		if ($argv[2] == "passwordurl")
 			$PURLDeleted = deletePasswordURL();
+		if ($argv[2] == "size")
+			$SizeDeleted = deleteSize();
 	}
 	else
 	{
@@ -101,9 +114,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$shortDeleted = deleteShort();
 		$exeDeleted = deleteExe();
 		$PURLDeleted = deletePasswordURL();
+		$SizeDeleted = deleteSize();
 	}
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$SizeDeleted;
 
 	if ($totalDeleted > 0)
 	{
@@ -118,6 +132,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			echo "EXE          : ".$exeDeleted."\n";
 		if($PURLDeleted > 0)
 			echo "PURL         : ".$PURLDeleted."\n";
+		if($SizeDeleted > 0)
+			echo "Size         : ".$SizeDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
@@ -129,6 +145,7 @@ else if (isset($argv[1]) && $argv[1] == "false")
 		."short deletes releases where the name is only numbers or letters and is 5 characters or less\n"
 		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
 		."passwordurl deletes releases which contain a password.url file\n"
+		."size deletes releases smaller than 1MB and has only 1 file\n"
 		."php removeCrapReleases.php true runs all the above\n"
 		."php removeCrapReleases.php true gibberish runs only this type\n");
 }
@@ -138,6 +155,6 @@ else
 		."To see an explanation of what this script does, type php removeCrapReleases.php false\n"
 		."If you are sure you want to run this script, type php removeCrapReleases.php true\n"
 		."You can pass 1 optional second argument:\n"
-		."gibberish | hashed | short | exe | passwordurl\n");
+		."gibberish | hashed | short | exe | passwordurl | size\n");
 }
 ?>
