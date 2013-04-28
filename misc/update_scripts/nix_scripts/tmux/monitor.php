@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r874";
+$version="0.1r875";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -450,9 +450,18 @@ while( $i > 0 )
 	$_php = "time nice -n$niceness php";
 	$_python = "time nice -n$niceness python";
 
+	if ( $releases_threaded == "TRUE" )
+	{
+		$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
+    }
+    else
+    {
+        $run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
+    }
+
+
 	if ( $running  == "TRUE" )
 	{
-
 		//fix names
 		//run postprocess_releases
 		if (( $fix_names == "TRUE" ) && ( $i = 1 ))
@@ -513,24 +522,24 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
-						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
-						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
-						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			elseif ( $releases_run == "TRUE" )
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
-						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -587,17 +596,11 @@ while( $i > 0 )
 			}
 
 			//run update_releases
-			if (( $releases_run == "TRUE" ) && ( $releases_threaded == "TRUE" ))
+			if ( $releases_run == "TRUE" )
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-			}
-			elseif (( $releases_run == "TRUE" ) && ( $releases_threaded != "TRUE" ))
-			{
-				$color = get_color();
-				shell_exec("tmux respawnp -t $tmux_session:1.6 'echo \"\033[38;5;\"$color\"m\" && \
-						$_php $DIR/misc/update_scripts/update_releases.php 1 false && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 			}
 			else
 			{
