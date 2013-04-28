@@ -90,6 +90,7 @@
 				<div class="movextra">
 					<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
 					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a>
 				</div>
 				</div>
 			</td>
