@@ -587,6 +587,14 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="grabstatus">Update grabs</label>:</td>
+	<td>
+		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
+		<div class="hint">Wether to update download counts when someone downloads a release.</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 

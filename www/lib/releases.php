@@ -31,6 +31,7 @@ class Releases
 		$site = $s->get();
 		$this->stage5limit = (!empty($site->maxnzbsprocessed)) ? $site->maxnzbsprocessed : 1000;
 		$this->completion = (!empty($site->releasecompletion)) ? $site->releasecompletion : 0;
+		$this->updategrabs = ($site->grabstatus == "0") ? false : true;
 	}
 	
 	public function get()
@@ -1291,8 +1292,11 @@ class Releases
 	
 	public function updateGrab($guid)
 	{			
-		$db = new DB();
-		$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));		
+		if ($this->updategrabs)
+		{
+			$db = new DB();
+			$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));
+		}
 	}	
 	
 	public function processReleasesStage1($groupID)
