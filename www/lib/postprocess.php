@@ -189,7 +189,7 @@ class PostProcess {
                 // Fetch the NZB using the GUID.
                 $nzb = new NZB();
 
-				if (file_exists(!$nzbpath = $nzb->NZBPath($guid)))
+				if (!$nzbpath = $nzb->NZBPath($guid))
 				{
 					echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
 					break;

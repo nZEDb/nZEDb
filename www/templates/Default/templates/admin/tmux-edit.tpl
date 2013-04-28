@@ -19,6 +19,14 @@
 </tr>
 
 <tr>
+	<td><label for="SEQUENTIAL">Run Sequential</label>:</td>
+	<td>
+		{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL}
+		<div class="hint">Choose to run update_binaries, backfill and update releases sequentially. Changing requires restart. true/false</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="BINARIES">Binaries</label>:</td>
 	<td>
 		{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES}

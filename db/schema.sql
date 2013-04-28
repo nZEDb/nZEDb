@@ -907,6 +907,7 @@ INSERT INTO `site`
     ('backfillthreads', 1),
     ('postthreads', 1),
     ('releasethreads', 1),
+    ('nzbthreads', 1),
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
 	('amazonassociatetag', ''),
@@ -1206,6 +1207,7 @@ INSERT INTO tmux (setting, value) values ('BACKFILL','FALSE');
 INSERT INTO tmux (setting, value) values ('IMPORT','FALSE');
 INSERT INTO tmux (setting, value) values ('NZBS','/path/to/nzbs');
 INSERT INTO tmux (setting, value) values ('RUNNING','FALSE');
+INSERT INTO tmux (setting, value) values ('SEQUENTIAL','FALSE');
 INSERT INTO tmux (setting, value) values ('NFOS','FALSE');
 INSERT INTO tmux (setting, value) values ('POST','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
