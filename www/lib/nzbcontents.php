@@ -31,7 +31,7 @@ Class NZBcontents
 	}
 
 	//
-	// Look for an .nfo file in the nzb, return the nfo. Also sets the completion while we are here.
+	// Look for an .nfo file in the nzb, return the nfo. Also gets the nzb completion.
 	//
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
@@ -51,25 +51,30 @@ Class NZBcontents
 			
 			foreach ($nzbfile->file as $nzbcontents)
 			{
-				$subject = $nzbcontents->attributes()->subject;
-				
 				// Get the completion while we are here...
 				foreach($nzbcontents->segments->segment as $segment)
 				{
 					$actualParts++;
 				}
-			
+				
+				$subject = $nzbcontents->attributes()->subject;
 				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
 				$artificalParts = $artificalParts+$parts['total'];
 				
-				if (preg_match('/\.nfo/', $subject))
+				if ($foundnfo !== true)
 				{
-					$messageid = $nzbcontents->segments->segment;
-					$foundnfo = true;
+					if (preg_match('/\.nfo/', $subject))
+					{
+						$messageid = $nzbcontents->segments->segment;
+						$foundnfo = true;
+					}
 				}
 			}
-			
 			$completion = ($actualParts/$artificalParts)*100;
+			if ($completion > 100)
+			{
+				$completion = 100;
+			}
 			$this->updateCompletion($completion, $relID);
 			
 			if ($foundnfo !== false)
