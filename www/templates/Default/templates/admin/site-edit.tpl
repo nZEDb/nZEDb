@@ -564,6 +564,22 @@
 </tr>
 
 <tr>
+    <td><label for="releasethreads">Update Releases Threads</label>:</td>
+    <td>
+        <input class="tiny" id="releasethreads" name="releasethreads" type="text" value="{$fsite->releasethreads}" />
+        <div class="hint">The number of threads for update releases.</div>
+    </td>
+</tr>
+
+<tr>
+    <td><label for="nzbthreads">Import-nzb Threads</label>:</td>
+    <td>
+        <input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+        <div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
+    </td>
+</tr>
+
+<tr>
 	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
 	<td>
 		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />

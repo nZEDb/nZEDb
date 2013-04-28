@@ -19,6 +19,14 @@
 </tr>
 
 <tr>
+	<td><label for="SEQUENTIAL">Run Sequential</label>:</td>
+	<td>
+		{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL}
+		<div class="hint">Choose to run update_binaries, backfill and update releases sequentially. Changing requires restart. true/false</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="BINARIES">Binaries</label>:</td>
 	<td>
 		{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES}
@@ -37,7 +45,7 @@
 <tr>
 	<td><label for="IMPORT">Import</label>:</td>
 	<td>
-		{html_radios id="IMPORT" name='text' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT}
+		{html_radios id="IMPORT" name='IMPORT' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT}
 		<div class="hint">Choose to run import nzb script true/false</div>
 	</td>
 </tr>
@@ -55,6 +63,14 @@
 	<td>
 		{html_radios id="RELEASES" name='RELEASES' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES}
 		<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="RELEASES_THREADED">Releases Threaded</label>:</td>
+	<td>
+		{html_radios id="RELEASES_THREADED" name='RELEASES_THREADED' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES_THREADED}
+		<div class="hint">Choose to run update releases threaded. The threaded runs update releases on 1 group per thread. This will make each loop take longer, but may keep your db more responsive. true/false</div>
 	</td>
 </tr>
 
