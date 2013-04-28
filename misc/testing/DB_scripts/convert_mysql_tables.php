@@ -1,4 +1,9 @@
 <?php
+
+/*
+ * This scripts convers tables to myisam , innodb dynamic or innodb compressed. Run like this : php convert_mysql_tables.php dinnodb
+ */
+
 require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
