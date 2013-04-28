@@ -83,6 +83,16 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
+	
+	// More than 1 part, less than 40MB, sample in searchname. TV/Movie sections.
+	function deleteSample()
+	{
+		$type = "Sample";
+		$db = new Db;
+		$sql = $db->query('select ID, searchname from releases where totalPart > 1 and searchname like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)');
+		$delcount = deleteReleases($sql, $type);
+		return $delcount;
+	}
 
 	$totalDeleted = 0;
 	$gibberishDeleted = 0;
@@ -90,7 +100,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 	$shortDeleted = 0;
 	$exeDeleted = 0;
 	$PURLDeleted = 0;
-	$NFODeleted = 0;
+	$sizeDeleted = 0;
+	$sampleDeleted = 0;
 	
 	if (isset($argv[2]))
 	{
@@ -105,7 +116,9 @@ if (isset($argv[1]) && $argv[1] == "true")
 		if ($argv[2] == "passwordurl")
 			$PURLDeleted = deletePasswordURL();
 		if ($argv[2] == "size")
-			$SizeDeleted = deleteSize();
+			$sizeDeleted = deleteSize();
+		if ($argv[2] == "sample")
+			$sampleDeleted = deleteSample();
 	}
 	else
 	{
@@ -114,10 +127,11 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$shortDeleted = deleteShort();
 		$exeDeleted = deleteExe();
 		$PURLDeleted = deletePasswordURL();
-		$SizeDeleted = deleteSize();
+		$sizeDeleted = deleteSize();
+		$sampleDeleted = deleteSample();
 	}
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$SizeDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$sizeDeleted+$sampleDeleted;
 
 	if ($totalDeleted > 0)
 	{
@@ -132,8 +146,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 			echo "EXE          : ".$exeDeleted."\n";
 		if($PURLDeleted > 0)
 			echo "PURL         : ".$PURLDeleted."\n";
-		if($SizeDeleted > 0)
-			echo "Size         : ".$SizeDeleted."\n";
+		if($sizeDeleted > 0)
+			echo "Size         : ".$sizeDeleted."\n";
+		if($sampleDeleted > 0)
+			echo "Size         : ".$sampleDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
@@ -146,6 +162,7 @@ else if (isset($argv[1]) && $argv[1] == "false")
 		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
 		."passwordurl deletes releases which contain a password.url file\n"
 		."size deletes releases smaller than 1MB and has only 1 file\n"
+		."sample deletes releases smaller than 40MB and has more than 1 file and has sample in the name\n"
 		."php removeCrapReleases.php true runs all the above\n"
 		."php removeCrapReleases.php true gibberish runs only this type\n");
 }
@@ -155,6 +172,6 @@ else
 		."To see an explanation of what this script does, type php removeCrapReleases.php false\n"
 		."If you are sure you want to run this script, type php removeCrapReleases.php true\n"
 		."You can pass 1 optional second argument:\n"
-		."gibberish | hashed | short | exe | passwordurl | size\n");
+		."gibberish | hashed | short | exe | passwordurl | size | sample\n");
 }
 ?>
