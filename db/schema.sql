@@ -939,7 +939,8 @@ INSERT INTO `site`
 	('adheader', ''),
 	('adbrowse', ''),
 	('addetail', ''),
-	('sqlpatch', '7');
+	('grabstatus', 1),
+	('sqlpatch', '8');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
