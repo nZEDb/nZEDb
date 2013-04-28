@@ -17,17 +17,18 @@ if (isset($argv[1]) && $argv[1] == true)
 		$delcount = 0;
 		foreach ($sql as $rel)
 		{
+			echo "Deleting: ".$rel['searchname']."\n";
 			$releases->delete($rel['ID']);
 			$delcount++;
 		}
 		return $delcount;
 	}
 
-	// 15 or more letters, nothing else.
-	function deleteLettersOnly()
+	// 15 or more letters or numbers, nothing else.
+	function deleteGibberish()
 	{
 		$db = new Db;
-		$sql = $db->query("select ID from releases where searchname REGEXP '^[a-zA-Z]{15,}$'");
+		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$'");
 		$delcount = deleteReleases($sql);
 		return $delcount;
 	}
@@ -36,23 +37,23 @@ if (isset($argv[1]) && $argv[1] == true)
 	function deleteHashed()
 	{
 		$db = new Db;
-		$sql = $db->query("select ID from releases where searchname REGEXP '[a-zA-Z0-9]{25,}'");
+		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}'");
 		$delcount = deleteReleases($sql);
 		return $delcount;
 	}
 
 	$totalDeleted = 0;
 
-	$lettersOnlyDeleted = deleteLettersOnly();
+	$gibberishDeleted = deleteGibberish();
 	$hashedDeleted = deleteHashed();
 
-	$totalDeleted = $totalDeleted+$lettersOnlyDeleted+$hashedDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted;
 
 	if ($totalDeleted > 0)
 	{
 		echo "Total Removed: ".$totalDeleted."\n";
-		if($lettersOnlyDeleted > 0)
-			echo "Letters only : ".$lettersOnlyDeleted."\n";
+		if($gibberishDeleted > 0)
+			echo "Gibberish : ".$gibberishDeleted."\n";
 		if($hashedDeleted > 0)
 			echo "Hashed       : ".$hashedDeleted."\n";
 	}
