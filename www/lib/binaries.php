@@ -264,7 +264,7 @@ class Binaries
 				}
 				
 				// Attempt to get file count.
-				if (!preg_match('/(\[|\()(\d+)(\/|(\s|_)of(\s|_)|\-)(\d+)(\]|\))(?!"?$)/i', $msg['Subject'], $filecnt))
+				if (!preg_match('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-|\\)\d{1,4}(\)|\]|\s)(?!"?$)/i', $msg['Subject'], $filecnt))
 				{
 					$filecnt[2] = "0";
 					$filecnt[6] = "0";
