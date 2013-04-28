@@ -78,7 +78,7 @@
 	<td><label for="NFOS">Fix Release Names</label>:</td>
 	<td>
 		{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES}
-		<div class="hint">Choose to try to fix releases names  true/false</div>
+		<div class="hint">Choose to try to fix Releases Names and remove Crap Releases  true/false</div>
 	</td>
 </tr>
 
