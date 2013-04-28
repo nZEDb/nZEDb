@@ -75,6 +75,11 @@ if (isset($argv[1]) && $argv[1] == "true")
 	}
 
 	$totalDeleted = 0;
+	$gibberishDeleted = 0;
+	$hashedDeleted = 0;
+	$shortDeleted = 0;
+	$exeDeleted = 0;
+	$PURLDeleted = 0;
 	
 	if (isset($argv[2]))
 	{
