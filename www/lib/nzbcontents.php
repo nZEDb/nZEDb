@@ -46,7 +46,7 @@ Class NZBcontents
 			$nzbfile = simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			$actualParts = 0;
-			$artificalParts = 0;
+			$artificialParts = 0;
 			$messageid = "";
 			
 			foreach ($nzbfile->file as $nzbcontents)
@@ -59,7 +59,7 @@ Class NZBcontents
 				
 				$subject = $nzbcontents->attributes()->subject;
 				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
-				$artificalParts = $artificalParts+$parts['total'];
+				$artificialParts = $artificialParts+$parts['total'];
 				
 				if ($foundnfo !== true)
 				{
@@ -70,7 +70,14 @@ Class NZBcontents
 					}
 				}
 			}
-			$completion = ($actualParts/$artificalParts)*100;
+			if($artificialParts <= 0 || $actualParts <= 0)
+			{
+				$completion = ($actualParts/$artificialParts)*100;
+			}
+			else
+			{
+				$completion = 0;
+			}
 			if ($completion > 100)
 			{
 				$completion = 100;

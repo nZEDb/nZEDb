@@ -279,7 +279,7 @@ class PostProcess {
 							
 						if ($this->site->checkpasswordedrar > 0 && $processPasswords)
 						{
-							$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar);
+							$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
 						}
 							
 						// we need to unrar the fetched binary if checkpasswordedrar wasnt 2
@@ -352,7 +352,7 @@ class PostProcess {
 		return $retval;
 	}
 	
-	public function processReleasePasswords($fetchedBinary, $tmpPath, $unrarPath, $checkpasswordedrar)
+	public function processReleasePasswords($fetchedBinary, $tmpPath, $unrarPath, $checkpasswordedrar, $relID)
 	{
 		$passStatus = Releases::PASSWD_NONE;
 		$potentiallypasswordedfileregex = "/\.(ace|cab|tar|gz|rar)$/i";
@@ -383,6 +383,13 @@ class PostProcess {
 					{
 						$passStatus = Releases::PASSWD_POTENTIAL;
 					}
+				}
+				
+				// rarinnerfilecount
+				if (sizeof($files) > 0)
+				{
+					$db = new DB();
+					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", sizeof($files), $relID));
 				}
 				
 				//
