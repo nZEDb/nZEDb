@@ -492,7 +492,7 @@ class Movie
 		$nfo = new Nfo;
 		$trakt = new Trakttv();
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -500,7 +500,7 @@ class Movie
 		
 			while ($arr = $db->fetchAssoc($res)) 
 			{				
-				$moviename = $this->parseMovieName($arr['searchname']);
+				$moviename = $this->parseMovieName($arr['name']);
 				if ($moviename !== false)
 				{
 					if ($this->echooutput)
@@ -572,17 +572,59 @@ class Movie
 	
 	public function parseMovieName($releasename)
 	{
-		$cat = new Category;
-		if (!$cat->isMovieForeign($releasename)) {
-			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
-				preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
-			}
+				$cat = new Category;
+		if (!$cat->isMovieForeign($releasename)) 
+		{
+			if (preg_match('/[\s\[](?:("|\s|\d{1,4}\/\d{1.4}}))(?P<name>.*?)(?:(dvd.+|xvid))?[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
+			{
+				if (!isset($matches['year'])) 
+				{
+					preg_match('/[\s\[](?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
+				}
 			
-			if (isset($matches['name'])) {
-				$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
-				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-				return trim($name).$year;
+				if (isset($matches['name'])) 
+				{
+					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
+					$name = str_replace('-', ' ', $name);
+					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
+					$name = preg_replace('/\s{1,}/', ' ', $name);
+					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
+					return trim($name).$year;
+				}
+			}
+			else if (preg_match('/"(?P<name>.*?)[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
+			{
+				if (!isset($matches['year'])) 
+				{
+					preg_match('/"(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
+				}
+			
+				if (isset($matches['name'])) 
+				{
+					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
+					$name = str_replace('-', ' ', $name);
+					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
+					$name = preg_replace('/\s{1,}/', ' ', $name);
+					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
+					return trim($name).$year;
+				}
+			}
+			else if (preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
+			{
+				if (!isset($matches['year'])) 
+				{
+					preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
+				}
+			
+				if (isset($matches['name'])) 
+				{
+					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
+					$name = str_replace('-', ' ', $name);
+					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
+					$name = preg_replace('/\s{1,}/', ' ', $name);
+					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
+					return trim($name).$year;
+				}
 			}
 		}
 		return false;
