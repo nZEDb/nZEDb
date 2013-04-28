@@ -549,17 +549,24 @@ class Category
 
 	public function isPhone($releasename)
 	{
-		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|ANDROID|COREPDA|symbian|xscale)[\.\-_ ]?/i', $releasename))
+		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|IPAD)[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_PC_PHONE_IOS;
+			return true;
+		}
+		
+		if (preg_match('/[\.\-_ ]?(ANDROID[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_PC_PHONE_ANDROID;
+			return true;
+		}
+		
+		if (preg_match('/[\.\-_ ]?(symbian|xscale|wm5|wm6)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
 			return true;
 		}
 		
-		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|IPAD|ANDROID|COREPDA|symbian|xscale|wm5|wm6)[\.\-_ ]/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
-			return true;
-		}
 		return false;
 	}
 
