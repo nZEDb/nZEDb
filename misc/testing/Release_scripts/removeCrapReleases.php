@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This script deletes releases that match certain criteria, type php removeCrapReleases.php true
+ * This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details.
  */
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
@@ -9,7 +9,7 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/releases.php");
 
-if (isset($argv[1]) && $argv[1] == true)
+if (isset($argv[1]) && $argv[1] == "true")
 {
 	function deleteReleases($sql, $type)
 	{
@@ -63,15 +63,47 @@ if (isset($argv[1]) && $argv[1] == true)
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
+	
+	// Anything with a password.url file.
+	function deletePasswordURL()
+	{
+		$type = "PasswordURL";
+		$db = new Db;
+		$sql = $db->query('select r.ID, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%password.url%"');
+		$delcount = deleteReleases($sql, $type);
+		return $delcount;
+	}
 
 	$totalDeleted = 0;
+	$gibberishDeleted = 0;
+	$hashedDeleted = 0;
+	$shortDeleted = 0;
+	$exeDeleted = 0;
+	$PURLDeleted = 0;
+	
+	if (isset($argv[2]))
+	{
+		if ($argv[2] == "gibberish")
+			$gibberishDeleted = deleteGibberish();
+		if ($argv[2] == "hashed")
+			$hashedDeleted = deleteHashed();
+		if ($argv[2] == "short")
+			$shortDeleted = deleteShort();
+		if ($argv[2] == "exe")
+			$exeDeleted = deleteExe();
+		if ($argv[2] == "passwordurl")
+			$PURLDeleted = deletePasswordURL();
+	}
+	else
+	{
+		$gibberishDeleted = deleteGibberish();
+		$hashedDeleted = deleteHashed();
+		$shortDeleted = deleteShort();
+		$exeDeleted = deleteExe();
+		$PURLDeleted = deletePasswordURL();
+	}
 
-	$gibberishDeleted = deleteGibberish();
-	$hashedDeleted = deleteHashed();
-	$shortDeleted = deleteShort();
-	$exeDeleted = deleteExe();
-
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted;
 
 	if ($totalDeleted > 0)
 	{
@@ -83,12 +115,29 @@ if (isset($argv[1]) && $argv[1] == true)
 		if($shortDeleted > 0)
 			echo "Short        : ".$shortDeleted."\n\n";
 		if($exeDeleted > 0)
-			echo "<30MB with .exe not in apps or misc: ".$exeDeleted."\n";
+			echo "EXE          : ".$exeDeleted."\n";
+		if($PURLDeleted > 0)
+			echo "PURL         : ".$PURLDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
 }
+else if (isset($argv[1]) && $argv[1] == "false")
+{
+	exit("gibberish deletes releases where the name is only letters or numbers and is 15 characters or more.\n"
+		."hashed deletes releases where the name contains a string of 25 or more numbers or letters.\n"
+		."short deletes releases where the name is only numbers or letters and is 5 characters or less\n"
+		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
+		."passwordurl deletes releases which contain a password.url file\n"
+		."php removeCrapReleases.php true runs all the above\n"
+		."php removeCrapReleases.php true gibberish runs only this type\n");
+}
 else
-	exit("Run fixReleaseNames.php first. If you are sure you want to run this script, type php removeCrapReleases.php true\n");
-
+{
+	exit("Run fixReleaseNames.php first to attempt to fix release names.\n"
+		."To see an explanation of what this script does, type php removeCrapReleases.php false\n"
+		."If you are sure you want to run this script, type php removeCrapReleases.php true\n"
+		."You can pass 1 optional second argument:\n"
+		."gibberish | hashed | short | exe | passwordurl\n");
+}
 ?>
