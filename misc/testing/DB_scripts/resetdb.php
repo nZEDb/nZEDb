@@ -41,6 +41,6 @@ if (isset($argv[1]) && $argv[1] === "true")
 }
 else
 {
-	exit("This is dangerous. If you are sure you want to run it , type php resetdb.php true.\n");
+	exit("This script removes all releases, nzb files, truncates all article tables, resets groups.\nIf you are sure you want to run it, type php resetdb.php true\n");
 }
 ?>
