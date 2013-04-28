@@ -3,7 +3,7 @@
 export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export HELP_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
 export THREAD_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
-export TESTH_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
+export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
 export PHP="$(which php5)"
 export PYTHON="$(which python)"
 export SCREEN="$(which screen)"
@@ -15,6 +15,7 @@ export NZEDB_SLEEP_TIME="60"
 while :
 do
 	
+	CURRTIME=`date +%s`
 	cd ${NZEDB_PATH}
 	if ! $SCREEN -list | grep -q "POSTP"; then
 		cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true
@@ -29,9 +30,8 @@ do
 	fi
 	
 	cd ${TEST_PATH}
-	CURRTIME=`date +%s`
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
-	if [ "$DIFF" -gt 3600 ] || [ "$DIFF" -lt 1 ]
+	if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
 	then
 		LASTOPTIMIZE=`date +%s`
 		echo "Optimizing DB..."
@@ -42,7 +42,6 @@ do
 	fi
 	
 	cd ${NZEDB_PATH}
-	CURRTIME=`date +%s`
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE1))
 	if [ "$DIFF" -gt 7200 ] || [ "$DIFF" -lt 1 ]
 	then
