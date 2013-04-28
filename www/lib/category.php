@@ -651,7 +651,7 @@ class Category
 	
 	public function isXxxWMV($releasename)
 	{
-		if (preg_match('/wmv|pack\-|mp4|f4v|flv|mov|mpeg|isom|realmedia|multiformat|(e\d{2,})|(\d{2}\.\d{2}\.\d{2})|uhq|(issue\.\d{2,})/i', $releasename))
+		if (preg_match('/(\d{2}\.\d{2}\.\d{2})|(e\d{2,})|f4v|flv|isom|(issue\.\d{2,})|mov|mp4|mpeg|multiformat|pack\-|realmedia|uhq|wmv/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_WMV;
 			return true;
@@ -694,7 +694,7 @@ class Category
 	public function isXxxOther($releasename)
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
+		if (preg_match('/[\.\-_ ]Brazzers|North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
