@@ -244,7 +244,7 @@ else
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
 							$seconds = TIME() - $time;
 							$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
-							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour\033[0m".$n;
+							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m".$n;
 						}
 					}
 					else 
