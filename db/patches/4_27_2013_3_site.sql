@@ -1,9 +1,9 @@
 INSERT IGNORE INTO `site`
     (`setting`, `value`)
     VALUES
-	('backfillthreads','4'),
-	('binarythreads','4'),
-	('postthreads','4');
+	('backfillthreads','1'),
+	('binarythreads','1'),
+	('postthreads','1');
 
 UPDATE `site` set `value` = '5' where `setting` = 'sqlpatch';
 
