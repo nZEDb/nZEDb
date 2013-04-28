@@ -72,11 +72,11 @@ Class NZBcontents
 			}
 			if($artificialParts <= 0 || $actualParts <= 0)
 			{
-				$completion = ($actualParts/$artificialParts)*100;
+				$completion = 0;
 			}
 			else
 			{
-				$completion = 0;
+				$completion = ($actualParts/$artificialParts)*100;
 			}
 			if ($completion > 100)
 			{
