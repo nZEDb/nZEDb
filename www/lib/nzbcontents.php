@@ -59,7 +59,7 @@ Class NZBcontents
 				
 				$subject = $nzbcontents->attributes()->subject;
 				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
-				$artificalParts = $artificalParts+$parts['total'];
+				$artificialParts = $artificalParts+$parts['total'];
 				
 				if ($foundnfo !== true)
 				{
