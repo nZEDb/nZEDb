@@ -28,8 +28,10 @@ class Category
 	const CAT_PC_0DAY = 4010;
 	const CAT_PC_ISO = 4020;
 	const CAT_PC_MAC = 4030;
-	const CAT_PC_PHONE = 4040;
+	const CAT_PC_PHONE_OTHER = 4040;
 	const CAT_PC_GAMES = 4050;
+	const CAT_PC_PHONE_IOS = 4060;
+	const CAT_PC_PHONE_ANDROID = 4070;
 	const CAT_TV_FOREIGN = 5020;
 	const CAT_TV_SD = 5030;
 	const CAT_TV_HD = 5040;
@@ -42,6 +44,8 @@ class Category
 	const CAT_XXX_XVID = 6030;
 	const CAT_XXX_X264 = 6040;
 	const CAT_XXX_OTHER = 6050;
+	const CAT_XXX_IMAGESET = 6060;
+	const CAT_XXX_PACKS = 6070;
 	const CAT_MISC = 7010;
 	const CAT_BOOKS_EBOOK = 8010;
 	const CAT_BOOKS_COMICS = 8020;
@@ -547,13 +551,13 @@ class Category
 	{
 		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|ANDROID|COREPDA|symbian|xscale)[\.\-_ ]?/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_PC_PHONE;
+			$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
 			return true;
 		}
 		
 		if (preg_match('/[\.\-_ ]?(IPHONE|ITOUCH|IPAD|ANDROID|COREPDA|symbian|xscale|wm5|wm6)[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_PC_PHONE;
+			$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
 			return true;
 		}
 		return false;
@@ -685,7 +689,7 @@ class Category
 	{
 		if (preg_match('/IMAGESET/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_XXX_OTHER;
+			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
 		}
 		

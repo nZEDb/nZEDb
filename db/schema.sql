@@ -659,8 +659,10 @@ INSERT INTO category (ID, title, parentID) VALUES (3050, 'Other', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (4010, '0day', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4020, 'ISO', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4030, 'Mac', 4000);
-INSERT INTO category (ID, title, parentID) VALUES (4040, 'Phone', 4000);
+INSERT INTO category (ID, title, parentID) VALUES (4040, 'Phone\-Other', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4050, 'Games', 4000);
+INSERT INTO category (ID, title, parentID) VALUES (4060, 'Phone\-IOS', 4000);
+INSERT INTO category (ID, title, parentID) VALUES (4070, 'Phone\-Android', 4000);
 
 INSERT INTO category (ID, title, parentID) VALUES (5020, 'Foreign', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5030, 'SD', 5000);
@@ -675,6 +677,8 @@ INSERT INTO category (ID, title, parentID) VALUES (6020, 'WMV', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6030, 'XviD', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6040, 'x264', 6000);
 INSERT INTO category (ID, title, parentID) VALUES (6050, 'Other', 6000);
+INSERT INTO category (ID, title, parentID) VALUES (6060, 'Imageset', 6000);
+INSERT INTO category (ID, title, parentID) VALUES (6070, 'Packs', 6000);
 
 INSERT INTO category (ID, title, parentID) VALUES (7010, 'Misc', 7000);
 
@@ -935,7 +939,7 @@ INSERT INTO `site`
 	('adheader', ''),
 	('adbrowse', ''),
 	('addetail', ''),
-	('sqlpatch', '6');
+	('sqlpatch', '7');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
