@@ -8,7 +8,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
-	
+
 	$db = new DB;
 
 
