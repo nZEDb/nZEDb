@@ -75,6 +75,12 @@
 				<div class="movextra">
 					{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
 					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.searchname|escape:"htmlall"}/" name="gamespot{$result.consoleinfoID}" title="View gamespot page">Gamespot</a>
+				</div>
+				</div>
+				<div class="movextra">
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://ign.com/search?q={$result.searchname|escape:"htmlall"}/" name="ign{$result.consoleinfoID}" title="View ign page">IGN</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.searchname|escape:"htmlall"}/results" name="metacritic{$result.consoleinfoID}" title="View metacritic page">Metacritic</a>
 					<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 				</div>
 				</div>
