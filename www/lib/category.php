@@ -555,7 +555,7 @@ class Category
 			return true;
 		}
 		
-		if (preg_match('/[\.\-_ ]?(ANDROID[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ]?(ANDROID)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_PHONE_ANDROID;
 			return true;
