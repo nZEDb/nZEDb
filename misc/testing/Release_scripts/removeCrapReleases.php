@@ -149,7 +149,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		if($sizeDeleted > 0)
 			echo "Size         : ".$sizeDeleted."\n";
 		if($sampleDeleted > 0)
-			echo "Size         : ".$sampleDeleted."\n";
+			echo "Sample       : ".$sampleDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
