@@ -50,7 +50,9 @@ cur.execute("select value from tmux where setting = 'NZBS'");
 nzbs = cur.fetchone();
 
 print "Sorting Folders in "+nzbs[0]+", be patient."
-datas = sorted(os.walk(nzbs[0]))
+#datas = sorted(os.walk(nzbs[0]))
+datas = os.walk(nzbs[0])
+datas = sorted(datas,reverse=False)
 	
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
