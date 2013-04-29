@@ -93,7 +93,7 @@ class NZB
 	{
 		if ($sitenzbpath == "")
 		{
-			$s = new Site();
+			$s = new Sites();
 			$site = $s->get();
 			$sitenzbpath = $site->nzbpath;
 			$levelsToSplit = $site->nzbsplitlevel;
