@@ -280,7 +280,8 @@ require_once(WWW_DIR."/lib/site.php");
 			
 			// Get name and author of the book from the name
 			
-			if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\s(\(|\[).+"/i', $releasename, $matches))
+			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
+			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)\s\(/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
@@ -303,7 +304,32 @@ require_once(WWW_DIR."/lib/site.php");
 				else
 					return false;
 			}
-			else if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\.[\w]+"/i', $releasename, $matches))
+			// "Maud Hart Lovelace - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
+			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)\s(\(|\[).+"/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
+			// "Maud Hart Lovelace - Betsy Was a Junior & Betsy and Joe.mobi"
+			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)\.[\w]+"/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
@@ -326,7 +352,8 @@ require_once(WWW_DIR."/lib/site.php");
 				else
 					return false;
 			}
-			else if(preg_match('/"(?P<title>.+)(\.|\s)by(\.|\s)(?P<author>.+)(\[|\().+"/i', $releasename, $matches))
+			// "Betsy Was a Junior & Betsy and Joe by Maud Hart Lovelace(retail).rar"
+			else if(preg_match('/"(?P<title>.+?)(\.|\s)by(\.|\s)(?P<author>.+?)(\[|\().+?"/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
