@@ -89,16 +89,14 @@ class NZB
 		}
 	}
 	
-	//
-	// builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
-	//
-	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
+	function buildNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
 	{
 		if ($sitenzbpath == "")
 		{
 			$s = new Site();
 			$site = $s->get();
 			$sitenzbpath = $site->nzbpath;
+			$levelsToSplit = $site->nzbsplitlevel;
 		}
 
 		$subpath = "";
@@ -111,31 +109,26 @@ class NZB
 		if ($createIfDoesntExist && !file_exists($nzbpath))
 				mkdir($nzbpath, 0777, true);
 		
+		return $nzbpath;
+	}
+	
+	//
+	// builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
+	//
+	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
+	{
+		$nzbpath = $this->buildNZBPath($releaseGuid, $sitenzbpath, $createIfDoesntExist, $levelsToSplit);
 		return $nzbpath.$releaseGuid.".nzb.gz";
 	}
 	
 	//
 	// Check if the NZB is there, returns path, else false.
 	//
-	function NZBPath($releaseGuid, $sitenzbpath = "")
+	function NZBPath($releaseGuid, $sitenzbpath = "", $levelsToSplit = 1)
 	{
-		if ($sitenzbpath == "")
-		{
-			$s = new Sites;
-			$site = $s->get();
-			$sitenzbpath = $site->nzbpath;
-		}
-
-		$nzbpath = $sitenzbpath.substr($releaseGuid, 0, 1)."/";
+		$nzbfile = getNZBPath($releaseGuid, $sitenzbpath, false, $levelsToSplit); 
 		
-		if (!file_exists($nzbpath))
-		{
-			return false;
-		}
-		else
-		{
-			return $nzbpath.$releaseGuid.".nzb.gz";
-		}
+		return !file_exists($nzbfile) ? false : $nzbfile;
 	}
     
 	function nzbFileList($nzb) 
