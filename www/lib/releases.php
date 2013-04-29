@@ -479,7 +479,7 @@ class Releases
 			// delete from disk.
 			//
 			$rel = $this->getById($identifier);
-			$nzbpath = $nzb->getNZBPath($rel["guid"], $s->nzbpath, false, $s->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($rel["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
 			
 			if ($rel && file_exists($nzbpath))
 			{
