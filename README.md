@@ -61,6 +61,18 @@ Post-Installation:
 	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
 
 	To clean up the release names, check out fixReleaseNames.php in misc/testing.
+	
+Notes:
+
+	We are not responsible for what is posted on the usenet.
+	
+	Everything indexed by this software is out of our control, if you have complaints, direct them to your usenet service provider.
+	
+	We are not responsible for what you do with this software.
+	
+	Windows is currently untested, we will not offer support for those having issues with windows.
+	
+	This software is offered as is, we classify it as "alpha", it has bugs, so be aware of this.
 
 Original Newznab readme:
 
