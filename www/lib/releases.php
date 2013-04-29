@@ -479,7 +479,7 @@ class Releases
 			// delete from disk.
 			//
 			$rel = $this->getById($identifier);
-			$nzbpath = $nzb->getNZBPath($rel["guid"]);
+			$nzbpath = $nzb->getNZBPath($rel["guid"], $s->nzbpath, false, $s->nzbsplitlevel);
 			
 			if ($rel && file_exists($nzbpath))
 			{
@@ -1212,7 +1212,7 @@ class Releases
 		
 		foreach ($guids as $guid)
 		{
-			$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath);
+			$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath, false, $site->nzbsplitlevel);
 
 			if (file_exists($nzbpath)) 
 			{
@@ -1606,7 +1606,7 @@ class Releases
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true));
+				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true, $page->site->nzbsplitlevel));
 				$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
 				$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %s", $rowrel['ID']));
 				/*$db->queryDirect(sprintf("DELETE collections, binaries, parts
