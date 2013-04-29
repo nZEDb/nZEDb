@@ -943,7 +943,8 @@ INSERT INTO `site`
 	('adbrowse', ''),
 	('addetail', ''),
 	('grabstatus', 1),
-	('sqlpatch', '11');
+	('nzbsplitlevel', 1),
+	('sqlpatch', '12');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

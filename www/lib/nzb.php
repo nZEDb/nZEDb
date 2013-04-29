@@ -72,7 +72,7 @@ class NZB
 	function copyNZBforImport($relguid, $nzb, $echooutput=false)
 	{
 		$page = new Page;
-		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true);
+		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
 		$fp = gzopen($path, 'w5');
 		if ($fp)
 		{
@@ -90,19 +90,24 @@ class NZB
 	//
 	// builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
 	//
-	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false)
+	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
 	{
 		if ($sitenzbpath == "")
 		{
-			$s = new Sites;
+			$s = new Site();
 			$site = $s->get();
 			$sitenzbpath = $site->nzbpath;
 		}
 
-		$nzbpath = $sitenzbpath.substr($releaseGuid, 0, 1)."/";
+		$subpath = "";
+		
+		for ($i = 0; $i < $levelsToSplit; $i++)
+			$subpath = $subpath . substr($releaseGuid, $i, 1) . "/";
+			
+		$nzbpath = $sitenzbpath . $subpath;
 
 		if ($createIfDoesntExist && !file_exists($nzbpath))
-				mkdir($nzbpath);
+				mkdir($nzbpath, 0777, true);
 		
 		return $nzbpath.$releaseGuid.".nzb.gz";
 	}

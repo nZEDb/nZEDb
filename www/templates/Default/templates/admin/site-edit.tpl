@@ -324,6 +324,14 @@
 </tr>
 
 <tr>
+	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
+	<td>
+		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
+		<div class="hint">Levels deep to store the nzb Files.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="releaseretentiondays">Release Retention</label>:</td>
 	<td>
 		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
