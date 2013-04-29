@@ -45,16 +45,16 @@ con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], c
 
 # The group names.
 cur = con.cursor()
+cur.execute("select value from site where setting = 'backfillthreads'");
+run_threads = cur.fetchone();
 cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
 seq = cur.fetchone();
 if seq[0] == "TRUE":
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 5")
+	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit int(run_threads[0])")
 	datas = cur.fetchall()
 else:
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
 	datas = cur.fetchall()
-cur.execute("select value from site where setting = 'backfillthreads'");
-run_threads = cur.fetchone();
 
 
 
