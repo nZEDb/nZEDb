@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r912";
+$version="0.1r943";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -224,27 +224,11 @@ printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_f
 $i = 1;
 while( $i > 0 )
 {
-	
+
 	//get microtime at start of loop
 	$time_loop_start = microtime_float();
 
 	$getdate = gmDate("Ymd");
-
-	if ((( TIME() - $time2 ) >= $monitor ) || ( $i == 1 )) {
-		//get microtime to at start of queries
-		$query_timer_start=microtime_float();
-		$result = @$db->query($qry);
-		$initquery = array();
-		foreach ($result as $cat=>$sub)
-		{
-			$initquery[$sub['parentID']] = $sub['cnt'];
-		}
-		$proc_result = @$db->query($proc);
-		$time2 = TIME();
-		$runloop = "true";
-	} else {
-		$runloop = "false";
-	}
 
 	//run queries
 	if ((( TIME() - $time2 ) >= $monitor ) || ( $i == 1 )) {
@@ -288,7 +272,7 @@ while( $i > 0 )
 	if (( @$proc_result[0]['releases'] ) && ( $releases_start == 0 )) { $releases_start = $proc_result[0]['releases']; }
 
 	//get start values from $qry
-	if ( $i == "1" ) 
+	if ( $i == 1 ) 
 	{
 		if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_result[0]['nforemains']; }
 		if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_result[0]['console']; }
@@ -464,7 +448,7 @@ while( $i > 0 )
 	{
 		//fix names
 		//run postprocess_releases
-		if (( $fix_names == "TRUE" ) && ( $i = 1 ))
+		if (( $fix_names == "TRUE" ) && ( $i == 1 ))
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && \
@@ -561,7 +545,7 @@ while( $i > 0 )
 				$color = get_color();
 				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Binaries\"'");
 			}
-
+			echo $i;
 			//run backfill
 			$color = get_color();
 			if (( $i == 1 ) && ( $backfill == "TRUE" ))
