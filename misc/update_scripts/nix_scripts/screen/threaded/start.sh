@@ -34,7 +34,7 @@ do
 	if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
 	then
 		LASTOPTIMIZE=`date +%s`
-		echo "Optimizing DB..."
+		echo "Cleaning DB..."
 		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 1 true all yes
@@ -54,6 +54,7 @@ do
 	if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
 	then
 		LASTOPTIMIZE2=`date +%s`
+		echo "Updating schedules..."
 		$PHP ${NZEDB_PATH}/update_tvschedule.php
 		$PHP ${NZEDB_PATH}/update_theaters.php
 	fi
