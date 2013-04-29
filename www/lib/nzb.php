@@ -124,7 +124,7 @@ class NZB
 	//
 	// Check if the NZB is there, returns path, else false.
 	//
-	function NZBPath($releaseGuid, $sitenzbpath = ""; $levelsToSplit = 1)
+	function NZBPath($releaseGuid, $sitenzbpath = "", $levelsToSplit = 1)
 	{
 		$nzbfile = getNZBPath($releaseGuid, $sitenzbpath, false, $levelsToSplit); 
 		
