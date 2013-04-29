@@ -281,7 +281,7 @@ require_once(WWW_DIR."/lib/site.php");
 			// Get name and author of the book from the name
 			
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
-			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)\s\(/i', $releasename, $matches))
+			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)(\s\[|\-\s|;\s|\s\-|\s\()/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
@@ -305,7 +305,7 @@ require_once(WWW_DIR."/lib/site.php");
 					return false;
 			}
 			// "Maud Hart Lovelace - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
-			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)\s(\(|\[).+"/i', $releasename, $matches))
+			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)(\-\s|\s(\(|\[)).+?"/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
