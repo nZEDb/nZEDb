@@ -141,7 +141,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		if($hashedDeleted > 0)
 			echo "Hashed       : ".$hashedDeleted."\n";
 		if($shortDeleted > 0)
-			echo "Short        : ".$shortDeleted."\n\n";
+			echo "Short        : ".$shortDeleted."\n";
 		if($exeDeleted > 0)
 			echo "EXE          : ".$exeDeleted."\n";
 		if($PURLDeleted > 0)
