@@ -36,7 +36,7 @@ foreach($objects as $filestoprocess => $nzbFile)
 	{
 		echo $newFileName . $n;
 		rename($nzbFile, $newFileName);
-		chmod($newFileName, 777); // chage the mod to fix issues some users have with file permissions
+		chmod($newFileName, 0777); // chage the mod to fix issues some users have with file permissions
 	}
 	
 	$iFilesProcessed++;
