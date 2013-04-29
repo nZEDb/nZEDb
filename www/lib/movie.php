@@ -489,9 +489,9 @@ class Movie
 	{
 		$db = new DB();
 		// Using name.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "name");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "name");
 		// Using searchname.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "searchname");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "searchname");
 	}
 	
 	public function doprocessMovieReleases($res, $type)
@@ -539,7 +539,7 @@ class Movie
 							$movieId = $this->updateMovieInfo($traktimdbid);
 						}
 					}
-					else if ($googleban == false && $googlelimit <= 15)
+					else if ($googleban == false && $googlelimit <= 40)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
 						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=&as_epq=".urlencode($moviename1)."&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
@@ -631,6 +631,10 @@ class Movie
 								$googleban = true;
 							}
 						}
+					}
+					else
+					{
+						// Later on use another search engine like Yahoo to continue once we have reached googles limits.
 					}
 				}
 				else
