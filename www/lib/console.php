@@ -547,26 +547,25 @@ class Console
 		preg_match('/^(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI\.?5|MULTI\.?4|MULTI\.?3|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|READ\.?NFO|NFOFIX|PS2|PS3|PSP|WII|X\-?BOX|XBLA|X360|NDS|N64|NGC)/i', $releasename, $matches);
 		if (isset($matches['title'])) 
 		{
-      $title = $matches['title'];
+			$title = $matches['title'];
 			//replace dots or underscores with spaces
 			$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
 			//Needed to add code to handle DLC Properly
-      if (preg_match('/dlc/i', $result['title']))
+			if (preg_match('/dlc/i', $result['title']))
 			{
 				$result['dlc'] = '1';
 				if (preg_match('/Rock Band Network/i', $result['title']))
 				{
-        	$result['title'] = 'Rock Band';
+					$result['title'] = 'Rock Band';
 				}
-				Else if (preg_match('/\-/i', $result['title']))
+				else if (preg_match('/\-/i', $result['title']))
 				{
-        	$dlc = explode("-", $result['title']);
-        	$result['title'] = $dlc[0];
+					$dlc = explode("-", $result['title']);
+					$result['title'] = $dlc[0];
 				}
-				Else
+				else if (preg_match('/(.*? .*?) /i', $result['title'], $dlc))
 				{
-        	preg_match('/(.*? .*?) /i', $result['title'], $dlc);
-        	$result['title'] = $dlc[0];
+					$result['title'] = $dlc[0];
 				}
 			}
 		}
