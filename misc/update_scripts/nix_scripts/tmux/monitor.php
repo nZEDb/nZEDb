@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r881";
+$version="0.1r888";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -435,6 +435,7 @@ while( $i > 0 )
     {
         $result = @$db->query($qcache);
         printf($mask2, "Query cache cleaned", "", "");
+		$time1 = TIME();
     }
 
 	//get microtime at end of queries
