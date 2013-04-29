@@ -75,7 +75,6 @@ foreach ($groups as $group)
 	$siteGroups[$group["name"]] = $group["ID"];
 
 $data = array();
-//$filenames = array();;
 
 if (!isset($groups) || count($groups) == 0)
 {
@@ -164,7 +163,8 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					//unlink($nzbFile);
+					if (isset($argv[2]) && $argv[2] == "delete")
+						unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -235,10 +235,10 @@ else
 						else
 						{
 							unset($data);
-							//foreach ($filenames as $value) {
- 								//unlink($value);
-							//}
-							//unset($filenames);
+							if (isset($argv[2]) && $argv[2] == "delete")
+								foreach ($filenames as $value) {
+ 									unlink($value);
+								}
 							categorize();
 							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
@@ -264,7 +264,6 @@ else
 				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m".$n;
 				$importfailed = true;
 			}
-			//$filenames[] = $nzbFile;
 			$nzbCount++;
 		}
 	}
