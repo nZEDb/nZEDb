@@ -502,8 +502,8 @@ class Movie
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
-		$bingban = false;
 		$binglimit = 0;
+		$yahoolimit = 0;
 		
 		if ($db->getNumRows($res) > 0)
 		{	
@@ -541,7 +541,7 @@ class Movie
 							$movieId = $this->updateMovieInfo($traktimdbid);
 						}
 					}
-					else if ($googleban == false && $googlelimit <= 50)
+					else if ($googleban == false && $googlelimit <= 40)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
 						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($moviename1)."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
@@ -605,7 +605,7 @@ class Movie
 							}
 						}
 					}
-					else if ($bingban == false && $binglimit <= 50)
+					else if ($binglimit <= 40)
 					{
 						$moviename = str_replace(' ', '+', $moviename);
 						preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result);
@@ -657,10 +657,61 @@ class Movie
 							}
 						}
 					}
+					else if ($yahoolimit <= 40)
+					{
+						$moviename = str_replace(' ', '+', $moviename);
+						preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result);
+						$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."+".urlencode($result["year"])."&vs=imdb.com");
+						
+						if ($buffer !== false && strlen($buffer))
+						{
+							$yahoolimit++;
+							$imdbId = $nfo->parseImdb($buffer);
+							if ($imdbId !== false) 
+							{
+								if ($this->echooutput)
+									echo 'Yahoo1 found IMDBid: tt'.$imdbId."\n";
+									
+								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+									
+								$movCheck = $this->getMovieInfo($imdbId);
+								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+								{
+									$movieId = $this->updateMovieInfo($imdbId);
+								}
+							}
+							else 
+							{
+								$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."&vs=imdb.com");
+								if ($buffer !== false && strlen($buffer))
+								{
+									$yahoolimit++;
+									$imdbId = $nfo->parseImdb($buffer);
+									if ($imdbId !== false) 
+									{
+										if ($this->echooutput)
+											echo 'Yahoo2 found IMDBid: tt'.$imdbId."\n";
+										
+										$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+										
+										$movCheck = $this->getMovieInfo($imdbId);
+										if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+										{
+											$movieId = $this->updateMovieInfo($imdbId);
+										}
+									}
+									else
+									{
+										//no imdb id found, set to all zeros so we dont process again
+										$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+									}
+								}
+							}
+						}
+					}
 					else
 					{
-						echo "Exceeded bing.com request limit.. Will retry next time.\n";
-						$bingban == true;
+						echo "Exceeded request limits on google.com bing.com and yahoo.com.\n"
 					}
 				}
 				else
