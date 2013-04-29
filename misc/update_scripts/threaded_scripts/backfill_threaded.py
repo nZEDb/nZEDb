@@ -48,7 +48,7 @@ cur = con.cursor()
 cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
 seq = cur.fetchone();
 if seq[0] == "TRUE":
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 20")
+	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 5")
 	datas = cur.fetchall()
 else:
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")

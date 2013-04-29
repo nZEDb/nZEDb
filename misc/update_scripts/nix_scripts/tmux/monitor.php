@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r892";
+$version="0.1r895";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -18,36 +18,36 @@ $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER
 
 //needs to be processed query
 $proc = "SELECT
-			( SELECT COUNT( groupID ) AS cnt from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 ) AS console,
-			( SELECT COUNT( groupID ) AS cnt from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 ) AS movies,
-			( SELECT COUNT( groupID ) AS cnt from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 ) AS audio,
-			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
-			( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
-			( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-			( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and categoryID BETWEEN 8000 AND 8999 ) as book,
-			( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
-			( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
-			( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-			( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
-            ( SELECT COUNT( groupID ) from collections ) collections,
-			( SELECT COUNT( groupID ) from collections where filecheck = 3 ) collections_3,
-			( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
-			( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
-			( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
-			( SELECT value from tmux where setting = 'COLLECTIONS' ) collections_kill,
-			( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
-			( SELECT value from tmux where setting = 'NICENESS' ) niceness,
-			( SELECT value from tmux where setting = 'RUNNING' ) running,
-			( SELECT value from tmux where setting = 'BINARIES' ) binaries_run,
-			( SELECT value from tmux where setting = 'BACKFILL' ) backfill,
-			( SELECT value from tmux where setting = 'IMPORT' ) import,
-			( SELECT value from tmux where setting = 'NZBS' ) nzbs,
-			( SELECT value from tmux where setting = 'FIX_NAMES' ) fix_names,
-			( SELECT value from tmux where setting = 'POST' ) post,
-			( SELECT value from tmux where setting = 'RELEASES' ) releases_run,
-			( SELECT value from tmux where setting = 'RELEASES_THREADED' ) releases_threaded,
-			( SELECT value from tmux where setting = 'MYSQL_PROC' ) process_list,
-			( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
+	( SELECT COUNT( groupID ) AS cnt from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 ) AS console,
+	( SELECT COUNT( groupID ) AS cnt from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( groupID ) AS cnt from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 ) AS audio,
+	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
+	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+	( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and categoryID BETWEEN 8000 AND 8999 ) as book,
+	( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
+	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
+	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
+	( SELECT COUNT( groupID ) from collections ) collections,
+	( SELECT COUNT( groupID ) from collections where filecheck = 3 ) collections_3,
+	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
+	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
+	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
+	( SELECT value from tmux where setting = 'COLLECTIONS' ) collections_kill,
+	( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
+	( SELECT value from tmux where setting = 'NICENESS' ) niceness,
+	( SELECT value from tmux where setting = 'RUNNING' ) running,
+	( SELECT value from tmux where setting = 'BINARIES' ) binaries_run,
+	( SELECT value from tmux where setting = 'BACKFILL' ) backfill,
+	( SELECT value from tmux where setting = 'IMPORT' ) import,
+	( SELECT value from tmux where setting = 'NZBS' ) nzbs,
+	( SELECT value from tmux where setting = 'FIX_NAMES' ) fix_names,
+	( SELECT value from tmux where setting = 'POST' ) post,
+	( SELECT value from tmux where setting = 'RELEASES' ) releases_run,
+	( SELECT value from tmux where setting = 'RELEASES_THREADED' ) releases_threaded,
+	( SELECT value from tmux where setting = 'MYSQL_PROC' ) process_list,
+	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
 $qcache = "FLUSH QUERY CACHE";
@@ -100,7 +100,6 @@ function relativeTime($_time) {
 			$return.= $w[$i]. " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
 		}
 	}
-
 	//$return .= ($diff>0)?"ago":"left";
 	return $return;
 }
@@ -225,7 +224,7 @@ printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_f
 $i = 1;
 while( $i > 0 )
 {
-
+	
 	//get microtime at start of loop
 	$time_loop_start = microtime_float();
 
@@ -325,25 +324,25 @@ while( $i > 0 )
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows_unformatted = $proc_result[0]['parts']; }
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = number_format($proc_result[0]['parts']); }
 	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
-    if ( @$proc_result[0]['collections'] != NULL ) { $collections = $proc_result[0]['collections']; }
-    if ( @$proc_result[0]['collections_3'] != NULL ) { $collections_3 = $proc_result[0]['collections_3']; }
+	if ( @$proc_result[0]['collections'] != NULL ) { $collections = $proc_result[0]['collections']; }
+	if ( @$proc_result[0]['collections_3'] != NULL ) { $collections_3 = $proc_result[0]['collections_3']; }
 
-    if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
-    if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
-    if ( @$proc_result[0]['monitor'] != NULL ) { $monitor = $proc_result[0]['monitor']; }
-    if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
-    if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
+	if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
+	if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
+	if ( @$proc_result[0]['monitor'] != NULL ) { $monitor = $proc_result[0]['monitor']; }
+	if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
+	if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
 
-    if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
-    if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
-    if ( @$proc_result[0]['backfill_delay'] != NULL ) { $backfill_delay = $proc_result[0]['backfill_delay']; }
-    if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
-    if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
-    if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
-    if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
-    if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
-    if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
-    if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
+	if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
+	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
+	if ( @$proc_result[0]['backfill_delay'] != NULL ) { $backfill_delay = $proc_result[0]['backfill_delay']; }
+	if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
+	if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
+	if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
+	if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
+	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
+	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
+	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows_unformatted = $proc_result[0]['binaries']; }
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = number_format($proc_result[0]['binaries']); }
@@ -430,13 +429,13 @@ while( $i > 0 )
 	printf($mask, "Books(8000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
 	printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
 
-    //defrag the query cache every 15 minutes
-    if (( TIME() - $time1 >= $defrag ) || ( $i == 1 ))
-    {
-        $result = @$db->query($qcache);
-        printf($mask2, "Query cache cleaned", "", "");
+	//defrag the query cache every 15 minutes
+	if (( TIME() - $time1 >= $defrag ) || ( $i == 1 ))
+	{
+		$result = @$db->query($qcache);
+		printf($mask2, "Query cache cleaned", "", "");
 		$time1 = TIME();
-    }
+	}
 
 	//get microtime at end of queries
 	if ( $runloop == "true" )
@@ -454,11 +453,11 @@ while( $i > 0 )
 	if ( $releases_threaded == "TRUE" )
 	{
 		$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
-    }
-    else
-    {
-        $run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
-    }
+	}
+	else
+	{
+		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
+	}
 
 
 	if ( $running  == "TRUE" )
@@ -469,19 +468,19 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && \
-                    $_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes \
-                    $_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other yes \
+					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes \
+					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other yes \
 					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 2 true other yes && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
 		}
-        elseif ( $fix_names == "TRUE" )
-        {
-            $color = get_color();
-            shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && \
-                    $_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes \
-                    $_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other yes \
-                    $_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true other yes \
-					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php true \&& date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-        }
+		elseif ( $fix_names == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\" && \
+					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes \
+					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other yes \
+					$_php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true all yes \
+					$_php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true \&& date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
+		}
 		else
 		{
 			$color = get_color();
