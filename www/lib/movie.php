@@ -502,6 +502,8 @@ class Movie
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
+		$bingban = false;
+		$binglimit = 0;
 		
 		if ($db->getNumRows($res) > 0)
 		{	
@@ -539,20 +541,20 @@ class Movie
 							$movieId = $this->updateMovieInfo($traktimdbid);
 						}
 					}
-					else if ($googleban == false && $googlelimit <= 40)
+					else if ($googleban == false && $googlelimit <= 50)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
-						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=&as_epq=".urlencode($moviename1)."&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($moviename1)."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
 						
 						// make sure we got some data
 						if ($buffer !== false && strlen($buffer))
 						{
+							$googlelimit++;
 							if (!preg_match('/To continue, please type the characters below/i', $buffer))
 							{
 								$imdbId = $nfo->parseImdb($buffer);
 								if ($imdbId !== false) 
 								{
-									$googlelimit++;
 									if ($this->echooutput)
 										echo 'Google1 found IMDBid: tt'.$imdbId."\n";
 							
@@ -569,22 +571,19 @@ class Movie
 								else 
 								{
 									preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result);
-									$buffer = getUrl("https://www.google.com/search?hl=en&as_q=&as_epq=".urlencode($result["name"])."&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
-								
-									// make sure we got some data
+									$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($result["name"])."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+									
 									if ($buffer !== false && strlen($buffer))
 									{
+										$googlelimit++;
 										$imdbId = $nfo->parseImdb($buffer);
 										if ($imdbId !== false) 
 										{
-											$googlelimit++;
 											if ($this->echooutput)
 												echo 'Google2 found IMDBid: tt'.$imdbId."\n";
-							
-											//update release with imdb id
+											
 											$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-							
-											//check for existing movie entry
+											
 											$movCheck = $this->getMovieInfo($imdbId);
 											if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
 											{
@@ -593,48 +592,75 @@ class Movie
 										}
 										else
 										{
-											$buffer = getUrl("http://www.google.com/search?source=ig&hl=en&rlz=&btnG=Google+Search&aq=f&oq=&q=".urlencode($moviename.' imdb'));
-										
-											// make sure we got some data
-											if ($buffer !== false && strlen($buffer))
-											{
-												$imdbId = $nfo->parseImdb($buffer);
-												if ($imdbId !== false) 
-												{
-													$googlelimit++;
-													if ($this->echooutput)
-														echo 'Google3 found IMDBid: tt'.$imdbId."\n";
-							
-													//update release with imdb id
-													$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-							
-													//check for existing movie entry
-													$movCheck = $this->getMovieInfo($imdbId);
-													if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-													{
-														$movieId = $this->updateMovieInfo($imdbId);
-													}
-												}
-												else
-												{
-													//no imdb id found, set to all zeros so we dont process again
-													$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-												}
-											}
+											//no imdb id found, set to all zeros so we dont process again
+											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
 										}
 									}
 								}
 							}
 							else
 							{
-								echo "Temporarily banned or exceeded google.com request limit.. Will retry next time.";
+								echo "Exceeded google.com request limit.. Using bing.com until next run.\n";
 								$googleban = true;
+							}
+						}
+					}
+					else if ($bingban == false && $binglimit <= 50)
+					{
+						$moviename = str_replace(' ', '+', $moviename);
+						preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result);
+						$buffer = getUrl("http://www.bing.com/search?q=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+						
+						if ($buffer !== false && strlen($buffer))
+						{
+							$binglimit++;
+							$imdbId = $nfo->parseImdb($buffer);
+							if ($imdbId !== false) 
+							{
+								if ($this->echooutput)
+									echo 'Bing1 found IMDBid: tt'.$imdbId."\n";
+									
+								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+									
+								$movCheck = $this->getMovieInfo($imdbId);
+								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+								{
+									$movieId = $this->updateMovieInfo($imdbId);
+								}
+							}
+							else 
+							{
+								$buffer = getUrl("http://www.bing.com/search?q=".$result["name"]."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"]."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+								if ($buffer !== false && strlen($buffer))
+								{
+									$binglimit++;
+									$imdbId = $nfo->parseImdb($buffer);
+									if ($imdbId !== false) 
+									{
+										if ($this->echooutput)
+											echo 'Bing2 found IMDBid: tt'.$imdbId."\n";
+										
+										$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+										
+										$movCheck = $this->getMovieInfo($imdbId);
+										if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+										{
+											$movieId = $this->updateMovieInfo($imdbId);
+										}
+									}
+									else
+									{
+										//no imdb id found, set to all zeros so we dont process again
+										$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+									}
+								}
 							}
 						}
 					}
 					else
 					{
-						// Later on use another search engine like Yahoo to continue once we have reached googles limits.
+						echo "Exceeded bing.com request limit.. Will retry next time.\n";
+						$bingban == true;
 					}
 				}
 				else

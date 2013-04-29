@@ -141,7 +141,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		if($hashedDeleted > 0)
 			echo "Hashed       : ".$hashedDeleted."\n";
 		if($shortDeleted > 0)
-			echo "Short        : ".$shortDeleted."\n\n";
+			echo "Short        : ".$shortDeleted."\n";
 		if($exeDeleted > 0)
 			echo "EXE          : ".$exeDeleted."\n";
 		if($PURLDeleted > 0)
@@ -149,7 +149,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		if($sizeDeleted > 0)
 			echo "Size         : ".$sizeDeleted."\n";
 		if($sampleDeleted > 0)
-			echo "Size         : ".$sampleDeleted."\n";
+			echo "Sample       : ".$sampleDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");
