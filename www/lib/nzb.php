@@ -117,7 +117,7 @@ class NZB
 	//
 	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
 	{
-		$nzbpath = buildNZBPath($releaseGuid, $sitenzbpath, $createIfDoesntExist, $levelsToSplit);
+		$nzbpath = $this->buildNZBPath($releaseGuid, $sitenzbpath, $createIfDoesntExist, $levelsToSplit);
 		return $nzbpath.$releaseGuid.".nzb.gz";
 	}
 	
