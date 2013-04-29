@@ -64,44 +64,90 @@ function SplitSQL($file, $delimiter = ';')
     return false;
 }
 
-
-$s = new Sites();
-$site = $s->get();
-$currentversion = $site->sqlpatch;
-$patched = 0;
-$patches = array();
-
-// Open the patch folder.
-if ($handle = @opendir(FS_ROOT.'/../../../db/patches')) 
+if (isset($argv[1]) && $argv[1] == "unix")
 {
-    while (false !== ($patch = readdir($handle))) 
-    {
-        $patches[] = $patch;
-    }
-    closedir($handle);
-}
-else
-	exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
+	$s = new Sites();
+	$site = $s->get();
+	$currentversion = $site->sqlpatch;
+	$patched = 0;
+	$patches = array();
 
-$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
-sort($patches);
-foreach($patches as $patch)
-{
-    if (preg_match('/\.sql$/i', $patch))
-    {
-		$filepath = $patchpath.$patch;
-		$file = fopen($filepath, "r");
-		$patch = fread($file, filesize($filepath));
-		if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
+	// Open the patch folder.
+	if ($handle = @opendir(FS_ROOT.'/../../../db/patches')) 
+	{
+		while (false !== ($patch = readdir($handle))) 
 		{
-			if ($patchnumber['1'] > $currentversion)
+			$patches[] = $patch;
+		}
+		closedir($handle);
+	}
+	else
+		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
+
+	$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
+	sort($patches);
+	foreach($patches as $patch)
+	{
+		if (preg_match('/\.sql$/i', $patch))
+		{
+			$filepath = $patchpath.$patch;
+			$file = fopen($filepath, "r");
+			$patch = fread($file, filesize($filepath));
+			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
 			{
-				SplitSQL($filepath);
-				$patched++;
+				if ($patchnumber['1'] > $currentversion)
+				{
+					SplitSQL($filepath);
+					$patched++;
+				}
 			}
 		}
 	}
 }
+else if (isset($argv[1]) && $argv[1] == "windows")
+{
+	$s = new Sites();
+	$site = $s->get();
+	$currentversion = $site->sqlpatch;
+	$patched = 0;
+	$patches = array();
+
+	// Open the patch folder.
+	if (!isset($argv[2]))
+		exit("You must suply the directory to the patches.\n");
+	if ($handle = @opendir($argv[2])) 
+	{
+		while (false !== ($patch = readdir($handle))) 
+		{
+			$patches[] = $patch;
+		}
+		closedir($handle);
+	}
+	else
+		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
+
+	sort($patches);
+	foreach($patches as $patch)
+	{
+		if (preg_match('/\.sql$/i', $patch))
+		{
+			$filepath = $argv[2].$patch;
+			$file = fopen($filepath, "r");
+			$patch = fread($file, filesize($filepath));
+			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
+			{
+				if ($patchnumber['1'] > $currentversion)
+				{
+					SplitSQL($filepath);
+					$patched++;
+				}
+			}
+		}
+	}
+}
+else
+	exit("ERROR: You must choose an operating system: php patchmysql.php windows c:\nzedb\db\patches\ | php patchmysql.php unix\n");
+
 if ($patched > 0)
 	exit($patched." patch(es) applied. Now you need to delete the files inside of the www/lib/smarty/templates_c folder.\n");
 if ($patched == 0)
