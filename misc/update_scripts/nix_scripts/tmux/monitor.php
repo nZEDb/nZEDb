@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r943";
+$version="0.1r944";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -59,6 +59,10 @@ function microtime_float()
 	return ((float)$usec + (float)$sec);
 }
 
+function command_exist($cmd) {
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
+}
 function get_color()
 {
 	$from = 1;
@@ -431,8 +435,13 @@ while( $i > 0 )
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t  $tmux_session:1 -F '#{pane_title}'`");
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_1));
 
-	$_php = "time nice -n$niceness php";
-	$_python = "time nice -n$niceness python";
+	if (!command_exist('time')) {
+		$_php = "nice -n$niceness php";
+		$_python = "nice -n$niceness python";
+	} else {
+		$_php = "/usr/bin/time nice -n$niceness php";
+		$_python = "/usr/bin/time nice -n$niceness python";
+	}
 
 	if ( $releases_threaded == "TRUE" )
 	{
@@ -545,7 +554,7 @@ while( $i > 0 )
 				$color = get_color();
 				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Binaries\"'");
 			}
-			echo $i;
+
 			//run backfill
 			$color = get_color();
 			if (( $i == 1 ) && ( $backfill == "TRUE" ))
