@@ -539,7 +539,7 @@ class Movie
 							$movieId = $this->updateMovieInfo($traktimdbid);
 						}
 					}
-					else if ($googleban == false || $googlelimit <= 15)
+					else if ($googleban == false && $googlelimit <= 15)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
 						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=&as_epq=".urlencode($moviename1)."&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
@@ -627,6 +627,7 @@ class Movie
 							}
 							else
 							{
+								echo "Temporarily banned or exceeded google.com request limit.. Will retry next time.";
 								$googleban = true;
 							}
 						}
