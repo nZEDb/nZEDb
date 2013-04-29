@@ -51,9 +51,17 @@ nzbs = cur.fetchone();
 
 print "Sorting Folders in "+nzbs[0]+", be patient."
 #datas = sorted(os.walk(nzbs[0]))
-datas = os.walk(nzbs[0])
-datas = sorted(datas,reverse=False)
-	
+#datas = os.listdir(nzbs[0])
+#datas = [d for d in os.listdir(nzbs[0]) if os.path.isdir(d)]
+datas = [name for name in os.listdir(nzbs[0]) if os.path.isdir(os.path.join(nzbs[0], name))]
+if len(datas) == 0:
+	datas = nzbs
+
+#for sub in datas:
+#	print sub
+
+#sys.exit()
+
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
         super(WorkerThread, self).__init__()
@@ -65,7 +73,7 @@ class WorkerThread(threading.Thread):
         while not self.stoprequest.isSet():
             try:
                 dirname = self.dir_q.get(True, 0.05)
-                print '\n%s: Update on %s started.' % (self.name, dirname)
+                print '\n%s: Import from %s started.' % (self.name, dirname)
                 subprocess.call(["php", pathname+"/../../testing/nzb-import-bulk.php", ""+dirname])
                 #subprocess.call(["echo", pathname+"/../../testing/nzb-import-bulk.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
@@ -92,14 +100,14 @@ def main(args):
     work_count = 0
     for gnames in datas:
         work_count += 1
-        dir_q.put(gnames[0])
+        dir_q.put(os.path.join(nzbs[0],gnames))
 
-    print 'Assigned %s groups to workers' % work_count
+    print 'Assigned %s folders to workers' % work_count
 
     while work_count > 0:
         # Blocking 'get' from a Queue.
         result = result_q.get()
-        print '\n%s: Update on %s finished.' % (result[0], result[1])
+        print '\n%s: Import from %s finished.' % (result[0], result[1])
         work_count -= 1
 
     # Ask threads to die and wait for them to do it
