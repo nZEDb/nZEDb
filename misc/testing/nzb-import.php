@@ -164,7 +164,8 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					//unlink($nzbFile);
+					if (isset($argv[2]) && $argv[2] == "delete")
+						unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -247,7 +248,8 @@ else
 					$importfailed = true;
 				}
 				$nzbCount++;
-				///@unlink($nzbFile);
+				if (isset($argv[2]) && $argv[2] == "delete")
+					@unlink($nzbFile);
 			}
 		}
 	}
