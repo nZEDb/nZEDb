@@ -89,6 +89,7 @@ From a command line:
 
 5. Install unrar / ffmpeg / mediainfo / lame.
 
+	sudo aptitude install software-properties-common
 	sudo apt-get install unrar python-software-properties lame
 	sudo add-apt-repository ppa:jon-severinsson/ffmpeg
 	sudo add-apt-repository ppa:shiki/mediainfo
