@@ -489,9 +489,9 @@ class Movie
 	{
 		$db = new DB();
 		// Using name.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "name");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "name");
 		// Using searchname.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "searchname");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty)), "searchname");
 	}
 	
 	public function doprocessMovieReleases($res, $type)
