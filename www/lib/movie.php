@@ -501,6 +501,7 @@ class Movie
 		$nfo = new Nfo;
 		$trakt = new Trakttv();
 		$googleban = false;
+		$googlelimit = 0;
 		
 		if ($db->getNumRows($res) > 0)
 		{	
@@ -513,7 +514,7 @@ class Movie
 			}
 		
 			while ($arr = $db->fetchAssoc($res)) 
-			{	
+			{
 				if($type == "name")		
 					$moviename = $this->parseMovieName($arr['name']);
 				if($type == "searchname")
@@ -538,7 +539,7 @@ class Movie
 							$movieId = $this->updateMovieInfo($traktimdbid);
 						}
 					}
-					else if ($googleban == false)
+					else if ($googleban == false || $googlelimit <= 15)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
 						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=&as_epq=".urlencode($moviename1)."&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
@@ -551,6 +552,7 @@ class Movie
 								$imdbId = $nfo->parseImdb($buffer);
 								if ($imdbId !== false) 
 								{
+									$googlelimit++;
 									if ($this->echooutput)
 										echo 'Google1 found IMDBid: tt'.$imdbId."\n";
 							
@@ -575,6 +577,7 @@ class Movie
 										$imdbId = $nfo->parseImdb($buffer);
 										if ($imdbId !== false) 
 										{
+											$googlelimit++;
 											if ($this->echooutput)
 												echo 'Google2 found IMDBid: tt'.$imdbId."\n";
 							
@@ -598,6 +601,7 @@ class Movie
 												$imdbId = $nfo->parseImdb($buffer);
 												if ($imdbId !== false) 
 												{
+													$googlelimit++;
 													if ($this->echooutput)
 														echo 'Google3 found IMDBid: tt'.$imdbId."\n";
 							
@@ -623,7 +627,6 @@ class Movie
 							}
 							else
 							{
-								echo "ERROR: Too many requests sent to google.com.\n";
 								$googleban = true;
 							}
 						}
