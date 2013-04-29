@@ -79,7 +79,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Size";
 		$db = new Db;
-		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050, 3010, 3030, 3050)');
+		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050)');
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
