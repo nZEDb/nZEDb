@@ -74,7 +74,7 @@ class WorkerThread(threading.Thread):
             try:
                 dirname = self.dir_q.get(True, 0.05)
                 print '\n%s: Import from %s started.' % (self.name, dirname)
-                subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
+                subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+dirname])
                 #subprocess.call(["echo", pathname+"/../../testing/nzb-import-bulk.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
             except Queue.Empty:
