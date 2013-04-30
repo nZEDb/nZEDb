@@ -89,6 +89,14 @@
 				</td>
 			</tr>
 
+            <tr>
+                <td><label for="BACKFILL_TYPE">Backfill Intervals</label>:</td>
+                <td>
+                    {html_radios id="BACKFILL_TYPE" name='BACKFILL_TYPE' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL_TYPE}
+                    <div class="hint">Choose to run backfill Intervals script true/false. True will download everything per group upto your backfill days set in admin, one group per thread. False will download 20k headers per group per thread.</div>
+                </td>
+            </tr>
+
 			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
 				<td>

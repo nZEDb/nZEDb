@@ -49,6 +49,9 @@ cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();
 cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
 seq = cur.fetchone();
+cur.execute("select value from tmux where setting = 'BACKFILL_TYPE'");
+type = cur.fetchone();
+
 if seq[0] == "TRUE":
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(run_threads[0])))
 	datas = cur.fetchall()
@@ -71,7 +74,10 @@ class WorkerThread(threading.Thread):
             try:
                 dirname = self.dir_q.get(True, 0.05)
                 print '\n%s: Backfill %s started.' % (self.name, dirname)
-                subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
+                if type[0] == "TRUE":
+                    subprocess.call(["php", pathname+"/backfill_interval.php", ""+dirname])
+                else:
+                    subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
             except Queue.Empty:
                 continue
