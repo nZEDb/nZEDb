@@ -414,7 +414,7 @@ class Music
 		return $result;
 	}
     
-  public function processMusicReleases()
+  public function processMusicReleases1()
 	{
 		$ret = 0;
 		$db = new DB();
@@ -461,7 +461,119 @@ class Music
 		}
 	}
 	
+	public function processMusicReleases()
+	{
+		$ret = 0;
+		$db = new DB();
+		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d", Category::CAT_PARENT_MUSIC, $this->musicqty));
+		if ($db->getNumRows($res) > 0)
+		{	
+			if ($this->echooutput)
+				echo "Processing ".$db->getNumRows($res)." music release(s).\n";
+						
+			while ($arr = $db->fetchAssoc($res)) 
+			{				
+				$album = $this->parseArtist($arr['name']);
+				if ($album !== false)
+				{
+					if ($this->echooutput)
+						echo 'Looking up: '.$album["artist"].' - '.$album["album"]; 
+						if($album['year'] !== "")
+							echo ' ('.$album['year'].")\n";
+						else
+							echo "\n";
+					
+					//check for existing music entry
+					$albumCheck = $this->getMusicInfoByName($album["artist"], $album["album"]);
+					
+					if ($albumCheck === false)
+					{
+						$albumId = $this->updateMusicInfo($album["artist"], $album["album"], $album['year']);
+						if ($albumId === false)
+						{
+							$albumId = -2;
+						}
+					}
+					else 
+					{
+						$albumId = $albumCheck["ID"];
+					}
+
+					//update release
+					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
+
+				} 
+				else {
+					//no album found
+					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+				}
+			}
+		}
+	}
+	
 	public function parseArtist($releasename)
+	{
+		$result = array();
+		
+		//Replace VA with Various Artists
+		$newName = preg_replace('/VA( |\-)/', 'Various Artists \-', $releasename);
+		
+		// Remove files/parts. Year. Yenc. Song. Bitrate. File 1 of 2.
+		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|par2|sfv)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
+		
+		// Remove some text.
+		$newName = preg_replace('/\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|trtk\d{1,12}\s|\(vinyl\s2496\)|altbinEFNet|as req(,|:)?|\sLP\s|ATT>\sSkipper;|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|REQ:|VBR\s\[?NMR|www\..+?\.com/i', '', $newName);
+		
+		//remove double dashes
+		$newName = str_replace('--', '-', $newName);
+		
+		// Remove various stuff, replace with nothing.
+		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=');
+		$newName = str_replace($a, '', $newName);
+		
+		// Remove various stuff, replace with a space.
+		$a = array('_');
+		$newName = str_replace($a, ' ', $newName);
+		
+		$newName = preg_replace('/\s+/', ' ', $newName);
+		if (preg_match('/bob|Attrition/i', $newName))
+			echo$newName."\n";
+		$name = explode("-", $newName);
+		$name = array_map("trim", $name);
+		
+		if (isset($name[1]))
+		{
+			if (preg_match('/^the /i', $name[0])) 
+			{
+					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
+			}
+			if (preg_match('/deluxe edition|single|nmrVBR|READ NFO/i', $name[1], $albumType)) 
+			{
+					$name[1] = preg_replace('/'.$albumType[0].'/i', '', $name[1]);
+			}
+			$result['artist'] = trim($name[0]);
+			$result['album'] = trim($name[1]);
+		
+			//make sure we've actually matched an album name
+			if (preg_match('/^(nmrVBR|VBR|WEB|SAT|20\d{2}|19\d{2}|CDM|EP)$/i', $result['album']))
+			{
+				$result['album'] = '';
+			}
+		
+			preg_match('/((?:19|20)\d{2})/i', $releasename, $year);
+			$result['year'] = (isset($year[1]) && !empty($year[1])) ? $year[1] : '';
+		
+			$result['releasename'] = $releasename;
+			
+			return (!empty($result['artist']) && !empty($result['album'])) ? $result : false;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public function parseArtist2($releasename)
 	{
 		$result = array();
 		/*TODO: FIX VA lookups
