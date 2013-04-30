@@ -8,9 +8,11 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 
-$db = new Db;
+$db = new DB;
 
-$reset = $db->query("update releases set relnamestatus = 1 where relnamestatus = 2");
-echo count($reset)." releases have had their relnamestatus set to 1.\n";
+$res = $db->queryDirect("update releases set relnamestatus = 1 where relnamestatus = 2");
+
+echo "Succesfully reset the relnamestatus of the releases to 1.\n";
+
 
 ?>
