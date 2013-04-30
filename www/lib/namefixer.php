@@ -549,7 +549,7 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title-SxxExx-XVID-DL.avi", $echo, $type, $namestatus);
 		if (preg_match('/\S.*[\w.\-\',;]+\s\-\ss\d{2}e\d{2}\s\-\s[\w.\-\',;].+\./i', $release["textstring"], $result))
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus);
-		if (preg_match('/\w.+\)\.nds/i', $release["textstring"], $result))
+		if (preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result))
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus);
 	}
 }

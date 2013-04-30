@@ -490,13 +490,22 @@ class Console
 		}
 		return $result;
 	}
-  
+	
 	public function processConsoleReleases()
+	{
+		$db = new DB();
+		// Non-fixed release names.
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 1);
+		// Names that were fixed and the release still doesn't have a consoleID.
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 2);
+		
+	}
+	
+	public function processConsoleReleaseTypes($res, $type)
 	{
 		$ret = 0;
 		$db = new DB();
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -509,7 +518,7 @@ class Console
 				{
 					
 					if ($this->echooutput)
-						echo 'Looking up: '.$gameInfo["title"].' ('.$gameInfo["platform"].') ['.$arr['searchname'].']'."\n";
+						echo 'Looking up: '.$gameInfo["title"].' ('.$gameInfo["platform"].")\n";
 					
 					//check for existing console entry
 					$gameCheck = $this->getConsoleInfoByName($gameInfo["title"], $gameInfo["platform"]);
@@ -519,7 +528,10 @@ class Console
 						$gameId = $this->updateConsoleInfo($gameInfo);
 						if ($gameId === false)
 						{
-							$gameId = -2;
+							if($type == 1)
+								$gameId = -2;
+							if($type == 2)
+								$gameId = -3;
 						}
 					}
 					else 
@@ -531,9 +543,13 @@ class Console
 					$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", $gameId, $arr["ID"]));
 
 				} 
-				else {
+				else
+				{
 					//could not parse release title
-					$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+					if($type == 1)
+						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+					if($type == 2)
+						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
 				}
 			}
 		}
@@ -544,7 +560,7 @@ class Console
 		$result = array();
 		
 		//get name of the game from name of release
-		preg_match('/^(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI\.?5|MULTI\.?4|MULTI\.?3|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|READ\.?NFO|NFOFIX|PS2|PS3|PSP|WII|X\-?BOX|XBLA|X360|NDS|N64|NGC)/i', $releasename, $matches);
+		preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI\.?5|MULTI\.?4|MULTI\.?3|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|READ\.?NFO|NFOFIX|PS2|PS3|PSP|WII|X\-?BOX|XBLA|X360|NDS|N64|NGC)/i', $releasename, $matches);
 		if (isset($matches['title'])) 
 		{
 			$title = $matches['title'];
