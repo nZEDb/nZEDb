@@ -27,12 +27,12 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour) and (categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 1 day)"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour)"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
@@ -77,12 +77,12 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
@@ -127,12 +127,12 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and (rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 1 day) group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID"." order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
