@@ -201,12 +201,12 @@ class Namefixer
 					if ($namestatus == 1)
 					{
 						$db = new DB();
-						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, relnamestatus = 2 where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, relnamestatus = 2, categoryID = %d where ID = %d", $db->escapeString($newname), $determinedcat, $release["releaseID"]));
 					}
 					else
 					{
 						$db = new DB();
-						$db->queryDirect(sprintf("UPDATE releases set searchname = %s where ID = %d", $db->escapeString($newname), $release["releaseID"]));
+						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, categoryID = %d where ID = %d", $db->escapeString($newname), $determinedcat, $release["releaseID"]));
 					}
 				}
 				if ($echo == 2)
