@@ -33,14 +33,6 @@
 				</td>
 			</tr>
 
-			<tr>
-				<td style="width:160px;"><label for="NICENESS">Niceness</label>:</td>
-				<td>
-					<input id="NICENESS" name="NICENESS" type="text" value="{$ftmux->NICENESS}" />
-					<div class="hint">This sets the 'nice'ness of each script, default is 19, the lowest, the highest is -20 anything between -1 and -20 require root/sudo to run</div>
-				</td>
-			</tr>
-
 		</table>
 </fieldset>
 
@@ -216,8 +208,16 @@
 </fieldset>
 
 <fieldset>
-	<legend>Miscelaneous</legend>
+	<legend>Miscellaneous</legend>
 		<table class="input">
+			<tr>
+				<td style="width:160px;"><label for="NICENESS">Niceness</label>:</td>
+				<td>
+					<input id="NICENESS" name="NICENESS" type="text" value="{$ftmux->NICENESS}" />
+					<div class="hint">This sets the 'nice'ness of each script, default is 19, the lowest, the highest is -20 anything between -1 and -20 require root/sudo to run</div>
+				</td>
+			</tr>
+
 			<tr>
 				<td style="width:160px;"><label for="DEFRAG_CACHE">Defrag Query Cache</label>:</td>
 				<td>
