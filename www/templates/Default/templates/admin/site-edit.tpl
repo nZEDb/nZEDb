@@ -324,30 +324,6 @@
 </tr>
 
 <tr>
-	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
-	<td>
-		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
-		<div class="hint">Levels deep to store the nzb Files.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="releaseretentiondays">Release Retention</label>:</td>
-	<td>
-		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
-		<div class="hint">The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="releasecompletion">Release Completion</label>:</td>
-	<td>
-		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
-		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="minfilestoformrelease">Minimum Files to Make a Release</label>:</td>
 	<td>
 		<input class="tiny" id="minfilestoformrelease" name="minfilestoformrelease" type="text" value="{$fsite->minfilestoformrelease}" />
@@ -456,14 +432,6 @@
 	<td>
 		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
 		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxmssgs">Max Messages</label>:</td>
-	<td>
-		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
-		<div class="hint">The maximum number of messages to fetch at a time from the server.</div>
 	</td>
 </tr>
 
@@ -585,6 +553,38 @@
         <input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
         <div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
     </td>
+</tr>
+
+<tr>
+	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
+	<td>
+		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
+		<div class="hint">Levels deep to store the nzb Files.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="releaseretentiondays">Release Retention</label>:</td>
+	<td>
+		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
+		<div class="hint">The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="releasecompletion">Release Completion</label>:</td>
+	<td>
+		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
+		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The minimum completion % to keep a release. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxmssgs">Max Messages</label>:</td>
+	<td>
+		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
+		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
+	</td>
 </tr>
 
 <tr>
