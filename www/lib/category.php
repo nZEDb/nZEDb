@@ -314,6 +314,13 @@ class Category
 					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
 					return true;
 				}
+				
+				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					return true;
+				}
 			}
 		}
 	}
