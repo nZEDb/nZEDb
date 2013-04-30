@@ -292,6 +292,7 @@ class Category
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				if($this->isComic($releasename)){ return $this->tmpCat; }
 				$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
 				return true;
 			}
@@ -954,7 +955,7 @@ class Category
 	
 	public function isComic($releasename)
 	{
-		if (preg_match('/\.(cbr|cbz)|\(c2c\)/i', $releasename))
+		if (preg_match('/\.(cbr|cbz)|\(c2c\)|comix|comic.+book/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_COMICS;
 			return true;
