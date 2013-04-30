@@ -1215,6 +1215,13 @@ INSERT INTO tmux (setting, value) values ('POST','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES_THREADED','FALSE');
 INSERT INTO tmux (setting, value) values ('FIX_NAMES','FALSE');
+INSERT INTO tmux (setting, value) values ('SEQ_TIMER','30');
+INSERT INTO tmux (setting, value) values ('BINS_TIMER','30');
+INSERT INTO tmux (setting, value) values ('BACK_TIMER','30');
+INSERT INTO tmux (setting, value) values ('IMPORT_TIMER','30');
+INSERT INTO tmux (setting, value) values ('REL_TIMER','30');
+INSERT INTO tmux (setting, value) values ('FIX_TIMER','30');
+INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
