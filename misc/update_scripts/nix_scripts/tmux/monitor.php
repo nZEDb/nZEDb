@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r973";
+$version="0.1r974";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
