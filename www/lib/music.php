@@ -471,7 +471,7 @@ class Music
 		$newName = preg_replace('/VA( |\-)/', 'Various Artists \-', $releasename);
 		
 		// Remove files/parts. Year. Yenc. Song. Bitrate. File 1 of 2.
-		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|par2|sfv)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
+		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|nzb|nfo|par2|sfv|zip)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
 		
 		// Remove some text.
 		$newName = preg_replace('/\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|trtk\d{1,12}\s|\(vinyl\s2496\)|altbinEFNet|as req(,|:)?|\sLP\s|ATT>\sSkipper;|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|REQ:|VBR\s\[?NMR|www\..+?\.com/i', '', $newName);
