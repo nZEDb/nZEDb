@@ -301,6 +301,14 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.games\.xbox360/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_GAME_XBOX360;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
