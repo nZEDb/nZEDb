@@ -944,11 +944,7 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-<<<<<<< HEAD
 	('sqlpatch', '15');
-=======
-	('sqlpatch', '14');
->>>>>>> 3ad0787d2df8a65be8e9dde9be33c30f3e522fc4
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
