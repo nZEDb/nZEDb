@@ -567,7 +567,7 @@
 	<td><label for="releaseretentiondays">Release Retention</label>:</td>
 	<td>
 		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
-		<div class="hint">The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
+		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
 	</td>
 </tr>
 
@@ -575,7 +575,7 @@
 	<td><label for="releasecompletion">Release Completion</label>:</td>
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
-		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The minimum completion % to keep a release. Set to 0 to disable.</div>
+		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
 	</td>
 </tr>
 
