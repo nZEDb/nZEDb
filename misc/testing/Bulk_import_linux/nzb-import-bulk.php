@@ -75,6 +75,7 @@ foreach ($groups as $group)
 	$siteGroups[$group["name"]] = $group["ID"];
 
 $data = array();
+$filenames = array();
 
 if (!isset($groups) || count($groups) == 0)
 {
@@ -235,8 +236,9 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
-								unlink($value);
+ 								unlink($value);
 							}
+							unset($filenames);
 							categorize();
 							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
@@ -263,6 +265,7 @@ else
 				$importfailed = true;
 			}
 			$nzbCount++;
+			$filenames[] = $nzbFile;
 		}
 	}
 }
