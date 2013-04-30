@@ -39,7 +39,7 @@ if (isset($argv[2]) && $argv[2] == "full")
 else if (isset($argv[2]) && is_numeric($argv[2]))
 {
 	echo "Removing crap releases from the past ".$argv[2]." hour(s).\n";
-	$and = " and adddate > (now() - interval ".$argv[2]." hour) order by releaseID asc";
+	$and = " and adddate > (now() - interval ".$argv[2]." hour) order by ID asc";
 }
 else if (!isset($argv[2]) && ($argv[2]) !== "full" || !is_numeric($argv[2]))
 	exit("ERROR: Wrong second argument.\n");
