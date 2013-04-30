@@ -257,6 +257,13 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_TV_FOREIGN;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
