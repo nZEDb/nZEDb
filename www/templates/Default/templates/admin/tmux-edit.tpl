@@ -126,6 +126,14 @@
 				</td>
 			</tr>
 
+            <tr>
+                <td><label for="IMPORT_BULK">Use Bulk Importer</label>:</td>
+                <td>
+                    {html_radios id="IMPORT_BULK" name='IMPORT_BULK' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT_BULK}
+                    <div class="hint">Choose to run the bulk import nzb script true/false. This uses /dev/shm and can interfere with apparmor. This runs about 10% faster than stock importer. true/false</div>
+                </td>
+            </tr>
+
 			<tr>
 				<td style="width:160px;"><label for="IMPORT_TIMER">Import NZBS Sleep Timer</label>:</td>
 				<td>

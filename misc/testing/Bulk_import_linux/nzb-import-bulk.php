@@ -1,13 +1,13 @@
 <?php
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/binaries.php");
-require_once(FS_ROOT."/../../www/lib/page.php");
-require_once(FS_ROOT."/../../www/lib/category.php");
-require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
-require_once(FS_ROOT."/../../www/lib/namecleaning.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../../www/lib/binaries.php");
+require_once(FS_ROOT."/../../../www/lib/page.php");
+require_once(FS_ROOT."/../../../www/lib/category.php");
+require_once(FS_ROOT."/../../../www/lib/mysqlBulk.inc.php");
+require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
@@ -75,6 +75,7 @@ foreach ($groups as $group)
 	$siteGroups[$group["name"]] = $group["ID"];
 
 $data = array();
+$filenames = array();
 
 if (!isset($groups) || count($groups) == 0)
 {
@@ -235,8 +236,9 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
-								unlink($value);
+ 								unlink($value);
 							}
+							unset($filenames);
 							categorize();
 							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
@@ -263,6 +265,7 @@ else
 				$importfailed = true;
 			}
 			$nzbCount++;
+			$filenames[] = $nzbFile;
 		}
 	}
 }
