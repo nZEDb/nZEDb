@@ -300,6 +300,13 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
