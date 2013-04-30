@@ -865,6 +865,7 @@ class Category
 		if($this->isMusicVideo($releasename)){ return true; }
 		if($this->isMusicLossless($releasename)){ return true; }
 		if($this->isMusicMP3($releasename)){ return true; }
+		if($this->isMusicOther($releasename)){ return true; }
 		
 		return false;
 	}
@@ -887,7 +888,7 @@ class Category
 	
 	public function isMusicLossless($releasename)
 	{
-		if (preg_match('/\[(19|20)\d\d\][\.\-_ ]\[FLAC\]|FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"/i', $releasename))
+		if (preg_match('/\[(19|20)\d\d\][\.\-_ ]\[FLAC\]|(\(|\[)flac(\)|\])|FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"|(19|20)\d\d\sFLAC/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 			return true;
@@ -898,7 +899,7 @@ class Category
 	
 	public function isMusicMP3($releasename)
 	{
-		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320|\s\dCDs|MP3\-\d{3}kbps|\.(m3u|mp3)"|\(320\)\.|\-\((Bootleg|Promo)\)|\-\sMP3\s(19|20)\d\d/i', $releasename))
+		if (preg_match('/[a-z0-9]{1,12}\-(19|20)\d\d\-[a-z0-9]{1,12}|[\.\-\(\[_ ]\d{2,3}k[\.\-\)\]_ ]|\((192|256|320)\)|(320|cd|eac|vbr).+mp3|(cd|eac|mp3|vbr).+320|FIH\_INT|\s\dCDs|[\.\-_ ]MP3[\.\-_ ]|MP3\-\d{3}kbps|\.(m3u|mp3)"|NMR\s\d{2,3}\skbps|\(320\)\.|\-\((Bootleg|Promo)\)|\.mp3$|\-\sMP3\s(19|20)\d\d|\(vbr\)|rip(192|256|320)|[\.\-_ ]WEB.+(19|20)\d\d/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
@@ -913,7 +914,7 @@ class Category
 	
 	public function isMusicOther($releasename)
 	{
-		if (preg_match('/Discography|Reggaeton/i', $releasename))
+		if (preg_match('/\(\d\-?CD\)|\-\dcd\-|\d[\.\-_ ]Albums|Albums.+(EP)|Bonus.+Tracks|Box.+?CD.+SET|Discography|D\.O\.M|Greatest\sSongs|Live.+(Bootleg|Remastered)|Music.+Vol|(\(|\[|\s)NMR(\)|\]|\s)|Promo.+CD|Reggaeton|Tiesto.+Club|Vinyl\s2496|^\(VA\s|\WV\.A\./i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_OTHER;
 			return true;
