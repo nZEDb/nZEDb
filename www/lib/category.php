@@ -353,13 +353,14 @@ class Category
 	
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
-		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?e\d{1,3}|C4TV|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL|WEBRip)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
+		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,2}[.-_ ]?(e|d)\d{1,3}|C4TV|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|Season[\.\-_ ]\d{1,2}|WEB\-DL|WEBRip)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d/i', $releasename);
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|Indy[\.\-_ ]?Car|(iMPACT|Smoky[\.\-_ ]Mountain|Texas)[\.\-_ ]Wrestling|Moto[\.\-_ ]?GP|NSCS[\.\-_ ]ROUND|NECW[\.\-_ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|mp3)[\.\-_ ]/i', $releasename))
 		{
 			if($this->isForeignTV($releasename)){ return true; }
 			if($this->isSportTV($releasename)){ return true; }
+			if($this->isDocumentaryTV($releasename)){ return true; }
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
 			if($this->isAnimeTV($releasename)){ return true; }
@@ -445,7 +446,18 @@ class Category
 		
 		return false;
 	}
-
+	
+	public function isDocumentaryTV($releasename)
+	{
+		if (preg_match('/[\.\-_ ](Docu|Documentary)[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_HD;
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function isHDTV($releasename)
 	{
 		if (preg_match('/1080(i|p)|720|h[\.\-_ ]264|web[\.\-_ ]dl/i', $releasename))
