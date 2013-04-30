@@ -429,11 +429,13 @@ class Music
 				if ($album !== false)
 				{
 					if ($this->echooutput)
+					{
 						echo 'Looking up: '.$album["artist"].' - '.$album["album"]; 
 						if($album['year'] !== "")
 							echo ' ('.$album['year'].")\n";
 						else
 							echo "\n";
+					}
 					
 					//check for existing music entry
 					$albumCheck = $this->getMusicInfoByName($album["artist"], $album["album"]);
