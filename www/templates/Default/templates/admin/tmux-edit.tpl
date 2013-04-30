@@ -195,7 +195,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Fix Release Names</legend>
+	<legend>Postprocessing</legend>
 		<table class="input">
 			<tr>
 				<td><label for="POST">Postprocess All</label>:</td>
