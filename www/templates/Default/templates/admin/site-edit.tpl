@@ -575,7 +575,7 @@
 	<td><label for="releasecompletion">Release Completion</label>:</td>
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
-		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The minimum completion % to keep a release. Set to 0 to disable.</div>
 	</td>
 </tr>
 
@@ -583,7 +583,7 @@
 	<td><label for="maxmssgs">Max Messages</label>:</td>
 	<td>
 		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
-		<div class="hint">The maximum number of messages to fetch at a time from the server.</div>
+		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
 	</td>
 </tr>
 
