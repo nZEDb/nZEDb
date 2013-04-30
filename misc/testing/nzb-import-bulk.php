@@ -163,8 +163,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					if (isset($argv[2]) && $argv[2] == "delete")
-						unlink($nzbFile);
+					unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -235,10 +234,9 @@ else
 						else
 						{
 							unset($data);
-							if (isset($argv[2]) && $argv[2] == "delete")
-								foreach ($filenames as $value) {
- 									unlink($value);
-								}
+							foreach ($filenames as $value) {
+								unlink($value);
+							}
 							categorize();
 							echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
