@@ -295,6 +295,12 @@ class Category
 				$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
 				return true;
 			}
+			if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+				return true;
+			}
 		}
 	}
 	
