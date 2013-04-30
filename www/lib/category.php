@@ -268,7 +268,7 @@ class Category
 				return true;
 			}
 			
-			if (preg_match('/alt\.binaries\.comics\.dcp/', $groupRes["name"]))
+			if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|repost))/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
 				$this->tmpCat =  Category::CAT_BOOKS_COMICS;
@@ -296,6 +296,14 @@ class Category
 				$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
 				return true;
 			}
+			
+			if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
+			{
+				if($this->isHashed($releasename)){ return $this->tmpCat; }
+				$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+				return true;
+			}
+			
 			if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 			{
 				if($this->isHashed($releasename)){ return $this->tmpCat; }
