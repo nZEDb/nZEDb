@@ -285,9 +285,10 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.country\.mp3/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->isMusicLossless($releasename)){ return $this->tmpCat; }
 					$this->tmpCat =  Category::CAT_MUSIC_MP3;
 					return true;
 				}
@@ -994,6 +995,12 @@ class Category
 	public function isHashed($releasename)
 	{
 		if (preg_match('/[a-z0-9]{25,}/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MISC;
+			return true;
+		}
+		
+		if (preg_match('/[A-Z0-9]{20,}/', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC;
 			return true;
