@@ -18,13 +18,7 @@ class Backfill
 	{
 		$n = $this->n;
 		$groups = new Groups;
-		/*$db = new DB();
-        $db->queryDirect(sprintf("SELECT ID from collections where filecheck = 2"));
-        $colcount = $db->getAffectedRows();
-        if ( $colcount > 0 )
-        {
-			exit($n."Collections = ".$colcount.$n.", backfill exiting.".$n);
-        }*/
+		
 		if ($groupName != '') 
 		{
 			$grp = $groups->getByName($groupName);
@@ -50,8 +44,9 @@ class Backfill
 			
 			foreach($res as $groupArr)
 			{
+				$left = sizeof($res)-$counter;
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillGroup($nntp, $nntpc, $groupArr);
+				$this->backfillGroup($nntp, $nntpc, $groupArr, $left);
 				$counter++;
 			}
 			$nntp->doQuit();
@@ -63,7 +58,7 @@ class Backfill
 		}
 	}
 
-	function backfillGroup($nntp, $nntpc, $groupArr)
+	function backfillGroup($nntp, $nntpc, $groupArr, $left)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -141,13 +136,8 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			/*$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
-			if ( $colcount > 0 )
-			{
-				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
-			}*/
 
-			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
+			echo "Getting ".($last-$first+1)." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
