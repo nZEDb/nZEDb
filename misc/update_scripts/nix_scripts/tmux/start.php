@@ -11,6 +11,21 @@ $tmux = new Tmux;
 $session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
 
+function command_exist($cmd) {
+    $returnVal = shell_exec("which $cmd");
+    return (empty($returnVal) ? false : true);
+}
+
+//check for apps
+$apps = array("time", "tmux", "nice", "python");
+foreach ($apps as &$value)
+{
+	if (!command_exist($value)) {
+		echo "I require ".$value." but it's not installed. Aborting.\n";
+		exit(1);
+	}
+}
+
 //reset collections dateadded to now
 passthru("clear");
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
