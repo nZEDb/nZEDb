@@ -1328,9 +1328,9 @@ class Releases
 		$n = "\n";
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		
-		//Get part and file size.
-		echo $n."\033[1;33mStage 2 -> Get part and file sizes.\033[0m".$n;
+		echo $n."\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m".$n;
 		$stage2 = TIME();
+		// Get the total size in bytes of the collection for releases where filecheck = 2.
 		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID) WHERE c.filecheck = 2 AND c.filesize = 0 " . $where);
 
         echo TIME() - $stage2." second(s).";
@@ -1427,8 +1427,7 @@ class Releases
 		$n = "\n";
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
-
-		// Create releases.
+		
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
 		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 2 AND filesize > 0 " . $where . " LIMIT 1000"))
