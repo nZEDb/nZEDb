@@ -330,7 +330,7 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.erotica(\.divx)/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.(erotica(\.divx)|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
@@ -365,6 +365,13 @@ class Category
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
 					$this->tmpCat = Category::CAT_GAME_XBOX360;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.ipod\.videos\.tvshows/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_TV_OTHER;
 					return true;
 				}
 				
