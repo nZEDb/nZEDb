@@ -1224,6 +1224,7 @@ INSERT INTO tmux (setting, value) values ('REL_TIMER','30');
 INSERT INTO tmux (setting, value) values ('FIX_TIMER','30');
 INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
 INSERT INTO tmux (setting, value) values ('IMPORT_BULK','FALSE');
+INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
