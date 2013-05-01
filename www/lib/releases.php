@@ -496,6 +496,43 @@ class Releases
 			$db->query(sprintf("delete from releases where id = %d", $rel['ID']));
 		}
 	}
+	
+	// For the site delete button.
+	public function deleteSite($id, $isGuid=false)
+	{			
+		$db = new DB();
+		$users = new Users();
+		$s = new Sites();
+		$nfo = new Nfo();
+		$site = $s->get();
+		$rf = new ReleaseFiles();
+		$re = new ReleaseExtra();
+		$rc = new ReleaseComments();
+		$ri = new ReleaseImage();
+		
+		if (!is_array($id))
+			$id = array($id);
+				
+		foreach($id as $identifier)
+		{
+			//
+			// delete from disk.
+			//
+			$rel = ($isGuid) ? $this->getByGuid($identifier) : $this->getById($identifier);
+
+			if ($rel && file_exists($site->nzbpath.$rel["guid"].".nzb.gz")) 
+				unlink($site->nzbpath.$rel["guid"].".nzb.gz");
+			
+			$nfo->deleteReleaseNfo($rel['ID']);
+			$rc->deleteCommentsForRelease($rel['ID']);
+			$users->delCartForRelease($rel['ID']);
+			$rf->delete($rel['ID']);
+			$re->delete($rel['ID']);
+			$re->deleteFull($rel['ID']);
+			$ri->delete($rel['guid']);
+			$db->query(sprintf("delete from releases where id = %d", $rel['ID']));
+		}
+	}
 
 	public function update($id, $name, $searchname, $fromname, $category, $parts, $grabs, $size, $posteddate, $addeddate, $rageid, $seriesfull, $season, $episode, $imdbid, $anidbid)
 	{			
