@@ -225,10 +225,10 @@ class Backfill
 		$counter = 1;
 		if (@$res)
 		{
-			$left = sizeof($res)-$counter;
 			// We do not use interval here, so use a compressed connection only - testing.
 			foreach($res as $groupArr)
 			{
+				$left = sizeof($res)-$counter;
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
 				$this->backfillPostGroup($groupArr, $articles, $left);
 				$counter++;
