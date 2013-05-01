@@ -69,8 +69,8 @@ class DB
 			return false;
 		
 		return ($rows) ? $rows[0] : $rows;		
-	}	
-		
+	}
+	
 	public function query($query)
 	{
 		if ($query=="")
