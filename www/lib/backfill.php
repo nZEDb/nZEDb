@@ -251,10 +251,17 @@ class Backfill
 
 		echo 'Processing '.$groupArr['name'].$n;
 		$data = $nntp->selectGroup($groupArr['name']);
-		if(PEAR::isError($data))
+		if (PEAR::isError($data))
 		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntp->doQuit();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
+				return;
+			}
 		}
 		
 		// Get targetpost based on days target.
