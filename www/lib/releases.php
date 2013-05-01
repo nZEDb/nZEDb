@@ -1297,33 +1297,27 @@ class Releases
 			$db = new DB();
 			$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));
 		}
-	}	
+	}
 	
-	public function processReleasesStage1($groupID)
+	public function processReleasesStage1()
 	{
 		$db = new DB();
 		$n = "\n";
 		
 		echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 			
-		//Look if we have all the files in a collection (which have the file count in the subject).
-		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
+		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
+		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
 		
-		if (empty($groupID))
-		{
-			$db->query("UPDATE binaries SET partcheck = 1 WHERE ID IN (SELECT ID FROM (SELECT b.ID FROM binaries b LEFT JOIN parts p ON b.ID = p.binaryID WHERE b.partcheck = 0 GROUP BY b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmp)");
-		}
-		else
-		{
-			$db->query("UPDATE binaries SET partcheck = 1 WHERE ID IN (SELECT ID FROM (SELECT b.ID FROM binaries b LEFT JOIN parts p ON b.ID = p.binaryID LEFT JOIN collections c ON c.ID = b.collectionID WHERE b.partcheck = 0 AND c.groupID = ". $groupID . " GROUP BY b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmp)");
-		}
+		// If we have all the parts set partcheck to 1.
+		$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p WHERE p.binaryID = b.ID AND b.partcheck = 0 GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts)");
 
+		// Set file check to 2 if we have all the parts.
 		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck = 1 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
 		
-		//If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2 ".$where);
+		// If a collection has not been updated in 2 hours, set filecheck to 2.
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2");
 	
         echo TIME() - $stage1." second(s).";
 	}
@@ -1766,7 +1760,7 @@ class Releases
 			return;
 		}
 		
-		$this->processReleasesStage1($groupID);
+		$this->processReleasesStage1();
 		
 		$this->processReleasesStage2($groupID);
 		
