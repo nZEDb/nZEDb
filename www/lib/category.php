@@ -315,6 +315,36 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.erotica(\.divx)/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->isXxx($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_XXX_OTHER;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.games\.nintendods/', $groupRes["name"]))
+				{
+					if($this->isG($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_GAME_NDS;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_GAME_WII;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.games\.xbox/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_GAME_XBOX;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.games\.xbox360/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
