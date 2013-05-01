@@ -56,7 +56,7 @@ if seq[0] == "TRUE":
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(run_threads[0])))
 	datas = cur.fetchall()
 else:
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
+	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 4")
 	datas = cur.fetchall()
 
 
@@ -76,8 +76,10 @@ class WorkerThread(threading.Thread):
                 print '\n%s: Backfill %s started.' % (self.name, dirname)
                 if type[0] == "TRUE":
                     subprocess.call(["php", pathname+"/backfill_interval.php", ""+dirname])
+                    #subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
                 else:
                     subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
+                    #subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
                 self.result_q.put((self.name, dirname))
             except Queue.Empty:
                 continue
