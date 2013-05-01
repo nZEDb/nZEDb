@@ -553,3 +553,4 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus);
 	}
 }
+?>

@@ -28,6 +28,8 @@
 
 {$site->adbrowse}	
 
+{if $results|@count > 0}
+
 <form id="nzb_multi_operations_form" action="get">
 
 <div class="nzb_multi_operations">
@@ -38,8 +40,6 @@
 	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
 </div>
 <br/>
-
-{if $results|@count > 0}
 
 {$pager}
 
