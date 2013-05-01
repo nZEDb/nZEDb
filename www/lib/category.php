@@ -239,139 +239,120 @@ class Category
 					if($this->isEBook($releasename)){ return $this->tmpCat; }
 					if($this->isPC($releasename)){ return $this->tmpCat; }
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat = Category::CAT_PC_0DAY;
-					return $this->tmpCat;
+					return $this->tmpCat = Category::CAT_PC_0DAY;
 				}
 				
 				if (preg_match('/alt\.binaries\.audio\.warez/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat = Category::CAT_PC_0DAY;
-					return true;
+					return $this->tmpCat = Category::CAT_PC_0DAY;
 				}
 				
 				if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat = Category::CAT_TV_ANIME;
-					return true;
+					return $this->tmpCat = Category::CAT_TV_ANIME;
 				}
 				
 				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_TV_FOREIGN;
-					return true;
+					return $this->tmpCat =  Category::CAT_TV_FOREIGN;
 				}
 				
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_PC_0DAY;
-					return true;
+					return $this->tmpCat =  Category::CAT_PC_0DAY;
 				}
 				
 				if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
-					return true;
+					return $this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
 				}
 				
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|repost))/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
-					return true;
+					return $this->tmpCat =  Category::CAT_BOOKS_COMICS;
 				}
 				
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_PS3;
-					return true;
+					return $this->tmpCat =  Category::CAT_GAME_PS3;
 				}
 				
 				if (preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isMusicLossless($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
-					return true;
+					return $this->tmpCat =  Category::CAT_MUSIC_MP3;
 				}
 				
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
-					return true;
+					return $this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
 				}
 				
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isComic($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
-					return true;
+					return $this->tmpCat =  Category::CAT_BOOKS_EBOOK;
 				}
 				
 				if (preg_match('/alt\.binaries\.erotica(\.divx)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_XXX_OTHER;
-					return true;
+					return $this->tmpCat =  Category::CAT_XXX_OTHER;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.nintendods/', $groupRes["name"]))
 				{
 					if($this->isG($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_NDS;
-					return true;
+					return $this->tmpCat =  Category::CAT_GAME_NDS;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_WII;
-					return true;
+					return $this->tmpCat =  Category::CAT_GAME_WII;
 				}
 				
-				if (preg_match('/alt\.binaries\.games\.xbox/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.games\.xbox$/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_XBOX;
-					return true;
+					return $this->tmpCat =  Category::CAT_GAME_XBOX;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.xbox360/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_XBOX360;
-					return true;
+					return $this->tmpCat = Category::CAT_GAME_XBOX360;
 				}
 				
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
-					return true;
+					return $this->tmpCat =  Category::CAT_MUSIC_VIDEO;
 				}
 				
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
-					return true;
+					return $this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
 				}
 				
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
-					return true;
+					return $this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
 				}
 			}
 		}
