@@ -1299,25 +1299,33 @@ class Releases
 		}
 	}
 	
-	public function processReleasesStage1()
+	public function processReleasesStage1($groupID)
 	{
 		$db = new DB();
 		$n = "\n";
 		
 		echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
 		$stage1 = TIME();
+		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 			
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
+		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
 		
 		// If we have all the parts set partcheck to 1.
-		$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p WHERE p.binaryID = b.ID AND b.partcheck = 0 GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts)");
-
+		if (empty($groupID)) 
+		{
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p WHERE p.binaryID = b.ID AND b.partcheck = 0 GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts)");
+		}
+		else
+		{
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p WHERE p.binaryID = b.ID AND b.partcheck = 0 GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts)");
+		}
+		
 		// Set file check to 2 if we have all the parts.
 		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck = 1 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
 		
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2");
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck != 2 ".$where);
 	
         echo TIME() - $stage1." second(s).";
 	}
@@ -1759,7 +1767,7 @@ class Releases
 			return;
 		}
 		
-		$this->processReleasesStage1();
+		$this->processReleasesStage1($groupID);
 		
 		$this->processReleasesStage2($groupID);
 		
