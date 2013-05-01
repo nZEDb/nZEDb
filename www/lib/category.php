@@ -404,6 +404,13 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.multimedia\.documentaries/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
