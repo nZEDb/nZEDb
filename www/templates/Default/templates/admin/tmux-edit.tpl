@@ -97,6 +97,14 @@
                 </td>
             </tr>
 
+            <tr>
+                <td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
+                <td>
+                    <input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
+                    <div class="hint">When not running backfill intervals, you select the number of hearders per group per thread to download.</div>
+                </td>
+            </tr>
+
 			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
 				<td>
