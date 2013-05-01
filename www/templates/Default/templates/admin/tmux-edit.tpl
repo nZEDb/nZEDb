@@ -97,6 +97,14 @@
                 </td>
             </tr>
 
+            <tr>
+                <td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
+                <td>
+                    <input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
+                    <div class="hint">When not running backfill intervals, you select the number of hearders per group per thread to download.</div>
+                </td>
+            </tr>
+
 			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
 				<td>
@@ -130,7 +138,7 @@
 				<td><label for="NZBS">Nzbs</label>:</td>
 				<td>
 					<input id="NZBS" class="long" name="NZBS" type="text" value="{$ftmux->NZBS}" />
-					<div class="hint">Set the path to the nzb dump you downloaded from torrents, this is the path to bulk files folder of nzbs this does not recurse through subfolders, unless you set NZB_THREADS to true</div>
+					<div class="hint">Set the path to the nzb dump you downloaded from torrents, this is the path to bulk files folder of nzbs. This is by default, recursive and threaded. You set the threads in edit site, Advanced Settings.</div>
 				</td>
 			</tr>
 

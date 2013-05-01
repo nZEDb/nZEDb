@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1084";
+$version="0.1r1086";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -66,10 +66,6 @@ function microtime_float()
 	return ((float)$usec + (float)$sec);
 }
 
-function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd");
-	return (empty($returnVal) ? false : true);
-}
 function get_color()
 {
 	$from = 1;
@@ -450,13 +446,8 @@ while( $i > 0 )
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t  $tmux_session:1 -F '#{pane_title}'`");
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_1));
 
-	if (!command_exist('time')) {
-		$_php = "nice -n$niceness php";
-		$_python = "nice -n$niceness python";
-	} else {
-		$_php = "/usr/bin/time nice -n$niceness php";
-		$_python = "/usr/bin/time nice -n$niceness python";
-	}
+	$_php = "/usr/bin/time nice -n$niceness php";
+	$_python = "/usr/bin/time nice -n$niceness python";
 
 	if ( $releases_threaded == "TRUE" )
 	{
