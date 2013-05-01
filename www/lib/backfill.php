@@ -277,7 +277,7 @@ class Backfill
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
 			echo "You need to run update_binaries on the group. Otherwise the group is dead, you must disable it.".$n;
-			return "";
+			return false;
 		}
 		// Check if we are grabbing further than the server has.
 		if($targetpost < $data['first'])
