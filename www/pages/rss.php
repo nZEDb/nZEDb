@@ -93,7 +93,7 @@ else
 	$usercat = -1;
 	if (isset($_GET["t"]))
 		$usercat = ($_GET["t"]==0 ? -1 : $_GET["t"]);
-		
+	
 	$userrage = -1;
 	$useranidb = -1;
 	$userseries = -1;
