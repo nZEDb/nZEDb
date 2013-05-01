@@ -302,7 +302,7 @@ class Category
 				if (preg_match('/alt\.binaries\.cores/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_PS3;
+					if($this->isXxx($releasename)){ return $this->tmpCat; }
 					return false;
 				}
 				
