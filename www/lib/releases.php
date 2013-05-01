@@ -1621,7 +1621,10 @@ class Releases
 		}
 		
 		$timing = TIME() - $stage5;
-		echo $n . $nzbcount . " NZBs created in " . $timing ." second(s). ";
+		if ($nzbcount > 0)
+			echo $n.$nzbcount." NZBs created in ". $timing." second(s).";
+		else
+			echo $nzbcount." NZBs created in ". $timing." second(s).";
 		return $nzbcount;
 	}
 	
@@ -1703,7 +1706,6 @@ class Releases
 		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			echo "Determining any passworded releases to be deleted".$n;
 			$result = $db->query("SELECT ID FROM releases WHERE passwordstatus > 0 " . $where); 		
 			foreach ($result as $row)
 			{
@@ -1788,7 +1790,7 @@ class Releases
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
 
 		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
-		echo $n."Completed adding ".$releasesAdded." releases in ".$timeUpdate." second(s). ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
+		echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate." second(s). ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $releasesAdded;
 	}
 
