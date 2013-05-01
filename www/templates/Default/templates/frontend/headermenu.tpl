@@ -1,4 +1,25 @@
 <div id="menucontainer"> 
+	<div id="menusearchlink">
+		<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
+
+			<div class="gobutton" title="Submit search"><input id="headsearch_go" type="submit" value="" tabindex="3" /></div>
+
+			<label style="display:none;" for="headcat">Search Category</label>
+			<select id="headcat" name="t" tabindex="2">
+				<option class="grouping" value="-1">All</option>
+			{foreach from=$parentcatlist item=parentcat}
+				<option {if $header_menu_cat==$parentcat.ID}selected="selected"{/if} class="grouping" value="{$parentcat.ID}">{$parentcat.title}</option>
+				{foreach from=$parentcat.subcatlist item=subcat}
+					<option {if $header_menu_cat==$subcat.ID}selected="selected"{/if} value="{$subcat.ID}">&nbsp;&nbsp;{$subcat.title}</option>
+				{/foreach}
+			{/foreach}
+			</select>
+
+			<label style="display:none;" for="headsearch">Search Text</label>
+			<input id="headsearch" name="search" value="{if $header_menu_search == ""}Enter keywords{else}{$header_menu_search|escape:"htmlall"}{/if}" style="width:85px;" type="text" tabindex="1" /> 
+
+		</form>
+	</div>
 	<div id="menulink"> 
 		<ul>
 		{foreach from=$parentcatlist item=parentcat}
@@ -54,27 +75,5 @@
 				</ul>
 			</li>
 		</ul>
-	</div>
-	
-	<div id="menusearchlink">
-		<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
-
-			<div class="gobutton" title="Submit search"><input id="headsearch_go" type="submit" value="" tabindex="3" /></div>
-
-			<label style="display:none;" for="headcat">Search Category</label>
-			<select id="headcat" name="t" tabindex="2">
-				<option class="grouping" value="-1">All</option>
-			{foreach from=$parentcatlist item=parentcat}
-				<option {if $header_menu_cat==$parentcat.ID}selected="selected"{/if} class="grouping" value="{$parentcat.ID}">{$parentcat.title}</option>
-				{foreach from=$parentcat.subcatlist item=subcat}
-					<option {if $header_menu_cat==$subcat.ID}selected="selected"{/if} value="{$subcat.ID}">&nbsp;&nbsp;{$subcat.title}</option>
-				{/foreach}
-			{/foreach}
-			</select>
-
-			<label style="display:none;" for="headsearch">Search Text</label>
-			<input id="headsearch" name="search" value="{if $header_menu_search == ""}Enter keywords{else}{$header_menu_search|escape:"htmlall"}{/if}" style="width:85px;" type="text" tabindex="1" /> 
-
-		</form>
 	</div>
 </div>
