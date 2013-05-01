@@ -272,6 +272,12 @@ class Category
 					return $this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
 				}
 				
+				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $group))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					return $this->tmpCat =  Category::CAT_TV_SD;
+				}
+				
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|repost))/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
@@ -313,7 +319,7 @@ class Category
 				
 				if (preg_match('/alt\.binaries\.games\.nintendods/', $groupRes["name"]))
 				{
-					if($this->isG($releasename)){ return $this->tmpCat; }
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					return $this->tmpCat =  Category::CAT_GAME_NDS;
 				}
 				
