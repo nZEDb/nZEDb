@@ -225,12 +225,12 @@ class Backfill
 		$counter = 1;
 		if (@$res)
 		{
-
+			$left = sizeof($res)-$counter;
 			// We do not use interval here, so use a compressed connection only - testing.
 			foreach($res as $groupArr)
 			{
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillPostGroup($groupArr, $articles);
+				$this->backfillPostGroup($groupArr, $articles, $left);
 				$counter++;
 			}
 		}
@@ -240,7 +240,7 @@ class Backfill
 		}
 	}
 	
-	function backfillPostGroup($groupArr, $articles = '')
+	function backfillPostGroup($groupArr, $articles = '', $left)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -314,7 +314,7 @@ class Backfill
 				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
 			}*/
 
-			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
+			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." groups left (".($first-$targetpost)." in queue).".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
