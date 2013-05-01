@@ -314,7 +314,7 @@ class Backfill
 				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
 			}*/
 
-			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." groups left (".($first-$targetpost)." in queue).".$n;
+			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left (".($first-$targetpost)." in queue).".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
