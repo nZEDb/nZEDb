@@ -44,7 +44,7 @@ con = None
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
 
 # The array.
-datas = ['additional','nfos','movies','music','games','anime','tv','books']
+datas = ['additional','movies','music','games','anime','tv','books']
 
 cur = con.cursor()
 cur.execute("select value from site where setting = 'postthreads'");
