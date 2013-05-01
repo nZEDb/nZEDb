@@ -2,20 +2,16 @@
 
 require(dirname(__FILE__)."/../config.php");
 require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/framework/db.php");
 
 
-$db = new DB();
 $groups = new Groups();
-$page = new Page();
 $n = "\n";
 $groupID = "";
 
-if (!empty($groupName))
+if (!empty($argv[1]))
 {
-	$groupInfo = $groups->getByName($groupName);
+	$groupInfo = $groups->getByName($argv[1]);
 	$groupID = $groupInfo['ID'];
 }
 
