@@ -299,6 +299,12 @@ class Category
 					$this->tmpCat =  Category::CAT_GAME_PS3;
 					return true;
 				}
+				if (preg_match('/alt\.binaries\.cores/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->isXxx($releasename)){ return $this->tmpCat; }
+					return false;
+				}
 				
 				if (preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $groupRes["name"]))
 				{
@@ -330,7 +336,7 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.(erotica(\.divx)|ijsklontje)/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.(erotica(\.divx)?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
@@ -725,7 +731,7 @@ class Category
 	
 	public function isPC($releasename)
 	{
-		if(!preg_match('/PDTV|x264/i', $releasename))
+		if(!preg_match('/PDTV|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
 		{
 			if($this->isPhone($releasename)){ return true; }
 			if($this->isMac($releasename)){ return true; }
