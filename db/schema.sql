@@ -650,6 +650,7 @@ INSERT INTO category (ID, title, parentID) VALUES (2030, 'SD', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2040, 'HD', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2050, '3D', 2000);
 INSERT INTO category (ID, title, parentID) VALUES (2060, 'BluRay', 2000);
+INSERT INTO category (ID, title, parentID) VALUES (2070, 'DVD', 2000);
 
 INSERT INTO category (ID, title, parentID) VALUES (3010, 'MP3', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3020, 'Video', 3000);
@@ -944,7 +945,7 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '12');
+	('sqlpatch', '17');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1215,6 +1216,16 @@ INSERT INTO tmux (setting, value) values ('POST','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
 INSERT INTO tmux (setting, value) values ('RELEASES_THREADED','FALSE');
 INSERT INTO tmux (setting, value) values ('FIX_NAMES','FALSE');
+INSERT INTO tmux (setting, value) values ('SEQ_TIMER','30');
+INSERT INTO tmux (setting, value) values ('BINS_TIMER','30');
+INSERT INTO tmux (setting, value) values ('BACK_TIMER','30');
+INSERT INTO tmux (setting, value) values ('IMPORT_TIMER','30');
+INSERT INTO tmux (setting, value) values ('REL_TIMER','30');
+INSERT INTO tmux (setting, value) values ('FIX_TIMER','30');
+INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
+INSERT INTO tmux (setting, value) values ('IMPORT_BULK','FALSE');
+INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
+INSERT INTO tmux (setting, value) values ('BACKFILL_QTY','100000');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

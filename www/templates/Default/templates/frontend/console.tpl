@@ -35,9 +35,9 @@
 </form>
 <p></p>
 
-{$site->adbrowse}	
+{$site->adbrowse}
 
-{if $results|@count > 0}
+{if $results|@count > 0}	
 
 <form id="nzb_multi_operations_form" action="get">
 

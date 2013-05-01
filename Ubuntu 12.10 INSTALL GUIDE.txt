@@ -4,6 +4,10 @@ From a command line:
 
 0. Misc :
 
+	For those using an older version of ubuntu, php 5.4 is required.
+	
+	Ubuntu 12.04 requires backports a user reported.
+	
 	Apparmor interferes with some of our files, here is how to disable it:
 
 	sudo /etc/init.d/apparmor stop
@@ -89,6 +93,7 @@ From a command line:
 
 5. Install unrar / ffmpeg / mediainfo / lame.
 
+	sudo aptitude install software-properties-common
 	sudo apt-get install unrar python-software-properties lame
 	sudo add-apt-repository ppa:jon-severinsson/ffmpeg
 	sudo add-apt-repository ppa:shiki/mediainfo
@@ -104,6 +109,8 @@ From a command line:
 	git clone https://github.com/nZEDb/nZEDb.git
 
 	sudo chmod 777 nZEDb
+	cd nZEDb
+	sudo chmod -R 755 .
 	sudo chmod 777 /var/www/nZEDb/www/lib/smarty/templates_c
 	sudo chmod -R 777 /var/www/nZEDb/www/covers
 	sudo chmod 777 /var/www/nZEDb/www

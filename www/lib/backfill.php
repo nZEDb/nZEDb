@@ -69,30 +69,37 @@ class Backfill
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-
-		echo 'Processing '.$groupArr['name'].$n;
+		
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
-		if(PEAR::isError($datac))
+		if (PEAR::isError($datac))
 		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
-		}
-		// No compression.
-		$data = $nntp->selectGroup($groupArr['name']);
-		if(PEAR::isError($data))
-		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			echo "Retrying to connect to usenet".$n;
-			$nntp->doQuit();
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if(PEAR::isError($data))
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntpc->doQuit();
+			$nntpc->doConnect();
+			$datac = $nntpc->selectGroup($groupArr['name']);
+			if (PEAR::isError($datac))
 			{
-				echo "Failed to reconnect to usenet, skipping group.".$n;
+				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
 		}
+		
+		// No comp - for interval.
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data))
+		{
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntp->doQuit();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
+				return;
+			}
+		}
+		
 		// Get targetpost based on days target.
 		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
@@ -218,12 +225,12 @@ class Backfill
 		$counter = 1;
 		if (@$res)
 		{
-
 			// We do not use interval here, so use a compressed connection only - testing.
 			foreach($res as $groupArr)
 			{
+				$left = sizeof($res)-$counter;
 				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillPostGroup($groupArr, $articles);
+				$this->backfillPostGroup($groupArr, $articles, $left);
 				$counter++;
 			}
 		}
@@ -233,7 +240,7 @@ class Backfill
 		}
 	}
 	
-	function backfillPostGroup($groupArr, $articles = '')
+	function backfillPostGroup($groupArr, $articles = '', $left)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -244,10 +251,17 @@ class Backfill
 
 		echo 'Processing '.$groupArr['name'].$n;
 		$data = $nntp->selectGroup($groupArr['name']);
-		if(PEAR::isError($data))
+		if (PEAR::isError($data))
 		{
-			echo "Could not select group (bad name?): {$groupArr['name']}".$n;
-			return;
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntp->doQuit();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
+				return;
+			}
 		}
 		
 		// Get targetpost based on days target.
@@ -300,7 +314,7 @@ class Backfill
 				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
 			}*/
 
-			echo "Getting ".($last-$first+1)." parts from ".str_replace('alt.binaries','a.b',$data["group"])." (".($first-$targetpost)." in queue).".$n;
+			echo "Getting ".($last-$first+1)." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 

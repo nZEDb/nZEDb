@@ -393,33 +393,31 @@ class Music
 	
 	public function fetchAmazonProperties($title)
 	{
-    $obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
-    try
-    {
-         $result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
-    }
-    catch(Exception $e)
-    {
-    	//if first search failed try the mp3downloads section
-    	try
-    	{
-    		$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
-    	}
-    	catch(Exception $e2)
-    	{
-			$result = false;
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		try
+		{
+			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		}
-    }
-
+		catch(Exception $e)
+		{
+			//if first search failed try the mp3downloads section
+			try
+			{
+				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
+			}
+			catch(Exception $e2)
+			{
+				$result = false;
+			}
+		}
 		return $result;
 	}
-    
-  public function processMusicReleases()
+	
+	public function processMusicReleases()
 	{
 		$ret = 0;
 		$db = new DB();
-		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, $this->musicqty));
+		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d", Category::CAT_PARENT_MUSIC, $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -427,11 +425,17 @@ class Music
 						
 			while ($arr = $db->fetchAssoc($res)) 
 			{				
-				$album = $this->parseArtist($arr['searchname']);
+				$album = $this->parseArtist($arr['name']);
 				if ($album !== false)
 				{
 					if ($this->echooutput)
-						echo 'Looking up: '.$album["artist"].' - '.$album["album"].' ('.$album['year'].') ['.$arr['searchname'].']'."\n";
+					{
+						echo 'Looking up: '.$album["artist"].' - '.$album["album"]; 
+						if($album['year'] !== "")
+							echo ' ('.$album['year'].")\n";
+						else
+							echo "\n";
+					}
 					
 					//check for existing music entry
 					$albumCheck = $this->getMusicInfoByName($album["artist"], $album["album"]);
@@ -464,21 +468,30 @@ class Music
 	public function parseArtist($releasename)
 	{
 		$result = array();
-		/*TODO: FIX VA lookups
-		if (substr($releasename, 0, 3) == 'VA-') {
-				$releasename = trim(str_replace('VA-', '', $releasename));
-		} elseif (substr($name, 0, 3) == 'VA ') {
-				$releasename = trim(str_replace('VA ', '', $releasename));
-		}
-		*/
+		
 		//Replace VA with Various Artists
 		$newName = preg_replace('/VA( |\-)/', 'Various Artists \-', $releasename);
 		
-		//remove years, vbr etc
-		$newName = preg_replace('/\(.*?\)/i', '', $newName);
+		// Remove files/parts. Year. Yenc. Song. Bitrate. File 1 of 2.
+		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|nzb|nfo|par2|sfv|zip)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
+		
+		// Remove some text.
+		$newName = preg_replace('/\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|trtk\d{1,12}\s|\(vinyl\s2496\)|altbinEFNet|as req(,|:)?|\sLP\s|ATT>\sSkipper;|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|REQ:|VBR\s\[?NMR|www\..+?\.com/i', '', $newName);
+		
 		//remove double dashes
 		$newName = str_replace('--', '-', $newName);
 		
+		// Remove various stuff, replace with nothing.
+		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=');
+		$newName = str_replace($a, '', $newName);
+		
+		// Remove various stuff, replace with a space.
+		$a = array('_');
+		$newName = str_replace($a, ' ', $newName);
+		
+		$newName = preg_replace('/\s+/', ' ', $newName);
+		if (preg_match('/bob|Attrition/i', $newName))
+			echo$newName."\n";
 		$name = explode("-", $newName);
 		$name = array_map("trim", $name);
 		
@@ -505,7 +518,7 @@ class Music
 			$result['year'] = (isset($year[1]) && !empty($year[1])) ? $year[1] : '';
 		
 			$result['releasename'] = $releasename;
-		
+			
 			return (!empty($result['artist']) && !empty($result['album'])) ? $result : false;
 		}
 		else

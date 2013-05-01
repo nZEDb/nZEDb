@@ -31,6 +31,7 @@ Installation:
 
 	Please view one of the two installation files in this folder.
 	If you are on windows, you can attempt to use a newznab guide.
+	PHP 5.4 is required, do not post bugs reports if you are using PHP 5.3.
 
 Post-Installation:
 

@@ -99,6 +99,8 @@ function getUrl($url, $method='get', $postdata='')
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
    	}
 	curl_setopt($ch, CURLOPT_URL, $url);
+	$header[] = "Accept-Language: en-us";
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
