@@ -138,7 +138,7 @@
 				<td><label for="NZBS">Nzbs</label>:</td>
 				<td>
 					<input id="NZBS" class="long" name="NZBS" type="text" value="{$ftmux->NZBS}" />
-					<div class="hint">Set the path to the nzb dump you downloaded from torrents, this is the path to bulk files folder of nzbs this does not recurse through subfolders, unless you set NZB_THREADS to true</div>
+					<div class="hint">Set the path to the nzb dump you downloaded from torrents, this is the path to bulk files folder of nzbs. This is by default, recursive and threaded. You set the threads in edit site, Advanced Settings.</div>
 				</td>
 			</tr>
 
