@@ -240,145 +240,211 @@ class Category
 					if($this->isEBook($releasename)){ return $this->tmpCat; }
 					if($this->isPC($releasename)){ return $this->tmpCat; }
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.audio\.warez/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_TV_ANIME;
+					$this->tmpCat = Category::CAT_TV_ANIME;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_TV_FOREIGN;
+					$this->tmpCat =  Category::CAT_TV_FOREIGN;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_PC_0DAY;
+					$this->tmpCat =  Category::CAT_PC_0DAY;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $group))
+				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_TV_SD;
+					$this->tmpCat =  Category::CAT_TV_SD;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|repost))/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_GAME_PS3;
+					$this->tmpCat =  Category::CAT_GAME_PS3;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isMusicLossless($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_MOVIE_DVD;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isComic($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_BOOKS_EBOOK;
+					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.erotica(\.divx)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_XXX_OTHER;
+					$this->tmpCat =  Category::CAT_XXX_OTHER;
+					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.games\.nintendods/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_GAME_NDS;
+					$this->tmpCat =  Category::CAT_GAME_NDS;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_GAME_WII;
+					$this->tmpCat =  Category::CAT_GAME_WII;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.xbox$/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_GAME_XBOX;
+					$this->tmpCat =  Category::CAT_GAME_XBOX;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.games\.xbox360/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_GAME_XBOX360;
+					$this->tmpCat = Category::CAT_GAME_XBOX360;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.mac$/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_PC_MAC;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.mma$/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					if($this->is0day($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_TV_SPORT;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.moovee/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_MOVIE_SD;
+					$this->tmpCat = Category::CAT_MOVIE_SD;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_TV_SPORT;
+					$this->tmpCat =  Category::CAT_TV_SPORT;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.pro\-wrestling/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat = Category::CAT_TV_SPORT;
+					$this->tmpCat = Category::CAT_TV_SPORT;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					return $this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					return true;
 				}
+				
+				if (preg_match('/alt\.binaries\.sony\.psp/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_GAME_PSP;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.warez$/', $groupRes["name"]))
+				{
+					$this->tmpCat = Category::CAT_PC_0DAY;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.warez\.smartphone/', $groupRes["name"]))
+				{
+					if($this->isPhone($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
+					return true;
+				}
+				return false;
 			}
 		}
 	}
@@ -548,9 +614,10 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|DVD-?(5|9|R|Rip)?|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
+			if($this->isMovieDVD($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
 			if($this->isMovie3D($releasename)){ return true; }
 			if($this->isMovieBluRay($releasename)){ return true; }
@@ -577,6 +644,17 @@ class Category
 		if(preg_match('/(AC3|DIVX|DVD(5|9|RIP|R)|XVID)[\.\-_ ](Dutch|French|German|ITA)|(Dutch|French|German|ITA)[\.\-_ ](AC3|DIVX|DVD(5|9|RIP|R)|XVID)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function isMovieDVD($releasename)
+	{
+		if(preg_match('/(dvd\-?r|[\.\-_ ]dvd|dvd9|dvd5|[\.\-_ ]r5)[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
 		}
 		
