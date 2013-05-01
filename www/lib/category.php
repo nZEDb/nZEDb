@@ -337,16 +337,34 @@ class Category
 					return $this->tmpCat = Category::CAT_GAME_XBOX360;
 				}
 				
+				if (preg_match('/alt\.binaries\.moovee/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					return $this->tmpCat = Category::CAT_MOVIE_SD;
+				}
+				
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					return $this->tmpCat =  Category::CAT_MUSIC_VIDEO;
 				}
 				
+				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					return $this->tmpCat =  Category::CAT_TV_SPORT;
+				}
+				
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					return $this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+				}
+				
+				if (preg_match('/alt\.binaries\.pro\-wrestling/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					return $this->tmpCat = Category::CAT_TV_SPORT;
 				}
 				
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
