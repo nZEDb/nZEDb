@@ -1318,7 +1318,7 @@ class Releases
 		}
 		else
 		{
-			$db->query("UPDATE binaries SET partcheck = 1 WHERE ID IN (SELECT ID FROM (SELECT b.ID FROM binaries b LEFT JOIN parts p ON b.ID = p.binaryID LEFT JOIN collections c ON c.ID = b.collectionID WHERE b.partcheck = 0 AND c.groupID = ". $groupID . " GROUP BY b.ID, b.totalParts HAVING count(p.ID) >= b.totalParts) as tmp)"); 
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 and c.id = b.collectionid and c.groupid = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts )"); 
 		}
 		
 		// Set file check to 2 if we have all the parts.
