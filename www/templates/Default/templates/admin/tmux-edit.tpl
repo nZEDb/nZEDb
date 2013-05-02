@@ -175,7 +175,7 @@
 				<td><label for="RELEASES_THREADED">Releases Threaded</label>:</td>
 				<td>
 					{html_radios id="RELEASES_THREADED" name='RELEASES_THREADED' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES_THREADED}
-					<div class="hint">Choose to run update releases threaded. The threaded runs update releases on 1 group per thread. This will make each loop take longer, but may keep your db more responsive. true/false</div>
+					<div class="hint">Choose to run update releases threaded per group or per stage. True will run a group per thread, false will run a stage per thread. true/false</div>
 				</td>
 			</tr>
 			
@@ -247,6 +247,22 @@
 				<td>
 					<input id="DEFRAG_CACHE" name="DEFRAG_CACHE" class="text" type="text" value="{$ftmux->DEFRAG_CACHE}" />
 					<div class="hint">The mysql query cache gets frogmented over time. Enter the time, in seconds, to defrag the query cache. <br/ >cmd: FLUSH QUERY CACHE;</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="COLLECTIONS_KILL">Maximum Collections</label>:</td>
+				<td>
+					<input id="COLLECTIONS_KILL" name="COLLECTIONS_KILL" class="text" type="text" value="{$ftmux->COLLECTIONS_KILL}" />
+					<div class="hint">Set this to any number above 0 and when it is exceeded, backfill and update binaries will be terminated. 0 disables.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="POSTPROCESS_KILL">Maximum Postprocess</label>:</td>
+				<td>
+					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="text" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
+					<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
 			</tr>
 		</table>
