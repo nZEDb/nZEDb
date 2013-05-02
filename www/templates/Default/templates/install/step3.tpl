@@ -29,7 +29,7 @@
 			<td><label for="port">Port:</label></td>
 			<td>
 				<input type="text" name="port" id="port" value="{$cfg->NNTP_PORT}" />
-				<div class="hint">e.g. 119 or 443,564 for SSL</div>
+				<div class="hint">e.g. 119 or 443,563 for SSL</div>
 			</td>
 		</tr>
 		<tr>
