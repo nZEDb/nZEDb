@@ -1,8 +1,13 @@
 <?php
-require_once(WWW_DIR."/lib/site.php");
+/*require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/TMDb.php");
 require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/usermovies.php");
+require_once(WWW_DIR."/lib/usermovies.php");*/
+
+require_once("/var/www/nZEDb/www/lib/site.php");
+require_once("/var/www/nZEDb/www/lib/TMDb.php");
+require_once("/var/www/nZEDb/www/lib/movie.php");
+require_once("/var/www/nZEDb/www/lib/usermovies.php");
 
 if (!$users->isLoggedIn())
 	$page->show403();
@@ -37,39 +42,52 @@ else
 	
 	$s = new Sites();
 	$site = $s->get();
-	$tmdb = new TMDb($site->tmdbkey);
-	
-	
+	$tmdb = new TMDb($site->tmdbkey, 'en'/*Language, make this changebale in the future.*/);
+	$m = new Movie(false);
 	
 	if (is_numeric($_REQUEST["id"]))
 	{
-		$obj = json_decode($tmdb->getMovie($_REQUEST["id"], TMDb::IMDB));
+		$movie = $m->fetchTmdbProperties($_REQUEST["id"]);
+		if($movie !== false)
+		{
+			$obj = array($movie);
+			//print_r($obj);
+		}
 	}
 	else
 	{
-		$obj = json_decode($tmdb->searchMovie($_REQUEST["id"]));
+		$searchm = $tmdb->searchMovie($_REQUEST["id"]);
+		if($searchm !== false)
+		{
+			if(isset($searchm['results']))
+			{
+				//print_r($searchm);
+				$obj = array();
+				$limit = 0;
+				foreach($searchm['results'] as $movie)
+				{
+					$limit++;
+					$movieinfo = $m->fetchTmdbProperties($movie['id'], true);
+					if($movieinfo !== false)
+					{
+						$obj[] = $movieinfo;
+					}
+					if ($limit > 4)
+						break;
+				}
+				//print_r($obj);
+			}
+		}
 	}
 	$imdbids = array();
 	
-	if (count($obj) > 0)
+	if (isset($obj) && count($obj) > 0)
 	{
 		foreach ($obj as $movie)
 		{
-			if (isset($movie->name) && isset($movie->imdb_id))
+			if (isset($movie['title']) && isset($movie['imdb_id']))
 			{
-				$imdbids[] = str_replace("tt", "", $movie->imdb_id);
-				
-				if (isset($movie->posters) && sizeof($movie->posters) > 0) 
-				{
-					foreach($movie->posters as $poster) 
-					{
-						if ($poster->image->size == 'cover') 
-						{
-							$movie->coverimg = $poster->image->url;
-							break;
-						}
-					}
-				}		
+				$imdbids[] = str_replace("tt", "", $movie['imdb_id']);
 			}
 			else
 			{
@@ -106,3 +124,4 @@ else
 		}
 	}
 }
+?>
