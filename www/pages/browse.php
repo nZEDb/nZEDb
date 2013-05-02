@@ -53,6 +53,8 @@ elseif ($category != -1 && $grp == "")
 			$section = 'movies';
 		elseif ($cdata['parentID'] == Category::CAT_PARENT_MUSIC || $cdata['ID'] == Category::CAT_PARENT_MUSIC)
 			$section = 'music';
+		elseif ($cdata['parentID'] == Category::CAT_PARENT_BOOKS || $cdata['ID'] == Category::CAT_PARENT_BOOKS)
+			$section = 'books';
 	} else {
 		$page->show404();
 	}
