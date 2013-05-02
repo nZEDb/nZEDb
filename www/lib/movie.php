@@ -370,52 +370,42 @@ class Movie
 		return $movieId;
 	}
 	
-	public function fetchTmdbProperties($imdbId)
+	public function fetchTmdbProperties($imdbId, $text=false)
 	{
-		$tmdb = new TMDb($this->apikey);
-		$lookupId = 'tt'.$imdbId;
-		$tmdbLookup = json_decode($tmdb->getMovie($lookupId, TMDb::IMDB));
-		if (!$tmdbLookup) { return false; }
-		$movie = array_shift($tmdbLookup);
-		if ($movie == 'Nothing found.') { return false; }
+		$tmdb = new TMDb($this->apikey, 'en'/*language, make it configurable in the future*/);
+		if ($text == false)
+			$lookupId = 'tt'.$imdbId;
+		else
+			$lookupId = $imdbId;
+		
+		$tmdbLookup = $tmdb->getMovie($lookupId);
+		if (!$tmdbLookup) {return false;};
+		if (isset($tmdbLookup['status_code']) && $tmdbLookup['status_code'] !== 1) { return false;}
 
 		$ret = array();
-		$ret['title'] = $movie->name;
-		$ret['tmdb_id'] = $movie->id;
-		$ret['imdb_id'] = $imdbId;
-		$ret['rating'] = ($movie->rating == 0) ? '' : $movie->rating;
-		$ret['plot'] = $movie->overview;
-		$ret['year'] = date("Y", strtotime($movie->released));
-		if (isset($movie->genres) && sizeof($movie->genres) > 0) 
+		$ret['title'] = $tmdbLookup['title'];
+		$ret['tmdb_id'] = $tmdbLookup['id'];
+		$ImdbID = str_replace('tt','',$tmdbLookup['imdb_id']);
+		$ret['imdb_id'] = $ImdbID;
+		if (isset($tmdbLookup['vote_average'])) {$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];}
+		if (isset($tmdbLookup['tagline']))		{$ret['plot'] = $tmdbLookup['tagline'];}
+		if (isset($tmdbLookup['release_date'])) {$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));}
+		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0) 
 		{
 			$genres = array();
-			foreach($movie->genres as $genre) 
+			foreach($tmdbLookup['genres'] as $genre) 
 			{
-				$genres[] = $genre->name;
+				$genres[] = $genre['name'];
 			}
 			$ret['genre'] = $genres;
 		}
-		if (isset($movie->posters) && sizeof($movie->posters) > 0) 
+		if (isset($tmdbLookup['poster_path']) && sizeof($tmdbLookup['poster_path']) > 0) 
 		{
-			foreach($movie->posters as $poster) 
-			{
-				if ($poster->image->size == 'cover') 
-				{
-					$ret['cover'] = $poster->image->url;
-					break;
-				}
-			}
+			$ret['cover'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185".$tmdbLookup['poster_path'];
 		}
 		if (isset($movie->backdrops) && sizeof($movie->backdrops) > 0) 
 		{
-			foreach($movie->backdrops as $backdrop) 
-			{
-				if ($backdrop->image->size == 'original') 
-				{
-					$ret['backdrop'] = $backdrop->image->url;
-					break;
-				}
-			}
+			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original".$tmdbLookup['backdrop_path'];
 		}
 		return $ret;
 	}

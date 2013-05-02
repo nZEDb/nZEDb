@@ -5,10 +5,11 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1086";
+$version="0.1r1117";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
+$db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
@@ -29,12 +30,15 @@ $proc = "SELECT
 	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
-	( SELECT COUNT( groupID ) from collections ) collections,
-	( SELECT COUNT( groupID ) from collections where filecheck = 3 ) collections_3,
+	( SELECT COUNT( ID ) from collections ) collections_table,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) as binaries_table,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) as parts_table,
+    ( SELECT COUNT( ID ) from parts ) parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
 	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
-	( SELECT value from tmux where setting = 'COLLECTIONS' ) collections_kill,
+	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) collections_kill,
+    ( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) postprocess_kill,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) niceness,
 	( SELECT value from tmux where setting = 'RUNNING' ) running,
@@ -153,8 +157,9 @@ $book_releases_now = 0;
 $nfo_remaining_now = 0;
 $nfo_now = 0;
 $releases_now = 0;
-$collections = 0;
-$collections_3 = 0;
+$collections_table = 0;
+$parts_table = 0;
+$binaries_table = 0;
 
 $console_releases_proc = 0;
 $movie_releases_proc = 0;
@@ -173,61 +178,54 @@ $book_releases_proc_start = 0;
 $work_remaining_start = 0;
 $nfo_remaining_start = 0;
 
-$total_work_now_formatted = 0;
-$misc_releases_now_formatted = 0;
-$misc_remaining_now_formatted = 0;
-$book_releases_now_formatted = 0;
-$book_releases_proc_formatted = 0;
-$tvrage_releases_now_formatted = 0;
-$tvrage_releases_proc_formatted = 0;
-$pc_releases_now_formatted = 0;
-$pc_releases_proc_formatted = 0;
-$music_releases_now_formatted = 0;
-$music_releases_proc_formatted = 0;
-$movie_releases_now_formatted = 0;
-$movie_releases_proc_formatted = 0;
-$console_releases_now_formatted = 0;
-$console_releases_proc_formatted = 0;
-$nfo_now_formatted = 0;
-$nfo_remaining_now_formatted = 0;
+$misc_releases_now = 0;
+$work_remaining_now = 0;
+$book_releases_now = 0;
+$book_releases_proc = 0;
+$tvrage_releases_now = 0;
+$tvrage_releases_proc = 0;
+$pc_releases_now = 0;
+$pc_releases_proc = 0;
+$music_releases_now = 0;
+$music_releases_proc = 0;
+$movie_releases_now = 0;
+$movie_releases_proc = 0;
+$console_releases_now = 0;
+$console_releases_proc = 0;
+$total_work_now = 0;
 
-$defrag = 900;
-$monitor = 15;
-$backfill = 30;
-$collections_kill = 1000;
-
-$running = true;
-
-//create initial display
-passthru('clear');
-//printf("\033[1;31m  First insert:\033[0m ".relativeTime("$firstdate")."\n");
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
+
+//create display
+passthru('clear');
+//printf("\033[1;31m  First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
-printf($mask, "Tables", "Not Ready", "Ready");
+printf($mask, "Collections", "Binaries", "Parts");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
-printf($mask, "Collections", "$collections", "$collections_3");
+printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
-printf($mask, "NFO's","$nfo_remaining_now_formatted($nfo_diff)","$nfo_now_formatted($nfo_percent%)");
-printf($mask, "Console(1000)","$console_releases_proc_formatted($console_diff)","$console_releases_now_formatted($console_percent%)");
-printf($mask, "Movie(2000)","$movie_releases_proc_formatted($movie_diff)","$movie_releases_now_formatted($movie_percent%)");
-printf($mask, "Audio(3000)","$music_releases_proc_formatted($music_diff)","$music_releases_now_formatted($music_percent%)");
-printf($mask, "PC(4000)","$pc_releases_proc_formatted($pc_diff)","$pc_releases_now_formatted($pc_percent%)");
-printf($mask, "TVShows(5000)","$tvrage_releases_proc_formatted($tvrage_diff)","$tvrage_releases_now_formatted($tvrage_percent%)");
-printf($mask, "Misc(7000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
-printf($mask, "Books(8000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
-printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
-
+printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
+printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
+printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
+printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
+printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
+printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
+printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
+printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
+printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
+	
+$monitor = 30;
 $i = 1;
 while( $i > 0 )
 {
@@ -252,26 +250,6 @@ while( $i > 0 )
 		$runloop = "true";
 	} else {
 		$runloop = "false";
-	}
-
-	if ( $releases_now != 0 ) {
-		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
-		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
-		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
-		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
-		$pc_percent = sprintf( "%02s", floor(( $pc_releases_now / $releases_now) * 100 ));
-		$tvrage_percent = sprintf( "%02s", floor(( $tvrage_releases_now / $releases_now) * 100 ));
-		$book_percent = sprintf( "%02s", floor(( $book_releases_now / $releases_now) * 100 ));
-		$misc_percent = sprintf( "%02s", floor(( $misc_releases_now / $releases_now) * 100 ));
-	} else {
-		$nfo_percent = 0;
-		$console_percent = 0;
-		$movie_percent = 0;
-		$music_percent = 0;
-		$pc_percent = 0;
-		$tvrage_percent = 0;
-		$book_percent = 0;
-		$misc_percent = 0;
 	}
 
 	//initial query for total releases
@@ -302,7 +280,7 @@ while( $i > 0 )
 
 	//get values from $proc
 	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc = $proc_result[0]['console']; }
-	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_formatted = number_format($proc_result[0]['console']); }
+	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc = $proc_result[0]['console']; }
 	if ( @$proc_result[0]['movies'] != NULL ) { $movie_releases_proc = $proc_result[0]['movies']; }
 	if ( @$proc_result[0]['audio'] != NULL ) { $music_releases_proc = $proc_result[0]['audio']; }
 	if ( @$proc_result[0]['pc'] != NULL ) { $pc_releases_proc = $proc_result[0]['pc']; }
@@ -312,11 +290,14 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases'] != NULL ) { $releases_loop = $proc_result[0]['releases']; }
 	if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_result[0]['nforemains']; }
 	if ( @$proc_result[0]['nfo'] != NULL ) { $nfo_now = $proc_result[0]['nfo']; }
-	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows_unformatted = $proc_result[0]['parts']; }
-	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = number_format($proc_result[0]['parts']); }
+	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = $proc_result[0]['parts']; }
 	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
-	if ( @$proc_result[0]['collections'] != NULL ) { $collections = $proc_result[0]['collections']; }
-	if ( @$proc_result[0]['collections_3'] != NULL ) { $collections_3 = $proc_result[0]['collections_3']; }
+	if ( @$proc_result[0]['collections_table'] != NULL ) { $collections_table = $proc_result[0]['collections_table']; }
+    if ( @$proc_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_result[0]['binaries_table']; }
+    if ( @$proc_result[0]['parts_table'] != NULL ) { $parts_table = $proc_result[0]['parts_table']; }
+
+    if ( @$proc_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_result[0]['collections_kill']; }
+    if ( @$proc_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_result[0]['postprocess_kill']; }
 
 	if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
 	if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
@@ -343,15 +324,12 @@ while( $i > 0 )
 	if ( @$proc_result[0]['fix_timer'] != NULL ) { $fix_timer = $proc_result[0]['fix_timer']; }
 	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
 
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows_unformatted = $proc_result[0]['binaries']; }
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = number_format($proc_result[0]['binaries']); }
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total_unformatted = $proc_result[0]['binaries_total']; }
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = number_format($proc_result[0]['binaries_total']); }
+	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_result[0]['binaries']; }
+	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = $proc_result[0]['binaries_total']; }
 
 	if ( @$proc_result[0]['binariessize'] != NULL ) { $binaries_size_gb = $proc_result[0]['binariessize']; }
 
 	if ( @$proc_result[0]['releases'] ) { $releases_now = $proc_result[0]['releases']; }
-	if ( @$proc_result[0]['releases'] ) { $releases_now_formatted = number_format($proc_result[0]['releases']); }
 	if ( @$proc_result[0]['newestaddname'] ) { $newestname = $proc_result[0]['newestaddname']; }
 	if ( @$proc_result[0]['newestadd'] ) { $newestdate = $proc_result[0]['newestadd']; }
 
@@ -362,7 +340,6 @@ while( $i > 0 )
 
 	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now;
 	if ( $i == 1 ) { $total_work_start = $total_work_now; }
-	$total_work_now_formatted = number_format($total_work_now);
 
 	$nfo_diff = number_format( $nfo_remaining_now - $nfo_remaining_start );
 	$console_diff = number_format( $console_releases_proc - $console_releases_proc_start );
@@ -373,32 +350,35 @@ while( $i > 0 )
 	$book_diff = number_format( $book_releases_proc - $book_releases_proc_start );
 
 	//formatted  output
-	$console_releases_proc_formatted = number_format( $console_releases_proc );
-	$movie_releases_proc_formatted = number_format( $movie_releases_proc );
-	$music_releases_proc_formatted = number_format( $music_releases_proc );
-	$pc_releases_proc_formatted = number_format( $pc_releases_proc );
-	$tvrage_releases_proc_formatted = number_format( $tvrage_releases_proc );
-	$misc_remaining_now_formatted = number_format( $work_remaining_now );
-	$book_releases_proc_formatted = number_format( $book_releases_proc );
-	$nfo_remaining_now_formatted = number_format( $nfo_remaining_now );
-	$nfo_now_formatted = number_format( $nfo_now );
-	$console_releases_now_formatted = number_format( $console_releases_now );
-	$movie_releases_now_formatted = number_format( $movie_releases_now );
-	$music_releases_now_formatted = number_format( $music_releases_now );
-	$pc_releases_now_formatted = number_format( $pc_releases_now );
-	$tvrage_releases_now_formatted = number_format( $tvrage_releases_now );
-	$book_releases_now_formatted = number_format( $book_releases_now );
-	$misc_releases_now_formatted = number_format( $misc_releases_now );
 	$misc_diff = number_format( $work_remaining_now - $work_start );
 
 	$work_since_start = ( $total_work_now - $total_work_start );
 	$work_diff = number_format($work_since_start);
 
+	if ( $releases_now != 0 ) {
+		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
+		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
+		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
+		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
+		$pc_percent = sprintf( "%02s", floor(( $pc_releases_now / $releases_now) * 100 ));
+		$tvrage_percent = sprintf( "%02s", floor(( $tvrage_releases_now / $releases_now) * 100 ));
+		$book_percent = sprintf( "%02s", floor(( $book_releases_now / $releases_now) * 100 ));
+		$misc_percent = sprintf( "%02s", floor(( $misc_releases_now / $releases_now) * 100 ));
+	} else {
+		$nfo_percent = 0;
+		$console_percent = 0;
+		$movie_percent = 0;
+		$music_percent = 0;
+		$pc_percent = 0;
+		$tvrage_percent = 0;
+		$book_percent = 0;
+		$misc_percent = 0;
+	}
+
 	//get microtime at end of queries
 	if ( $runloop == "true" ) {
 		$query_timer = microtime_float()-$query_timer_start;
 	}
-
 
 	//update display
 	passthru('clear');
@@ -409,27 +389,27 @@ while( $i > 0 )
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
-	printf($mask, "Tables", "Not Ready", "Ready");
+	printf($mask, "Collections", "Binaries", "Parts");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, "Collections", "$collections", "$collections_3");
+	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, "NFO's","$nfo_remaining_now_formatted($nfo_diff)","$nfo_now_formatted($nfo_percent%)");
-	printf($mask, "Console(1000)","$console_releases_proc_formatted($console_diff)","$console_releases_now_formatted($console_percent%)");
-	printf($mask, "Movie(2000)","$movie_releases_proc_formatted($movie_diff)","$movie_releases_now_formatted($movie_percent%)");
-	printf($mask, "Audio(3000)","$music_releases_proc_formatted($music_diff)","$music_releases_now_formatted($music_percent%)");
-	printf($mask, "PC(4000)","$pc_releases_proc_formatted($pc_diff)","$pc_releases_now_formatted($pc_percent%)");
-	printf($mask, "TVShows(5000)","$tvrage_releases_proc_formatted($tvrage_diff)","$tvrage_releases_now_formatted($tvrage_percent%)");
-	printf($mask, "Misc(7000)","$misc_remaining_now_formatted($misc_diff)","$misc_releases_now_formatted($misc_percent%)");
-	printf($mask, "Books(8000)","$book_releases_proc_formatted($book_diff)","$book_releases_now_formatted($book_percent%)");
-	printf($mask, "Total", "$total_work_now_formatted($work_diff)", "$releases_now_formatted($releases_since_start)");
+	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
+	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
+	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
+	printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
+	printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
+	printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
+	printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
+	printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
+	printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
 
 	//defrag the query cache every 15 minutes
-	if (( TIME() - $time1 >= $defrag ) || ( $i == 1 ))
+	if ( TIME() - $time1 >= $defrag )
 	{
 		$result = @$db->query($qcache);
 		printf($mask2, "Query cache cleaned", "", "");
@@ -448,16 +428,16 @@ while( $i > 0 )
 
 	$_php = "/usr/bin/time nice -n$niceness php";
 	$_python = "/usr/bin/time nice -n$niceness python";
+	$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
 
-	if ( $releases_threaded == "TRUE" )
-	{
-		$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
-	}
+	if (( $postprocess_kill < $total_work_now ) && ( $postprocess_kill != 0 ))
+		$kill_pp = "TRUE";
 	else
-	{
-		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
-	}
-
+		$kill_pp = "FALSE";
+	if (( $collections_kill < $collections_table ) && ( $collections_kill != 0 ))
+		$kill_coll = "TRUE";
+	else
+		$kill_coll = "FALSE";
 
 	if ( $running  == "TRUE" )
 	{
@@ -503,7 +483,7 @@ while( $i > 0 )
 		if ( $seq == "TRUE" )
 		{
 			//run import-nzb-bulk
-			if ( $import == "TRUE" )
+			if (( $import == "TRUE" ) && ( $kill_pp == "FALSE" ))
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
@@ -517,20 +497,20 @@ while( $i > 0 )
 
 			//run update_binaries
 			$color = get_color();
-			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ))
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ))
+			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ))
+			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
@@ -540,6 +520,11 @@ while( $i > 0 )
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$run_releases && date +\"%D %T\" && sleep seq_timer' 2>&1 1> /dev/null");
+			}
+			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Exceeding Limits\"'");
 			}
 			else
 			{
@@ -551,10 +536,15 @@ while( $i > 0 )
 		{
 			//run update_binaries
 			$color = get_color();
-			if ( $binaries == "TRUE" )
+			if (( $binaries == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && date +\"%D %T\" && sleep $bins_timer' 2>&1 1> /dev/null");
+			}
+			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.3 'echo \"\033[38;5;\"$color\"m\n$panes1[3] has been disabled/terminated by Exceeding Limits\"'");
 			}
 			else
 			{
@@ -564,17 +554,22 @@ while( $i > 0 )
 
 			//run backfill
 			$color = get_color();
-			if (( $i == 1 ) && ( $backfill == "TRUE" ))
+			if (( $i == 1 ) && ( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						echo \"Sleeping $backfill_delay seconds to ensure the first group has finished update_binaries\" && \
 						sleep $backfill_delay && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
 			}
-			elseif ( $backfill == "TRUE" )
+			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+			}
+			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\n$panes1[4] has been disabled/terminated by Exceeding Limits\"'");
 			}
 			else
 			{
@@ -583,11 +578,16 @@ while( $i > 0 )
 			}
 
 			//run import-nzb-bulk
-			if ( $import == "TRUE" )
+			if (( $import == "TRUE" ) && ( $kill_pp == "FALSE" ))
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/import_threaded.py && date +\"%D %T\" && sleep $import_timer' 2>&1 1> /dev/null");
+			}
+			elseif ( $kill_pp == "TRUE" )
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t $tmux_session:1.5 'echo \"\033[38;5;\"$color\"m\n$panes1[5] has been disabled/terminated by Exceeding Limits\"'");
 			}
 			else
 			{

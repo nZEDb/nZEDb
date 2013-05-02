@@ -56,7 +56,7 @@ if seq[0] == "TRUE":
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(run_threads[0])))
 	datas = cur.fetchall()
 else:
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit 4")
+	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
 	datas = cur.fetchall()
 
 
