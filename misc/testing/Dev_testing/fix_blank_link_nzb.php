@@ -4,7 +4,7 @@
  * Fixes NZB files with a blank first line.
  */
  
-require("../../../www/config.php");
+require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
