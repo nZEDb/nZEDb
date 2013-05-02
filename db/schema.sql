@@ -687,6 +687,7 @@ INSERT INTO category (ID, title, parentID) VALUES (7010, 'Misc', 7000);
 INSERT INTO category (ID, title, parentID) VALUES (8010, 'Ebook', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 
 
@@ -912,7 +913,7 @@ INSERT INTO `site`
     ('nzbthreads', 1),
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
-	('amazonassociatetag', ''),
+	('amazonassociatetag', 'n01369-20'),
 	('tmdbkey', '9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
 	('trakttvkey', ''),
@@ -945,7 +946,7 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '18');
+	('sqlpatch', '19');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
