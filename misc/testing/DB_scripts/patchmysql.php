@@ -64,7 +64,9 @@ function SplitSQL($file, $delimiter = ';')
     return false;
 }
 
-if (isset($argv[1]) && $argv[1] == "unix")
+$os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
+
+if (isset($os) && $os == "unix")
 {
 	$s = new Sites();
 	$site = $s->get();
@@ -104,7 +106,7 @@ if (isset($argv[1]) && $argv[1] == "unix")
 		}
 	}
 }
-else if (isset($argv[1]) && $argv[1] == "windows")
+else if (isset($os) && $os == "windows")
 {
 	$s = new Sites();
 	$site = $s->get();
@@ -113,9 +115,9 @@ else if (isset($argv[1]) && $argv[1] == "windows")
 	$patches = array();
 
 	// Open the patch folder.
-	if (!isset($argv[2]))
+	if (!isset($argv[1]))
 		exit("You must suply the directory to the patches.\n");
-	if ($handle = @opendir($argv[2])) 
+	if ($handle = @opendir($argv[1])) 
 	{
 		while (false !== ($patch = readdir($handle))) 
 		{
@@ -131,7 +133,7 @@ else if (isset($argv[1]) && $argv[1] == "windows")
 	{
 		if (preg_match('/\.sql$/i', $patch))
 		{
-			$filepath = $argv[2].$patch;
+			$filepath = $argv[1].$patch;
 			$file = fopen($filepath, "r");
 			$patch = fread($file, filesize($filepath));
 			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
@@ -146,7 +148,7 @@ else if (isset($argv[1]) && $argv[1] == "windows")
 	}
 }
 else
-	exit("ERROR: You must choose an operating system: php patchmysql.php windows c:\nzedb\db\patches\ | php patchmysql.php unix\n");
+	exit("ERROR: Unable to determine OS\n");
 
 if ($patched > 0)
 	exit($patched." patch(es) applied. Now you need to delete the files inside of the www/lib/smarty/templates_c folder.\n");

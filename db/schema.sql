@@ -945,7 +945,7 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '17');
+	('sqlpatch', '18');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1226,6 +1226,8 @@ INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
 INSERT INTO tmux (setting, value) values ('IMPORT_BULK','FALSE');
 INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
 INSERT INTO tmux (setting, value) values ('BACKFILL_QTY','100000');
+INSERT INTO tmux (setting, value) values ('COLLECTIONS_KILL','0');
+INSERT INTO tmux (setting, value) values ('POSTPROCESS_KILL','0');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
