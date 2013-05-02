@@ -634,7 +634,7 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)/i', $releasename))
 		{
 			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieDVD($releasename)){ return true; }
