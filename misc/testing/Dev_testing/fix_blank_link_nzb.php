@@ -1,10 +1,10 @@
 <?php
 
 /*
- * Fixes NZB files with a blank lines.
+ * Fixes NZB files with a blank first line.
  */
  
-require("../../../www/config.php");
+require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
@@ -26,11 +26,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$nzbpathc = 'compress.zlib://'.$nzbpath;
 			$nzbfile = file_get_contents($nzbpathc);
 			
-			if (preg_match("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", $nzbfile))
+			if (preg_match("/^[\r\n]+<\?xml/", $nzbfile))
 			{
-				$nzbfile = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", $nzbfile);
-				$nzbfile = preg_Replace('/.+<\?xml/i', '<?xml', $nzbfile);
-				$nzb = preg_Replace('/<\/nzb>.+/i', '</nzb>', $nzbfile);
+				$nzbfile = preg_replace('/^[\r\n]+<\?xml/i', '<?xml', $nzbfile);
+				$nzb = preg_replace('/<\/nzb>.+/i', '</nzb>', $nzbfile);
 				
 				unlink($nzbpath);
 				$fp = gzopen($nzbpath, 'w5'); 
