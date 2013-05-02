@@ -51,6 +51,7 @@ class Category
 	const CAT_BOOKS_EBOOK = 8010;
 	const CAT_BOOKS_COMICS = 8020;
 	const CAT_BOOKS_MAGAZINES = 8030;
+	const CAT_BOOKS_TECHNICAL = 8040;
 	const CAT_BOOKS_OTHER = 8050;
 	
 
@@ -325,6 +326,13 @@ class Category
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_BOOKS_TECHNICAL;
 					return true;
 				}
 				
@@ -619,7 +627,7 @@ class Category
 	
 	public function isAnimeTV($releasename)
 	{
-		if (preg_match('/^\(\[AST\]\s|\[HorribleSubs\]/i', $releasename))
+		if (preg_match('/[\.\-_ ]Anime[\.\-_ ]|^\(\[AST\]\s|\[HorribleSubs\]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_ANIME;
 			return true;
