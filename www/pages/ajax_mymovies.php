@@ -1,13 +1,8 @@
 <?php
-/*require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/TMDb.php");
 require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/usermovies.php");*/
-
-require_once("/var/www/nZEDb/www/lib/site.php");
-require_once("/var/www/nZEDb/www/lib/TMDb.php");
-require_once("/var/www/nZEDb/www/lib/movie.php");
-require_once("/var/www/nZEDb/www/lib/usermovies.php");
+require_once(WWW_DIR."/lib/usermovies.php");
 
 if (!$users->isLoggedIn())
 	$page->show403();
