@@ -134,7 +134,7 @@ class TvRage
 			$tsql .= sprintf("and tvrage.releasetitle like %s", $db->escapeString("%".$ragename."%"));
 		}
 		
-		$sql = sprintf(" SELECT tvrage.ID, tvrage.rageID, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.ID as userseriesID from tvrage left outer join userseries on userseries.userID = %d and userseries.rageID = tvrage.rageID where tvrage.rageID > 0 %s %s group by tvrage.rageID order by tvrage.releasetitle asc", $uid, $rsql, $tsql);
+		$sql = sprintf(" SELECT tvrage.ID, tvrage.rageID, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.ID as userseriesID from tvrage left outer join userseries on userseries.userID = %d and userseries.rageID = tvrage.rageID where tvrage.rageID in (select rageid from releases) and tvrage.rageID > 0 %s %s group by tvrage.rageID order by tvrage.releasetitle asc", $uid, $rsql, $tsql);
 		return $db->query($sql);		
 	}
 	
