@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1117";
+$version="0.1r1139";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -33,7 +33,6 @@ $proc = "SELECT
 	( SELECT COUNT( ID ) from collections ) collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) as binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) as parts_table,
-    ( SELECT COUNT( ID ) from parts ) parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
 	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
