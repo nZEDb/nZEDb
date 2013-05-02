@@ -378,7 +378,9 @@ class Movie
 		else
 			$lookupId = $imdbId;
 		
-		$tmdbLookup = $tmdb->getMovie($lookupId);
+		try {$tmdbLookup = $tmdb->getMovie($lookupId);} 
+		catch (exception $e) {return false;}
+		
 		if (!$tmdbLookup) {return false;};
 		if (isset($tmdbLookup['status_code']) && $tmdbLookup['status_code'] !== 1) { return false;}
 
