@@ -26,7 +26,7 @@
 			<td colspan="3" class="left">
 				<h2>
 				<a href="{$smarty.const.WWW_TOP}/movies?title={$result['title']}">{$result['title']|escape:"htmlall"}</a> 
-				{if $result['year'] != ""}(<a class="title" href="{$smarty.const.WWW_TOP}/movies?year={$result['year']|date_format:"Y"}">{$result['year']|date_format:"Y"}</a>){/if}
+				{if $result['year'] != ""}(<a class="title" href="{$smarty.const.WWW_TOP}/movies?year={$result['year']}">{$result['year']}</a>){/if}
 				{if $result['rating'] > 0}{$result['rating']}/10{/if}
 				</h2>				
 				
