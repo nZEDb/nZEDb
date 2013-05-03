@@ -196,12 +196,12 @@ class AniDB
 		return $cleanFilename;
 	}
 
-	public function processAnimeReleases()
+	public function processAnimeReleases($threads=0)
 	{
 		$db = new DB();
 		$ri = new ReleaseImage();
 
-		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d limit %d )", Category::CAT_TV_ANIME, $this->aniqty));
+		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d limit %d,%d )", Category::CAT_TV_ANIME, ($this->aniqty) * ($threads * 1.25), $this->aniqty));
 
 		if ($db->getNumRows($results) > 0) {
 			if ($this->echooutput)

@@ -491,13 +491,13 @@ class Console
 		return $result;
 	}
 	
-	public function processConsoleReleases()
+	public function processConsoleReleases($threads=0)
 	{
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 1);
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, ($this->gameqty) * ($threads * 1.25), $this->gameqty)), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 2);
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, ($this->gameqty) * ($threads * 1.25), $this->gameqty)), 2);
 		
 	}
 	
