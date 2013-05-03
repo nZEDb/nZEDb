@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1192";
+$version="0.1r1193";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -460,7 +460,7 @@ while( $i > 0 )
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other yes && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true all yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 12 && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
