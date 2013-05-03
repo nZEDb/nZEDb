@@ -278,8 +278,6 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
-			// Get name and author of the book from the name
-			// Author/Series not in file name - Rice, Anne - Mayfair Witches [1 of 3] "1 - The Witching Hour.htm" yEnc
 			if(preg_match('/^.+?\-\s(?P<author>.+?)\s\-.+?\s"\d+\s\-\s(?P<title>.+?)(\sv\d.+|\s\-\s.+|\.\w+")/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
@@ -305,6 +303,54 @@ require_once(WWW_DIR."/lib/site.php");
 			}
 			// Author/Series not in file name - O'Brian, Patrick [1 of 20] "01 - Master & Commander v1.1.txt" yEnc
 			if(preg_match('/^.+?\s\-\s(?P<author>.+?)\[.+\s\-\s(?P<title>.+?)(\.(doc|epub|mobi|rtf|txt)"|\sv\d.+)/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
+			//(Thomas Perry - Jane Whitfield Book 7.scr
+			if(preg_match('/^\((?P<author>.+?)(\s\-\s|\.\s|\sby\s)(?P<title>.+?)(\s\[|(\.|\()|\s\.scr)/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
+			// (Sebastian.Barry.-.The.Secret.Scripture.2008.Retail.eBook-BitBook.scr
+			if(preg_match('/^\((?P<author>.+?)(\.\-\.)(?P<title>.+?)(\.\d{4}\.)/i', $releasename, $matches))
 			{
 				if (isset($matches['author']))
 				{
