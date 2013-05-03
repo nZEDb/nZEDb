@@ -138,8 +138,8 @@ class PostProcess {
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		
 		$tmpPath = $this->site->tmpunrarpath;
-		if (isset($threads))
-			$tmpPath .= $threads;
+		$tmpPath .= $threads;
+		$threads--;
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
 			$tmpPath = $tmpPath.'/';								
 		if (!file_exists($tmpPath))
@@ -154,13 +154,13 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.25)), $this->addqty));
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty));
 		
 		$rescount = sizeof($result);
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.25)).": ";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)
@@ -187,8 +187,8 @@ class PostProcess {
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
 
-                // Fetch the NZB using the GUID.
-                $nzb = new NZB();
+				// Fetch the NZB using the GUID.
+				$nzb = new NZB();
 
 				if (!$nzbpath = $nzb->NZBPath($guid, $this->site->nzbpath, $this->site->nzbsplitlevel))
 				{
@@ -197,10 +197,10 @@ class PostProcess {
 				}
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				if (!$nzbpath)
-                {
-                    echo "ERROR: NZB file contents empty.\n";
-                    continue;
-                }
+				{
+					echo "ERROR: NZB file contents empty.\n";
+					continue;
+				}
 
 				$nzbfile = simplexml_load_file($nzbpath);
 

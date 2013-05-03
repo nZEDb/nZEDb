@@ -362,7 +362,7 @@ class Music
 				
 		$query = sprintf("
 		INSERT INTO musicinfo  (`title`, `asin`, `url`, `salesrank`,  `artist`, `publisher`, `releasedate`, `review`, `year`, `genreID`, `tracks`, `cover`, `createddate`, `updateddate`)
-		VALUES (%s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %d,        now(),        now())
+		VALUES (%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%d,		now(),		now())
 			ON DUPLICATE KEY UPDATE  `title` = %s,  `asin` = %s,  `url` = %s,  `salesrank` = %s,  `artist` = %s,  `publisher` = %s,  `releasedate` = %s,  `review` = %s,  `year` = %s,  `genreID` = %s,  `tracks` = %s,  `cover` = %d,  createddate = now(),  updateddate = now()", 
 		$db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), 
 		$mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), 
@@ -415,9 +415,10 @@ class Music
 	
 	public function processMusicReleases($threads=0)
 	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.25)), $this->musicqty));
+		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -502,7 +503,7 @@ class Music
 		{
 			if (preg_match('/^the /i', $name[0])) 
 			{
-					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
+					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';	 
 			}
 			if (preg_match('/deluxe edition|single|nmrVBR|READ NFO/i', $name[1], $albumType)) 
 			{
