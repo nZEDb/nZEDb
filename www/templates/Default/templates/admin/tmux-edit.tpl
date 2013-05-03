@@ -89,21 +89,21 @@
 				</td>
 			</tr>
 
-            <tr>
-                <td><label for="BACKFILL_TYPE">Backfill Intervals</label>:</td>
-                <td>
-                    {html_radios id="BACKFILL_TYPE" name='BACKFILL_TYPE' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL_TYPE}
-                    <div class="hint">Choose to run backfill Intervals script true/false. True will download everything per group upto your backfill days set in admin, one group per thread. False will download 20k headers per group per thread.</div>
-                </td>
-            </tr>
+			<tr>
+				<td><label for="BACKFILL_TYPE">Backfill Intervals</label>:</td>
+				<td>
+					{html_radios id="BACKFILL_TYPE" name='BACKFILL_TYPE' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL_TYPE}
+					<div class="hint">Choose to run backfill Intervals script true/false. True will download everything per group upto your backfill days set in admin, one group per thread. False will download 20k headers per group per thread.</div>
+				</td>
+			</tr>
 
-            <tr>
-                <td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
-                <td>
-                    <input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
-                    <div class="hint">When not running backfill intervals, you select the number of hearders per group per thread to download.</div>
-                </td>
-            </tr>
+			<tr>
+				<td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
+				<td>
+					<input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
+					<div class="hint">When not running backfill intervals, you select the number of hearders per group per thread to download.</div>
+				</td>
+			</tr>
 
 			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
@@ -142,13 +142,13 @@
 				</td>
 			</tr>
 
-            <tr>
-                <td><label for="IMPORT_BULK">Use Bulk Importer</label>:</td>
-                <td>
-                    {html_radios id="IMPORT_BULK" name='IMPORT_BULK' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT_BULK}
-                    <div class="hint">Choose to run the bulk import nzb script true/false. This uses /dev/shm and can interfere with apparmor. This runs about 10% faster than stock importer. true/false</div>
-                </td>
-            </tr>
+			<tr>
+				<td><label for="IMPORT_BULK">Use Bulk Importer</label>:</td>
+				<td>
+					{html_radios id="IMPORT_BULK" name='IMPORT_BULK' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT_BULK}
+					<div class="hint">Choose to run the bulk import nzb script true/false. This uses /dev/shm and can interfere with apparmor. This runs about 10% faster than stock importer. true/false</div>
+				</td>
+			</tr>
 
 			<tr>
 				<td style="width:160px;"><label for="IMPORT_TIMER">Import NZBS Sleep Timer</label>:</td>
