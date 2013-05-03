@@ -280,6 +280,8 @@ require_once(WWW_DIR."/lib/site.php");
 			
 			$releasename = trim(preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename));
 			
+			//$releasename = trim(preg_replace('/\s+/', '', $releasename));
+			
 			// Get name and author of the book from the name
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
 			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)(\s\[|\-\s|;\s|\s\-|\s\()/i', $releasename, $matches))

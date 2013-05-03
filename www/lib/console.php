@@ -557,6 +557,7 @@ class Console
 	
 	function parseTitle($releasename)
 	{
+		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
 		$result = array();
 		
 		//get name of the game from name of release
