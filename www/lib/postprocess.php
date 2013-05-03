@@ -138,7 +138,7 @@ class PostProcess {
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		
 		$tmpPath = $this->site->tmpunrarpath;
-		if (isset($threads) && ($threads > 1 ))
+		if (isset($threads))
 			$tmpPath .= $threads;
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
 			$tmpPath = $tmpPath.'/';								
