@@ -206,8 +206,8 @@ Class NZBcontents
 	//
 	//	Check if the possible NFo is a JFIF.
 	//
-    function check_JFIF($filename)
-    {
+	function check_JFIF($filename)
+	{
 		$fp = @fopen($filename, 'r');
 		if ($fp) 
 		{

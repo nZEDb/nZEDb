@@ -33,39 +33,39 @@ function isWindows()
 
 function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 {
-    $arrData = array();
-    
-    // if input is object, convert into array
-    if (is_object($arrObjData)) {
-        $arrObjData = get_object_vars($arrObjData);
-    }
-    
-    if (is_array($arrObjData)) {
-        foreach ($arrObjData as $index => $value) {
-            if (is_object($value) || is_array($value)) {
-                $value = objectsIntoArray($value, $arrSkipIndices); // recursive call
-            }
-            if (in_array($index, $arrSkipIndices)) {
-                continue;
-            }
-            $arrData[$index] = $value;
-        }
-    }
-    return $arrData;
+	$arrData = array();
+	
+	// if input is object, convert into array
+	if (is_object($arrObjData)) {
+		$arrObjData = get_object_vars($arrObjData);
+	}
+	
+	if (is_array($arrObjData)) {
+		foreach ($arrObjData as $index => $value) {
+			if (is_object($value) || is_array($value)) {
+				$value = objectsIntoArray($value, $arrSkipIndices); // recursive call
+			}
+			if (in_array($index, $arrSkipIndices)) {
+				continue;
+			}
+			$arrData[$index] = $value;
+		}
+	}
+	return $arrData;
 }
 
 function safeFilename($filename) 
 {
-    $temp = $filename;
+	$temp = $filename;
  
-    $result = '';
-    for ($i=0; $i<strlen($temp); $i++) {
-        if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
-            $result = $result . $temp[$i];
-        }
-    }
+	$result = '';
+	for ($i=0; $i<strlen($temp); $i++) {
+		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
+			$result = $result . $temp[$i];
+		}
+	}
  
-    return $result;
+	return $result;
 }
 
 function runCmd($command, $debug=false) {
@@ -118,7 +118,7 @@ function getUrl($url, $method='get', $postdata='')
 
 function cp437toUTF($str) {
 	$out = '';
-    for ($i = 0; $i<strlen($str);$i++){	
+	for ($i = 0; $i<strlen($str);$i++){	
 		$ch = ord($str{$i});
 		//echo $ch.' ';
 		switch($ch){
@@ -253,7 +253,7 @@ function cp437toUTF($str) {
 			default : $out .= chr($ch);
 		}
 	}
-	return $out;    
+	return $out;	
 }
 	
 ?>

@@ -11,8 +11,8 @@ $groupID = "";
 
 if (!empty($argv[1]))
 {
-    $groupInfo = $groups->getByName($argv[1]);
-    $groupID = $groupInfo['ID'];
+	$groupInfo = $groups->getByName($argv[1]);
+	$groupID = $groupInfo['ID'];
 }
 
 $releases = new Releases;

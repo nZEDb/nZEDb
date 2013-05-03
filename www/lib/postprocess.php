@@ -32,20 +32,20 @@ class PostProcess {
 	
 	public function processAll()
 	{
-		$this->processNfos();
-		$this->processMovies();
-		$this->processMusic();
-		$this->processGames();
-		$this->processAnime();
-		$this->processTv();
-		$this->processBooks();
-		$this->processAdditional();
+		$this->processNfos($threads=1);
+		$this->processMovies($threads=1);
+		$this->processMusic($threads=1);
+		$this->processGames($threads=1);
+		$this->processAnime($threads=1);
+		$this->processTv($threads=1);
+		$this->processBooks($threads=1);
+		$this->processAdditional($threads=1);
 	}
 	
 	//
 	// Process nfo files
 	//
-	public function processNfos($threads=0)
+	public function processNfos($threads=1)
 	{		
 		if ($this->site->lookupnfo == 1)
 		{
@@ -57,7 +57,7 @@ class PostProcess {
 	//
 	// Lookup imdb if enabled
 	//
-	public function processMovies($threads=0)
+	public function processMovies($threads=1)
 	{	
 		if ($this->site->lookupimdb == 1) 
 		{
@@ -69,7 +69,7 @@ class PostProcess {
 	//
 	// Lookup music if enabled
 	//
-	public function processMusic($threads=0)
+	public function processMusic($threads=1)
 	{
 		if ($this->site->lookupmusic == 1) 
 		{
@@ -81,7 +81,7 @@ class PostProcess {
 	//
 	// Lookup games if enabled
 	//
-	public function processGames($threads=0)
+	public function processGames($threads=1)
 	{
 		if ($this->site->lookupgames == 1) 
 		{
@@ -93,7 +93,7 @@ class PostProcess {
 	//
 	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processAnime($threads=0)
+	public function processAnime($threads=1)
 	{
 		if ($this->site->lookupanidb == 1) 
 		{
@@ -106,7 +106,7 @@ class PostProcess {
 	//
 	// Process all TV related releases which will assign their series/episode/rage data
 	//
-	public function processTv($threads=0)
+	public function processTv($threads=1)
 	{
 		if ($this->site->lookuptvrage == 1) 
 		{
@@ -118,7 +118,7 @@ class PostProcess {
 	//
 	// Process books using amazon.com
 	//
-	public function processBooks($threads=0)
+	public function processBooks($threads=1)
 	{
 		if ($this->site->lookupbooks == 1) 
 		{
@@ -130,7 +130,7 @@ class PostProcess {
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info
 	//
-	public function processAdditional($threads=0)
+	public function processAdditional($threads=1)
 	{
 		$maxattemptstocheckpassworded = 5;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;

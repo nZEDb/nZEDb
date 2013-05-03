@@ -46,11 +46,11 @@ class Groups
 		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");		
 	}
 	
-    public function getActiveByDate()
-    {
-        $db = new DB();
-        return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY first_record_postdate DESC");
-    }
+	public function getActiveByDate()
+	{
+		$db = new DB();
+		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY first_record_postdate DESC");
+	}
 
 	public function getActiveIDs()
 	{			
@@ -321,12 +321,12 @@ class Groups
 		return $ret;
 	}
 
-    public function updateGroupStatus($id, $status = 0)
-    {
-        $db = new DB();
-        $db->query(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
-        $status = ($status == 0) ? 'deactivated' : 'activated';
-        return "Group $id has been $status.";
-    }
+	public function updateGroupStatus($id, $status = 0)
+	{
+		$db = new DB();
+		$db->query(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
+		$status = ($status == 0) ? 'deactivated' : 'activated';
+		return "Group $id has been $status.";
+	}
 }
 ?>
