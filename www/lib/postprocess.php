@@ -193,13 +193,13 @@ class PostProcess {
 				if (!$nzbpath = $nzb->NZBPath($guid, $this->site->nzbpath, $this->site->nzbsplitlevel))
 				{
 					echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
-					break;
+					continue;
 				}
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				if (!$nzbpath)
                 {
                     echo "ERROR: NZB file contents empty.\n";
-                    break;
+                    continue;
                 }
 
 				$nzbfile = simplexml_load_file($nzbpath);
