@@ -200,8 +200,8 @@ class Category
 	// returns -1 if no category is appropriate from the group name.
 	//
 	public function determineCategory($releasename = "", $groupID)
-	{     
-		//                       
+	{	 
+		//					   
 		//Try against all functions, if still nothing, return Cat Misc.
 		//
 		

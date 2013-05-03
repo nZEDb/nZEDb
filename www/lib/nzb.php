@@ -129,20 +129,20 @@ class NZB
 		$nzbfile = $this->getNZBPath($releaseGuid, $sitenzbpath, false, $levelsToSplit); 		
 		return !file_exists($nzbfile) ? false : $nzbfile;
 	}
-    
+	
 	function nzbFileList($nzb) 
 	{
-	    $result = array();
+		$result = array();
 	   
-	    $nzb = str_replace("\x0F", "", $nzb);
+		$nzb = str_replace("\x0F", "", $nzb);
 	   	$num_pars = 0;
-	    $xml = @simplexml_load_string($nzb);
-	    if (!$xml || strtolower($xml->getName()) != 'nzb') 
-	      return false;
+		$xml = @simplexml_load_string($nzb);
+		if (!$xml || strtolower($xml->getName()) != 'nzb') 
+		  return false;
 
-	    $i=0;
-	    foreach($xml->file as $file) 
-	    {
+		$i=0;
+		foreach($xml->file as $file) 
+		{
 			//subject
 			$title = $file->attributes()->subject;
 			if (preg_match('/\.par2/i', $title)) 
@@ -177,9 +177,9 @@ class NZB
 			$result[$i]['partsactual'] = $numsegs;
 			
 			$i++;
-	    }
+		}
 	   
-	    return $result;
+		return $result;
 	}
 
 }

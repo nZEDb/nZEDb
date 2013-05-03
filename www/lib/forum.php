@@ -21,15 +21,15 @@ class Forum
 			}
 			
 			$db->queryInsert(sprintf("INSERT INTO `forumpost`
-            (             `forumID`,
-             `parentID`,             `userID`,
-             `subject`,             `message`,
-             `locked`,             `sticky`,
-             `replies`,             `createddate`,
-             `updateddate`) VALUES (
-        1,        %d,        %d,        %s,        %s,        %d,        %d,        %d,
-        NOW(),        NOW())", $parentid, $userid, $db->escapeString($subject)	
-        , $db->escapeString($message), $locked, $sticky, $replies));
+			(			 `forumID`,
+			 `parentID`,			 `userID`,
+			 `subject`,			 `message`,
+			 `locked`,			 `sticky`,
+			 `replies`,			 `createddate`,
+			 `updateddate`) VALUES (
+		1,		%d,		%d,		%s,		%s,		%d,		%d,		%d,
+		NOW(),		NOW())", $parentid, $userid, $db->escapeString($subject)	
+		, $db->escapeString($message), $locked, $sticky, $replies));
 			
 		}
 
