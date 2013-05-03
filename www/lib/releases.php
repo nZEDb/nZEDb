@@ -28,10 +28,10 @@ class Releases
 	function Releases()
 	{
 		$s = new Sites();
-		$site = $s->get();
-		$this->stage5limit = (!empty($site->maxnzbsprocessed)) ? $site->maxnzbsprocessed : 1000;
-		$this->completion = (!empty($site->releasecompletion)) ? $site->releasecompletion : 0;
-		$this->updategrabs = ($site->grabstatus == "0") ? false : true;
+		$this->site = $s->get();
+		$this->stage5limit = (!empty($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
+		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
+		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 	}
 	
 	public function get()
@@ -460,14 +460,10 @@ class Releases
 	public function delete($id, $isGuid=false)
 	{			
 		$db = new DB();
-		$users = new Users();
-		$s = new Sites();
-		$nfo = new Nfo();
 		$nzb = new NZB();
+		$s = new Sites();
 		$site = $s->get();
-		$rf = new ReleaseFiles();
-		$re = new ReleaseExtra();
-		$rc = new ReleaseComments();
+		
 		$ri = new ReleaseImage();
 		
 		if (!is_array($id))
@@ -479,37 +475,43 @@ class Releases
 			// delete from disk.
 			//
 			$rel = $this->getById($identifier);
-			$nzbpath = $nzb->getNZBPath($rel["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
-			
-			if ($rel && file_exists($nzbpath))
-			{
-				unlink($nzbpath);
-			}
-			
-			$nfo->deleteReleaseNfo($rel['ID']);
-			$rc->deleteCommentsForRelease($rel['ID']);
-			$users->delCartForRelease($rel['ID']);
-			$rf->delete($rel['ID']);
-			$re->delete($rel['ID']);
-			$re->deleteFull($rel['ID']);
-			$ri->delete($rel['guid']);
-			$db->query(sprintf("delete from releases where id = %d", $rel['ID']));
+			$this->fastDelete($rel["ID"], $rel["guid"], $this->site);
 		}
+	}
+
+	public function fastDelete($id, $guid, $site)
+	{			
+		$db = new DB();
+		$nzb = new NZB();
+		$ri = new ReleaseImage();
+		
+		
+		//
+		// delete from disk.
+		//
+		$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath, false, $site->nzbsplitlevel);
+		
+		if (file_exists($nzbpath))
+			unlink($nzbpath);
+
+		$db->query(sprintf("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull 
+							from releases 
+								LEFT OUTER JOIN releasenfo on releasenfo.releaseID = releases.ID
+								LEFT OUTER JOIN releasecomment on releasecomment.releaseID = releases.ID
+								LEFT OUTER JOIN usercart on usercart.releaseID = releases.ID
+								LEFT OUTER JOIN releasefiles on releasefiles.releaseID = releases.ID
+								LEFT OUTER JOIN releaseaudio on releaseaudio.releaseID = releases.ID
+								LEFT OUTER JOIN releasesubs on releasesubs.releaseID = releases.ID
+								LEFT OUTER JOIN releasevideo on releasevideo.releaseID = releases.ID
+								LEFT OUTER JOIN releaseextrafull on releaseextrafull.releaseID = releases.ID
+							where releases.ID = %d", $id));
+		
+		$ri->delete($guid); // This deletes a file so not in the query
 	}
 	
 	// For the site delete button.
 	public function deleteSite($id, $isGuid=false)
 	{			
-		$db = new DB();
-		$users = new Users();
-		$s = new Sites();
-		$nfo = new Nfo();
-		$site = $s->get();
-		$rf = new ReleaseFiles();
-		$re = new ReleaseExtra();
-		$rc = new ReleaseComments();
-		$ri = new ReleaseImage();
-		
 		if (!is_array($id))
 			$id = array($id);
 				
@@ -519,18 +521,7 @@ class Releases
 			// delete from disk.
 			//
 			$rel = ($isGuid) ? $this->getByGuid($identifier) : $this->getById($identifier);
-
-			if ($rel && file_exists($site->nzbpath.$rel["guid"].".nzb.gz")) 
-				unlink($site->nzbpath.$rel["guid"].".nzb.gz");
-			
-			$nfo->deleteReleaseNfo($rel['ID']);
-			$rc->deleteCommentsForRelease($rel['ID']);
-			$users->delCartForRelease($rel['ID']);
-			$rf->delete($rel['ID']);
-			$re->delete($rel['ID']);
-			$re->deleteFull($rel['ID']);
-			$ri->delete($rel['guid']);
-			$db->query(sprintf("delete from releases where id = %d", $rel['ID']));
+			$this->fastDelete($rel['ID'], $rel["guid"], $this->site);
 		}
 	}
 
@@ -1242,14 +1233,12 @@ class Releases
 	//
 	public function getZipped($guids)
 	{
-		$s = new Sites();
 		$nzb = new NZB;
-		$site = $s->get();
 		$zipfile = new zipfile();
 		
 		foreach ($guids as $guid)
 		{
-			$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath, false, $site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($guid, $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 
 			if (file_exists($nzbpath)) 
 			{
@@ -1539,7 +1528,7 @@ class Releases
 			
 			foreach ($groupIDs as $groupID)
 			{
-				if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN 
+				if ($resrel = $db->query("SELECT r.ID, r.guid FROM releases r LEFT JOIN 
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) 
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease 
 							FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE 
@@ -1547,7 +1536,7 @@ class Releases
 				{
 					foreach ($resrel as $rowrel)
 					{
-						$this->delete($rowrel['ID']);
+						$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 						$minsizecount ++;
 					}
 				}
@@ -1555,25 +1544,25 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres["value"] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID from releases where groupID = %d AND filesize > %d ", $groupID["ID"], $maxfilesizeres["value"])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID["ID"], $maxfilesizeres["value"])))
 					{
 						foreach ($resrel as $rowrel)
 						{
-							$this->delete($rowrel['ID']);
+							$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 							$maxsizecount ++;
 						}
 					}
 				}
 
 				if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN 
-							(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) 
+							(SELECT g.ID, guid, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) 
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease 
 							FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE 
 							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND groupID = ".$groupID["ID"]))
 				{
 					foreach ($resrel as $rowrel)
 					{
-						$this->delete($rowrel['ID']);
+						$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 						$minfilecount ++;
 					}
 				}
@@ -1582,14 +1571,14 @@ class Releases
         else
         {
 			if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN 
-						(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) 
+						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) 
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease 
 						FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE 
 						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND groupID = ".$groupID))
 			{
 				foreach ($resrel as $rowrel)
 				{
-					$this->delete($rowrel['ID']);
+					$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 					$minsizecount ++;
 				}
 			}
@@ -1597,17 +1586,17 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres["value"] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID from releases where groupID = %d AND filesize > %d ", $groupID, $maxfilesizeres["value"])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID, $maxfilesizeres["value"])))
 				{
 					foreach ($resrel as $rowrel)
 					{
-						$this->delete($rowrel['ID']);
+						$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 						$maxsizecount ++;
 					}
 				}
 			}
 
-			if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN 
+			if ($resrel = $db->query("SELECT r.ID, guid FROM releases r LEFT JOIN 
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) 
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease 
 						FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE 
@@ -1615,7 +1604,7 @@ class Releases
 			{
 				foreach ($resrel as $rowrel)
 				{
-					$this->delete($rowrel['ID']);
+					$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 					$minfilecount ++;
 				}
 			}
@@ -1718,6 +1707,7 @@ class Releases
 		$dupecount = 0;
 		$relsizecount = 0;
 		$completioncount = 0;
+
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 		
 		// Delete old releases and finished collections.
@@ -1734,29 +1724,31 @@ class Releases
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
-			$result = $db->query(sprintf("SELECT ID FROM releases WHERE postdate < now() - interval %d day " . $where, $page->site->releaseretentiondays)); 		
-			foreach ($result as $row)
-				$this->delete($row["ID"]);
+			$result = $db->query(sprintf("SELECT ID, guid FROM releases WHERE postdate < now() - interval %d day " . $where, $page->site->releaseretentiondays)); 		
+			foreach ($result as $rowrel)
+			{
+				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 				$remcount ++;
+			}
 		}
 		
 		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			$result = $db->query("SELECT ID FROM releases WHERE passwordstatus > 0 " . $where); 		
-			foreach ($result as $row)
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus > 0 " . $where); 		
+			foreach ($result as $rowrel)
 			{
-				$this->delete($row["ID"]);
+				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 				$passcount ++;
 			}
 		}
 		
 		// Crossposted releases.
-		if($resrel = $db->query("SELECT ID FROM releases WHERE adddate > (now() - interval 2 hour) " . $where . " GROUP BY name HAVING count(name) > 1"))
+		if($resrel = $db->query("SELECT ID, guid FROM releases WHERE adddate > (now() - interval 2 hour) " . $where . " GROUP BY name HAVING count(name) > 1"))
 		{
 			foreach ($resrel as $rowrel)
 			{
-				$this->delete($rowrel['ID']);
+				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 				$dupecount ++;
 			}
 		}
@@ -1764,11 +1756,11 @@ class Releases
 		// Releases below completion %.
 		if($this->completion > 0)
 		{
-			if($resrel = $db->query(sprintf("SELECT ID FROM releases WHERE completion < %d and completion > 0", $this->completion)))
+			if($resrel = $db->query(sprintf("SELECT ID, guid FROM releases WHERE completion < %d and completion > 0", $this->completion)))
 			{
 				foreach ($resrel as $rowrel)
 				{
-					$this->delete($rowrel['ID']);
+					$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
 					$completioncount ++;
 				}
 			}

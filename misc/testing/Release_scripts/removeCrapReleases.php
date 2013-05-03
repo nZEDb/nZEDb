@@ -8,6 +8,7 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/releases.php");
+require_once(FS_ROOT."/../../../www/lib/site.php");
 
 if (!isset($argv[1]) && !isset($argv[2]))
 {
@@ -49,11 +50,14 @@ if ($argv[1] == "true")
 	function deleteReleases($sql, $type)
 	{
 		$releases = new Releases();
+		$s = new Sites();
+		$site = $s->get();
+		
 		$delcount = 0;
 		foreach ($sql as $rel)
 		{
 			echo "Deleting, ".$type.": ".$rel['searchname']."\n";
-			$releases->delete($rel['ID']);
+			$releases->fastDelete($rel['ID'], $rel['guid'], $site);
 			$delcount++;
 		}
 		return $delcount;
@@ -64,7 +68,7 @@ if ($argv[1] == "true")
 	{
 		$type = "Gibberish";
 		$db = new Db;
-		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -74,7 +78,7 @@ if ($argv[1] == "true")
 	{
 		$type = "Hashed";
 		$db = new Db;
-		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -84,7 +88,7 @@ if ($argv[1] == "true")
 	{
 		$type = "Short";
 		$db = new Db;
-		$sql = $db->query("select ID, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -94,7 +98,7 @@ if ($argv[1] == "true")
 	{
 		$type = "EXE";
 		$db = new Db;
-		$sql = $db->query('select r.ID, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.size < 30000000 and r.categoryID not in (4010, 4020, 4030, 4040, 4050, 4060, 4070, 7010)'.$and);
+		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.size < 30000000 and r.categoryID not in (4010, 4020, 4030, 4040, 4050, 4060, 4070, 7010)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -104,7 +108,7 @@ if ($argv[1] == "true")
 	{
 		$type = "PasswordURL";
 		$db = new Db;
-		$sql = $db->query('select r.ID, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%password.url%"'.$and);
+		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%password.url%"'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -114,7 +118,7 @@ if ($argv[1] == "true")
 	{
 		$type = "Size";
 		$db = new Db;
-		$sql = $db->query('select ID, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050)'.$and);
+		$sql = $db->query('select ID, guid, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -124,7 +128,7 @@ if ($argv[1] == "true")
 	{
 		$type = "Sample";
 		$db = new Db;
-		$sql = $db->query('select ID, searchname from releases where totalPart > 1 and searchname like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
+		$sql = $db->query('select ID, guid, searchname from releases where totalPart > 1 and searchname like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
