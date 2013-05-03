@@ -48,7 +48,7 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($processImdb=1, $processTvrage=1)
+	public function processNfoFiles($threads=0, $processImdb=1, $processTvrage=1)
 	{
 		$ret = 0;
 		$db = new DB();
@@ -56,13 +56,13 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents($this->echooutput);
 
-		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d", $this->nzbs));
+		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d,%d", ($this->nzbs) * ($threads * 1.25), $this->nzbs));
 		$nfocount = $db->getNumRows($res);
 		if ($nfocount >= 0)
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+					echo "Processing ".$nfocount." NFO(s), starting at ".(($this->nzbs) * $threads * 1.25)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			while ($arr = $db->fetchAssoc($res))
