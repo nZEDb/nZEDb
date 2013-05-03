@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1172";
+$version="0.1r1186";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -518,7 +518,7 @@ while( $i > 0 )
 			elseif ( $releases_run == "TRUE" )
 			{
 				shell_exec("tmux respawnp -t $tmux_session:1.4 'echo \"\033[38;5;\"$color\"m\" && \
-						$run_releases && date +\"%D %T\" && sleep seq_timer' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
 			{
