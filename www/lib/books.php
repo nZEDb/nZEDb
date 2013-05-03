@@ -279,6 +279,7 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
+			// Author/Series not in file name - Rice, Anne - Mayfair Witches [1 of 3] "1 - The Witching Hour.htm" yEnc
 			if(preg_match('/^.+?\-\s(?P<author>.+?)\s\-.+?\s"\d+\s\-\s(?P<title>.+?)(\sv\d.+|\s\-\s.+|\.\w+")/i', $releasename, $matches))
 				return $this->parseHelper($releasename, $matches);
 			
@@ -302,9 +303,25 @@ require_once(WWW_DIR."/lib/site.php");
 			if(preg_match('/^new\sebooks.+?\s"(?P<author>.+?)\s\-.+?\]\s\-\s(?P<title>.+?)\s(\(|\[)/i', $releasename, $matches))
 				return $this->parseHelper($releasename, $matches);
 			
-			$releasename = preg_replace('/\s\-\s\[.+?\]\s\-\s|\.(7z|epub|flac|jpg|m3um|mobi|mp3|nzb|nfo|par2|png|php|rar|rtf|sfv|txt|zip)|^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|\s\(ed\)\s|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|txt\s\-|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename);
+			// "Harris, Charlaine - Aurora Teagarden 01 - Real Murders 1.0.html"  353 kBytes yEnc
+			if(preg_match('/^(\-\s)?(?P<author>.+?)\s\-\s.+?\s\-\s(?P<title>.+?)\./i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
+			
+			// - Alan Burt Akers - Dray Prescot 22 - A Victory for Kregen.pdf
+			if(preg_match('/^(\-\s)?(?P<author>.+?)\s\-\s.+?\s\-\s.+?(?P<title>.+?)\./i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
+			
+			// Caitlyn Willows - Hired Hand.pdf
+			if(preg_match('/^"?(?P<author>.+?)\s\-\s(?P<title>.+?)(\.(pdf|rar|txt|zip)|\s\(\w)/i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
+			
+			// ST_Joshi_-_Sixty_Years_Of_Arkham_House.part1.rar
+			if(preg_match('/^(?P<author>.+?)_\-_(?P<title>.+?)\.\w/i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
+			
+			//$releasename = preg_replace('/\s\-\s\[.+?\]\s\-\s|\.(7z|epub|flac|jpg|m3um|mobi|mp3|nzb|nfo|par2|png|php|rar|rtf|sfv|txt|zip)|^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|\s\(ed\)\s|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|txt\s\-|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename);
 			$releasename = str_replace('--', '-', $releasename);
-			$releasename = str_replace(array('[', ']'), '', $releasename);
+			//$releasename = str_replace(array('[', ']'), '', $releasename);
 			$releasename = trim(preg_replace('/\s\s+/', ' ', $releasename));
 			
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
