@@ -55,7 +55,7 @@ if run_threads_alt[0] == "TRUE":
 	datas = cur.fetchall()
 	type_work = "Groups"
 else:
-	datas = ['1','2','3','4','45','5','6','7']
+	datas = ['1','2','3','4','5','6','7','8']
 	type_work = "Stage"
 
 class WorkerThread(threading.Thread):
@@ -69,7 +69,7 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				print '\n%s: %s %s started.' % (self.name, type_work, dirname)
+				#print '\n%s: %s %s started.' % (self.name, type_work, dirname)
 				if run_threads_alt[0] == "TRUE":
 					subprocess.call(["php", pathname+"/update_releases.php", ""+dirname])
 				else:
@@ -105,7 +105,7 @@ def main(args):
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
-		print '\n%s: %s %s finished.' % (result[0], type_work, result[1])
+		#print '\n%s: %s %s finished.' % (result[0], type_work, result[1])
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it
