@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1191";
+$version="0.1r1192";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -498,9 +498,6 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been disabled/terminated by Postprocess All\"'");
 		}
-		echo $history;
-		echo $last_history;
-		echo relativeTime($time3);
 		
 		if ( $seq == "TRUE" )
 		{
