@@ -278,7 +278,7 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
-			$releasename = preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|\s(\-|,)$/i', '', $releasename);
+			$releasename = trim(preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename));
 			
 			// Get name and author of the book from the name
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
