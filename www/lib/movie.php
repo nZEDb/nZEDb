@@ -412,58 +412,58 @@ class Movie
 		return $ret;
 	}
 	
-    public function fetchImdbProperties($imdbId)
-    {
-        $imdb_regex = array(
-            'title'    => '/<title>(.*?)\s?\(.*?<\/title>/i',
+	public function fetchImdbProperties($imdbId)
+	{
+		$imdb_regex = array(
+			'title'	=> '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline'  => '/taglines:<\/h4>\s([^<]+)/i',
-			'plot'     => '/<p>\s<p>(.*?)\s<\/p>\s<\/p>/i',
-            'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
-			'year'     => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
-			'cover'    => '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
-        );
-        
-        $imdb_regex_multi = array(
-        	'genre'    => '/href="\/genre\/(.*?)\?/i',
-        	'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
-        );
+			'plot'	 => '/<p>\s<p>(.*?)\s<\/p>\s<\/p>/i',
+			'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
+			'year'	 => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
+			'cover'	=> '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
+		);
+		
+		$imdb_regex_multi = array(
+			'genre'	=> '/href="\/genre\/(.*?)\?/i',
+			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
+		);
 
-        $buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
+		$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
 
-        // make sure we got some data
-        if ($buffer !== false && strlen($buffer))
-        {
-        	$ret = array();
-            foreach ($imdb_regex as $field => $regex)
-            {
-                if (preg_match($regex, $buffer, $matches))
-                {
-                    $match = $matches[1];
-                    $match = strip_tags(trim(rtrim(addslashes($match))));
-                    $ret[$field] = $match;
-                }
-            }
-            
-            foreach ($imdb_regex_multi as $field => $regex)
-            {
-                if (preg_match_all($regex, $buffer, $matches))
-                {
-                    $match = $matches[1];
-                    $match = array_map("trim", $match);
-                    $ret[$field] = $match;
-                }
-            }
-            
-            //actors
-            if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit))
-            {
+		// make sure we got some data
+		if ($buffer !== false && strlen($buffer))
+		{
+			$ret = array();
+			foreach ($imdb_regex as $field => $regex)
+			{
+				if (preg_match($regex, $buffer, $matches))
+				{
+					$match = $matches[1];
+					$match = strip_tags(trim(rtrim(addslashes($match))));
+					$ret[$field] = $match;
+				}
+			}
+			
+			foreach ($imdb_regex_multi as $field => $regex)
+			{
+				if (preg_match_all($regex, $buffer, $matches))
+				{
+					$match = $matches[1];
+					$match = array_map("trim", $match);
+					$ret[$field] = $match;
+				}
+			}
+			
+			//actors
+			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit))
+			{
 				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER))
 				{
 					$ret['actors'] = $results[2];
 				} 
-            }
-            
-            //directors
+			}
+			
+			//directors
 			if (preg_match('/Directors?:([\s]+)?<\/h4>(.+)<\/div>/sU', $buffer, $hit))
 			{
 				if (preg_match_all('/"name">(.*?)<\/span>/is', $hit[0], $results, PREG_PATTERN_ORDER))
@@ -471,19 +471,20 @@ class Movie
 					$ret['director'] = $results[1];
 				} 
 			}
-            
-            return $ret;
-        }
-        return false;
-    }
+			
+			return $ret;
+		}
+		return false;
+	}
 	
 	public function processMovieReleases($threads=0)
 	{
+		$threads--;
 		$db = new DB();
 		// Using name.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.25)), $this->movieqty)), "name");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty)), "name");
 		// Using searchname.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.25)), $this->movieqty)), "searchname");
+		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus >= 0 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty)), "searchname");
 	}
 	
 	public function doprocessMovieReleases($res, $type)

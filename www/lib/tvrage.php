@@ -457,12 +457,13 @@ class TvRage
 	
 	public function processTvReleases($threads=0, $lookupTvRage=true)
 	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
 
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.25)), $this->rageqty));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
 		
 		if ($this->echooutput)
 		{
@@ -935,9 +936,9 @@ class TvRage
 	}
 	
 	public function getGenres()
-    {
-    	return array(
-    		'Action',
+	{
+		return array(
+			'Action',
 			'Adult/Porn',
 			'Adventure',
 			'Anthology',
@@ -992,7 +993,7 @@ class TvRage
 			'Western',
 			'Wildlife'
 		);
-    }
+	}
 	
 }
 
