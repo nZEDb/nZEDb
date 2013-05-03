@@ -770,6 +770,7 @@ class TvRage
 	
 	public function parseNameEpSeason($relname)
 	{
+		$relname = trim(preg_replace('/EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
 		$showInfo = array(
 			'name' => '',
 			'season' => '',
