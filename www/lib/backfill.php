@@ -450,10 +450,10 @@ class Backfill
 		echo "Determined to be article $upperbound which is ".$this->daysOld($dateofnextone)." days old (".date("r", $dateofnextone).").".$n;
 		return $upperbound;
 	}
-    
-    private function daysOld($timestamp)
-    {
-    	return round((time()-$timestamp)/86400, 1);
-    }
+	
+	private function daysOld($timestamp)
+	{
+		return round((time()-$timestamp)/86400, 1);
+	}
 }
 ?>

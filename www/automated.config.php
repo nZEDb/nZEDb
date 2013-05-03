@@ -5,7 +5,7 @@ if(strlen($www_top) == 1)
 	$www_top = "";
 
 //
-// used everywhere an href is output, includes the full path to the nzedb install
+// used everywhere an href is output, includes the full path to the nZEDb install
 //
 define('WWW_TOP', $www_top);
 
