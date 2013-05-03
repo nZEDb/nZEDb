@@ -28,10 +28,10 @@ class Releases
 	function Releases()
 	{
 		$s = new Sites();
-		$site = $s->get();
-		$this->stage5limit = (!empty($site->maxnzbsprocessed)) ? $site->maxnzbsprocessed : 1000;
-		$this->completion = (!empty($site->releasecompletion)) ? $site->releasecompletion : 0;
-		$this->updategrabs = ($site->grabstatus == "0") ? false : true;
+		$this->site = $s->get();
+		$this->stage5limit = (!empty($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
+		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
+		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 	}
 	
 	public function get()
@@ -464,12 +464,6 @@ class Releases
 		$s = new Sites();
 		$site = $s->get();
 		
-		if (!isset($this->site))
-		{
-			$s = new Sites();
-			$this->site = $s->get();
-		}
-		
 		$ri = new ReleaseImage();
 		
 		if (!is_array($id))
@@ -518,12 +512,6 @@ class Releases
 	// For the site delete button.
 	public function deleteSite($id, $isGuid=false)
 	{			
-		if (!isset($this->site))
-		{
-			$s = new Sites();
-			$this->site = $s->get();
-		}
-	
 		if (!is_array($id))
 			$id = array($id);
 				
@@ -1247,11 +1235,6 @@ class Releases
 	{
 		$nzb = new NZB;
 		$zipfile = new zipfile();
-		if (!isset($this->site))
-		{
-			$s = new Sites();
-			$this->site = $s->get();
-		}
 		
 		foreach ($guids as $guid)
 		{
@@ -1534,11 +1517,6 @@ class Releases
 		$minsizecount = 0;
 		$maxsizecount = 0;
 		$minfilecount = 0;
-		if (!isset($this->site))
-		{
-			$s = new Sites();
-			$this->site = $s->get();
-		}
 		
 		echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
 		$stage4dot5 = TIME();
@@ -1729,11 +1707,6 @@ class Releases
 		$dupecount = 0;
 		$relsizecount = 0;
 		$completioncount = 0;
-		if (!isset($this->site))
-		{
-			$s = new Sites();
-			$this->site = $s->get();
-		}
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 		
