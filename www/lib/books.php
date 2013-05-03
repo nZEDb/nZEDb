@@ -278,9 +278,64 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
-			$releasename = trim(preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename));
-			
 			// Get name and author of the book from the name
+			// Author/Series not in file name - Rice, Anne - Mayfair Witches [1 of 3] "1 - The Witching Hour.htm" yEnc
+			if(preg_match('/^.+?\-\s(?P<author>.+?)\s\-.+?\s"\d+\s\-\s(?P<title>.+?)(\sv\d.+|\s\-\s.+|\.\w+")/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
+			// Author/Series not in file name - O'Brian, Patrick [1 of 20] "01 - Master & Commander v1.1.txt" yEnc
+			if(preg_match('/^.+?\s\-\s(?P<author>.+?)\[.+\s\-\s(?P<title>.+?)(\.(doc|epub|mobi|rtf|txt)"|\sv\d.+)/i', $releasename, $matches))
+			{
+				if (isset($matches['author']))
+				{
+					$author = $matches['author'];
+					// Replace dots or underscores with spaces.
+					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+				}
+				if (isset($matches['title']))
+				{
+					$title = $matches['title'];
+					// Replace dots or underscores with spaces.
+					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+				}
+			
+				$result['release'] = $releasename;
+				array_map("trim", $result);
+				
+				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+					return $result;
+				else
+					return false;
+			}
+			
+			$releasename = preg_replace('/\s\-\s\[.+?\]\s\-\s|\.(7z|epub|flac|jpg|m3um|mobi|mp3|nzb|nfo|par2|png|php|rar|rtf|sfv|txt|zip)|^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|\s\(ed\)\s|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|txt\s\-|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename);
+			
+			$releasename = str_replace('--', '-', $releasename);
+			
+			$releasename = str_replace(array('[', ']'), '', $releasename);
+			
+			$releasename = trim(preg_replace('/\s\s+/', ' ', $releasename));
+			
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
 			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)(\s\[|\-\s|;\s|\s\-|\s\()/i', $releasename, $matches))
 			{
@@ -453,7 +508,7 @@ require_once(WWW_DIR."/lib/site.php");
 			if ($bookId) 
 			{
 				if ($this->echooutput)
-					echo "Added/updated book: ".$book['author']." - ".$book['title'].".\n";
+					echo "Added/updated book: ".$book['author']." - ".$book['title']."\n";
 
 				$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 			} 
