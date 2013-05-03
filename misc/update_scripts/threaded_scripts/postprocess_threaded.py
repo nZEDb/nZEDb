@@ -42,13 +42,12 @@ config = readConfig()
 con = None
 # The MYSQL connection.
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
-
-# The array.
-datas = ['nfos','additional','movies','music','games','anime','tv','books']
-
 cur = con.cursor()
 cur.execute("select value from site where setting = 'postthreads'");
 run_threads = cur.fetchone();
+
+# The array.
+datas = list(xrange(int(run_threads[0])))
 
 class WorkerThread(threading.Thread):
     def __init__(self, dir_q, result_q):
@@ -87,7 +86,7 @@ def main(args):
     work_count = 0
     for gnames in datas:
         work_count += 1
-        dir_q.put(gnames)
+        dir_q.put(str(gnames))
 
     print 'Assigned %s Postprocesses to workers' % work_count
 
