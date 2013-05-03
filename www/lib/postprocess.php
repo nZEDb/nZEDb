@@ -45,92 +45,92 @@ class PostProcess {
 	//
 	// Process nfo files
 	//
-	public function processNfos()
+	public function processNfos($threads=0)
 	{		
 		if ($this->site->lookupnfo == 1)
 		{
 			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($this->site->lookupimdb, $this->site->lookuptvrage);
+			$nfo->processNfoFiles($threads, $this->site->lookupimdb, $this->site->lookuptvrage);
 		}
 	}
 	
 	//
 	// Lookup imdb if enabled
 	//
-	public function processMovies()
+	public function processMovies($threads=0)
 	{	
 		if ($this->site->lookupimdb == 1) 
 		{
 			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases();
+			$movie->processMovieReleases($threads);
 		}
 	}
 	
 	//
 	// Lookup music if enabled
 	//
-	public function processMusic()
+	public function processMusic($threads=0)
 	{
 		if ($this->site->lookupmusic == 1) 
 		{
 			$music = new Music($this->echooutput);
-			$music->processMusicReleases();
+			$music->processMusicReleases($threads);
 		}
 	}
 	
 	//
 	// Lookup games if enabled
 	//
-	public function processGames()
+	public function processGames($threads=0)
 	{
 		if ($this->site->lookupgames == 1) 
 		{
 			$console = new Console($this->echooutput);
-			$console->processConsoleReleases();
+			$console->processConsoleReleases($threads);
 		}
 	}
 	
 	//
 	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processAnime()
+	public function processAnime($threads=0)
 	{
 		if ($this->site->lookupanidb == 1) 
 		{
 			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate();
-			$anidb->processAnimeReleases();
+			$anidb->animetitlesUpdate($threads);
+			$anidb->processAnimeReleases($threads);
 		}
 	}
 	
 	//
 	// Process all TV related releases which will assign their series/episode/rage data
 	//
-	public function processTv()
+	public function processTv($threads=0)
 	{
 		if ($this->site->lookuptvrage == 1) 
 		{
 			$tvrage = new TVRage($this->echooutput);
-			$tvrage->processTvReleases(($this->site->lookuptvrage==1));
+			$tvrage->processTvReleases($threads, $this->site->lookuptvrage==1);
 		}
 	}
 	
 	//
 	// Process books using amazon.com
 	//
-	public function processBooks()
+	public function processBooks($threads=0)
 	{
 		if ($this->site->lookupbooks == 1) 
 		{
 			$books = new Books($this->echooutput);
-			$books->processBookReleases();
+			$books->processBookReleases($threads);
 		}
 	}
 	
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info
 	//
-	public function processAdditional()
+	public function processAdditional($threads=0)
 	{
 		$maxattemptstocheckpassworded = 5;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
@@ -138,28 +138,29 @@ class PostProcess {
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		
 		$tmpPath = $this->site->tmpunrarpath;
+		if (isset($threads) && ($threads > 1 ))
+			$tmpPath .= $threads;
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
-		{
 			$tmpPath = $tmpPath.'/';								
-		}
-		
+		if (!file_exists($tmpPath))
+			mkdir("$tmpPath", 0777);
+
 		$db = new DB;
 		$nntp = new Nntp;
 		$consoleTools = new ConsoleTools();
-		
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
 		//
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d", ($maxattemptstocheckpassworded + 1) * -1, $this->addqty));
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.25)), $this->addqty));
 		
 		$rescount = sizeof($result);
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s): ";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.25)).": ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)
