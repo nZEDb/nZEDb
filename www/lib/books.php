@@ -226,12 +226,12 @@ require_once(WWW_DIR."/lib/site.php");
 			return $result;
 		}
 		
-		public function processBookReleases()
+		public function processBookReleases($threads=0)
 		{
 			$ret = 0;
 			$db = new DB();
 			
-			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_BOOKS, $this->bookqty));
+			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d,%d", Category::CAT_PARENT_BOOKS, ($this->bookqty) * ($threads * 1.25), $this->bookqty));
 			if ($db->getNumRows($res) > 0)
 			{
 				if ($this->echooutput)
@@ -278,7 +278,7 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			$result = array();
 			
-			$releasename = preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)/i', '', $releasename);
+			$releasename = preg_replace('/^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|\s(\-|,)$/i', '', $releasename);
 			
 			// Get name and author of the book from the name
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
