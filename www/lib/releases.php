@@ -461,6 +461,15 @@ class Releases
 	{			
 		$db = new DB();
 		$nzb = new NZB();
+		$s = new Sites();
+		$site = $s->get();
+		
+		if (!isset($this->site))
+		{
+			$s = new Sites();
+			$this->site = $s->get();
+		}
+		
 		$ri = new ReleaseImage();
 		
 		if (!is_array($id))
@@ -509,14 +518,12 @@ class Releases
 	// For the site delete button.
 	public function deleteSite($id, $isGuid=false)
 	{			
-		$db = new DB();
-		$users = new Users();
-		$nfo = new Nfo();
-		$rf = new ReleaseFiles();
-		$re = new ReleaseExtra();
-		$rc = new ReleaseComments();
-		$ri = new ReleaseImage();
-		
+		if (!isset($this->site))
+		{
+			$s = new Sites();
+			$this->site = $s->get();
+		}
+	
 		if (!is_array($id))
 			$id = array($id);
 				
@@ -1240,6 +1247,11 @@ class Releases
 	{
 		$nzb = new NZB;
 		$zipfile = new zipfile();
+		if (!isset($this->site))
+		{
+			$s = new Sites();
+			$this->site = $s->get();
+		}
 		
 		foreach ($guids as $guid)
 		{
@@ -1522,6 +1534,11 @@ class Releases
 		$minsizecount = 0;
 		$maxsizecount = 0;
 		$minfilecount = 0;
+		if (!isset($this->site))
+		{
+			$s = new Sites();
+			$this->site = $s->get();
+		}
 		
 		echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
 		$stage4dot5 = TIME();
@@ -1712,6 +1729,12 @@ class Releases
 		$dupecount = 0;
 		$relsizecount = 0;
 		$completioncount = 0;
+		if (!isset($this->site))
+		{
+			$s = new Sites();
+			$this->site = $s->get();
+		}
+
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 		
 		// Delete old releases and finished collections.
