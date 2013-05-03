@@ -1633,16 +1633,18 @@ class Releases
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				$nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true, $page->site->nzbsplitlevel));
-				$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
-				$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %s", $rowrel['ID']));
-				/*$db->queryDirect(sprintf("DELETE collections, binaries, parts
+				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true, $page->site->nzbsplitlevel)));
+				{
+					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
+					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %s", $rowrel['ID']));
+					/*$db->queryDirect(sprintf("DELETE collections, binaries, parts
 											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 											WHERE (collections.releaseID = %d)", $rowrel['ID']));*/
-				echo ".";
-				$nzbcount++;
-				if ($nzbcount % 100 == 0)
-					echo $n;
+					echo ".";
+					$nzbcount++;
+					if ($nzbcount % 100 == 0)
+						echo $n;
+				}
 			}
 		}
 		
