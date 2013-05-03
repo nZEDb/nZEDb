@@ -462,7 +462,7 @@ class TvRage
 		$trakt = new Trakttv();
 
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_TV, ($this->rageqty) * ($threads * 1.25), $this->rageqty));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.25)), $this->rageqty));
 		
 		if ($this->echooutput)
 		{
@@ -770,6 +770,7 @@ class TvRage
 	
 	public function parseNameEpSeason($relname)
 	{
+		$relname = trim(preg_replace('/EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
 		$showInfo = array(
 			'name' => '',
 			'season' => '',

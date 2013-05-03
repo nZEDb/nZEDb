@@ -56,7 +56,7 @@ class Nfo
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents($this->echooutput);
 
-		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d,%d", ($this->nzbs) * ($threads * 1.25), $this->nzbs));
+		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d,%d", floor(($this->nzbs) * ($threads * 1.25)), $this->nzbs));
 		$nfocount = $db->getNumRows($res);
 		if ($nfocount >= 0)
 		{
