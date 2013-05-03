@@ -279,209 +279,75 @@ require_once(WWW_DIR."/lib/site.php");
 			$result = array();
 			
 			if(preg_match('/^.+?\-\s(?P<author>.+?)\s\-.+?\s"\d+\s\-\s(?P<title>.+?)(\sv\d.+|\s\-\s.+|\.\w+")/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
 			// Author/Series not in file name - O'Brian, Patrick [1 of 20] "01 - Master & Commander v1.1.txt" yEnc
 			if(preg_match('/^.+?\s\-\s(?P<author>.+?)\[.+\s\-\s(?P<title>.+?)(\.(doc|epub|mobi|rtf|txt)"|\sv\d.+)/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
-			//(Thomas Perry - Jane Whitfield Book 7.scr
+			// (Thomas Perry - Jane Whitfield Book 7.scr
 			if(preg_match('/^\((?P<author>.+?)(\s\-\s|\.\s|\sby\s)(?P<title>.+?)(\s\[|(\.|\()|\s\.scr)/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
 			// (Sebastian.Barry.-.The.Secret.Scripture.2008.Retail.eBook-BitBook.scr
-			if(preg_match('/^\((?P<author>.+?)(\.\-\.)(?P<title>.+?)(\.\d{4}\.)/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+			if(preg_match('/^\((?P<author>.+?)(\.\-\.|\-)(?P<title>.+?)(\.\d{4}\.)/i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
+			// NEW Romance: Fix You (Second Chances) by Mari Carr (Dec 11, 2012) "Fix You - Mari Carr.mobi"
+			if(preg_match('/^new.+?:\s(?P<title>.+?)\sby\s(?P<author>.+?)\s\(/i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
+			
+			// New eBooks 10 May 2012 - "Leilani Harvey - [Truth & Consequences 01-03] - Consequences Never Hurt; Truth Be Told; Burn (html).rar" 121k yEnc
+			if(preg_match('/^new\sebooks.+?\s"(?P<author>.+?)\s\-.+?\]\s\-\s(?P<title>.+?)\s(\(|\[)/i', $releasename, $matches))
+				return $this->parseHelper($releasename, $matches);
 			
 			$releasename = preg_replace('/\s\-\s\[.+?\]\s\-\s|\.(7z|epub|flac|jpg|m3um|mobi|mp3|nzb|nfo|par2|png|php|rar|rtf|sfv|txt|zip)|^(attn(:|\s)|by\s(req(quest)?(\sattn)?)|\s\(ed\)\s|re:(\sattn:|\sreq:?)?|repost:?(\sby\sreq:)?|req:)|txt\s\-|\-\.?(nzb|sfv)|\s(\-|,)$/i', '', $releasename);
-			
 			$releasename = str_replace('--', '-', $releasename);
-			
 			$releasename = str_replace(array('[', ']'), '', $releasename);
-			
 			$releasename = trim(preg_replace('/\s\s+/', ' ', $releasename));
 			
 			// "Maud Hart Lovelace - [Betsy-Tacy 07-08] - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
 			if(preg_match('/"(?P<author>.+?)\s\-\s\[.+?\]\s\-\s(?P<title>.+?)(\s\[|\-\s|;\s|\s\-|\s\()/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
 			// "Maud Hart Lovelace - Betsy Was a Junior & Betsy and Joe (retail) (epub).rar"
 			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)(\-\s|\s(\(|\[)).+?"/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
 			// "Maud Hart Lovelace - Betsy Was a Junior & Betsy and Joe.mobi"
 			else if(preg_match('/"(?P<author>.+?)\s\-\s(?P<title>.+?)\.[\w]+"/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
+				return $this->parseHelper($releasename, $matches);
 			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-			
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
 			// "Betsy Was a Junior & Betsy and Joe by Maud Hart Lovelace(retail).rar"
 			else if(preg_match('/"(?P<title>.+?)(\.|\s)by(\.|\s)(?P<author>.+?)(\[|\().+?"/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
-			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-			
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
+				return $this->parseHelper($releasename, $matches);
 			else
 				return false;
 		}
-
+		
+		// Takes match parsed from  parsetitle and returns author/title 
+		public function parseHelper($releasename, $matches)
+		{
+			if (isset($matches['author']))
+			{
+				$author = $matches['author'];
+				$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
+			}
+			if (isset($matches['title']))
+			{
+				$title = $matches['title'];
+				$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
+			}
+			
+			$result['release'] = $releasename;
+			array_map("trim", $result);
+			
+			if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
+				return $result;
+			else
+				return false;
+		}
+		
 		public function updateBookInfo($bookInfo)
 		{
 			$db = new DB();
