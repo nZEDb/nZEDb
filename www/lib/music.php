@@ -473,16 +473,19 @@ class Music
 		$newName = preg_replace('/VA( |\-)/', 'Various Artists \-', $releasename);
 		
 		// Remove files/parts. Year. Yenc. Song. Bitrate. File 1 of 2.
-		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|nzb|nfo|par2|sfv|zip)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
+		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|\s\d{1,3}\/\d{1,3}$|".+?\.(7z|flac|jpg|m3u|mp3|nzb|nfo|par2|png|php|rar|sfv|txt|zip)"|\.(7z|flac|jpg|m3u|mp3|nzb|nfo|par2|png|php|rar|sfv|txt|zip)|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}|/i', '', $newName);
+		
+		// File sizes.
+		$newName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B|\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $newName);
 		
 		// Remove some text.
-		$newName = preg_replace('/\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|as\sper\sreq\s\-all\s\i\shave|attn+?\s\-\s|trtk\d{1,12}\s|\(vinyl\s2496\)|altbinEFNet|as req(,|:)?|\sLP\s|ATT>\sSkipper;|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|REQ:|VBR\s\[?NMR|www\..+?\.com/i', '', $newName);
+		$newName = preg_replace('/^\(\w.+?METAL\)|\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|^\[as.+?have\]|^\[Attn.+?\]\s|attn+?\s\-\s|^\(Attn.+?\)\s|^ATTN:.+?\s\-\s|Attn\sPrcn3|trtk\d{1,12}\s|\(vinyl\s24(88|96)\)|altbinEFNet|\[as\sreq.+?\]|as req(,|:)?|\sLP\s|ATT>\sSkipper;|bonus\stracks|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|FLAC|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|\sOST\s|REQ:|VBR\s\[?NMR|VBR|www\..+?\.com/i', '', $newName);
 		
 		//remove double dashes
 		$newName = str_replace('--', '-', $newName);
 		
 		// Remove various stuff, replace with nothing.
-		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=');
+		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=', '"');
 		$newName = str_replace($a, '', $newName);
 		
 		// Remove various stuff, replace with a space.
