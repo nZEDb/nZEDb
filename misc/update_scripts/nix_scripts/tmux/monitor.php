@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1186";
+$version="0.1r1188";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -37,7 +37,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
 	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
 	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) collections_kill,
-    ( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) postprocess_kill,
+	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) postprocess_kill,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) niceness,
 	( SELECT value from tmux where setting = 'RUNNING' ) running,
@@ -118,6 +118,7 @@ function relativeTime($_time) {
 $time = TIME();
 $time1 = TIME();
 $time2 = TIME();
+$time3 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -192,6 +193,7 @@ $movie_releases_proc = 0;
 $console_releases_now = 0;
 $console_releases_proc = 0;
 $total_work_now = 0;
+$last_history = "";
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -292,11 +294,11 @@ while( $i > 0 )
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = $proc_result[0]['parts']; }
 	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
 	if ( @$proc_result[0]['collections_table'] != NULL ) { $collections_table = $proc_result[0]['collections_table']; }
-    if ( @$proc_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_result[0]['binaries_table']; }
-    if ( @$proc_result[0]['parts_table'] != NULL ) { $parts_table = $proc_result[0]['parts_table']; }
+	if ( @$proc_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_result[0]['binaries_table']; }
+	if ( @$proc_result[0]['parts_table'] != NULL ) { $parts_table = $proc_result[0]['parts_table']; }
 
-    if ( @$proc_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_result[0]['collections_kill']; }
-    if ( @$proc_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_result[0]['postprocess_kill']; }
+	if ( @$proc_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_result[0]['collections_kill']; }
+	if ( @$proc_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_result[0]['postprocess_kill']; }
 
 	if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
 	if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
@@ -465,11 +467,29 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.1 'echo \"\033[38;5;\"$color\"m\n$panes1[1] has been disabled/terminated by Fix Release Names\"'");
 		}
-
-		//run postprocess_releases
+					
 		if ( $post == "TRUE" )
 		{
-			$color = get_color();
+			//run postprocess_releases
+			$history = str_replace( " ", '', `tmux list-panes -t $tmux_session:1 | grep 2: | awk '{print $4;}'` );
+			if ( $last_history != $history )
+			{
+				$last_history = $history;
+				$time3 = TIME();
+			}
+			else
+			{
+				if ( TIME() - $time3 >= 120 )
+				{
+					shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been terminated by Possible Hung thread\"'");
+					$wipe = `tmux clearhist -t $tmux_session:1.2`;
+					$color = get_color();
+					$time3 = TIME();
+				}
+			}
+			$dead1 = str_replace( " ", '', `tmux list-panes -t $tmux_session:1 | grep dead | grep 2: | wc -l` );
+			if ( $dead1 == 1 )
+				$time3 = TIME();
 			shell_exec("tmux respawnp -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\" && \
 					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
@@ -478,7 +498,10 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t $tmux_session:1.2 'echo \"\033[38;5;\"$color\"m\n$panes1[2] has been disabled/terminated by Postprocess All\"'");
 		}
-
+		echo $history;
+		echo $last_history;
+		echo relativeTime($time3);
+		
 		if ( $seq == "TRUE" )
 		{
 			//run import-nzb-bulk
@@ -616,14 +639,14 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t $tmux_session:1.$g 'echo \"\033[38;5;\"$color\"m\n$panes1[$g] has been disabled/terminated by Running\"'");
 		}
 	}
-    else
-    {
-        for ($g=1; $g<=4; $g++)
-        {
-            $color = get_color();
-            shell_exec("tmux respawnp -k -t $tmux_session:1.$g 'echo \"\033[38;5;\"$color\"m\n$panes1[$g] has been disabled/terminated by Running\"'");
-        }
-    }
+	else
+	{
+		for ($g=1; $g<=4; $g++)
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t $tmux_session:1.$g 'echo \"\033[38;5;\"$color\"m\n$panes1[$g] has been disabled/terminated by Running\"'");
+		}
+	}
 
 	$i++;
 	sleep(5);

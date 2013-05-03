@@ -59,16 +59,16 @@ else:
 	type_work = "Stage"
 
 class WorkerThread(threading.Thread):
-	def __init__(self, dir_q, result_q):
+	def __init__(self, threadID, result_q):
 		super(WorkerThread, self).__init__()
-		self.dir_q = dir_q
+		self.threadID = threadID
 		self.result_q = result_q
 		self.stoprequest = threading.Event()
 
 	def run(self):
 		while not self.stoprequest.isSet():
 			try:
-				dirname = self.dir_q.get(True, 0.05)
+				dirname = self.threadID.get(True, 0.05)
 				print '\n%s: %s %s started.' % (self.name, type_work, dirname)
 				if run_threads_alt[0] == "TRUE":
 					subprocess.call(["php", pathname+"/update_releases.php", ""+dirname])
@@ -84,11 +84,11 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	dir_q = Queue.Queue()
+	threadID = Queue.Queue()
 	result_q = Queue.Queue()
 
 	# Create the "thread pool"
-	pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(int(run_threads[0]))]
+	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
 
 	# Start all threads
 	for thread in pool:
@@ -98,7 +98,7 @@ def main(args):
 	work_count = 0
 	for gnames in datas:
 		work_count += 1
-		dir_q.put(gnames[0])
+		threadID.put(gnames[0])
 
 	print 'Assigned %s %ss to workers' % (work_count, type_work)
 

@@ -217,7 +217,7 @@
 				<td><label for="POST">Postprocess All</label>:</td>
 				<td>
 					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST}
-					<div class="hint">Choose to postprocess movies, music, etc true/false</div>
+					<div class="hint">Choose to postprocess movies, music, etc true/false  This script will be terminated if there is no activity for 120 seconds.</div>
 				</td>
 			</tr>
 

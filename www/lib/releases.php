@@ -895,7 +895,7 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);            
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);			
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -996,7 +996,7 @@ class Releases
 		else
 			$maxage = "";		
 		
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join category c on c.ID = releases.categoryID left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s order by postdate desc limit %d, %d ", $rageId, $series, $episode, $searchsql, $catsrch, $maxage, $offset, $limit);            
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join category c on c.ID = releases.categoryID left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s order by postdate desc limit %d, %d ", $rageId, $series, $episode, $searchsql, $catsrch, $maxage, $offset, $limit);			
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -1080,7 +1080,7 @@ class Releases
 			FROM releases LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN groups ON groups.ID = releases.groupID
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID and rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.ID = c.parentID
 			WHERE releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s ORDER BY postdate desc LIMIT %d, %d ",
-			$anidbID, $epno, $searchsql, $catsrch, $maxage, $offset, $limit);            
+			$anidbID, $epno, $searchsql, $catsrch, $maxage, $offset, $limit);			
 		$orderpos = strpos($sql, "ORDER BY");
 		$wherepos = strpos($sql, "WHERE");
 		$sqlcount = "SELECT count(releases.ID) AS num FROM releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -1169,7 +1169,7 @@ class Releases
 		else
 			$maxage = "";		
 		
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID from releases left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by postdate desc limit %d, %d ", $searchsql, $imdbId, $catsrch, $maxage, $offset, $limit);            
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID from releases left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by postdate desc limit %d, %d ", $searchsql, $imdbId, $catsrch, $maxage, $offset, $limit);			
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -1353,7 +1353,7 @@ class Releases
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck < 2 ".$where);
 	
-        echo TIME() - $stage1." second(s).";
+		echo TIME() - $stage1." second(s).";
 	}
 	 
 	public function processReleasesStage2($groupID)
@@ -1367,7 +1367,7 @@ class Releases
 		// Get the total size in bytes of the collection for releases where filecheck = 2.
 		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID) WHERE c.filecheck = 2 AND c.filesize = 0 " . $where);
 
-        echo TIME() - $stage2." second(s).";
+		echo TIME() - $stage2." second(s).";
 	}
 	
 	public function processReleasesStage3($groupID)
@@ -1417,8 +1417,8 @@ class Releases
 				}
 			}
 		}
-        else
-        {
+		else
+		{
 			if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
 			{
 				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease AND groupID = ".$groupID);
@@ -1491,8 +1491,8 @@ class Releases
 		}
 		
 		$timing = TIME() - $stage4;
-        echo $retcount . " Releases added in " . $timing . " second(s).";
-        return $retcount;
+		echo $retcount . " Releases added in " . $timing . " second(s).";
+		return $retcount;
 	}
 	
 	public function processReleasesStage4_loop($groupID)
@@ -1568,8 +1568,8 @@ class Releases
 				}
 			}
 		}
-        else
-        {
+		else
+		{
 			if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN 
 						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) 
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease 
@@ -1772,7 +1772,7 @@ class Releases
 		else
 			echo ". Removed ".$reccount." parts/binaries/collection rows.".$n;
 		
-		echo TIME() - $stage7." second(s).".$n;        
+		echo TIME() - $stage7." second(s).".$n;		
 	}
 
 	public function processReleases($categorize, $postproc, $groupName)

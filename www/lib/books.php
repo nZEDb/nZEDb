@@ -228,10 +228,11 @@ require_once(WWW_DIR."/lib/site.php");
 		
 		public function processBookReleases($threads=0)
 		{
+			$threads--;
 			$ret = 0;
 			$db = new DB();
 			
-			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d,%d", Category::CAT_PARENT_BOOKS, floor(($this->bookqty) * ($threads * 1.25)), $this->bookqty));
+			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d,%d", Category::CAT_PARENT_BOOKS, floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
 			if ($db->getNumRows($res) > 0)
 			{
 				if ($this->echooutput)
