@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1215";
+$version="0.1r1216";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -677,7 +677,7 @@ while( $i > 0 )
 	}
 	elseif ( $seq != "TRUE" )
 	{
-		for ($g=0; $g<=4; $g++)
+		for ($g=1; $g<=4; $g++)
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
