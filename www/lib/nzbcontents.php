@@ -121,7 +121,7 @@ Class NZBcontents
 		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
+			$nzbfile = @simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
