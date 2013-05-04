@@ -543,7 +543,7 @@
     <td><label for="releasethreads">Update Releases Threads</label>:</td>
     <td>
         <input class="tiny" id="releasethreads" name="releasethreads" type="text" value="{$fsite->releasethreads}" />
-        <div class="hint">The number of threads for update releases.</div>
+        <div class="hint">The number of threads for update releases. If your tables are MyIsam, it is not recommended to run update_releases with more than 1 thread.</div>
     </td>
 </tr>
 
