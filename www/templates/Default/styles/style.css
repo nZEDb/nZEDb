@@ -243,7 +243,7 @@ movie, console and music modals with backdrop images.
 #movieinfo h2, #movieinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
 #movieinfo a { color: #fff; }
 #movieinfo img.cover { margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000; }
-#backdrop { position: absolute; width: 810px; height: 455px; left: -1px; top: 20px; background-color: #000; overflow: hidden;}
+#backdrop { position: absolute; width: 810px; height: 455px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
 #backdrop img { opacity:0.5; width: 100%; height: 100%;}
 
 #musicinfo { color:#FFF; min-height:435px; background-color:#7F7F7F; background-image:url('../../covers/music/backdrop.jpg'); background-repeat: repeat-x;}
