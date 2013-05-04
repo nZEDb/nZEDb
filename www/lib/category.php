@@ -322,6 +322,13 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
@@ -472,6 +479,14 @@ class Category
 					$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
 					return true;
 				}
+				
+				if (preg_match('/dk\.binaer\.tv/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat = Category::CAT_TV_FOREIGN;
+					return true;
+				}
+				
 				return false;
 			}
 		}
