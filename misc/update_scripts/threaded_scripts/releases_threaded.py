@@ -100,7 +100,7 @@ def main(args):
 		work_count += 1
 		threadID.put(gnames[0])
 
-	print 'Assigned %s %ss to workers' % (work_count, type_work)
+	print 'Assigned %s %s to workers' % (work_count, type_work)
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.

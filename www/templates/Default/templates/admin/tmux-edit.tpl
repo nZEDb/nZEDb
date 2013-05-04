@@ -190,6 +190,27 @@
 </fieldset>
 
 <fieldset>
+	<legend>Postprocessing</legend>
+		<table class="input">
+			<tr>
+				<td><label for="POST">Postprocess All</label>:</td>
+				<td>
+					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST}
+					<div class="hint">Choose to postprocess movies, music, etc true/false  This script will be terminated if there is no activity for 120 seconds.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="POST_TIMER">Postprocess Sleep Timer</label>:</td>
+				<td>
+					<input id="POST_TIMER" name="POST_TIMER" class="text" type="text" value="{$ftmux->POST_TIMER}" />
+					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+		</table>
+</fieldset>
+
+<fieldset>
 	<legend>Fix Release Names</legend>
 		<table class="input">
 			<tr>
@@ -211,21 +232,42 @@
 </fieldset>
 
 <fieldset>
-	<legend>Postprocessing</legend>
+	<legend>Remove Crap Releases</legend>
 		<table class="input">
 			<tr>
-				<td><label for="POST">Postprocess All</label>:</td>
+				<td><label for="FIX_CRAP">Remove Crap Releases</label>:</td>
 				<td>
-					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST}
-					<div class="hint">Choose to postprocess movies, music, etc true/false  This script will be terminated if there is no activity for 120 seconds.</div>
+					{html_radios id="FIX_CRAP" name='FIX_CRAP' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_CRAP}
+					<div class="hint">Choose to run Remove Crap Releases true/false</div>
 				</td>
 			</tr>
 
 			<tr>
-				<td style="width:160px;"><label for="POST_TIMER">Postprocess Sleep Timer</label>:</td>
+				<td style="width:160px;"><label for="CRAP_TIMER">Remove Crap Releases Sleep Timer</label>:</td>
 				<td>
-					<input id="POST_TIMER" name="POST_TIMER" class="text" type="text" value="{$ftmux->POST_TIMER}" />
+					<input id="CRAP_TIMER" name="CRAP_TIMER" class="text" type="text" value="{$ftmux->CRAP_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+		</table>
+</fieldset>
+
+<fieldset>
+	<legend>Update TV/Theater</legend>
+		<table class="input">
+			<tr>
+				<td><label for="UPDATE_TV">Update TV and Theater Schedules</label>:</td>
+				<td>
+					{html_radios id="UPDATE_TV" name='UPDATE_TV' values=$truefalse_names output=$truefalse_names selected=$ftmux->UPDATE_TV}
+					<div class="hint">Choose to run Update TV and Theater Schedules true/false</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="TV_TIMER">Update TV and Theater Start Timer</label>:</td>
+				<td>
+					<input id="TV_TIMER" name="TV_TIMER" class="text" type="text" value="{$ftmux->TV_TIMER}" />
+					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
 				</td>
 			</tr>
 		</table>
@@ -268,6 +310,69 @@
 		</table>
 </fieldset>
 
+<fieldset>
+	<legend>Server Monitors</legend>
+		<table class="input">
+			<tr>
+				<td style="width:160px;"><label for="HTOP">htop</label>:</td>
+				<td>
+					{html_radios id="HTOP" name='HTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->HTOP}
+					<div class="hint">htop - an interactive process viewer for Linux. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="NMON">nmon</label>:</td>
+				<td>
+					{html_radios id="NMON" name='NMON' values=$truefalse_names output=$truefalse_names selected=$ftmux->NMON}
+					<div class="hint">nmon is short for Nigel's performance Monitor for Linux. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="VNSTAT">vnstat</label>:</td>
+				<td>
+					{html_radios id="VNSTAT" name='VNSTAT' values=$truefalse_names output=$truefalse_names selected=$ftmux->VNSTAT}
+					<input id="VNSTAT_ARGS" name="VNSTAT_ARGS" class="text" type="text" value="{$ftmux->VNSTAT_ARGS}" />
+					<div class="hint">vnStat is a console-based network traffic monitor for Linux and BSD that keeps a log of network traffic for the selected interface(s). Any additional arguments should be placed in the text box. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="TCPTRACK">tcptrack</label>:</td>
+				<td>
+					{html_radios id="TCPTRACK" name='TCPTRACK' values=$truefalse_names output=$truefalse_names selected=$ftmux->TCPTRACK}
+					<input id="TCPTRACK_ARGS" name="TCPTRACK_ARGS" class="text" type="text" value="{$ftmux->TCPTRACK_ARGS}" />
+					<div class="hint">tcptrack displays the status of TCP connections that it sees on a given network interface. tcptrack monitors their state and displays information such as state, source/destination addresses and bandwidth usage in a sorted, updated list very much like the top(1) command. <br />Any additional arguments should be placed in the text box. <br />You may need to run "sudo setcap -v cap_net_raw+ep /usr/bin/tcptrac", to be able to run as user. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="BWMNG">bwm-ng</label>:</td>
+				<td>
+					{html_radios id="BWMNG" name='BWMNG' values=$truefalse_names output=$truefalse_names selected=$ftmux->BWMNG}
+					<div class="hint">bwm-ng can be used to monitor the current bandwidth of all or some specific network interfaces or disks (or partitions). The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="MYTOP">mytop</label>:</td>
+				<td>
+					{html_radios id="MYTOP" name='MYTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->MYTOP}
+					<div class="hint">mytop - display MySQL server performance info like `top'. <br />You will need to create ~/.mytop, an example can be found in 'perldoc mytop'. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="CONSOLE">Console</label>:</td>
+				<td>
+					{html_radios id="CONSOLE" name='CONSOLE' values=$truefalse_names output=$truefalse_names selected=$ftmux->CONSOLE}
+					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
+				</td>
+			</tr>
+
+		</table>
+</fieldset>
 <input type="submit" value="Save Tmux Settings" />
 
 </form>
