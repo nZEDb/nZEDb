@@ -198,7 +198,7 @@ Class NZBcontents
 		}
 		else
 		{
-			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
 			return false;
 		}
 	}
