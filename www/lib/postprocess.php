@@ -154,7 +154,7 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty));
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate desc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty));
 		
 		$rescount = sizeof($result);
 		if ($rescount > 0)

@@ -418,7 +418,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
+		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
