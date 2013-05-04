@@ -344,7 +344,7 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.((movies\.)?erotica(\.divx)?|ijsklontje)/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
