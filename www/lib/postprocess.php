@@ -202,7 +202,7 @@ class PostProcess {
 					continue;
 				}
 
-				$nzbfile = simplexml_load_file($nzbpath);
+				$nzbfile = @simplexml_load_file($nzbpath);
 
 				foreach ($nzbfile->file as $nzbcontents)
 				{
