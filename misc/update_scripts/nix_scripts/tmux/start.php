@@ -3,6 +3,7 @@
 require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
+require_once(WWW_DIR."/lib/site.php");
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -10,6 +11,16 @@ $DIR = WWW_DIR."/..";
 $tmux = new Tmux;
 $session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
+
+$site = New Sites();
+$patch = $site->get()->sqlpatch;
+
+if ( $patch < '20' )
+{
+	echo "\033[1;33mYour database is not up to date. Please update.\n";
+	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
+	exit(1);
+}
 
 function command_exist($cmd) {
     $returnVal = shell_exec("which $cmd");
