@@ -563,30 +563,32 @@ class Movie
 								}
 								else 
 								{
-									preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result);
-									$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($result["name"])."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
-									
-									if ($buffer !== false && strlen($buffer))
+									if (preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result))
 									{
-										$googlelimit++;
-										$imdbId = $nfo->parseImdb($buffer);
-										if ($imdbId !== false) 
+										$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($result["name"])."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+									
+										if ($buffer !== false && strlen($buffer))
 										{
-											if ($this->echooutput)
-												echo 'Google2 found IMDBid: tt'.$imdbId."\n";
-											
-											$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-											
-											$movCheck = $this->getMovieInfo($imdbId);
-											if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+											$googlelimit++;
+											$imdbId = $nfo->parseImdb($buffer);
+											if ($imdbId !== false) 
 											{
-												$movieId = $this->updateMovieInfo($imdbId);
+												if ($this->echooutput)
+													echo 'Google2 found IMDBid: tt'.$imdbId."\n";
+												
+												$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
+												
+												$movCheck = $this->getMovieInfo($imdbId);
+												if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+												{
+													$movieId = $this->updateMovieInfo($imdbId);
+												}
 											}
-										}
-										else
-										{
-											//no imdb id found, set to all zeros so we dont process again
-											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+											else
+											{
+												//no imdb id found, set to all zeros so we dont process again
+												$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+											}
 										}
 									}
 								}
