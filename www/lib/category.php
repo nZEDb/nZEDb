@@ -33,6 +33,7 @@ class Category
 	const CAT_PC_GAMES = 4050;
 	const CAT_PC_PHONE_IOS = 4060;
 	const CAT_PC_PHONE_ANDROID = 4070;
+	const CAT_TV_WEBDL = 5010;
 	const CAT_TV_FOREIGN = 5020;
 	const CAT_TV_SD = 5030;
 	const CAT_TV_HD = 5040;
@@ -506,6 +507,7 @@ class Category
 			if($this->isForeignTV($releasename)){ return true; }
 			if($this->isSportTV($releasename)){ return true; }
 			if($this->isDocumentaryTV($releasename)){ return true; }
+			if($this->isWEBDL($releasename)){ return true; }
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
 			if($this->isAnimeTV($releasename)){ return true; }
@@ -596,7 +598,18 @@ class Category
 	{
 		if (preg_match('/[\.\-_ ](Docu|Documentary)[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_TV_HD;
+			$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function isWEBDL($releasename)
+	{
+		if (preg_match('/web[\.\-_ ]dl/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_WEBDL;
 			return true;
 		}
 		
@@ -605,7 +618,7 @@ class Category
 	
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720|h[\.\-_ ]264|web[\.\-_ ]dl/i', $releasename))
+		if (preg_match('/1080(i|p)|720p/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
