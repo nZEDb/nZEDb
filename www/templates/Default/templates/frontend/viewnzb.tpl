@@ -89,7 +89,7 @@
 		{if $boo.isbn != ""}<strong>ISBN:</strong> {$boo.isbn|escape:"htmlall"}<br />{/if}
 		{if $boo.ean != ""}<strong>EAN:</strong> {$boo.ean|escape:"htmlall"}{/if}
 		<div style="margin-top:10px;">
-			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$con.url}/" title="View book at Amazon">Amazon</a>
+			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$boo.url}/" title="View book at Amazon">Amazon</a>
 		</div>
 	</td></tr>
 	{/if}
