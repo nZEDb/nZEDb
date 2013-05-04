@@ -666,6 +666,7 @@ INSERT INTO category (ID, title, parentID) VALUES (4050, 'Games', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4060, 'Phone\-IOS', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4070, 'Phone\-Android', 4000);
 
+INSERT INTO category (ID, title, parentID) VALUES (5010, 'WEB\-DL', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5020, 'Foreign', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5030, 'SD', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5040, 'HD', 5000);
@@ -946,7 +947,7 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '20');
+	('sqlpatch', '21');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
