@@ -199,6 +199,7 @@ Class NZBcontents
 		else
 		{
 			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
+			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
 			return false;
 		}
 	}
