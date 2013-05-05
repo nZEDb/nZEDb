@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1225";
+$version="0.1r1234";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -124,6 +124,7 @@ $time1 = TIME();
 $time2 = TIME();
 $time3 = TIME();
 $time4 = TIME();
+$time5 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -530,7 +531,7 @@ while( $i > 0 )
 		if (( $update_tv == "TRUE" ) && (( TIME() - $time4 >= $tv_timer ) || ( $i == 1 )))
 		{
 			$color = get_color();
-			shell_exec("tmux respawnp -t ${tmux_session}:1.3 'echo \"\033[38;5;${color}m\" && \
+			shell_exec("tmux respawnp -t ${tmux_session}:1.'echo \"\033[38;5;${color}m\" && \
 					nice -n$niceness php $DIR/misc/update_scripts/update_theaters.php &&  nice -n$niceness php $DIR/misc/update_scripts/update_tvschedule.php && date +\"%D %T\"' 2>&1 1> /dev/null");
 			$time4 = TIME();
 		}
@@ -619,16 +620,21 @@ while( $i > 0 )
 			}
 
 			//run backfill
-			$color = get_color();
-			if (( $i == 1 ) && ( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			if (( $backfill == "TRUE" ) && ( TIME() - $time5 <= $backfill_delay ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
+				$run_time2 = relativeTime( $backfill_delay + $time5 );
+				$color = get_color();
+				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} will run in T[ $run_time2] - This is only necessary to ensure that the groups are pulled once with update_binaries before running backfill.\"' 2>&1 1> /dev/null");
+			}
+			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			{
+				$color = get_color();
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						echo \"Sleeping $backfill_delay seconds to ensure the first group has finished update_binaries\" && \
-						sleep $backfill_delay && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
+				$color = get_color();
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
 			}
