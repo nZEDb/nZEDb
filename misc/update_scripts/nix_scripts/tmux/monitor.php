@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1239";
+$version="0.1r1269";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -441,7 +441,8 @@ while( $i > 0 )
 
 	$_php = "/usr/bin/time nice -n$niceness php";
 	$_python = "/usr/bin/time nice -n$niceness python";
-	$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
+	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
+	$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
 
 	if (( $postprocess_kill < $total_work_now ) && ( $postprocess_kill != 0 ))
 		$kill_pp = "TRUE";
