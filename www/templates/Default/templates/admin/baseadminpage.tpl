@@ -11,10 +11,10 @@
 <link href="{$smarty.const.WWW_TOP}/../templates/Default/themes/{$site->style}/admin.css" rel="stylesheet" type="text/css" media="screen" />	
 	{/if}
 	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_TOP}/../templates/Default/images/favicon.ico"/>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/templates/../Default/scripts/jquery.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/templates/../Default/scripts/sorttable.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/templates/../Default/scripts/utils-admin.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/templates/../Default/scripts/jquery.multifile.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../templates/Default/scripts/jquery.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../templates/Default/scripts/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../templates/Default/scripts/utils-admin.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../templates/Default/scripts/jquery.multifile.js"></script>
 	<script type="text/javascript">var WWW_TOP = "{$smarty.const.WWW_TOP}/..";</script>
 	
 	{$page->head}
