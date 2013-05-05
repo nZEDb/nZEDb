@@ -223,7 +223,12 @@ switch ($function)
 			$audios = getAudioReleases($release['ID']);
 			foreach($audios as $audio)
 			{
-				$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+				if ($audio['audiolanguage'] == "")
+				{
+					$release['searchname'] = $release['searchname'];
+				}
+				else
+					$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
 			}
 			$langdata[] = $release;
 		}
@@ -284,7 +289,12 @@ switch ($function)
 			$audios = getAudioReleases($release['ID']);
 			foreach($audios as $audio)
 			{
-				$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+				if ($audio['audiolanguage'] == "")
+				{
+					$release['searchname'] = $release['searchname'];
+				}
+				else
+					$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
 			}
 			$langdata[] = $release;
 		}
