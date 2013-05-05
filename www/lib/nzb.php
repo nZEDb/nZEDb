@@ -36,23 +36,13 @@ class NZB
 	
 			$result = $db->queryDirect(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
 			while ($binrow = $db->fetchAssoc($result)) 
-			{				
-				$groups = array();
-				$groupsRaw = explode(' ', $binrow['xref']);
-				foreach($groupsRaw as $grp) 
-					if (preg_match('/^([a-z0-9\.\-_]+):(\d+)?$/i', $grp, $match) && strtolower($grp) !== 'xref') 
-						$groups[] = $match[1];
-				
-				if (count($groups) == 0)
-					$groups[] = $binrow["groupname"];
-				
+			{
 				$result2 = $db->queryDirect(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d", $binrow["ID"]));
 				while ($binrow2 = $db->fetchAssoc($result2))
 				{
 					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$binrow["unixdate"]."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalParts"].")\">\n"); 
 					gzwrite($fp, " <groups>\n"); 
-					foreach ($groups as $group)
-						gzwrite($fp, "  <group>".$group."</group>\n"); 
+					gzwrite($fp, "  <group>".$binrow["groupname"]."</group>\n"); 
 					gzwrite($fp, " </groups>\n"); 
 					gzwrite($fp, " <segments>\n"); 
 					
