@@ -110,7 +110,15 @@ class Category
 		$db = new DB();
 		return $db->query(sprintf("select c.* from category c where parentID = %d", $cid));
 	}
-
+	
+	//
+	// Returns ID's for site disabled categories. 
+	//
+	public function getDisabledIDs()
+	{
+		$db = new DB();
+		return $db->queryDirect("SELECT ID from category where status = 2");
+	}
 	public function getById($id)
 	{
 		$db = new DB();
