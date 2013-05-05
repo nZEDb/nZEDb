@@ -27,9 +27,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 
 	echo "Resetting groups.\n";
 	$db->query("UPDATE groups SET first_record=0, first_record_postdate=NULL, last_record=0, last_record_postdate=NULL");
-
-	echo "Deleting Releases and NZB's.\n";
+	
 	$relids = $db->query(sprintf("SELECT ID, guid FROM releases"));
+	echo "Deleting ".sizeof($relids)." releases and NZB's.\n";
 	$releases = new Releases();
 
 	foreach ($relids as $relid)
@@ -39,11 +39,11 @@ if (isset($argv[1]) && $argv[1] === "true")
 		
 		if ($relcount % 100 == 0)
 			echo ".";
+		if ($relcount % 10000 == 0)
+			echo "\n";
 	}
-	
-	echo "\n";
 
-	echo "Deleted ".$relcount." release(s). This script ran for ";
+	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";
 	echo TIME() - $timestart;
 	echo " second(s).\n";
 }
