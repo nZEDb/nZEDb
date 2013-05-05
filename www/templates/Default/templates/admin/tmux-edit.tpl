@@ -172,14 +172,6 @@
 			</tr>
 
 			<tr>
-				<td><label for="RELEASES_THREADED">Releases Threaded</label>:</td>
-				<td>
-					{html_radios id="RELEASES_THREADED" name='RELEASES_THREADED' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES_THREADED}
-					<div class="hint">Choose to run update releases threaded per group or per stage. True will run a group per thread, false will run a stage per thread. true/false</div>
-				</td>
-			</tr>
-			
-			<tr>
 				<td style="width:160px;"><label for="REL_TIMER">Update Releases Sleep Timer</label>:</td>
 				<td>
 					<input id="REL_TIMER" name="REL_TIMER" class="text" type="text" value="{$ftmux->REL_TIMER}" />
