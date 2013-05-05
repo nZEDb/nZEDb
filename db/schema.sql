@@ -947,7 +947,8 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '21');
+	('categorizeforeign', 1),
+	('sqlpatch', '22');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
