@@ -228,7 +228,7 @@ switch ($function)
 					$release['searchname'] = $release['searchname'];
 				}
 				else
-					$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+					$release['searchname'] = $release['searchname']." ".$audio['audiolanguage'];
 			}
 			$langdata[] = $release;
 		}
@@ -294,7 +294,7 @@ switch ($function)
 					$release['searchname'] = $release['searchname'];
 				}
 				else
-					$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+					$release['searchname'] = $release['searchname']." ".$audio['audiolanguage'];
 			}
 			$langdata[] = $release;
 		}
