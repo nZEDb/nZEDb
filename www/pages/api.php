@@ -2,6 +2,17 @@
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/nzb.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+
+function getAudioReleases($rID)
+{	
+		$db = new DB();
+		return $db->query("select * from releaseaudio where releaseID = ".$rID);		
+	
+}
+
+
+
 
 $releases = new Releases;
 $category = new Category;
@@ -211,10 +222,33 @@ switch ($function)
 		$reldata = $releases->searchbyRageId((isset($_GET["rid"]) ? $_GET["rid"] : "-1"), (isset($_GET["season"]) ? $_GET["season"] : "")
 																						, (isset($_GET["ep"]) ? $_GET["ep"] : ""), $offset, $limit, (isset($_GET["q"]) ? $_GET["q"] : ""), $categoryId, $maxage );
 				
+				
+		$moddata = array();
+		foreach($reldata as $release) 
+		{
+			
+		$audios = 	getAudioReleases($release['ID']);
+		
+		foreach($audios as $audio) 
+		{
+		
+			$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+			
+		}
+			
+			
+			
+		
+
+		$moddata[] = $release;
+		}
+		
+		
+		
 		if ($outputtype == "xml")
 		{
 			$page->smarty->assign('offset',$offset);
-			$page->smarty->assign('releases',$reldata);
+			$page->smarty->assign('releases',$moddata);
 			header("Content-type: text/xml");
 			echo trim($page->smarty->fetch('apiresult.tpl'));
 		}
@@ -260,11 +294,33 @@ switch ($function)
 		if (isset($_GET["offset"]) && is_numeric($_GET["offset"]))
 			$offset = $_GET["offset"];		
 		$reldata = $releases->searchbyImdbId((isset($_GET["imdbid"]) ? $_GET["imdbid"] : "-1"), $offset, $limit, (isset($_GET["q"]) ? $_GET["q"] : ""), $categoryId, $maxage );
+		
+				
+		$moddata = array();
+		foreach($reldata as $release) 
+		{
 			
+		$audios = 	getAudioReleases($release['ID']);
+		
+		foreach($audios as $audio) 
+		{
+			$release['searchname'] = $release['searchname'].".".$audio['audiolanguage'];
+			
+		}
+			
+			
+			
+		
+
+		$moddata[] = $release;
+		}
+		
+		
+		
 		if ($outputtype == "xml")
 		{
 			$page->smarty->assign('offset',$offset);
-			$page->smarty->assign('releases',$reldata);
+			$page->smarty->assign('releases',$moddata);
 			header("Content-type: text/xml");
 			echo trim($page->smarty->fetch('apiresult.tpl'));	
 		}
