@@ -5,6 +5,8 @@
 require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/releases.php");
+require_once(WWW_DIR."/lib/site.php");
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
