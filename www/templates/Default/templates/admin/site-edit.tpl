@@ -543,7 +543,7 @@
     <td><label for="releasethreads">Update Releases Threads</label>:</td>
     <td>
         <input class="tiny" id="releasethreads" name="releasethreads" type="text" value="{$fsite->releasethreads}" />
-        <div class="hint">The number of threads for update releases.</div>
+        <div class="hint">The number of threads for update releases. If your tables are MyIsam, it is not recommended to run update_releases with more than 1 thread.</div>
     </td>
 </tr>
 
@@ -608,6 +608,14 @@
 	<td>
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
 		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
+	<td>
+		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
+		<div class="hint">Wether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
 	</td>
 </tr>
 

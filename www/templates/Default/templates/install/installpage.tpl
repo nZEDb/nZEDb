@@ -4,7 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<title>{$page->title}</title>
 	<link href="../templates/Default/styles/install.css" rel="stylesheet" type="text/css" media="screen" />
-	<link rel="shortcut icon" type="image/ico" href="../templates/images/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="../templates/Default/images/favicon.ico"/>
 	{$page->head}
 </head>
 <body>

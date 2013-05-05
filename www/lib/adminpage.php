@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/framework/basepage.php");
 require_once(WWW_DIR."/lib/users.php");
 
 class AdminPage extends BasePage
-{    
+{	
 	function AdminPage($allowmod = false)
 	{	
 		$this->template_dir = 'admin';

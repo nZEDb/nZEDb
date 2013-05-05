@@ -2,6 +2,7 @@
 
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Category
 {
@@ -33,6 +34,7 @@ class Category
 	const CAT_PC_GAMES = 4050;
 	const CAT_PC_PHONE_IOS = 4060;
 	const CAT_PC_PHONE_ANDROID = 4070;
+	const CAT_TV_WEBDL = 5010;
 	const CAT_TV_FOREIGN = 5020;
 	const CAT_TV_SD = 5030;
 	const CAT_TV_HD = 5040;
@@ -51,9 +53,9 @@ class Category
 	const CAT_BOOKS_EBOOK = 8010;
 	const CAT_BOOKS_COMICS = 8020;
 	const CAT_BOOKS_MAGAZINES = 8030;
+	const CAT_BOOKS_TECHNICAL = 8040;
 	const CAT_BOOKS_OTHER = 8050;
 	
-
 	const CAT_PARENT_GAME = 1000;
 	const CAT_PARENT_MOVIE = 2000;
 	const CAT_PARENT_MUSIC = 3000;
@@ -69,6 +71,13 @@ class Category
 
 	private $tmpCat = 0;
 
+	public function category()
+	{
+		$s = new Sites();
+		$site = $s->get();
+		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
+	}
+	
 	public function get($activeonly=false, $excludedcats=array())
 	{
 		$db = new DB();
@@ -108,7 +117,15 @@ class Category
 		$db = new DB();
 		return $db->query(sprintf("select c.* from category c where parentID = %d", $cid));
 	}
-
+	
+	//
+	// Returns ID's for site disabled categories. 
+	//
+	public function getDisabledIDs()
+	{
+		$db = new DB();
+		return $db->queryDirect("SELECT ID from category where status = 2");
+	}
 	public function getById($id)
 	{
 		$db = new DB();
@@ -199,8 +216,8 @@ class Category
 	// returns -1 if no category is appropriate from the group name.
 	//
 	public function determineCategory($releasename = "", $groupID)
-	{     
-		//                       
+	{	 
+		//					   
 		//Try against all functions, if still nothing, return Cat Misc.
 		//
 		
@@ -258,11 +275,14 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
+				if($this->categorizeforeign)
 				{
-					if($this->isHashed($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_TV_FOREIGN;
-					return true;
+					if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
+					{
+						if($this->isHashed($releasename)){ return $this->tmpCat; }
+						$this->tmpCat =  Category::CAT_TV_FOREIGN;
+						return true;
+					}
 				}
 				
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
@@ -321,10 +341,27 @@ class Category
 					return true;
 				}
 				
+				if($this->categorizeforeign)
+				{
+					if (preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $groupRes["name"]))
+					{
+						if($this->isHashed($releasename)){ return $this->tmpCat; }
+						$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+						return true;
+					}
+				}
+				
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $groupRes["name"]))
+				{
+					if($this->isHashed($releasename)){ return $this->tmpCat; }
+					$this->tmpCat =  Category::CAT_BOOKS_TECHNICAL;
 					return true;
 				}
 				
@@ -336,7 +373,7 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.((movies\.)?erotica(\.divx)?|ijsklontje)/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isHashed($releasename)){ return $this->tmpCat; }
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
@@ -464,6 +501,17 @@ class Category
 					$this->tmpCat = Category::CAT_PC_PHONE_OTHER;
 					return true;
 				}
+				
+				if($this->categorizeforeign)
+				{
+					if (preg_match('/dk\.binaer\.tv/', $groupRes["name"]))
+					{
+						if($this->isHashed($releasename)){ return $this->tmpCat; }
+						$this->tmpCat = Category::CAT_TV_FOREIGN;
+						return true;
+					}
+				}
+				
 				return false;
 			}
 		}
@@ -480,9 +528,13 @@ class Category
 		
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|imageset|mp3|xxx)[\.\-_ ]/i', $releasename))
 		{
-			if($this->isForeignTV($releasename)){ return true; }
+			if($this->categorizeforeign)
+			{
+				if($this->isForeignTV($releasename)){ return true; }
+			}
 			if($this->isSportTV($releasename)){ return true; }
 			if($this->isDocumentaryTV($releasename)){ return true; }
+			if($this->isWEBDL($releasename)){ return true; }
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
 			if($this->isAnimeTV($releasename)){ return true; }
@@ -573,7 +625,18 @@ class Category
 	{
 		if (preg_match('/[\.\-_ ](Docu|Documentary)[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_TV_HD;
+			$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function isWEBDL($releasename)
+	{
+		if (preg_match('/web[\.\-_ ]dl/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_WEBDL;
 			return true;
 		}
 		
@@ -582,7 +645,7 @@ class Category
 	
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720|h[\.\-_ ]264|web[\.\-_ ]dl/i', $releasename))
+		if (preg_match('/1080(i|p)|720p/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
@@ -619,7 +682,7 @@ class Category
 	
 	public function isAnimeTV($releasename)
 	{
-		if (preg_match('/^\(\[AST\]\s|\[HorribleSubs\]/i', $releasename))
+		if (preg_match('/[\.\-_ ]Anime[\.\-_ ]|^\(\[AST\]\s|\[HorribleSubs\]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_ANIME;
 			return true;
@@ -634,9 +697,12 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]/i', $releasename))
+		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)/i', $releasename))
 		{
-			if($this->isMovieForeign($releasename)){ return true; }
+			if($this->categorizeforeign)
+			{
+				if($this->isMovieForeign($releasename)){ return true; }
+			}
 			if($this->isMovieDVD($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
 			if($this->isMovie3D($releasename)){ return true; }
@@ -705,7 +771,7 @@ class Category
 	
 	public function isMovieBluRay($releasename)
 	{
-		if(preg_match('/bluray\-|bd?25|bd?50|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
+		if(preg_match('/bluray\-|bd?[\.\-_ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_BLURAY;
 			return true;

@@ -58,8 +58,10 @@ Class NZBcontents
 				}
 				
 				$subject = $nzbcontents->attributes()->subject;
-				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
-				$artificialParts = $artificialParts+$parts['total'];
+				if(preg_match('/(?P<total>\d{1,4})\)$/', $subject, $parts))
+				{
+					$artificialParts = $artificialParts+$parts['total'];
+				}
 				
 				if ($foundnfo !== true)
 				{
@@ -119,7 +121,7 @@ Class NZBcontents
 		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
+			$nzbfile = @simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
@@ -196,7 +198,8 @@ Class NZBcontents
 		}
 		else
 		{
-			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
+			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
 			return false;
 		}
 	}
@@ -204,8 +207,8 @@ Class NZBcontents
 	//
 	//	Check if the possible NFo is a JFIF.
 	//
-    function check_JFIF($filename)
-    {
+	function check_JFIF($filename)
+	{
 		$fp = @fopen($filename, 'r');
 		if ($fp) 
 		{

@@ -12,6 +12,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 {
 	$timestart = TIME();
 	$nzbcount = 0;
+	$brokencount = 0;
 	$db = new DB();
 
 	$guids = $db->query("select guid from releases where nzbstatus = 1");
@@ -28,6 +29,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 			
 			if (preg_match("/^[\r\n]+<\?xml/", $nzbfile))
 			{
+				$brokencount++;
 				$nzbfile = preg_replace('/^[\r\n]+<\?xml/i', '<?xml', $nzbfile);
 				$nzb = preg_replace('/<\/nzb>.+/i', '</nzb>', $nzbfile);
 				
@@ -61,7 +63,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	}
 	echo "\n".$nzbcount." NZB files scanned. in ";
 	echo TIME() - $timestart;
-	echo " seconds.\n";
+	echo " seconds. ".$brokencount." NZB files were fixed.\n";
 }
 else
 {

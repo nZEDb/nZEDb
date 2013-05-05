@@ -32,20 +32,20 @@ class PostProcess {
 	
 	public function processAll()
 	{
-		$this->processNfos();
-		$this->processMovies();
-		$this->processMusic();
-		$this->processGames();
-		$this->processAnime();
-		$this->processTv();
-		$this->processBooks();
-		$this->processAdditional();
+		$this->processNfos($threads=1);
+		$this->processMovies($threads=1);
+		$this->processMusic($threads=1);
+		$this->processGames($threads=1);
+		$this->processAnime($threads=1);
+		$this->processTv($threads=1);
+		$this->processBooks($threads=1);
+		$this->processAdditional($threads=1);
 	}
 	
 	//
 	// Process nfo files
 	//
-	public function processNfos($threads=0)
+	public function processNfos($threads=1)
 	{		
 		if ($this->site->lookupnfo == 1)
 		{
@@ -57,7 +57,7 @@ class PostProcess {
 	//
 	// Lookup imdb if enabled
 	//
-	public function processMovies($threads=0)
+	public function processMovies($threads=1)
 	{	
 		if ($this->site->lookupimdb == 1) 
 		{
@@ -69,7 +69,7 @@ class PostProcess {
 	//
 	// Lookup music if enabled
 	//
-	public function processMusic($threads=0)
+	public function processMusic($threads=1)
 	{
 		if ($this->site->lookupmusic == 1) 
 		{
@@ -81,7 +81,7 @@ class PostProcess {
 	//
 	// Lookup games if enabled
 	//
-	public function processGames($threads=0)
+	public function processGames($threads=1)
 	{
 		if ($this->site->lookupgames == 1) 
 		{
@@ -93,7 +93,7 @@ class PostProcess {
 	//
 	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processAnime($threads=0)
+	public function processAnime($threads=1)
 	{
 		if ($this->site->lookupanidb == 1) 
 		{
@@ -106,7 +106,7 @@ class PostProcess {
 	//
 	// Process all TV related releases which will assign their series/episode/rage data
 	//
-	public function processTv($threads=0)
+	public function processTv($threads=1)
 	{
 		if ($this->site->lookuptvrage == 1) 
 		{
@@ -118,7 +118,7 @@ class PostProcess {
 	//
 	// Process books using amazon.com
 	//
-	public function processBooks($threads=0)
+	public function processBooks($threads=1)
 	{
 		if ($this->site->lookupbooks == 1) 
 		{
@@ -130,7 +130,7 @@ class PostProcess {
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info
 	//
-	public function processAdditional($threads=0)
+	public function processAdditional($threads=1)
 	{
 		$maxattemptstocheckpassworded = 5;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
@@ -138,8 +138,8 @@ class PostProcess {
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		
 		$tmpPath = $this->site->tmpunrarpath;
-		if (isset($threads) && ($threads > 1 ))
-			$tmpPath .= $threads;
+		$tmpPath .= $threads;
+		$threads--;
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
 			$tmpPath = $tmpPath.'/';								
 		if (!file_exists($tmpPath))
@@ -154,13 +154,13 @@ class PostProcess {
 		$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview from releases r 
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate asc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.25)), $this->addqty));
+			or (r.haspreview = -1 and c.disablepreview = 0) order by adddate desc limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty));
 		
 		$rescount = sizeof($result);
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.25)).": ";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 			$nntp->doConnect();
 			
 			foreach ($result as $rel)
@@ -187,22 +187,23 @@ class PostProcess {
 				$bingroup = $samplegroup = $mediagroup = "";
 				$norar = 0;
 
-                // Fetch the NZB using the GUID.
-                $nzb = new NZB();
+				// Fetch the NZB using the GUID.
+				$nzb = new NZB();
 
 				if (!$nzbpath = $nzb->NZBPath($guid, $this->site->nzbpath, $this->site->nzbsplitlevel))
 				{
-					echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
-					break;
+					echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
+					$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $rel['ID']));
+					continue;
 				}
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				if (!$nzbpath)
-                {
-                    echo "ERROR: NZB file contents empty.\n";
-                    break;
-                }
+				{
+					echo "ERROR: NZB file contents empty.\n";
+					continue;
+				}
 
-				$nzbfile = simplexml_load_file($nzbpath);
+				$nzbfile = @simplexml_load_file($nzbpath);
 
 				foreach ($nzbfile->file as $nzbcontents)
 				{

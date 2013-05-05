@@ -14,22 +14,22 @@
  *   $rar = new RarInfo;
  *   $rar->open('./foo.rar'); // or $rar->setData($data);
  *   if ($rar->error) {
- *     echo "Error: {$rar->error}\n";
- *     exit;   
+ *	 echo "Error: {$rar->error}\n";
+ *	 exit;   
  *   }
  *
  *   // Check encryption
  *   if ($rar->isEncrypted) {
- *     echo "Archive is password encrypted\n";
- *     exit;
+ *	 echo "Archive is password encrypted\n";
+ *	 exit;
  *   }
  *
  *   // Process the file list
  *   $files = $rar->getFileList();
  *   foreach ($files as $file) {
- *     if ($file['pass'] == true) {
- *       echo "File is passworded: {$file['name']}\n";
- *     }
+ *	 if ($file['pass'] == true) {
+ *	   echo "File is passworded: {$file['name']}\n";
+ *	 }
  *   }
  *
  * </code>
@@ -37,10 +37,10 @@
  * @todo Plenty of parsing still possible, most format values have been added ;)
  * @link http://www.win-rar.com/index.php?id=24&kb_article_id=162
  *
- * @author     Hecks
+ * @author	 Hecks
  * @copyright  (c) 2010 Hecks
- * @license    Modified BSD
- * @version    1.6
+ * @license	Modified BSD
+ * @version	1.6
  *
  * CHANGELOG:
  * ----------
@@ -62,60 +62,60 @@ class RarInfo
 	 */
 	
 	// Block types
-	const BLOCK_MARK          = 0x72;
-	const BLOCK_MAIN          = 0x73;
-	const BLOCK_FILE          = 0x74;
+	const BLOCK_MARK		  = 0x72;
+	const BLOCK_MAIN		  = 0x73;
+	const BLOCK_FILE		  = 0x74;
 	const BLOCK_OLD_COMMENT   = 0x75;
-	const BLOCK_OLD_EXTRA     = 0x76;
-	const BLOCK_OLD_SUB       = 0x77;
+	const BLOCK_OLD_EXTRA	 = 0x76;
+	const BLOCK_OLD_SUB	   = 0x77;
 	const BLOCK_OLD_RECOVERY  = 0x78;
-	const BLOCK_OLD_AUTH      = 0x79;
-	const BLOCK_SUB           = 0x7a;
-	const BLOCK_ENDARC        = 0x7b;
+	const BLOCK_OLD_AUTH	  = 0x79;
+	const BLOCK_SUB		   = 0x7a;
+	const BLOCK_ENDARC		= 0x7b;
 
 	// Flags for BLOCK_MAIN
-	const MAIN_VOLUME         = 0x0001;
-	const MAIN_COMMENT        = 0x0002;
-	const MAIN_LOCK           = 0x0004;
-	const MAIN_SOLID          = 0x0008;
+	const MAIN_VOLUME		 = 0x0001;
+	const MAIN_COMMENT		= 0x0002;
+	const MAIN_LOCK		   = 0x0004;
+	const MAIN_SOLID		  = 0x0008;
 	const MAIN_NEWNUMBERING   = 0x0010;
-	const MAIN_AUTH           = 0x0020;
-	const MAIN_RECOVERY       = 0x0040;
-	const MAIN_PASSWORD       = 0x0080;
-	const MAIN_FIRSTVOLUME    = 0x0100;
-	const MAIN_ENCRYPTVER     = 0x0200;
+	const MAIN_AUTH		   = 0x0020;
+	const MAIN_RECOVERY	   = 0x0040;
+	const MAIN_PASSWORD	   = 0x0080;
+	const MAIN_FIRSTVOLUME	= 0x0100;
+	const MAIN_ENCRYPTVER	 = 0x0200;
 
 	// Flags for BLOCK_FILE
 	const FILE_SPLIT_BEFORE   = 0x0001;
-	const FILE_SPLIT_AFTER    = 0x0002;
-	const FILE_PASSWORD       = 0x0004;
-	const FILE_COMMENT        = 0x0008;
-	const FILE_SOLID          = 0x0010;
-	const FILE_DICTMASK       = 0x00e0;
-	const FILE_DICT64         = 0x0000;
-	const FILE_DICT128        = 0x0020;
-	const FILE_DICT256        = 0x0040;
-	const FILE_DICT512        = 0x0060;
-	const FILE_DICT1024       = 0x0080;
-	const FILE_DICT2048       = 0x00a0;
-	const FILE_DICT4096       = 0x00c0;
-	const FILE_DIRECTORY      = 0x00e0;
-	const FILE_LARGE          = 0x0100;
-	const FILE_UNICODE        = 0x0200;
-	const FILE_SALT           = 0x0400;
-	const FILE_VERSION        = 0x0800;
-	const FILE_EXTTIME        = 0x1000;
-	const FILE_EXTFLAGS       = 0x2000;
+	const FILE_SPLIT_AFTER	= 0x0002;
+	const FILE_PASSWORD	   = 0x0004;
+	const FILE_COMMENT		= 0x0008;
+	const FILE_SOLID		  = 0x0010;
+	const FILE_DICTMASK	   = 0x00e0;
+	const FILE_DICT64		 = 0x0000;
+	const FILE_DICT128		= 0x0020;
+	const FILE_DICT256		= 0x0040;
+	const FILE_DICT512		= 0x0060;
+	const FILE_DICT1024	   = 0x0080;
+	const FILE_DICT2048	   = 0x00a0;
+	const FILE_DICT4096	   = 0x00c0;
+	const FILE_DIRECTORY	  = 0x00e0;
+	const FILE_LARGE		  = 0x0100;
+	const FILE_UNICODE		= 0x0200;
+	const FILE_SALT		   = 0x0400;
+	const FILE_VERSION		= 0x0800;
+	const FILE_EXTTIME		= 0x1000;
+	const FILE_EXTFLAGS	   = 0x2000;
 
 	// Flags for BLOCK_ENDARC
 	const ENDARC_NEXT_VOLUME  = 0x0001;
-	const ENDARC_DATACRC      = 0x0002;
-	const ENDARC_REVSPACE     = 0x0004;
-	const ENDARC_VOLNR        = 0x0008;
+	const ENDARC_DATACRC	  = 0x0002;
+	const ENDARC_REVSPACE	 = 0x0004;
+	const ENDARC_VOLNR		= 0x0008;
 
 	// Flags for all blocks
-	const SKIP_IF_UNKNOWN     = 0x4000;
-	const LONG_BLOCK          = 0x8000;
+	const SKIP_IF_UNKNOWN	 = 0x4000;
+	const LONG_BLOCK		  = 0x8000;
 
 	// OS types
 	const OS_MSDOS = 0;
@@ -199,7 +199,7 @@ class RarInfo
 	 * the archive contents.
 	 *
 	 * @param   string  path to the file
-	 * @return  bool    false if archive analysis fails
+	 * @return  bool	false if archive analysis fails
 	 */
 	public function open($file)
 	{
@@ -221,7 +221,7 @@ class RarInfo
 	 * archive contents.
 	 *
 	 * @param   string  archive data stored in a variable
-	 * @return  bool    false if archive analysis fails
+	 * @return  bool	false if archive analysis fails
 	 */	
 	public function setData(&$data)
 	{
