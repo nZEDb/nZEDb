@@ -612,6 +612,14 @@
 </tr>
 
 <tr>
+	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
+	<td>
+		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
+		<div class="hint">Wether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="grabstatus">Update grabs</label>:</td>
 	<td>
 		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
