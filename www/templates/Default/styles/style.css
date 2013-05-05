@@ -243,7 +243,7 @@ movie, console and music modals with backdrop images.
 #movieinfo h2, #movieinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
 #movieinfo a { color: #fff; }
 #movieinfo img.cover { margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000; }
-#backdrop { position: absolute; width: 810px; height: 455px; left: -1px; top: 5px; background-color: #000; overflow: hidden;}
+#backdrop { position: absolute; width: 810px; height: 455px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
 #backdrop img { opacity:0.5; width: 100%; height: 100%;}
 
 #musicinfo { color:#FFF; min-height:435px; background-color:#7F7F7F; background-image:url('../../covers/music/backdrop.jpg'); background-repeat: repeat-x;}
@@ -340,21 +340,21 @@ div.icon_check			{ background-image:url('../images/icons/check.png'); }
 	Use colorbox example 2 css for movieinfo popups
 */
 .cboxMovie{}
-    .cboxMovie #cboxContent{margin-top:32px; background: transparent;}
-    .cboxMovie #cboxTopLeft{display:none;}
-    .cboxMovie #cboxTopCenter{display:none;}
-    .cboxMovie #cboxTopRight{display:none;}
-    .cboxMovie #cboxBottomLeft{display:none;}
-    .cboxMovie #cboxBottomCenter{display:none;}
-    .cboxMovie #cboxBottomRight{display:none;}
-    .cboxMovie #cboxMiddleLeft{display:none;}
-    .cboxMovie #cboxMiddleRight{display:none;}
-        .cboxMovie #cboxLoadedContent{margin-top: 5px; background:#888; padding:1px;}
-        .cboxMovie #cboxLoadingGraphic{background:url(../images/loading.gif) center center no-repeat;}
-        .cboxMovie #cboxLoadingOverlay{background:#000;}
-        .cboxMovie #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
-        .cboxMovie #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../images/colorbox/controls2.png) 0 0 no-repeat;}
+    .cboxMovie #cboxContent{background:#fff;}
+    .cboxMovie #cboxTopLeft{width:25px; height:25px; background:url(../images/colorbox/border1.png) 0 0 no-repeat;}
+    .cboxMovie #cboxTopCenter{height:25px; background:url(../images/colorbox/border1.png) 0 -50px repeat-x;}
+    .cboxMovie #cboxTopRight{width:25px; height:25px; background:url(../images/colorbox/border1.png) -25px 0 no-repeat;}
+    .cboxMovie #cboxBottomLeft{width:25px; height:25px; background:url(../images/colorbox/border1.png) 0 -25px no-repeat;}
+    .cboxMovie #cboxBottomCenter{height:25px; background:url(../images/colorbox/border1.png) 0 -75px repeat-x;}
+    .cboxMovie #cboxBottomRight{width:25px; height:25px; background:url(../images/colorbox/border1.png) -25px -25px no-repeat;}
+    .cboxMovie #cboxMiddleLeft{width:25px; background:url(../images/colorbox/border2.png) 0 0 repeat-y;}
+    .cboxMovie #cboxMiddleRight{width:25px; background:url(../images/colorbox/border2.png) -25px 0 repeat-y;}
+        .cboxMovie #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
+        /*.cboxMovie #cboxLoadingGraphic{background:url(../images/loading.gif) center center no-repeat;}*/
+        .cboxMovie #cboxLoadingOverlay{background:#fff;}
+        .cboxMovie #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; margin-top:-10px;}
+        .cboxMovie #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../images/colorbox/controls.png) 0 0 no-repeat;}
         .cboxMovie #cboxPrevious{background-position:0px 0px; right:44px;}
         .cboxMovie #cboxPrevious.hover{background-position:0px -25px;}
         .cboxMovie #cboxNext{background-position:-25px 0px; right:22px;}

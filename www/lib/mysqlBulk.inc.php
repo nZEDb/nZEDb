@@ -104,7 +104,7 @@ function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) 
 								  "[^'|^\\\']*['|\\\'])*[^'|^\\\']" .
 								  "*[^'|^\\\']$)/", $sql);
 			$process = 'keys';
-			$dat     = array();
+			$dat	 = array();
 
 			foreach ($parts as $k=>$part) {
 				$tpart = strtoupper(trim($part));

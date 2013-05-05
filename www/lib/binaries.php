@@ -51,7 +51,7 @@ class Binaries
 			foreach($res as $groupArr) 
 			{
 				$this->message = array();
-                echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
+				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
 				$this->updateGroup($nntp, $groupArr);
 				$counter++;
 			}

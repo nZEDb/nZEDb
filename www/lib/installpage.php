@@ -21,8 +21,8 @@ class Installpage
 				
 		$this->smarty->compile_dir  = realpath('../lib/smarty/templates_c/');
 		$this->smarty->config_dir   = realpath('../lib/smarty/configs/');
-		$this->smarty->cache_dir    = realpath('../lib/smarty/cache/');
-	}    
+		$this->smarty->cache_dir	= realpath('../lib/smarty/cache/');
+	}	
 	
 	public function addToHead($headcontent) 
 	{			

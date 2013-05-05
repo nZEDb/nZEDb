@@ -150,7 +150,7 @@ class Nntp extends Net_NNTP_Client
 		$input = array();
 		preg_match("/^(=ybegin.*=yend[^$]*)$/ims", $yencodedvar, $input);
 		if (isset($input[1]))
-		{        
+		{		
 			$ret = "";
 			$input = trim(preg_replace("/\r\n/im", "",  preg_replace("/(^=yend.*)/im", "", preg_replace("/(^=ypart.*\\r\\n)/im", "", preg_replace("/(^=ybegin.*\\r\\n)/im", "", $input[1], 1), 1), 1)));
 				

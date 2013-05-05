@@ -666,6 +666,7 @@ INSERT INTO category (ID, title, parentID) VALUES (4050, 'Games', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4060, 'Phone\-IOS', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4070, 'Phone\-Android', 4000);
 
+INSERT INTO category (ID, title, parentID) VALUES (5010, 'WEB\-DL', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5020, 'Foreign', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5030, 'SD', 5000);
 INSERT INTO category (ID, title, parentID) VALUES (5040, 'HD', 5000);
@@ -687,6 +688,7 @@ INSERT INTO category (ID, title, parentID) VALUES (7010, 'Misc', 7000);
 INSERT INTO category (ID, title, parentID) VALUES (8010, 'Ebook', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 
 
@@ -912,7 +914,7 @@ INSERT INTO `site`
     ('nzbthreads', 1),
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
 	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
-	('amazonassociatetag', ''),
+	('amazonassociatetag', 'n01369-20'),
 	('tmdbkey', '9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
 	('trakttvkey', ''),
@@ -945,7 +947,8 @@ INSERT INTO `site`
 	('addetail', ''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
-	('sqlpatch', '18');
+	('categorizeforeign', 1),
+	('sqlpatch', '22');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1228,6 +1231,19 @@ INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
 INSERT INTO tmux (setting, value) values ('BACKFILL_QTY','100000');
 INSERT INTO tmux (setting, value) values ('COLLECTIONS_KILL','0');
 INSERT INTO tmux (setting, value) values ('POSTPROCESS_KILL','0');
+INSERT INTO tmux (setting, value) values ('CRAP_TIMER','30');
+INSERT INTO tmux (setting, value) values ('FIX_CRAP','FALSE');
+INSERT INTO tmux (setting, value) values ('TV_TIMER','43200');
+INSERT INTO tmux (setting, value) values ('UPDATE_TV','FALSE');
+INSERT INTO tmux (setting, value) values ('HTOP','FALSE');
+INSERT INTO tmux (setting, value) values ('NMON','FALSE');
+INSERT INTO tmux (setting, value) values ('BWMNG','FALSE');
+INSERT INTO tmux (setting, value) values ('MYTOP','FALSE');
+INSERT INTO tmux (setting, value) values ('CONSOLE','FALSE');
+INSERT INTO tmux (setting, value) values ('VNSTAT','FALSE');
+INSERT INTO tmux (setting, value) values ('VNSTAT_ARGS',NULL);
+INSERT INTO tmux (setting, value) values ('TCPTRACK','FALSE');
+INSERT INTO tmux (setting, value) values ('TCPTRACK_ARGS','-i eth0 port 443');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
