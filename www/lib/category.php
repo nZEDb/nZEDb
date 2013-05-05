@@ -749,7 +749,7 @@ class Category
 	
 	public function isMovieBluRay($releasename)
 	{
-		if(preg_match('/bluray\-|bd?25|bd?50|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
+		if(preg_match('/bluray\-|bd?[\.\-_ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_BLURAY;
 			return true;
