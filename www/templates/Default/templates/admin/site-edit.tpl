@@ -599,7 +599,7 @@
 	<td><label for="partrepair">Part Repair</label>:</td>
 	<td>
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
-		<div class="hint">Wether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 	</td>
 </tr>
 
@@ -607,7 +607,7 @@
 	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
 	<td>
 		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
-		<div class="hint">Wether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
+		<div class="hint">Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
 	</td>
 </tr>
 
@@ -615,7 +615,7 @@
 	<td><label for="grabstatus">Update grabs</label>:</td>
 	<td>
 		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
-		<div class="hint">Wether to update download counts when someone downloads a release.</div>
+		<div class="hint">Whether to update download counts when someone downloads a release.</div>
 	</td>
 </tr>
 
