@@ -148,20 +148,20 @@ class PostProcess {
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
 			$tmpPath = $tmpPath.'/';								
 		
-		$tmPath1 = $tmPath;
+		$tmpPath1 = $tmpPath;
 		
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
 		//
-		if ($id != '')
+		/*if ($id != '')
 			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
 				left join category c on c.ID = r.categoryID
 				where r.ID = %d", $id);
-		else
+		else*/
 			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-			AND (r.haspreview = -1 and c.disablepreview = 0) order by RAND()  limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty));
+			AND (r.haspreview = -1 and c.disablepreview = 0) order by RAND()  limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 		
 		$result = $db->query($query);
 		$rescount = count($result);
