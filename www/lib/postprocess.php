@@ -257,9 +257,10 @@ class PostProcess {
 				}
 				
 				// Attempt to process sample file.
-				if($samplemsgid != -1 && $processSample && $blnTookSample === false)
+				if(!empty($samplemsgid) && $samplemsgid !== -1 && $processSample && $blnTookSample === false)
 				{
 					$sampleBinary = $nntp->getMessage($samplegroup, $samplemsgid);
+					break;
 					if ($sampleBinary === false) 
 					{
 						$samplemsgid = -1;
@@ -550,7 +551,7 @@ class PostProcess {
 		else
 		{
 			// Load the ZIP file or data
-			$files = processReleaseZips($fetchedBinary, false);
+			$files = $this->processReleaseZips($fetchedBinary, false);
 			if ($files !== false)
 				foreach ($files as $file)
 				{
