@@ -10,10 +10,15 @@ class Nntp extends Net_NNTP_Client
 	
 	function doConnect() 
 	{
+		if ($this->_isConnected())
+			return true;
 		$enc = false;
-		$db = new DB();
-		$compressionstatus = $db->queryOneRow('select value from site where setting = "compressedheaders"');
-		$compressionstatus = array_shift($compressionstatus);
+		
+		$s = new Sites();
+		$site = $s->get();
+		$compressionstatus = $site->compressedheaders;
+		unset($s);
+		unset($site);
 		
 		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
@@ -37,6 +42,7 @@ class Nntp extends Net_NNTP_Client
 		{
 			$this->enableCompression();
 		}
+		return $ret && $ret2;
 	}
 	
 	//
@@ -44,6 +50,8 @@ class Nntp extends Net_NNTP_Client
 	//
 	function doConnectNC() 
 	{
+		if ($this->_isConnected())
+			return;
 		$enc = false;
 		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
@@ -97,7 +105,22 @@ class Nntp extends Net_NNTP_Client
 
 		return $message;
 	}
-
+	
+	function getMessages($groupname, $msgIds)
+	{
+		$body = '';
+		
+		foreach ($msgIds as $m)
+		{
+			$message = $this->getMessage($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
+	}
+	
 	function getBinary($binaryId, $isNfo=false)
 	{
 		$db = new DB();
