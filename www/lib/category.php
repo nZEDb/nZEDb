@@ -590,7 +590,7 @@ class Category
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
+			if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|RealCO|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
