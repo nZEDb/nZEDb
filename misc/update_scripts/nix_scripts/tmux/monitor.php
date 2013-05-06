@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1303";
+$version="0.1r1316";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -19,15 +19,15 @@ $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER
 
 //needs to be processed query
 $proc = "SELECT
-	( SELECT COUNT( groupID ) AS cnt from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( groupID ) AS cnt from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( groupID ) AS cnt from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 ) AS audio,
-	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
-	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) or (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and categoryID BETWEEN 8000 AND 8999 ) as book,
-	( SELECT COUNT( groupID ) AS cnt from releases) AS releases,
-	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( groupID ) AS cnt from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
+	( SELECT COUNT( groupID ) AS cnt from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
+	( SELECT COUNT( groupID ) AS cnt from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 and nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
+	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+	( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID BETWEEN 8000 AND 8999 ) as book,
+	( SELECT COUNT( groupID ) AS cnt from releases where nzbstatus = 1 ) AS releases,
+	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 and nzbstatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
 	( SELECT COUNT( ID ) from collections ) collections_table,
@@ -477,7 +477,7 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Fix Release Names\"'");
 		}
-					
+
 		//remove crap releases
 		if (( $fix_crap == "TRUE" ) && ( $i == 1 ))
 		{
@@ -508,7 +508,7 @@ while( $i > 0 )
 			}
 			else
 			{
-				if ( TIME() - $time3 >= 120 )
+				if ( TIME() - $time3 >= 300 )
 				{
 					shell_exec("tmux respawnp -k -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been terminated by Possible Hung thread\"'");
 					$wipe = `tmux clearhist -t ${tmux_session}:1.2`;

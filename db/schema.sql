@@ -573,6 +573,7 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.test', 'This group contains a variety of content.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.town', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.triballs', 'This group contains various.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tun', 'This group contains various.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tvseries', 'This group contains X264 and XVID TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tv', 'This group contains XVID TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u-4all', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
@@ -948,7 +949,7 @@ INSERT INTO `site`
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
-	('sqlpatch', '22');
+	('sqlpatch', '23');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

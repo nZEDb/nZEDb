@@ -139,16 +139,16 @@ class PostProcess {
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
-		
+
 		$db = new DB;
 		$nntp = new Nntp;
 		$consoleTools = new ConsoleTools();
-		
+
 		$tmpPath = $this->site->tmpunrarpath;
 		$threads--;
 		if (substr($tmpPath, -strlen( '/' ) ) != '/')
-			$tmpPath = $tmpPath.'/';								
-		
+			$tmpPath = $tmpPath.'/';
+
 		$tmpPath1 = $tmpPath;
 		$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
 			left join category c on c.ID = r.categoryID
