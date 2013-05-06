@@ -46,7 +46,7 @@ class PostProcess {
 	}
 	
 	//
-	// Process nfo files
+	// Process nfo files.
 	//
 	public function processNfos($threads=1)
 	{		
@@ -58,7 +58,7 @@ class PostProcess {
 	}
 	
 	//
-	// Lookup imdb if enabled
+	// Lookup imdb if enabled.
 	//
 	public function processMovies($threads=1)
 	{	
@@ -70,7 +70,7 @@ class PostProcess {
 	}
 	
 	//
-	// Lookup music if enabled
+	// Lookup music if enabled.
 	//
 	public function processMusic($threads=1)
 	{
@@ -82,7 +82,7 @@ class PostProcess {
 	}
 	
 	//
-	// Lookup games if enabled
+	// Lookup games if enabled.
 	//
 	public function processGames($threads=1)
 	{
@@ -107,7 +107,7 @@ class PostProcess {
 	}
 	
 	//
-	// Process all TV related releases which will assign their series/episode/rage data
+	// Process all TV related releases which will assign their series/episode/rage data.
 	//
 	public function processTv($threads=1)
 	{
@@ -119,7 +119,7 @@ class PostProcess {
 	}
 	
 	//
-	// Process books using amazon.com
+	// Process books using amazon.com.
 	//
 	public function processBooks($threads=1)
 	{
@@ -131,7 +131,7 @@ class PostProcess {
 	}
 	
 	//
-	// Check for passworded releases, RAR contents and Sample/Media info
+	// Check for passworded releases, RAR contents and Sample/Media info.
 	//
 	public function processAdditional($threads=1)
 	{
@@ -174,7 +174,7 @@ class PostProcess {
 			
 			foreach ($result as $rel)
 			{
-				// Per release defaults
+				// Per release defaults.
 				$tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!file_exists($tmpPath))
 				{
@@ -192,7 +192,8 @@ class PostProcess {
 				
 				$passStatus = array(Releases::PASSWD_NONE);
 				$blnTookMediainfo = false;
-				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false; //only attempt sample if not disabled
+				// Only attempt sample if not disabled.
+				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				if ($this->echooutput)
 					$consoleTools->overWrite($rescount--." left..");
 				
@@ -200,7 +201,7 @@ class PostProcess {
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
 				
 				//
-				// Go through the nzb for this release looking for a rar, a sample, and a mediafile
+				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				//
 				$nzbcontents = new NZBcontents(true);
 				$relres = $db->queryOneRow(sprintf("select guid, groupID from releases where ID = %d", $rel["ID"]));
@@ -290,6 +291,7 @@ class PostProcess {
 				}
 				
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
+				
 				//if ($this->echooutput)
 					//echo "Deleted ".$db->getAffectedRows()." releasefiles.\n";
 				
@@ -390,7 +392,7 @@ class PostProcess {
 								//$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
 							}
 							
-							// we need to unrar the fetched binary if checkpasswordedrar wasnt 2
+							// Ee need to unrar the fetched binary if checkpasswordedrar wasnt 2.
 							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
 							{
 								$rarfile = $tmpPath.'rarfile.rar';
@@ -414,7 +416,7 @@ class PostProcess {
 							}
 						}
 
-						//clean up all files
+						// Clean up all files.
 						foreach(glob($tmpPath.'*') as $v)
 						{
 							unlink($v);
@@ -446,7 +448,7 @@ class PostProcess {
 	
 	public function processReleaseZips($fetchedBinary, $open = false)
 	{
-		// Load the ZIP file or data
+		// Load the ZIP file or data.
 		$zip = new ZipInfo;
 
 		if ($open)
@@ -550,7 +552,7 @@ class PostProcess {
 		}
 		else
 		{
-			// Load the ZIP file or data
+			// Load the ZIP file or data.
 			$files = $this->processReleaseZips($fetchedBinary, false);
 			if ($files !== false)
 				foreach ($files as $file)
@@ -583,32 +585,26 @@ class PostProcess {
 				$files = $rar->getFileList();		
 				foreach ($files as $file) 
 				{
-					//
-					// individual file rar passworded
-					//
+					// Individual file rar passworded.
 					if ($file['pass'] == 1) 
 					{
 						$passStatus = Releases::PASSWD_RAR;
 					}
-					//
-					// individual file looks suspect
-					//
+					// Individual file looks suspect.
 					elseif (preg_match($potentiallypasswordedfileregex, $file["name"]) && $passStatus != Releases::PASSWD_RAR)
 					{
 						$passStatus = Releases::PASSWD_POTENTIAL;
 					}
 				}
 				
-				// rarinnerfilecount
+				// Rarinnerfilecount.
 				if (sizeof($files) > 0)
 				{
 					$db = new DB();
 					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", sizeof($files), $relID));
 				}
 				
-				//
-				// Deep Checking
-				//
+				// Deep Checking.
 				if ($checkpasswordedrar == 2)
 				{
 					$israr = $this->isRar($fetchedBinary);
@@ -628,20 +624,20 @@ class PostProcess {
 					
 					$output = runCmd($execstring);
 
-					// delete the rar
+					// Delete the rar.
 					unlink($rarfile);
 					
-					// ok, now we have all the files extracted from the rar into the tempdir and
+					// Ok, now we have all the files extracted from the rar into the tempdir and
 					// the rar file deleted, now to loop through the files and recursively unrar
 					// if any of those are rars, we don't trust their names and we test every file
-					// for the rar header
+					// for the rar header.
 					for ($i=0;$i<sizeof($israr);$i++)
 					{
 						$mayberar = @file_get_contents($unrarPath.$israr[$i]);
 						$tmp = $this->isRar($mayberar);
 						unset($mayberar);
 						if (is_array($tmp)) 
-						// it's a rar
+						// It's a rar.
 						{
 							for ($x=0;$x<sizeof($tmp);$x++) 
 							{
@@ -684,10 +680,10 @@ class PostProcess {
 	
 	public function isRar($rarfile)
 	{
-	// returns 0 if not rar
-	// returns 1 if encrypted rar
-	// returns 2 if passworded rar
-	// returns array of files in the rar if normal rar
+	// Returns 0 if not rar.
+	// Returns 1 if encrypted rar.
+	// Returns 2 if passworded rar.
+	// Returns array of files in the rar if normal rar.
 		unset($filelist);
 		$rar = new RarInfo;
 		if ($rar->setData($rarfile))
@@ -703,22 +699,20 @@ class PostProcess {
 				{
 					$filelist[] = $file['name'];
 					if ($file['pass'] == true) 
-					//
-					// individual file rar passworded
-					//
+					// Individual file rar passworded.
 					{
 						return 2;
-						// passworded
+						// Passworded.
 					}
 				}
 				return ($filelist);
-				// normal rar
+				// Normal rar.
 			}					
 		}
 		else 
 		{
+			// Not a rar.
 			return 0;
-			// not a rar
 		}
 	}
 	
@@ -770,7 +764,7 @@ class PostProcess {
 						$retval = true;
 					}
 					
-					//clean up all files
+					// Clean up all files.
 					foreach(glob($ramdrive.'*.jpg') as $v)
 					{
 						unlink($v);
