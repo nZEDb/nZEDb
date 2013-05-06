@@ -539,6 +539,7 @@ class Category
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
 			if($this->isAnimeTV($releasename)){ return true; }
+			if($this->isOtherTV2($releasename)){ return true; }
 			$this->tmpCat = Category::CAT_TV_OTHER;
 			return true;
 		}
@@ -564,7 +565,7 @@ class Category
 	
 	public function isForeignTV($releasename)
 	{
-		if (!preg_match('/[\.\-_ ]NHL[\.\-_ ]/', $releasename))
+		if (!preg_match('/[\.\-_ ](NHL|stanley.+cup)[\.\-_ ]/', $releasename))
 		{
 			if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?[\.\-_ ]|<German>/i', $releasename))
 			{
@@ -701,6 +702,15 @@ class Category
 		}
 		
 		return false;
+	}
+	
+	public function isOtherTV2($releasename)
+	{
+		if(preg_match('/[\.\-_ ]s\d{1,3}[.-_ ]?(e|d)\d{1,3}[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_TV_OTHER;
+			return true;
+		}
 	}
 
 	//
