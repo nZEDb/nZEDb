@@ -498,11 +498,6 @@ class PostProcess {
 						$retval = true;
 					}
 				}
-				else
-				{
-					$db = new DB();
-					$db->query(sprintf("UPDATE releases set mediainfo = 0 where ID = %d", $releaseID));
-				}
 			} 
 		}
 		return $retval;
