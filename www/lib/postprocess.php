@@ -385,7 +385,8 @@ class PostProcess {
 							
 							if ($this->site->checkpasswordedrar > 0 && $processPasswords)
 							{
-								//echo "processReleasePasswords\n";
+								//if ($this->echooutput)
+									//echo "processReleasePasswords\n";
 								//$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
 							}
 							
