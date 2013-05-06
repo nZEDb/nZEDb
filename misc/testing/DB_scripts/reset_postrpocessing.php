@@ -53,5 +53,3 @@ if (!isset($argv[1]))
         echo "To reset everything, run php reset_postrpocessing.php all\n";
 }
 ?>
-
-
