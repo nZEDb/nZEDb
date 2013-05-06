@@ -857,7 +857,7 @@ class Category
 			return true;
 		}
 		
-		if (preg_match('/Adobe|\-BEAN|Cracked|CYGNUS|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|v\d{1,3}.*?|WinAll|\(x(64|86)\)/i', $releasename))
+		if (preg_match('/Adobe|\-BEAN|Cracked|CYGNUS|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|[\.\-_ ]v\d{1,3}[\.\-_ ]|WinAll|\(x(64|86)\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
