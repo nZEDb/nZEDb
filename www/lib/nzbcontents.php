@@ -204,6 +204,41 @@ Class NZBcontents
 		}
 	}
 	
+	public function nzblist($guid='')
+	{
+		if (empty($guid))
+			return false;
+		
+		$nzb = new NZB();
+		$nzbpath = $nzb->getNZBPath($guid);
+		$nzb = array();
+		
+		if (file_exists($nzbpath))
+		{
+			$nzbpath = 'compress.zlib://'.$nzbpath;
+			$xmlObj = @simplexml_load_file($nzbpath);
+			
+			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb')
+			{
+				foreach($xmlObj->file as $file)
+				{
+					$nzbfile = array();
+					$nzbfile['subject'] = (string) $file->attributes()->subject;
+					$nzbfile = array_merge($nzbfile, (array) $file->groups);
+					$nzbfile = array_merge($nzbfile, (array) $file->segments);
+					$nzb[] = $nzbfile;
+					$nzbfile = null;
+				}
+			}
+			else
+				$nzb = false;
+			unset($xmlObj);
+			return $nzb;
+		}
+		else
+			return false;
+	}
+	
 	//
 	//	Check if the possible NFo is a JFIF.
 	//
