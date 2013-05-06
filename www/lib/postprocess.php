@@ -452,6 +452,12 @@ class PostProcess {
 						$retval[] = $file['name'];
 					}
 				}
+				// rarinnerfilecount
+				if (sizeof($files) > 0)
+				{
+					$db = new DB();
+					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", sizeof($files), $relid));
+				}
 			}
 		}
 		else
