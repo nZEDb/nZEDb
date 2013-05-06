@@ -287,3 +287,9 @@ HALL OF FAME
 	crudehung@newznab			nginx rewrite rules
 	www.famfamfam.com			icons
 
+<hr>
+ * If you find these scripts useful and would like to show your support or just buy us a beer, please use one of the donation links below. Donations are greatly appreciated. Thank you
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=N4AJV5FHZDBFE"><img src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+
+<hr>

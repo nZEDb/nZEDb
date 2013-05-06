@@ -436,9 +436,11 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.boneless', 'This group contains XVID and X264 Movies. Some Foreign.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.british.drama', 'This group contains British TV shows.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cartoons.french', 'This group contains French cartoons.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cats', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image.linux', 'This group contains Linux distributions.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image', 'This group contains PC-ISO.', 4, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.lossless', 'This group contains a variety of lossless Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.chello', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.classic.tv.shows', 'This group contains Classic TV and Movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comics.dcp', 'This group contains Comic Books', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comp', 'This group contains Warez. Mostly Foreign.', NULL, NULL);
@@ -450,6 +452,7 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.divx.french', 'This group contains French XVID Movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries', 'This group contains Documentaries TV and Movies.', 5, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries.french', 'This group contains French Documentaries TV and Movies.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.downunder', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd', 'This group contains DVD Movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd.movies', 'This group contains DVDR Movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvdr', 'This group contains DVD Movies.', NULL, NULL);
@@ -461,6 +464,7 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica.divx', 'This group contains XXX.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica', 'This group contains XXX.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.etc', 'This group contains a variety of items.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.font', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.french-tv', 'This group contains French TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.frogs', 'This group contains a variety.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ftn', 'This group contains a variety of Music and TV.', NULL, NULL);
@@ -480,9 +484,12 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.illuminaten', 'This group contains mostly German.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ipod.videos', 'This group contains Mobile TV and Movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.linux.iso', 'This group contains Linux distributions.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.lou', 'This group contains mostly german TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac', 'This group contains MAC/OSX Software.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac.applications', 'This group contains MAC/OSX Software.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.milo', 'This group contains mostly TV, some german.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.misc', 'This group contains a variety of items.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mojo', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mma', 'This group contains MMA/TNA Sport TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mom', 'This group contains a variety. Mostly Foreign.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.moovee', 'This group contains XVID and X264 Movies.', NULL, NULL);
@@ -569,6 +576,7 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.bbc', 'This group contains BBC Radio Music', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.british', 'This group contains British Radio Music.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.whitburn.pop', 'This group contains Pop Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tatu', 'This group contains mostly French TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.teevee', 'This group contains X264 and XVID TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.test', 'This group contains a variety of content.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.town', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
@@ -578,6 +586,8 @@ INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizeto
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tv', 'This group contains XVID TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u-4all', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u4e', 'This group contains a variery, mostly German movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ucc', 'This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ufg', 'This group contains mostly TV.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.uzenet', 'This group contains XXX. Some Foreign.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.ibm-pc.0-day', 'This group contains PC-0Day.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.quebec-hackers', 'This group contains PC-0day. Some Foreign.', NULL, NULL);
@@ -949,7 +959,7 @@ INSERT INTO `site`
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
-	('sqlpatch', '23');
+	('sqlpatch', '24');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
