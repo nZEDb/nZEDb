@@ -14,6 +14,7 @@ require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/releaseextra.php");
 require_once(WWW_DIR."/lib/releasefiles.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
+require_once(WWW_DIR."/lib/rrarinfo.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/util.php");
