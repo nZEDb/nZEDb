@@ -30,7 +30,7 @@ class PostProcess {
 		$this-> addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->password = false;
 		
-		$this->mediafileregex = 'AVI|VOB|MKV|MP4|TS|WMV|MOV|M4V|F4V|MPG|MPEG';
+		$this->mediafileregex = 'AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV|AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA';
 	}
 	
 	public function processAll()
@@ -347,6 +347,7 @@ class PostProcess {
 								$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
 								$output = runCmd($execstring);
 								unlink($rarfile);
+									
 							}
 
 							if ($processSample && $blnTookSample === false)
@@ -484,7 +485,7 @@ class PostProcess {
 			foreach($mediafiles as $mediafile) 
 			{
 				if (preg_match("/\.(".$this->mediafileregex.")$/i",$mediafile))  
-				{	
+				{
 					$execstring = '"'.$mediainfo.'" --Output=XML "'.$mediafile.'"';
 					$xmlarray = runCmd($execstring);
 					
@@ -496,6 +497,11 @@ class PostProcess {
 						$re->addFromXml($releaseID,$xmlarray);
 						$retval = true;
 					}
+				}
+				else
+				{
+					$db = new DB();
+					$db->query(sprintf("UPDATE releases set mediainfo = 0 where ID = %d", $releaseID));
 				}
 			} 
 		}
