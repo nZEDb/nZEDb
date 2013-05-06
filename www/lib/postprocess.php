@@ -394,10 +394,10 @@ class PostProcess {
 							{
 								$rarfile = $tmpPath.'rarfile.rar';
 
-								//file_put_contents($rarfile, $fetchedBinary);
-								//$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
-								//$output = runCmd($execstring);
-								//unlink($rarfile);
+								file_put_contents($rarfile, $fetchedBinary);
+								$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
+								$output = runCmd($execstring);
+								unlink($rarfile);
 							}
 
 							if ($processSample && $blnTookSample === false)
