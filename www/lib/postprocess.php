@@ -231,7 +231,7 @@ class PostProcess {
 						if (isset($samplepart))
 						{
 							$samplegroup = $groupName;
-							$samplemsgid = array_merge($samplemsgidm, array($samplepart[0]));
+							$samplemsgid = array_merge($samplemsgid, array($samplepart[0]));
 						}
 					}
 					if (preg_match('/\.('.$this->mediafileregex.')[\. "\)\]]/i',$subject) && !preg_match("/\.par2|\.srs/i",$subject))
@@ -324,8 +324,8 @@ class PostProcess {
 							//echo "b\n";
 						if ($this->password)
 						{
-							if ($this->echooutput)
-								echo "-Skipping processing of rar $subject was found to be passworded.\n";
+							//if ($this->echooutput)
+								//echo "-Skipping processing of rar $subject was found to be passworded.\n";
 							continue;
 						}
 
@@ -463,8 +463,8 @@ class PostProcess {
 
 		if ($zip->isEncrypted)
 		{
-			if ($this->echooutput)
-				echo "Archive is password encrypted\n";
+			//if ($this->echooutput)
+				//echo "Archive is password encrypted\n";
 			$this->password = true;
 			return false;
 		}
@@ -495,8 +495,8 @@ class PostProcess {
 
 			if ($rar->isEncrypted)
 			{
-				if ($this->echooutput)
-					echo "Archive is password encrypted\n";
+				//if ($this->echooutput)
+					//echo "Archive is password encrypted\n";
 				$this->password = true;
 				return false;
 			}
