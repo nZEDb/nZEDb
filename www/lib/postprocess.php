@@ -255,7 +255,7 @@ class PostProcess {
 					}
 				}
 				
-				// attempt to process sample file
+				// Attempt to process sample file.
 				if($samplemsgid != -1 && $processSample && $blnTookSample === false)
 				{
 					$sampleBinary = $nntp->getMessage($samplegroup, $samplemsgid);
@@ -289,7 +289,8 @@ class PostProcess {
 				}
 				
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
-				//echo "Deleted ".$db->getAffectedRows()." releasefiles.\n";
+				//if ($this->echooutput)
+					//echo "Deleted ".$db->getAffectedRows()." releasefiles.\n";
 				
 				$bytes = $rel['size'] * 2;
 				$bytes = min( 1024*1024*1024, $bytes);
@@ -303,26 +304,32 @@ class PostProcess {
 					foreach ($nzbfiles as $rarFile)
 					{
 						$subject = $rarFile['subject'];
-						//echo "starting {$rel['guid']}\n";
+						//if ($this->echooutput)
+							//echo "starting {$rel['guid']}\n";
 						if (preg_match("/\.(vol\d{1,3}\+\d{1,3}|par2|sfv)/i", $subject))
 							continue;
 						
-						//echo "a\n";
+						//if ($this->echooutput)
+							//echo "a\n";
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)\b/i", $subject))
 						{
-							//echo "not matched and skipping $subject\n";
+							//if ($this->echooutput)
+								//echo "not matched and skipping $subject\n";
 							continue;
 						}
 						
-						//echo "b\n";
+						//if ($this->echooutput)
+							//echo "b\n";
 						if ($this->password)
 						{
-							//echo "-Skipping processing of rar $subject was found to be passworded.\n";
+							if ($this->echooutput)
+								echo "-Skipping processing of rar $subject was found to be passworded.\n";
 							continue;
 						}
 
 						$size = $db->queryOneRow("SELECT sum(size) as size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
-						//echo "size = {$size["size"]} name = $subject id = {$rel['ID']} count ".count($nzbfiles)."\n";
+						//if ($this->echooutput)
+							//echo "size = {$size["size"]} name = $subject id = {$rel['ID']} count ".count($nzbfiles)."\n";
 
 						if (is_numeric($size["size"]) && $size["size"] > $bytes)
 							continue;
@@ -337,16 +344,18 @@ class PostProcess {
 
 						if ($i > count($nzbfiles)/ 10)
 						{
-							//echo "new files don't seem to contribute\n";
+							//if ($this->echooutput)
+								//echo "new files don't seem to contribute\n";
 							continue;
 						}
-
-						//echo "c\n";
+						
+						//if ($this->echooutput)
+							//echo "c\n";
 						//$rarMsgids = array($rarFile['segment']);
 						//$mid = array($rarMsgids[0]);
-
+						
 						$mid = array_slice((array)$rarFile['segment'], 0, 1);
-
+						
 						$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 						if ($fetchedBinary === false)
 						{
@@ -355,39 +364,38 @@ class PostProcess {
 						}
 						else
 						{
-
+							
 							$relFiles = $this->processReleaseFiles($fetchedBinary, $rel['ID']);
-							//var_dump($relFiles);
-
+							//if ($this->echooutput)
+								//var_dump($relFiles);
+							
 							if ($relFiles === false)
 							{
-								//echo "error processing files {$rel['ID']}";
+								//if ($this->echooutput)
+									//echo "error processing files {$rel['ID']}";
 								$passStatus[] = Releases::PASSWD_POTENTIAL;
 							}
-
+							
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
-
-							//echo $this->password."\n";
-
-
+							
+							//if ($this->echooutput)
+								//echo $this->password."\n";
+							
 							if ($this->site->checkpasswordedrar > 0 && $processPasswords)
 							{
 								//echo "processReleasePasswords\n";
 								//$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
 							}
-
+							
 							// we need to unrar the fetched binary if checkpasswordedrar wasnt 2
 							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
 							{
 								$rarfile = $tmpPath.'rarfile.rar';
 
 								//file_put_contents($rarfile, $fetchedBinary);
-
 								//$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
-
 								//$output = runCmd($execstring);
-
 								//unlink($rarfile);
 							}
 
@@ -419,9 +427,10 @@ class PostProcess {
 				$hpsql = '';
 				if (!$blnTookSample)
 					$hpsql = ', haspreview = 0';
-
-				//echo max($passStatus)."\n";
-
+				
+				//if ($this->echooutput)
+					//echo max($passStatus)."\n";
+				
 				$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
 				$db->query($sql);
 			}
@@ -445,13 +454,15 @@ class PostProcess {
 
 		if ($zip->error)
 		{
-		 // echo "Error: {$zip->error}\n";
+			//if ($this->echooutput)
+				//echo "Error: {$zip->error}\n";
 		  return false;
 		}
 
 		if ($zip->isEncrypted)
 		{
-			//echo "Archive is password encrypted\n";
+			if ($this->echooutput)
+				echo "Archive is password encrypted\n";
 			$this->password = true;
 			return false;
 		}
@@ -475,28 +486,35 @@ class PostProcess {
 		{
 			if ($rar->error)
 			{
-				//echo "Error: {$rar->error}\n";
+				//if ($this->echooutput)
+					//echo "Error: {$rar->error}\n";
 				return false;
 			}
 
 			if ($rar->isEncrypted)
 			{
-				//echo "Archive is password encrypted\n";
+				if ($this->echooutput)
+					echo "Archive is password encrypted\n";
 				$this->password = true;
 				return false;
 			}
-
-			//echo "nested rar? ".$rar->containsArchive()."\n";
-			//echo "summary ";
+			
+			/*if ($this->echooutput)
+			{
+				echo "nested rar? ".$rar->containsArchive()."\n";
+				echo "summary ";
+			}*/
 			$tmp = $rar->getSummary(true, false);
 
 			if ($tmp["is_encrypted"])
 				$this->password = true;
-
-			//var_dump($tmp);
+			
+			//if ($this->echooutput)
+				//var_dump($tmp);
 			$files = $rar->getArchiveFileList();
-
-			//var_dump($files);
+			
+			//if ($this->echooutput)
+				//var_dump($files);
 			if ($files !== false)
 			{
 				foreach ($files as $file)
@@ -508,7 +526,8 @@ class PostProcess {
 
 						if (isset($file['error']))
 						{
-							//echo "Error: {$file['error']} (in: {$file['source']})\n";
+							//if ($this->echooutput)
+								//echo "Error: {$file['error']} (in: {$file['source']})\n";
 							continue;
 						}
 
