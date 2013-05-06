@@ -438,7 +438,7 @@ class PostProcess {
 			if ($files !== false)
 			{
 				foreach ($files as $file)
-
+				{
 					if (isset($file['name']))
 					{
 						if ($file['pass'])
@@ -460,6 +460,7 @@ class PostProcess {
 	 						// or $data = $rar->getFileData($file['name'], $file['source']);
 	 					}*/
 					}
+				}
 			}
 		}
 		else
