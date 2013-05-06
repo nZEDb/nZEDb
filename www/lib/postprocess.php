@@ -260,7 +260,6 @@ class PostProcess {
 				if(!empty($samplemsgid) && $samplemsgid !== -1 && $processSample && $blnTookSample === false)
 				{
 					$sampleBinary = $nntp->getMessage($samplegroup, $samplemsgid);
-					break;
 					if ($sampleBinary === false) 
 					{
 						$samplemsgid = -1;
