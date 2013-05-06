@@ -226,12 +226,7 @@ class Namefixer
 	//	Check the array using regex for a clean name.
 	//
 	public function checkName($release, $echo, $type, $namestatus)
-	{                       
-		$this->tvCheck($release, $echo, $type, $namestatus);
-		$this->movieCheck($release, $echo, $type, $namestatus);
-		$this->gameCheck($release, $echo, $type, $namestatus);
-		$this->appCheck($release, $echo, $type, $namestatus);
-		
+	{       
 		// Just for NFOs.
 		if ($type == "NFO, ")
 		{
@@ -244,6 +239,11 @@ class Namefixer
 		{
 			$this->fileCheck($release, $echo, $type, $namestatus);
 		}
+		                
+		$this->tvCheck($release, $echo, $type, $namestatus);
+		$this->movieCheck($release, $echo, $type, $namestatus);
+		$this->gameCheck($release, $echo, $type, $namestatus);
+		$this->appCheck($release, $echo, $type, $namestatus);
 	}
 	
 	//
@@ -529,6 +529,14 @@ class Namefixer
 	//
 	public function fileCheck($release, $echo, $type, $namestatus)
 	{
+		if (preg_match('/^(\\|\/)?(.+(\\|\/))*(.+?S\d{1,3}[.-_ ]?(E|D)\d{1,3}.+)\.(.+)$/i', $release["textstring"], $result))
+		{
+			$this->updateRelease($release, $result["4"], $methdod="fileCheck: General TV filename.", $echo, $type, $namestatus);
+		}
+		if (preg_match('/^(\\|\/)?(.+(\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result))
+		{
+			$this->updateRelease($release, $result["4"], $methdod="fileCheck: General movie filename.", $echo, $type, $namestatus);
+		}
 		if (preg_match('/\w[\w.\-\',;& ]+1080i(\.|_|\-| )DD5(\.|_|\-| )1(\.|_|\-| )MPEG2-R&C(?=\.ts)/i', $release["textstring"], $result))
 		{
 			$result = str_replace("MPEG2","MPEG2.HDTV",$result["0"]);
