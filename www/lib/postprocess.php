@@ -35,6 +35,7 @@ class PostProcess {
 	
 	public function processAll()
 	{
+		$this->processAdditional($threads=1);
 		$this->processNfos($threads=1);
 		$this->processMovies($threads=1);
 		$this->processMusic($threads=1);
@@ -42,7 +43,6 @@ class PostProcess {
 		$this->processAnime($threads=1);
 		$this->processTv($threads=1);
 		$this->processBooks($threads=1);
-		$this->processAdditional($threads=1);
 	}
 	
 	//
@@ -334,10 +334,6 @@ class PostProcess {
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
 							
-							// Not sure if this was disabled for testing, so leaving it for now.
-							//if ($this->site->checkpasswordedrar > 0 && $processPasswords)
-								//$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
-							
 							// We need to unrar the fetched binary if checkpasswordedrar wasnt 2.
 							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
 							{
@@ -451,14 +447,6 @@ class PostProcess {
 						if (!$ok)
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 						$retval[] = $file['name'];
-						
-						// Not sure if this was disabled for testing, so leaving it.
-	 					/*if ($file['compressed'] == false)
-	 					{
-	 						echo "Extracting uncompressed file: {$file['name']} from: {$file['source']}\n";
-	 						$rar->saveFileData($file['name'], "./dir/{$file['name']}", $file['source']);
-	 						// or $data = $rar->getFileData($file['name'], $file['source']);
-	 					}*/
 					}
 				}
 			}
@@ -479,154 +467,6 @@ class PostProcess {
 		}
 		unset($fetchedBinary);
 		return $retval;
-	}
-	
-	public function processReleasePasswords($fetchedBinary, $tmpPath, $unrarPath, $checkpasswordedrar, $relID)
-	{
-		$passStatus = Releases::PASSWD_NONE;
-		$potentiallypasswordedfileregex = "/\.(ace|cab|tar|gz|rar)$/i";
-		$rar = new RarInfo;
-		
-		if ($rar->setData($fetchedBinary))
-		{
-			if ($rar->isEncrypted)
-			{
-				$passStatus = Releases::PASSWD_RAR;
-			}
-			else
-			{
-				$files = $rar->getFileList();		
-				foreach ($files as $file) 
-				{
-					// Individual file rar passworded.
-					if ($file['pass'] == 1) 
-					{
-						$passStatus = Releases::PASSWD_RAR;
-					}
-					// Individual file looks suspect.
-					elseif (preg_match($potentiallypasswordedfileregex, $file["name"]) && $passStatus != Releases::PASSWD_RAR)
-					{
-						$passStatus = Releases::PASSWD_POTENTIAL;
-					}
-				}
-				
-				// Rarinnerfilecount.
-				if (sizeof($files) > 0)
-				{
-					$db = new DB();
-					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", sizeof($files), $relID));
-				}
-				
-				// Deep Checking.
-				if ($checkpasswordedrar == 2)
-				{
-					$israr = $this->isRar($fetchedBinary);
-					for ($i=0;$i<sizeof($israr);$i++) 
-					{
-						if (preg_match('/\\\\/',$israr[$i]))
-						{
-							$israr[$i] = ltrim((strrchr($israr[$i],"\\")),"\\");	
-						}
-					}
-					
-					$rarfile = $tmpPath.'rarfile.rar';
-					
-					file_put_contents($rarfile, $fetchedBinary);
-					
-					$execstring = '"'.$unrarPath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
-					
-					$output = runCmd($execstring);
-
-					// Delete the rar.
-					unlink($rarfile);
-					
-					// Ok, now we have all the files extracted from the rar into the tempdir and
-					// the rar file deleted, now to loop through the files and recursively unrar
-					// if any of those are rars, we don't trust their names and we test every file
-					// for the rar header.
-					for ($i=0;$i<sizeof($israr);$i++)
-					{
-						$mayberar = @file_get_contents($unrarPath.$israr[$i]);
-						$tmp = $this->isRar($mayberar);
-						unset($mayberar);
-						if (is_array($tmp)) 
-						// It's a rar.
-						{
-							for ($x=0;$x<sizeof($tmp);$x++) 
-							{
-								if (preg_match('/\\\\/',$tmp[$x]))
-								{
-									$tmp[$x] = ltrim((strrchr($tmp[$x],"\\")),"\\");
-								}
-								$israr[] = $tmp[$x];
-							}
-						
-							$execstring = '"'.$unrarPath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$tmpPath.$israr[$i].'" "'.$tmpPath.'"';
-							
-							$output2 = runCmd($execstring);
-
-							unlink($tmpPath.$israr[$i]);
-						}
-						else
-						{
-							switch($tmp)
-							{
-								case 1:
-									$passStatus = Releases::PASSWD_RAR;
-									unlink($tmpPath.$israr[$i]);
-									break;
-								case 2:
-									$passStatus = Releases::PASSWD_RAR;
-									unlink($tmpPath.$israr[$i]);
-									break;
-							}
-						}
-						unset($tmp);
-					}
-				}
-			}
-		}
-		unset($fetchedBinary);
-		
-		return $passStatus;
-	}
-	
-	public function isRar($rarfile)
-	{
-	// Returns 0 if not rar.
-	// Returns 1 if encrypted rar.
-	// Returns 2 if passworded rar.
-	// Returns array of files in the rar if normal rar.
-		unset($filelist);
-		$rar = new RarInfo;
-		if ($rar->setData($rarfile))
-		{
-			if ($rar->isEncrypted)
-			{
-				return 1;
-			}
-			else
-			{
-				$files = $rar->getFileList();			
-				foreach ($files as $file) 
-				{
-					$filelist[] = $file['name'];
-					if ($file['pass'] == true) 
-					// Individual file rar passworded.
-					{
-						return 2;
-						// Passworded.
-					}
-				}
-				return ($filelist);
-				// Normal rar.
-			}					
-		}
-		else 
-		{
-			// Not a rar.
-			return 0;
-		}
 	}
 	
 	public function getMediainfo($ramdrive,$mediainfo,$releaseID)
