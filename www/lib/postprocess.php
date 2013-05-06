@@ -150,16 +150,7 @@ class PostProcess {
 			$tmpPath = $tmpPath.'/';								
 		
 		$tmpPath1 = $tmpPath;
-		
-		//
-		// Get out all releases which have not been checked more than max attempts for password.
-		//
-		/*if ($id != '')
-			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
-				left join category c on c.ID = r.categoryID
-				where r.ID = %d", $id);
-		else*/
-			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
+		$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size from releases r
 			left join category c on c.ID = r.categoryID
 			where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 			AND (r.haspreview = -1 and c.disablepreview = 0) order by RAND()  limit %d,%d", ($maxattemptstocheckpassworded + 1) * -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
@@ -292,9 +283,6 @@ class PostProcess {
 				
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
 				
-				//if ($this->echooutput)
-					//echo "Deleted ".$db->getAffectedRows()." releasefiles.\n";
-				
 				$bytes = $rel['size'] * 2;
 				$bytes = min( 1024*1024*1024, $bytes);
 				$this->password = false;
@@ -307,55 +295,27 @@ class PostProcess {
 					foreach ($nzbfiles as $rarFile)
 					{
 						$subject = $rarFile['subject'];
-						//if ($this->echooutput)
-							//echo "starting {$rel['guid']}\n";
 						if (preg_match("/\.(vol\d{1,3}\+\d{1,3}|par2|sfv)/i", $subject))
 							continue;
 						
-						//if ($this->echooutput)
-							//echo "a\n";
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)\b/i", $subject))
-						{
-							//if ($this->echooutput)
-								//echo "not matched and skipping $subject\n";
 							continue;
-						}
 						
-						//if ($this->echooutput)
-							//echo "b\n";
 						if ($this->password)
-						{
-							//if ($this->echooutput)
-								//echo "-Skipping processing of rar $subject was found to be passworded.\n";
 							continue;
-						}
-
+						
 						$size = $db->queryOneRow("SELECT sum(size) as size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
-						//if ($this->echooutput)
-							//echo "size = {$size["size"]} name = $subject id = {$rel['ID']} count ".count($nzbfiles)."\n";
-
 						if (is_numeric($size["size"]) && $size["size"] > $bytes)
 							continue;
-
-
+						
 						if (is_numeric($size["size"]) && $size["size"] == $lsize)
 							$i++;
 						else
 							$i = 0;
-
-						$lsize = $size["size"];
-
-						if ($i > count($nzbfiles)/ 10)
-						{
-							//if ($this->echooutput)
-								//echo "new files don't seem to contribute\n";
-							continue;
-						}
 						
-						//if ($this->echooutput)
-							//echo "c\n";
-						//$rarMsgids = array($rarFile['segment']);
-						//$mid = array($rarMsgids[0]);
+						$lsize = $size["size"];
+						if ($i > count($nzbfiles)/ 10)
+							continue;
 						
 						$mid = array_slice((array)$rarFile['segment'], 0, 1);
 						
@@ -367,32 +327,18 @@ class PostProcess {
 						}
 						else
 						{
-							
 							$relFiles = $this->processReleaseFiles($fetchedBinary, $rel['ID']);
-							//if ($this->echooutput)
-								//var_dump($relFiles);
-							
 							if ($relFiles === false)
-							{
-								//if ($this->echooutput)
-									//echo "error processing files {$rel['ID']}";
 								$passStatus[] = Releases::PASSWD_POTENTIAL;
-							}
 							
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
 							
-							//if ($this->echooutput)
-								//echo $this->password."\n";
-							
-							if ($this->site->checkpasswordedrar > 0 && $processPasswords)
-							{
-								//if ($this->echooutput)
-									//echo "processReleasePasswords\n";
+							// Not sure if this was disabled for testing, so leaving it for now.
+							//if ($this->site->checkpasswordedrar > 0 && $processPasswords)
 								//$passStatus[] = $this->processReleasePasswords($fetchedBinary, $tmpPath, $this->site->unrarpath, $this->site->checkpasswordedrar, $rel['ID']);
-							}
 							
-							// Ee need to unrar the fetched binary if checkpasswordedrar wasnt 2.
+							// We need to unrar the fetched binary if checkpasswordedrar wasnt 2.
 							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
 							{
 								$rarfile = $tmpPath.'rarfile.rar';
@@ -424,16 +370,11 @@ class PostProcess {
 					}
 				}
 				elseif(empty($mid) && $hasrar == 1)
-				{
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
-				}
 
 				$hpsql = '';
 				if (!$blnTookSample)
 					$hpsql = ', haspreview = 0';
-				
-				//if ($this->echooutput)
-					//echo max($passStatus)."\n";
 				
 				$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
 				$db->query($sql);
@@ -442,7 +383,6 @@ class PostProcess {
 			if ($this->echooutput)
 				echo "\n";
 		}
-
 		@rmdir($tmpPath);
 	}
 	
@@ -457,22 +397,15 @@ class PostProcess {
 			$zip->setData($fetchedBinary, true);
 
 		if ($zip->error)
-		{
-			//if ($this->echooutput)
-				//echo "Error: {$zip->error}\n";
 		  return false;
-		}
 
 		if ($zip->isEncrypted)
 		{
-			//if ($this->echooutput)
-				//echo "Archive is password encrypted\n";
 			$this->password = true;
 			return false;
 		}
-
+		
 		$files = $zip->getFileList();
-
 		unset($fetchedBinary);
 		unset($zip);
 		return $files;
@@ -489,36 +422,19 @@ class PostProcess {
 		if ($rar->setData($fetchedBinary, true))
 		{
 			if ($rar->error)
-			{
-				//if ($this->echooutput)
-					//echo "Error: {$rar->error}\n";
 				return false;
-			}
 
 			if ($rar->isEncrypted)
 			{
-				//if ($this->echooutput)
-					//echo "Archive is password encrypted\n";
 				$this->password = true;
 				return false;
 			}
 			
-			/*if ($this->echooutput)
-			{
-				echo "nested rar? ".$rar->containsArchive()."\n";
-				echo "summary ";
-			}*/
 			$tmp = $rar->getSummary(true, false);
-
 			if ($tmp["is_encrypted"])
 				$this->password = true;
 			
-			//if ($this->echooutput)
-				//var_dump($tmp);
 			$files = $rar->getArchiveFileList();
-			
-			//if ($this->echooutput)
-				//var_dump($files);
 			if ($files !== false)
 			{
 				foreach ($files as $file)
@@ -527,20 +443,16 @@ class PostProcess {
 					{
 						if ($file['pass'])
 							$this->password = true;
-
+						
 						if (isset($file['error']))
-						{
-							//if ($this->echooutput)
-								//echo "Error: {$file['error']} (in: {$file['source']})\n";
 							continue;
-						}
-
+						
 						$ok = preg_match("/main/i", $file['source']) && preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)\b/i", $file['name']) && count($files) > 1;
-
 						if (!$ok)
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 						$retval[] = $file['name'];
-
+						
+						// Not sure if this was disabled for testing, so leaving it.
 	 					/*if ($file['compressed'] == false)
 	 					{
 	 						echo "Extracting uncompressed file: {$file['name']} from: {$file['source']}\n";
@@ -781,5 +693,4 @@ class PostProcess {
 		$db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $db->escapeString($guid)));		
 	}
 }
-
 ?>
