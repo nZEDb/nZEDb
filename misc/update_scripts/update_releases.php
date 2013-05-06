@@ -55,7 +55,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relcount = 0;
 		echo "Categorizing releases in misc sections using the searchname. This can take a while, be patient.\n";
 		
-		$relres = $db->queryDirect("SELECT searchname, ID, groupID from releases where categoryID in (5050, 7010)");
+		$relres = $db->queryDirect("SELECT searchname, ID, groupID from releases where categoryID in (1090, 2020, 3050, 5050, 6050, 7010)");
 		while ($relrow = $db->fetchAssoc($relres))
 		{
 			$catID = $cat->determineCategory($relrow['searchname'], $relrow['groupID']);
