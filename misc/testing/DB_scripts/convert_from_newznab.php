@@ -226,7 +226,7 @@ function truncateTable($db, $tableName, $runQueries)
 				"SELECT `ID`, `request`, `timestamp`, `userID` FROM " . $nn_schema . ".`userrequests`", $runQueries);
 
 	// You loose (canpre)
-	convertTable($db, $nZEDB_schema, "userroles", "INSERT INTO " . $nZEDB_schema . ".userroles (`apirequests`, `canpreview`, `defaultinvites`, `downloadrequests`, `ID`, `isdefault`, `name`) " . 
+	convertTable($db, $nZEDB_schema, "userroles", "INSERT IGNORE INTO " . $nZEDB_schema . ".userroles (`apirequests`, `canpreview`, `defaultinvites`, `downloadrequests`, `ID`, `isdefault`, `name`) " . 
 				"SELECT `apirequests`, `canpreview`, `defaultinvites`, `downloadrequests`, `ID`, `isdefault`, `name` FROM " . $nn_schema . ".`userroles`", $runQueries);
 
 	// You loose (kindleid, notes, rolechangedate, nzbvortex_api_key, nzbvortex_server_url)
@@ -235,5 +235,7 @@ function truncateTable($db, $tableName, $runQueries)
 
 	convertTable($db, $nZEDB_schema, "userseries", "INSERT INTO " . $nZEDB_schema . ".userseries (userID, rageID, categoryID, createddate) " .
 				"SELECT userID, rageID, 'categoryID', 'createddate' FROM " . $nn_schema . ".userseries", $runQueries);	
+
+	echo "Due to some issues moving roles we've used INSERT IGNORE... Please check your user roles in your nZEDb install\n"
 
 ?>
