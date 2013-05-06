@@ -564,36 +564,38 @@ class Category
 	
 	public function isForeignTV($releasename)
 	{
-		if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?[\.\-_ ]|<German>/i', $releasename))
+		if (!preg_match('/[\.\-_ ]NHL[\.\-_ ]/', $releasename))
 		{
-			$this->tmpCat = Category::CAT_TV_FOREIGN;
-			return true;
-		}
+			if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?[\.\-_ ]|<German>/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_FOREIGN;
+				return true;
+			}
 		
-		if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_TV_FOREIGN;
-			return true;
-		}
+			if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_FOREIGN;
+				return true;
+			}
 		
-		if(preg_match('/[\.\-_ ](Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_TV_FOREIGN;
-			return true;
-		}
+			if(preg_match('/[\.\-_ ](Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_FOREIGN;
+				return true;
+			}
 		
-		if(preg_match('/(S\d\dE\d\d|DOCU(MENTAIRE)?|TV)?[\.\-_ ](FRENCH|German|Dutch)[\.\-_ ](720p|dv(b|d)r(ip)?|LD|HD\-?TV|TV[\.\-_ ]?RIP|x264)[\.\-_ ]/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_TV_FOREIGN;
-			return true;
-		}
+			if(preg_match('/(S\d\dE\d\d|DOCU(MENTAIRE)?|TV)?[\.\-_ ](FRENCH|German|Dutch)[\.\-_ ](720p|dv(b|d)r(ip)?|LD|HD\-?TV|TV[\.\-_ ]?RIP|x264)[\.\-_ ]/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_FOREIGN;
+				return true;
+			}
 		
-		if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_TV_FOREIGN;
-			return true;
+			if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_FOREIGN;
+				return true;
+			}
 		}
-		
 		return false;
 	}
 
