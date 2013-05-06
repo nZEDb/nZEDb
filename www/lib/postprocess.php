@@ -204,7 +204,7 @@ class PostProcess {
 				$bingroup = $samplegroup = $mediagroup = "";
 				$hasrar = 0;
 				$this->password = false;
-
+				
 				$nzbfiles = $nzbcontents->nzblist($rel['guid']);
 				if (!$nzbfiles)
 					continue;
@@ -291,9 +291,13 @@ class PostProcess {
 				
 				if (!empty($mid) && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
 				{
+					$notinfinite = 0;
 					shuffle($nzbfiles);
 					foreach ($nzbfiles as $rarFile)
 					{
+						$notinfinite++;
+						if ($notinfinite > 5)
+							continue;
 						$subject = $rarFile['subject'];
 						if (preg_match("/\.(vol\d{1,3}\+\d{1,3}|par2|sfv)/i", $subject))
 							continue;
@@ -357,7 +361,6 @@ class PostProcess {
 								$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
 							}
 						}
-
 						// Clean up all files.
 						foreach(glob($tmpPath.'*') as $v)
 						{
@@ -367,7 +370,7 @@ class PostProcess {
 				}
 				elseif(empty($mid) && $hasrar == 1)
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
-
+				
 				$hpsql = '';
 				if (!$blnTookSample)
 					$hpsql = ', haspreview = 0';
