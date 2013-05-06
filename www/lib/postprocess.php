@@ -259,7 +259,7 @@ class PostProcess {
 				// Attempt to process sample file.
 				if(!empty($samplemsgid) && $samplemsgid !== -1 && $processSample && $blnTookSample === false)
 				{
-					$sampleBinary = $nntp->getMessage($samplegroup, $samplemsgid);
+					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 					if ($sampleBinary === false) 
 					{
 						$samplemsgid = -1;
