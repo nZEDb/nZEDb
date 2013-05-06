@@ -29,7 +29,7 @@ class AniDB
 		if ($this->echooutput)
 			echo "Updating animetitles.";
 
-		$zh = gzopen('http://anidb.net/api/animetitles.dat.gz', 'r');
+		$zh = gzopen('http://anidb.net/api/anime-titles.dat.gz', 'r');
 
 		preg_match_all('/(\d+)\|\d\|.+\|(.+)/', gzread($zh, '10000000'), $animetitles);
 		if(!$animetitles)
