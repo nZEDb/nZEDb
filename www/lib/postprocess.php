@@ -377,12 +377,12 @@ class PostProcess {
 				
 				$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
 				$db->query($sql);
+				rmdir($tmpPath);
 			}
 			$nntp->doQuit();
 			if ($this->echooutput)
 				echo "\n";
 		}
-		@rmdir($tmpPath);
 	}
 	
 	public function processReleaseZips($fetchedBinary, $open = false)
