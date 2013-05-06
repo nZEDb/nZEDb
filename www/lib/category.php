@@ -555,7 +555,7 @@ class Category
 	
 	public function isOtherTV($releasename)
 	{
-		if(preg_match('/SUBPACK/i', $releasename))
+		if(preg_match('/[\.\-_ ]SUBPACK[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_OTHER;
 			return true;

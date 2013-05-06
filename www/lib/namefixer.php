@@ -533,6 +533,10 @@ class Namefixer
 		{
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: General TV filename.", $echo, $type, $namestatus);
 		}
+		if (preg_match('/^(\\|\/)?(.+(\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result))
+		{
+			$this->updateRelease($release, $result["4"], $methdod="fileCheck: General movie filename.", $echo, $type, $namestatus);
+		}
 		if (preg_match('/\w[\w.\-\',;& ]+1080i(\.|_|\-| )DD5(\.|_|\-| )1(\.|_|\-| )MPEG2-R&C(?=\.ts)/i', $release["textstring"], $result))
 		{
 			$result = str_replace("MPEG2","MPEG2.HDTV",$result["0"]);
