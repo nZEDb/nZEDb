@@ -1162,7 +1162,7 @@ class Category
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
 		}
-		if (preg_match('/\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ]sat.+(19|20)\d\d[\.\-_ ]/i', $releasename))
+		if (preg_match('/\s(19|20)\d\d\s[a-z]{3}$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ]sat.+(19|20)\d\d[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
