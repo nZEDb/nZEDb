@@ -553,13 +553,15 @@ class Namefixer
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic movie", $echo, $type, $namestatus);
 		if (preg_match('/(.+?(FLAC|SAT).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: Generic music", $echo, $type, $namestatus);
-		if (preg_match('/^(.+?(19|20)\d\d\-[a-z]{3})\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		if (preg_match('/^(.+?(19|20)\d\d\-[a-z0-9]{3})\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: music groups", $echo, $type, $namestatus);
 		if (preg_match('/.+\\\\(.+\((19|20)\d\d\)\.avi)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
 			$newname = str_replace('.avi', ' DVDRip XVID', $result["1"]);
 			$this->updateRelease($release, $newname, $methdod="fileCheck: Movie (year) avi", $echo, $type, $namestatus);
 		}
+		if (preg_match('/^(.+?IMAGESET.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["1"], $methdod="fileCheck: XXX Imagesets", $echo, $type, $namestatus);
 		if (preg_match('/\w[\w.\-\',;& ]+1080i(\.|_|\-| )DD5(\.|_|\-| )1(\.|_|\-| )MPEG2-R&C(?=\.ts)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
 			$result = str_replace("MPEG2","MPEG2.HDTV",$result["0"]);
