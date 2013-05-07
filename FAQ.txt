@@ -24,6 +24,7 @@ A: There is a script in misc/testing/Dev_testing to fix those NZB files.
 
 Q: I'm getting many releases with unusable names.
 A: There is a script in misc/testing/Release_scripts called fixReleaseNames.php
+   Do not expect miracles...
 
 Q: How do I run x script?
 A: type php name-of-the-script.php , most of the scripts tell you how to use them if you run them like that.
