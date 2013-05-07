@@ -1192,13 +1192,14 @@ class Category
 		if($this->isEBook($releasename)){ return true; }
 		if($this->isComic($releasename)){ return true; }
 		if($this->isMagazine($releasename)){ return true; }
+		if($this->isTechnicalBook($releasename)){ return true; }
 		
 		return false;
 	}
 	
 	public function isEBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ](Ebook|E?\-book|\) WW|Publishing|\[Springer\]|Service\s?Manual)|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])|\.(doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
+		if (preg_match('/[\.\-_ ](Ebook|E?\-book|\) WW|Publishing|\[Springer\])|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])|\.(doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 			return true;
@@ -1220,9 +1221,20 @@ class Category
 	
 	public function isMagazine($releasename)
 	{
-		if (preg_match('/[\.\-_ ](Magazine)[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ]Magazine[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
+			return true;
+		}
+
+		return false;
+	}
+	
+	public function isTechnicalBook($releasename)
+	{
+		if (preg_match('/[\.\-_ ]Service\s?Manual/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 			return true;
 		}
 
@@ -1235,24 +1247,32 @@ class Category
 	
 	public function isHashed($releasename)
 	{
-		if (preg_match('/[a-z0-9]{21,}/i', $releasename))
+		if (!preg_match('/[\.\-_ ](720p|1080p|s\d{1,2}[.-_ ]?e\d{1,2})[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_MISC;
-			return true;
-		}
+			if (preg_match('/[a-z0-9]{21,}/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_MISC;
+				return true;
+			}
 		
-		if (preg_match('/[A-Z0-9]{20,}/', $releasename))
-		{
-			$this->tmpCat = Category::CAT_MISC;
-			return true;
-		}
+			if (preg_match('/[A-Z0-9]{20,}/', $releasename))
+			{
+				$this->tmpCat = Category::CAT_MISC;
+				return true;
+			}
 		
-		if (preg_match('/^[A-Z0-9]{1,}$/', $releasename))
-		{
-			$this->tmpCat = Category::CAT_MISC;
-			return true;
+			if (preg_match('/^[A-Z0-9]{1,}$/', $releasename))
+			{
+				$this->tmpCat = Category::CAT_MISC;
+				return true;
+			}
+		
+			if (preg_match('/^[a-z0-9]{1,}$/', $releasename))
+			{
+				$this->tmpCat = Category::CAT_MISC;
+				return true;
+			}
 		}
-
 		return false;
 	}
 }
