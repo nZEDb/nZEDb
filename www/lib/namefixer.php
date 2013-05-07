@@ -561,8 +561,13 @@ class Namefixer
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: music groups", $echo, $type, $namestatus);
 		if (preg_match('/.+\\\\(.+\((19|20)\d\d\)\.avi)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
-			$newname = str_replace('.avi', ' DVDRip XVID', $result["1"]);
+			$newname = str_replace('.avi', ' DVDRip XVID NoGroup', $result["1"]);
 			$this->updateRelease($release, $newname, $methdod="fileCheck: Movie (year) avi", $echo, $type, $namestatus);
+		}
+		if (preg_match('/.+\\\\(.+\((19|20)\d\d\)\.iso)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		{
+			$newname = str_replace('.iso', ' DVD NoGroup', $result["1"]);
+			$this->updateRelease($release, $newname, $methdod="fileCheck: Movie (year) iso", $echo, $type, $namestatus);
 		}
 		if (preg_match('/^(.+?IMAGESET.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: XXX Imagesets", $echo, $type, $namestatus);
