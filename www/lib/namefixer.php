@@ -360,8 +360,8 @@ class Namefixer
 		}
 		if (preg_match('/\w[A-Za-z0-9._\-\',;].+\-ALiAS/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
-			$result = str_replace("ALiAS","PC GAME ALiAS",$result['0']);
-			$this->updateRelease($release, $result["0"], $methdod="gameCheck: PC Games -ALiAS", $echo, $type, $namestatus);
+			$newresult = str_replace("-ALiAS"," PC GAME ALiAS",$result['0']);
+			$this->updateRelease($release, $newresult, $methdod="gameCheck: PC Games -ALiAS", $echo, $type, $namestatus);
 		}
 	}
 	
