@@ -1365,7 +1365,7 @@ class Releases
 		echo $n."\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m".$n;
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID) WHERE c.filecheck = 2 AND c.filesize = 0 " . $where);
+		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0 " . $where);
 
 		echo TIME() - $stage2." second(s).";
 	}
@@ -1388,9 +1388,9 @@ class Releases
 			
 			foreach ($groupIDs as $groupID)
 			{
-				if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
+				if($db->queryDirect("SELECT ID from collections where filecheck = 3 and filesize > 0"))
 				{
-					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID["ID"]);
+					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID["ID"]);
 						
 					$minsizecount = $db->getAffectedRows();
 					if ($minsizecount < 0)
@@ -1400,7 +1400,7 @@ class Releases
 					$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
 					if ($maxfilesizeres["value"] != 0)
 					{
-						$db->query(sprintf("UPDATE collections SET filecheck = 4 WHERE filecheck = 2 AND groupID = %d AND filesize > %d ", $groupID["ID"], $maxfilesizeres["value"]));
+						$db->query(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND groupID = %d AND filesize > %d ", $groupID["ID"], $maxfilesizeres["value"]));
 				
 						$maxsizecount = $db->getAffectedRows();
 						if ($maxsizecount < 0)
@@ -1408,7 +1408,7 @@ class Releases
 						$maxsizecounts = $maxsizecount+$maxsizecounts;
 					}
 
-					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID["ID"]);
+					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID["ID"]);
 
 					$minfilecount = $db->getAffectedRows();
 					if ($minfilecount < 0)
@@ -1419,9 +1419,9 @@ class Releases
 		}
 		else
 		{
-			if($db->queryDirect("SELECT ID from collections where filecheck = 2 and filesize > 0"))
+			if($db->queryDirect("SELECT ID from collections where filecheck = 3 and filesize > 0"))
 			{
-				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 2 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID);
+				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID);
 						
 				$minsizecount = $db->getAffectedRows();
 				if ($minsizecount < 0)
@@ -1431,7 +1431,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
 				if ($maxfilesizeres["value"] != 0)
 				{
-					$db->query(sprintf("UPDATE collections SET filecheck = 4 WHERE filecheck = 2 AND filesize > %d " . $where, $maxfilesizeres["value"]));
+					$db->query(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d " . $where, $maxfilesizeres["value"]));
 				
 					$maxsizecount = $db->getAffectedRows();
 					if ($maxsizecount < 0)
@@ -1439,7 +1439,7 @@ class Releases
 					$maxsizecounts = $maxsizecount+$maxsizecounts;
 				}
 
-				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 4 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 2 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
+				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
 
 				$minfilecount = $db->getAffectedRows();
 				if ($minfilecount < 0)
@@ -1464,7 +1464,7 @@ class Releases
 		
 		echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 2 AND filesize > 0 " . $where . " LIMIT 1000"))
+		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT 1000"))
 		{
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
@@ -1479,7 +1479,7 @@ class Releases
 				{
 					$relid = $db->getInsertID();
 					// Update collections table to say we inserted the release.
-					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 3, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
+					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
 					echo "Added release ".$cleanRelName.$n;
 				}
@@ -1636,7 +1636,7 @@ class Releases
 				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true, $page->site->nzbsplitlevel)));
 				{
 					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
-					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4 WHERE releaseID = %s", $rowrel['ID']));
+					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					/*$db->queryDirect(sprintf("DELETE collections, binaries, parts
 											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 											WHERE (collections.releaseID = %d)", $rowrel['ID']));*/
@@ -1719,7 +1719,7 @@ class Releases
 	
 		$db->queryDirect("DELETE collections, binaries, parts 
 						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID 
-						  WHERE (collections.filecheck = 4 OR (collections.dateadded < (now() - interval 72 hour))) " . $where);
+						  WHERE (collections.filecheck = 5 OR (collections.dateadded < (now() - interval 72 hour))) " . $where);
 		$reccount = $db->getAffectedRows();
 		
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
