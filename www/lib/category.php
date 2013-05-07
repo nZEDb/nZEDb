@@ -1146,7 +1146,7 @@ class Category
 	
 	public function isMusicLossless($releasename)
 	{
-		if (preg_match('/\[(19|20)\d\d\][\.\-_ ]\[FLAC\]|(\(|\[)flac(\)|\])|FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"|(19|20)\d\d\sFLAC/i', $releasename))
+		if (preg_match('/\[(19|20)\d\d\][\.\-_ ]\[FLAC\]|(\(|\[)flac(\)|\])|FLAC\-(19|20)\d\d\-[a-z0-9]{1,12}|\.flac"|(19|20)\d\d\sFLAC|[\.\-_ ]FLAC.+(19|20)\d\d[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 			return true;
@@ -1162,7 +1162,7 @@ class Category
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
 		}
-		if (preg_match('/\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)/i', $releasename))
+		if (preg_match('/\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ]sat.+(19|20)\d\d[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
