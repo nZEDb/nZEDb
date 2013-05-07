@@ -1703,12 +1703,14 @@ class Releases
 	{
 		$db = new DB;
 		$page = new Page;
+		$category = new Category();
 		$n = "\n";
 		$remcount = 0;
 		$passcount = 0;
 		$dupecount = 0;
 		$relsizecount = 0;
 		$completioncount = 0;
+		$disabledcount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 		
@@ -1768,7 +1770,23 @@ class Releases
 			}
 		}
 		
-		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted";
+		// Disabled categories.
+		if ($catlist = $category->getDisabledIDs())
+		{
+			while ($cat = mysqli_fetch_assoc($catlist))
+			{
+				if ($rels = $db->query(sprintf("select ID, guid from releases where categoryID = %d", $cat['ID'])))
+				{
+					foreach ($rels as $rel)
+					{
+						$disabledcount++;
+						$this->fastDelete($rel['ID'], $rel['guid'], $this->site);
+					}
+				}
+			}
+		}
+		
+		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted, ".$disabledcount." from disabled categoteries";
 		if($this->completion > 0)
 			echo ", ".$completioncount." under ".$this->completion."% completion. Removed ".$reccount." parts/binaries/collection rows.".$n;
 		else
