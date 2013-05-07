@@ -540,13 +540,13 @@ class Category
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
+			if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ](Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+			if(preg_match('/[\.\-_ ](720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
@@ -683,7 +683,7 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)/i', $releasename))
+		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)/i', $releasename))
 		{
 			if($this->categorizeforeign)
 			{
@@ -701,7 +701,7 @@ class Category
 
 	public function isMovieForeign($releasename)
 	{
-		if(preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl[\.\-_ ]?sub(bed|s)?|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]/i', $releasename))
+		if(preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl[\.\-_ ]?sub(bed|s)?|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]|\(german\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
@@ -713,7 +713,7 @@ class Category
 			return true;
 		}
 		
-		if(preg_match('/(AC3|DIVX|DVD(5|9|RIP|R)|XVID)[\.\-_ ](Dutch|French|German|ITA)|\(?(Dutch|French|German|ITA)\)?[\.\-_ ](720P|1080p|AC3|DIVX|DVD(5|9|RIP|R)|HD[\.\-_ ]|XVID)/i', $releasename))
+		if(preg_match('/(720p|1080p|AC3|AVC|DIVX|DVD(5|9|RIP|R)|XVID)[\.\-_ ](Dutch|French|German|ITA)|\(?(Dutch|French|German|ITA)\)?[\.\-_ ](720P|1080p|AC3|AVC|DIVX|DVD(5|9|RIP|R)|HD[\.\-_ ]|XVID)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
@@ -757,7 +757,7 @@ class Category
 	
 	public function isMovieBluRay($releasename)
 	{
-		if(preg_match('/bluray\-|bd?[\.\-_ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
+		if(preg_match('/bluray\-|[\.\-_ ]bd?[\.\-_ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[\.\-_ ]untouched[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_BLURAY;
 			return true;
@@ -771,6 +771,17 @@ class Category
 		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function isMovieOther($releasename)
+	{
+		if(preg_match('/[\.\-_ ]cam[\.\-_ ]/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MOVIE_OTHER;
 			return true;
 		}
 		
