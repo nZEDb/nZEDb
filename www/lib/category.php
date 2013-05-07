@@ -1235,13 +1235,19 @@ class Category
 	
 	public function isHashed($releasename)
 	{
-		if (preg_match('/[a-z0-9]{25,}/i', $releasename))
+		if (preg_match('/[a-z0-9]{21,}/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC;
 			return true;
 		}
 		
 		if (preg_match('/[A-Z0-9]{20,}/', $releasename))
+		{
+			$this->tmpCat = Category::CAT_MISC;
+			return true;
+		}
+		
+		if (preg_match('/^[A-Z0-9]{1,}$/', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MISC;
 			return true;
