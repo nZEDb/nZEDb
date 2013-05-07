@@ -683,7 +683,7 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)/i', $releasename))
+		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)?|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
 		{
 			if($this->categorizeforeign)
 			{
@@ -794,7 +794,7 @@ class Category
 	
 	public function isPC($releasename)
 	{
-		if(!preg_match('/PDTV|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
+		if(!preg_match('/[\.\-_ ]PDTV[\.\-_ ]|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
 		{
 			if($this->isPhone($releasename)){ return true; }
 			if($this->isMac($releasename)){ return true; }
@@ -842,7 +842,7 @@ class Category
 			return true;
 		}
 		
-		if (preg_match('/Adobe|\-BEAN|Cracked|CYGNUS|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|[\.\-_ ]v\d{1,3}[\.\-_ ]|WinAll|\(x(64|86)\)/i', $releasename))
+		if (preg_match('/Adobe|\-BEAN|Cracked|CYGNUS|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|[\.\-_ ]v\d{1,3}[\.\-_ ]|WinAll|\(x(64|86)\)|Xilisoft/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
