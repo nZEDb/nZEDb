@@ -1165,7 +1165,7 @@ class Category
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
 		}
-		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d[\.\-_ ]/i', $releasename))
+		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[\.\-_ ]FM.+MP3[\.\-_ ]|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;

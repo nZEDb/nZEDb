@@ -241,7 +241,7 @@ class Namefixer
 		{
 			$this->nfoCheckTV($release, $echo, $type, $namestatus);
 			$this->nfoCheckMov($release, $echo, $type, $namestatus);
-			//$this->nfoCheckMus($release, $echo, $type, $namestatus);
+			$this->nfoCheckMus($release, $echo, $type, $namestatus);
 			$this->nfoCheckTY($release, $echo, $type, $namestatus);
 			$this->nfoCheckG($release, $echo, $type, $namestatus);
 		}
@@ -408,12 +408,14 @@ class Namefixer
 	//
 	//	Music.
 	//
-	/*public function nfoCheckMus($release, $echo, $type, $namestatus)
+	public function nfoCheckMus($release, $echo, $type, $namestatus)
 	{
 		if(preg_match('/(?:\s{2,})(.+?\-FM\-\d{2}\-\d{2})/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		{
 			$newname = str_replace('-FM-', '-FM-Radio-MP3-', $result["1"]);
-			$this->updateRelease($release, $result["1"], $methdod="nfoCheck: Generic TV", $echo, $type, $namestatus);
-	}*/
+			$this->updateRelease($release, $newname, $methdod="nfoCheck: Music FM RADIO", $echo, $type, $namestatus);
+		}
+	}
 	
 	//
 	//	Title (year)
