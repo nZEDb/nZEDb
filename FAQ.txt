@@ -33,6 +33,9 @@ Q: My parts/binaries/collections tabls are very large.
 A: Article collections with poorly named subjects or incomplete collections are created 2 hours after the last time we have downloaded an article for that collection,
    if you keep backfilling, your parts/binaries/collections tables will get large obviously...
 
+Q: I'm having x issue not in the readme or FAQ.
+A: Please do some research first. If you can't solve the issue, we have a channel on IRC, server : synirc, channel #nZEDB
+
 Please do not open issues on github if the question is already asked. Take a few minutes to look at the titles of other issues.
 Do not expect us to implement requested features in a short amount of time.
 Some requested features we will not implement, you are free to clone the git.
