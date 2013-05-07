@@ -435,6 +435,17 @@ class Category
 					return true;
 				}
 				
+				if (preg_match('/alt\.binaries\.music\.opera/', $groupRes["name"]))
+				{
+					if (preg_match('/720p|[\.\-_ ]mkv/i', $releasename))
+					{
+						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						return true;
+					}
+					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					return true;
+				}
+				
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
 					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
@@ -451,6 +462,15 @@ class Category
 				{
 					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
 					return true;
+				}
+				
+				if (preg_match('/alt\.binaries\.sounds\.whitburn\.pop/i', $groupRes["name"]))
+				{
+					if (!preg_match('/[\.\-_ ]scans[\.\-_ ]/i', $releasename))
+					{
+						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						return true;
+					}
 				}
 				
 				if (preg_match('/alt\.binaries\.sony\.psp/', $groupRes["name"]))
@@ -966,7 +986,7 @@ class Category
 	public function isXxxOther($releasename)
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/[\.\-_ ]Brazzers|[\.\-_ ]JAV[\.\-_ ]|North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
+		if (preg_match('/[\.\-_ ]Brazzers|Creampie|[\.\-_ ]JAV[\.\-_ ]|North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
