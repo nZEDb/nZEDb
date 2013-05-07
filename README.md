@@ -75,10 +75,10 @@ Notes:
 	This software is offered as is, we classify it as "alpha", it has bugs, so be aware of this.
 
 <hr>
-<a style="float:right;" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WT7FVU4YZFBPA"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
 The team:
 
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo <br /><br /k>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WT7FVU4YZFBPA"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
 <hr>
 
 Original Newznab readme:
