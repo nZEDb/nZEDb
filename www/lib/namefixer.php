@@ -396,8 +396,12 @@ class Namefixer
 	//
 	public function nfoCheckM($release, $echo, $type, $namestatus)
 	{
-		if(preg_match('/(?:(\:\s{1,}))(.+?[\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
-			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies", $echo, $type, $namestatus);
+		if(preg_match('/(?:(\:\s{1,}))(.+?(19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 1", $echo, $type, $namestatus);
+		if(preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 2", $echo, $type, $namestatus);
+		if(preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](NTSC|MULTi).+?(MULTi|DVDR)[\.\-_ ].+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 3", $echo, $type, $namestatus);
 	}
 	
 	//
@@ -500,11 +504,11 @@ class Namefixer
 	//
 	public function nfoCheckG($release, $echo, $type, $namestatus)
 	{
-		if(preg_match('/ALiAS|BAT-TEAM|\FAiRLiGHT|Game Type|HI2U|iTWINS|JAGUAR|LARGEISO|MAZE|MEDIUMISO|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"]) && $this->relid !== $release["releaseID"])
+		if(preg_match('/ALiAS|BAT-TEAM|\FAiRLiGHT|Game Type|Glamoury|HI2U|iTWINS|JAGUAR|LARGEISO|MAZE|MEDIUMISO|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"]) && $this->relid !== $release["releaseID"])
 		{
 			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\(c\)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
 			{
-				$releasename = str_replace("(c)","(PC GAMES) (c)", $result['0']);
+				$releasename = str_replace(array("(c)", "(C)"),"(PC GAMES) (c)", $result['0']);
 				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games (c)", $echo, $type, $namestatus);
 			}
 			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\*ISO\*/i', $release["textstring"], $result))
