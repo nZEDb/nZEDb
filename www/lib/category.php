@@ -726,7 +726,7 @@ class Category
 	{
 		if(preg_match('/(dvd\-?r|[\.\-_ ]dvd|dvd9|dvd5|[\.\-_ ]r5)[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_MOVIE_SD;
+			$this->tmpCat = Category::CAT_MOVIE_DVD;
 			return true;
 		}
 		
@@ -735,7 +735,7 @@ class Category
 	
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(dvdr|dvd9|dvd5|divx|dvdscr|extrascene|dvdrip|r5|\.CAM|vhsrip|xvid)[\.\-_ ]/i', $releasename))
+		if(preg_match('/(bdrip|divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
