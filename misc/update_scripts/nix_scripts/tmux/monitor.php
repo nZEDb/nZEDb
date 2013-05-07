@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1319";
+$version="0.1r1349";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -497,6 +497,58 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 		}
 
+/*		//postprocess nfos
+                if ( $post == "TRUE" )
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
+                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_nfo_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess\"'");
+                }
+
+                //postprocess movies tv
+                if ( $post == "TRUE" )
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
+                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_movies_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess\"'");
+                }
+
+                //postprocess books consoles
+                if ( $post == "TRUE" )
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
+                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_books_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess\"'");
+                }
+
+                //postprocess music anidb
+                if ( $post == "TRUE" )
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\" && \
+                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_music_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                        $color = get_color();
+                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\n${panes2[3]} has been disabled/terminated by Postprocess\"'");
+                }
+*/
 		if ( $post == "TRUE" )
 		{
 			//run postprocess_releases
@@ -547,7 +599,7 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Update TV/Theater\"'");
 		}
-	
+
 		if ( $seq == "TRUE" )
 		{
 			//run import-nzb-bulk
@@ -697,7 +749,7 @@ while( $i > 0 )
 	}
 	else
 	{
-		for ($g=1; $g<=4; $g++)
+		for ($g=1; $g<=2; $g++)
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
