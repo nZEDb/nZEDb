@@ -358,10 +358,10 @@ class Namefixer
 			$result = str_replace("OUTLAWS","PC GAME OUTLAWS",$result['0']);
 			$this->updateRelease($release, $result["0"], $methdod="gameCheck: PC Games -OUTLAWS", $echo, $type, $namestatus);
 		}
-		if (preg_match('/\w[A-Za-z0-9._\-\',;].+-ALiAS/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		if (preg_match('/\w[A-Za-z0-9._\-\',;].+\-ALiAS/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
-			$result = str_replace("ALiAS","PC GAME ALiAS",$result['0']);
-			$this->updateRelease($release, $result["0"], $methdod="gameCheck: PC Games -ALiAS", $echo, $type, $namestatus);
+			$newresult = str_replace("-ALiAS"," PC GAME ALiAS",$result['0']);
+			$this->updateRelease($release, $newresult, $methdod="gameCheck: PC Games -ALiAS", $echo, $type, $namestatus);
 		}
 	}
 	
@@ -551,13 +551,15 @@ class Namefixer
 	//
 	public function fileCheck($release, $echo, $type, $namestatus)
 	{
+		if (preg_match('/^(.+?(x264|XviD)\-TVP)\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["1"], $methdod="fileCheck: TVP", $echo, $type, $namestatus);
 		if (preg_match('/^(\\\\|\/)?(.+(\\\\|\/))*(.+?S\d{1,3}[.-_ ]?(E|D)\d{1,3}.+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic TV", $echo, $type, $namestatus);
 		if (preg_match('/^(\\\\|\/)?(.+(\\\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic movie", $echo, $type, $namestatus);
-		if (preg_match('/(.+?([\.\-_ ]\dCD|CDR|FLAC|SAT|WEB).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		if (preg_match('/(.+?([\.\-_ ](FM)|[\.\-_ ]\dCD|CDR|FLAC|SAT|WEB).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: Generic music", $echo, $type, $namestatus);
-		if (preg_match('/^(.+?(19|20)\d\d\-([a-z0-9]{3})|[a-z]{2})\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		if (preg_match('/^(.+?(19|20)\d\d\-([a-z0-9]{3}|[a-z]{2}|C4))\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: music groups", $echo, $type, $namestatus);
 		if (preg_match('/.+\\\\(.+\((19|20)\d\d\)\.avi)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
