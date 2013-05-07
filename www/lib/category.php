@@ -492,7 +492,7 @@ class Category
 	
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
-		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,3}[.-_ ]?(e|d)\d{1,3}|C4TV|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|S\d{1,3}.+Extras|SUBPACK|Season[\.\-_ ]\d{1,2}|WEB\-DL|WEBRip)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d|TrollHD/i', $releasename);
+		$looksLikeTV = preg_match('/[\.\-_ ](\dx\d\d|s\d{1,3}[.-_ ]?(e|d)\d{1,3}|C4TV|Complete[\.\-_ ]Season|DSR|(D|H|P)DTV|EP[\.\-_ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[\.\-_ ]\d{1,2}|WEB\-DL|WEBRip)[\.\-_ ]|TV[\.\-_ ](19|20)\d\d|TrollHD/i', $releasename);
 		$looksLikeSportTV = preg_match('/[\.\-_ ]((19|20)\d\d[\.\-_ ]\d{1,2}[\.\-_ ]\d{1,2}[\.\-_ ]VHSRip|Indy[\.\-_ ]?Car|(iMPACT|Smoky[\.\-_ ]Mountain|Texas)[\.\-_ ]Wrestling|Moto[\.\-_ ]?GP|NSCS[\.\-_ ]ROUND|NECW[\.\-_ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[\.\-_ ]HD|WWE[\.\-_ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[\.\-_ ]/i', $releasename);
 		
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|imageset|mp3|xxx)[\.\-_ ]/i', $releasename))
@@ -536,7 +536,7 @@ class Category
 	{
 		if (!preg_match('/[\.\-_ ](NHL|stanley.+cup)[\.\-_ ]/', $releasename))
 		{
-			if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?[\.\-_ ]|<German>/i', $releasename))
+			if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?|<German>/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
@@ -685,7 +685,7 @@ class Category
 	
 	public function isMovie($releasename)
 	{
-		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]exe$|[\.\-_ ]XXX[\.\-_ ]|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
+		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]exe$|[\.\-_ ](jav|XXX)[\.\-_ ]|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
 		{
 			if($this->categorizeforeign)
 			{
@@ -966,7 +966,7 @@ class Category
 	public function isXxxOther($releasename)
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/[\.\-_ ]Brazzers|North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
+		if (preg_match('/[\.\-_ ]Brazzers|[\.\-_ ]JAV[\.\-_ ]|North\.Pole|She[\.\-_ ]?Male|Transsexual/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
@@ -1165,7 +1165,7 @@ class Category
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
 		}
-		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d[\.\-_ ]/i', $releasename))
+		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[\.\-_ ]FM.+MP3[\.\-_ ]|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_MP3;
 			return true;
@@ -1175,7 +1175,7 @@ class Category
 	
 	public function isMusicOther($releasename)
 	{
-		if (preg_match('/(19|20)\d\d\-(C4)$|[\.\-_ ]\dCD[\.\-_ ](19|20)\d\d|\(\d\-?CD\)|\-\dcd\-|\d[\.\-_ ]Albums|Albums.+(EP)|Bonus.+Tracks|Box.+?CD.+SET|Discography|D\.O\.M|Greatest\sSongs|Live.+(Bootleg|Remastered)|Music.+Vol|(\(|\[|\s)NMR(\)|\]|\s)|Promo.+CD|Reggaeton|Tiesto.+Club|Vinyl\s2496|\WV\.A\.|^\(VA\s|^VA[\.\-_ ]/i', $releasename))
+		if (preg_match('/(19|20)\d\d\-(C4)$|[\.\-_ ]\d?CD[\.\-_ ](19|20)\d\d|\(\d\-?CD\)|\-\dcd\-|\d[\.\-_ ]Albums|Albums.+(EP)|Bonus.+Tracks|Box.+?CD.+SET|Discography|D\.O\.M|Greatest\sSongs|Live.+(Bootleg|Remastered)|Music.+Vol|(\(|\[|\s)NMR(\)|\]|\s)|Promo.+CD|Reggaeton|Tiesto.+Club|Vinyl\s2496|\WV\.A\.|^\(VA\s|^VA[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MUSIC_OTHER;
 			return true;

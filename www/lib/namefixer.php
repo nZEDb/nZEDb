@@ -240,7 +240,8 @@ class Namefixer
 		if ($type == "NFO, ")
 		{
 			$this->nfoCheckTV($release, $echo, $type, $namestatus);
-			$this->nfoCheckM($release, $echo, $type, $namestatus);
+			$this->nfoCheckMov($release, $echo, $type, $namestatus);
+			$this->nfoCheckMus($release, $echo, $type, $namestatus);
 			$this->nfoCheckTY($release, $echo, $type, $namestatus);
 			$this->nfoCheckG($release, $echo, $type, $namestatus);
 		}
@@ -394,7 +395,7 @@ class Namefixer
 	//
 	//	Movies.
 	//
-	public function nfoCheckM($release, $echo, $type, $namestatus)
+	public function nfoCheckMov($release, $echo, $type, $namestatus)
 	{
 		if(preg_match('/(?:(\:\s{1,}))(.+?(19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 1", $echo, $type, $namestatus);
@@ -402,6 +403,18 @@ class Namefixer
 			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 2", $echo, $type, $namestatus);
 		if(preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](NTSC|MULTi).+?(MULTi|DVDR)[\.\-_ ].+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 3", $echo, $type, $namestatus);
+	}
+	
+	//
+	//	Music.
+	//
+	public function nfoCheckMus($release, $echo, $type, $namestatus)
+	{
+		if(preg_match('/(?:\s{2,})(.+?\-FM\-\d{2}\-\d{2})/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		{
+			$newname = str_replace('-FM-', '-FM-Radio-MP3-', $result["1"]);
+			$this->updateRelease($release, $newname, $methdod="nfoCheck: Music FM RADIO", $echo, $type, $namestatus);
+		}
 	}
 	
 	//
@@ -508,7 +521,7 @@ class Namefixer
 		{
 			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\(c\)[\w.\-\',;& ]+\w/i', $release["textstring"], $result))
 			{
-				$releasename = str_replace(array("(c)", "(C)"),"(PC GAMES) (c)", $result['0']);
+				$releasename = str_replace(array("(c)", "(C)"),"(GAMES) (c)", $result['0']);
 				$this->updateRelease($release, $releasename, $methdod="nfoCheck: PC Games (c)", $echo, $type, $namestatus);
 			}
 			if(preg_match('/\w[\w.\+\&\*\/\-\(\)\',;: ]+\*ISO\*/i', $release["textstring"], $result))
@@ -546,9 +559,12 @@ class Namefixer
 		}
 	}
 	
-	//
-	//	Just for filenames.
-	//
+	/*
+	 * 
+	 * Just for filenames.
+	 * 
+	 */
+	 
 	public function fileCheck($release, $echo, $type, $namestatus)
 	{
 		if (preg_match('/^(.+?(x264|XviD)\-TVP)\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
@@ -557,7 +573,7 @@ class Namefixer
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic TV", $echo, $type, $namestatus);
 		if (preg_match('/^(\\\\|\/)?(.+(\\\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic movie", $echo, $type, $namestatus);
-		if (preg_match('/(.+?([\.\-_ ](FM)|[\.\-_ ]\dCD|CDR|FLAC|SAT|WEB).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+		if (preg_match('/(.+?([\.\-_ ](CD|FM)|[\.\-_ ]\dCD|CDR|FLAC|SAT|WEB).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: Generic music", $echo, $type, $namestatus);
 		if (preg_match('/^(.+?(19|20)\d\d\-([a-z0-9]{3}|[a-z]{2}|C4))\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["1"], $methdod="fileCheck: music groups", $echo, $type, $namestatus);
