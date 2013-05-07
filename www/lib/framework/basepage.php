@@ -60,7 +60,11 @@ class BasePage
 		
 		if (isset($_SERVER["SERVER_NAME"]))
 		{
-			$this->serverurl = ($this->secure_connection ? "https://" : "http://").$_SERVER["SERVER_NAME"].(($_SERVER["SERVER_PORT"] != "80" && $_SERVER["SERVER_PORT"] != "443") ? ":".$_SERVER["SERVER_PORT"] : "").WWW_TOP.'/';
+			if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
+				$httpstart = "https://";
+			else
+				$httpstart = "http://";
+			$this->serverurl = $httpstart.$_SERVER["SERVER_NAME"].(($_SERVER["SERVER_PORT"] != "80" && $_SERVER["SERVER_PORT"] != "443") ? ":".$_SERVER["SERVER_PORT"] : "").WWW_TOP.'/';
 			$this->smarty->assign('serverroot', $this->serverurl);
 		}
 		
