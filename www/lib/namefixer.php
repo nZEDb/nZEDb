@@ -227,6 +227,11 @@ class Namefixer
 	//
 	public function checkName($release, $echo, $type, $namestatus)
 	{
+		// Just for filenames.
+		if ($type == "Filenames, ")
+		{
+			$this->fileCheck($release, $echo, $type, $namestatus);
+		}
 		$this->tvCheck($release, $echo, $type, $namestatus);
 		$this->movieCheck($release, $echo, $type, $namestatus);
 		$this->gameCheck($release, $echo, $type, $namestatus);
@@ -238,12 +243,6 @@ class Namefixer
 			$this->nfoCheckM($release, $echo, $type, $namestatus);
 			$this->nfoCheckTY($release, $echo, $type, $namestatus);
 			$this->nfoCheckG($release, $echo, $type, $namestatus);
-		}
-		
-		// Just for filenames.
-		if ($type == "Filenames, ")
-		{
-			$this->fileCheck($release, $echo, $type, $namestatus);
 		}
 	}
 	
@@ -548,6 +547,12 @@ class Namefixer
 	//
 	public function fileCheck($release, $echo, $type, $namestatus)
 	{
+		if (preg_match('/^(\\\\|\/)?(.+(\\\\|\/))*(.+?S\d{1,3}[.-_ ]?(E|D)\d{1,3}.+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic TV", $echo, $type, $namestatus);
+		if (preg_match('/^(\\\\|\/)?(.+(\\\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic movie", $echo, $type, $namestatus);
+		if (preg_match('/(.+?(FLAC|SAT).+?(19|20)\d\d.+?)\\\\.+/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
+			$this->updateRelease($release, $result["1"], $methdod="fileCheck: Generic music", $echo, $type, $namestatus);
 		if (preg_match('/\w[\w.\-\',;& ]+1080i(\.|_|\-| )DD5(\.|_|\-| )1(\.|_|\-| )MPEG2-R&C(?=\.ts)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 		{
 			$result = str_replace("MPEG2","MPEG2.HDTV",$result["0"]);
@@ -570,10 +575,6 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus);
 		if (preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus);
-		if (preg_match('/^(\\|\/)?(.+(\\|\/))*(.+?S\d{1,3}[.-_ ]?(E|D)\d{1,3}.+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
-			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic TV", $echo, $type, $namestatus);
-		if (preg_match('/^(\\|\/)?(.+(\\|\/))*(.+?([\.\-_ ]\d{4}[\.\-_ ].+?(BDRip|bluray|DVDRip|XVID)).+)\.(.+)$/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
-			$this->updateRelease($release, $result["4"], $methdod="fileCheck: Generic movie", $echo, $type, $namestatus);
 	}
 }
 ?>
