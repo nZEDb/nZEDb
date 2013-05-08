@@ -104,6 +104,7 @@ function getUrl($url, $method='get', $postdata='')
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
