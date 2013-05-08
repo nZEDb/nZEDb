@@ -91,8 +91,8 @@ $page->smarty->assign('sabapikeytype_ids', array(SABnzbd::API_TYPE_NZB,SABnzbd::
 $page->smarty->assign('sabapikeytype_names', array( 'Nzb Api Key', 'Full Api Key'));
 $page->smarty->assign('sabapikeytype_selected', ($sab->apikeytype == '')?SABnzbd::API_TYPE_NZB:$sab->apikeytype);
 
-$page->smarty->assign('sabpriority_ids', array(SABnzbd::PRIORITY_FORCE, SABnzbd::PRIORITY_HIGH, SABnzbd::PRIORITY_NORMAL, SABnzbd::PRIORITY_LOW));
-$page->smarty->assign('sabpriority_names', array( 'Force', 'High', 'Normal', 'Low'));
+$page->smarty->assign('sabpriority_ids', array(SABnzbd::PRIORITY_FORCE, SABnzbd::PRIORITY_HIGH, SABnzbd::PRIORITY_NORMAL, SABnzbd::PRIORITY_LOW, SABnzbd::PRIORITY_PAUSED));
+$page->smarty->assign('sabpriority_names', array( 'Force', 'High', 'Normal', 'Low', 'Paused'));
 $page->smarty->assign('sabpriority_selected', ($sab->priority == '')?SABnzbd::PRIORITY_NORMAL:$sab->priority);
 
 $page->smarty->assign('sabsetting_ids', array(1,2));
