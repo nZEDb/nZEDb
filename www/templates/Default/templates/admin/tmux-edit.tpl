@@ -106,6 +106,14 @@
 			</tr>
 
 			<tr>
+				<td style="width:160px;"><label for="BACKFILL_GROUPS">Backfill Groups</label>:</td>
+				<td>
+					<input id="BACKFILL_GROUPS" name="BACKFILL_GROUPS" class="text" type="text" value="{$ftmux->BACKFILL_GROUPS}" />
+					<div class="hint">When running backfill the groups are sorted so that the newest groups are backfilled first. Select the number of groups to backfill per loop.</div>
+				</td>
+			</tr>
+
+			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
 				<td>
 					<input id="BACK_TIMER" name="BACK_TIMER" class="text" type="text" value="{$ftmux->BACK_TIMER}" />
@@ -197,6 +205,14 @@
 				<td>
 					<input id="POST_TIMER" name="POST_TIMER" class="text" type="text" value="{$ftmux->POST_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="POST_KILL_TIMER">Postprocess Kill Timer</label>:</td>
+				<td>
+					<input id="POST_KILL_TIMER" name="POST_KILL_TIMER" class="text" type="text" value="{$ftmux->POST_KILL_TIMER}" />
+					<div class="hint">The time postprocess is allowed to run with no updates to the screen. Activity is detected when the history for the pane changes. The clock is restarted everytime activity is detected.</div>
 				</td>
 			</tr>
 		</table>
