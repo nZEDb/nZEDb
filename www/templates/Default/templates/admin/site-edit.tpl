@@ -580,6 +580,14 @@
 </tr>
 
 <tr>
+	<td><label for="crossposttime">Crossposted Time Check</label>:</td>
+	<td>
+		<input class="tiny" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
+		<div class="hint">The time in hours to check for crossposted releases.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="maxmssgs">Max Messages</label>:</td>
 	<td>
 		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />

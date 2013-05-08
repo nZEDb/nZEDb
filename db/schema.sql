@@ -960,7 +960,8 @@ INSERT INTO `site`
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
 	('menuposition', 2),
-	('sqlpatch', '25');
+	('crossposttime', 2),
+	('sqlpatch', '26');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
