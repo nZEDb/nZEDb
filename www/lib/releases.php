@@ -521,7 +521,10 @@ class Releases
 			//
 			// delete from disk.
 			//
-			$rel = ($isGuid) ? $this->getByGuid($identifier) : $this->getById($identifier);
+			if ($isGuid !== false)
+				$rel = $this->getById($identifier);
+			else
+				$rel = $this->getByGuid($identifier);
 			$this->fastDelete($rel['ID'], $rel["guid"], $this->site);
 		}
 	}
