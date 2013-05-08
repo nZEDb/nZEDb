@@ -86,6 +86,14 @@
 </tr>
 
 <tr>
+	<td><label for="style">User Menu Position</label>:</td>
+	<td>
+		{html_options class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$fsite->menuposition}
+		<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (placeholder)</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="style">Dereferrer Link</label>:</td>
 	<td>
 		<input id="dereferrer_link" class="long" name="dereferrer_link" type="text" value="{$fsite->dereferrer_link}" />

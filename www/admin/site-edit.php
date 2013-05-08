@@ -64,6 +64,9 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 $page->smarty->assign('passwd_ids', array(1,0));
 $page->smarty->assign('passwd_names', array( 'Deep (requires unrar)', 'None'));
 
+$page->smarty->assign('menupos_ids', array(0,1,3));
+$page->smarty->assign('menupos_names', array( 'Left', 'Right', 'Top'));
+
 $page->smarty->assign('sabintegrationtype_ids', array(SABnzbd::INTEGRATION_TYPE_USER, SABnzbd::INTEGRATION_TYPE_SITEWIDE, SABnzbd::INTEGRATION_TYPE_NONE));
 $page->smarty->assign('sabintegrationtype_names', array( 'User', 'Site-wide', 'None (Off)'));
 
