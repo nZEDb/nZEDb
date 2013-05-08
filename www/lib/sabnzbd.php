@@ -25,6 +25,7 @@ class SABnzbd
 	const PRIORITY_HIGH = 1;
 	const PRIORITY_NORMAL = 0;
 	const PRIORITY_LOW = -1;
+	const PRIORITY_PAUSED = -2;
 	
 	function SABnzbd(&$page)
 	{
