@@ -381,6 +381,28 @@
 
 		</table>
 </fieldset>
+
+<fieldset>
+	<legend>OPTIMIZE</legend>
+		<table class="input">
+			<tr>
+				<td style="width:160px;"><label for="OPTIMIZE">Optimize Mysql Tables</label>:</td>
+				<td>
+					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE}
+					<div class="hint">Optimize will disable all panes while it runs and re-enable all panes when completed. This only optimizes tables that need it.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Timer</label>:</td>
+				<td>
+					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="text" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
+					<div class="hint">This is a start timer. The default is 24 hours. This means that if enabled, is will start/run every 24 hours, no matter how long it runs for.</div>
+				</td>
+			</tr>
+
+		</table>
+</fieldset>
 <input type="submit" value="Save Tmux Settings" />
 
 </form>
