@@ -24,8 +24,11 @@ if ($json !== false)
 	$speed = $obj->{'speed'};
 	$queued = round($obj->{'mbleft'}, 2)."MB / ".round($obj->{'mb'}, 2)."MB";
 	$status = ucwords(strtolower($obj->{'state'}));
+	$load = $obj->{'loadavg'};
+	$space1 = $obj->{'diskspace1'};
+	$space2 = $obj->{'diskspace2'};
 	
-	$output .= "<p><b>Download speed:</b> ".$speed."B/s - <b>Queued:</b> ".$queued." - <b>Status:</b> ".$status."</p>";
+	$output .= "<p><b>Download speed:</b> ".$speed."B/s - <b>Queued:</b> ".$queued." - <b>Status:</b> ".$status." - <b>Server stats:</b> ".$load." - <b>Space left download dir:</b> ".round($space1)."GB - <b>Complete dir:</b> ".round($space2)."GB</p>";
 	
 	if (count($queue) > 0)
 	{
@@ -40,7 +43,6 @@ if ($json !== false)
 		<th style='text-align:center;'>Delete</th>";
 		$output.="<th style='text-align:center;'><a href='?pall'>Pause all</a></th>";
 		$output.="<th style='text-align:center;'><a href='?rall'>Resume all</a></th></tr>";
-		
 		foreach ($queue as $item)
 		{
 			if (strpos($item->{'filename'}, "fetch NZB") > 0)
