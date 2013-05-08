@@ -961,7 +961,7 @@ INSERT INTO `site`
 	('categorizeforeign', 1),
 	('menuposition', 2),
 	('crossposttime', 2),
-	('sqlpatch', '27');
+	('sqlpatch', '28');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
