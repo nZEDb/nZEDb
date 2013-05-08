@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1409";
+$version="0.1r1410";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -33,35 +33,37 @@ $proc = "SELECT
 	( SELECT COUNT( ID ) from collections ) collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) as binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) as parts_table,
-	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) defrag,
-	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) monitor,
-	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) backfill_delay,
-	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) collections_kill,
-	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) postprocess_kill,
-	( SELECT value from tmux where setting = 'TMUX_SESSION' ) tmux_session,
-	( SELECT value from tmux where setting = 'NICENESS' ) niceness,
-	( SELECT value from tmux where setting = 'RUNNING' ) running,
-	( SELECT value from tmux where setting = 'BINARIES' ) binaries_run,
-	( SELECT value from tmux where setting = 'BACKFILL' ) backfill,
-	( SELECT value from tmux where setting = 'IMPORT' ) import,
-	( SELECT value from tmux where setting = 'NZBS' ) nzbs,
-	( SELECT value from tmux where setting = 'FIX_NAMES' ) fix_names,
-	( SELECT value from tmux where setting = 'FIX_CRAP' ) fix_crap,
-	( SELECT value from tmux where setting = 'POST' ) post,
-	( SELECT value from tmux where setting = 'UPDATE_TV' ) update_tv,
-	( SELECT value from tmux where setting = 'RELEASES' ) releases_run,
-	( SELECT value from tmux where setting = 'RELEASES_THREADED' ) releases_threaded,
-	( SELECT value from tmux where setting = 'MYSQL_PROC' ) process_list,
-	( SELECT value from tmux where setting = 'SEQ_TIMER' ) seq_timer,
-	( SELECT value from tmux where setting = 'BINS_TIMER' ) bins_timer,
-	( SELECT value from tmux where setting = 'BACK_TIMER' ) back_timer,
-	( SELECT value from tmux where setting = 'IMPORT_TIMER' ) import_timer,
-	( SELECT value from tmux where setting = 'REL_TIMER' ) rel_timer,
-	( SELECT value from tmux where setting = 'FIX_TIMER' ) fix_timer,
-	( SELECT value from tmux where setting = 'CRAP_TIMER' ) crap_timer,
-	( SELECT value from tmux where setting = 'TV_TIMER' ) tv_timer,
-	( SELECT value from tmux where setting = 'POST_TIMER' ) post_timer,
-	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) post_kill_timer,
+	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
+	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
+	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) AS backfill_delay,
+	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) AS collections_kill,
+	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) AS postprocess_kill,
+	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
+	( SELECT value from tmux where setting = 'NICENESS' ) AS niceness,
+	( SELECT value from tmux where setting = 'RUNNING' ) AS running,
+	( SELECT value from tmux where setting = 'BINARIES' ) AS binaries_run,
+	( SELECT value from tmux where setting = 'BACKFILL' ) AS backfill,
+	( SELECT value from tmux where setting = 'IMPORT' ) AS import,
+	( SELECT value from tmux where setting = 'NZBS' ) AS nzbs,
+	( SELECT value from tmux where setting = 'FIX_NAMES' ) AS fix_names,
+	( SELECT value from tmux where setting = 'FIX_CRAP' ) AS fix_crap,
+	( SELECT value from tmux where setting = 'POST' ) AS post,
+	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
+	( SELECT value from tmux where setting = 'RELEASES' ) AS releases_run,
+	( SELECT value from tmux where setting = 'RELEASES_THREADED' ) AS releases_threaded,
+	( SELECT value from tmux where setting = 'MYSQL_PROC' ) AS process_list,
+	( SELECT value from tmux where setting = 'SEQ_TIMER' ) AS seq_timer,
+	( SELECT value from tmux where setting = 'BINS_TIMER' ) AS bins_timer,
+	( SELECT value from tmux where setting = 'BACK_TIMER' ) AS back_timer,
+	( SELECT value from tmux where setting = 'IMPORT_TIMER' ) AS import_timer,
+	( SELECT value from tmux where setting = 'REL_TIMER' ) AS rel_timer,
+	( SELECT value from tmux where setting = 'FIX_TIMER' ) AS fix_timer,
+	( SELECT value from tmux where setting = 'CRAP_TIMER' ) AS crap_timer,
+	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
+	( SELECT value from tmux where setting = 'POST_TIMER' ) AS post_timer,
+	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
+    ( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
+    ( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -126,6 +128,7 @@ $time2 = TIME();
 $time3 = TIME();
 $time4 = TIME();
 $time5 = TIME();
+$time6 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -323,6 +326,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
+    if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -334,6 +338,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
 	if ( @$proc_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_result[0]['post_kill_timer']; }
 	if ( @$proc_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_result[0]['tv_timer']; }
+    if ( @$proc_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_result[0]['optimize_timer']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_result[0]['binaries']; }
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = $proc_result[0]['binaries_total']; }
@@ -397,6 +402,11 @@ while( $i > 0 )
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
+    if ( $optimize_tables == "TRUE" )
+    {
+        $run_time1 = relativeTime( $tv_timer + $time4 );
+        printf($mask1, "Optimize in:", "T[ $run_time1]");
+    }
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
@@ -452,6 +462,14 @@ while( $i > 0 )
 		$kill_coll = "TRUE";
 	else
 		$kill_coll = "FALSE";
+
+	if (( $optimize_tables == "TRUE" ) && ( TIME() - $time6 >= $optimize_timer ))
+	{
+		$color = get_color();
+		shell_exec("tmux respawnp -t ${tmux_session}:0.1 'echo \"\033[38;5;${color}m\" && \
+				nice -n$niceness php $DIR/misc/update_scripts/optimise_db.php && date +\"%D %T\"' 2>&1 1> /dev/null");
+		$time6 = TIME();
+	}
 
 	if ( $running  == "TRUE" )
 	{
