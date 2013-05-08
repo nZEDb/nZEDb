@@ -1,5 +1,11 @@
 Some common mistakes/errors people encounter.
 
+Q: Sabnzbd is not working.
+A: Make sure Saznbd is not https, make sure you have the sabnzbd/ in the url.
+
+Q: Sickbeard/Couchpotato are not working.
+A: Make sure they are not https.
+
 Q: I do not see any releases unless I click on ALL.
 A: Go to http://localhost/profileedit untick the 4 checkmarks, click save profile.
 
