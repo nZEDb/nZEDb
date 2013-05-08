@@ -959,7 +959,8 @@ INSERT INTO `site`
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
-	('sqlpatch', '24');
+	('menuposition', 2),
+	('sqlpatch', '25');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
