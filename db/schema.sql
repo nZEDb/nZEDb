@@ -959,7 +959,7 @@ INSERT INTO `site`
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
-	('menuposition', 0),
+	('menuposition', 2),
 	('sqlpatch', '25');
 
 

@@ -89,7 +89,7 @@
 	<td><label for="style">User Menu Position</label>:</td>
 	<td>
 		{html_options class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$fsite->menuposition}
-		<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (placeholder)</div>
+		<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (not currently functional)</div>
 	</td>
 </tr>
 
