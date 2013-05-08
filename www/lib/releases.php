@@ -31,6 +31,7 @@ class Releases
 		$this->site = $s->get();
 		$this->stage5limit = (!empty($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
 		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
+		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 	}
 	
@@ -1728,7 +1729,7 @@ class Releases
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
-			$result = $db->query(sprintf("SELECT ID, guid FROM releases WHERE postdate < now() - interval %d day " . $where, $page->site->releaseretentiondays)); 		
+			$result = $db->query(sprintf("SELECT ID, guid FROM releases WHERE postdate < now() - interval %d day ", $page->site->releaseretentiondays)); 		
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1739,7 +1740,7 @@ class Releases
 		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus > 0 " . $where); 		
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus > 0"); 		
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1748,7 +1749,7 @@ class Releases
 		}
 		
 		// Crossposted releases.
-		if($resrel = $db->query("SELECT ID, guid FROM releases WHERE adddate > (now() - interval 2 hour) " . $where . " GROUP BY name HAVING count(name) > 1"))
+		if($resrel = $db->query(sprintf("SELECT ID, guid FROM releases WHERE adddate > (now() - interval %d hour) GROUP BY name HAVING count(name) > 1", $this->crosspostt)))
 		{
 			foreach ($resrel as $rowrel)
 			{
