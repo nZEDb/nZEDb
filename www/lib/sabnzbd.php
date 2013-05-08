@@ -84,6 +84,30 @@ class SABnzbd
 		return getUrl($delUrl);
 	}
 	
+	public function pauseFromQueue($id)
+	{
+		$pauseUrl = $this->url."api?mode=queue&name=pause&value=".$id."&apikey=".$this->apikey;
+		return getUrl($pauseUrl);
+	}
+	
+	public function resumeFromQueue($id)
+	{
+		$resumeUrl = $this->url."api?mode=queue&name=resume&value=".$id."&apikey=".$this->apikey;
+		return getUrl($resumeUrl);
+	}
+	
+	public function pauseAll()
+	{
+		$pauseallUrl = $this->url."api?mode=pause"."&apikey=".$this->apikey;
+		return getUrl($pauseallUrl);
+	}
+	
+	public function resumeAll()
+	{
+		$resumeallUrl = $this->url."api?mode=resume"."&apikey=".$this->apikey;
+		return getUrl($resumeallUrl);
+	}
+	
 	public function checkCookie()
 	{
 		$res = false;
