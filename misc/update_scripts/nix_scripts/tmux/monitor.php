@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1410";
+$version="0.1r1411";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -404,7 +404,7 @@ while( $i > 0 )
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
     if ( $optimize_tables == "TRUE" )
     {
-        $run_time1 = relativeTime( $tv_timer + $time4 );
+        $run_time1 = relativeTime( $optimize_timer + $time6 );
         printf($mask1, "Optimize in:", "T[ $run_time1]");
     }
 
