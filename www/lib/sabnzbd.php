@@ -66,7 +66,7 @@ class SABnzbd
 
 	public function sendToSab($guid)
 	{
-		$addToSabUrl = $this->url.'api/?mode=addurl&priority='.$this->priority.'&apikey='.$this->apikey;
+		$addToSabUrl = $this->url.'api?mode=addurl&priority='.$this->priority.'&apikey='.$this->apikey;
 		$nzbUrl = $this->serverurl.'getnzb/'.$guid.'&i='.$this->uid.'&r='.$this->rsstoken;
 		$addToSabUrl = $addToSabUrl.'&name='.urlencode($nzbUrl);
 		return getUrl($addToSabUrl);
@@ -74,13 +74,13 @@ class SABnzbd
 	
 	public function getQueue()
 	{
-		$queueUrl = $this->url."api/?mode=qstatus&output=json&apikey=".$this->apikey;
+		$queueUrl = $this->url."api?mode=qstatus&output=json&apikey=".$this->apikey;
 		return getUrl($queueUrl);
 	}
 	
 	public function delFromQueue($id)
 	{
-		$delUrl = $this->url."api/?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
+		$delUrl = $this->url."api?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
 		return getUrl($delUrl);
 	}
 	
