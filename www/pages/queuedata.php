@@ -33,12 +33,14 @@ if ($json !== false)
 		$output.="<tr>
 		<th></th>
 		<th>Name</th>
-		<th style='width:80px;'>size</th>
-		<th style='width:80px;'>left</th>
-		<th style='width:50px;'>%</th>
-		<th>time left</th>
-		<th></th>
-		</tr>";
+		<th style='width:80px;text-align:center;'>size</th>
+		<th style='width:80px;text-align:center;'>left</th>
+		<th style='width:50px;text-align:center;'>%</th>
+		<th style='text-align:center;'>time left</th>
+		<th style='text-align:center;'>Delete</th>";
+		$output.="<th style='text-align:center;'><a href='?pall'>Pause all</a></th>";
+		$output.="<th style='text-align:center;'><a href='?rall'>Resume all</a></th></tr>";
+		
 		foreach ($queue as $item)
 		{
 			if (strpos($item->{'filename'}, "fetch NZB") > 0)
@@ -54,6 +56,8 @@ if ($json !== false)
 				$output.="<td class='right'>".($item->{'mb'}==0?0:round($item->{'mbleft'}/$item->{'mb'}*100))."%</td>";
 				$output.="<td style='text-align:right;'>".$item->{'timeleft'}."</td>";
 				$output.="<td style='text-align:right;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=".$item->{'id'}."'>delete</a></td>";
+				$output.="<td style='text-align:center;'><a href='?pause=".$item->{'id'}."'>pause</a></td>";
+				$output.="<td style='text-align:center;'><a href='?resume=".$item->{'id'}."'>resume</a></td>";
 				$output.="</tr>";
 				$count++;
 			}

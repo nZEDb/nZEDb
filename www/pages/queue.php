@@ -15,6 +15,18 @@ if (empty($sab->apikey))
 if (isset($_REQUEST["del"]))
 	$sab->delFromQueue($_REQUEST['del']);
 
+if (isset($_REQUEST["pause"]))
+	$sab->pauseFromQueue($_REQUEST['pause']);
+	
+if (isset($_REQUEST["resume"]))
+	$sab->resumeFromQueue($_REQUEST['resume']);
+
+if (isset($_REQUEST["pall"]))
+	$sab->pauseAll($_REQUEST['pall']);
+	
+if (isset($_REQUEST["rall"]))
+	$sab->resumeAll($_REQUEST['rall']);
+
 $page->smarty->assign('sabserver',$sab->url);	
 $page->title = "Your Download Queue";
 $page->meta_title = "View Sabnzbd Queue";
