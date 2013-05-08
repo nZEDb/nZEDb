@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1358";
+$version="0.1r1408";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -61,6 +61,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'CRAP_TIMER' ) crap_timer,
 	( SELECT value from tmux where setting = 'TV_TIMER' ) tv_timer,
 	( SELECT value from tmux where setting = 'POST_TIMER' ) post_timer,
+	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) post_kill_timer,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -200,7 +201,7 @@ $console_releases_now = 0;
 $console_releases_proc = 0;
 $total_work_now = 0;
 $last_history = "";
-
+	
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
 
@@ -231,7 +232,7 @@ printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_d
 printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
 printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
 printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
-	
+
 $monitor = 30;
 $i = 1;
 while( $i > 0 )
@@ -259,10 +260,6 @@ while( $i > 0 )
 		$runloop = "false";
 	}
 
-	//initial query for total releases
-	if (( @$proc_result[0]['work'] != NULL ) && ( $work_start == 0 )) { $work_start = $proc_result[0]['work']; }
-	if (( @$proc_result[0]['releases'] ) && ( $releases_start == 0 )) { $releases_start = $proc_result[0]['releases']; }
-
 	//get start values from $qry
 	if ( $i == 1 ) 
 	{
@@ -274,6 +271,8 @@ while( $i > 0 )
 		if ( @$proc_result[0]['tv'] != NULL ) { $tvrage_releases_proc_start = $proc_result[0]['tv']; }
 		if ( @$proc_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_result[0]['book']; }
 		if ( @$proc_result[0]['work'] != NULL ) { $work_remaining_start = $proc_result[0]['work']; }
+        if ( @$proc_result[0]['work'] != NULL ) { $work_start = $proc_result[0]['work']; }
+        if ( @$proc_result[0]['releases'] != NULL ) { $releases_start = $proc_result[0]['releases']; }
 	}
 
 	//get values from $qry
@@ -333,6 +332,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['fix_timer'] != NULL ) { $fix_timer = $proc_result[0]['fix_timer']; }
 	if ( @$proc_result[0]['crap_timer'] != NULL ) { $crap_timer = $proc_result[0]['crap_timer']; }
 	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
+	if ( @$proc_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_result[0]['post_kill_timer']; }
 	if ( @$proc_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_result[0]['tv_timer']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_result[0]['binaries']; }
@@ -498,56 +498,56 @@ while( $i > 0 )
 		}
 
 /*		//postprocess nfos
-                if ( $post == "TRUE" )
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
-                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_nfo_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
-                }
-                else
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess\"'");
-                }
+		if ( $post == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
+					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_nfo_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess\"'");
+		}
 
-                //postprocess movies tv
-                if ( $post == "TRUE" )
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
-                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_movies_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
-                }
-                else
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess\"'");
-                }
+		//postprocess movies tv
+		if ( $post == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
+					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_movies_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess\"'");
+		}
 
-                //postprocess books consoles
-                if ( $post == "TRUE" )
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
-                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_books_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
-                }
-                else
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess\"'");
-                }
+		//postprocess books consoles
+		if ( $post == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
+					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_books_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess\"'");
+		}
 
-                //postprocess music anidb
-                if ( $post == "TRUE" )
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\" && \
-                                        $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_music_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
-                }
-                else
-                {
-                        $color = get_color();
-                        shell_exec("tmux respawnp -k -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\n${panes2[3]} has been disabled/terminated by Postprocess\"'");
-                }
+		//postprocess music anidb
+		if ( $post == "TRUE" )
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\" && \
+					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_music_threaded.py && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.3 'echo \"\033[38;5;${color}m\n${panes2[3]} has been disabled/terminated by Postprocess\"'");
+		}
 */
 		if ( $post == "TRUE" )
 		{
@@ -560,7 +560,7 @@ while( $i > 0 )
 			}
 			else
 			{
-				if ( TIME() - $time3 >= 300 )
+				if ( TIME() - $time3 >= $post_kill_timer )
 				{
 					shell_exec("tmux respawnp -k -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been terminated by Possible Hung thread\"'");
 					$wipe = `tmux clearhist -t ${tmux_session}:1.2`;

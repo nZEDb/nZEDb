@@ -51,16 +51,11 @@ cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
 seq = cur.fetchone();
 cur.execute("select value from tmux where setting = 'BACKFILL_TYPE'");
 type = cur.fetchone();
+cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
+groups = cur.fetchone();
 
-if seq[0] == "TRUE":
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(run_threads[0])))
-	datas = cur.fetchall()
-else:
-	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
-	datas = cur.fetchall()
-
-
-
+cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
+datas = cur.fetchall()
 
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID, result_q):
