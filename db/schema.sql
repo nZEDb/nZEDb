@@ -961,7 +961,7 @@ INSERT INTO `site`
 	('categorizeforeign', 1),
 	('menuposition', 2),
 	('crossposttime', 2),
-	('sqlpatch', '26');
+	('sqlpatch', '27');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1257,6 +1257,8 @@ INSERT INTO tmux (setting, value) values ('VNSTAT','FALSE');
 INSERT INTO tmux (setting, value) values ('VNSTAT_ARGS',NULL);
 INSERT INTO tmux (setting, value) values ('TCPTRACK','FALSE');
 INSERT INTO tmux (setting, value) values ('TCPTRACK_ARGS','-i eth0 port 443');
+INSERT INTO tmux (setting, value) values ('BACKFILL_GROUPS','4');
+INSERT INTO tmux (setting, value) values ('POST_KILL_TIMER','300');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
