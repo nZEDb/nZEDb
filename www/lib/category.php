@@ -230,26 +230,26 @@ class Category
 		
 		if($this->catlanguage == "0")
 		{
-			$this->determineCategoryNormal($releasename, $groupID);
-			return $this->tmpCat;
+			if($this->determineCategoryNormal($releasename, $groupID)) { return $this->tmpCat; }
+			return Category::CAT_MISC;
 		}
 		else if($this->catlanguage == "1")
 		{
 			$cg = new CategoryGerman();
-			$cg->determineCategory($releasename, $groupID);
-			return $this->tmpCat;
+			if($cg->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
+			return Category::CAT_MISC;
 		}
 		else if($this->catlanguage == "2")
 		{
 			$cd = new CategoryDanish();
-			$cd->determineCategory($releasename, $groupID);
-			return $this->tmpCat;
+			if($cd->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
+			return Category::CAT_MISC;
 		}
 		else if($this->catlanguage == "3")
 		{
 			$cf = new CategoryFrench();
-			$cf->determineCategory($releasename, $groupID);
-			return $this->tmpCat;
+			if($cf->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
+			return Category::CAT_MISC;
 		}
 	}
 	

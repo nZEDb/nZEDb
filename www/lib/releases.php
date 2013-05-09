@@ -1684,7 +1684,7 @@ class Releases
 		$stage6 = TIME();
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE (relnamestatus = 0 and categoryID = 7010) or (relnamestatus = 1 and categoryID = 0) " . $where);
+			$resrel = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE relnamestatus = 0 " . $where);
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
 				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
