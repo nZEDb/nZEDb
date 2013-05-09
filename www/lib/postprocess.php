@@ -597,6 +597,7 @@ class PostProcess {
 			if ($files !== false)
 			{
 				foreach ($files as $file)
+				{
 					if (isset($file['name']))
 					{
 						if ($file['pass'])
@@ -641,6 +642,10 @@ class PostProcess {
 							// or $data = $rar->getFileData($file['name'], $file['source']);
 						}*/
 					}
+				}
+				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
+				if (sizeof($files) > 0)
+					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", sizeof($files), $relid));
 			}
 		}
 		else
