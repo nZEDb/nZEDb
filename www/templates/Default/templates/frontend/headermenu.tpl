@@ -23,7 +23,7 @@
 	<div id="menulink"> 
 		<ul>
 		{foreach from=$parentcatlist item=parentcat}
-			{if $parentcat.ID == 1000 && $userdata.consoleview=="1"}
+			{if $parentcat.ID == 1000 && $userdata.consoleview=="1" && $site->lookupgames=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/console">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
@@ -31,7 +31,7 @@
 				{/foreach}
 				</ul>
 			</li>
-			{elseif $parentcat.ID == 2000 && $userdata.movieview=="1"}
+			{elseif $parentcat.ID == 2000 && $userdata.movieview=="1" && $site->lookupimdb=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
@@ -39,7 +39,7 @@
 				{/foreach}
 				</ul>
 			</li>
-			{elseif ($parentcat.ID == 3000 && $userdata.musicview=="1")}
+			{elseif ($parentcat.ID == 3000 && $userdata.musicview=="1") && $site->lookupmusic=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
@@ -51,7 +51,7 @@
 				{/foreach}
 				</ul>
 			</li>
-			{elseif ($parentcat.ID == 8000 && $userdata.bookview=="1")}
+			{elseif ($parentcat.ID == 8000 && $userdata.bookview=="1") && $site->lookupbooks=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 				<ul>
 					{foreach from=$parentcat.subcatlist item=subcat}
