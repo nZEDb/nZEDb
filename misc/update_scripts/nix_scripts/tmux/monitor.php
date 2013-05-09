@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1414";
+$version="0.1r1415";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -403,11 +403,6 @@ while( $i > 0 )
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
-    if ( $optimize_tables == "TRUE" )
-    {
-        $run_time1 = relativeTime( $optimize_timer + $time6 );
-        printf($mask1, "Optimize in:", "T[ $run_time1]");
-    }
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
@@ -463,14 +458,6 @@ while( $i > 0 )
 		$kill_coll = "TRUE";
 	else
 		$kill_coll = "FALSE";
-
-	if (( $optimize_tables == "TRUE" ) && ( TIME() - $time6 >= $optimize_timer ))
-	{
-		$color = get_color();
-		shell_exec("tmux respawnp -t ${tmux_session}:0.1 'echo \"\033[38;5;${color}m\" && \
-				nice -n$niceness php $DIR/misc/update_scripts/optimise_db.php && date +\"%D %T\"' 2>&1 1> /dev/null");
-		$time6 = TIME();
-	}
 
 	if ( $running  == "TRUE" )
 	{
