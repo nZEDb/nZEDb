@@ -55,7 +55,7 @@ $browseby_link = '&amp;title='.$title.'&amp;author='.$author;
 
 $page->smarty->assign('pagertotalitems',$browsecount);
 $page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
+$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);z
 $page->smarty->assign('pagerquerybase', WWW_TOP."/books?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
