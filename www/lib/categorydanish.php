@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/groups.php");
 
 class CategoryDanish
 {
+	private $tmpCat = 0;
 	//
 	// Work out which category is applicable for either a group or a binary.
 	// returns -1 if no category is appropriate from the group name.
