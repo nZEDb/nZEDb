@@ -1240,7 +1240,7 @@ class Category
 	
 	public function isTechnicalBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking)[\.\-_ ]|^Wood[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking|Workshops?)[\.\-_ ]|^Wood[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 			return true;
@@ -1251,7 +1251,7 @@ class Category
 	
 	public function isMagazine($releasename)
 	{
-		if (preg_match('/[\.\-_ ]Magazine[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ](FHM|Magazine|NUTS|XXX)[\.\-_ ]|(^Club|^FHM|Hustler|Maxim|^NUTS|Penthouse|Playboy|Top[\.\-_ ]Gear)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
 			return true;
