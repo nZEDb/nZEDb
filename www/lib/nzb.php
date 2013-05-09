@@ -83,7 +83,7 @@ class NZB
 		{
 			gzwrite ($fp, file_get_contents($nzb));
 			gzclose($fp);
-			chmod($path, 0777); // chage the mod to fix issues some users have with file permissions
+			chmod($path, 0764); // chage the mod to fix issues some users have with file permissions
 			return true;
 		}
 		else
