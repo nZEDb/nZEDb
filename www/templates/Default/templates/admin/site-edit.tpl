@@ -81,7 +81,15 @@
 	<td><label for="style">Categorize Language</label>:</td>
 	<td>
 		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
-		<div class="hint">The language to use when categorizing releases. (This is WIP, looking for people to help with this.)</div>
+		<div class="hint">If you pick something other than english, that language will not go in the foreign category. (This is WIP, looking for people to help with this.)</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
+	<td>
+		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
+		<div class="hint">Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories. This only works if the above is set to english.</div>
 	</td>
 </tr>
 
@@ -632,14 +640,6 @@
 	<td>
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
 		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
-	<td>
-		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
-		<div class="hint">Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
 	</td>
 </tr>
 
