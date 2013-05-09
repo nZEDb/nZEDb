@@ -468,6 +468,14 @@
 </tr>
 
 <tr>
+	<td><label for="maxpartsprocessed">Maximum add PP parts checked</label>:</td>
+	<td>
+		<input class="tiny" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
+		<div class="hint">How many parts to download when add pp runs, the higher you set this the slower it becomes but the bigger chance of finding a password.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />

@@ -27,7 +27,8 @@ class PostProcess {
 		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$this->site = $s->get();
-		$this-> addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
+		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
+		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 1;
 		$this->password = false;
 		
 		$this->mediafileregex = 'AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV|AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA';
@@ -295,9 +296,9 @@ class PostProcess {
 					shuffle($nzbfiles);
 					foreach ($nzbfiles as $rarFile)
 					{
-						$notinfinite++;
-						if ($notinfinite > 5)
+						if ($notinfinite > $this->partsqty)
 							continue;
+						$notinfinite++;
 						$subject = $rarFile['subject'];
 						if (preg_match("/\.(vol\d{1,3}\+\d{1,3}|par2|sfv)/i", $subject))
 							continue;

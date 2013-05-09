@@ -299,7 +299,7 @@ class Category
 					return true;
 				}
 				
-				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|repost))/', $groupRes["name"]))
+				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $groupRes["name"]))
 				{
 					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
 					return true;
@@ -352,7 +352,7 @@ class Category
 				
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
-					if($this->isComic($releasename)){ return $this->tmpCat; }
+					if($this->isBook($releasename)){ return $this->tmpCat; }
 					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
 					return true;
 				}
@@ -1209,11 +1209,10 @@ class Category
 	
 	public function isBook($releasename)
 	{
-		if($this->isEBook($releasename)){ return true; }
 		if($this->isComic($releasename)){ return true; }
-		if($this->isMagazine($releasename)){ return true; }
 		if($this->isTechnicalBook($releasename)){ return true; }
-		
+		if($this->isMagazine($releasename)){ return true; }
+		if($this->isEBook($releasename)){ return true; }
 		return false;
 	}
 	
@@ -1239,22 +1238,22 @@ class Category
 		return false;
 	}
 	
-	public function isMagazine($releasename)
+	public function isTechnicalBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ]Magazine[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking|Workshops?)[\.\-_ ]|^Wood[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
+			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 			return true;
 		}
 
 		return false;
 	}
 	
-	public function isTechnicalBook($releasename)
+	public function isMagazine($releasename)
 	{
-		if (preg_match('/[\.\-_ ]Service\s?Manual/i', $releasename))
+		if (preg_match('/[\.\-_ ](FHM|Magazine|NUTS|XXX)[\.\-_ ]|(^Club|^FHM|Hustler|Maxim|^NUTS|Penthouse|Playboy|Top[\.\-_ ]Gear)[\.\-_ ]/i', $releasename))
 		{
-			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
+			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
 			return true;
 		}
 
