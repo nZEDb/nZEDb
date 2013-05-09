@@ -64,6 +64,9 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 $page->smarty->assign('passwd_ids', array(1,0));
 $page->smarty->assign('passwd_names', array( 'Deep (requires unrar)', 'None'));
 
+$page->smarty->assign('langlist_ids', array(0,1));
+$page->smarty->assign('langlist_names', array( 'English', 'German'));
+
 $page->smarty->assign('menupos_ids', array(0,1,2));
 $page->smarty->assign('menupos_names', array( 'Right', 'Left', 'Top'));
 

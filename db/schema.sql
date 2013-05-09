@@ -962,7 +962,8 @@ INSERT INTO `site`
 	('menuposition', 2),
 	('crossposttime', 2),
 	('maxpartsprocessed', 2),
-	('sqlpatch', '29');
+	('catlanguage', 0),
+	('sqlpatch', '30');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

@@ -78,6 +78,14 @@
 </tr>
 
 <tr>
+	<td><label for="style">Categorize Language</label>:</td>
+	<td>
+		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
+		<div class="hint">The language to use when categorizing releases. (This is WIP, looking for people to help with this.)</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="style">Theme</label>:</td>
 	<td>
 		{html_options class="siteeditstyle" id="style" name='style' values=$themelist output=$themelist selected=$fsite->style}
