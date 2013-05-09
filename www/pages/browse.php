@@ -66,7 +66,7 @@ elseif ($grp != "")
 $page->smarty->assign('section',$section);
 
 foreach($ordering as $ordertype) 
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;ob=".$ordertype."&amp;offset=0");	
+	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");	
 
 $page->smarty->assign('lastvisit',$page->userdata['lastlogin']);
 
