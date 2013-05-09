@@ -180,17 +180,17 @@ class PostProcess {
 						exit (0);
 					}
 				}
-				
+
 				$passStatus = array(Releases::PASSWD_NONE);
 				$blnTookMediainfo = false;
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				if ($this->echooutput)
 					$consoleTools->overWrite($rescount--." left..");
-				
+
 				if ($blnTookSample)
 					$db->query(sprintf("update releases set haspreview = 0 where id = %d", $rel['ID']));
-				
+
 				//
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				//
@@ -204,7 +204,7 @@ class PostProcess {
 				$bingroup = $samplegroup = $mediagroup = "";
 				$hasrar = 0;
 				$this->password = false;
-				
+
 				$nzbfiles = $nzbcontents->nzblist($rel['guid']);
 				if (!$nzbfiles)
 					continue;
@@ -215,7 +215,7 @@ class PostProcess {
 
 					if (preg_match("/\.(001|000|rar|r00|zip)/i", $subject))
 						$hasrar= 1;
-					
+
 					if (preg_match("/sample/i",$subject) && !preg_match("/\.par2|\.srs/i",$subject))
 					{
 						$samplesegments = $nzbcontents['segment'];
@@ -247,7 +247,7 @@ class PostProcess {
 						}
 					}
 				}
-				
+
 				// Attempt to process sample file.
 				if(!empty($samplemsgid) && $samplemsgid !== -1 && $processSample && $blnTookSample === false)
 				{
@@ -257,20 +257,20 @@ class PostProcess {
 						$samplemsgid = -1;
 					}
 					else
-					{						
+					{
 						$samplefile = $tmpPath.'sample.avi';
-						
+
 						file_put_contents($samplefile, $sampleBinary);
-						
+
 						$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 						if ($blnTookSample)
 							$this->updateReleaseHasPreview($rel['guid']);
-						
+
 						unlink($samplefile);
 					}
 					unset($sampleBinary);
 				}
-				
+
 				if ($hasrar)
 				{
 					foreach ($nzbcontents as $rarFile)
@@ -280,15 +280,15 @@ class PostProcess {
 					}
 					$mid = array_keys(array_count_values($mid));
 				}
-				
+
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
-				
+
 				$bytes = $rel['size'] * 2;
 				$bytes = min( 1024*1024*1024, $bytes);
 				$this->password = false;
 				$lsize = 0;
 				$i = 0;
-				
+
 				if (!empty($mid) && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
 				{
 					$notinfinite = 0;
@@ -301,28 +301,28 @@ class PostProcess {
 						$subject = $rarFile['subject'];
 						if (preg_match("/\.(vol\d{1,3}\+\d{1,3}|par2|sfv)/i", $subject))
 							continue;
-						
+
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)\b/i", $subject))
 							continue;
-						
+
 						if ($this->password)
 							continue;
-						
+
 						$size = $db->queryOneRow("SELECT sum(size) as size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
 						if (is_numeric($size["size"]) && $size["size"] > $bytes)
 							continue;
-						
+
 						if (is_numeric($size["size"]) && $size["size"] == $lsize)
 							$i++;
 						else
 							$i = 0;
-						
+
 						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 							continue;
-						
+
 						$mid = array_slice((array)$rarFile['segment'], 0, 1);
-						
+
 						$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 						if ($fetchedBinary === false)
 						{
@@ -334,20 +334,22 @@ class PostProcess {
 							$relFiles = $this->processReleaseFiles($fetchedBinary, $rel['ID']);
 							if ($relFiles === false)
 								$passStatus[] = Releases::PASSWD_POTENTIAL;
-							
+
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
-							
+
 							// We need to unrar the fetched binary if checkpasswordedrar wasnt 2.
 							if ($this->site->checkpasswordedrar < 2 && $processPasswords)
 							{
+								if (!file_exists($tmpPath))
+									mkdir("$tmpPath", 0764, true);
 								$rarfile = $tmpPath.'rarfile.rar';
 
 								file_put_contents($rarfile, $fetchedBinary);
 								$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
 								$output = runCmd($execstring);
 								unlink($rarfile);
-									
+
 							}
 
 							if ($processSample && $blnTookSample === false)
@@ -371,11 +373,11 @@ class PostProcess {
 				}
 				elseif(empty($mid) && $hasrar == 1)
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
-				
+
 				$hpsql = '';
 				if (!$blnTookSample)
 					$hpsql = ', haspreview = 0';
-				
+
 				$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
 				$db->query($sql);
 				rmdir($tmpPath);

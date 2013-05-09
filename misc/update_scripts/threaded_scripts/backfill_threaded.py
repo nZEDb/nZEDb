@@ -54,10 +54,8 @@ type = cur.fetchone();
 cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
 groups = cur.fetchone();
 
-cur.execute("select * from groups where active = 1 and last_updated < (now() - interval 1.5 hour)");
-stale_groups = cur.fetchall()
-if len(stale_groups) > 0:
-	cur.execute("select name from groups where active = 1 and last_updated < (now() - interval 1 hour) ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
+if sys.argv[1] == "all":
+	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC")
 	datas = cur.fetchall()
 else:
 	cur.execute("SELECT name from groups where active = 1 ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
