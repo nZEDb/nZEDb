@@ -1218,7 +1218,7 @@ class Category
 	
 	public function isEBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ](Ebook|E?\-book|\) WW|Publishing|\[Springer\])|(\(|\[)(epub|html|mobi|pdf|rtf|tif|txt)(\)|\])|\.(doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
+		if (preg_match('/^ePub|[\.\-_ ](Ebook|E?\-book|\) WW|Publishing|\[Springer\])|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 			return true;
@@ -1229,7 +1229,7 @@ class Category
 	
 	public function isComic($releasename)
 	{
-		if (preg_match('/\.(cbr|cbz)|\(c2c\)|comix|comic.+book/i', $releasename))
+		if (preg_match('/[\. ](cbr|cbz)|[\( ]c2c[\) ]|comix|comic.+book/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_COMICS;
 			return true;
