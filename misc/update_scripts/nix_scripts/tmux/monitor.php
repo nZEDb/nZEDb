@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1415";
+$version="0.1r1418";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -403,6 +403,10 @@ while( $i > 0 )
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
+    if ( $post == "TRUE" )
+    {
+        printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
+    }
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
