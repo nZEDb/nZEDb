@@ -1240,7 +1240,7 @@ class Category
 	
 	public function isTechnicalBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking)[\.\-_ ]|Wood[\.\-_ ]/i', $releasename))
+		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking)[\.\-_ ]|^Wood[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 			return true;
