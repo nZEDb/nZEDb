@@ -230,22 +230,22 @@ class Category
 		
 		if($this->catlanguage == "0")
 		{
-			$this->determineCategoryNormal($releasename = "", $groupID);
+			$this->determineCategoryNormal($releasename, $groupID);
 		}
 		else if($this->catlanguage == "1")
 		{
 			$cg = new CategoryGerman();
-			$cg->determineCategory($releasename = "", $groupID);
+			$cg->determineCategory($releasename, $groupID);
 		}
 		else if($this->catlanguage == "2")
 		{
 			$cd = new CategoryDanish();
-			$cd->determineCategory($releasename = "", $groupID);
+			$cd->determineCategory($releasename, $groupID);
 		}
 		else if($this->catlanguage == "3")
 		{
 			$cf = new CategoryFrench();
-			$cf->determineCategory($releasename = "", $groupID);
+			$cf->determineCategory($releasename, $groupID);
 		}
 	}
 	
