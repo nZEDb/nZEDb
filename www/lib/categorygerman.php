@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/groups.php");
 
 class CategoryGerman
 {
+	private $tmpCat = 0;
 	//
 	// Work out which category is applicable for either a group or a binary.
 	// returns -1 if no category is appropriate from the group name.
@@ -23,8 +24,6 @@ class CategoryGerman
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isBook($releasename)){ return $this->tmpCat; }
-		
-		return Category::CAT_MISC;
 	}
 	
 	//
