@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1413";
+$version="0.1r1414";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -25,14 +25,14 @@ $proc = "SELECT
 	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
 	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
 	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( groupID ) as cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID BETWEEN 8000 AND 8999 ) as book,
+	( SELECT COUNT( groupID ) AS cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID BETWEEN 8000 AND 8999 ) AS book,
 	( SELECT COUNT( groupID ) AS cnt from releases where nzbstatus = 1 ) AS releases,
-	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 and nzbstatus = 1 ) AS nfo,
+	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
 	( SELECT COUNT( ID ) from collections ) collections_table,
-	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) as binaries_table,
-	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) as parts_table,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) AS backfill_delay,
@@ -129,6 +129,7 @@ $time3 = TIME();
 $time4 = TIME();
 $time5 = TIME();
 $time6 = TIME();
+$time7 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -204,7 +205,7 @@ $console_releases_now = 0;
 $console_releases_proc = 0;
 $total_work_now = 0;
 $last_history = "";
-	
+
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
 
@@ -635,25 +636,40 @@ while( $i > 0 )
 
 			//run update_binaries
 			$color = get_color();
-			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
+			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
+			{
+				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py all && \
+						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+				$time7 = TIME();
+            }
 			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
+			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			{
+				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py all && \
+						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+				$time7 = TIME();
+            }
 			elseif ( $releases_run == "TRUE" )
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
@@ -697,17 +713,24 @@ while( $i > 0 )
 				$color = get_color();
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} will run in T[ $run_time2] - This is only necessary to ensure that the groups are pulled once with update_binaries before running backfill.\"' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				$color = get_color();
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+			}
+			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
+			{
+				$color = get_color();
+				shell_exec("tmux respawnp -k -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
+						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py all && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+				$time7 = TIME();
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
 			{
