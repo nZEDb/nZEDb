@@ -272,8 +272,6 @@ class Category
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isBook($releasename)){ return $this->tmpCat; }
-		
-		return Category::CAT_MISC;
 	}
 	
 	//
