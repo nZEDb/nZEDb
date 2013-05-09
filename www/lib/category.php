@@ -225,7 +225,7 @@ class Category
 		*0 = English
 		*2 = Danish
 		*3 = French
-		*4 = German
+		*1 = German
 		*/
 		
 		if($this->catlanguage == "0")

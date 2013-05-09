@@ -68,7 +68,7 @@ $page->smarty->assign('passwd_names', array( 'Deep (requires unrar)', 'None'));
  *0 = English
  *2 = Danish
  *3 = French
- *4 = German
+ *1 = German
  */
 
 $page->smarty->assign('langlist_ids', array(0,2,3,1));
