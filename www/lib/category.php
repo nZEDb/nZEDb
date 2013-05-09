@@ -231,21 +231,25 @@ class Category
 		if($this->catlanguage == "0")
 		{
 			$this->determineCategoryNormal($releasename, $groupID);
+			return $this->tmpCat;
 		}
 		else if($this->catlanguage == "1")
 		{
 			$cg = new CategoryGerman();
 			$cg->determineCategory($releasename, $groupID);
+			return $this->tmpCat;
 		}
 		else if($this->catlanguage == "2")
 		{
 			$cd = new CategoryDanish();
 			$cd->determineCategory($releasename, $groupID);
+			return $this->tmpCat;
 		}
 		else if($this->catlanguage == "3")
 		{
 			$cf = new CategoryFrench();
 			$cf->determineCategory($releasename, $groupID);
+			return $this->tmpCat;
 		}
 	}
 	
