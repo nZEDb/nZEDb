@@ -453,12 +453,14 @@ class PostProcess {
 				//
 				if (!$blnTookSample)
 				{
+					if (is_dir($tmpPath))
+					{
 					$files = @scandir($tmpPath);
 
 					if (isset($files) && is_array($files) && count($files) > 0)
 						foreach ($files as $file)
 						{
-							if (preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
+								if (is_file( $file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
 							{
 								if ($name[1] == 'sample')
 									continue;
@@ -468,6 +470,7 @@ class PostProcess {
 								@unlink($tmpPath."sample.avi");
 							}
 						}
+				}
 				}
 
 				if ($blnTookSample)
@@ -710,7 +713,9 @@ class PostProcess {
 				{
 					$execstring = '"'.$ffmpeginfo.'" -q:v 0 -i "'.$samplefile.'" -loglevel quiet -vframes 300 "'.$ramdrive.'zzzz%03d.jpg"';
 					$output = runCmd($execstring);
-					$all_files = scandir($ramdrive,1);
+					if (is_dir($ramdrive))
+					{
+						@$all_files = scandir($ramdrive,1);
 					if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
 					{
 						$ri->saveImage($releaseguid.'_thumb', $ramdrive.$all_files[1], $ri->imgSavePath, 800, 600);
@@ -724,6 +729,7 @@ class PostProcess {
 					}
 				}
 			}
+		}
 		}
 		return $retval;
 	}
