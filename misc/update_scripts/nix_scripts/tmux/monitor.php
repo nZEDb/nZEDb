@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1464";
+$version="0.1r1465";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -62,8 +62,8 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
 	( SELECT value from tmux where setting = 'POST_TIMER' ) AS post_timer,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
-    ( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
-    ( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
+	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
+	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -275,8 +275,8 @@ while( $i > 0 )
 		if ( @$proc_result[0]['tv'] != NULL ) { $tvrage_releases_proc_start = $proc_result[0]['tv']; }
 		if ( @$proc_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_result[0]['book']; }
 		if ( @$proc_result[0]['work'] != NULL ) { $work_remaining_start = $proc_result[0]['work']; }
-        if ( @$proc_result[0]['work'] != NULL ) { $work_start = $proc_result[0]['work']; }
-        if ( @$proc_result[0]['releases'] != NULL ) { $releases_start = $proc_result[0]['releases']; }
+		if ( @$proc_result[0]['work'] != NULL ) { $work_start = $proc_result[0]['work']; }
+		if ( @$proc_result[0]['releases'] != NULL ) { $releases_start = $proc_result[0]['releases']; }
 	}
 
 	//get values from $qry
@@ -327,7 +327,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
-    if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
+	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -339,7 +339,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
 	if ( @$proc_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_result[0]['post_kill_timer']; }
 	if ( @$proc_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_result[0]['tv_timer']; }
-    if ( @$proc_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_result[0]['optimize_timer']; }
+	if ( @$proc_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_result[0]['optimize_timer']; }
 
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_result[0]['binaries']; }
 	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = $proc_result[0]['binaries_total']; }
@@ -403,10 +403,10 @@ while( $i > 0 )
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
-    if ( $post == "TRUE" )
-    {
-        printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
-    }
+	if ( $post == "TRUE" )
+	{
+		printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
+	}
 
 	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
@@ -452,7 +452,7 @@ while( $i > 0 )
 	$_php = "/usr/bin/time nice -n$niceness php";
 	$_python = "/usr/bin/time nice -n$niceness python";
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
-	$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
+	$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false";
 
 	if (( $postprocess_kill < $total_work_now ) && ( $postprocess_kill != 0 ))
 		$kill_pp = "TRUE";
@@ -641,7 +641,7 @@ while( $i > 0 )
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py all && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				$time7 = TIME();
-            }
+			}
 			elseif (( $binaries == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
@@ -660,7 +660,7 @@ while( $i > 0 )
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py all && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				$time7 = TIME();
-            }
+			}
 			elseif ( $releases_run == "TRUE" )
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
