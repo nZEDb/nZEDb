@@ -30,7 +30,7 @@
 	</tr>
 	{/if}
 	
-	{if $userinvitedby.username != ""}
+	{if $userinvitedby && $userinvitedby.username != ""}
 	<tr><th>Invited By:</th><td><a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a></td>
 	{/if}
 	
