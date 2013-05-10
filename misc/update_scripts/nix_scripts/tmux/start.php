@@ -14,7 +14,7 @@ $seq = $tmux->get()->SEQUENTIAL;
 
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
-	
+
 if ( $patch < '32' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
@@ -36,6 +36,8 @@ foreach ($apps as &$value)
 		exit(1);
 	}
 }
+
+shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR: not installed not usable\" >&2; exit 2; fi");
 
 //reset collections dateadded to now
 passthru("clear");
