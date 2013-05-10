@@ -39,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relcount = 0;
 		echo "Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.\n";
 		
-		$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+		$relres = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE relnamestatus = 0 and categoryID = 7010");
 		while ($relrow = $db->fetchAssoc($relres))
 		{
 			$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);

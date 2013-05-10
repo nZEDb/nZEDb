@@ -1,263 +1,15 @@
 <?php
-
-require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/categorygerman.php");
-require_once(WWW_DIR."/lib/categorydanish.php");
-require_once(WWW_DIR."/lib/categoryfrench.php");
 
-class Category
+class CategoryFrench
 {
-	const CAT_GAME_NDS = 1010;
-	const CAT_GAME_PSP = 1020;
-	const CAT_GAME_WII = 1030;
-	const CAT_GAME_XBOX = 1040;
-	const CAT_GAME_XBOX360 = 1050;
-	const CAT_GAME_WIIWARE = 1060;
-	const CAT_GAME_XBOX360DLC = 1070;
-	const CAT_GAME_PS3 = 1080;
-	const CAT_GAME_OTHER = 1090;
-	const CAT_MOVIE_FOREIGN = 2010;
-	const CAT_MOVIE_OTHER = 2020;
-	const CAT_MOVIE_SD = 2030;
-	const CAT_MOVIE_HD = 2040;
-	const CAT_MOVIE_3D = 2050;
-	const CAT_MOVIE_BLURAY = 2060;
-	const CAT_MOVIE_DVD = 2070;
-	const CAT_MUSIC_MP3 = 3010;
-	const CAT_MUSIC_VIDEO = 3020;
-	const CAT_MUSIC_AUDIOBOOK = 3030;
-	const CAT_MUSIC_LOSSLESS = 3040;
-	const CAT_MUSIC_OTHER = 3050;
-	const CAT_PC_0DAY = 4010;
-	const CAT_PC_ISO = 4020;
-	const CAT_PC_MAC = 4030;
-	const CAT_PC_PHONE_OTHER = 4040;
-	const CAT_PC_GAMES = 4050;
-	const CAT_PC_PHONE_IOS = 4060;
-	const CAT_PC_PHONE_ANDROID = 4070;
-	const CAT_TV_WEBDL = 5010;
-	const CAT_TV_FOREIGN = 5020;
-	const CAT_TV_SD = 5030;
-	const CAT_TV_HD = 5040;
-	const CAT_TV_OTHER = 5050;
-	const CAT_TV_SPORT = 5060;
-	const CAT_TV_ANIME = 5070;
-	const CAT_TV_DOCUMENTARY = 5080;
-	const CAT_XXX_DVD = 6010;
-	const CAT_XXX_WMV = 6020;
-	const CAT_XXX_XVID = 6030;
-	const CAT_XXX_X264 = 6040;
-	const CAT_XXX_OTHER = 6050;
-	const CAT_XXX_IMAGESET = 6060;
-	const CAT_XXX_PACKS = 6070;
-	const CAT_MISC = 7010;
-	const CAT_BOOKS_EBOOK = 8010;
-	const CAT_BOOKS_COMICS = 8020;
-	const CAT_BOOKS_MAGAZINES = 8030;
-	const CAT_BOOKS_TECHNICAL = 8040;
-	const CAT_BOOKS_OTHER = 8050;
-	
-	const CAT_PARENT_GAME = 1000;
-	const CAT_PARENT_MOVIE = 2000;
-	const CAT_PARENT_MUSIC = 3000;
-	const CAT_PARENT_PC = 4000;
-	const CAT_PARENT_TV = 5000;
-	const CAT_PARENT_XXX = 6000;
-	const CAT_PARENT_MISC = 7000;
-	const CAT_PARENT_BOOKS = 8000;
-
-	const STATUS_INACTIVE = 0;
-	const STATUS_ACTIVE = 1;
-	const STATUS_DISABLED = 2;
-
 	private $tmpCat = 0;
-
-	public function category()
-	{
-		$s = new Sites();
-		$site = $s->get();
-		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
-		$this->catlanguage = (!empty($site->catlanguage)) ? $site->catlanguage : "0";
-	}
-	
-	public function get($activeonly=false, $excludedcats=array())
-	{
-		$db = new DB();
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and c.ID not in (".implode(",", $excludedcats).")";
-
-		$act = "";
-		if ($activeonly)
-			$act = sprintf(" where c.status = %d %s ", Category::STATUS_ACTIVE, $exccatlist ) ;
-
-		return $db->query("select c.ID, concat(cp.title, ' > ',c.title) as title, cp.ID as parentID, c.status from category c inner join category cp on cp.ID = c.parentID ".$act." ORDER BY c.ID");
-	}
-
-	public function isParent($cid)
-	{
-		$db = new DB();
-		$ret = $db->queryOneRow(sprintf("select * from category where ID = %d and parentID is null", $cid));
-		if ($ret)
-			return true;
-		else
-			return false;
-	}
-
-	public function getFlat($activeonly=false)
-	{
-		$db = new DB();
-		$act = "";
-		if ($activeonly)
-			$act = sprintf(" where c.status = %d ", Category::STATUS_ACTIVE ) ;
-		return $db->query("select c.*, (SELECT title FROM category WHERE ID=c.parentID) AS parentName from category c ".$act." ORDER BY c.ID");
-	}
-
-	public function getChildren($cid)
-	{
-		$db = new DB();
-		return $db->query(sprintf("select c.* from category c where parentID = %d", $cid));
-	}
-	
-	//
-	// Returns ID's for site disabled categories. 
-	//
-	public function getDisabledIDs()
-	{
-		$db = new DB();
-		return $db->queryDirect("SELECT ID from category where status = 2");
-	}
-	public function getById($id)
-	{
-		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.ID, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID from category c left outer join category cp on cp.ID = c.parentID where c.ID = %d", $id));
-	}
-
-	public function getByIds($ids)
-	{
-		$db = new DB();
-		return $db->query(sprintf("SELECT concat(cp.title, ' > ',c.title) as title from category c inner join category cp on cp.ID = c.parentID where c.ID in (%s)", implode(',', $ids)));
-	}
-
-	public function update($id, $status, $desc, $disablepreview)
-	{
-		$db = new DB();
-		return $db->query(sprintf("update category set disablepreview = %d, status = %d, description = %s where ID = %d", $disablepreview, $status, $db->escapeString($desc), $id));
-	}
-
-	public function getForMenu($excludedcats=array())
-	{
-		$db = new DB();
-		$ret = array();
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and ID not in (".implode(",", $excludedcats).")";
-
-		$arr = $db->query(sprintf("select * from category where status = %d %s", Category::STATUS_ACTIVE, $exccatlist));
-		foreach ($arr as $a)
-			if ($a["parentID"] == "")
-				$ret[] = $a;
-
-		foreach ($ret as $key => $parent)
-		{
-			$subcatlist = array();
-			$subcatnames = array();
-			foreach ($arr as $a)
-			{
-				if ($a["parentID"] == $parent["ID"])
-				{
-					$subcatlist[] = $a;
-					$subcatnames[] = $a["title"];
-				}
-			}
-
-			if (count($subcatlist) > 0)
-			{
-				array_multisort($subcatnames, SORT_ASC, $subcatlist);
-				$ret[$key]["subcatlist"] = $subcatlist;
-			}
-			else
-			{
-				unset($ret[$key]);
-			}
-		}
-		return $ret;
-	}
-
-	public function getForSelect($blnIncludeNoneSelected = true)
-	{
-		$categories = $this->get();
-		$temp_array = array();
-
-		if ($blnIncludeNoneSelected)
-		{
-			$temp_array[-1] = "--Please Select--";
-		}
-
-		foreach($categories as $category)
-			$temp_array[$category["ID"]] = $category["title"];
-
-		return $temp_array;
-	}
-	
-	//
-	// Return the category name from the supplied categoryID.
-	//
-	public function getNameByID($ID)
-	{
-		$db = new DB();
-		$parent = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", substr($ID, 0, 1)."000")));
-		$cat = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", $ID)));
-		return $parent." ".$cat;
-	}
-	
-	//
-	// Looks up the site to see which language of categorizer to use.
-	//
-	public function determineCategory($releasename = "", $groupID)
-	{
-		
-		/*
-		*0 = English
-		*2 = Danish
-		*3 = French
-		*1 = German
-		*/
-		
-		if($this->catlanguage == "0")
-		{
-			if($this->determineCategoryNormal($releasename, $groupID)) { return $this->tmpCat; }
-			return Category::CAT_MISC;
-		}
-		else if($this->catlanguage == "1")
-		{
-			$cg = new CategoryGerman();
-			if($cg->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
-			return Category::CAT_MISC;
-		}
-		else if($this->catlanguage == "2")
-		{
-			$cd = new CategoryDanish();
-			if($cd->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
-			return Category::CAT_MISC;
-		}
-		else if($this->catlanguage == "3")
-		{
-			$cf = new CategoryFrench();
-			if($cf->determineCategory($releasename, $groupID)) { return $this->tmpCat; }
-			return Category::CAT_MISC;
-		}
-	}
-	
 	//
 	// Work out which category is applicable for either a group or a binary.
 	// returns -1 if no category is appropriate from the group name.
 	//
-	public function determineCategoryNormal($releasename = "", $groupID)
+	public function determineCategory($releasename = "", $groupID)
 	{	 
 		//					   
 		//Try against all functions, if still nothing, return Cat Misc.
@@ -312,15 +64,6 @@ class Category
 					return true;
 				}
 				
-				if($this->categorizeforeign)
-				{
-					if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
-					{
-						$this->tmpCat =  Category::CAT_TV_FOREIGN;
-						return true;
-					}
-				}
-				
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
 					$this->tmpCat =  Category::CAT_PC_0DAY;
@@ -369,13 +112,10 @@ class Category
 					return true;
 				}
 				
-				if($this->categorizeforeign)
+				if (preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $groupRes["name"]))
 				{
-					if (preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $groupRes["name"]))
-					{
-						$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
-						return true;
-					}
+					$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
+					return true;
 				}
 				
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
@@ -532,13 +272,10 @@ class Category
 					return true;
 				}
 				
-				if($this->categorizeforeign)
+				if (preg_match('/dk\.binaer\.tv/', $groupRes["name"]))
 				{
-					if (preg_match('/dk\.binaer\.tv/', $groupRes["name"]))
-					{
-						$this->tmpCat = Category::CAT_TV_FOREIGN;
-						return true;
-					}
+					$this->tmpCat = Category::CAT_TV_FOREIGN;
+					return true;
 				}
 				
 				return false;
@@ -558,10 +295,7 @@ class Category
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|imageset|mp3|xxx)[\.\-_ ]/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
-			if($this->categorizeforeign)
-			{
-				if($this->isForeignTV($releasename)){ return true; }
-			}
+			if($this->isForeignTV($releasename)){ return true; }
 			if($this->isSportTV($releasename)){ return true; }
 			if($this->isDocumentaryTV($releasename)){ return true; }
 			if($this->isWEBDL($releasename)){ return true; }
@@ -596,31 +330,31 @@ class Category
 	{
 		if (!preg_match('/[\.\-_ ](NHL|stanley.+cup)[\.\-_ ]/', $releasename))
 		{
-			if(preg_match('/[\.\-_ ](chinese|dk|fin|french|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?|<German>/i', $releasename))
+			if(preg_match('/[\.\-_ ](chinese|dk|fin|ger|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[\.\-_ ]?(sub|dub)(ed|bed|s)?|<German>/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
+			if(preg_match('/[\.\-_ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid)[\.\-_ ]/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ](720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
+			if(preg_match('/[\.\-_ ](720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[\.\-_ ]?Rip|WS|Xvid).+(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\.\-_ ]/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
 		
-			if(preg_match('/(S\d\dE\d\d|DOCU(MENTAIRE)?|TV)?[\.\-_ ](FRENCH|German|Dutch)[\.\-_ ](720p|1080p|dv(b|d)r(ip)?|LD|HD\-?TV|TV[\.\-_ ]?RIP|x264)[\.\-_ ]/i', $releasename))
+			if(preg_match('/(S\d\dE\d\d|DOCU|TV)?[\.\-_ ](German|Dutch)[\.\-_ ](720p|1080p|dv(b|d)r(ip)?|LD|HD\-?TV|TV[\.\-_ ]?RIP|x264)[\.\-_ ]/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
 		
-			if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|RealCO|Seizoen|slosinh|Videomann|Vostfr|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
+			if(preg_match('/[\.\-_ ]FastSUB|NL|nlvlaams|patrfa|RealCO|Seizoen|slosinh|Videomann|xslidian[\.\-_ ]|x264\-iZU/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
@@ -747,10 +481,7 @@ class Category
 	{
 		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/[\.\-_ ]exe$|[\.\-_ ](jav|XXX)[\.\-_ ]|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
 		{
-			if($this->categorizeforeign)
-			{
-				if($this->isMovieForeign($releasename)){ return true; }
-			}
+			if($this->isMovieForeign($releasename)){ return true; }
 			if($this->isMovieDVD($releasename)){ return true; }
 			if($this->isMovieSD($releasename)){ return true; }
 			if($this->isMovie3D($releasename)){ return true; }
@@ -764,7 +495,7 @@ class Category
 	
 	public function isMovieForeign($releasename)
 	{
-		if(preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl[\.\-_ ]?sub(bed|s)?|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]|\(german\)/i', $releasename))
+		if(preg_match('/(danish|flemish|Deutsch|dutch|german|nl[\.\-_ ]?sub(bed|s)?|\.NL|norwegian|swedish|swesub|spanish|Staffel)[\.\-_ ]|\(german\)/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;

@@ -78,6 +78,22 @@
 </tr>
 
 <tr>
+	<td><label for="style">Categorize Language</label>:</td>
+	<td>
+		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
+		<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
+	<td>
+		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
+		<div class="hint">This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="style">Theme</label>:</td>
 	<td>
 		{html_options class="siteeditstyle" id="style" name='style' values=$themelist output=$themelist selected=$fsite->style}
@@ -624,14 +640,6 @@
 	<td>
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
 		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
-	<td>
-		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
-		<div class="hint">Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
 	</td>
 </tr>
 

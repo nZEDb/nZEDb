@@ -40,7 +40,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 				{
 					gzwrite($fp, $nzb, strlen($nzb));
 					gzclose($fp); 
-					chmod($nzbpath, 0777);
+					chmod($nzbpath, 0764);
 				}
 			}
 			if ($nzbcount % 10 == 0)
