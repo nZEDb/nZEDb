@@ -29,7 +29,7 @@
 				<td><label for="TMUX_SESSION">Tmux Session</label>:</td>
 				<td>
 					<input id="TMUX_SESSION" name="TMUX_SESSION" class="long" type="text" value="{$ftmux->TMUX_SESSION}" />
-					<div class="hint">Enter the session name to be used by tmux, no spaces allowed in the name, this can be changed after scripts start if you are running multiple servers, you could put your hostname here</div>
+					<div class="hint">Enter the session name to be used by tmux, no spaces allowed in the name, this can't be changed after scripts start. If you are running multiple servers, you could put your hostname here</div>
 				</td>
 			</tr>
 
@@ -43,7 +43,7 @@
 				<td><label for="SEQUENTIAL">Run Sequential</label>:</td>
 				<td>
 					{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL}
-					<div class="hint">Choose to run update_binaries, backfill and update releases sequentially. Changing requires restart. true/false</div>
+					<div class="hint">Choose to run update_binaries, backfill and update releases_sequentially. Changing requires restart. true/false</div>
 				</td>
 			</tr>
 
@@ -64,7 +64,7 @@
 				<td><label for="BINARIES">Update Binaries</label>:</td>
 				<td>
 					{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES}
-					<div class="hint">Choose to run update_binaries true/false</div>
+					<div class="hint">Choose to run update_binaries true/false. Update binaries gets from your last_record to now. </div>
 				</td>
 			</tr>
 
@@ -85,7 +85,7 @@
 				<td><label for="BACKFILL">Backfill</label>:</td>
 				<td>
 					{html_radios id="BACKFILL" name='BACKFILL' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL}
-					<div class="hint">Choose to run backfill script true/false. It is not recommended to set "Max Messages" > 20k as this will overwhelm the collections table. Small increments is faster for update_releases.</div>
+					<div class="hint">Choose to run backfill true/false. Backfill gets from your first_record back. It is not recommended to set "Backfill Quantity" > 20k as this will overwhelm the collections table. Small increments is faster for update_releases.</div>
 				</td>
 			</tr>
 
@@ -93,7 +93,7 @@
 				<td><label for="BACKFILL_TYPE">Backfill Intervals</label>:</td>
 				<td>
 					{html_radios id="BACKFILL_TYPE" name='BACKFILL_TYPE' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL_TYPE}
-					<div class="hint">Choose to run backfill Intervals script true/false. True will download everything per group upto your backfill days set in admin, one group per thread. False will download 20k headers per group per thread.</div>
+					<div class="hint">Choose to run Backfill Intervals true/false. True will download everything per group upto your backfill days set in admin/view group, one group per thread. False will download "Backfill Quantity" headers per group until backfill days is reached.</div>
 				</td>
 			</tr>
 
@@ -101,7 +101,7 @@
 				<td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
 				<td>
 					<input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
-					<div class="hint">When not running backfill intervals, you select the number of hearders per group per thread to download.</div>
+					<div class="hint">When not running backfill intervals, you select the number of headers per group per thread to download.</div>
 				</td>
 			</tr>
 
@@ -225,7 +225,7 @@
 				<td><label for="FIX_NAMES">Fix Release Names</label>:</td>
 				<td>
 					{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES}
-					<div class="hint">Choose to try to fix Releases Names and remove Crap Releases true/false</div>
+					<div class="hint">Choose to try to fix Releases Names true/false</div>
 				</td>
 			</tr>
 

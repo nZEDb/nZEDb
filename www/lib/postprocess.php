@@ -427,7 +427,7 @@ class PostProcess {
 					//unset($sampleBinary);
 				}
 
-				if ($processMediainfo && $blnTookMediainfo === false)
+				if ($processMediainfo && $processSample && $blnTookMediainfo === false)
 				{
 					$nntp->doConnect();
 
@@ -451,7 +451,7 @@ class PostProcess {
 				//
 				// Last attempt to get a sample image.
 				//
-				if (!$blnTookSample)
+				if (!$blnTookSample && $processSample)
 				{
 					$files = @scandir($tmpPath);
 
