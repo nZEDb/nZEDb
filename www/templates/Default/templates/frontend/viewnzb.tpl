@@ -275,6 +275,7 @@
 	{/if}
 
 	<tr><th>Size:</th><td>{$release.size|fsize_format:"MB"}{if $release.completion > 0}&nbsp;({if $release.completion < 100}<span class="warning">{$release.completion}%</span>{else}{$release.completion}%{/if}){/if}</td></tr>
+	<tr><th>ID:</th><td>{$release.ID}</td></tr>
 	<tr><th>Grabs:</th><td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}</td></tr>
 	<tr><th>Files:</th><td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a></td></tr>
 	{if $releasefiles|@count > 0}
@@ -303,7 +304,7 @@
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Passworded Rar Archive{elseif $release.passwordstatus == 2}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possible Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}

@@ -145,7 +145,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 }
 else
 {
-	echo "\033[1;33mTo reset consoles, run php reset_postrpocessing.php consoles\n";
+	echo "\033[1;33mTo reset consoles, run php reset_postrpocessing.php consoles true\n";
 	echo "To reset movies, run php reset_postrpocessing.php movies true\n";
 	echo "To reset music, run php reset_postrpocessing.php music true\n";
 	echo "To reset misc, run php reset_postrpocessing.php misc true\n";

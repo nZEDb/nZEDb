@@ -453,21 +453,25 @@ class PostProcess {
 				//
 				if (!$blnTookSample && $processSample)
 				{
-					$files = @scandir($tmpPath);
-
-					if (isset($files) && is_array($files) && count($files) > 0)
-						foreach ($files as $file)
+					if (is_dir($tmpPath))
+					{
+						$files = @scandir($tmpPath);
+						if (isset($files) && is_array($files) && count($files) > 0)
 						{
-							if (preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
+							foreach ($files as $file)
 							{
-								if ($name[1] == 'sample')
-									continue;
+								if (is_file( $file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
+								{
+									if ($name[1] == 'sample')
+										continue;
 
-								rename($tmpPath.$name[0], $tmpPath."sample.avi");
-								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
-								@unlink($tmpPath."sample.avi");
+									rename($tmpPath.$name[0], $tmpPath."sample.avi");
+									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+									@unlink($tmpPath."sample.avi");
+								}
 							}
 						}
+					}
 				}
 
 				if ($blnTookSample)
@@ -710,17 +714,20 @@ class PostProcess {
 				{
 					$execstring = '"'.$ffmpeginfo.'" -q:v 0 -i "'.$samplefile.'" -loglevel quiet -vframes 300 "'.$ramdrive.'zzzz%03d.jpg"';
 					$output = runCmd($execstring);
-					$all_files = scandir($ramdrive,1);
-					if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
+					if (is_dir($ramdrive))
 					{
-						$ri->saveImage($releaseguid.'_thumb', $ramdrive.$all_files[1], $ri->imgSavePath, 800, 600);
-						$retval = true;
-					}
+						@$all_files = scandir($ramdrive,1);
+						if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
+						{
+							$ri->saveImage($releaseguid.'_thumb', $ramdrive.$all_files[1], $ri->imgSavePath, 800, 600);
+							$retval = true;
+						}
 
-					// Clean up all files.
-					foreach(glob($ramdrive.'*.jpg') as $v)
-					{
-						@unlink($v);
+						// Clean up all files.
+						foreach(glob($ramdrive.'*.jpg') as $v)
+						{
+							@unlink($v);
+						}
 					}
 				}
 			}
