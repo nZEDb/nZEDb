@@ -70,7 +70,7 @@ CREATE TABLE `releases`
 `anidbID` INT NULL,
 `grabs` INT UNSIGNED NOT NULL DEFAULT '0',
 `comments` INT NOT NULL DEFAULT 0,
-`passwordstatus` TINYINT NOT NULL DEFAULT 0,
+`passwordstatus` FLOAT NOT NULL DEFAULT 0,
 `rarinnerfilecount` INT NOT NULL DEFAULT 0,
 `haspreview` TINYINT NOT NULL DEFAULT 0,
 `nzbstatus` TINYINT NOT NULL DEFAULT 0,
@@ -86,7 +86,7 @@ CREATE INDEX ix_releases_rageID ON releases (`rageID`);
 CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
-CREATE INDEX ix_release_name ON releases('name');
+CREATE INDEX ix_release_name ON releases(`name`);
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
