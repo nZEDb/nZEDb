@@ -469,7 +469,7 @@ class PostProcess {
 					}
 				}
 
-				if ($processMediainfo && $processSample && $blnTookMediainfo === false)
+				if ($processMediainfo && $blnTookMediainfo === false)
 				{
 					$nntp->doConnect();
 
@@ -524,7 +524,7 @@ class PostProcess {
 				else
 					$hpsql = ', haspreview = 0';
 
-				if (max($passStatus) >= 0)
+				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
 				else
 					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1 %s where ID = %d", $hpsql, $rel["ID"]);
