@@ -36,7 +36,7 @@
 			//Extensions.
 			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|jpg|mkv|mobi|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
 			//Unwanted stuff.
-			$cleanerName = preg_replace('\(\?\?\?\?\)|AutoRarPar\d{1,5}|brothers\-of\-usenet\.info(\/\.net)?|\[\d{1,}\]\-\[FULL\].+#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|Lords-of-Usenet|Partner (of|von) SSL\-News\.info((>>)? presents)?|\-\s\[.+?\]\s<>\spresents|<.+https:\/\/secretusenet\.com>|/SECTIONED brings you|usenet\-space\-cowboys\.info|> USC </i', '', $cleanerName);
+			$cleanerName = preg_replace('/\(\?\?\?\?\)|AutoRarPar\d{1,5}|brothers\-of\-usenet\.info(\/\.net)?|ghost-of-usenet.org<<|GOU<<|\[\d{1,}\]\-\[FULL\].+?#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|Lords-of-Usenet(\] <> presents)?|Partner (of|von) SSL\-News\.info((>>)? presents)?|\-\s\[.+?\]\s<>\spresents|<.+?https:\/\/secretusenet\.com>|SECTIONED brings you|>>www\.SSL-News\.info|usenet\-space\-cowboys\.info|> USC </i', '', $cleanerName);
 			//Removes some characters.
 			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
 			$cleanerName = str_replace($crapchars, "", $cleanerName);
