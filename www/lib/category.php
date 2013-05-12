@@ -973,7 +973,7 @@ class Category
 	
 	public function isXxx264($releasename)
 	{
-		if (preg_match('/720p|1080p|x264/i', $releasename) && !preg_match('/wmv/i', $releasename))
+		if (preg_match('/720p|1080(hd|p)|x264/i', $releasename) && !preg_match('/wmv/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_XXX_X264;
 			return true;
