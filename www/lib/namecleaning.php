@@ -34,17 +34,22 @@
 			//Size.
 			$cleanerName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B|\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $cleanerName);
 			//Extensions.
-			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|jpg|mkv|mobi|mp4|nfo|nzb|par\s?2|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
+			$cleanerName = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|mds|mkv|mobi|mp4|nfo|nzb|par(\s?2|")|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|zip|z{2})"?|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', '', $cleanerName);
 			//Unwanted stuff.
-			$cleanerName = preg_replace('/\(\?\?\?\?\)|AutoRarPar\d{1,5}|brothers\-of\-usenet\.info(\/\.net)?|ghost-of-usenet.org<<|GOU<<|\[\d{1,}\]\-\[FULL\].+?#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|Lords-of-Usenet(\] <> presents)?|Partner (of|von) SSL\-News\.info((>>)? presents)?|\-\s\[.+?\]\s<>\spresents|<.+?https:\/\/secretusenet\.com>|SECTIONED brings you|<TOWN>|(partner of )?www\.SSL-News\.info|www\.town\.ag|usenet\-space\-cowboys\.info|> USC </i', '', $cleanerName);
+			$cleanerName = preg_replace('/\(\?\?\?\?\)|AsianDVDClub\.org|AutoRarPar\d{1,5}|brothers\-of\-usenet\.(info|net)(\/\.net)?|~bY [a-z]{3,15}|for\.usenet4ever\.info|ghost-of-usenet.org<<|GOU<<|(http:\/\/www\.)?friends-4u\.nl|\[\d{3,}\]-\[FULL\]-\[(a\.b| abgx).+?\]|\[\d{1,}\]|\-\[FULL\].+?#a\.b[\w.#!@$%^&*\(\){}\|\\:"\';<>,?~` ]+\]|Lords-of-Usenet(\] <> presents)?|nzbcave\.co\.uk( VIP)?|Partner (of|von) SSL\-News\.info((>>)? presents)?|\/ post: |powere?d by 4ux(\.n\)?l)?|powered by ssl-news(\.info)?|\-\s\[.+?\]\s<>\spresents|<.+?https:\/\/secretusenet\.com>|SECTIONED brings you|team-hush\.org\/| TiMnZb |<TOWN>|www\.binnfo\.in|www\.dreameplace\.biz|wwwworld\.me|(partner of )?www\.SSL-News\.info|www\.town\.ag|(Draak48|Egbert47|jipenjans|Taima) post voor u op|Sponsored\.by\.SecretUsenet\.com|(::::)?UR-powered by SecretUsenet.com(::::)?|usenet4ever\.info|(www\.)?usenet-4all\.info|usenet\-space\-cowboys\.info|> USC <|SecretUsenet\.com|\] und \[|www\.[a-z0-9]+\.com|zoekt nog posters\/spotters/i', '', $cleanerName);
+			//Change [pw] to passworded.
+			$cleanerName = str_replace(array('[pw]', '[PW]', ' PW '), ' PASSWORDED ', $cleanerName);
 			//Removes some characters.
-			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}");
+			$crapchars = array("<", ">", '"', "=", '[', "]", "(", ")", "{", "}", "*");
 			$cleanerName = str_replace($crapchars, "", $cleanerName);
 			//Replaces some characters with 1 space.
 			$commonchars = array(".", "_", '-', "|");
 			$cleanerName = str_replace($commonchars, " ", $cleanerName);
 			//Replace multiple spaces with 1 space
 			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
+			// Attempt to remove the double name.
+			$cleanerName = explode(' ', $cleanerName);
+			$cleanerName = implode(' ', array_map('ucwords', array_unique(array_map('strtolower', $cleanerName))));	
 			
 			return $cleanerName;
 		}

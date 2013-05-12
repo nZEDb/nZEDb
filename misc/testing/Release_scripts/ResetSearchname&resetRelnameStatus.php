@@ -31,7 +31,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 				echo "\n";
 		}
 		$time = TIME() - $timestart;
-		exit($done." releases changed in ".$time." seconds.\n");
+		exit("\n".$done." releases changed in ".$time." seconds.\n");
 	}
 	else
 		exit("You have no releases in the DB.\n");	
