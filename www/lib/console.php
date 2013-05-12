@@ -491,7 +491,7 @@ class Console
 		return $result;
 	}
 	
-	public function processConsoleReleases($threads=0)
+	public function processConsoleReleases($threads=1)
 	{
 		$threads--;
 		$db = new DB();

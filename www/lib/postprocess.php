@@ -723,9 +723,12 @@ class PostProcess {
 									$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
 								}
 
-							} elseif (preg_match("/sample/i",$file['name'])) {
+							}
+							elseif (preg_match("/sample/i",$file['name']))
+							{
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							} elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']) && !preg_match("/sample/i",$file['name']))
+							}
+							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']) && !preg_match("/sample/i",$file['name']))
 							{
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
 							}

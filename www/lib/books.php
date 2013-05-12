@@ -226,7 +226,7 @@ require_once(WWW_DIR."/lib/site.php");
 			return $result;
 		}
 		
-		public function processBookReleases($threads=0)
+		public function processBookReleases($threads=1)
 		{
 			$threads--;
 			$ret = 0;

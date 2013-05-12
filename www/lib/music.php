@@ -413,7 +413,7 @@ class Music
 		return $result;
 	}
 	
-	public function processMusicReleases($threads=0)
+	public function processMusicReleases($threads=1)
 	{
 		$threads--;
 		$ret = 0;
