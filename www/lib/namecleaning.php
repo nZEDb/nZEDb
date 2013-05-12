@@ -47,9 +47,8 @@
 			$cleanerName = str_replace($commonchars, " ", $cleanerName);
 			//Replace multiple spaces with 1 space
 			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
-			// Attempt to remove the double name.
-			$cleanerName = explode(' ', $cleanerName);
-			$cleanerName = implode(' ', array_map('ucwords', array_unique(array_map('strtolower', $cleanerName))));	
+			//Remove the double name.
+			$cleanerName = implode(' ', array_map('ucwords', array_unique(array_map('strtolower', explode(' ', $cleanerName)))));	
 			
 			return $cleanerName;
 		}
