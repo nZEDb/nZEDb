@@ -62,10 +62,10 @@ Class NZBcontents
 				{
 					$artificialParts = $artificialParts+$parts['total'];
 				}
-				
+
 				if ($foundnfo !== true)
 				{
-					if (preg_match('/\.nfo/', $subject))
+					if (preg_match('/\.\b(nfo|inf|ofn)\b/', $subject))
 					{
 						$messageid = $nzbcontents->segments->segment;
 						$foundnfo = true;

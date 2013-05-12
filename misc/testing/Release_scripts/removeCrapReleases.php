@@ -17,7 +17,7 @@ if (!isset($argv[1]) && !isset($argv[2]))
 		."If you are sure you want to run this script, type php removeCrapReleases.php true full\n"
 		."The second mandatory argument is the time in hours(ex: 12) to go back, or you can type full.\n"
 		."You can pass 1 optional third argument:\n"
-		."gibberish | hashed | short | exe | passwordurl | size | sample\n");
+		."gibberish | hashed | short | exe | passwordurl | passworded | size | sample\n");
 }
 else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 {
@@ -26,26 +26,27 @@ else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 		."short deletes releases where the name is only numbers or letters and is 5 characters or less\n"
 		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
 		."passwordurl deletes releases which contain a password.url file\n"
+		."passworded deletes releases which contain password or passworded in the search name\n"
 		."size deletes releases smaller than 1MB and has only 1 file not in mp3/books\n"
 		."sample deletes releases smaller than 40MB and has more than 1 file and has sample in the name\n"
 		."php removeCrapReleases.php true full runs all the above\n"
 		."php removeCrapReleases.php true full gibberish runs only this type\n");
 }
 
-if (isset($argv[2]) && $argv[2] == "full")
+if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "full")
 {
 	echo "Removing crap releases - no time limit.\n";
 	$and = "";
 }
-else if (isset($argv[2]) && is_numeric($argv[2]))
+else if (isset($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
 	echo "Removing crap releases from the past ".$argv[2]." hour(s).\n";
 	$and = " and adddate > (now() - interval ".$argv[2]." hour) order by ID asc";
 }
-else if (!isset($argv[2]) && ($argv[2]) !== "full" || !is_numeric($argv[2]))
+else if (!isset($argv[2]) || $argv[2] !== "full" || !is_numeric($argv[2]))
 	exit("ERROR: Wrong second argument.\n");
 
-if ($argv[1] == "true")
+if (isset($argv[1]) && $argv[1] == "true")
 {
 	function deleteReleases($sql, $type)
 	{
@@ -113,6 +114,16 @@ if ($argv[1] == "true")
 		return $delcount;
 	}
 	
+	// Password in the searchname
+	function deletePassworded($and)
+	{
+		$type = "Passworded";
+		$db = new Db;
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP 'Passworded|Password Protect' and nzbstatus = 1".$and);
+		$delcount = deleteReleases($sql, $type);
+		return $delcount;
+	}
+	
 	// Anything that is 1 part and smaller than 1MB and not in MP3/books.
 	function deleteSize($and)
 	{
@@ -139,24 +150,27 @@ if ($argv[1] == "true")
 	$shortDeleted = 0;
 	$exeDeleted = 0;
 	$PURLDeleted = 0;
+	$PassDeleted = 0;
 	$sizeDeleted = 0;
 	$sampleDeleted = 0;
 	
 	if (isset($argv[3]))
 	{
-		if ($argv[3] == "gibberish")
+		if (isset($argv[3]) && $argv[3] == "gibberish")
 			$gibberishDeleted = deleteGibberish($and);
-		if ($argv[3] == "hashed")
+		if (isset($argv[3]) && $argv[3] == "hashed")
 			$hashedDeleted = deleteHashed($and);
-		if ($argv[3] == "short")
+		if (isset($argv[3]) && $argv[3] == "short")
 			$shortDeleted = deleteShort($and);
-		if ($argv[3] == "exe")
+		if (isset($argv[3]) && $argv[3] == "exe")
 			$exeDeleted = deleteExe($and);
-		if ($argv[3] == "passwordurl")
+		if (isset($argv[3]) && $argv[3] == "passwordurl")
 			$PURLDeleted = deletePasswordURL($and);
-		if ($argv[3] == "size")
+		if (isset($argv[3]) && $argv[3] == "passworded")
+			$PURLDeleted = deletePassworded($and);
+		if (isset($argv[3]) && $argv[3] == "size")
 			$sizeDeleted = deleteSize($and);
-		if ($argv[3] == "sample")
+		if (isset($argv[3]) && $argv[3] == "sample")
 			$sampleDeleted = deleteSample($and);
 	}
 	else
@@ -166,11 +180,12 @@ if ($argv[1] == "true")
 		$shortDeleted = deleteShort($and);
 		$exeDeleted = deleteExe($and);
 		$PURLDeleted = deletePasswordURL($and);
+		$PassDeleted = deletePassworded($and);
 		$sizeDeleted = deleteSize($and);
 		$sampleDeleted = deleteSample($and);
 	}
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$sizeDeleted+$sampleDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted;
 	
 	if ($totalDeleted > 0)
 	{
@@ -185,6 +200,8 @@ if ($argv[1] == "true")
 			echo "EXE          : ".$exeDeleted."\n";
 		if($PURLDeleted > 0)
 			echo "PURL         : ".$PURLDeleted."\n";
+		if($PassDeleted > 0)
+			echo "Passwordeded : ".$PassDeleted."\n";
 		if($sizeDeleted > 0)
 			echo "Size         : ".$sizeDeleted."\n";
 		if($sampleDeleted > 0)

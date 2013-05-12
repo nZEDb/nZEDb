@@ -14,7 +14,7 @@ export NZEDB_SLEEP_TIME="60"
 	   
 while :
 do
-	
+	sleep 1
 	CURRTIME=`date +%s`
 	cd ${NZEDB_PATH}
 	if ! $SCREEN -list | grep -q "POSTP"; then
@@ -38,7 +38,6 @@ do
 		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 1 true all yes
-		$PHP ${TEST_PATH}/removeCrapReleases.php true 2
 	fi
 	
 	cd ${NZEDB_PATH}
