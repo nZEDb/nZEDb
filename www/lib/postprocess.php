@@ -803,7 +803,7 @@ class PostProcess {
 		$retval = false;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 
-		if (!($processSample && is_dir($ramdrive) && ($releaseID > 0)))
+		if (!($processSample && is_dir($ramdrive) && ($releaseguid > 0)))
 			return $retval;
 
 		$ri = new ReleaseImage();
