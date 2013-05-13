@@ -134,12 +134,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 		return $delcount;
 	}
 	
-	// More than 1 part, less than 40MB, sample in searchname. TV/Movie sections.
+	// More than 1 part, less than 40MB, sample in name. TV/Movie sections.
 	function deleteSample($and)
 	{
 		$type = "Sample";
 		$db = new Db;
-		$sql = $db->query('select ID, guid, searchname from releases where totalPart > 1 and searchname like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
+		$sql = $db->query('select ID, guid, searchname from releases where totalPart > 1 and name like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
