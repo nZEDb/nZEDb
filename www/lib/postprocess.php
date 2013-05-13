@@ -469,7 +469,7 @@ class PostProcess {
 					}
 				}
 
-				if ($processMediainfo && $processSample && $blnTookMediainfo === false)
+				if ($processMediainfo && $blnTookMediainfo === false)
 				{
 					$nntp->doConnect();
 
@@ -524,10 +524,16 @@ class PostProcess {
 				else
 					$hpsql = ', haspreview = 0';
 
-				if (max($passStatus) >= 0)
+				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
+				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
+				{
+					if (!$blnTookSample)
+						$hpsql = '';
+					$sql = sprintf("update releases set passwordstatus = (ceiling(passwordstatus) - 1 - (%f + 0.2) %% 1) %s where ID = %d", $this->thetime(), $hpsql, $rel["ID"]);
+				}
 				else
-					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1 %s where ID = %d", $hpsql, $rel["ID"]);
+					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
 
 				$db->query($sql);
 
@@ -763,6 +769,11 @@ class PostProcess {
 	public function getMediainfo($ramdrive,$mediainfo,$releaseID)
 	{
 		$retval = false;
+		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
+
+		if (!($processMediainfo && is_dir($ramdrive) && ($releaseID > 0)))
+			return $retval;
+
 		$mediafiles = glob($ramdrive.'*.*');
 		if (is_array($mediafiles))
 		{
@@ -789,8 +800,13 @@ class PostProcess {
 
 	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
 	{
-		$ri = new ReleaseImage();
 		$retval = false;
+		$processSample = ($this->site->ffmpegpath != '') ? true : false;
+
+		if (!($processSample && is_dir($ramdrive) && ($releaseID > 0)))
+			return $retval;
+
+		$ri = new ReleaseImage();
 
 		$samplefiles = glob($ramdrive.'*.*');
 		if (is_array($samplefiles))
