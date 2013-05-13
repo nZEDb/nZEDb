@@ -342,7 +342,6 @@ class PostProcess {
 				if ($notmatched && !$hasrar)
 					$this->doecho("\nmatching failed ".$rel['guid']);
 
-
 				$oldreleasefiles = $db->query("select * FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
 
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
@@ -422,7 +421,7 @@ class PostProcess {
 						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 						{
-//							$this->doecho("new files don't seem to contribute");
+							//$this->doecho("new files don't seem to contribute");
 							continue;
 						}
 
@@ -526,11 +525,16 @@ class PostProcess {
 
 				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
+				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
+				{
+					if (!$blnTookSample)
+						$hpsql = '';
+					$sql = sprintf("update releases set passwordstatus = (ceiling(passwordstatus) - 1 - (%f + 0.2) %% 1) %s where ID = %d", $this->thetime(), $hpsql, $rel["ID"]);
+				}
 				else
-					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1 %s where ID = %d", $hpsql, $rel["ID"]);
-
+					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
+				
 				$db->query($sql);
-
 
 				if ($update_files)
 				{
@@ -548,7 +552,6 @@ class PostProcess {
 					}
 					unset($rf);
 				}
-
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
 				$size = $db->queryOneRow(sprintf("SELECT count(releasefiles.releaseID) as count FROM releasefiles WHERE releasefiles.releaseID = %d", $rel['ID']));
@@ -579,6 +582,7 @@ class PostProcess {
 		unset($nzbcontents);
 		unset($groups);
 	}
+	
 	function doecho($str)
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
@@ -666,7 +670,6 @@ class PostProcess {
 				$this->password = true;
 				return false;
 			}
-
 
 			$files = $rar->getArchiveFileList();
 			if ($files !== false)
@@ -766,6 +769,11 @@ class PostProcess {
 	public function getMediainfo($ramdrive,$mediainfo,$releaseID)
 	{
 		$retval = false;
+		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
+
+		if (!($processMediainfo && is_dir($ramdrive) && ($releaseID > 0)))
+			return $retval;
+
 		$mediafiles = glob($ramdrive.'*.*');
 		if (is_array($mediafiles))
 		{
@@ -792,8 +800,13 @@ class PostProcess {
 
 	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
 	{
-		$ri = new ReleaseImage();
 		$retval = false;
+		$processSample = ($this->site->ffmpegpath != '') ? true : false;
+
+		if (!($processSample && is_dir($ramdrive) && ($releaseguid > 0)))
+			return $retval;
+
+		$ri = new ReleaseImage();
 
 		$samplefiles = glob($ramdrive.'*.*');
 		if (is_array($samplefiles))

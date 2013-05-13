@@ -65,13 +65,13 @@ else
 		exit("ERROR: You must supply arguments.\n\n".
 			"php update_releases.php 1 true			...: Creates releases and attempts to categorize new releases\n".
 			"php update_releases.php 2 true			...: Creates releases and leaves new releases in other -> misc\n".
-			"\nYou must to pass a second argument wether to post process or not, true or false\n".
+			"\nYou must pass a second argument whether to post process or not, true or false\n".
+			"You can pass a third optional argument, a group name (ex.: alt.binaries.multimedia).\n".
 			"\nExtra commands::\n".
 			"php update_releases.php 4 true			...: Puts all releases in other-> misc (also resets to look like they have never been categorized)\n".
 			"php update_releases.php 5 true			...: Categorizes all releases in other-> misc (which have not been categorized already)\n".
 			"php update_releases.php 6 false		...: Categorizes releases in misc sections using the search name\n".
-			"php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n".
-			"You can pass a third argument, a group name.\n");
+			"php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n");
 }
 
 ?>
