@@ -10,6 +10,7 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
 require_once(FS_ROOT."/../../../www/lib/namefixer.php");
+require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 if (isset($argv[1]) && $argv[1] == "full")
 {
@@ -32,20 +33,21 @@ if (isset($argv[1]) && $argv[1] == "full")
 			if ($done % 10000 == 0)
 				echo "\n";
 		}
-		$timenc = TIME() - $timestart;
-		echo "\n".$done." releases renamed in ".$timenc." seconds.\nNow the releases will be recategorized.\n";
+		$consoletools = new consoleTools();
+		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 		
 		$releases = new Releases();
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
-		$timecat = TIME() - $timestart;
-		echo "\nFinished categorizing ".$categorized." releases in ".$timecat." seconds.\nFinally, the releases will be fixed using the NFO/filenames.\n";
+		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 		
 		$namefixer = new Namefixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
 		$namefixer->fixNamesWithFiles(2,1,1,1);
-		$timetotal = TIME() - $timestart;
-		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal." seconds.\n";
+		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal.".\n";
 	}
 	else
 		exit("You have no releases in the DB.\n");	
@@ -71,20 +73,21 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 			if ($done % 10000 == 0)
 				echo "\n";
 		}
-		$timenc = TIME() - $timestart;
-		echo "\n".$done." releases renamed in ".$timenc." seconds.\nNow the releases will be recategorized.\n";
+		$consoletools = new consoleTools();
+		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 		
 		$releases = new Releases();
 		$releases->resetCategorize("WHERE relnamestatus != 2");
 		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus != 2", true);
-		$timecat = TIME() - $timestart;
-		echo "\nFinished categorizing ".$categorized." releases in ".$timecat." seconds.\nFinally, the releases will be fixed using the NFO/filenames.\n";
+		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 		
 		$namefixer = new Namefixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
 		$namefixer->fixNamesWithFiles(2,1,1,1);
-		$timetotal = TIME() - $timestart;
-		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal." seconds.\n";
+		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal.".\n";
 	}
 	else
 		exit("You have no releases in the DB.\n");	
