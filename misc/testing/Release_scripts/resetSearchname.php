@@ -18,7 +18,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 	
 	if (sizeof($res) > 0)
 	{
-		echo "Going to recreate all search names, recategorize them and fix the names with namfixer, this can take a while.\n";
+		echo "Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
 		while ($row = mysqli_fetch_assoc($res))
