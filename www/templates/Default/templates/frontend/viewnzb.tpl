@@ -87,7 +87,8 @@
 		{if $boo.salesrank != ""}<strong>Amazon Rank:</strong> {$boo.salesrank|escape:"htmlall"}<br />{/if}
 		{if $boo.asin != ""}<strong>ASIN:</strong> {$boo.asin|escape:"htmlall"}<br />{/if}
 		{if $boo.isbn != ""}<strong>ISBN:</strong> {$boo.isbn|escape:"htmlall"}<br />{/if}
-		{if $boo.ean != ""}<strong>EAN:</strong> {$boo.ean|escape:"htmlall"}{/if}
+		{if $boo.ean != ""}<strong>EAN:</strong> {$boo.ean|escape:"htmlall"}<br />{/if}
+		{if $boo.overview != "null"}<strong>Overview:</strong> {$boo.overview|escape:"htmlall"}{/if}
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$boo.url}/" title="View book at Amazon">Amazon</a>
 		</div>
