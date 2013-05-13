@@ -357,6 +357,7 @@ CREATE TABLE `movieinfo`
   `plot` varchar(1024) NOT NULL,
   `year` varchar(4) NOT NULL,
   `genre` varchar(64) NOT NULL,
+  `type` varchar(32) NOT NULL,
   `director` VARCHAR(64) NOT NULL,
   `actors` VARCHAR(2000) NOT NULL,
   `language` VARCHAR(64) NOT NULL,
@@ -963,7 +964,7 @@ INSERT INTO `site`
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
-	('sqlpatch', '31');
+	('sqlpatch', '33');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
