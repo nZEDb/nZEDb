@@ -34,7 +34,7 @@ class ConsoleTools
 	public function convertTime($seconds)
 	{
 		if ($seconds < 60)
-			return $seconds." seconds";
+			return $seconds." second(s)";
 		if ($seconds > 60 && $seconds < 3600)
 			return round($seconds/60)." minute(s)";
 		if ($seconds > 3600)
