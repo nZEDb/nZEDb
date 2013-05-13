@@ -66,7 +66,7 @@ else
 			"php update_releases.php 1 true			...: Creates releases and attempts to categorize new releases\n".
 			"php update_releases.php 2 true			...: Creates releases and leaves new releases in other -> misc\n".
 			"\nYou must pass a second argument whether to post process or not, true or false\n".
-			"You can pass a third optional argument, a group name (ex.: alt.binaries.multimedia).\n"
+			"You can pass a third optional argument, a group name (ex.: alt.binaries.multimedia).\n".
 			"\nExtra commands::\n".
 			"php update_releases.php 4 true			...: Puts all releases in other-> misc (also resets to look like they have never been categorized)\n".
 			"php update_releases.php 5 true			...: Categorizes all releases in other-> misc (which have not been categorized already)\n".
