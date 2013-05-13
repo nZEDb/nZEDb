@@ -187,73 +187,73 @@ class PostProcess {
 
 		$result = $db->query($query);
 		if ($result != $this->addqty)
-	    {
-		    if ($id != '')
-	            $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-    	        left join category c on c.ID = r.categoryID
-        	    where r.ID = %d", $id);
-	        else
-    	        $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-        	    left join category c on c.ID = r.categoryID
-            	where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-	            AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-		}
-
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-		    if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-		}
-
-        $result = $db->query($query);
-        if ($result != $this->addqty)
 		{
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 		}
 
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-        }
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
 
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-        }
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
+
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
+
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
 
 		$rescount = count($result);
 		if ($rescount > 0)
