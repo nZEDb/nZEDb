@@ -328,6 +328,16 @@ class Movie
 		}
 		$mov['genre'] = html_entity_decode($mov['genre'], ENT_QUOTES, 'UTF-8');
 		
+		$mov['type'] = '';
+		if (isset($imdb['type']) && $imdb['type'] != '') {
+			$mov['type'] = $imdb['type'];
+		}
+		if (is_array($mov['type'])) {
+			$mov['type'] = implode(', ', array_unique($mov['type']));
+		}
+		$mov['type'] = ucwords(preg_replace('/[\.\_]/', ' ', $mov['type']));
+		$mov['type'] = html_entity_decode($mov['type'], ENT_QUOTES, 'UTF-8');
+
 		$mov['director'] = '';
 		if (isset($imdb['director']) && $imdb['director'] != '') { 
 			$mov['director'] = (is_array($imdb['director'])) ? implode(', ', array_unique($imdb['director'])) : $imdb['director'];
@@ -349,13 +359,13 @@ class Movie
 		$db = new DB();
 		$query = sprintf("
 			INSERT INTO movieinfo 
-				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, director, actors, language, cover, backdrop, createddate, updateddate)
+				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate)
 			VALUES 
-				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 			ON DUPLICATE KEY UPDATE
-				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()", 
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
+				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, type=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()",
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
 		
 		$movieId = $db->queryInsert($query);
 
@@ -425,7 +435,8 @@ class Movie
 		
 		$imdb_regex_multi = array(
 			'genre'	=> '/href="\/genre\/(.*?)\?/i',
-			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
+			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
+			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
 		$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
