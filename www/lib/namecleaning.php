@@ -67,7 +67,9 @@
 			//Replaces some characters with 1 space.
 			$cleanerName = str_replace(array(".", "_", '-', "|"), " ", $cleanerName);
 			//Replace multiple spaces with 1 space
-			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
+			$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
+			//Remove invalid characters.
+			$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/','', $cleanerName)));
 			
 			return $cleanerName;
 		}
