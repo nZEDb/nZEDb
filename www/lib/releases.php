@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/consoletools.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/zipfile.php");
@@ -1347,6 +1348,7 @@ class Releases
 	{
 		$db = new DB();
 		$cat = new Category;
+		$consoletools = new consoleTools();
 		$relcount = 0;
 		
 		$resrel = $db->queryDirect("SELECT ID, ".$type.", groupID FROM releases ".$where);
@@ -1356,12 +1358,7 @@ class Releases
 			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
 			$relcount ++;
 			if ($echo == true)
-			{
-				if ($relcount % 100 == 0)
-					echo ".";
-				if ($relcount % 10000 == 0)
-					echo "\n";
-			}
+				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
 		}
 		return $relcount;
 	}

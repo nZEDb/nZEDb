@@ -22,18 +22,15 @@ if (isset($argv[1]) && $argv[1] == "full")
 		echo "Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
+		$consoletools = new consoleTools();
 		while ($row = mysqli_fetch_assoc($res))
 		{
 			$nc = new nameCleaning();
 			$newname = $nc-> releaseCleaner($row['name']);
 			$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
-			if ($done % 100 == 0)
-				echo ".";
-			if ($done % 10000 == 0)
-				echo "\n";
+			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
 		}
-		$consoletools = new consoleTools();
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 		
@@ -62,18 +59,15 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		echo "Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
+		$consoletools = new consoleTools();
 		while ($row = mysqli_fetch_assoc($res))
 		{
 			$nc = new nameCleaning();
 			$newname = $nc-> releaseCleaner($row['name']);
 			$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
-			if ($done % 100 == 0)
-				echo ".";
-			if ($done % 10000 == 0)
-				echo "\n";
+			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
 		}
-		$consoletools = new consoleTools();
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 		
