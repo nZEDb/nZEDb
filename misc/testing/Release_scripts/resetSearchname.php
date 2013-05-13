@@ -66,7 +66,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		{
 			$nc = new nameCleaning();
 			$newname = $nc-> releaseCleaner($row['name']);
-			//$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+			$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
 			if ($done % 100 == 0)
 				echo ".";
