@@ -1329,6 +1329,43 @@ class Releases
 		}
 	}
 
+	//
+	// Sends releases back to other->misc.
+	//
+	public function resetCategorize($where="")
+	{
+		$db = new DB();
+		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
+	}
+
+	//
+	// Categorizes releases.
+	// $type = name or searchname
+	// Returns the quantity of categorized releases.
+	//
+	public function categorizeRelease($type, $where="", $echo=false)
+	{
+		$db = new DB();
+		$cat = new Category;
+		$relcount = 0;
+		
+		$resrel = $db->queryDirect("SELECT ID, ".$type.", groupID FROM releases ".$where);
+		while ($rowrel = $db->fetchAssoc($resrel))
+		{
+			$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupID']);
+			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
+			$relcount ++;
+			if ($echo == true)
+			{
+				if ($relcount % 100 == 0)
+					echo ".";
+				if ($relcount % 10000 == 0)
+					echo "\n";
+			}
+		}
+		return $relcount;
+	}
+
 	public function processReleasesStage1($groupID)
 	{
 		$db = new DB();
@@ -1675,21 +1712,15 @@ class Releases
 	public function processReleasesStage6($categorize, $postproc, $groupID)
 	{
 		$db = new DB;
-		$cat = new Category;
 		$n = "\n";
-		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
+		$where = (!empty($groupID)) ? "WHERE relnamestatus = 0 AND groupID = " . $groupID : "WHERE relnamestatus = 0";
 
 		// Categorize releases.
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
 		$stage6 = TIME();
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE relnamestatus = 0 " . $where);
-			while ($rowrel = $db->fetchAssoc($resrel))
-			{
-				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
-				$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
-			}
+			$this->categorizeRelease("name", $where);
 		}
 		if ($postproc == 1)
 		{
