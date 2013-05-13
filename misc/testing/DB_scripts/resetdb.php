@@ -42,7 +42,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	}
 
 	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);;
+	echo $consoletools->convertTime(TIME() - $timestart);
 	echo ".\n";
 }
 else
