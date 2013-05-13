@@ -47,8 +47,9 @@
 			$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
 			//Remove the double name.
 			$cleanerName = implode(' ', array_intersect_key(explode(' ', $cleanerName), array_unique(array_map('strtolower', explode(' ', $cleanerName)))));
-
-			return $cleanerName;
+			
+			if (empty($cleanerName)) {return $subject;}
+			else {return $cleanerName;}
 		}
 		
 		//
