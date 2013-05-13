@@ -525,12 +525,12 @@ class PostProcess {
 
 				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
-				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
+				/*elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
 				{
 					if (!$blnTookSample)
 						$hpsql = '';
 					$sql = sprintf("update releases set passwordstatus = (ceiling(passwordstatus) - 1 - (%f + 0.2) %% 1) %s where ID = %d", $this->thetime(), $hpsql, $rel["ID"]);
-				}
+				}*/
 				else
 					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
 				
