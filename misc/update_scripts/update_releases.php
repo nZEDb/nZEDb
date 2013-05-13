@@ -5,6 +5,7 @@ require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/consoletools.php");
 
 $groupName = isset($argv[3]) ? $argv[3] : "";
 if (isset($argv[1]) && isset($argv[2]))
@@ -36,7 +37,8 @@ if (isset($argv[1]) && isset($argv[2]))
 		echo "Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.\n";
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease("name", "WHERE relnamestatus = 0 and categoryID = 7010", true);
-		$time = TIME() - $timestart;
+		$consoletools = new ConsoleTools();
+		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.\n";
 	}
 	else if ($argv[1] == 6 && $argv[2] == "true")
@@ -44,7 +46,8 @@ if (isset($argv[1]) && isset($argv[2]))
 		echo "Categorizing releases in all sections using the searchname. This can take a while, be patient.\n";
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease("searchname", "", true);
-		$time = TIME() - $timestart;
+		$consoletools = new ConsoleTools();
+		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";	
 	}
 	else if ($argv[1] == 6 && $argv[2] == "false")
@@ -52,7 +55,8 @@ if (isset($argv[1]) && isset($argv[2]))
 		echo "Categorizing releases in misc sections using the searchname. This can take a while, be patient.\n";
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease("searchname", "WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)", true);
-		$time = TIME() - $timestart;
+		$consoletools = new ConsoleTools();
+		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";	
 	}
 	else
@@ -70,7 +74,7 @@ else
 			"\nExtra commands::\n".
 			"php update_releases.php 4 true			...: Puts all releases in other-> misc (also resets to look like they have never been categorized)\n".
 			"php update_releases.php 5 true			...: Categorizes all releases in other-> misc (which have not been categorized already)\n".
-			"php update_releases.php 6 false		...: Categorizes releases in misc sections using the search name\n".
+			"php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n".
 			"php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n");
 }
 
