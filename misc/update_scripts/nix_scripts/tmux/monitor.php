@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1484";
+$version="0.1r1507";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -471,16 +471,16 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 2 true other yes && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no && \
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 2 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_names == "TRUE" )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true all yes && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no && \
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true all no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
