@@ -31,7 +31,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 				echo "\n";
 		}
 		$time = TIME() - $timestart;
-		exit("\n".$done." releases changed in ".$time." seconds.\n");
+		exit("\n".$done." releases changed in ".$time." seconds.\nNow it's a good idea to run update_releases 4 true, update releases 5 true, fixReleaseNames 4 true other yes, fixReleaseNames 6 true other yes in this order.\n");
 	}
 	else
 		exit("You have no releases in the DB.\n");	
