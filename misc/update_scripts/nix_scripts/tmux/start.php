@@ -42,7 +42,7 @@ shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR
 //reset collections dateadded to now
 passthru("clear");
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1.5 hour)");
+$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1 hour)");
 
 function start_apps()
 {

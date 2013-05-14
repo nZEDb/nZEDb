@@ -175,7 +175,7 @@
 				<td><label for="RELEASES">Update Releases</label>:</td>
 				<td>
 					{html_radios id="RELEASES" name='RELEASES' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES}
-					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process</div>
+					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process. This runs "Categorizes releases in misc sections using the search name" on first loop and has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new releases.</div>
 				</td>
 			</tr>
 
