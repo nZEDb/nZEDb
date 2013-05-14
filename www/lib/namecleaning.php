@@ -19,7 +19,7 @@
 			//File Sizes - Non unique ones.
 			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $cleansubject);
 			//Random stuff.
-			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}/i', '', $cleansubject)));
+			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}| \(\d+\)$/i', '', $cleansubject)));
 			
 			return $cleansubject;
 		}
