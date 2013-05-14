@@ -22,7 +22,6 @@ then
 	echo "Cleaning DB..."
 	/usr/bin/php5 ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 	/usr/bin/php5 ${TEST_PATH}/fixReleaseNames.php 5 true other yes
-	/usr/bin/php5 ${TEST_PATH}/fixReleaseNames.php 1 true all yes
 	/usr/bin/php5 ${TEST_PATH}/removeCrapReleases.php true 2
 fi
 
