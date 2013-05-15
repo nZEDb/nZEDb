@@ -488,7 +488,7 @@ class Movie
 		return false;
 	}
 	
-	public function processMovieReleases($threads=0)
+	public function processMovieReleases($threads=1)
 	{
 		$threads--;
 		$db = new DB();

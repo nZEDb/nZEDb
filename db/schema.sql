@@ -964,7 +964,7 @@ INSERT INTO `site`
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
-	('sqlpatch', '31');
+	('sqlpatch', '33');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1203,6 +1203,7 @@ INSERT INTO `genres`
   ('SynthPop', 3000),
   ('Electronica', 3000);
 
+DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
   
 	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1263,7 +1264,7 @@ INSERT INTO tmux (setting, value) values ('TCPTRACK_ARGS','-i eth0 port 443');
 INSERT INTO tmux (setting, value) values ('BACKFILL_GROUPS','4');
 INSERT INTO tmux (setting, value) values ('POST_KILL_TIMER','300');
 INSERT INTO tmux (setting, value) values ('OPTIMIZE','FALSE');
-INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400')
+INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

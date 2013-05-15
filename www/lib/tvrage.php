@@ -455,7 +455,7 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
-	public function processTvReleases($threads=0, $lookupTvRage=true)
+	public function processTvReleases($threads=1, $lookupTvRage=true)
 	{
 		$threads--;
 		$ret = 0;

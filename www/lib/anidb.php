@@ -196,7 +196,7 @@ class AniDB
 		return $cleanFilename;
 	}
 
-	public function processAnimeReleases($threads=0)
+	public function processAnimeReleases($threads=1)
 	{
 		$threads--;
 		$db = new DB();

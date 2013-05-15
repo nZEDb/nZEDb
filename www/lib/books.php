@@ -226,7 +226,7 @@ require_once(WWW_DIR."/lib/site.php");
 			return $result;
 		}
 		
-		public function processBookReleases($threads=0)
+		public function processBookReleases($threads=1)
 		{
 			$threads--;
 			$ret = 0;
@@ -413,17 +413,15 @@ require_once(WWW_DIR."/lib/site.php");
 			$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
 			if ($book['pages'] == "")
 				$book['pages'] = 'null';
-				
-			if(isset($amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content))
+			
+			if(isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content))
 			{
-				$book['overview'] = (string) $amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content;
+				$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
 				if ($book['overview'] == "")
 					$book['overview'] = 'null';
 			}
 			else
-			{
 				$book['overview'] = 'null';
-			}
 			
 			$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
 			if ($book['coverurl'] != "")

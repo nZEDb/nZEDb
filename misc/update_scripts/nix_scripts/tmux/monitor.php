@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1479";
+$version="0.1r1553";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -452,7 +452,10 @@ while( $i > 0 )
 	$_php = "/usr/bin/time nice -n$niceness php";
 	$_python = "/usr/bin/time nice -n$niceness python";
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
-	$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false";
+	if (( $i == 1 ) || ( $i % 3 == 0 ))
+		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false";
+	else
+		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 1 false";
 
 	if (( $postprocess_kill < $total_work_now ) && ( $postprocess_kill != 0 ))
 		$kill_pp = "TRUE";
@@ -471,16 +474,14 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 2 true other yes && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_names == "TRUE" )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
 					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other yes && \
-					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 1 true all yes && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{

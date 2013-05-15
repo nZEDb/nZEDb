@@ -48,7 +48,7 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($threads=0, $processImdb=1, $processTvrage=1)
+	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
 		$threads--;
 		$ret = 0;

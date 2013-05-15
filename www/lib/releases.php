@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/binaries.php");
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/consoletools.php");
 require_once(WWW_DIR."/lib/nzb.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/zipfile.php");
@@ -1329,9 +1330,43 @@ class Releases
 		}
 	}
 
+	//
+	// Sends releases back to other->misc.
+	//
+	public function resetCategorize($where="")
+	{
+		$db = new DB();
+		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
+	}
+
+	//
+	// Categorizes releases.
+	// $type = name or searchname
+	// Returns the quantity of categorized releases.
+	//
+	public function categorizeRelease($type, $where="", $echo=false)
+	{
+		$db = new DB();
+		$cat = new Category;
+		$consoletools = new consoleTools();
+		$relcount = 0;
+		
+		$resrel = $db->queryDirect("SELECT ID, ".$type.", groupID FROM releases ".$where);
+		while ($rowrel = $db->fetchAssoc($resrel))
+		{
+			$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupID']);
+			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
+			$relcount ++;
+			if ($echo == true)
+				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
+		}
+		return $relcount;
+	}
+
 	public function processReleasesStage1($groupID)
 	{
 		$db = new DB();
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 
 		echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
@@ -1357,12 +1392,13 @@ class Releases
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck < 2 ".$where);
 
-		echo TIME() - $stage1." second(s).";
+		echo $consoletools->convertTime(TIME() - $stage1);
 	}
 
 	public function processReleasesStage2($groupID)
 	{
 		$db = new DB;
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 
@@ -1371,12 +1407,13 @@ class Releases
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), c.filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0 " . $where);
 
-		echo TIME() - $stage2." second(s).";
+		echo $consoletools->convertTime(TIME() - $stage2);
 	}
 
 	public function processReleasesStage3($groupID)
 	{
 		$db = new DB;
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$minsizecounts = 0;
 		$maxsizecounts= 0;
@@ -1455,13 +1492,14 @@ class Releases
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
 		if ($delcount > 0)
 				echo "...Deleted ".$delcount." collections smaller/larger than group/site settings.".$n;
-		echo TIME() - $stage3." second(s).";
+		echo $consoletools->convertTime(TIME() - $stage3);
 	}
 
 	public function processReleasesStage4($groupID)
 	{
 		$db = new DB;
 		$page = new Page();
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
@@ -1494,8 +1532,8 @@ class Releases
 			}
 		}
 
-		$timing = TIME() - $stage4;
-		echo $retcount . " Releases added in " . $timing . " second(s).";
+		$timing = $consoletools->convertTime(TIME() - $stage4);
+		echo $retcount . " Releases added in " . $timing . ".";
 		return $retcount;
 	}
 
@@ -1517,6 +1555,7 @@ class Releases
 	public function processReleasesStage4dot5($groupID)
 	{
 		$db = new DB;
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$minsizecount = 0;
 		$maxsizecount = 0;
@@ -1617,7 +1656,7 @@ class Releases
 		$delcount = $minsizecount+$maxsizecount+$minfilecount;
 		if ($delcount > 0)
 				echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
-		echo TIME() - $stage4dot5." second(s).";
+		echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}
 
 	public function processReleasesStage5($groupID)
@@ -1625,6 +1664,7 @@ class Releases
 		$db = new DB;
 		$nzb = new Nzb;
 		$page = new Page;
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$nzbcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
@@ -1641,22 +1681,17 @@ class Releases
 				{
 					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
-					/*$db->queryDirect(sprintf("DELETE collections, binaries, parts
-											FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
-											WHERE (collections.releaseID = %d)", $rowrel['ID']));*/
-					echo ".";
 					$nzbcount++;
-					if ($nzbcount % 100 == 0)
-						echo $n;
+					$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,mysqli_num_rows($resrel)));
 				}
 			}
 		}
 
-		$timing = TIME() - $stage5;
+		$timing = $consoletools->convertTime(TIME() - $stage5);
 		if ($nzbcount > 0)
-			echo $n.$nzbcount." NZBs created in ". $timing." second(s).";
+			echo $n.$nzbcount." NZBs created in ". $timing.".";
 		else
-			echo $nzbcount." NZBs created in ". $timing." second(s).";
+			echo $nzbcount." NZBs created in ". $timing.".";
 		return $nzbcount;
 	}
 
@@ -1675,21 +1710,16 @@ class Releases
 	public function processReleasesStage6($categorize, $postproc, $groupID)
 	{
 		$db = new DB;
-		$cat = new Category;
+		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
+		$where = (!empty($groupID)) ? "WHERE relnamestatus = 0 AND groupID = " . $groupID : "WHERE relnamestatus = 0";
 
 		// Categorize releases.
 		echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
 		$stage6 = TIME();
 		if ($categorize == 1)
 		{
-			$resrel = $db->queryDirect("SELECT ID, name, groupID FROM releases WHERE relnamestatus = 0 " . $where);
-			while ($rowrel = $db->fetchAssoc($resrel))
-			{
-				$catId = $cat->determineCategory($rowrel["name"], $rowrel['groupID']);
-				$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
-			}
+			$this->categorizeRelease("name", $where);
 		}
 		if ($postproc == 1)
 		{
@@ -1700,7 +1730,7 @@ class Releases
 		{
 			echo "Post-processing disabled.".$n;
 		}
-		echo TIME() - $stage6." second(s).";
+		echo $consoletools->convertTime(TIME() - $stage6).".";
 	}
 
 	public function processReleasesStage7($groupID)
@@ -1708,6 +1738,7 @@ class Releases
 		$db = new DB;
 		$page = new Page;
 		$category = new Category();
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$remcount = 0;
 		$passcount = 0;
@@ -1796,7 +1827,7 @@ class Releases
 		else
 			echo ". Removed ".$reccount." parts/binaries/collection rows.".$n;
 
-		echo TIME() - $stage7." second(s).".$n;
+		echo $consoletools->convertTime(TIME() - $stage7).".".$n;
 	}
 
 	public function processReleases($categorize, $postproc, $groupName)
@@ -1804,6 +1835,7 @@ class Releases
 		$db = new DB();
 		$groups = new Groups();
 		$page = new Page();
+		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$groupID = "";
 
@@ -1839,11 +1871,11 @@ class Releases
 		$deletedCount = $this->processReleasesStage7($groupID);
 
 		//Print amount of added releases and time it took.
-		$timeUpdate = number_format(microtime(true) - $this->processReleases, 2);
+		$timeUpdate = $consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2));
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
 
 		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
-		echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate." second(s). ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
+		echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate.". ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $releasesAdded;
 	}
 

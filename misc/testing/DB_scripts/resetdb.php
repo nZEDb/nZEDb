@@ -11,9 +11,11 @@ if (isset($argv[1]) && $argv[1] === "true")
 	require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 	require_once(FS_ROOT."/../../../www/lib/releases.php");
 	require_once(FS_ROOT."/../../../www/lib/site.php");
+	require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 	$db = new Db;
 	$s = new Sites();
+	$consoletools = new ConsoleTools();
 	$site = $s->get();
 	$timestart = TIME();
 	$relcount = 0;
@@ -36,16 +38,12 @@ if (isset($argv[1]) && $argv[1] === "true")
 	{
 		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
 		$relcount++;
-		
-		if ($relcount % 100 == 0)
-			echo ".";
-		if ($relcount % 10000 == 0)
-			echo "\n";
+		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids)));
 	}
 
 	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";
-	echo TIME() - $timestart;
-	echo " second(s).\n";
+	echo $consoletools->convertTime(TIME() - $timestart);
+	echo ".\n";
 }
 else
 {

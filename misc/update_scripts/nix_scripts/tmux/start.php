@@ -15,7 +15,7 @@ $seq = $tmux->get()->SEQUENTIAL;
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
 
-if ( $patch < '32' )
+if ( $patch < '33' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -42,7 +42,7 @@ shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR
 //reset collections dateadded to now
 passthru("clear");
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1.5 hour)");
+$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1 hour)");
 
 function start_apps()
 {

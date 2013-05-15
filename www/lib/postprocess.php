@@ -187,73 +187,73 @@ class PostProcess {
 
 		$result = $db->query($query);
 		if ($result != $this->addqty)
-	    {
-		    if ($id != '')
-	            $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-    	        left join category c on c.ID = r.categoryID
-        	    where r.ID = %d", $id);
-	        else
-    	        $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-        	    left join category c on c.ID = r.categoryID
-            	where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-	            AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-		}
-
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-		    if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-		}
-
-        $result = $db->query($query);
-        if ($result != $this->addqty)
 		{
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 		}
 
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-        }
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
 
-        $result = $db->query($query);
-        if ($result != $this->addqty)
-        {
-            if ($id != '')
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where r.ID = %d", $id);
-            else
-                $query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
-                left join category c on c.ID = r.categoryID
-                where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-                AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
-        }
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
+
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
+
+		$result = $db->query($query);
+		if ($result != $this->addqty)
+		{
+			if ($id != '')
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where r.ID = %d", $id);
+			else
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				left join category c on c.ID = r.categoryID
+				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
+				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+		}
 
 		$rescount = count($result);
 		if ($rescount > 0)
@@ -342,7 +342,6 @@ class PostProcess {
 				if ($notmatched && !$hasrar)
 					$this->doecho("\nmatching failed ".$rel['guid']);
 
-
 				$oldreleasefiles = $db->query("select * FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
 
 				$db->query("DELETE FROM `releasefiles` WHERE `releaseID` =".$rel['ID']);
@@ -422,7 +421,7 @@ class PostProcess {
 						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 						{
-//							$this->doecho("new files don't seem to contribute");
+							//$this->doecho("new files don't seem to contribute");
 							continue;
 						}
 
@@ -526,17 +525,16 @@ class PostProcess {
 
 				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
-				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
+				/*elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
 				{
 					if (!$blnTookSample)
 						$hpsql = '';
 					$sql = sprintf("update releases set passwordstatus = (ceiling(passwordstatus) - 1 - (%f + 0.2) %% 1) %s where ID = %d", $this->thetime(), $hpsql, $rel["ID"]);
-				}
+				}*/
 				else
 					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
-
+				
 				$db->query($sql);
-
 
 				if ($update_files)
 				{
@@ -554,7 +552,6 @@ class PostProcess {
 					}
 					unset($rf);
 				}
-
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
 				$size = $db->queryOneRow(sprintf("SELECT count(releasefiles.releaseID) as count FROM releasefiles WHERE releasefiles.releaseID = %d", $rel['ID']));
@@ -585,6 +582,7 @@ class PostProcess {
 		unset($nzbcontents);
 		unset($groups);
 	}
+	
 	function doecho($str)
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
@@ -673,7 +671,6 @@ class PostProcess {
 				return false;
 			}
 
-
 			$files = $rar->getArchiveFileList();
 			if ($files !== false)
 			{
@@ -729,9 +726,12 @@ class PostProcess {
 									$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
 								}
 
-							} elseif (preg_match("/sample/i",$file['name'])) {
+							}
+							elseif (preg_match("/sample/i",$file['name']))
+							{
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							} elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']) && !preg_match("/sample/i",$file['name']))
+							}
+							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']) && !preg_match("/sample/i",$file['name']))
 							{
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
 							}
@@ -803,7 +803,7 @@ class PostProcess {
 		$retval = false;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 
-		if (!($processSample && is_dir($ramdrive) && ($releaseID > 0)))
+		if (!($processSample && is_dir($ramdrive) && ($releaseguid > 0)))
 			return $retval;
 
 		$ri = new ReleaseImage();
