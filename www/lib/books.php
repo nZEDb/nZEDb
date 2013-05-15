@@ -280,6 +280,12 @@ require_once(WWW_DIR."/lib/site.php");
 				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
 				return false;
 			}
+			else if (preg_match('/^ekiosk/i', $releasename))
+			{
+				$db = new DB();
+				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
+				return false;
+			}
 			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
 				return $releasename;
 			else
