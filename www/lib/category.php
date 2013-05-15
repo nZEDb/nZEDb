@@ -294,7 +294,7 @@ class Category
 			{
 				if (preg_match('/alt\.binaries\.0day\.stuffz/', $groupRes["name"]))
 				{
-					if($this->isEBook($releasename)){ return $this->tmpCat; }
+					if($this->isBook($releasename)){ return $this->tmpCat; }
 					if($this->isPC($releasename)){ return $this->tmpCat; }
 					$this->tmpCat = Category::CAT_PC_0DAY;
 					return true;
@@ -857,7 +857,7 @@ class Category
 	
 	public function isPC($releasename)
 	{
-		if(!preg_match('/[\.\-_ ]PDTV[\.\-_ ]|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
+		if(!preg_match('/[\.\-_ ](PDTV|PSP|UMD(RIP)?)[\.\-_ ]|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
 		{
 			if($this->isPhone($releasename)){ return true; }
 			if($this->isMac($releasename)){ return true; }
@@ -899,13 +899,13 @@ class Category
 			return true;
 		}
 		
-		if(preg_match('/[\.\-_ ](32bit|64bit|x32|x64|x86|i\d86|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win2kxp2k3|keygen|regged|keymaker|winall|win32|template|Patch|GAMEGUiDE|unix|irix|solaris|freebsd|hpux|linux|windows|multilingual|software|Pro v\d{1,3})[\.\-_ ]/i', $releasename))
+		if(preg_match('/[\.\-_ ](32bit|64bit|converter|i\d86|keygen|keymaker|freebsd|GAMEGUiDE|hpux|irix|linux|multilingual|Patch|Pro v\d{1,3}|portable|regged|software|solaris|template|unix|win2kxp2k3|win64|winnt|win9x|win2k|winxp|winnt2k2003serv|win9xnt|win9xme|winnt2kxp|win2kxp|win32|winall|Windows|x32|x64|x86)[\.\-_ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
 		}
 		
-		if (preg_match('/Adobe|auto(cad|desk)|\-BEAN|Cracked|Cucusoft|CYGNUS|Divx[\.\-_ ]Plus|\.deb|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|[\.\-_ ]v\d{1,3}[\.\-_ ]|WinAll|\(x(64|86)\)|Xilisoft/i', $releasename))
+		if (preg_match('/Adobe|auto(cad|desk)|\-BEAN|Cracked|Cucusoft|CYGNUS|Divx[\.\-_ ]Plus|\.(deb|exe)|DIGERATI|FOSI|Keyfilemaker|Keymaker|Keygen|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|\-iNViSiBLE|\-SPYRAL|\-SUNiSO|\-UNION|\-TE|v\d{1,3}.*?Pro|[\.\-_ ]v\d{1,3}[\.\-_ ]|WinAll|\(x(64|86)\)|Xilisoft/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
@@ -1249,16 +1249,19 @@ class Category
 	
 	public function isBook($releasename)
 	{
-		if($this->isComic($releasename)){ return true; }
-		if($this->isTechnicalBook($releasename)){ return true; }
-		if($this->isMagazine($releasename)){ return true; }
-		if($this->isEBook($releasename)){ return true; }
+		if (!preg_match('/AVI[\.\-_ ]PDF|\.exe|Full[\.\-_ ]Video/i', $releasename))
+		{
+			if($this->isComic($releasename)){ return true; }
+			if($this->isTechnicalBook($releasename)){ return true; }
+			if($this->isMagazine($releasename)){ return true; }
+			if($this->isEBook($releasename)){ return true; }
+		}
 		return false;
 	}
 	
 	public function isEBook($releasename)
 	{
-		if (preg_match('/^ePub|[\.\-_ ](Ebook|E?\-book|\) WW|Publishing|\[Springer\])|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
+		if (preg_match('/^ePub|[\.\-_ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 			return true;
@@ -1269,7 +1272,7 @@ class Category
 	
 	public function isComic($releasename)
 	{
-		if (preg_match('/[\. ](cbr|cbz)|[\( ]c2c[\) ]|comix|comic.+book/i', $releasename))
+		if (preg_match('/[\. ](cbr|cbz)|[\( ]c2c|cbr|cbz[\) ]|comix|^\(comic|[\.\-_\(\[ ]comics?[\.\-_ ]|comic.+book|covers.+digital|DC.+(Adventures|Universe)|digital.+(son|zone)|Graphic.+Novel|[\.\-_h ]manga|Total[\.\-_ ]Marvel/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_COMICS;
 			return true;
@@ -1280,7 +1283,7 @@ class Category
 	
 	public function isTechnicalBook($releasename)
 	{
-		if (preg_match('/[\.\-_ ](DIY|Service\s?Manual|Woodworking|Workshops?)[\.\-_ ]|^Wood[\.\-_ ]/i', $releasename))
+		if (preg_match('/^\(?(atz|bb|css|c ?t|Drawing|Gabler|IOS|Iphone|Lynda|Manning|Medic(al|ine)|MIT|No[\.\-_ ]Starch|Packt|Peachpit|Pragmatic|Revista|Servo|SmartBooks|Spektrum|Sybex|Vieweg|Wiley|Woods|Wrox)[\.\-_ ]|[\.\-_ ](Ajax|CSS|DIY|Javascript|(My|Postgre)?SQL|XNA)[\.\-_ ]|3DS\.\-_ ]Max|Academic|Adobe|Algebra|Analysis|Appleworks|Archaeology|Bitdefender|Birkhauser|Britannica|C[\.\-_ ](Sharp|Plus)|Chemistry|Circuits|Cook(book|ing)|(Beginners?|Complete|Communications|Definitive|Essential|Hackers?|Practical|Professionals?)[\.\-_ ]Guide|Developer|Diagnostic|Disassembl(er|ing|y)|Debugg(er|ing)|Dreamweaver|Economics|Education|Electronics|Enc(i|y)clopedia|Engineer(ing|s)|Exercizes|For.+Beginners|Focal[\.\-_ ]Press|For[\.\-_ ]Dummies|FreeBSD|Fundamentals[\.\-_ ]of[\.\-_ ]|(Galileo|Island)[\.\-_ ]Press|Geography|Grammar|Guide[\.\-_ ](For|To)|Hacking|Google|Handboo?k|How[\.\-_ ](It|To)|Intoduction[\.\-_ ]to|Iphone|jQuery|Lessons[\.\-_ ]In|Learning|LibreOffice|Linux|Manual|Marketing|Masonry|Mathematic(al|s)?|Medical|Microsoft|National[\.\-_ ]Academies|Nero[\.\-_ ]\d+|OReilly|OS[\.\-_ ]X[\.\-_ ]|Official[\.\-_ ]Guide|Open(GL|Office)|Periodic.+Table|Photoshop|Physics|PowerPC|PowerShell|Programm(ers?|ier||ing)|Raspberry.+Pi|Remedies|Service\s?Manual|SitePoint|Sketching|Statistics|Stock.+Market|Students|Theory|Training|Tutsplus|Ubuntu|Understanding[\.\-_ ](and|Of|The)|Visual[\.\-_ ]Studio|Textbook|VMWare|wii?max|Windows[\.\-_ ](8|7|Vista|XP)|^Wood[\.\-_ ]|Woodwork|WordPress|Work(book|shop)|Youtube/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 			return true;
@@ -1291,7 +1294,7 @@ class Category
 	
 	public function isMagazine($releasename)
 	{
-		if (preg_match('/[\.\-_ ](FHM|Magazine|NUTS|XXX)[\.\-_ ]|(^Club|^FHM|Hustler|Maxim|^NUTS|Penthouse|Playboy|Top[\.\-_ ]Gear)[\.\-_ ]/i', $releasename))
+		if (preg_match('/^\(.+( |\.)\d{1,2}( |\.)20\d\d( |\.).+\.scr|[\.\-_ ](Catalogue|FHM|NUTS|Pictorial|Tatler|XXX)[\.\-_ ]|^\(?(Allehanda|Club|Computer([a-z0-9]+)?|Connect \d+|Corriere|ct|Diario|Digit(al)?|Esquire|FHM|Gadgets|Galileo|Glam|GQ|Infosat|Inked|Instyle|io|Kicker|Liberation|New Scientist|NGV|Nuts|Popular|Professional|Reise|Sette(tv)?|Springer|Stuff|Studentlitteratur|Vegetarian|Vegetable|Videomarkt|Wired)[\.\-_ ]|Brady(.+)?Games|Catalog|Columbus.+Dispatch|Correspondenten|Corriere[\.\-_ ]Della[\.\-_ ]Sera|Dagbladet|Digital[\.\-_ ]Guide|Economist|Eload ?24|ExtraTime|Fatto[\.\-_ ]Quotidiano|Flight[\.\-_ ](International|Journal)|Finanzwoche|France.+Football|Foto.+Video|Games?(Master|Markt|tar|TM)|Gardening|Gazzetta|Globe[\.\-_ ]And[\.\-_ ]Mail|Heimkino|Hustler|La.+(Lettura|Rblica|Stampa)|Le[\.\-_ ](Monde|Temps)|Les[\.\-_ ]Echos|e?Magazin(es?)?|Mac(life|welt)|Maxim|Men.+(Health|Fitness)|Motocross|Motorcycle|Mountain[\.\-_ ]Bike|MusikWoche|National[\.\-_ ]Geographic|New[\.\-_ ]Yorker|PC([\.\-_ ](Gamer|Welt|World)|Games|Go|Tip)|Penthouse|Photograph(er|ic)|Playboy|Posten|Quotidiano|(Golf|Readers?).+Digest|SFX[\.\-_ ]UK|Recipe.+Guide|SkyNews|Sport[\.\-_ ]?Week|Strategy.+Guide|TabletPC|Tattoo[\.\-_ ]Life|The[\.\-_ ]Guardian|Tageszeitung|Tid(bits|ning)|Top[\.\-_ ]Gear[\.\-_ ]|Total[\.\-_ ]Guitar|Travel[\.\-_ ]Guides?|Tribune[\.\-_ ]De[\.\-_ ]|US[\.\-_ ]Weekly|USA[\.\-_ ]Today|Vogue|Verlag|Warcraft|Web.+Designer|What[\.\-_ ]Car|Zeitung/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
 			return true;

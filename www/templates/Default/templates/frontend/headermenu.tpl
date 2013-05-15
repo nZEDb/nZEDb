@@ -55,7 +55,11 @@
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 				<ul>
 					{foreach from=$parentcat.subcatlist item=subcat}
-						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.ID}">{$subcat.title}</a></li>
+						{if $subcat.ID == 8010}
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.ID}">{$subcat.title}</a></li>
+						{else}
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+						{/if}
 					{/foreach}
 				</ul>
 			</li>
