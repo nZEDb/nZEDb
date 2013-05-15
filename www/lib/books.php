@@ -273,7 +273,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 			$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 			
-			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|O(c|k)t|Nov|De(c|z))))[a-z]+$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
+			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( The)?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
 			{
 				echo "Changing category to misc books: ".$releasename."\n";
 				$db = new DB();
