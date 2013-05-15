@@ -280,7 +280,7 @@ require_once(WWW_DIR."/lib/site.php");
 				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
 				return false;
 			}
-			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
+			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 			{
 				echo "Changing category to magazines: ".$releasename."\n";
 				$db = new DB();
