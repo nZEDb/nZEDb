@@ -2,7 +2,7 @@
 
 export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
-export NZEDB_SLEEP_TIME="0" # in seconds
+export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
 
