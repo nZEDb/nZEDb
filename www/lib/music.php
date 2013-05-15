@@ -18,6 +18,7 @@ class Music
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
+		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
@@ -458,10 +459,12 @@ class Music
 					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
 				} 
-				else {
+				else
+				{
 					//no album found
 					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 				}
+				usleep($this->sleeptime*1000);
 			}
 		}
 	}

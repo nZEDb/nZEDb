@@ -964,7 +964,8 @@ INSERT INTO `site`
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
-	('sqlpatch', '33');
+	('amazonsleep', 1000),
+	('sqlpatch', '34');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
