@@ -240,6 +240,6 @@ function truncateTable($db, $tableName, $runQueries)
 
 	echo "Due to some issues moving roles we've used INSERT IGNORE... Please check your user roles in your nZEDb install\n";
 	echo "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n";
-	echo "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.");
+	echo "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.";
 ?>
 
