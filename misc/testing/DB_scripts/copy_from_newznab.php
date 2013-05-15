@@ -21,8 +21,11 @@ elseif (isset($argv[1]) && !file_exists($argv[1]))
 else
 {
 	$from = $argv[1];
-	system("cp -vR $from ".$dir."../nzbfiles/");
-	system("cp -vR ".$from."../www/covers/ ".$dir."/covers/");
+	echo "Copying nzbs from ".$from."\n";
+	system("cp -R ".$from."/* ".$dir."../nzbfiles/");
+    echo "Copying nzbs from ".$from."/../www/covers\n";
+	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
+	echo "Setting nzbstatus for all releases\n";
 	$db->query("update releases set nzbstatus = 1");
 	system("php ".$dir."../misc/testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
 }

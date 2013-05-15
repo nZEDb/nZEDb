@@ -548,6 +548,14 @@
 </tr>
 
 <tr>
+	<td><label for="amazonsleep">Amazon sleep time</label>:</td>
+	<td>
+		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
+		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by 3. https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</div>
+	</td>
+</tr>
+
+<tr>
     <td><label for="postthreads">Postprocessing Threads</label>:</td>
     <td>
         <input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
