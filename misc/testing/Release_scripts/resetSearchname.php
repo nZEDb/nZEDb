@@ -87,5 +87,5 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		exit("You have no releases in the DB.\n");	
 }
 else
-	exit("This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\nType php ResetSearchname&resetRelnameStatus.php full to run this, recategorize and refix release names on all releases.\nType php ResetSearchname&resetRelnameStatus.php limited to run this on releases that have not had their names fixed, then categorizing them.\n");
+	exit("This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\nType php resetSearchname.php full to run this, recategorize and refix release names on all releases.\nType php resetSearchname.php limited to run this on releases that have not had their names fixed, then categorizing them.\n");
 ?>
