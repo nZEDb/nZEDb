@@ -273,7 +273,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 			$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 			
-			if (preg_match('/ArtofUsenet|ekiosk|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|Novel.+Collection|NY Times|(Book|Massive) Dump/i', $releasename))
+			if (preg_match('/ArtofUsenet|ekiosk|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|Novel.+Collection|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
 			{
 				echo "Changing category to misc books: ".$releasename."\n";
 				$db = new DB();
