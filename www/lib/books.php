@@ -269,21 +269,21 @@ require_once(WWW_DIR."/lib/site.php");
 		
 		public function parseTitle($releasename, $releaseID)
 		{
-			$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[\.\-_ ](Novel|TIA)([\.\-_ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TruePDF|V413HAV|(would someone )?please (re)?post.+? "/i', '', $releasename);
-			$releasename = preg_replace('/^(As Req |Das neue Abenteuer \d+|Full |Per Req As Found|R4 |REQ |\d+(\s+)?$)|(COMPLETE|INTERNAL| (AZW3|eB|docx|ENG|exe|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
+			$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[\.\-_ ](Novel|TIA)([\.\-_ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TruePDF|V413HAV|(would someone )?please (re)?post.+? "/i', '', $releasename);
+			$releasename = preg_replace('/^(As Req |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|R4 |REQ |version |\d+(\s+)?$)|(COMPLETE|INTERNAL| (AZW3|eB|docx|ENG|exe|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 			$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 			
-			if (preg_match('/^([a-z0-9]+ ){1,2}N?\d{1,4}$|^([a-z0-9]+ ){1,2}(Jan( |unary|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|Oct( |ober|$)|Nov( |ember|$)|Dec( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
+			if (preg_match('/ArtofUsenet|ekiosk|Full Video|ImwithJamie|Mega.+pack|NY Times|(Book|Massive) Dump/i', $releasename))
+			{
+				$db = new DB();
+				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
+				return false;
+			}
+			else if (preg_match('/^([a-z0-9]+ ){1,2}N?\d{1,4}$|^([a-z0-9]+ ){1,2}(Jan( |unary|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|Oct( |ober|$)|Nov( |ember|$)|Dec( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 			{
 				echo "Changing category to magazines: ".$releasename."\n";
 				$db = new DB();
 				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
-				return false;
-			}
-			else if (preg_match('/^ekiosk/i', $releasename))
-			{
-				$db = new DB();
-				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
 				return false;
 			}
 			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
