@@ -1904,7 +1904,7 @@ class Releases
 				while ($row = mysqli_fetch_assoc($res))
 				{
 					$cIDS[] = $row["ID"];
-					$newColName = $namecleaner->splitCleaner($row["bname"]);
+					$newColName = $namecleaner->collectionsCleaner($row["bname"], "split");
 					$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
 					if(!$cres)
