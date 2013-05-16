@@ -1905,6 +1905,8 @@ class Releases
 				{
 					$cIDS[] = $row["ID"];
 					$newColName = $namecleaner->collectionsCleaner($row["bname"], "split");
+					echo $row["bname"]."\n";
+					echo $newColName."\n";
 					$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
 					if(!$cres)
