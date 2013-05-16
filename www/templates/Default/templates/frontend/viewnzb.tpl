@@ -34,9 +34,9 @@
 	
 	{if $movie && $release.rageID < 0}
 	<tr><th>Movie Info:</th><td>
-		<strong>{$movie.title|escape:"htmlall"} ({$movie.year}) {if $movie.rating == ''}N/A{/if}{$movie.rating}/10</strong>
-		{if $movie.tagline != ''}<br />{$movie.tagline|escape:"htmlall"}{/if}
-		{if $movie.plot != ''}{if $movie.tagline != ''} - {else}<br />{/if}{$movie.plot|escape:"htmlall"}{/if}
+		<strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>
+		{if $movie.tagline != ''}<br />{$movie.tagline|stripslashes|escape:"htmlall"}{/if}
+		{if $movie.plot != ''}{if $movie.tagline != ''} - {else}<br />{/if}{$movie.plot|stripslashes|escape:"htmlall"}{/if}
 		<br /><br />{if $movie.director != ""} <strong>Director:</strong> {$movie.director}<br />{/if}
 		<strong>Genre:</strong> {$movie.genre}
 		<br /><strong>Starring:</strong> {$movie.actors}
