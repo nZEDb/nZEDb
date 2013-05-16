@@ -27,9 +27,9 @@
 			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}| \(\d+\)$/i', '', $cleansubject)));
 			
 			if ($type == "split")
-				return $cleansubject;
-			else
 				return $cleansubject.$matches[1];
+			else
+				return $cleansubject;
 		}
 		
 		//
