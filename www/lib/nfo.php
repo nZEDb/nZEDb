@@ -30,10 +30,10 @@ class Nfo
 	
 	public function parseImdb($str) 
 	{
-		preg_match('/(imdb.*?)?(tt|Title\?)(\d{7})/i', $str, $matches);
-		if (isset($matches[3]) && !empty($matches[3])) 
+		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
+		if (isset($matches[1]) && !empty($matches[1]))
 		{
-			return trim($matches[3]);
+			return trim($matches[1]);
 		}
 		return false;
 	}
