@@ -1898,7 +1898,7 @@ class Releases
 			$splitcnt = mysqli_num_rows($res);
 			if ($splitcnt > 0)
 			{
-				echo "De-splitting bunched up collections.\n";
+				echo "Extracting bunched up collections.\n";
 				$bunchedcnt = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
