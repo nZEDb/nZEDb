@@ -1895,39 +1895,43 @@ class Releases
 		$namecleaner = new nameCleaning();
 		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID where c.filecheck = 10"))
 		{
-			echo "De-splitting collections.\n";
-			$bunchedcnt = 0;
-			$cIDS = array();
-			while ($row = mysqli_fetch_assoc($res))
+			$splitcnt = mysqli_num_rows($res);
+			if ($splitcnt > 0)
 			{
-				$cIDS[] = $row["ID"];
-				$newColName = $namecleaner->splitCleaner($row["bname"]);
-				$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
-				$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
-				if(!$cres)
+				echo "De-splitting ".$splitcnt." collections.\n";
+				$bunchedcnt = 0;
+				$cIDS = array();
+				while ($row = mysqli_fetch_assoc($res))
 				{
-					$bunchedcnt++;
-					$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, 11, now())", $db->escapeString($row["name"]), $db->escapeString($row["subject"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
-					$collectionID = $db->queryInsert($csql);
+					$cIDS[] = $row["ID"];
+					$newColName = $namecleaner->splitCleaner($row["bname"]);
+					$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
+					if(!$cres)
+					{
+						$bunchedcnt++;
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, 11, now())", $db->escapeString($row["name"]), $db->escapeString($row["subject"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
+						$collectionID = $db->queryInsert($csql);
+					}
+					else
+					{
+						$collectionID = $cres["ID"];
+						//Update the collection table with the last seen date for the collection.
+						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID));
+					}
+					//Update the parts/binaries with the new info.
+					$binaryID = $db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bname"]));
+					$db->queryDirect(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
 				}
-				else
+				//Remove the old collections.
+				foreach ($cIDS as $cID)
 				{
-					$collectionID = $cres["ID"];
-					//Update the collection table with the last seen date for the collection.
-					$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID));
+					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 				}
-				//Update the parts/binaries with the new info.
-				$binaryID = $db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bname"]));
-				$db->queryDirect(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
+				//Update the collections to say we are done.
+				$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
+				echo $bunchedcnt." collections extracted out of ".mysqli_num_rows($res)." collections.\n";
 			}
-			//Remove the old collections.
-			foreach ($cIDS as $cID)
-			{
-				$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
-			}
-			//Update the collections to say we are done.
-			//$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
-			echo "De-splitted ".$bunchedcnt." collections.\n";
 		}		
 	}
 
