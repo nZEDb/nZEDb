@@ -17,14 +17,14 @@ if (!isset($argv[1]) && !isset($argv[2]))
 		."If you are sure you want to run this script, type php removeCrapReleases.php true full\n"
 		."The second mandatory argument is the time in hours(ex: 12) to go back, or you can type full.\n"
 		."You can pass 1 optional third argument:\n"
-		."gibberish | hashed | short | exe | passwordurl | passworded | size | sample\n");
+		."gibberish | hashed | short | executable | passwordurl | passworded | size | sample\n");
 }
 else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 {
 	exit("gibberish deletes releases where the name is only letters or numbers and is 15 characters or more.\n"
 		."hashed deletes releases where the name contains a string of 25 or more numbers or letters.\n"
 		."short deletes releases where the name is only numbers or letters and is 5 characters or less\n"
-		."exe deletes releases not in other misc or the apps sections and contains an exe file\n"
+		."executable deletes releases not in other misc or the apps sections and contains an .exe or install.bin file\n"
 		."passwordurl deletes releases which contain a password.url file\n"
 		."passworded deletes releases which contain password or passworded in the search name\n"
 		."size deletes releases smaller than 1MB and has only 1 file not in mp3/books\n"
@@ -94,10 +94,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 		return $delcount;
 	}
 	
-	// Anything smaller than 30MB with an exe not in other misc or pc apps.
-	function deleteExe($and)
+	// Anything with an exe or install.bin not in other misc or pc apps.
+	function deleteExecutable($and)
 	{
-		$type = "EXE";
+		$type = "Executable";
 		$db = new Db;
 		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.size < 30000000 and r.categoryID not in (4010, 4020, 4030, 4040, 4050, 4060, 4070, 7010)'.$and);
 		$delcount = deleteReleases($sql, $type);
@@ -148,7 +148,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	$gibberishDeleted = 0;
 	$hashedDeleted = 0;
 	$shortDeleted = 0;
-	$exeDeleted = 0;
+	$executableDeleted = 0;
 	$PURLDeleted = 0;
 	$PassDeleted = 0;
 	$sizeDeleted = 0;
@@ -162,8 +162,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$hashedDeleted = deleteHashed($and);
 		if (isset($argv[3]) && $argv[3] == "short")
 			$shortDeleted = deleteShort($and);
-		if (isset($argv[3]) && $argv[3] == "exe")
-			$exeDeleted = deleteExe($and);
+		if (isset($argv[3]) && $argv[3] == "executable")
+			$executableDeleted = deleteExecutable($and);
 		if (isset($argv[3]) && $argv[3] == "passwordurl")
 			$PURLDeleted = deletePasswordURL($and);
 		if (isset($argv[3]) && $argv[3] == "passworded")
@@ -178,14 +178,14 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$gibberishDeleted = deleteGibberish($and);
 		$hashedDeleted = deleteHashed($and);
 		$shortDeleted = deleteShort($and);
-		$exeDeleted = deleteExe($and);
+		$executableDeleted = deleteExecutable($and);
 		$PURLDeleted = deletePasswordURL($and);
 		$PassDeleted = deletePassworded($and);
 		$sizeDeleted = deleteSize($and);
 		$sampleDeleted = deleteSample($and);
 	}
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$exeDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$executableDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted;
 	
 	if ($totalDeleted > 0)
 	{
@@ -196,8 +196,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			echo "Hashed       : ".$hashedDeleted."\n";
 		if($shortDeleted > 0)
 			echo "Short        : ".$shortDeleted."\n";
-		if($exeDeleted > 0)
-			echo "EXE          : ".$exeDeleted."\n";
+		if($executableDeleted > 0)
+			echo "Executable   : ".$executableDeleted."\n";
 		if($PURLDeleted > 0)
 			echo "PURL         : ".$PURLDeleted."\n";
 		if($PassDeleted > 0)
