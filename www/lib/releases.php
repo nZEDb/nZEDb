@@ -1923,11 +1923,11 @@ class Releases
 			//Remove the old collections.
 			foreach ($cIDS as $cID)
 			{
-				$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID["ID"]));
+				$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 			}
 			//Update the collections to say we are done.
 			//$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
-			echo "De-splitted ".$bunchedcnt." collections";
+			echo "De-splitted ".$bunchedcnt." collections.\n";
 		}		
 	}
 
