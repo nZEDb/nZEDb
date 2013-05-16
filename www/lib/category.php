@@ -1254,19 +1254,9 @@ class Category
 			if($this->isComic($releasename)){ return true; }
 			if($this->isTechnicalBook($releasename)){ return true; }
 			if($this->isMagazine($releasename)){ return true; }
+			if($this->isBookOther($releasename)){ return true; }
 			if($this->isEBook($releasename)){ return true; }
 		}
-		return false;
-	}
-	
-	public function isEBook($releasename)
-	{
-		if (preg_match('/^ePub|[\.\-_ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
-		{
-			$this->tmpCat = Category::CAT_BOOKS_EBOOK;
-			return true;
-		}
-
 		return false;
 	}
 	
@@ -1294,9 +1284,31 @@ class Category
 	
 	public function isMagazine($releasename)
 	{
-		if (preg_match('/[\.\-_ ](January|February|March|April|May|June|July|August|September|October|November|December)[\.\-_ ](\d{1,2},)?20\d\d[\.\-_ ]|^\(.+( |\.)\d{1,2}( |\.)20\d\d( |\.).+\.scr|[\.\-_ ](Catalogue|FHM|NUTS|Pictorial|Tatler|XXX)[\.\-_ ]|^\(?(Allehanda|Club|Computer([a-z0-9]+)?|Connect \d+|Corriere|ct|Diario|Digit(al)?|Esquire|FHM|Gadgets|Galileo|Glam|GQ|Infosat|Inked|Instyle|io|Kicker|Liberation|New Scientist|NGV|Nuts|Popular|Professional|Reise|Sette(tv)?|Springer|Stuff|Studentlitteratur|Vegetarian|Vegetable|Videomarkt|Wired)[\.\-_ ]|Brady(.+)?Games|Catalog|Columbus.+Dispatch|Correspondenten|Corriere[\.\-_ ]Della[\.\-_ ]Sera|Cosmopolitan|Dagbladet|Digital[\.\-_ ]Guide|Economist|Eload ?24|ExtraTime|Fatto[\.\-_ ]Quotidiano|Flight[\.\-_ ](International|Journal)|Finanzwoche|France.+Football|Foto.+Video|Games?(Master|Markt|tar|TM)|Gardening|Gazzetta|Globe[\.\-_ ]And[\.\-_ ]Mail|Heimkino|Hustler|La.+(Lettura|Rblica|Stampa)|Le[\.\-_ ](Monde|Temps)|Les[\.\-_ ]Echos|e?Magazin(es?)?|Mac(life|welt)|Marie.+Claire|Maxim|Men.+(Health|Fitness)|Motocross|Motorcycle|Mountain[\.\-_ ]Bike|MusikWoche|National[\.\-_ ]Geographic|New[\.\-_ ]Yorker|PC([\.\-_ ](Gamer|Welt|World)|Games|Go|Tip)|Penthouse|Photograph(er|ic)|Playboy|Posten|Quotidiano|(Golf|Readers?).+Digest|SFX[\.\-_ ]UK|Recipe(.+Guide|s)|SkyNews|Sport[\.\-_ ]?Week|Strategy.+Guide|TabletPC|Tattoo[\.\-_ ]Life|The[\.\-_ ]Guardian|Tageszeitung|Tid(bits|ning)|Top[\.\-_ ]Gear[\.\-_ ]|Total[\.\-_ ]Guitar|Travel[\.\-_ ]Guides?|Tribune[\.\-_ ]De[\.\-_ ]|US[\.\-_ ]Weekly|USA[\.\-_ ]Today|Vogue|Verlag|Warcraft|Web.+Designer|What[\.\-_ ]Car|Zeitung/i', $releasename))
+		if (preg_match('/[a-z\-\._ ][\.\-_ ](January|February|March|April|May|June|July|August|September|October|November|December)[\.\-_ ](\d{1,2},)?20\d\d[\.\-_ ]|^\(.+( |\.)\d{1,2}( |\.)20\d\d( |\.).+\.scr|[\.\-_ ](Catalogue|FHM|NUTS|Pictorial|Tatler|XXX)[\.\-_ ]|^\(?(Allehanda|Club|Computer([a-z0-9]+)?|Connect \d+|Corriere|ct|Diario|Digit(al)?|Esquire|FHM|Gadgets|Galileo|Glam|GQ|Infosat|Inked|Instyle|io|Kicker|Liberation|New Scientist|NGV|Nuts|Popular|Professional|Reise|Sette(tv)?|Springer|Stuff|Studentlitteratur|Vegetarian|Vegetable|Videomarkt|Wired)[\.\-_ ]|Brady(.+)?Games|Catalog|Columbus.+Dispatch|Correspondenten|Corriere[\.\-_ ]Della[\.\-_ ]Sera|Cosmopolitan|Dagbladet|Digital[\.\-_ ]Guide|Economist|Eload ?24|ExtraTime|Fatto[\.\-_ ]Quotidiano|Flight[\.\-_ ](International|Journal)|Finanzwoche|France.+Football|Foto.+Video|Games?(Master|Markt|tar|TM)|Gardening|Gazzetta|Globe[\.\-_ ]And[\.\-_ ]Mail|Heimkino|Hustler|La.+(Lettura|Rblica|Stampa)|Le[\.\-_ ](Monde|Temps)|Les[\.\-_ ]Echos|e?Magazin(es?)?|Mac(life|welt)|Marie.+Claire|Maxim|Men.+(Health|Fitness)|Motocross|Motorcycle|Mountain[\.\-_ ]Bike|MusikWoche|National[\.\-_ ]Geographic|New[\.\-_ ]Yorker|PC([\.\-_ ](Gamer|Welt|World)|Games|Go|Tip)|Penthouse|Photograph(er|ic)|Playboy|Posten|Quotidiano|(Golf|Readers?).+Digest|SFX[\.\-_ ]UK|Recipe(.+Guide|s)|SkyNews|Sport[\.\-_ ]?Week|Strategy.+Guide|TabletPC|Tattoo[\.\-_ ]Life|The[\.\-_ ]Guardian|Tageszeitung|Tid(bits|ning)|Top[\.\-_ ]Gear[\.\-_ ]|Total[\.\-_ ]Guitar|Travel[\.\-_ ]Guides?|Tribune[\.\-_ ]De[\.\-_ ]|US[\.\-_ ]Weekly|USA[\.\-_ ]Today|Vogue|Verlag|Warcraft|Web.+Designer|What[\.\-_ ]Car|Zeitung/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
+			return true;
+		}
+
+		return false;
+	}
+	
+	public function isBookOther($releasename)
+	{
+		if (preg_match('/"\d\d-\d\d-20\d\d\./i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_BOOKS_OTHER;
+			return true;
+		}
+
+		return false;
+	}
+	
+	public function isEBook($releasename)
+	{
+		if (preg_match('/^ePub|[\.\-_ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $releasename))
+		{
+			$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 			return true;
 		}
 
