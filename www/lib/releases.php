@@ -1378,7 +1378,7 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) as tmpTable)");
 
 		// Attempt to split bundled collections.
-		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2 as tmpTable)");
+		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
 		$this->splitBunchedCollections();
 
 		// If we have all the parts set partcheck to 1.
@@ -1893,7 +1893,7 @@ class Releases
 		// Create new collections from collections with filecheck = 10 , set them to filecheck = 11, using the binaries table and the alternate namecleaner.
 		$db = new DB();
 		$namecleaner = new nameCleaning();
-		if($res = $db->query("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON c.binaryID = b.ID where c.filecheck = 10"))
+		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID where c.filecheck = 10"))
 		{
 			echo "De-splitting collections.\n";
 			$bunchedcnt = 0;
@@ -1907,7 +1907,7 @@ class Releases
 				if(!$cres)
 				{
 					$bunchedcnt++;
-					$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, 11, now())", $db->escapeString($row["cname"]), $db->escapeString($row["subject"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
+					$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, 11, now())", $db->escapeString($row["name"]), $db->escapeString($row["subject"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
 					$collectionID = $db->queryInsert($csql);
 				}
 				else
@@ -1926,7 +1926,7 @@ class Releases
 				$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID["ID"]));
 			}
 			//Update the collections to say we are done.
-			$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
+			//$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
 			echo "De-splitted ".$bunchedcnt." collections";
 		}		
 	}

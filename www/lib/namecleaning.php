@@ -29,6 +29,8 @@
 		//
 		public function splitCleaner($subject)
 		{
+			//Get up to 5 of the first letters of the quotes.
+			preg_match('/".+?([a-z]{1,5}).+?"/i', $subject, $matches);
 			//Parts/files
 			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s/i', '', $subject);
 			//File extensions - If it was not quotes.
@@ -37,10 +39,8 @@
 			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes?|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $cleansubject);
 			//Random stuff.
 			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}| \(\d+\)$/i', '', $cleansubject)));
-			//Get up to 5 of the first letters of the quotes.
-			preg_match('/".+?([a-z]{1,5}).+?"/i', $cleansubject, $matches);
 			
-			return $cleansubject.$matches["1"];
+			return $cleansubject.$matches[1];
 		}
 		
 		//
