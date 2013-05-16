@@ -379,7 +379,7 @@ class Music
 		if ($musicId) 
 		{
 			if ($this->echooutput)
-				echo "added/updated album: ".$mus['title']." (".$mus['year'].")\n";
+				echo "added/updated album: Artist: ".$mus['artist'].", Album: ".$mus['title']." (".$mus['year'].")\n";
 
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
 		} 
