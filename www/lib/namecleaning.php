@@ -33,6 +33,8 @@
 			preg_match('/".+?([a-z]{1,5}).+?"/i', $subject, $matches);
 			//Parts/files
 			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s/i', '', $subject);
+			//Anything between the quotes. Too much variance within the quotes, so remove it completely.
+			$cleansubject = preg_replace('/\".+\"/i', '', $cleansubject);
 			//File extensions - If it was not quotes.
 			$cleansubject = preg_replace('/(\.part(\d{1,5})?)?\.(7z|\d{3}(?=(\s|"))|avi|idx|jpg|mp4|nfo|nzb|pdf|rar|rev|r\d\d|sfv|srs|srr|sub|txt|vol.+par2|par\s?2|zip|z{2})"?|\d{2,3}\s\-\s.+\.mp3|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', '', $cleansubject);
 			//File Sizes - Non unique ones.
