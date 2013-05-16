@@ -13,7 +13,7 @@
 			if ($type == "split")
 			{
 				//Get the first word minus the first letter of the quotes.
-				preg_match('/".+?([a-z]{2,}).+?"/i', $subject, $matches);
+				preg_match('/".+?([a-z0-9]{2,}).+?"/i', $subject, $matches);
 			}
 			//Parts/files
 			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s/i', '', $subject);
