@@ -1,6 +1,6 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."lib/miscsorter.php");
+require(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."/lib/miscsorter.php");
 
 $sorter = new MiscSorter(true);
 
