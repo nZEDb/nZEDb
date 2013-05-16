@@ -16,6 +16,7 @@ require_once(WWW_DIR."/lib/releaseimage.php");
 require_once(WWW_DIR."/lib/releasecomments.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Releases
 {
