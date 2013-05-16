@@ -345,20 +345,38 @@ require_once(WWW_DIR."/lib/site.php");
 			else
 				$book['overview'] = 'null';
 			
+			if(isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name))
+			{
+				$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
+				if ($book['genre'] == "")
+					$book['genre'] = 'null';
+			}
+			else
+				$book['genre'] = 'null';
+			
 			$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
 			if ($book['coverurl'] != "")
 				$book['cover'] = 1;
 			else
 				$book['cover'] = 0;
 			
-			$query = sprintf("INSERT INTO bookinfo  (`title`, `author`, `asin`, `isbn`, `ean`, `url`, `salesrank`, `publisher`, `publishdate`, `pages`, `overview`, `cover`, `createddate`, `updateddate`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $book['cover']);
+			$query = sprintf("INSERT INTO bookinfo  (`title`, `author`, `asin`, `isbn`, `ean`, `url`, `salesrank`, `publisher`, `publishdate`, `pages`, `overview`, `genre`, `cover`, `createddate`, `updateddate`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `genre` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
 			
 			$bookId = $db->queryInsert($query);
 
 			if ($bookId) 
 			{
 				if ($this->echooutput)
-					echo "Added/updated book: ".$book['author']." - ".$book['title']."\n";
+				{
+					echo "Added/updated book: ";
+					if ($book['author'] !== "")
+						echo "Author: ".$book['author'].", ";
+					echo "Title: ".$book['title'];
+					if ($book['genre'] !== "null")
+						echo ", Genre: ".$book['genre'].".\n";
+					else
+						echo ".\n";
+				}
 
 				$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 			} 

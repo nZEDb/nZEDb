@@ -69,7 +69,8 @@
 				</div>
 			</td>
 			<td colspan="8" class="left" id="guid{$result.guid}">
-				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}</a></h2>
+				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{if $result.author != ""}{$result.author|escape:"htmlall"} - {/if}{$result.title|escape:"htmlall"}</a></h2>
+				{if $result.genre != "null"}<b>Genre:</b> {$result.genre|escape:'htmlall'}<br />{/if}
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher}<br />{/if}
 				{if $result.publishdate != ""}<b>Released:</b> {$result.publishdate|date_format}<br />{/if}
 				{if $result.pages != ""}<b>Pages:</b> {$result.pages}<br />{/if}
