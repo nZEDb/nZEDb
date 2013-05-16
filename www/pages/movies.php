@@ -41,7 +41,7 @@ foreach($results as $result) {
 }
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
-$page->smarty->assign('title', $title);
+$page->smarty->assign('title', stripslashes($title));
 
 $actors = (isset($_REQUEST['actors']) && !empty($_REQUEST['actors'])) ? stripslashes($_REQUEST['actors']) : '';
 $page->smarty->assign('actors', $actors);

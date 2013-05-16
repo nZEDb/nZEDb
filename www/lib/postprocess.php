@@ -501,10 +501,11 @@ class PostProcess {
 						{
 							foreach ($files as $file)
 							{
-								if (is_file( $file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
+								if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name)) 
 								{
 									rename($tmpPath.$name[0], $tmpPath."sample.avi");
-									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']); 
+									$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
 									@unlink($tmpPath."sample.avi");
 
 									if ($blnTookSample)
