@@ -1374,7 +1374,11 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmpTable)");
+		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) as tmpTable)");
+
+		// Attempt to split bundled collections.
+		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2 as tmpTable)");
+		$this->splitBunchedCollections();
 
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
@@ -1877,6 +1881,53 @@ class Releases
 		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
 		echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate.". ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $releasesAdded;
+	}
+
+	//
+	// When multiple collections are bunched up with the same MD5 ((ebooklezer) [0/2] - "geheimen.nzb" yEnc (1/1) | (ebooklezer) [1/2] - "destiny.par2" yEnc (1/1))
+	// Seperate them using a different namecleaner and change the ID's on the parts/binaries.
+	//
+	public function splitBunchedCollections()
+	{
+		// Create new collections from collections with filecheck = 10 , set them to filecheck = 11, using the binaries table and the alternate namecleaner.
+		$db = new DB();
+		$namecleaner = new nameCleaning();
+		if($res = $db->query("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON c.binaryID = b.ID where c.filecheck = 10"))
+		{
+			echo "De-splitting collections.\n";
+			$bunchedcnt = 0;
+			$cIDS = array();
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$cIDS[] = $row["ID"];
+				$newColName = $namecleaner->splitCleaner($row["bname"]);
+				$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
+				$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
+				if(!$cres)
+				{
+					$bunchedcnt++;
+					$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, 11, now())", $db->escapeString($row["cname"]), $db->escapeString($row["subject"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
+					$collectionID = $db->queryInsert($csql);
+				}
+				else
+				{
+					$collectionID = $cres["ID"];
+					//Update the collection table with the last seen date for the collection.
+					$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID));
+				}
+				//Update the parts/binaries with the new info.
+				$binaryID = $db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bname"]));
+				$db->queryDirect(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
+			}
+			//Remove the old collections.
+			foreach ($cIDS as $cID)
+			{
+				$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID["ID"]));
+			}
+			//Update the collections to say we are done.
+			$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
+			echo "De-splitted ".$bunchedcnt." collections";
+		}		
 	}
 
 	public function getTopDownloads()
