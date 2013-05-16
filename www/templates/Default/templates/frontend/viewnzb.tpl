@@ -79,8 +79,9 @@
 	
 	{if $boo}
 	<tr><th>Book Info:</th><td>
-		<strong>{$boo.title|escape:"htmlall"} ({$boo.publishdate|date_format:"%Y"})</strong><br />
+		<strong>{$boo.title|escape:"htmlall"}{if $boo.publishdate != "0000-00-00 00:00:00"} ({$boo.publishdate|date_format:"%Y"}){/if}</strong><br />
 		{if $boo.author != ""}<strong>Author:</strong> {$boo.author|escape:"htmlall"}<br />{/if}
+		{if $boo.genre != "null"}<strong>Genre:</strong> {$boo.genre|escape:"htmlall"}<br />{/if}
 		{if $boo.publisher != ""}<strong>Publisher:</strong> {$boo.publisher|escape:"htmlall"}<br />{/if}
 		{if $boo.publishdate != ""}<strong>Released:</strong> {$boo.publishdate|date_format}<br />{/if}
 		{if $boo.pages != ""}<strong>Pages:</strong> {$boo.pages|escape:"htmlall"}<br />{/if}

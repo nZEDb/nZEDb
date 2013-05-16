@@ -731,7 +731,7 @@ class Movie
 	
 	public function parseMovieName($releasename)
 	{
-				$cat = new Category;
+		$cat = new Category;
 		if (!$cat->isMovieForeign($releasename)) 
 		{
 			if (preg_match('/[\s\[](?:("|\s|\d{1,4}\/\d{1.4}}))(?P<name>.*?)(?:(dvd.+|xvid))?[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))

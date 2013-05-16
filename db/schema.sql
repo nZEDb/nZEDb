@@ -964,7 +964,8 @@ INSERT INTO `site`
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
-	('sqlpatch', '33');
+	('amazonsleep', 1000),
+	('sqlpatch', '35');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1000,6 +1001,7 @@ CREATE TABLE `bookinfo` (
   `publishdate` datetime DEFAULT NULL,
   `pages` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overview` varchar(3000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `genre` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cover` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `createddate` datetime NOT NULL,
   `updateddate` datetime NOT NULL,
