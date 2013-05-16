@@ -99,7 +99,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Executable";
 		$db = new Db;
-		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.size < 30000000 and r.categoryID not in (4010, 4020, 4030, 4040, 4050, 4060, 4070, 7010)'.$and);
+		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where (rf.name like "%.exe%" or rf.name like "%install.bin%") and r.categoryID not in (4010, 4020, 4030, 4040, 4050, 4060, 4070, 7010)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
