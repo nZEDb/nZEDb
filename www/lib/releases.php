@@ -1496,7 +1496,7 @@ class Releases
 
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
 		if ($delcount > 0)
-				echo "...Deleted ".$delcount." collections smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." collections smaller/larger than group/site settings.".$n;
 		echo $consoletools->convertTime(TIME() - $stage3);
 	}
 
@@ -1660,7 +1660,7 @@ class Releases
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount;
 		if ($delcount > 0)
-				echo "...Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
 		echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}
 
