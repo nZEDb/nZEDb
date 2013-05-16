@@ -1898,7 +1898,7 @@ class Releases
 			$splitcnt = mysqli_num_rows($res);
 			if ($splitcnt > 0)
 			{
-				echo "De-splitting ".$splitcnt." collections.\n";
+				echo "De-splitting bunched up collections.\n";
 				$bunchedcnt = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
@@ -1930,7 +1930,7 @@ class Releases
 				}
 				//Update the collections to say we are done.
 				$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
-				echo $bunchedcnt." collections extracted out of ".mysqli_num_rows($res)." collections.\n";
+				echo "Extracted ".$bunchedcnt." bunched collections.\n";
 			}
 		}		
 	}
