@@ -1777,7 +1777,7 @@ class Releases
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
 		{
-			$result = $db->query(sprintf("SELECT ID, guid FROM releases WHERE postdate < now() - interval %d day ", $page->site->releaseretentiondays)); 		
+			$result = $db->query(sprintf("SELECT ID, guid FROM releases WHERE postdate < (now() - interval %d day)", $page->site->releaseretentiondays)); 		
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
