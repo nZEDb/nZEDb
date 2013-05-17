@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1593";
+$version="0.1r1635";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -64,6 +64,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
+    ( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -74,6 +75,13 @@ function microtime_float()
 {
 	list($usec, $sec) = explode(" ", microtime());
 	return ((float)$usec + (float)$sec);
+}
+
+function decodeSize( $bytes )
+{
+	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+	for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+	return( round( $bytes, 2 ) . " " . $types[$i] );
 }
 
 function get_color()
@@ -328,6 +336,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
+    if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -414,6 +423,15 @@ while( $i > 0 )
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+	if (( $monitor_path ) && ( file_exists( $monitor_path ))) {
+		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
+		$disk_free = decodeSize( disk_free_space($monitor_path) );
+		printf("\033[1;33m\n");
+		printf($mask, "Ramdisk", "Used", "Free");
+		printf($mask, "====================", "====================", "====================");
+		printf("\033[38;5;214m");
+		printf($mask, substr($monitor_path,-15), $disk_use, $disk_free);
+	}
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
