@@ -1926,7 +1926,7 @@ class Releases
 					{
 						$collectionID = $cres["ID"];
 						//Update the collection table with the last seen date for the collection.
-						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID));
+						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
 					}
 					//Update the parts/binaries with the new info.
 					$db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
