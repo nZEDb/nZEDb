@@ -260,7 +260,11 @@ class PostProcess {
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
+			if ($threads > 1)
+				echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
+			else
+				$ppcount = $db->queryOneRow(sprintf("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)"));
 			$nntp->doConnect();
 
 			foreach ($result as $rel)
@@ -285,8 +289,10 @@ class PostProcess {
 				$blnTookMediainfo = false;
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
-				if ($this->echooutput)
+				if ($this->echooutput && $threads > 1)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+				else if ($this->echooutput)
+					$consoleTools->overWrite(", ".$rescount--." left of ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				//
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
