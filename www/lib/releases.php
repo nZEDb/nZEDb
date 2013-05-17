@@ -1392,7 +1392,7 @@ class Releases
 			// If filecheck 15, check if we have all the files then set part check.
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts)");
 			// If filecheck 16, check if we have all the files+1(because of the 0) then set part check.
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts+1)");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1)");
 		}
 		else
 		{
