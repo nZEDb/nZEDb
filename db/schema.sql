@@ -965,7 +965,8 @@ INSERT INTO `site`
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
 	('amazonsleep', 1000),
-	('sqlpatch', '36');
+	('passchkattempts', 1),
+	('sqlpatch', '37');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
