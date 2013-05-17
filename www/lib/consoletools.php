@@ -42,7 +42,7 @@ class ConsoleTools
 	}
 	
 	//
-	// Convert seconds to a timer, 00h.00m.00s
+	// Convert seconds to a timer, 00h:00m:00s
 	//
 	public function convertTimer($seconds)
 	{
