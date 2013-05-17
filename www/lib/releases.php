@@ -1381,18 +1381,27 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
 		$this->splitBunchedCollections();
 
+		// Set filecheck to 16 if theres a file that starts with 0.
+		$db->query("UPDATE collections c SET filecheck = 16 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 1 AND b.filenumber = 0".$where." GROUP BY c.ID) as tmpTable)");
+		// Set filecheck to 15 on everything left over.
+		$db->query("UPDATE collections set filecheck = 15 where filecheck = 1");
+		
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
 		{
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p WHERE p.binaryID = b.ID AND b.partcheck = 0 GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts)");
+			// If filecheck 15, check if we have all the files then set part check.
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts)");
+			// If filecheck 16, check if we have all the files+1(because of the 0) then set part check.
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts+1)");
 		}
 		else
 		{
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 and c.id = b.collectionid and c.groupid = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts )");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts )");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts+1 )");
 		}
 
 		// Set file check to 2 if we have all the parts.
-		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck = 1 GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
+		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck in (15, 16) GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck < 2 ".$where);
