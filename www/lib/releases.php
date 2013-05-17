@@ -1929,7 +1929,7 @@ class Releases
 						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID));
 					}
 					//Update the parts/binaries with the new info.
-					$db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bname"]));
+					$db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
 					$db->queryDirect(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
 				}
 				//Remove the old collections.
