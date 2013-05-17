@@ -390,9 +390,9 @@ class PostProcess {
 					foreach ($nzbfiles as $rarFile)
 					{
 						if ($foundcontent === true)
-							continue;
+							break;
 						if ($notinfinite > $this->partsqty)
-							continue;
+							break;
 
 						$notinfinite++;
 						$subject = $rarFile['subject'];
