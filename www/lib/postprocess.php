@@ -357,7 +357,6 @@ class PostProcess {
 
 				if ($hasrar && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
 				{
-					$notinfinite = 0;
 					if (count($nzbfiles) > 1)
 					{
 						$nzbfiles = $this->subval_sort($nzbfiles, "subject");
@@ -386,9 +385,12 @@ class PostProcess {
 						$nzbfiles = array_merge($rarpart, $nzbfiles);
 
 					$foundcontent = false;
+					$notinfinite = 0;
 
 					foreach ($nzbfiles as $rarFile)
 					{
+						if ($foundcontent === true)
+							continue;
 						if ($notinfinite > $this->partsqty)
 							continue;
 
@@ -440,11 +442,10 @@ class PostProcess {
 							{
 								$this->doecho("\nerror processing files {$rel['ID']}");
 								continue;
-							} else
+							}
+							else
 								$foundcontent = true;
-
 						}
-
 					}
 				}
 				elseif ($hasrar == 1)
