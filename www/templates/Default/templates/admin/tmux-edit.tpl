@@ -33,6 +33,14 @@
 				</td>
 			</tr>
 
+			<tr>
+				<td><label for="MONITOR_PATH">Monitor a Ramdisk</label>:</td>
+				<td>
+					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" />
+					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.</div>
+				</td>
+			</tr>
+
 		</table>
 </fieldset>
 
