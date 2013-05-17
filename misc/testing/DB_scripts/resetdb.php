@@ -38,7 +38,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	{
 		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
 		$relcount++;
-		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids)));
+		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 	}
 
 	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";

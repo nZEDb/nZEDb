@@ -40,5 +40,16 @@ class ConsoleTools
 		if ($seconds > 3600)
 			return round($seconds/3600)." hour(s)";
 	}
+	
+	//
+	// Convert seconds to a timer, 00h.00m.00s
+	//
+	public function convertTimer($seconds)
+	{
+		$s = $seconds%60;
+		$m = floor(($seconds/60)%60);
+		$h = floor($seconds/3600);
+		return " ".sprintf("%02dh:%02dm:%02ds", $h, $m, $s);
+	}
 }
 ?>
