@@ -1904,8 +1904,7 @@ class Releases
 		$namecleaner = new nameCleaning();
 		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID where c.filecheck = 10"))
 		{
-			$splitcnt = mysqli_num_rows($res);
-			if ($splitcnt > 0)
+			if (mysqli_num_rows($res) > 0)
 			{
 				echo "Extracting bunched up collections.\n";
 				$bunchedcnt = 0;
@@ -1913,14 +1912,12 @@ class Releases
 				while ($row = mysqli_fetch_assoc($res))
 				{
 					$cIDS[] = $row["ID"];
-					$newColName = $namecleaner->collectionsCleaner($row["bname"], "split");
-					$newMD5 = md5($newColName.$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$newMD5 = md5($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
 					if(!$cres)
 					{
-						$newName = $namecleaner->releaseCleaner($row["bname"]);
 						$bunchedcnt++;
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($newName), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
 						$collectionID = $db->queryInsert($csql);
 					}
 					else
@@ -1930,11 +1927,11 @@ class Releases
 						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
 					}
 					//Update the parts/binaries with the new info.
-					$db->queryDirect(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
-					$db->queryDirect(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
+					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
+					$db->query(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
 				}
 				//Remove the old collections.
-				foreach ($cIDS as $cID)
+				foreach (array_unique($cIDS) as $cID)
 				{
 					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 				}
