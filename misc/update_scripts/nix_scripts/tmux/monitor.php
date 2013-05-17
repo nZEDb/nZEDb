@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1647";
+$version="0.1r1649";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -25,7 +25,7 @@ $proc = "SELECT
 	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
 	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
 	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( groupID ) AS cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID BETWEEN 8000 AND 8999 ) AS book,
+	( SELECT COUNT( groupID ) AS cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
 	( SELECT COUNT( groupID ) AS cnt from releases where nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
