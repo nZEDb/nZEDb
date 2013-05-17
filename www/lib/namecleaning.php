@@ -14,6 +14,8 @@
 			{
 				//Get the first word of the quotes.
 				preg_match('/"([a-z0-9]+).+?"/i', $subject, $matches);
+				//Season-Episode or year.
+				preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|(19|20)\d\d/i', $subject, $matches2);	
 			}
 			//Parts/files
 			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s/i', '', $subject);
@@ -26,7 +28,12 @@
 			//Random stuff.
 			$cleansubject = utf8_encode(trim(preg_replace('/AutoRarPar\d{1,5}| \(\d+\)$/i', '', $cleansubject)));
 			if ($type == "split" && isset($matches[1]))
-				return $cleansubject.$matches[1];
+			{
+				if (isset($matches2[0]))
+					return $cleansubject.$matches[1].$matches2[0];
+				else
+					return $cleansubject.$matches[1];
+			}
 			else
 				return $cleansubject;
 		}
