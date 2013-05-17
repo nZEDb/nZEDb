@@ -292,7 +292,7 @@ class PostProcess {
 				if ($this->echooutput && $threads > 1)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
-					$consoleTools->overWrite(", ".$rescount--." left of ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				//
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
