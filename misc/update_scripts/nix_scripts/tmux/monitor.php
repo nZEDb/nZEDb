@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1633";
+$version="0.1r1634";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -64,6 +64,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
+    ( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -74,6 +75,13 @@ function microtime_float()
 {
 	list($usec, $sec) = explode(" ", microtime());
 	return ((float)$usec + (float)$sec);
+}
+
+function decodeSize( $bytes )
+{
+	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+	for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+	return( round( $bytes, 2 ) . " " . $types[$i] );
 }
 
 function get_color()
@@ -92,16 +100,6 @@ function get_color()
 	}
 	return $number;
 }
-
-function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd");
-	return (empty($returnVal) ? false : true);
-}
-
-if (command_exist("php5"))
-	$PHP = php5;
-else
-	$PHP = php;
 
 function relativeTime($_time) {
 	$d[0] = array(1,"sec");
@@ -338,6 +336,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
+    if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -424,6 +423,15 @@ while( $i > 0 )
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+	if (( $monitor_path ) && ( file_exists( $monitor_path ))) {
+		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
+		$disk_free = decodeSize( disk_free_space($monitor_path) );
+		printf("\033[1;33m\n");
+		printf($mask, "Ramdisk", "Used", "Free");
+		printf($mask, "====================", "====================", "====================");
+		printf("\033[38;5;214m");
+		printf($mask, substr($monitor_path,-15), $disk_use, $disk_free);
+	}
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
@@ -459,7 +467,7 @@ while( $i > 0 )
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 
-	$_php = "/usr/bin/time nice -n$niceness $PHP";
+	$_php = "/usr/bin/time nice -n$niceness php";
 	$_python = "/usr/bin/time nice -n$niceness python";
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
 	if (( $i == 1 ) || ( $i % 3 == 0 ))
@@ -483,15 +491,15 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes && \
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_names == "TRUE" )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes && \
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -504,13 +512,13 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_crap == "TRUE" )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -606,7 +614,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/update_scripts/update_theaters.php &&  nice -n$niceness $PHP $DIR/misc/update_scripts/update_tvschedule.php && date +\"%D %T\"' 2>&1 1> /dev/null");
+					nice -n$niceness php $DIR/misc/update_scripts/update_theaters.php &&  nice -n$niceness php $DIR/misc/update_scripts/update_tvschedule.php && date +\"%D %T\"' 2>&1 1> /dev/null");
 			$time4 = TIME();
 		}
 		elseif ( $update_tv == "TRUE" )
