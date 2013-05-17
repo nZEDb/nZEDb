@@ -484,10 +484,18 @@
 </tr>
 
 <tr>
-	<td><label for="maxpartsprocessed">Maximum add PP parts checked</label>:</td>
+	<td><label for="maxpartsprocessed">Maximum add PP parts downloaded</label>:</td>
 	<td>
 		<input class="tiny" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
 		<div class="hint">If a part fails to download while post processing, this will retry up to the amount you set, then give up.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="passchkattempts">Maximum add PP parts checked</label>:</td>
+	<td>
+		<input class="tiny" id="passchkattempts" name="passchkattempts" type="text" value="{$fsite->passchkattempts}" />
+		<div class="hint">This overrides the above setting if set above 1. How many parts to check for a password before giving up. This slows down post processing massively, better to leave it 1.</div>
 	</td>
 </tr>
 

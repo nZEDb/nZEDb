@@ -29,6 +29,7 @@ class PostProcess {
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
+		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 
 		$this->mediafileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV|AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -389,10 +390,18 @@ class PostProcess {
 
 					foreach ($nzbfiles as $rarFile)
 					{
-						if ($foundcontent === true)
-							break;
-						if ($notinfinite > $this->partsqty)
-							break;
+						if ($this->passchkattempts > 1)
+						{
+							if ($notinfinite > $this->passwordcheckattempts)
+								break;
+						}
+						else
+						{
+							if ($foundcontent === true)
+								break;
+							if ($notinfinite > $this->partsqty)
+								break;
+						}
 
 						$notinfinite++;
 						$subject = $rarFile['subject'];
