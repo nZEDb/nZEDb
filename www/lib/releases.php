@@ -1397,7 +1397,7 @@ class Releases
 		else
 		{
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts )");
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts+1 )");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 )");
 		}
 
 		// Set file check to 2 if we have all the parts.
