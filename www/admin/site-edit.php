@@ -95,10 +95,9 @@ $page->smarty->assign('passworded_names', array( 'Dont show passworded or potent
 
 
 $themelist = array();
-$themelist[] = "/";
-$themes = scandir(WWW_DIR."/templates");
+$themes = scandir(WWW_DIR."/themes");
 foreach ($themes as $theme)
-	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/templates/".$theme))
+	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/themes/".$theme))
 		$themelist[] = $theme;
 
 $page->smarty->assign('themelist', $themelist);
