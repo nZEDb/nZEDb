@@ -3,12 +3,14 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/nfo.php");
+require_once(WWW_DIR."/lib/namecleaning.php");
+
 
 class MiscSorter {
 
 	// **********************************************************************
 	function __construct($echooutput=false) {
-		$qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
+		$this->qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
 		'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
 		'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
 		'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
@@ -22,6 +24,7 @@ class MiscSorter {
 		$this->cat = new Category($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
+		$this->nc = new nameCleaning();
 
 
 		$res = $this->db->query("SET NAMES 'utf8'");
@@ -271,6 +274,62 @@ class MiscSorter {
 
 	}
 
+	function moviename ($nfo, $imdb, $name)
+	{
+		$qual = array();
+		foreach ($this->qualities as $quality)
+		{
+			if (preg_match("/(?<!\[ \] )(\b".$quality."\b)(?! \[ \])/i", $nfo, $match))
+			{
+				$qual[] =$match[1];
+			}
+		}
+
+		$name = preg_replace("/[a-f0-9]{10,}/i", " ", $name);
+
+		$name = $this->nc->releaseCleaner($name);
+
+		foreach ($qual as $key=>$quality)
+		{
+			if (preg_match("/$quality/i", $name))
+			{
+				unset($qual[$key]);
+			}
+		}
+
+		$n = '';
+		if (count($qual) > 0)
+		{
+			foreach ($qual as $quality)
+			{
+				$n = $n ." ".$quality;
+			}
+		}
+
+		$movie = $this->movie->getMovieInfo($imdb);
+
+		$name1 = $name;
+
+		foreach (explode(" ", $movie['title']." ".$movie['year']) as $word)
+		{
+			echo "word ".$word."\n";;
+			$tmp = preg_split("/$word/i", $name1);
+			$name2 = '';
+
+			foreach ($tmp as $t)
+			{
+				$name2 = $name2." ".$t;
+			}
+			$name1 = $name2;
+		}
+
+		$name1 = preg_replace('/[ \.\-\_]{2,}/', ' ', $name1);
+		$name1 = preg_replace('/ {2,}/', ' ', $name1);
+		$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n;
+		return trim($name);
+
+	}
+
 	function matchnfo ($case, $nfo, $row)
 	{
 		$ok = false;
@@ -371,6 +430,8 @@ class MiscSorter {
 				if ($imdb !== false)
 				{
 					$movie = $this->movie->getMovieInfo($imdb);
+					$name = $this->moviename($nfo, $imdb, $row['name']);
+
 					if ($movie !== false)
 					{
 						if (preg_match('/sport/iU', $movie['genre']))
@@ -382,11 +443,14 @@ class MiscSorter {
 						elseif (preg_match('/tv/iU', $movie['type']) || preg_match('/episode/iU', $movie['type']) || preg_match('/reality/iU', $movie['type']))
 							$cat = Category::CAT_TV_OTHER;
 						else
-							$cat = Category::CAT_MOVIE_OTHER;
+							$cat = $this->cat->determineCategory($name, $row['groupID']);
 					} else
+						$cat = $this->cat->determineCategory($name, $row['groupID']);
+
+					if ($cat < Category::CAT_PARENT_GAME || $cat > Category::CAT_PARENT_BOOKS + 1000)
 						$cat = Category::CAT_MOVIE_OTHER;
 
-					$ok = $this->dodbupdate($row['ID'], $cat, '', $imdb, 'imdb');
+					$ok = $this->dodbupdate($row['ID'], $cat, $name, $imdb, 'imdb');
 				}
 				break;
 			case 'audiobook':
@@ -429,7 +493,7 @@ class MiscSorter {
 			$this->idarr = $id;
 
 		$query = "SELECT uncompress(releasenfo.nfo) AS nfo, releases.ID, releases.guid, releases.`fromname`, releases.`name`,
-	releases.searchname, groups.`name` AS gname FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
+	releases.searchname, groups.`name` AS gname, releases.groupID FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
 	releases.ID INNER JOIN groups ON releases.groupID = groups.ID WHERE releases.ID in ($this->idarr) order by RAND()";
 
 		$res = $this->db->queryDirect($query);
