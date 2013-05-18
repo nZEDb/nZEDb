@@ -367,7 +367,7 @@ class MiscSorter {
 				break;
 
 			case 'imdb':
-				$imdb = $this->nfolib->parseImdb($nfo);
+				$imdb = $this->movie->domovieupdate($nfo, "sorter",  $row['ID'], $this->db);
 				if ($imdb !== false)
 				{
 					$movie = $this->movie->getMovieInfo($imdb);

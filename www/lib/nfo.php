@@ -93,6 +93,7 @@ class Nfo
 					echo "Processing ".$nfocount." NFO(s), starting at ".(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
+			$movie = new Movie($this->echooutput);
 			while ($arr = $db->fetchAssoc($res))
 			{
 				$guid = $arr['guid'];
@@ -106,24 +107,7 @@ class Nfo
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
 
-					$imdbId = $this->parseImdb($fetchedBinary);
-					if ($imdbId !== false)
-					{
-						//update release with imdb id
-						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-
-						//if set scan for imdb info
-						if ($processImdb == 1)
-						{
-							$movie = new Movie();
-							//check for existing movie entry
-							$movCheck = $movie->getMovieInfo($imdbId);
-							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-							{
-								$movieId = $movie->updateMovieInfo($imdbId);
-							}
-						}
-					}
+					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
 					$rageId = $this->parseRageId($fetchedBinary);
 					if ($rageId !== false)
