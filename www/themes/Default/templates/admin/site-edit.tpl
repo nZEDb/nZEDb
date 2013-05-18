@@ -78,22 +78,6 @@
 </tr>
 
 <tr>
-	<td><label for="style">Categorize Language</label>:</td>
-	<td>
-		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
-		<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
-	<td>
-		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
-		<div class="hint">This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="style">Theme</label>:</td>
 	<td>
 		{html_options class="siteeditstyle" id="style" name='style' values=$themelist output=$themelist selected=$fsite->style}
@@ -130,6 +114,37 @@
 	<td>
 		<textarea id="tandc" name="tandc">{$fsite->tandc}</textarea>
 		<div class="hint">Text displayed in the terms and conditions page.</div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Language/Categorization options</legend>
+<table class="input">
+
+<tr>
+	<td><label for="style">Categorize Language</label>:</td>
+	<td>
+		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
+		<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="categorizeforeign">Categorize Foreign</label>:</td>
+	<td>
+		{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}
+		<div class="hint">This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="catwebdl">Categorize WEB-DL</label>:</td>
+	<td>
+		{html_radios id="catwebdl" name='catwebdl' values=$yesno_ids output=$yesno_names selected=$fsite->catwebdl separator='<br />'}
+		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.</div>
 	</td>
 </tr>
 
