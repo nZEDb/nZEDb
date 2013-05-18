@@ -29,6 +29,7 @@ class PostProcess {
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
+		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 
 		$this->mediafileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV|AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -186,7 +187,7 @@ class PostProcess {
 			AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 
 		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -197,10 +198,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -211,10 +212,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -225,10 +226,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -239,10 +240,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -253,13 +254,18 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s), starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
+			if ($threads > 1)
+				echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
+			else
+				$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 			$nntp->doConnect();
 
 			foreach ($result as $rel)
@@ -284,8 +290,10 @@ class PostProcess {
 				$blnTookMediainfo = false;
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
-				if ($this->echooutput)
+				if ($this->echooutput && $threads > 1)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+				else if ($this->echooutput)
+					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				//
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
@@ -357,7 +365,6 @@ class PostProcess {
 
 				if ($hasrar && ($this->site->checkpasswordedrar > 0 || ($processSample && $blnTookSample === false) || $processMediainfo))
 				{
-					$notinfinite = 0;
 					if (count($nzbfiles) > 1)
 					{
 						$nzbfiles = $this->subval_sort($nzbfiles, "subject");
@@ -386,11 +393,22 @@ class PostProcess {
 						$nzbfiles = array_merge($rarpart, $nzbfiles);
 
 					$foundcontent = false;
+					$notinfinite = 0;
 
 					foreach ($nzbfiles as $rarFile)
 					{
-						if ($notinfinite > $this->partsqty)
-							continue;
+						if ($this->passchkattempts > 1)
+						{
+							if ($notinfinite > $this->passwordcheckattempts)
+								break;
+						}
+						else
+						{
+							if ($foundcontent === true)
+								break;
+							if ($notinfinite > $this->partsqty)
+								break;
+						}
 
 						$notinfinite++;
 						$subject = $rarFile['subject'];
@@ -440,11 +458,10 @@ class PostProcess {
 							{
 								$this->doecho("\nerror processing files {$rel['ID']}");
 								continue;
-							} else
+							}
+							else
 								$foundcontent = true;
-
 						}
-
 					}
 				}
 				elseif ($hasrar == 1)
@@ -501,10 +518,11 @@ class PostProcess {
 						{
 							foreach ($files as $file)
 							{
-								if (is_file( $file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name))
+								if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->mediafileregex.'$/i',$file,$name)) 
 								{
 									rename($tmpPath.$name[0], $tmpPath."sample.avi");
-									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']); 
+									$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
 									@unlink($tmpPath."sample.avi");
 
 									if ($blnTookSample)

@@ -95,10 +95,10 @@
 				</div>
 			</td>
 			<td colspan="3" class="left">
-				<h2>{$result.title|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}</h2>
-				{if $result.tagline != ''}<b>{$result.tagline}</b><br />{/if}
-				{if $result.plot != ''}{$result.plot}<br /><br />{/if}
-				{if $result.genre != ''}<b>Genre:</b> {$result.genre}<br />{/if}
+				<h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}</h2>
+				{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
+				{if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
+				{if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
 				{if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
 				{if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
 				<div class="movextra">
