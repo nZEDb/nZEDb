@@ -24,7 +24,7 @@ $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 
 $groupsearch = ($gname != "") ? 'groupname='.$gname.'&amp;' : '';
 $page->smarty->assign('pagerquerybase', WWW_TOP."/group-list.php?".$groupsearch."offset=");
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $grouplist = $groups->getRange($offset, ITEMS_PER_PAGE, $gname);
