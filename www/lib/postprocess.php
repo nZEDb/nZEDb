@@ -706,7 +706,7 @@ class PostProcess {
 						}
 
 						if (preg_match($this->supportfiles.")/i", $file['name']))
-										continue;
+							continue;
 
 						/*if (preg_match('/\.zip/i', $file['name']))
 						{
@@ -727,14 +727,12 @@ class PostProcess {
 								$file['source'] = $matches[1]."_".$matches[4];
 							
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
-
 							if (isset($file['range']))
 								$range = $file['range'];
 							else
 								$range = mt_rand(0,255)."-"."383999";
 							
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
-						
 							if (preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
