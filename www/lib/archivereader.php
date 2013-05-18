@@ -442,6 +442,7 @@ abstract class ArchiveReader
 
 		// Write the buffered data to disk
 		$this->seek(0);
+		echo $destination."\n";
 		$fh = fopen($destination, 'wb');
 		$rlen = $this->length;
 		$written = 0;
