@@ -727,7 +727,7 @@ class PostProcess {
 						{
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 
-							$range = rand(0, 100000);
+							$range = rand(0, 32767);
 							if (isset($file['range']))
 								$range = $file['range'];
 
@@ -747,11 +747,11 @@ class PostProcess {
 							}
 							elseif (preg_match("/sample/i",$file['name']))
 							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,100000)."_".$file['name'], $file['source']);
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
 							}
 							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']))
 							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,100000)."_".$file['name'], $file['source']);
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
 							}
 
 						}
