@@ -21,9 +21,9 @@
 	{foreach from=$shows item=show}
 		<tr class="{cycle values=",alt"}">
 			<td>
-				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.rageID}{if $show.categoryID != ''}?t={$show.categoryID|replace:"|":","}{/if}">{$show.releasetitle|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.rageID}{if $show.categoryID != ''}?t={$show.categoryID|replace:"|":","}{/if}">{$show.releasetitle|stripslashes|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
-			<td><a href="{$smarty.const.WWW_TOP}/rss?rage={$show.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS Feed for {$show.releasetitle|escape:"htmlall"} (All Categories)">RSS Feed</td>
+			<td><a href="{$smarty.const.WWW_TOP}/rss?rage={$show.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS Feed for {$show.releasetitle|stripslashes|escape:"htmlall"} (All Categories)">RSS Feed</td>
 			<td class="less">{if $show.categoryNames != ''}{$show.categoryNames|escape:"htmlall"}{else}All{/if}</td>
 			<td class="less" title="Added on {$show.createddate}">{$show.createddate|date_format}</td>
 			<td class="mid"><a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.rageID}" class="myshows" rel="edit" name="series{$show.rageID}" title="Edit Categories">Edit</a>&nbsp;&nbsp;<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.rageID}" class="myshows" rel="remove" name="series{$show.rageID}" title="Remove from My Shows">Remove</a></td>
