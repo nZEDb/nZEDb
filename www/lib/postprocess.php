@@ -706,7 +706,7 @@ class PostProcess {
 						}
 
 						if (preg_match($this->supportfiles.")/i", $file['name']))
-										continue;
+							continue;
 
 						/*if (preg_match('/\.zip/i', $file['name']))
 						{
@@ -721,18 +721,18 @@ class PostProcess {
 								}
 							}
 						}*/
-
-						$ok = preg_match("/main/i", $file['source']) && preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) > 1;
-						if (!$ok)
+						if (preg_match("/(main)(( > )(.+))?/i", $file['source'], $matches) && !preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) >= 1)
 						{
+							if(isset($matches[2]))
+								$file['source'] = $matches[1]."_".$matches[4];
+							
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
-
-							$range = rand(0, 32767);
 							if (isset($file['range']))
 								$range = $file['range'];
-
+							else
+								$range = mt_rand(0,255)."-"."383999";
+							
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
-
 							if (preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
@@ -746,14 +746,9 @@ class PostProcess {
 
 							}
 							elseif (preg_match("/sample/i",$file['name']))
-							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							}
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
 							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']))
-							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							}
-
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
 						}
 					}
 				}
