@@ -20,6 +20,11 @@ define('WWW_DIR', realpath(dirname(__FILE__)).'/');
 define('SMARTY_DIR', WWW_DIR.'lib/smarty/');
 
 //
+// path to themes directory
+//
+define('THEMES_DIR', WWW_TOP.'themes');
+
+//
 // number of results per page
 //
 define("ITEMS_PER_PAGE", "50");

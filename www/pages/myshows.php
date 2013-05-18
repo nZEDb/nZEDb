@@ -131,7 +131,7 @@ switch($action) {
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/myshows/browse?ob=".$orderby."&amp;offset=");
 		$page->smarty->assign('pagerquerysuffix', "#results");
 		
-		$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+		$pager = $page->smarty->fetch("pager.tpl");
 		$page->smarty->assign('pager', $pager);
 
 		foreach($ordering as $ordertype) 
