@@ -721,21 +721,17 @@ class PostProcess {
 								}
 							}
 						}*/
-						if (preg_match("/main/i", $file['source']) && !preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) >= 1)
+						if (preg_match("/(main)(( > )(.+))?/i", $file['source'], $matches) && !preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) >= 1)
 						{
-							if(preg_match("/(main)( > )(.+)/", $file['source'], $matches))
-								$file['source'] = $matches[1]."_".$matches[3];
+							if(isset($matches[2]))
+								$file['source'] = $matches[1]."_".$matches[4];
 							
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 
 							if (isset($file['range']))
-							{
 								$range = $file['range'];
-							}
 							else
-							{
-								$range = mt_rand(0,1000)."-".mt_rand(0, 1000000);
-							}
+								$range = mt_rand(0,255)."-"."383999";
 							
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
 						
