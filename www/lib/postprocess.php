@@ -187,7 +187,7 @@ class PostProcess {
 			AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -1, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 
 		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -198,10 +198,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -2, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -212,10 +212,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -3, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -226,10 +226,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -4, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -240,10 +240,10 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -5, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
-		$result = $db->query($query);
-		if ($result != $this->addqty)
+		if (count($result) != $this->addqty)
 		{
 			if ($id != '')
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
@@ -254,6 +254,7 @@ class PostProcess {
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", -6, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+			$result = $db->query($query);
 		}
 
 		$rescount = count($result);
@@ -264,7 +265,7 @@ class PostProcess {
 			if ($threads > 1)
 				echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 			else
-				$ppcount = $db->queryOneRow(sprintf("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)"));
+				$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 			$nntp->doConnect();
 
 			foreach ($result as $rel)
