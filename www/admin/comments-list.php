@@ -16,7 +16,7 @@ $page->smarty->assign('pagertotalitems',$commentcount);
 $page->smarty->assign('pageroffset',$offset);
 $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/comments-list.php?offset=");
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $commentslist = $releases->getCommentsRange($offset, ITEMS_PER_PAGE);

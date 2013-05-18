@@ -23,7 +23,7 @@ $page->smarty->assign('pagertotalitems',$ragecount);
 $page->smarty->assign('pageroffset',$offset);
 $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/rage-list.php?".$tsearch."&offset=");
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $page->smarty->assign('ragename',$tname);
