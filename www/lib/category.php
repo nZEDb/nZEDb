@@ -80,6 +80,7 @@ class Category
 		$site = $s->get();
 		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
 		$this->catlanguage = (!empty($site->catlanguage)) ? $site->catlanguage : "0";
+		$this->catwebdl = ($site->catwebdl == "0") ? false : true;
 	}
 	
 	public function get($activeonly=false, $excludedcats=array())
@@ -558,13 +559,10 @@ class Category
 		if ($looksLikeTV && !preg_match('/[\.\-_ ](flac|imageset|mp3|xxx)[\.\-_ ]/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
-			if($this->categorizeforeign)
-			{
-				if($this->isForeignTV($releasename)){ return true; }
-			}
+			if($this->categorizeforeign) { if($this->isForeignTV($releasename)){ return true; } }
 			if($this->isSportTV($releasename)){ return true; }
 			if($this->isDocumentaryTV($releasename)){ return true; }
-			if($this->isWEBDL($releasename)){ return true; }
+			if($this->catwebdl) { if($this->isWEBDL($releasename))  { return true; } }
 			if($this->isHDTV($releasename)){ return true; }
 			if($this->isSDTV($releasename)){ return true; }
 			if($this->isAnimeTV($releasename)){ return true; }
@@ -688,6 +686,14 @@ class Category
 		{
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
+		}
+		if ($this->catwebdl == false)
+		{
+			if (preg_match('/web[\.\-_ ]dl/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_TV_HD;
+				return true;
+			}
 		}
 		
 		return false;

@@ -80,6 +80,7 @@ if (isset($_GET["id"]))
 		$mov = $movie->getMovieInfo($data['imdbID']);
 		
 		if ($mov) {
+			$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 			$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre'] = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');

@@ -86,12 +86,12 @@
 				</div>
 			</td>
 			<td colspan="8" class="left" id="guid{$result.guid}">
-				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|escape:"htmlall"} - {$result.platform|escape:"htmlall"}</a></h2>
+				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"} - {$result.platform|escape:"htmlall"}</a></h2>
 				{if $result.genre != ""}<b>Genre:</b> {$result.genre}<br />{/if}
 				{if $result.esrb != ""}<b>Rating:</b> {$result.esrb}<br />{/if}
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher}<br />{/if}
 				{if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br />{/if}
-				{if $result.review != ""}<b>Review:</b> {$result.review|escape:'htmlall'}<br />{/if}
+				{if $result.review != ""}<b>Review:</b> {$result.review|stripslashes|escape:'htmlall'}<br />{/if}
 				<br />
 				<div class="movextra">
 					<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>

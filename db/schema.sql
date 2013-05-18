@@ -966,7 +966,8 @@ INSERT INTO `site`
 	('catlanguage', 0),
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
-	('sqlpatch', '37');
+	('catwebdl', 0),
+	('sqlpatch', '38');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

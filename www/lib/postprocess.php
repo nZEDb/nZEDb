@@ -262,7 +262,7 @@ class PostProcess {
 		{
 			if ($this->echooutput)
 				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
-			if ($threads > 1)
+			if ($threads > 0)
 				echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 			else
 				$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
@@ -290,7 +290,7 @@ class PostProcess {
 				$blnTookMediainfo = false;
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
-				if ($this->echooutput && $threads > 1)
+				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
 					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
@@ -706,7 +706,7 @@ class PostProcess {
 						}
 
 						if (preg_match($this->supportfiles.")/i", $file['name']))
-										continue;
+							continue;
 
 						/*if (preg_match('/\.zip/i', $file['name']))
 						{
@@ -721,18 +721,18 @@ class PostProcess {
 								}
 							}
 						}*/
-
-						$ok = preg_match("/main/i", $file['source']) && preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) > 1;
-						if (!$ok)
+						if (preg_match("/(main)(( > )(.+))?/i", $file['source'], $matches) && !preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $file['name']) && count($files) >= 1)
 						{
+							if(isset($matches[2]))
+								$file['source'] = $matches[1]."_".$matches[4];
+							
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
-
-							$range = rand(0, 32767);
 							if (isset($file['range']))
 								$range = $file['range'];
-
+							else
+								$range = mt_rand(0,255)."-"."383999";
+							
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
-
 							if (preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
@@ -746,14 +746,9 @@ class PostProcess {
 
 							}
 							elseif (preg_match("/sample/i",$file['name']))
-							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							}
-							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']) && !preg_match("/sample/i",$file['name']))
-							{
-								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".rand(0,1000)."_".$file['name'], $file['source']);
-							}
-
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
+							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']))
+								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
 						}
 					}
 				}
