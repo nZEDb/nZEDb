@@ -111,7 +111,7 @@ Class NZBcontents
 	//
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$notout = '/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|exe|gif|htm|ico|idx|ini|jpg|log|m3u|mid|nzb|odt|par2|pdf|psd|pps|png|ppt|sfv|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|wps|xml)/i';
+		$notout = '/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|log|m3u|mid|mobi|nzb|odt|par2|pdf|psd|pps|png|ppt|rar|sfv|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|wps|xml)/i';
 		$notin = '/<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR/i';
 		$db = new DB();
 		$nfo = new NFO();
