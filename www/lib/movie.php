@@ -445,7 +445,7 @@ class Movie
 				if (preg_match($regex, $buffer, $matches))
 				{
 					$match = $matches[1];
-					$match = strip_tags(trim(rtrim(addslashes($match))));
+					$match = strip_tags(trim(rtrim($match)));
 					$ret[$field] = $match;
 				}
 			}
