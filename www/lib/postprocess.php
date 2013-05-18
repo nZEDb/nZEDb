@@ -751,7 +751,6 @@ class PostProcess {
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
 							elseif (preg_match('/'.$this->mediafileregex.'$/i',$file['name']))
 								$rar->saveFileData($file['name'], $tmpPath."_".$file['source']."_".$range."_".mt_rand(0,1000)."_".$file['name']);
-							}
 						}
 					}
 				}
