@@ -28,7 +28,7 @@ function command_exist($cmd) {
 }
 
 //check for apps
-$apps = array("time", "tmux", "nice", "python");
+$apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
 {
 	if (!command_exist($value)) {

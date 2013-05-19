@@ -322,6 +322,14 @@
 					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="text" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
 					<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
+
+			<tr>
+				<td style="width:160px;"><label for="WRITE_LOGS">Logging</label>:</td>
+				<td>
+					{html_radios id="WRITE_LOGS" name='WRITE_LOGS' values=$truefalse_names output=$truefalse_names selected=$ftmux->WRITE_LOGS}
+					<div class="hint">Set this to write each panes output to a per pane per day log file.</div>
+				</td>
+			</tr>
 			</tr>
 		</table>
 </fieldset>
