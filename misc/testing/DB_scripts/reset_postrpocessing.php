@@ -10,8 +10,13 @@ if (isset($argv[1]) && $argv[1] === "all")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->query("truncate table consoleinfo; truncate table movieinfo; truncate table musicinfo; truncate table bookinfo; truncate table releasenfo");
-		$db->query("update releases set consoleinfoID = NULL, imdbID = NULL, musicinfoID = NULL, bookinfoID = NULL, rageID = NULL, passwordstatus = '-1', haspreview = '-1', nfostatus = '-1'");
+		$db->query("truncate table consoleinfo");
+		$db->query("truncate table movieinfo");
+        $db->query("truncate table releasevideo");
+		$db->query("truncate table musicinfo");
+		$db->query("truncate table bookinfo");
+		$db->query("truncate table releasenfo");
+		$db->query("update releases set consoleinfoID = NULL, imdbID = NULL, musicinfoID = NULL, bookinfoID = NULL, rageID = NULL, passwordstatus = -1, haspreview = -1, nfostatus = -1");
 		$affected = $db->getAffectedRows();
 		echo $affected." releases reset.\n";
 	}
@@ -60,6 +65,7 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
+		$db->query("truncate table releasevideo");
 		$db->query("truncate table movieinfo");
 	}
 	else
@@ -95,7 +101,7 @@ elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2]
 	{
 		$where = " where haspreview = 0";
 	}
-	$db->query("update releases set passwordstatus = '-1', haspreview = '-1'");
+	$db->query("update releases set passwordstatus = -1, haspreview = -1");
 	$affected = $db->getAffectedRows();
 	echo $affected." releases reset.\n";
 }

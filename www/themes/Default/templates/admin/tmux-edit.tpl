@@ -37,7 +37,7 @@
 				<td><label for="MONITOR_PATH">Monitor a Ramdisk</label>:</td>
 				<td>
 					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" />
-					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.</div>
+					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=512M,mode=777 0 0</div>
 				</td>
 			</tr>
 
@@ -322,6 +322,14 @@
 					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="text" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
 					<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
+
+			<tr>
+				<td style="width:160px;"><label for="WRITE_LOGS">Logging</label>:</td>
+				<td>
+					{html_radios id="WRITE_LOGS" name='WRITE_LOGS' values=$truefalse_names output=$truefalse_names selected=$ftmux->WRITE_LOGS}
+					<div class="hint">Set this to write each panes output to a per pane per day log file.</div>
+				</td>
+			</tr>
 			</tr>
 		</table>
 </fieldset>

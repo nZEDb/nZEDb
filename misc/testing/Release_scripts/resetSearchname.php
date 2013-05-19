@@ -15,7 +15,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]) && $argv[1] == "full")
 {
 	$db = new DB;
-	$res = $db->queryDirect("SELECT ID, name FROM releases");
+	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
 	
 	if (sizeof($res) > 0)
 	{
@@ -52,7 +52,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB;
-	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 2");
+	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus in (0, 1)");
 	
 	if (sizeof($res) > 0)
 	{
@@ -73,7 +73,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		
 		$releases = new Releases();
 		$releases->resetCategorize("WHERE relnamestatus != 2");
-		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus != 2", true);
+		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus in (0, 1)", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 		
