@@ -15,7 +15,7 @@ $seq = $tmux->get()->SEQUENTIAL;
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
 
-if ( $patch < '38' )
+if ( $patch < '39' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -28,7 +28,7 @@ function command_exist($cmd) {
 }
 
 //check for apps
-$apps = array("time", "tmux", "nice", "python");
+$apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
 {
 	if (!command_exist($value)) {
