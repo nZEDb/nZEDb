@@ -531,11 +531,11 @@ class PostProcess
 							{
 								if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name)) 
 								{
-									rename($tmpPath.$name[0], $tmpPath."sample.".$name[2]);
+									rename($tmpPath.$name[0], $tmpPath."sample.avi");
 									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']); 
 									if ($processMediainfo && $blnTookMediainfo === false)
 										$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
-									@unlink($tmpPath."sample.".$name[2]);
+									@unlink($tmpPath."sample.avi");
 
 									if ($blnTookSample)
 										break;
@@ -753,11 +753,11 @@ class PostProcess
 
 							}
 							// Extract a video file from the compressed file.
-							elseif (preg_match('/'.$this->videofileregex.'$/i', $file['name'], $name))
+							elseif (preg_match('/'.$this->videofileregex.'$/i', $file['name']))
 							{
 								$videofile = $rar->getFileData($file['name'], $file['source']);
 								if ($videofile !== false)
-									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).$name[0], $videofile);
+									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999)."avi", $videofile);
 							}
 						}
 					}
