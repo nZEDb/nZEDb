@@ -872,7 +872,7 @@ class PostProcess
 		$processAudioinfo = true;
 		
 		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID FROM releases WHERE ID = %d", $releaseID));
-		if (!preg_match('/^3\d{4}|7010/', $catID["ID"]))
+		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
 			return $retval;
 		
 		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
