@@ -167,6 +167,7 @@ class PostProcess
 		$maxattemptstocheckpassworded = 5;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
+		$processAudioinfo = true;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		$tmpPath = $this->site->tmpunrarpath;
 
@@ -291,6 +292,7 @@ class PostProcess
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = false;
+				$blnTookAudioinfo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 				
 				if ($this->echooutput && $threads > 0)
@@ -305,8 +307,8 @@ class PostProcess
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
-				$bingroup = $samplegroup = $mediagroup = "";
-				$samplemsgid = $mediamsgid = $mid = array();
+				$bingroup = $samplegroup = $mediagroup = $audiogroup = "";
+				$samplemsgid = $mediamsgid = $audiomsgid = $audiotype = $mid = array();
 				$hasrar = 0;
 				$this->password = false;
 				$notmatched = false;
@@ -333,7 +335,7 @@ class PostProcess
 						$notmatched = true;
 
 					// Look for a sample.
-					if (preg_match("/sample/i",$subject))
+					if ($processSample && preg_match("/sample/i",$subject))
 					{
 						if (isset($nzbcontents['segment']) && empty($samplemsgid))
 						{
@@ -342,7 +344,7 @@ class PostProcess
 						}
 					}
 					// Look for a media file.
-					elseif (preg_match('/'.$this->videofileregex.'[\. "\)\]]/i',$subject) && !preg_match("/sample/i",$subject))
+					elseif ($processMediainfo && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i',$subject) && !preg_match("/sample/i",$subject))
 					{
 						if (isset($nzbcontents['segment']) && empty($mediamsgid))
 						{
@@ -350,6 +352,16 @@ class PostProcess
 							$mediamsgid[] = $nzbcontents['segment'][0];
 						}
 					}
+					/*// Look for a audio file.
+					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i',$subject), $type)
+					{
+						if (isset($nzbcontents['segment']) && empty($audiomsgid))
+						{
+							$audiogroup = $groupName;
+							$audiotype = $type[1];
+							$audiomsgid[] = $nzbcontents['segment'][0];
+						}
+					}*/
 				}
 
 				if ($notmatched && !$hasrar)
@@ -469,6 +481,7 @@ class PostProcess
 							else
 								$foundcontent = true;
 						}
+						$nntp->doQuit();
 					}
 				}
 				elseif ($hasrar == 1)
@@ -494,10 +507,11 @@ class PostProcess
 						}
 						unset($mediaBinary);
 					}
+					$nntp->doQuit();
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
-				if ($processMediainfo && $blnTookMediainfo === false)
+				if (!empty($mediamsgid) && $processMediainfo && $blnTookMediainfo === false)
 				{
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
@@ -517,9 +531,30 @@ class PostProcess
 						}
 						unset($mediaBinary);
 					}
+					$nntp->doQuit();
 				}
 
-				// Last attempt to get a sample image.
+				/*// Download audio file, use mediainfo to try to get the artist / album.
+				if(!empty($audiomsgid) && $processAudio && $blnTookAudio === false)
+				{
+					$nntp->doConnect();
+					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+
+					if ($audioBinary !== false)
+					{
+						if (strlen($audioBinary) > 100)
+						{
+							$audiofile = $tmpPath.'audio.',$audiotype;
+							file_put_contents($audiofile, $audioBinary);
+							$blnTookAudio = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+							unset($audiofile);
+						}
+						unset($audioBinary);
+					}
+					$nntp->doQuit();
+				}*/
+
+				// Last attempt to get image/mediainfo/audioinfo, using an extracted file.
 				if ($processSample && $blnTookSample === false)
 				{
 					if (is_dir($tmpPath))
@@ -602,7 +637,6 @@ class PostProcess
 
 				@rmdir($tmpPath);
 			}
-			$nntp->doQuit();
 			if ($this->echooutput)
 				echo "\n";
 		}
@@ -809,6 +843,38 @@ class PostProcess
 						$re = new ReleaseExtra();
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
+						$retval = true;
+					}
+				}
+			}
+		}
+		return $retval;
+	}
+
+	// Attempt to get mediafio xml from a audio file.
+	public function getAudioinfo($ramdrive,$audioinfo,$releaseID)
+	{
+		$db = new DB();
+		$retval = false;
+		$processAudioinfo = true;
+
+		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
+			return $retval;
+
+		$mediafiles = glob($ramdrive.'*.*');
+		if (is_array($mediafiles))
+		{
+			foreach($mediafiles as $mediafile)
+			{
+				if (preg_match("/".$this->audiofileregex."$/i",$audiofile))
+				{
+					$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+
+					if (is_array($xmlarray))
+					{
+						$xmlarray = implode("\n",$xmlarray);
+						print_r($xmlarray);
+						//$db->query(sprintf("UPDATE releases SET searchname = %s WHERE ID = %d, $xmlarray[]." - ".$xmlarray[], $releaseID));
 						$retval = true;
 					}
 				}
