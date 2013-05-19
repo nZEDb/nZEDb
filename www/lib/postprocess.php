@@ -352,8 +352,8 @@ class PostProcess
 							$mediamsgid[] = $nzbcontents['segment'][0];
 						}
 					}
-					/*// Look for a audio file.
-					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i',$subject), $type)
+					// Look for a audio file.
+					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $subject, $type))
 					{
 						if (isset($nzbcontents['segment']) && empty($audiomsgid))
 						{
@@ -361,7 +361,7 @@ class PostProcess
 							$audiotype = $type[1];
 							$audiomsgid[] = $nzbcontents['segment'][0];
 						}
-					}*/
+					}
 				}
 
 				if ($notmatched && !$hasrar)
@@ -534,8 +534,8 @@ class PostProcess
 					$nntp->doQuit();
 				}
 
-				/*// Download audio file, use mediainfo to try to get the artist / album.
-				if(!empty($audiomsgid) && $processAudio && $blnTookAudio === false)
+				// Download audio file, use mediainfo to try to get the artist / album.
+				if(!empty($audiomsgid) && $processAudioinfo && $blnTookAudioinfo === false)
 				{
 					$nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
@@ -544,15 +544,15 @@ class PostProcess
 					{
 						if (strlen($audioBinary) > 100)
 						{
-							$audiofile = $tmpPath.'audio.',$audiotype;
+							$audiofile = $tmpPath.'audio.'.$audiotype;
 							file_put_contents($audiofile, $audioBinary);
-							$blnTookAudio = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+							$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['guid']);
 							unset($audiofile);
 						}
 						unset($audioBinary);
 					}
 					$nntp->doQuit();
-				}*/
+				}
 
 				// Last attempt to get image/mediainfo/audioinfo, using an extracted file.
 				if ($processSample && $blnTookSample === false)
@@ -564,6 +564,12 @@ class PostProcess
 						{
 							foreach ($files as $file)
 							{
+								if ($processAudioinfo && is_file($tmpPath.$file) && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name)) 
+								{
+									rename($tmpPath.$name[0], $tmpPath."audiofile.".$name[2]);
+									$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
+									@unlink($tmpPath."sample.".$name[2]);
+								}
 								if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name)) 
 								{
 									rename($tmpPath.$name[0], $tmpPath."sample.avi");
@@ -793,6 +799,13 @@ class PostProcess
 								if ($videofile !== false)
 									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999)."avi", $videofile);
 							}
+							// Extract a video file from the compressed file.
+							elseif (preg_match('/'.$this->audiofileregex.'$/i', $file['name'], $ext))
+							{
+								$audiofile = $rar->getFileData($file['name'], $file['source']);
+								if ($audiofile !== false)
+									file_put_contents($tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $audiofile);
+							}
 						}
 					}
 				}
@@ -851,31 +864,44 @@ class PostProcess
 		return $retval;
 	}
 
-	// Attempt to get mediafio xml from a audio file.
+	// Attempt to get a release name from a audio file.
 	public function getAudioinfo($ramdrive,$audioinfo,$releaseID)
 	{
 		$db = new DB();
 		$retval = false;
 		$processAudioinfo = true;
-
+		
+		$catID = $db->queryOneRow("SELECT categoryID as ID FROM releases WHERE ID = %d", $releaseID);
+		if (!preg_match('/^3\d{4}|7010/', $catID["ID"]))
+			return $retval;
+		
 		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
-		$mediafiles = glob($ramdrive.'*.*');
-		if (is_array($mediafiles))
+		$audiofiles = glob($ramdrive.'*.*');
+		if (is_array($audiofiles))
 		{
-			foreach($mediafiles as $mediafile)
+			foreach($audiofiles as $audiofile)
 			{
-				if (preg_match("/".$this->audiofileregex."$/i",$audiofile))
+				if (preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
 					$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
 
 					if (is_array($xmlarray))
 					{
 						$xmlarray = implode("\n",$xmlarray);
-						print_r($xmlarray);
-						//$db->query(sprintf("UPDATE releases SET searchname = %s WHERE ID = %d, $xmlarray[]." - ".$xmlarray[], $releaseID));
-						$retval = true;
+						$xmlObj = @simplexml_load_string($xmlarray);
+						$arrXml = objectsIntoArray($xmlObj);
+						foreach ($arrXml["File"]["track"] as $track)
+						{
+							if (isset($track["Album"]) && isset($track["Performer"]) && isset($track["Recorded_date"]))
+							{
+								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
+								$db->query(sprintf("UPDATE releases SET searchname = %s WHERE ID = %d", $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]), $releaseID));
+								$retval = true;
+								break;
+							}
+						}
 					}
 				}
 			}
