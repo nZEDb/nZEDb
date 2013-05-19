@@ -841,7 +841,7 @@ class PostProcess
 								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
 								$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
 								$newcat = $category->determineCategory($newname, $catID["groupID"]);
-								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
+								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
 								$retval = true;
 								break;
 							}
