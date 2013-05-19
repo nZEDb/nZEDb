@@ -897,7 +897,7 @@ class PostProcess
 							if (isset($track["Album"]) && isset($track["Performer"]) && isset($track["Recorded_date"]))
 							{
 								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
-								$db->query(sprintf("UPDATE releases SET searchname = %s WHERE ID = %d", $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]), $releaseID));
+								$db->query(sprintf("UPDATE releases SET searchname = %s WHERE ID = %d", $db->escapeString($track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1])), $releaseID));
 								$retval = true;
 								break;
 							}
