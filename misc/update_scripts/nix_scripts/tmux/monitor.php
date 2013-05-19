@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1692";
+$version="0.1r1693";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -64,7 +64,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
-    ( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -224,7 +224,7 @@ $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
 
 //create display
 passthru('clear');
-//printf("\033[1;31m  First insert:\033[0m ".relativeTime("$firstdate")."\n");
+//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
@@ -341,7 +341,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
-    if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
+	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -380,7 +380,7 @@ while( $i > 0 )
 	$tvrage_diff = number_format( $tvrage_releases_proc - $tvrage_releases_proc_start );
 	$book_diff = number_format( $book_releases_proc - $book_releases_proc_start );
 
-	//formatted  output
+	//formatted output
 	$misc_diff = number_format( $work_remaining_now - $work_start );
 
 	$work_since_start = ( $total_work_now - $total_work_start );
@@ -413,7 +413,7 @@ while( $i > 0 )
 
 	//update display
 	passthru('clear');
-	//printf("\033[1;31m  First insert:\033[0m ".relativeTime("$firstdate")."\n");
+	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
@@ -467,8 +467,8 @@ while( $i > 0 )
 	}
 
 	//get list of panes by name
-	$panes_win_1 = shell_exec("echo `tmux list-panes -t  $tmux_session:0 -F '#{pane_title}'`");
-	$panes_win_2 = shell_exec("echo `tmux list-panes -t  $tmux_session:1 -F '#{pane_title}'`");
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+	$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 
@@ -477,7 +477,7 @@ while( $i > 0 )
 	else
 		$PHP = "php";
 	$_php = "/usr/bin/time nice -n$niceness $PHP";
-	$_python = "/usr/bin/time nice -n$niceness python";
+	$_python = "/usr/bin/time nice -n$niceness python -OO";
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
 	if (( $i == 1 ) || ( $i % 3 == 0 ))
 		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false";
@@ -493,7 +493,7 @@ while( $i > 0 )
 	else
 		$kill_coll = "FALSE";
 
-	if ( $running  == "TRUE" )
+	if ( $running == "TRUE" )
 	{
 		//fix names
 		if (( $fix_names == "TRUE" ) && ( $i == 1 ))
@@ -623,7 +623,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -t ${tmux_session}:1.'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/update_scripts/update_theaters.php &&  nice -n$niceness $PHP $DIR/misc/update_scripts/update_tvschedule.php && date +\"%D %T\"' 2>&1 1> /dev/null");
+					nice -n$niceness $PHP $DIR/misc/update_scripts/update_theaters.php && nice -n$niceness $PHP $DIR/misc/update_scripts/update_tvschedule.php && date +\"%D %T\"' 2>&1 1> /dev/null");
 			$time4 = TIME();
 		}
 		elseif ( $update_tv == "TRUE" )
@@ -655,14 +655,14 @@ while( $i > 0 )
 
 			//run update_binaries
 			$color = get_color();
-			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group && \
 						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" )  && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
+			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
 			{
 				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python $DIR/misc/update_scripts/threaded_scripts/binaries_threaded.py && \
