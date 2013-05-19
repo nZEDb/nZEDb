@@ -15,7 +15,17 @@ $db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
 $sleep = $delay + 120;
 echo "Waiting $sleep seconds for all panes to shutdown\n";
 sleep($sleep);
-system("php $DIR/misc/update_scripts/optimise_db.php");
+
+function command_exist($cmd) {
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
+}
+
+if (command_exist("php5"))
+	$PHP = "php5";
+else
+	$PHP = "php";
+system("$PHP $DIR/misc/update_scripts/optimise_db.php");
 $db->query(sprintf("update tmux set value = %s where setting = 'RUNNING'",$running));
 
 ?>

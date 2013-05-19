@@ -112,7 +112,11 @@ function window_post()
 
 function attach($DIR, $session)
 {
-	shell_exec("tmux respawnp -t $session:0.0 'php $DIR/misc/update_scripts/nix_scripts/tmux/monitor.php'");
+	if (command_exist("php5"))
+		$PHP = "php5";
+	else
+		$PHP = "php";
+	shell_exec("tmux respawnp -t $session:0.0 '$PHP $DIR/misc/update_scripts/nix_scripts/tmux/monitor.php'");
 	shell_exec("tmux select-window -t$session:0 && tmux attach-session -d -t$session");
 }
 
