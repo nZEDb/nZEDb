@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1707";
+$version="0.1r1712";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -444,13 +444,13 @@ while( $i > 0 )
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
-		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
-		$disk_free = decodeSize( disk_free_space($monitor_path) );
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
 		printf($mask, "====================", "====================", "====================");
 		printf("\033[38;5;214m");
-		printf($mask, substr($monitor_path,-15), $disk_use, $disk_free);
+		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
+		$disk_free = decodeSize( disk_free_space($monitor_path) );
+		printf($mask, basename($monitor_path), $disk_use, $disk_free);
 	}
 
 	printf("\033[1;33m\n");
