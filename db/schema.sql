@@ -970,7 +970,8 @@ INSERT INTO `site`
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
 	('catwebdl', 0),
-	('sqlpatch', '41');
+	('safebackfilldate', '2012-06-24'),
+	('sqlpatch', '42');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
