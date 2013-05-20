@@ -327,7 +327,7 @@
 				<td style="width:160px;"><label for="WRITE_LOGS">Logging</label>:</td>
 				<td>
 					{html_radios id="WRITE_LOGS" name='WRITE_LOGS' values=$truefalse_names output=$truefalse_names selected=$ftmux->WRITE_LOGS}
-					<div class="hint">Set this to write each panes output to a per pane per day log file.</div>
+					<div class="hint">Set this to write each panes output to a per pane per day log file. This adds GMT date to the filename.</div>
 				</td>
 			</tr>
 			</tr>
