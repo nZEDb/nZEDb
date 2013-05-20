@@ -170,7 +170,7 @@ class PostProcess
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
-		$processJPGSample = true;
+		$processJPGSample = ($this->site->processjpg == "0") ? false : true;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		$tmpPath = $this->site->tmpunrarpath;
 
