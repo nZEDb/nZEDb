@@ -19,7 +19,6 @@ class BasePage
 	public $smarty = '';
 	public $userdata = array();
 	public $serverurl = '';
-	public $template_dir = 'frontend';
 	public $site = '';
 	
 	const FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS = 1.000;
@@ -40,19 +39,17 @@ class BasePage
         // set site variable
 		$s = new Sites();
 		$this->site = $s->get();
-		$db = new DB();
-		$theme = $db->query("select value from site where setting = 'style'");
-		$theme = array_shift($theme);
-		if($theme["value"] == "/")
-		{
-			$theme["value"] = "Default";
-		}
+
 		
 		$this->smarty = new Smarty();
-		$this->smarty->template_dir = WWW_DIR.'templates/'.$theme["value"].'/templates/'.$this->template_dir;
-		$this->smarty->compile_dir = SMARTY_DIR.'templates_c/';
-		$this->smarty->config_dir = SMARTY_DIR.'configs/';
-		$this->smarty->cache_dir = SMARTY_DIR.'cache/';	
+		$this->smarty->setTemplateDir(array(
+		    'user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend',
+		    'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+		));
+
+		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
+		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');
+		$this->smarty->setCacheDir(SMARTY_DIR.'cache/');
 		$this->smarty->error_reporting = (E_ALL - E_NOTICE);
 
 		$this->smarty->assign('site',$this->site);
@@ -60,7 +57,11 @@ class BasePage
 		
 		if (isset($_SERVER["SERVER_NAME"]))
 		{
-			$this->serverurl = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].($_SERVER["SERVER_PORT"] != "80" ? ":".$_SERVER["SERVER_PORT"] : "").WWW_TOP.'/';
+			if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
+				$httpstart = "https://";
+			else
+				$httpstart = "http://";
+			$this->serverurl = $httpstart.$_SERVER["SERVER_NAME"].(($_SERVER["SERVER_PORT"] != "80" && $_SERVER["SERVER_PORT"] != "443") ? ":".$_SERVER["SERVER_PORT"] : "").WWW_TOP.'/';
 			$this->smarty->assign('serverroot', $this->serverurl);
 		}
 		
@@ -193,11 +194,6 @@ class BasePage
 		$this->body = $this->body." ".$attr;
 	}		
 	
-	public function render() 
-	{
-		$this->smarty->display($this->page_template);
-	}
-	
 	public function isPostBack()
 	{
 		return (strtoupper($_SERVER["REQUEST_METHOD"]) === "POST");	
@@ -235,9 +231,9 @@ class BasePage
 		die();
 	}
 	
-	public function getCommonTemplate($tpl)
+	public function render() 
 	{
-		return "../common/".$tpl;
+		$this->smarty->display($this->page_template);
 	}
 }
 ?>

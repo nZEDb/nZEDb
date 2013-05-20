@@ -29,7 +29,7 @@ class AniDB
 		if ($this->echooutput)
 			echo "Updating animetitles.";
 
-		$zh = gzopen('http://anidb.net/api/animetitles.dat.gz', 'r');
+		$zh = gzopen('http://anidb.net/api/anime-titles.dat.gz', 'r');
 
 		preg_match_all('/(\d+)\|\d\|.+\|(.+)/', gzread($zh, '10000000'), $animetitles);
 		if(!$animetitles)
@@ -196,12 +196,13 @@ class AniDB
 		return $cleanFilename;
 	}
 
-	public function processAnimeReleases()
+	public function processAnimeReleases($threads=1)
 	{
+		$threads--;
 		$db = new DB();
 		$ri = new ReleaseImage();
 
-		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d limit %d )", Category::CAT_TV_ANIME, $this->aniqty));
+		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL and nzbstatus = 1 AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d order by adddate desc limit %d,%d )", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));
 
 		if ($db->getNumRows($results) > 0) {
 			if ($this->echooutput)

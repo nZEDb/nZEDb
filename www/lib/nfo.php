@@ -30,10 +30,10 @@ class Nfo
 	
 	public function parseImdb($str) 
 	{
-		preg_match('/(imdb.*?)?(tt|Title\?)(\d{7})/i', $str, $matches);
-		if (isset($matches[3]) && !empty($matches[3])) 
+		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
+		if (isset($matches[1]) && !empty($matches[1]))
 		{
-			return trim($matches[3]);
+			return trim($matches[1]);
 		}
 		return false;
 	}
@@ -48,23 +48,52 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($processImdb=1, $processTvrage=1)
+	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents($this->echooutput);
 
-		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d", $this->nzbs));
+		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus = -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
 		$nfocount = $db->getNumRows($res);
-		if ($nfocount >= 0)
+		if ($nfocount != $this->nzbs)
+		{
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -2 and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$nfocount = $db->getNumRows($res);
+		}
+        if ($nfocount != $this->nzbs)
+        {
+            $res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -3 and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$nfocount = $db->getNumRows($res);
+        }
+        if ($nfocount != $this->nzbs)
+        {
+            $res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -4 and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$nfocount = $db->getNumRows($res);
+        }
+        if ($nfocount != $this->nzbs)
+        {
+            $res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -5 and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+            $nfocount = $db->getNumRows($res);
+        }
+        if ($nfocount != $this->nzbs)
+        {
+            $res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+            $nfocount = $db->getNumRows($res);
+        }
+
+
+		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+					echo "Processing ".$nfocount." NFO(s), starting at ".(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
+			$movie = new Movie($this->echooutput);
 			while ($arr = $db->fetchAssoc($res))
 			{
 				$guid = $arr['guid'];
@@ -78,24 +107,7 @@ class Nfo
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
 
-					$imdbId = $this->parseImdb($fetchedBinary);
-					if ($imdbId !== false)
-					{
-						//update release with imdb id
-						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-
-						//if set scan for imdb info
-						if ($processImdb == 1)
-						{
-							$movie = new Movie();
-							//check for existing movie entry
-							$movCheck = $movie->getMovieInfo($imdbId);
-							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-							{
-								$movieId = $movie->updateMovieInfo($imdbId);
-							}
-						}
-					}
+					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
 					$rageId = $this->parseRageId($fetchedBinary);
 					if ($rageId !== false)

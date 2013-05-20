@@ -34,9 +34,9 @@ foreach($objects as $filestoprocess => $nzbFile)
 	$newFileName = $nzb->getNZBPath($fileGuid, $sitenzbpath, true, $newLevel);
 	if ($newFileName != $nzbFile)
 	{
-		echo $newFileName . $n;
+		//echo $newFileName . $n;
 		rename($nzbFile, $newFileName);
-		chmod($newFileName, 0777); // chage the mod to fix issues some users have with file permissions
+		chmod($newFileName, 0764); // chage the mod to fix issues some users have with file permissions
 	}
 	
 	$iFilesProcessed++;

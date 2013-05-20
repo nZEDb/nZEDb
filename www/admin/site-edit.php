@@ -64,6 +64,19 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 $page->smarty->assign('passwd_ids', array(1,0));
 $page->smarty->assign('passwd_names', array( 'Deep (requires unrar)', 'None'));
 
+/*
+ *0 = English
+ *2 = Danish
+ *3 = French
+ *1 = German
+ */
+
+$page->smarty->assign('langlist_ids', array(0,2,3,1));
+$page->smarty->assign('langlist_names', array( 'English', 'Danish', 'French', 'German'));
+
+$page->smarty->assign('menupos_ids', array(0,1,2));
+$page->smarty->assign('menupos_names', array( 'Right', 'Left', 'Top'));
+
 $page->smarty->assign('sabintegrationtype_ids', array(SABnzbd::INTEGRATION_TYPE_USER, SABnzbd::INTEGRATION_TYPE_SITEWIDE, SABnzbd::INTEGRATION_TYPE_NONE));
 $page->smarty->assign('sabintegrationtype_names', array( 'User', 'Site-wide', 'None (Off)'));
 
@@ -82,10 +95,9 @@ $page->smarty->assign('passworded_names', array( 'Dont show passworded or potent
 
 
 $themelist = array();
-$themelist[] = "/";
-$themes = scandir(WWW_DIR."/templates");
+$themes = scandir(WWW_DIR."/themes");
 foreach ($themes as $theme)
-	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/templates/".$theme))
+	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/themes/".$theme))
 		$themelist[] = $theme;
 
 $page->smarty->assign('themelist', $themelist);

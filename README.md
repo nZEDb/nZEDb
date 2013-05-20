@@ -1,6 +1,5 @@
 We have made a patcher for MYSQL, in misc/testing/DB_scripts (patchmysql.php), please look out for patches as we add new features and run this script.
 
-------------------------------------------------------------------------------------------------
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
 
 Some of the differences between that version of newznab and our indexer are:
@@ -74,6 +73,13 @@ Notes:
 	Windows is currently untested, we will not offer support for those having issues with windows.
 	
 	This software is offered as is, we classify it as "alpha", it has bugs, so be aware of this.
+
+<hr>
+The team:
+
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo <br /><br /k>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WT7FVU4YZFBPA"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+<hr>
 
 Original Newznab readme:
 
@@ -286,4 +292,3 @@ HALL OF FAME
 	mobiKalw@newznab			testing
 	crudehung@newznab			nginx rewrite rules
 	www.famfamfam.com			icons
-

@@ -4,7 +4,7 @@ export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export HELP_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
 export THREAD_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
 export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
-export PHP="$(which php5)"
+command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 export PYTHON="$(which python)"
 export SCREEN="$(which screen)"
 export NZEDB_SLEEP_TIME="60"
@@ -14,7 +14,7 @@ export NZEDB_SLEEP_TIME="60"
 	   
 while :
 do
-	
+	sleep 1
 	CURRTIME=`date +%s`
 	cd ${NZEDB_PATH}
 	if ! $SCREEN -list | grep -q "POSTP"; then
@@ -37,8 +37,6 @@ do
 		echo "Cleaning DB..."
 		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
-		$PHP ${TEST_PATH}/fixReleaseNames.php 1 true all yes
-		$PHP ${TEST_PATH}/removeCrapReleases.php true 2
 	fi
 	
 	cd ${NZEDB_PATH}

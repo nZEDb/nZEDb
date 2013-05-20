@@ -134,7 +134,7 @@ class TvRage
 			$tsql .= sprintf("and tvrage.releasetitle like %s", $db->escapeString("%".$ragename."%"));
 		}
 		
-		$sql = sprintf(" SELECT tvrage.ID, tvrage.rageID, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.ID as userseriesID from tvrage left outer join userseries on userseries.userID = %d and userseries.rageID = tvrage.rageID where tvrage.rageID > 0 %s %s group by tvrage.rageID order by tvrage.releasetitle asc", $uid, $rsql, $tsql);
+		$sql = sprintf(" SELECT tvrage.ID, tvrage.rageID, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.ID as userseriesID from tvrage left outer join userseries on userseries.userID = %d and userseries.rageID = tvrage.rageID where tvrage.rageID in (select rageid from releases) and tvrage.rageID > 0 %s %s group by tvrage.rageID order by tvrage.releasetitle asc", $uid, $rsql, $tsql);
 		return $db->query($sql);		
 	}
 	
@@ -455,14 +455,15 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
-	public function processTvReleases($lookupTvRage=true)
+	public function processTvReleases($threads=1, $lookupTvRage=true)
 	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
-		
+
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_TV, $this->rageqty));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
 		
 		if ($this->echooutput)
 		{
@@ -770,6 +771,7 @@ class TvRage
 	
 	public function parseNameEpSeason($relname)
 	{
+		$relname = trim(preg_replace('/EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
 		$showInfo = array(
 			'name' => '',
 			'season' => '',
@@ -934,9 +936,9 @@ class TvRage
 	}
 	
 	public function getGenres()
-    {
-    	return array(
-    		'Action',
+	{
+		return array(
+			'Action',
 			'Adult/Porn',
 			'Adventure',
 			'Anthology',
@@ -991,7 +993,7 @@ class TvRage
 			'Western',
 			'Wildlife'
 		);
-    }
+	}
 	
 }
 

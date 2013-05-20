@@ -58,12 +58,14 @@ Class NZBcontents
 				}
 				
 				$subject = $nzbcontents->attributes()->subject;
-				preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $subject, $parts);
-				$artificialParts = $artificialParts+$parts['total'];
-				
+				if(preg_match('/(?P<total>\d{1,4})\)$/', $subject, $parts))
+				{
+					$artificialParts = $artificialParts+$parts['total'];
+				}
+
 				if ($foundnfo !== true)
 				{
-					if (preg_match('/\.nfo/', $subject))
+					if (preg_match('/\.\b(nfo|inf|ofn)\b/', $subject))
 					{
 						$messageid = $nzbcontents->segments->segment;
 						$foundnfo = true;
@@ -109,8 +111,8 @@ Class NZBcontents
 	//
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$notout = '/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|exe|gif|htm|ico|idx|ini|jpg|log|m3u|mid|nzb|odt|par2|pdf|psd|pps|png|ppt|sfv|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|wps|xml)/i';
-		$notin = '/<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}/i';
+		$notout = '/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|log|m3u|mid|mobi|nzb|odt|par2|pdf|psd|pps|png|ppt|rar|sfv|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|wps|xml)/i';
+		$notin = '/<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR/i';
 		$db = new DB();
 		$nfo = new NFO();
 		$nzb = new NZB();
@@ -119,7 +121,7 @@ Class NZBcontents
 		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
+			$nzbfile = @simplexml_load_file($nzbpath);
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
@@ -196,16 +198,52 @@ Class NZBcontents
 		}
 		else
 		{
-			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
+			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
+			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
 			return false;
 		}
+	}
+	
+	public function nzblist($guid='')
+	{
+		if (empty($guid))
+			return false;
+		
+		$nzb = new NZB();
+		$nzbpath = $nzb->getNZBPath($guid);
+		$nzb = array();
+		
+		if (file_exists($nzbpath))
+		{
+			$nzbpath = 'compress.zlib://'.$nzbpath;
+			$xmlObj = @simplexml_load_file($nzbpath);
+			
+			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb')
+			{
+				foreach($xmlObj->file as $file)
+				{
+					$nzbfile = array();
+					$nzbfile['subject'] = (string) $file->attributes()->subject;
+					$nzbfile = array_merge($nzbfile, (array) $file->groups);
+					$nzbfile = array_merge($nzbfile, (array) $file->segments);
+					$nzb[] = $nzbfile;
+					$nzbfile = null;
+				}
+			}
+			else
+				$nzb = false;
+			unset($xmlObj);
+			return $nzb;
+		}
+		else
+			return false;
 	}
 	
 	//
 	//	Check if the possible NFo is a JFIF.
 	//
-    function check_JFIF($filename)
-    {
+	function check_JFIF($filename)
+	{
 		$fp = @fopen($filename, 'r');
 		if ($fp) 
 		{

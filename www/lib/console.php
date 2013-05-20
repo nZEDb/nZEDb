@@ -18,6 +18,7 @@ class Console
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
+		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		
 		$this->imgSavePath = WWW_DIR.'covers/console/';
 	}
@@ -276,46 +277,46 @@ class Console
 		//Some of the Platforms don't match Amazon's exactly. This code is needed to facilitate rechecking.
 		if (preg_match('/^X360$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('X360', 'Xbox 360', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('X360', 'Xbox 360', $gameInfo['platform']);	// baseline single quote
 		}		
 		if (preg_match('/^XBOX360$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('XBOX360', 'Xbox 360', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('XBOX360', 'Xbox 360', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^NDS$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('NDS', 'Nintendo DS', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('NDS', 'Nintendo DS', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^PS3$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('PS3', 'PlayStation 3', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('PS3', 'PlayStation 3', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^PSP$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('PSP', 'Sony PSP', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('PSP', 'Sony PSP', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^Wii$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('Wii', 'Nintendo Wii', $gameInfo['platform']);    // baseline single quote
-			$gameInfo['platform'] = str_replace('WII', 'Nintendo Wii', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('Wii', 'Nintendo Wii', $gameInfo['platform']);	// baseline single quote
+			$gameInfo['platform'] = str_replace('WII', 'Nintendo Wii', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^N64$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('N64', 'Nintendo 64', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('N64', 'Nintendo 64', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/^NES$/i', $gameInfo['platform']))
 		{
-			$gameInfo['platform'] = str_replace('NES', 'Nintendo NES', $gameInfo['platform']);    // baseline single quote
+			$gameInfo['platform'] = str_replace('NES', 'Nintendo NES', $gameInfo['platform']);	// baseline single quote
 		}
 		if (preg_match('/Super/i', $con['platform']))
 		{
-			$con['platform'] = str_replace('Super Nintendo', 'SNES', $con['platform']);    // baseline single quote
-			$con['platform'] = str_replace('Nintendo Super NES', 'SNES', $con['platform']);    // baseline single quote
+			$con['platform'] = str_replace('Super Nintendo', 'SNES', $con['platform']);	// baseline single quote
+			$con['platform'] = str_replace('Nintendo Super NES', 'SNES', $con['platform']);	// baseline single quote
 		}
 		//Remove Online Game Code So Titles Match Properly.
 		if (preg_match('/\[Online Game Code\]/i', $con['title']))
 		{
-			$con['title'] = str_replace(' [Online Game Code]', '', $con['title']);    // baseline single quote
+			$con['title'] = str_replace(' [Online Game Code]', '', $con['title']);	// baseline single quote
 		}
 		
 		//Basically the XBLA names contain crap, this is to reduce the title down far enough to be usable
@@ -359,7 +360,7 @@ class Console
 		{	
 			if ($platformpercent != 100)
 			{
-      return false;
+	  return false;
 			}
 		}
 		
@@ -491,13 +492,14 @@ class Console
 		return $result;
 	}
 	
-	public function processConsoleReleases()
+	public function processConsoleReleases($threads=1)
 	{
+		$threads--;
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 1);
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_GAME, $this->gameqty)), 2);
+		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
 		
 	}
 	
@@ -551,12 +553,14 @@ class Console
 					if($type == 2)
 						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
 				}
+				usleep($this->sleeptime*1000);
 			}
 		}
 	}
 	
 	function parseTitle($releasename)
 	{
+		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
 		$result = array();
 		
 		//get name of the game from name of release

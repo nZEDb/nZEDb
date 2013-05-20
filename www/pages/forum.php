@@ -25,7 +25,7 @@ $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/forum?offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 $page->smarty->assign('results',$results);		
 

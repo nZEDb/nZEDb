@@ -18,6 +18,7 @@ class Music
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
+		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
@@ -362,7 +363,7 @@ class Music
 				
 		$query = sprintf("
 		INSERT INTO musicinfo  (`title`, `asin`, `url`, `salesrank`,  `artist`, `publisher`, `releasedate`, `review`, `year`, `genreID`, `tracks`, `cover`, `createddate`, `updateddate`)
-		VALUES (%s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %s,        %d,        now(),        now())
+		VALUES (%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%d,		now(),		now())
 			ON DUPLICATE KEY UPDATE  `title` = %s,  `asin` = %s,  `url` = %s,  `salesrank` = %s,  `artist` = %s,  `publisher` = %s,  `releasedate` = %s,  `review` = %s,  `year` = %s,  `genreID` = %s,  `tracks` = %s,  `cover` = %d,  createddate = now(),  updateddate = now()", 
 		$db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), 
 		$mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), 
@@ -378,7 +379,7 @@ class Music
 		if ($musicId) 
 		{
 			if ($this->echooutput)
-				echo "added/updated album: ".$mus['title']." (".$mus['year'].")\n";
+				echo "added/updated album: Artist: ".$mus['artist'].", Album: ".$mus['title']." (".$mus['year'].")\n";
 
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
 		} 
@@ -413,11 +414,18 @@ class Music
 		return $result;
 	}
 	
-	public function processMusicReleases()
+	public function processMusicReleases($threads=1)
 	{
+		$this->DoprocessMusicReleases($threads, sprintf("SELECT searchname as name, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus > 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty/2));
+		$this->DoprocessMusicReleases($threads, sprintf("SELECT name, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty/2));
+	}
+
+	public function DoprocessMusicReleases($threads, $query)
+	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id ASC LIMIT %d", Category::CAT_PARENT_MUSIC, $this->musicqty));
+		$res = $db->queryDirect($query);
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -457,10 +465,12 @@ class Music
 					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
 				} 
-				else {
+				else
+				{
 					//no album found
 					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 				}
+				usleep($this->sleeptime*1000);
 			}
 		}
 	}
@@ -473,16 +483,19 @@ class Music
 		$newName = preg_replace('/VA( |\-)/', 'Various Artists \-', $releasename);
 		
 		// Remove files/parts. Year. Yenc. Song. Bitrate. File 1 of 2.
-		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|".+?\.(flac|jpg|m3u|mp3|nzb|nfo|par2|sfv|zip)"|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}/i', '', $newName);
+		$newName = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s)|(19|20)\d\d|yEnc|\s\d{1,3}\/\d{1,3}$|".+?\.(7z|flac|jpg|m3u|mp3|nzb|nfo|par2|png|php|rar|sfv|txt|zip)"|\.(7z|flac|jpg|m3u|mp3|nzb|nfo|par2|png|php|rar|sfv|txt|zip)|\d{2,3}kbps|\d\s{2,3}|File\s\d{1,3}\sof\s\d{1,3}|/i', '', $newName);
+		
+		// File sizes.
+		$newName = preg_replace('/\d{1,3}(\.|,)\d{1,3}\s(K|M|G)B|\d{1,}(K|M|G)B|\d{1,}\sbytes|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-(\syenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s/i', '', $newName);
 		
 		// Remove some text.
-		$newName = preg_replace('/\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|trtk\d{1,12}\s|\(vinyl\s2496\)|altbinEFNet|as req(,|:)?|\sLP\s|ATT>\sSkipper;|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|REQ:|VBR\s\[?NMR|www\..+?\.com/i', '', $newName);
+		$newName = preg_replace('/^\(\w.+?METAL\)|\s320\s|^\d+|\(\dcd\)|\d\d\.\d\d\\.\d\d|\[[0-9].+?FULL\]\-|\[\d{2,3}\]|\s\d{2,3}k|\d{2,3}k\svbr|\(Amazon\sExclusive\sVersion\)|\[Amazon\sMP3\sExclusive\sVersion\]|^\[as.+?have\]|^\[Attn.+?\]\s|attn+?\s\-\s|^\(Attn.+?\)\s|^ATTN:.+?\s\-\s|Attn\sPrcn3|trtk\d{1,12}\s|\(vinyl\s24(88|96)\)|altbinEFNet|\[as\sreq.+?\]|as req(,|:)?|\sLP\s|ATT>\sSkipper;|bonus\stracks|by\srequest|cd\s\d|Emmeloord\spost|ENJOY!|Flac\sFlood|FLAC|\[Full\]|<heavy\sprog>|mp3|\(?nmr\)?|NMR\s\d{2,3}|\sOST\s|REQ:|VBR\s\[?NMR|VBR|www\..+?\.com/i', '', $newName);
 		
 		//remove double dashes
 		$newName = str_replace('--', '-', $newName);
 		
 		// Remove various stuff, replace with nothing.
-		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=');
+		$a = array('(', ')', '[', ']', '<', '>', 'ATTN ', '|', '\\', '/', "'", '!', ':', '=', '"');
 		$newName = str_replace($a, '', $newName);
 		
 		// Remove various stuff, replace with a space.
@@ -499,7 +512,7 @@ class Music
 		{
 			if (preg_match('/^the /i', $name[0])) 
 			{
-					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';     
+					$name[0] = preg_replace('/^the /i', '', $name[0]).', The';	 
 			}
 			if (preg_match('/deluxe edition|single|nmrVBR|READ NFO/i', $name[1], $albumType)) 
 			{
