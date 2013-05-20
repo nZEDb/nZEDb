@@ -22,6 +22,11 @@ if ( $patch < '42' )
 	exit(1);
 }
 
+#remove folders from tmpunrar
+$tmpunrar = $site->get()->tmpunrarpath;
+echo "Removing dead folders from ".$tmpunrar."\n";
+exec("rm -r ".$tmpunrar."/*");
+
 function command_exist($cmd) {
 	$returnVal = shell_exec("which $cmd");
 	return (empty($returnVal) ? false : true);
