@@ -669,7 +669,7 @@ INSERT INTO category (ID, title, parentID) VALUES (3020, 'Video', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3030, 'Audiobook', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3040, 'Lossless', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3050, 'Other', 3000);
-INSERT INTO category (ID, title, parentID) VALUES (3050, 'Foreign', 3000);
+INSERT INTO category (ID, title, parentID) VALUES (3060, 'Foreign', 3000);
 
 INSERT INTO category (ID, title, parentID) VALUES (4010, '0day', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4020, 'ISO', 4000);
@@ -703,7 +703,7 @@ INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
-INSERT INTO category (ID, title, parentID) VALUES (8050, 'Foreign', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
 
 DROP TABLE IF EXISTS `users`;
