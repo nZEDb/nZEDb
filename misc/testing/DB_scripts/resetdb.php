@@ -41,7 +41,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 	}
 
-	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";
+	if ($relcount > 0)
+		echo "\n";
+	echo "Deleted ".$relcount." release(s). This script ran for ";
 	echo $consoletools->convertTime(TIME() - $timestart);
 	echo ".\n";
 }
