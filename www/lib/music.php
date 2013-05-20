@@ -423,9 +423,9 @@ class Music
 				$album = $this->parseArtist($arr['searchname'], $arr['categoryID']);
 				if ($album !== false)
 				{
-					if ($album["ext"] !== "")
+					/*if ($album["ext"] !== "")
 						$newname = $album["name"].' ('.$album["year"].') '.$album["ext"];
-					else
+					else*/
 						$newname = $album["name"].' ('.$album["year"].')';
 					
 					if ($this->echooutput)
