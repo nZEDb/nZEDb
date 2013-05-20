@@ -15,7 +15,7 @@ $seq = $tmux->get()->SEQUENTIAL;
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
 
-if ( $patch < '41' )
+if ( $patch < '42' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
