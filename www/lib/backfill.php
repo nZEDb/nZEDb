@@ -141,7 +141,7 @@ class Backfill
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
-			$db->query(sprintf("UPDATE groups SET first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -308,7 +308,7 @@ class Backfill
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
-			$db->query(sprintf("UPDATE groups SET first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)
 				$done = true;
 			else
