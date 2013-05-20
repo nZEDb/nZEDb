@@ -28,13 +28,19 @@ div#message {
 /* deactivate link */
 div#group_list a.group_active,
 div#group_list a.group_active:visited,
-div#group_list a.group_active:active {
+div#group_list a.group_active:active,
+a.backfill_active,
+a.backfill_active:visited,
+a.backfill_active:active {
     color: #CC0000;
 }
 
 /* activate link */
 div#group_list a.group_deactive
 div#group_list a.group_deactive:visited,
-div#group_list a.group_deactive:active {
+div#group_list a.group_deactive:active,
+a.backfill_deactive,
+a.backfill_deactive:visited,
+a.backfill_deactive:active {
     color: #008C00;
 }

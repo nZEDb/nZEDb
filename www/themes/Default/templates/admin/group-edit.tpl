@@ -54,6 +54,14 @@
 </tr>
 
 <tr>
+	<td><label for="backfill">Backfill</label>:</td>
+	<td>
+		{html_radios id="backfill" name='backfill' values=$yesno_ids output=$yesno_names selected=$group.backfill separator='<br />'}
+		<div class="hint">If set to false, backfill.php will ignore this group. This works even if the above setting is no.</div>		
+	</td>
+</tr>
+
+<tr>
 	<td></td>
 	<td>
 		<input type="submit" value="Save" />

@@ -29,7 +29,7 @@ class Backfill
 		} 
 		else 
 		{
-			$res = $groups->getActive();
+			$res = $groups->getActiveBackfill();
 		}
 
 		$counter = 1;
@@ -109,18 +109,28 @@ class Backfill
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
 		
+		// Check if we are grabbing further than the server has.
+		if($targetpost < $data['first'])
+		{
+			if ($data['first']-$targetpost > 21000)
+			{
+				$targetpost = $data['first']-1000;
+			}
+			else
+			{
+				echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
+				$groups = new Groups();
+				$groups->disableForPost($groupArr['name']);
+				return "";
+			}
+		}
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
 		{
 			echo "Nothing to do, we already have the target post".$n.$n;
 			return "";
 		}
-		// Get first and last part numbers from newsgroup.
-		if($targetpost < $data['first'])
-		{
-			echo "WARNING: Backfill came back as before server's first.  Setting targetpost to server first".$n."Skipping Group:".$n;
-			return "";
-		}
+		
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -173,7 +183,7 @@ class Backfill
 		$n = $this->n;
 		
 		$targetdate = "2012-06-24";
-		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (active = 1) order by name asc", $db->escapeString($targetdate)));
+		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($targetdate)));
 		
 		if (!$groupname)
 		{
@@ -204,11 +214,11 @@ class Backfill
 		{
 			if($type == "normal")
 			{
-				$res = $groups->getActive();
+				$res = $groups->getActiveBackfill();
 			}
 			else if($type == "date")
 			{
-				$res = $groups->getActiveByDate();
+				$res = $groups->getActiveByDateBackfill();
 			}
 		}
 
@@ -256,6 +266,8 @@ class Backfill
 		
 		// Get targetpost based on days target.
 		$targetpost =  round($groupArr['first_record']-$articles);
+		if ($targetpost < 0)
+			$targetpost = round($data['first']+1000);
 		
 		echo "Group ".$data["group"]."'s oldest article is ".$data['first'].", newest is ".$data['last'].". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
@@ -272,10 +284,17 @@ class Backfill
 		// Check if we are grabbing further than the server has.
 		if($targetpost < $data['first'])
 		{
-			$groups = new Groups;
-			$groups->disableForPost($groupArr['name']);
-			echo "WARNING: Attempting to backfill further than usenet's first article, setting our first article date very high so safe backfill can skip it.".$n."Skipping Group:".$n;
-			return "";
+			if ($data['first']-$targetpost > 21000)
+			{
+				$targetpost = $data['first']-1000;
+			}
+			else
+			{
+				echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
+				$groups = new Groups();
+				$groups->disableForPost($groupArr['name']);
+				return "";
+			}
 		}
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
@@ -298,11 +317,6 @@ class Backfill
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
-			/*$colcount = array_shift($db->queryOneRow("SELECT COUNT(ID) from collections where filecheck = 2"));
-			if ( $colcount > 0 )
-			{
-				 exit($n."Collections = ".$colcount.", backfill exiting.".$n);
-			}*/
 
 			echo "Getting ".($last-$first+1)." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
 			flush();
