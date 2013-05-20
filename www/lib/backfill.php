@@ -9,6 +9,9 @@ class Backfill
 	function Backfill() 
 	{
 		$this->n = "\n";
+		$s = new Sites();
+		$site = $s->get();
+		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 	}
 
 	//
@@ -112,7 +115,7 @@ class Backfill
 				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
 		
 		// Check if we are grabbing further than the server has.
-		if($targetpost <= $data['first'])
+		if($groupArr['first_record'] <= $data['first']+50000)
 		{
 			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
 			$groups = new Groups();
@@ -177,12 +180,11 @@ class Backfill
 		$db = new DB();
 		$n = $this->n;
 		
-		$targetdate = "2012-06-24";
-		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($targetdate)));
+		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($this->safebdate)));
 		
 		if (!$groupname)
 		{
-			exit("No groups to backfill, they are all at the target date ".$targetdate.".".$n);
+			exit("No groups to backfill, they are all at the target date ".$this->safebdate.".".$n);
 		}
 		else
 		{
@@ -277,7 +279,7 @@ class Backfill
 			return "";
 		}
 		// Check if we are grabbing further than the server has.
-		if($targetpost <= $data['first'])
+		if($groupArr['first_record'] <= $data['first']+50000)
 		{
 			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
 			$groups = new Groups();
