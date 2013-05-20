@@ -198,6 +198,8 @@ class PostProcess
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
+				echo "\npasswordstatus = ".$i."\n";
+				echo "available to process = ".count($result)."\n";
 				$i--;
 			}
 		}
