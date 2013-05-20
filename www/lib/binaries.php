@@ -264,16 +264,16 @@ class Binaries
 				}
 				
 				// Attempt to get file count.
-				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s)(?!"?$)/i', $msg['Subject'], $filecnt))
+				$partless = preg_replace($pattern, '', $msg['Subject']);
+				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$)/i', $partless, $filecnt))
 				{
 					$filecnt[2] = "0";
 					$filecnt[6] = "0";
 				}
-
 				if(is_numeric($matches[1]) && is_numeric($matches[2]))
 				{
 					array_map('trim', $matches);
-					$subject = utf8_encode(trim(preg_replace($pattern, '', $msg['Subject'])));
+					$subject = utf8_encode(trim($partless));
 					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
 					
 					if(!isset($this->message[$subject]))

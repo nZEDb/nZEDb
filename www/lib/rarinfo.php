@@ -52,7 +52,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    4.0
+ * @version    4.1
  */
 class RarInfo extends ArchiveReader
 {
@@ -73,6 +73,7 @@ class RarInfo extends ArchiveReader
 	const BLOCK_OLD_AUTH      = 0x79;
 	const BLOCK_SUB           = 0x7a;
 	const BLOCK_ENDARC        = 0x7b;
+	const BLOCK_NULL          = 0x00;
 
 	// Flags for BLOCK_MAIN
 	const MAIN_VOLUME         = 0x0001;
@@ -147,6 +148,11 @@ class RarInfo extends ArchiveReader
 	/**#@-*/
 
 	/**
+	 * Size in bytes of the main part of each block header.
+	 */
+	const HEADER_SIZE = 7;
+
+	/**
 	 * Format for unpacking the main part of each block header.
 	 */
 	const FORMAT_BLOCK_HEADER = 'vhead_crc/Chead_type/vhead_flags/vhead_size';
@@ -180,6 +186,7 @@ class RarInfo extends ArchiveReader
 		0x79 => 'Old Style Archive Authenticity',
 		0x7a => 'Subblock',
 		0x7b => 'Archive End',
+		0x00 => 'Null Block',
 	);
 
 	/**
@@ -443,7 +450,7 @@ class RarInfo extends ArchiveReader
 			$this->seek($this->offset - 3);
 			$block = $this->getNextBlock();
 			if ($this->checkFileHeaderCRC($block)) {
-				$this->seek($block['offset'] + 7);
+				$this->seek($block['offset'] + self::HEADER_SIZE);
 				$this->processBlock($block);
 				if ($this->sanityCheckFileHeader($block)) {
 
@@ -597,7 +604,7 @@ class RarInfo extends ArchiveReader
 		$block = array('offset' => $this->offset);
 
 		// Unpack the block header
-		$block += self::unpack(self::FORMAT_BLOCK_HEADER, $this->read(7), false);
+		$block += self::unpack(self::FORMAT_BLOCK_HEADER, $this->read(self::HEADER_SIZE), false);
 
 		// Check for add_size field
 		if (($block['head_flags'] & self::LONG_BLOCK)
@@ -608,6 +615,9 @@ class RarInfo extends ArchiveReader
 		} else {
 			$block['add_size'] = 0;
 		}
+
+		// Sanity check header size
+		$block['head_size'] = max(self::HEADER_SIZE, $block['head_size']);
 
 		// Add offset info for next block (if any)
 		$block['next_offset'] = $block['offset'] + $block['head_size'] + $block['add_size'];
@@ -652,6 +662,15 @@ class RarInfo extends ArchiveReader
 		// Block type: ARCHIVE END
 		elseif ($block['head_type'] == self::BLOCK_ENDARC) {
 			$block['more_volumes'] = (bool) ($block['head_flags'] & self::ENDARC_NEXT_VOLUME);
+		}
+
+		// Block type: NULL BLOCK (zero-padded)
+		elseif ($block['head_type'] == self::BLOCK_NULL) {
+			$remainder = $this->length - $block['offset'] - $block['head_size'];
+			if ($remainder < self::HEADER_SIZE) {
+				$block['next_offset'] = $this->length;
+				$block['add_size'] = $remainder;
+			}
 		}
 
 		// Block type: FILE or SUBBLOCK (new style)

@@ -433,6 +433,7 @@ abstract class ArchiveReader
 	 */
 	protected function saveRange(array $range, $destination)
 	{
+
 		// Check that the requested range is valid
 		$original = array($this->start, $this->end, $this->length);
 		if (!$this->setRange($range)) {
@@ -442,15 +443,15 @@ abstract class ArchiveReader
 
 		// Write the buffered data to disk
 		$this->seek(0);
-		$fh = fopen($destination, 'wb');
+		@$fh = fopen($destination, 'wb');
 		$rlen = $this->length;
 		$written = 0;
 		while ($this->offset < $this->length) {
 			$data = $this->read(min(1024, $rlen));
 			$rlen -= strlen($data);
-			$written += fwrite($fh, $data);
+			@$written += fwrite($fh, $data);
 		}
-		fclose($fh);
+		@fclose($fh);
 
 		// Restore the original range
 		list($this->start, $this->end, $this->length) = $original;

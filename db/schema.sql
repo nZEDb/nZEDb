@@ -966,7 +966,8 @@ INSERT INTO `site`
 	('catlanguage', 0),
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
-	('sqlpatch', '37');
+	('catwebdl', 0),
+	('sqlpatch', '39');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1269,6 +1270,7 @@ INSERT INTO tmux (setting, value) values ('POST_KILL_TIMER','300');
 INSERT INTO tmux (setting, value) values ('OPTIMIZE','FALSE');
 INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400');
 INSERT INTO tmux (setting, value) values ('MONITOR_PATH', NULL);
+INSERT INTO tmux (setting, value) values ('WRITE_LOGS', 'FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
