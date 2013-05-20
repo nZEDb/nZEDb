@@ -459,9 +459,9 @@ class Music
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?(19\d{2}|20[0-1][0-9])/', $releasename, $name))
 		{
 			$ext = "";
-			if (preg_match('/ (MP3|FLAC|SAT|WEB) /i', $releasename, $source))
+			if (preg_match('/(MP3|FLAC| SAT |WEB)/i', $releasename, $source))
 			{
-				if ($source[1] == ('FM' || 'MP3' || 'SAT' || 'WEB')){ $ext = "MP3"; }
+				if ($source[1] == ('FM' || 'MP3' || ' SAT ' || 'WEB')){ $ext = "MP3"; }
 				else if ($source[1] == "FLAC"){ $ext = "FLAC"; }
 			}
 			else
