@@ -416,10 +416,16 @@ class Music
 	
 	public function processMusicReleases($threads=1)
 	{
+		$this->DoprocessMusicReleases($threads, sprintf("SELECT searchname as name, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus > 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty/2));
+		$this->DoprocessMusicReleases($threads, sprintf("SELECT name, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty/2));
+	}
+
+	public function DoprocessMusicReleases($threads, $query)
+	{
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT name, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY adddate desc LIMIT %d,%d", Category::CAT_PARENT_MUSIC, floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
+		$res = $db->queryDirect($query);
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
