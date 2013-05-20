@@ -423,9 +423,9 @@ class Music
 				$album = $this->parseArtist($arr['searchname'], $arr['categoryID']);
 				if ($album !== false)
 				{
-					/*if ($album["ext"] !== "")
+					if ($album["ext"] !== "")
 						$newname = $album["name"].' ('.$album["year"].') '.$album["ext"];
-					else*/
+					else
 						$newname = $album["name"].' ('.$album["year"].')';
 					
 					if ($this->echooutput)
@@ -438,9 +438,9 @@ class Music
 					}
 
 					// Update release.
-					/*if ($arr["relnamestatus"] !== "3")
+					if ($arr["relnamestatus"] !== "3")
 						$db->query(sprintf("UPDATE releases SET musicinfoID = %d, searchname = %s, relnamestatus = 3 WHERE ID = %d", $albumId, $db->escapeString($newname), $arr["ID"]));
-					else*/
+					else
 						$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
 				} 
@@ -459,14 +459,14 @@ class Music
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?(19\d{2}|20[0-1][0-9])/', $releasename, $name))
 		{
 			$ext = "";
-			if (preg_match('/(MP3|FLAC| SAT |WEB)/i', $releasename, $source))
+			if (preg_match('/(FLAC|MP3| SAT |WEB)/i', $releasename, $source))
 			{
-				if ($source[1] == ('FM' || 'MP3' || ' SAT ' || 'WEB')){ $ext = "MP3"; }
-				else if ($source[1] == "FLAC"){ $ext = "FLAC"; }
+				if ($source[1] != "FLAC" && $source[1] == ('FM' || 'MP3' || ' SAT ' || 'WEB')){ $ext = "MP3"; }
+				else if ($source[1] =="FLAC"){ $ext = "FLAC"; }
 			}
 			else
 			{
-				if ($categoryID == "3010"){ $ext = "MP3"; }
+				if ($categoryID !== "3040" && $categoryID == "3010"){ $ext = "MP3"; }
 				elseif ($categoryID == "3040"){ $ext = "FLAC"; }
 			}
 			
