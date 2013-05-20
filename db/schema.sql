@@ -418,6 +418,7 @@ CREATE TABLE `groups` (
   `minfilestoformrelease` INT(4) NULL,
   `minsizetoformrelease` BIGINT NULL,
   `active` TINYINT(1) NOT NULL DEFAULT '0',
+  `backfill` TINYINT(1) NOT NULL DEFAULT '0',
   `description` VARCHAR(255) NULL DEFAULT '',
   PRIMARY KEY  (`ID`),
   KEY `active` (`active`)
@@ -969,7 +970,7 @@ INSERT INTO `site`
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
 	('catwebdl', 0),
-	('sqlpatch', '40');
+	('sqlpatch', '41');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
