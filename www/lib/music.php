@@ -438,9 +438,9 @@ class Music
 					}
 
 					// Update release.
-					if ($arr["relnamestatus"] !== "3")
+					/*if ($arr["relnamestatus"] !== "3")
 						$db->query(sprintf("UPDATE releases SET musicinfoID = %d, searchname = %s, relnamestatus = 3 WHERE ID = %d", $albumId, $db->escapeString($newname), $arr["ID"]));
-					else
+					else*/
 						$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
 				} 
