@@ -76,6 +76,7 @@ CREATE TABLE `releases`
 `nzbstatus` TINYINT NOT NULL DEFAULT 0,
 `nfostatus` TINYINT NOT NULL DEFAULT 0,
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
+`jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -971,7 +972,8 @@ INSERT INTO `site`
 	('passchkattempts', 1),
 	('catwebdl', 0),
 	('safebackfilldate', '2012-06-24'),
-	('sqlpatch', '42');
+	('processjpg', 0),
+	('sqlpatch', '43');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
