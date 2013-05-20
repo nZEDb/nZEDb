@@ -411,6 +411,14 @@
 </tr>
 
 <tr>
+	<td><label for="lookupnfo">Process JPG</label>:</td>
+	<td>
+		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
+		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookupnfo">Lookup NFO</label>:</td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
