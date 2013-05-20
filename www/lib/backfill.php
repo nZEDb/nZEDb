@@ -97,6 +97,8 @@ class Backfill
 		
 		// Get targetpost based on days target.
 		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);
+		if ($targetpost < 0)
+			$targetpost = round($data['first']);
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
 		{
 			echo "Group ".$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?".$n;
@@ -110,19 +112,12 @@ class Backfill
 				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
 		
 		// Check if we are grabbing further than the server has.
-		if($targetpost < $data['first'])
+		if($targetpost <= $data['first'])
 		{
-			if ($data['first']-$targetpost > 21000)
-			{
-				$targetpost = $data['first']-1000;
-			}
-			else
-			{
-				echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
-				$groups = new Groups();
-				$groups->disableForPost($groupArr['name']);
-				return "";
-			}
+			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
+			$groups = new Groups();
+			$groups->disableForPost($groupArr['name']);
+			return "";
 		}
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
@@ -267,7 +262,7 @@ class Backfill
 		// Get targetpost based on days target.
 		$targetpost =  round($groupArr['first_record']-$articles);
 		if ($targetpost < 0)
-			$targetpost = round($data['first']+1000);
+			$targetpost = round($data['first']);
 		
 		echo "Group ".$data["group"]."'s oldest article is ".$data['first'].", newest is ".$data['last'].". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
@@ -282,19 +277,12 @@ class Backfill
 			return "";
 		}
 		// Check if we are grabbing further than the server has.
-		if($targetpost < $data['first'])
+		if($targetpost <= $data['first'])
 		{
-			if ($data['first']-$targetpost > 21000)
-			{
-				$targetpost = $data['first']-1000;
-			}
-			else
-			{
-				echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
-				$groups = new Groups();
-				$groups->disableForPost($groupArr['name']);
-				return "";
-			}
+			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
+			$groups = new Groups();
+			$groups->disableForPost($groupArr['name']);
+			return "";
 		}
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
