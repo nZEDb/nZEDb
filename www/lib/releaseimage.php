@@ -7,6 +7,7 @@ class ReleaseImage
 	function ReleaseImage()
 	{	
 		$this->imgSavePath = WWW_DIR.'covers/preview/';
+		$this->jpgSavePath = WWW_DIR.'covers/sample/';
 	}
 	
 	public function fetchImage($imgLoc)
@@ -52,7 +53,7 @@ class ReleaseImage
 				$new_image = imagecreatetruecolor($new_width, $new_height);
   				imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
   				ob_start();
-  				imagejpeg($new_image, null, 85);
+  				imagejpeg($new_image, null, 75);
   				$thumb = ob_get_clean();
   				imagedestroy($new_image);
   				

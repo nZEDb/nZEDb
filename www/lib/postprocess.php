@@ -170,6 +170,7 @@ class PostProcess
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
+		$processJPGSample = true;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		$tmpPath = $this->site->tmpunrarpath;
 
@@ -198,8 +199,11 @@ class PostProcess
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
-				echo "\npasswordstatus = ".$i."\n";
-				echo "available to process = ".count($result)."\n";
+				if ($this->echooutput)
+				{
+					echo "Passwordstatus = ".$i."\n";
+					echo "Available to process = ".count($result)."\n";
+				}
 				$i--;
 			}
 		}
@@ -239,6 +243,7 @@ class PostProcess
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = false;
 				$blnTookAudioinfo = false;
+				$blnTookJPG = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 				
 				if ($this->echooutput && $threads > 0)
@@ -251,8 +256,8 @@ class PostProcess
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
-				$bingroup = $samplegroup = $mediagroup = $audiogroup = "";
-				$samplemsgid = $mediamsgid = $audiomsgid = $audiotype = $mid = array();
+				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
+				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
 				$hasrar = 0;
 				$this->password = false;
 				$notmatched = false;
@@ -284,6 +289,7 @@ class PostProcess
 						{
 							$samplegroup = $groupName;
 							$samplemsgid[] = $nzbcontents['segment'][0];
+							$samplemsgid[] = $nzbcontents['segment'][1];
 						}
 					}
 					// Look for a media file.
@@ -293,6 +299,7 @@ class PostProcess
 						{
 							$mediagroup = $groupName;
 							$mediamsgid[] = $nzbcontents['segment'][0];
+							$mediamsgid[] = $nzbcontents['segment'][1];
 						}
 					}
 					// Look for a audio file.
@@ -303,6 +310,17 @@ class PostProcess
 							$audiogroup = $groupName;
 							$audiotype = $type[1];
 							$audiomsgid[] = $nzbcontents['segment'][0];
+							$audiomsgid[] = $nzbcontents['segment'][1];
+						}
+					}
+					// Look for a JPG picture.
+					elseif ($processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $subject))
+					{
+						if (isset($nzbcontents['segment']) && empty($jpgmsgid))
+						{
+							$jpggroup = $groupName;
+							$jpgmsgid[] = $nzbcontents['segment'][0];
+							$jpgmsgid[] = $nzbcontents['segment'][1];
 						}
 					}
 				}
@@ -497,6 +515,33 @@ class PostProcess
 					$nntp->doQuit();
 				}
 
+				// Download JPG file.
+				if(!empty($jpgmsgid) && $processJPGSample && $blnTookJPG === false)
+				{
+					$nntp->doConnect();
+					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+					
+					if ($jpgBinary !== false)
+					{
+						file_put_contents($tmpPath."samplepicture.jpg", $jpgBinary);
+						if (is_dir($tmpPath))
+						{
+							$ri = new ReleaseImage;
+							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 450, 450);
+							
+							if ($blnTookJPG !== false)
+								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
+
+							foreach(glob($tmpPath.'*.jpg') as $v)
+							{
+								@unlink($v);
+							}
+						}
+						unset($jpgBinary);
+					}
+					$nntp->doQuit();
+				}
+				
 				// Last attempt to get image/mediainfo/audioinfo, using an extracted file.
 				if ($processSample && $blnTookSample === false)
 				{
