@@ -53,7 +53,7 @@ class ReleaseImage
 				$new_image = imagecreatetruecolor($new_width, $new_height);
   				imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
   				ob_start();
-  				imagejpeg($new_image, null, 75);
+  				imagejpeg($new_image, null, 85);
   				$thumb = ob_get_clean();
   				imagedestroy($new_image);
   				
