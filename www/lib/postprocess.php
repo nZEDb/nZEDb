@@ -738,7 +738,7 @@ class PostProcess
 							{
 								$videofile = $rar->getFileData($file['name'], $file['source']);
 								if ($videofile !== false)
-									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999)."avi", $videofile);
+									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).".avi", $videofile);
 							}
 							// Extract a video file from the compressed file.
 							elseif (preg_match('/'.$this->audiofileregex.'$/i', $file['name'], $ext))
