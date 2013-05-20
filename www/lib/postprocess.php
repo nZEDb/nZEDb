@@ -206,11 +206,13 @@ class PostProcess
 		if ($rescount > 0)
 		{
 			if ($this->echooutput)
+			{
 				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
-			if ($threads > 0)
-				echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
-			else
-				$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
+				if ($threads > 0)
+					echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
+				else
+					$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
+			}
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -242,9 +244,7 @@ class PostProcess
 				else if ($this->echooutput)
 					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
-				//
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
-				//
 				$nzbcontents = new NZBcontents(true);
 				$groups = new Groups;
 				$groupName = $groups->getByNameByID($rel["groupID"]);
@@ -254,8 +254,7 @@ class PostProcess
 				$hasrar = 0;
 				$this->password = false;
 				$notmatched = false;
-
-				// Loop through the NZB, look for a rar, sample and media files.
+				
 				$nzbfiles = $nzbcontents->nzblist($rel['guid']);
 				if (!$nzbfiles)
 					continue;
