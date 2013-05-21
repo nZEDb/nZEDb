@@ -411,6 +411,14 @@
 </tr>
 
 <tr>
+	<td><label for="lookupnfo">Process JPG</label>:</td>
+	<td>
+		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
+		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookupnfo">Lookup NFO</label>:</td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
@@ -481,6 +489,14 @@
 		<input class="tiny" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or 
 		<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$fsite->newgroupmsgstoscan}" /> Posts<br />
 		<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="safebackfilldate">Safe Backfill Date</label>:</td>
+	<td>
+		<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$fsite->safebackfilldate}" />
+		<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
 	</td>
 </tr>
 </table>

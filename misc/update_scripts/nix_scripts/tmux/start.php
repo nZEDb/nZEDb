@@ -15,12 +15,18 @@ $seq = $tmux->get()->SEQUENTIAL;
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
 
-if ( $patch < '38' )
+if ( $patch < '43' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
 	exit(1);
 }
+
+#remove folders from tmpunrar
+$tmpunrar = $site->get()->tmpunrarpath;
+passthru("clear");
+echo "Removing dead folders from ".$tmpunrar."\n";
+exec("rm -r ".$tmpunrar."/*");
 
 function command_exist($cmd) {
 	$returnVal = shell_exec("which $cmd");
@@ -28,7 +34,7 @@ function command_exist($cmd) {
 }
 
 //check for apps
-$apps = array("time", "tmux", "nice", "python");
+$apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
 {
 	if (!command_exist($value)) {
@@ -40,7 +46,6 @@ foreach ($apps as &$value)
 shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR: not installed not usable\" >&2; exit 2; fi");
 
 //reset collections dateadded to now
-passthru("clear");
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
 $db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1 hour)");
 
@@ -112,7 +117,11 @@ function window_post()
 
 function attach($DIR, $session)
 {
-	shell_exec("tmux respawnp -t $session:0.0 'php $DIR/misc/update_scripts/nix_scripts/tmux/monitor.php'");
+	if (command_exist("php5"))
+		$PHP = "php5";
+	else
+		$PHP = "php";
+	shell_exec("tmux respawnp -t $session:0.0 '$PHP $DIR/misc/update_scripts/nix_scripts/tmux/monitor.php'");
 	shell_exec("tmux select-window -t$session:0 && tmux attach-session -d -t$session");
 }
 

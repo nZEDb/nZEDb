@@ -7,6 +7,7 @@ class ReleaseImage
 	function ReleaseImage()
 	{	
 		$this->imgSavePath = WWW_DIR.'covers/preview/';
+		$this->jpgSavePath = WWW_DIR.'covers/sample/';
 	}
 	
 	public function fetchImage($imgLoc)

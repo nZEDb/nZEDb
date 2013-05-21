@@ -17,7 +17,7 @@ if (!isset($argv[1]) && !isset($argv[2]))
 		."If you are sure you want to run this script, type php removeCrapReleases.php true full\n"
 		."The second mandatory argument is the time in hours(ex: 12) to go back, or you can type full.\n"
 		."You can pass 1 optional third argument:\n"
-		."gibberish | hashed | short | executable | passwordurl | passworded | size | sample\n");
+		."gibberish | hashed | short | executable | passwordurl | passworded | size | sample | scr\n");
 }
 else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 {
@@ -29,6 +29,7 @@ else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 		."passworded deletes releases which contain password or passworded in the search name\n"
 		."size deletes releases smaller than 1MB and has only 1 file not in mp3/books\n"
 		."sample deletes releases smaller than 40MB and has more than 1 file and has sample in the name\n"
+		."scr deletes releases where .scr extension is found in the files or subject\n"
 		."php removeCrapReleases.php true full runs all the above\n"
 		."php removeCrapReleases.php true full gibberish runs only this type\n");
 }
@@ -143,16 +144,18 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
+	
+	// Anything with a scr file in the filename/subject.
+	function deleteScr($and)
+	{
+		$type = ".scr";
+		$db = new Db;
+		$sql = $db->query("select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where (rf.name REGEXP '\.scr$' or r.name REGEXP '\.scr($| |\")')".$and);
+		$delcount = deleteReleases($sql, $type);
+		return $delcount;
+	}
 
-	$totalDeleted = 0;
-	$gibberishDeleted = 0;
-	$hashedDeleted = 0;
-	$shortDeleted = 0;
-	$executableDeleted = 0;
-	$PURLDeleted = 0;
-	$PassDeleted = 0;
-	$sizeDeleted = 0;
-	$sampleDeleted = 0;
+	$totalDeleted = $gibberishDeleted = $hashedDeleted = $shortDeleted = $executableDeleted = $PURLDeleted = $PassDeleted = $sizeDeleted = $sampleDeleted = $scrDeleted = 0;
 	
 	if (isset($argv[3]))
 	{
@@ -172,6 +175,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$sizeDeleted = deleteSize($and);
 		if (isset($argv[3]) && $argv[3] == "sample")
 			$sampleDeleted = deleteSample($and);
+		if (isset($argv[3]) && $argv[3] == "scr")
+			$scrDeleted = deleteScr($and);
 	}
 	else
 	{
@@ -183,9 +188,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$PassDeleted = deletePassworded($and);
 		$sizeDeleted = deleteSize($and);
 		$sampleDeleted = deleteSample($and);
+		$scrDeleted = deleteScr($and);
 	}
 
-	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$executableDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted;
+	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$executableDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted+$scrDeleted;
 	
 	if ($totalDeleted > 0)
 	{
@@ -206,6 +212,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 			echo "Size         : ".$sizeDeleted."\n";
 		if($sampleDeleted > 0)
 			echo "Sample       : ".$sampleDeleted."\n";
+		if($scrDeleted > 0)
+			echo ".scr         : ".$scrDeleted."\n";
 	}
 	else
 		exit("Nothing was found to delete.\n");

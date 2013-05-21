@@ -443,7 +443,7 @@ abstract class ArchiveReader
 
 		// Write the buffered data to disk
 		$this->seek(0);
-		@$fh = fopen($destination, 'wb');
+		@$fh = fopen($destination, 'w+');
 		$rlen = $this->length;
 		$written = 0;
 		while ($this->offset < $this->length) {

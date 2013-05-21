@@ -140,9 +140,10 @@ class Binaries
 		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
 			 $db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false)."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false).") WHERE ID = %d", $groupArr['ID']));
 
+		////////NEED TO FIND BUG IN THIS
 		// Deactivate empty groups
-		if (($data['last'] - $data['first']) <= 5)
-			$db->query(sprintf("UPDATE groups SET active = %s, last_updated = now() WHERE ID = %d", $db->escapeString('0'), $groupArr['ID']));
+		//if (($data['last'] - $data['first']) <= 5)
+			//$db->query(sprintf("UPDATE groups SET active = %s, last_updated = now() WHERE ID = %d", $db->escapeString('0'), $groupArr['ID']));
 		
 		// Calculate total number of parts
 		$total = $grouplast - $first + 1;
