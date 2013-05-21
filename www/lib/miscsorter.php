@@ -14,7 +14,7 @@ class MiscSorter {
 		'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
 		'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
 		'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
-		'tv[\- ]?rip', 'unrated', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
+		'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
 
 		$this->echooutput = $echooutput;
 		$this->qty = 10000;
@@ -265,9 +265,14 @@ class MiscSorter {
 		{
 			$pattern = '/(?:(?:presents?|p +r +e +s +e +n +t +s)(?:[^a-z0-9]+?))([a-z0-9 \.\-\_\']+?)/Ui';
 			$set = preg_split($pattern,  $nfo, 0, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+			if (isset($set[1]) && preg_match('/(another)? *(fine)? *relase/i', $set[1]))
+				$set = null;
 		}
 
-		if (isset($set[1]) && strlen($set[1]) < 64)
+		if (isset($set[1]) && preg_match('/^(.+)(\(c\)|\xA9)/i', $this->cleanname($set[1]), $tmp))
+			$set[1] = $tmp[1];
+
+		if (isset($set[1]) && strlen($set[1]) < 128)
 			$ok = $this->dodbupdate($id, $cat, $this->cleanname($set[1]));
 
 		return $ok;
@@ -286,9 +291,8 @@ class MiscSorter {
 		}
 
 		$name = preg_replace("/[a-f0-9]{10,}/i", " ", $name);
-
-		$name = $this->nc->releaseCleaner($name);
-
+		$name = preg_replace("/\\\\/i", " ", $name);
+		$name = $this->nc->fixerCleaner($name);
 		foreach ($qual as $key=>$quality)
 		{
 			if (preg_match("/$quality/i", $name))
@@ -322,10 +326,13 @@ class MiscSorter {
 			}
 			$name1 = $name2;
 		}
+		$name1 = trim($name1);
+echo "$name1\n";
 
-		$name1 = preg_replace('/[ \.\-\_]{2,}/', ' ', $name1);
+		$name1 = preg_replace('/[ \-\_]{2,}/', ' ', $name1);
 		$name1 = preg_replace('/ {2,}/', ' ', $name1);
-		$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n;
+		$name1 = preg_replace('/ /', ' ', $name1);
+		$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n."_";
 		return trim($name);
 
 	}
@@ -347,10 +354,10 @@ class MiscSorter {
 			case 'flac':
 				if (preg_match('/(a\s?r\s?t\s?i\s?s\s?t|l\s?a\s?b\s?e\s?l|mp3|e\s?n\s?c\s?o\s?d\s?e\s?r|rip|stereo|mono|single charts)/i', $nfo))
 				{
-					if (!preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install|Setup\.exe|unzip|unrar)/i', $nfo))
+					if (!preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install(?!ation)|Setup\.exe|unzip|unrar)/i', $nfo))
 					{
-						$artist = preg_split('/(?:a\s?r\s?t\s?i\s?s\s?t\b)+? *?(?!(?:[^ \.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)]((?!\:)[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
-						$title = preg_split('/(?:t\s?i\s?t\s?l\s?e\b|a\s?l\s?b\s?u\s?m\b)+? *?(?!(?:[^ \.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)]((?!\:)[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
+						$artist = preg_split('/(?:a\s?r\s?t\s?i\s?s\s?ts?\b[^ \.\:]*) *?(?!(?:[^ \.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)\xb0-\x{3000}\?]((?!\:)[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
+						$title = preg_split('/(?:t+\s?i+\s?t+\s?l+\s?e+\b|a\s?l\s?b\s?u\s?m\b) *?(?!(?:[^ \.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)\xb0-\x{3000}\?]((?!\:)[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 //var_dump($artist);
 //var_dump($title);
 
@@ -361,12 +368,11 @@ class MiscSorter {
 								$artist[1] = $matches[1];
 								$title[1] = $matches[2];
 							}
-							if (!isset($matches[2]) && preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches))
+							if (!isset($matches[2]) && preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+?)(?:[\?\s\_\.\:\xb0-\x{3000}]{2,}|$)/Uiu', $nfo, $matches))
 							{
 
 								$pos = $this->nfopos($nfo, $matches[1]." - ".$matches[2]);
-
-								if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48)
+								if ($pos !== false && $pos < 0.45 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 64)
 								{
 									if (!preg_match('/title/i', $matches[1]) && !preg_match('/title/i', $matches[2]))
 									{
@@ -430,7 +436,7 @@ class MiscSorter {
 				if ($imdb !== false)
 				{
 					$movie = $this->movie->getMovieInfo($imdb);
-					$name = $this->moviename($nfo, $imdb, $row['name']);
+					$name = $this->moviename($nfo, $imdb, $row['searchname']);
 
 					if ($movie !== false)
 					{
@@ -443,7 +449,11 @@ class MiscSorter {
 						elseif (preg_match('/tv/iU', $movie['type']) || preg_match('/episode/iU', $movie['type']) || preg_match('/reality/iU', $movie['type']))
 							$cat = Category::CAT_TV_OTHER;
 						else
+						{
 							$cat = $this->cat->determineCategory($name, $row['groupID']);
+							if ($cat == Category::CAT_MISC)
+								$cat = Category::CAT_MOVIE_OTHER;
+						}
 					} else
 						$cat = $this->cat->determineCategory($name, $row['groupID']);
 
@@ -501,7 +511,7 @@ class MiscSorter {
 		{
 			$hash = $this->getHash($row['name']);
 			if ($hash !== false)
-				$row['name'] = $hash;
+				$row['searchname'] = $hash;
 
 			$nfo = utf8_decode($row['nfo']);
 
