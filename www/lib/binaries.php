@@ -266,7 +266,7 @@ class Binaries
 				
 				// Attempt to get file count.
 				$partless = preg_replace($pattern, '', $msg['Subject']);
-				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$)/i', $partless, $filecnt))
+				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)/i', $partless, $filecnt))
 				{
 					$filecnt[2] = "0";
 					$filecnt[6] = "0";
