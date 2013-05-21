@@ -527,7 +527,7 @@ class PostProcess
 						if (is_dir($tmpPath))
 						{
 							$ri = new ReleaseImage;
-							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 450, 450);
+							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 							
 							if ($blnTookJPG !== false)
 								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
