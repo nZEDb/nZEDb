@@ -385,7 +385,7 @@ class PostProcess
 
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile['subject']))
 						{
-							$this->doecho("Not matched and skipping $subject");
+							$this->doecho("Not matched and skipping ".$rarFile['subject']);
 							continue;
 						}
 
