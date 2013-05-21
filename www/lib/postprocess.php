@@ -856,15 +856,15 @@ class PostProcess
 	{
 		$db = new DB();
 		$retval = false;
-		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, groupID FROM releases WHERE ID = %d", $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
-			return $retval;
 		
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
 		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
-		$category = new Category();
+		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, groupID FROM releases WHERE ID = %d", $releaseID));
+		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
+			return $retval;
+
 		$audiofiles = glob($ramdrive.'*.*');
 		if (is_array($audiofiles))
 		{
@@ -885,6 +885,7 @@ class PostProcess
 							{
 								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
 								$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+								$category = new Category();
 								$newcat = $category->determineCategory($newname, $catID["groupID"]);
 								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
 								$retval = true;
