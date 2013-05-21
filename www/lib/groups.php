@@ -280,7 +280,7 @@ class Groups
 		else
 			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
 
-		return $db->query(sprintf("update groups set name=%s, description = %s, backfill_target = %s , active=%d, minfilestoformrelease=%s, minsizetoformrelease=%s where ID = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"] , $minfiles, $minsizetoformrelease, $group["id"] ));		
+		return $db->query(sprintf("update groups set name=%s, description = %s, backfill_target = %s , active=%d, backfill=%d, minfilestoformrelease=%s, minsizetoformrelease=%s where ID = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));		
 	}	
 
 	//
