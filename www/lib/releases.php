@@ -1926,9 +1926,8 @@ class Releases
 						//Update the collection table with the last seen date for the collection.
 						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
 					}
-					//Update the parts/binaries with the new info.
+					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
-					$db->query(sprintf("UPDATE parts SET binaryID = %d where binaryID = %d", $row["bID"], $row["bID"]));
 				}
 				//Remove the old collections.
 				foreach (array_unique($cIDS) as $cID)
