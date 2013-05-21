@@ -313,7 +313,7 @@ class PostProcess
 						}
 					}
 					// Look for a JPG picture.
-					elseif ($processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $subject))
+					elseif ($processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $subject) && !preg_match('/FLAC|MP3|WEB/i', $subject))
 					{
 						if (isset($nzbcontents['segment']) && empty($jpgmsgid))
 						{
