@@ -70,7 +70,7 @@ class Nfo
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s), starting at ".(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
