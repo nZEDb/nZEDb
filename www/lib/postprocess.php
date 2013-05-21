@@ -199,7 +199,7 @@ class PostProcess
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
-				if ($this->echooutput)
+				if ($this->echooutput && count($result) > 0)
 				{
 					echo "Passwordstatus = ".$i."\n";
 					echo "Available to process = ".count($result)."\n";
@@ -527,7 +527,7 @@ class PostProcess
 						if (is_dir($tmpPath))
 						{
 							$ri = new ReleaseImage;
-							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 450, 450);
+							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 							
 							if ($blnTookJPG !== false)
 								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
