@@ -201,8 +201,7 @@ class PostProcess
 				$result = $db->query($query);
 				if ($this->echooutput && count($result) > 0)
 				{
-					echo "Passwordstatus = ".$i."\n";
-					echo "Available to process = ".count($result)."\n";
+					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
 				}
 				$i--;
 			}
