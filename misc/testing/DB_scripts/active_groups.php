@@ -9,28 +9,28 @@ if (isset($argv[2]) && is_numeric($argv[2]) )
 else
 	$limit = "";
 
-$mask = "\033[1;33m%-50.50s %15.15s %22.22s %22.22s %22.22s\n";
-printf($mask, "Group Name", "Backfill Days", "Oldest Post", "Last Updated", "Headers Downloaded");
+$mask = "\033[1;33m%-50.50s %50.50s %22.22s %22.22s %22.22s\n";
+printf($mask, "Group Name", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded");
 printf($mask, "==================================================", "=============", "======================", "======================", "======================");
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
-    if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, last_record-first_record as 'headers downloaded' from groups where active = 1 order by first_record_postdate DESC %s", $limit)))
+    if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 order by first_record_postdate DESC %s", $limit)))
     {
         foreach ($rels as $rel)
         {
-            printf($mask, $rel['name'], $rel['backfill_target'], $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
+            printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
         }
     }
     printf("\033[0m");
 }
 else
 {
-	if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, last_record-first_record as 'headers downloaded' from groups where active = 1 order by first_record_postdate ASC %s", $limit)))
+	if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 order by first_record_postdate ASC %s", $limit)))
 	{
 		foreach ($rels as $rel)
 		{
-			printf($mask, $rel['name'], $rel['backfill_target'], $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
+			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
 		}
 	}
 	printf("\033[0m");

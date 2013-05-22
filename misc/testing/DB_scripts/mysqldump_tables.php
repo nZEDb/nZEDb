@@ -3,7 +3,7 @@ require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 //
-//	This script can dump all table or just collections/binaries/parts.
+//	This script can dump all table or just collections/binaries/parts/partrepair.
 //
 
 function newname( $filename )
@@ -49,18 +49,20 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "backup") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$db = new DB;
-	$arr = array("parts", "binaries", "collections");
+	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
 		$filename = $argv[3]."/".$tbl.".sql";
 		printf("Dumping $tbl.\n");
+		if (file_exists($filename))
+			newname($filename);
 		$db->query(sprintf("SELECT * INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$db = new DB;
-	$arr = array("parts", "binaries", "collections");
+	$arr = array("parts", "binaries", "collections", "partrepair", "groups"");
 	foreach ($arr as &$tbl)
 	{
 		$filename = $argv[3]."/".$tbl.".sql";
