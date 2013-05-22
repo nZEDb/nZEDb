@@ -1766,12 +1766,15 @@ class Releases
 		// Delete old releases and finished collections.
 		echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
+		
 		// Old collections that were missed somehow.
-
 		$db->queryDirect("DELETE collections, binaries, parts
 						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 						  WHERE (collections.filecheck = 5 OR (collections.dateadded < (now() - interval 72 hour))) " . $where);
 		$reccount = $db->getAffectedRows();
+
+		// Binaries/parts that somehow have no collection.
+		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
