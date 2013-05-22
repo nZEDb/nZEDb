@@ -1956,6 +1956,8 @@ class Releases
 			{
 				$timestart = TIME();
 				echo "Going to remake all the collections. This can be a long process, be patient.\n";
+				// Reset the collectionhash.
+				$db->query("UPDATE collections SET collectionhash = 0");
 				$remadecnt = $delcount = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
