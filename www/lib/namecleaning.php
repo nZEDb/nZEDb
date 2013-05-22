@@ -35,14 +35,14 @@
 				else
 					return $cleansubject.$matches[1];
 			}
-			else if ($type !== "split" && strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 -]{1,8}$/i', $cleansubject))
+			else if ($type !== "split" && (strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 -]{1,8}$/i', $cleansubject)))
 			{
-				preg_match('/"([a-z0-9]+).+?"/i', $subject, $matches);
-				preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2);
-				if (isset($matches2[0]))
-					return $cleansubject.$matches[1].$matches2[0];
-				else
-					return $cleansubject.$matches[1];
+				$one = $two = "";
+				if (preg_match('/"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
+					$one = $matches[1];
+				if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2))
+					$two = $matches2[0];
+				return $cleansubject.$one.$two;
 			}
 			else
 				return $cleansubject;
