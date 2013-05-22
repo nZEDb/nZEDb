@@ -382,7 +382,14 @@
 	<td><label for="maxsizetoformrelease">Maximum File Size to Make a Release</label>:</td>
 	<td>
 		<input class="small" id="maxsizetoformrelease" name="maxsizetoformrelease" type="text" value="{$fsite->maxsizetoformrelease}" />
-		<div class="hint">The maximum total size in gigabytes to make a release. If set to 0, then ignored. Only deletes during release creation. This is also used during postprocessing, so releases already in the db will not be processed if size exceeded.</div>
+		<div class="hint">The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
+	</td>
+</tr>
+<tr>
+	<td><label for="maxsizetopostprocess">Maximum File Size to Make a Release</label>:</td>
+	<td>
+		<input class="small" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<div class="hint">The maximum total size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
 
