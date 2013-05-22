@@ -13,7 +13,7 @@
 			if ($type == "split")
 			{
 				//Get the first word of the quotes.
-				preg_match('/"([a-z0-9]+).+?"/i', $subject, $matches);
+				preg_match('/.+?"(.+?)\.[a-z0-9].+?"/i', $subject, $matches);
 				//Season-Episode, EP# or year.
 				preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2);
 			}
@@ -38,7 +38,7 @@
 			else if ($type !== "split" && (strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 -]{1,8}$/i', $cleansubject)))
 			{
 				$one = $two = "";
-				if (preg_match('/"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
+				if (preg_match('/.+?"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
 					$one = $matches[1];
 				if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2))
 					$two = $matches2[0];
