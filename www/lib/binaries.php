@@ -312,7 +312,7 @@ class Binaries
 					}
 				}
 			}
-			if ($this->debug)
+			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
 				$arr = array_combine($colnames, $orignames);
 				ksort($arr);

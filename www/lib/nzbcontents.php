@@ -65,7 +65,7 @@ Class NZBcontents
 
 				if ($foundnfo !== true)
 				{
-					if (preg_match('/\.\b(nfo|inf|ofn)\b/', $subject))
+					if (preg_match('/\.\b(nfo|inf|ofn)\b/i', $subject))
 					{
 						$messageid = $nzbcontents->segments->segment;
 						$foundnfo = true;
@@ -93,9 +93,14 @@ Class NZBcontents
 					$nfo->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-					if ($this->echooutput)
-						echo "+";
-					return $fetchedBinary;
+					if (strlen($fetchedBinary) > 10)
+					{
+						if ($this->echooutput)
+							echo "+";
+						return $fetchedBinary;
+					}
+					else
+						return false;
 				}
 			}
 		}
@@ -111,7 +116,6 @@ Class NZBcontents
 	//
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$notout = '/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|log|m3u|mid|mobi|mp3|nzb|odt|otf|par2|pdf|psd|pps|png|ppt|rar|r\d{2,4}|sfv|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i';
 		$notin = '/<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR/i';
 		$db = new DB();
 		$nfo = new NFO();
@@ -126,10 +130,47 @@ Class NZBcontents
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
 			
+			//
+			// Ignore common file extensions from the post
+			//
+			$ext = array();
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
-				if (preg_match('/yEnc\s\(1\/1\)/', $subject) && !preg_match($notout, $subject))
+				if (preg_match('/(yEnc\s\(1\/1\)|\(1\/1\)$)/i', $subject))
+				{
+					if (preg_match('/\.([a-z][a-z0-9]{2,3})(?:\"|$)/i', $subject, $matches))
+					{
+						$ext[] = $matches[1];
+					}
+				}
+			}
+			$ext = array_count_values($ext);
+			asort($ext);
+			if (count($ext) > 0)
+				$avg = floor(array_sum($ext)/count($ext));
+			else
+				$avg = 1;
+
+			foreach($ext as $k => $v)
+			{
+				if ($v < $avg || $v == 1 || preg_match('/(nfo|inf|ofn)/i', $k))
+					unset($ext[$k]);
+			}
+
+			$ext = array_keys($ext);
+			$ext = implode("|", $ext);
+			$notout = '/\.(\d{2,4}|apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf';
+			$notout = $notout.'|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip';
+
+			if (strlen($ext) > 0)
+				$notout = $notout."|".$ext;
+			$notout = $notout.")/i";
+
+			foreach ($nzbfile->file as $nzbcontents)
+			{
+				$subject = $nzbcontents->attributes()->subject;
+				if (preg_match('/(yEnc\s\(1\/1\)|\(1\/1\)$)/i', $subject) && !preg_match($notout, $subject))
 				{
 					$messageid = $nzbcontents->segments->segment;
 					if ($messageid !== false)

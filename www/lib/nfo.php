@@ -61,7 +61,7 @@ class Nfo
 		$nfocount = 0;
 		while ((($nfocount) != $this->nzbs) && ($i >= -6))
 		{
-			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 order by postdate desc limit %d,%d", $i, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < 107374182400 order by postdate desc limit %d,%d", $i, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
 			$nfocount = $db->getNumRows($res);
 			$i--;
 		}

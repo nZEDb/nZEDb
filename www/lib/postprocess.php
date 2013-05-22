@@ -197,7 +197,7 @@ class PostProcess
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+				AND (r.haspreview = -1 and c.disablepreview = 0) and r.size < 107374182400 order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
 				if ($this->echooutput && count($result) > 0)
 					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
@@ -856,8 +856,10 @@ class PostProcess
 						{
 							if (isset($track["Album"]) && isset($track["Performer"]) && isset($track["Recorded_date"]))
 							{
-								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
-								$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+								if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+									$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+								else
+									$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 								$category = new Category();
 								$newcat = $category->determineCategory($newname, $catID["groupID"]);
 								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
