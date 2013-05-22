@@ -1923,9 +1923,9 @@ class Releases
 					{
 						if ($this->debug)
 						{
-							if (!in_array($cleansubject, $binnames))
+							if (!in_array($newSHA1, $binnames))
 							{
-								$colnames[] = $cleansubject;
+								$colnames[] = $newSHA1;
 								$binnames[] = $row["bname"];
 							}
 						}
