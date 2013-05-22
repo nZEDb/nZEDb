@@ -1914,13 +1914,21 @@ class Releases
 			{
 				echo "Extracting bunched up collections.\n";
 				$bunchedcnt = 0;
-				$cIDS = array();
+				$cIDS = $colnames = $binnames = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
 					$newSHA1 = sha1($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
+						if ($this->debug)
+						{
+							if (!in_array($newSHA1, $binnames))
+							{
+								$colnames[] = $newSHA1;
+								$binnames[] = $row["bname"];
+							}
+						}
 						$cIDS[] = $row["ID"];
 						$bunchedcnt++;
 						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
@@ -1934,6 +1942,12 @@ class Releases
 					}
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
+				}
+				if ($this->debug)
+				{
+					$arr = array_combine($colnames, $binnames);
+					ksort($arr);
+					print_r($arr);
 				}
 				//Remove the old collections.
 				foreach (array_unique($cIDS) as $cID)
