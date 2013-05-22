@@ -5,6 +5,7 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Nfo 
 {
@@ -55,13 +56,17 @@ class Nfo
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
+		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
+		$maxsize = $site->get()->maxsizetoformrelease;
+		if ($maxsize == 0)
+			$maxsize = 107374182400;
 
 		$i = -1;
 		$nfocount = 0;
 		while ((($nfocount) != $this->nzbs) && ($i >= -6))
 		{
-			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < 107374182400 order by postdate desc limit %d,%d", $i, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %d order by postdate desc limit %d,%d", $i, $maxsize, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
 			$nfocount = $db->getNumRows($res);
 			$i--;
 		}
