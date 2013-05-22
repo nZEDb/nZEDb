@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
 $db = new DB();
-$DIR = WWW_DIR."/..";
+$DIR = WWW_DIR."..";
 
 $tmux = new Tmux;
 $session = $tmux->get()->TMUX_SESSION;
@@ -14,8 +14,17 @@ $seq = $tmux->get()->SEQUENTIAL;
 
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
+$hashcheck = $site->get()->hashcheck;
 
-if ( $patch < '43' )
+if ( $hashcheck != '1' )
+{
+    echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
+    echo "php ${DIR}/misc/testing/DB_scripts/reset_Collections.php true\033[0m\n";
+    exit(1);
+}
+
+
+if ( $patch < '45' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
