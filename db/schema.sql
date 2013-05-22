@@ -34,7 +34,6 @@ CREATE TABLE `binaries` (
 		`binaryhash` VARCHAR(255) NOT NULL DEFAULT '0',
 		`partcheck` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`partsize` BIGINT UNSIGNED NOT NULL DEFAULT '0',
-		`importname` VARCHAR(255) NULL,
 		PRIMARY KEY  (`ID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -973,7 +972,9 @@ INSERT INTO `site`
 	('catwebdl', 0),
 	('safebackfilldate', '2012-06-24'),
 	('processjpg', 0),
-	('sqlpatch', '43');
+	('hashcheck', 0),
+	('debuginfo', 0),
+	('sqlpatch', '45');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

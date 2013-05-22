@@ -115,7 +115,7 @@
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="id[]" value="{$result.guid}" /></td>
 			<td class="item">
-				<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a></label>
+				<label for="chk{$result.guid|substr:0:7}">{if release_flag($result.searchname, search)}<img src="{$smarty.const.WWW_TOP}/themes/Default/images/flags/{release_flag($result.searchname, search)}.png" /> {/if}<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a></label>
 
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />

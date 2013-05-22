@@ -5,7 +5,7 @@ require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 
-$version="0.1r1792";
+$version="0.1r1869";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -15,7 +15,7 @@ $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
 
 //totals per category in db, results by parentID
-$qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE parentID IS NOT NULL GROUP BY parentID";
+$qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
 
 //needs to be processed query
 $proc = "SELECT

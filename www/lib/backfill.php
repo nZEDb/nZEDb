@@ -12,6 +12,7 @@ class Backfill
 		$s = new Sites();
 		$site = $s->get();
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
+		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 	}
 
 	//
@@ -19,6 +20,8 @@ class Backfill
 	//
 	function backfillAllGroups($groupName='')
 	{
+		if ($this->hashcheck == 0)
+			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
 		$groups = new Groups;
 		
@@ -177,6 +180,8 @@ class Backfill
 	//
 	function safeBackfill($articles='')
 	{
+		if ($this->hashcheck == 0)
+			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$db = new DB();
 		$n = $this->n;
 		
@@ -197,6 +202,8 @@ class Backfill
 	//
 	function backfillPostAllGroups($groupName='', $articles = '', $type='')
 	{
+		if ($this->hashcheck == 0)
+			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
 		$groups = new Groups;
 		if ($groupName != '')
