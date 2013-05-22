@@ -1978,7 +1978,7 @@ class Releases
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
 					$rescount++;
-					$consoletools->overWrite("Recreated: ".$consoletools->overWrite($rescount)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
+					$consoletools->overWrite("Recreated: ".$rescount." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 				}
 				//Remove the old collections.
 				$delcount = 0;
