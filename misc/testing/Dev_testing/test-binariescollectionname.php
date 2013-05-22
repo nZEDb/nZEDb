@@ -13,12 +13,12 @@ else
 		$groups = new Groups();
 		$grouplist = $groups->getActive();
 		$nntp = new Nntp();
-		$nntp->doConnect();
 		foreach ($grouplist as $group)
 		{
+			$nntp->doConnect();
 			dogroup($group, $nntp);
+			$nntp->doQuit();
 		}
-		$nntp->doQuit();
 	}
 	else
 	{
