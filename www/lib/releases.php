@@ -1953,7 +1953,7 @@ class Releases
 			{
 				$timestart = TIME();
 				echo "Going to remake all the collections. This can be a long process, be patient.\n";
-				$bunchedcnt = $rescount = 0;
+				$remadecnt = $rescount = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
