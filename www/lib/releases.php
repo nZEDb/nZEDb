@@ -1950,7 +1950,7 @@ class Releases
 		$db = new DB();
 		$namecleaner = new nameCleaning();
 		$consoletools = new ConsoleTools();
-		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID order by c.ID"))
+		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID"))
 		{
 			if (mysqli_num_rows($res) > 0)
 			{
