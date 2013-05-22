@@ -40,7 +40,14 @@
 					$one = $matches[2];
 				if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2))
 					$two = $matches2[0];
-				return $cleansubject.$one.$two;
+				if ($one == "" && $two == "")
+				{
+					$newname = preg_replace('/[a-z0-9]/i', '', $subject);
+					if (preg_match('/[\!@#\$%\^&\*\(\)\-={}\[\]\|\\:;\'<>\,\.\?\/_ ]{1,3}/', $newame, $matches3))
+						return $cleansubject.$matches3[0];
+				}
+				else
+					return $cleansubject.$one.$two;
 			}
 			else
 				return $cleansubject;
