@@ -975,7 +975,7 @@ INSERT INTO `site`
 	('processjpg', 0),
 	('hashcheck', 0),
 	('debuginfo', 0),
-	('sqlpatch', '45');
+	('sqlpatch', '46');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
