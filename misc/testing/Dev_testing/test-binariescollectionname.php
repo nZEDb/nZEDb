@@ -34,10 +34,13 @@ function dogroup($group, $nntp)
 	$binaries = new binaries();
 	$binaries->updateGroup($nntp, $group);
 	echo "Press enter to continue, type n and press enter to quit.\n";
-	if(trim(fgets(fopen("php://stdin","r"))) == '')
+	$cmd = trim(fgets(fopen("php://stdin","r")));
+	if($cmd == '')
 		return true;
-	else
+	else if ($cmd == "no")
 		exit("Done.\n");
+	else
+		return true;
 }
 
 ?>
