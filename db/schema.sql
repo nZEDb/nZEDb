@@ -972,7 +972,9 @@ INSERT INTO `site`
 	('catwebdl', 0),
 	('safebackfilldate', '2012-06-24'),
 	('processjpg', 0),
-	('sqlpatch', '43');
+	('hashcheck', 0),
+	('debuginfo', 0),
+	('sqlpatch', '45');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

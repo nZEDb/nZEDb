@@ -26,6 +26,8 @@ class Binaries
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
 		$this->DoPartRepair = ($site->partrepair == "0") ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
+		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
+		$this->debug = ($site->debuginfo == "0") ? false : true;
 		
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
@@ -34,6 +36,14 @@ class Binaries
 	
 	function updateAllGroups() 
 	{
+		if ($this->hashcheck == 0)
+		{
+			echo "We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type yes, else type no to see how to run manually.\n";
+			if(trim(fgets(fopen("php://stdin","r"))) != 'yes')
+				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called resetCollections.php\n");
+			$relss = new Releases();
+			$relss->resetCollections();
+		}
 		$n = $this->n;
 		$groups = new Groups;
 		$res = $groups->getActive();
@@ -102,9 +112,7 @@ class Binaries
 			$this->partRepair($nntp, $groupArr);
 		}
 		else
-		{
 			echo "Part Repair Disabled... Skipping..." . $n;
-		}
 
 		//Get first and last part numbers from newsgroup
 		$last = $grouplast = $data['last'];
@@ -206,6 +214,8 @@ class Binaries
 	{
 		$db = new Db();
 		$namecleaning = new nameCleaning();
+		if ($this->debug)
+			$consoletools = new ConsoleTools();
 		$n = $this->n;
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
@@ -240,6 +250,8 @@ class Binaries
 		if (is_array($msgs))
 		{	
 			// Loop articles, figure out files/parts.
+			if ($this->debug)
+				$colnames = $orignames = array();
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
@@ -276,13 +288,21 @@ class Binaries
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim($partless));
 					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
+					if ($this->debug)
+					{
+						if (!in_array($cleansubject, $colnames))
+						{
+							$colnames[] = $cleansubject;
+							$orignames[] = $msg['Subject'];
+						}
+					}
 					
 					if(!isset($this->message[$subject]))
 					{
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int)$matches[2];
 						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
-						$this->message[$subject]['CollectionHash'] = md5($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
+						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
@@ -291,6 +311,12 @@ class Binaries
 						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
 					}
 				}
+			}
+			if ($this->debug)
+			{
+				$arr = array_combine($colnames, $orignames);
+				ksort($arr);
+				print_r($arr);
 			}
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg);
