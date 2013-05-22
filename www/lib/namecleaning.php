@@ -35,7 +35,7 @@
 				else
 					return $cleansubject.$matches[1];
 			}
-			else if ($type !== "split" && (strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 -]{1,8}$/i', $cleansubject)))
+			else if ($type !== "split" && (strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 \-]{1,8}$/i', $cleansubject)))
 			{
 				$one = $two = "";
 				if (preg_match('/.+?"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
