@@ -22,7 +22,7 @@ do
 	fi
 	
 	cd ${THREAD_PATH}
-	$PYTHON ${THREAD_PATH}/binaries_threaded.py
+	$PYTHON -OO ${THREAD_PATH}/binaries_threaded.py
 	
 	cd ${HELP_PATH}
 	if ! $SCREEN -list | grep -q "RELEASES"; then
