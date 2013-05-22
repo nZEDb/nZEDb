@@ -1958,7 +1958,7 @@ class Releases
 				echo "Going to remake all the collections. This can be a long process, be patient.\n";
 				// Reset the collectionhash.
 				$db->query("UPDATE collections SET collectionhash = 0");
-				$remadecnt = $delcount = 0;
+				$delcount = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
@@ -1969,8 +1969,7 @@ class Releases
 						$cIDS[] = $row["ID"];
 						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
-						$remadecnt++;
-						$consoletools->overWrite("Recreated: ".$remadecnt." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}
 					else
 						$collectionID = $cres["ID"];
@@ -1986,7 +1985,9 @@ class Releases
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
-				echo "\nRemade ".$remadecnt." collections in ".$consoletools->convertTime(TIME() - $timestart);
+				// Delete previous failed attempts.
+				$db->query("DELETE FROM collections where collectionhash = 0");
+				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
 		}
 	}

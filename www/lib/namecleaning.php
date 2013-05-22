@@ -26,7 +26,7 @@
 			//File Sizes - Non unique ones.
 			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes?|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}/i', ' ', $cleansubject);
 			//Random stuff.
-			$cleansubject = preg_replace('/AutoRarPar\d{1,5}| \(\d+\)$|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
+			$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\) yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 			$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
 			if ($type == "split" && isset($matches[1]))
 			{
