@@ -161,6 +161,11 @@ class PostProcess
 		$nntp = new Nntp;
 		$consoleTools = new ConsoleTools();
 		$rar = new RecursiveRarInfo();
+		$site = new Sites;
+
+        $maxsize = $site->get()->maxsizetoformrelease * 1024;
+        if ($maxsize == 0)
+            $maxsize = 107374182400;
 
 		$threads--;
 		$update_files = true;
@@ -197,7 +202,7 @@ class PostProcess
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-				AND (r.haspreview = -1 and c.disablepreview = 0) and r.size < 107374182400 order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+				AND (r.haspreview = -1 and c.disablepreview = 0) and r.size < $maxsize order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
 				if ($this->echooutput && count($result) > 0)
 					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
