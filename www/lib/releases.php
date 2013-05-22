@@ -35,6 +35,7 @@ class Releases
 		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
 		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
+		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 	}
 
 	public function get()
@@ -1849,6 +1850,8 @@ class Releases
 
 	public function processReleases($categorize, $postproc, $groupName)
 	{
+		if ($this->hashcheck == 0)
+			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$db = new DB();
 		$groups = new Groups();
 		$page = new Page();
@@ -1955,7 +1958,7 @@ class Releases
 			if (mysqli_num_rows($res) > 0)
 			{
 				$timestart = TIME();
-				echo "Going to remake all the collections. This can be a long process, be patient.\n";
+				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
 				// Reset the collectionhash.
 				$db->query("UPDATE collections SET collectionhash = 0");
 				$delcount = 0;
@@ -1987,6 +1990,9 @@ class Releases
 				}
 				// Delete previous failed attempts.
 				$db->query('DELETE FROM collections where collectionhash = "0"');
+				
+				if ($this->hashcheck == 0)
+					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
 		}
