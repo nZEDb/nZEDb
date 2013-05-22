@@ -58,7 +58,7 @@ class Nfo
 		$groups = new Groups();
 		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
-		$maxsize = $site->get()->maxsizetoformrelease * 1024 * 1024;
+		$maxsize = $site->get()->maxsizetopostprocess * 1024 * 1024;
 		if ($maxsize == 0)
 			$maxsize = 107374182400;
 
