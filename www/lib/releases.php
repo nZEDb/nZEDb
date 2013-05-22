@@ -1977,13 +1977,14 @@ class Releases
 				}
 				//Remove the old collections.
 				$delstart = TIME();
+				echo "\n";
 				foreach (array_unique($cIDS) as $cID)
 				{
 					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
-				echo "Remade ".$remadecnt." collections in".$consoletools->convertTime($timestart).".\n";
+				echo "\nRemade ".$remadecnt." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
 		}
 	}
