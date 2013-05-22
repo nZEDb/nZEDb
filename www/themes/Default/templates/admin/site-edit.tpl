@@ -386,10 +386,10 @@
 	</td>
 </tr>
 <tr>
-	<td><label for="maxsizetopostprocess">Maximum File Size to Make a Release</label>:</td>
+	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess</label>:</td>
 	<td>
 		<input class="small" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
-		<div class="hint">The maximum total size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
+		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
 
