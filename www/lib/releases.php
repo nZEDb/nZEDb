@@ -1995,6 +1995,8 @@ class Releases
 					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
+			else
+				$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 		}
 	}
 
