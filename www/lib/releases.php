@@ -1986,7 +1986,7 @@ class Releases
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
-				echo "Remade ".$rescount." collections in"$consoletools->convertTime($delstart)".\n";
+				echo "Remade ".$rescount." collections in".$consoletools->convertTime($delstart).".\n";
 			}
 		}
 	}
