@@ -282,7 +282,7 @@ class Binaries
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int)$matches[2];
 						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
-						$this->message[$subject]['CollectionHash'] = md5($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
+						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}

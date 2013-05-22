@@ -1527,7 +1527,7 @@ class Releases
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-				$relguid = md5(uniqid());
+				$relguid = sha1(uniqid());
 				if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) 
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", 
 											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol["totalFiles"], $rowcol["groupID"], $db->escapeString($relguid),
@@ -1894,7 +1894,7 @@ class Releases
 	}
 
 	//
-	// When multiple collections are bunched up with the same MD5 ((ebooklezer) [0/2] - "geheimen.nzb" yEnc (1/1) | (ebooklezer) [1/2] - "destiny.par2" yEnc (1/1))
+	// When multiple collections are bunched up with the same Sha1 ((ebooklezer) [0/2] - "geheimen.nzb" yEnc (1/1) | (ebooklezer) [1/2] - "destiny.par2" yEnc (1/1))
 	// Seperate them using a different namecleaner and change the ID's on the parts/binaries.
 	//
 	public function splitBunchedCollections()
@@ -1911,13 +1911,13 @@ class Releases
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
-					$cIDS[] = $row["ID"];
-					$newMD5 = md5($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
-					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newMD5)));
+					$newSHA1 = sha1($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
+						$cIDS[] = $row["ID"];
 						$bunchedcnt++;
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newMD5));
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
 					}
 					else
@@ -1939,6 +1939,56 @@ class Releases
 				echo "Extracted ".$bunchedcnt." bunched collections.\n";
 			}
 		}		
+	}
+
+	// This resets collections, useful when the namecleaning class's collectioncleaner function changes.
+	public function resetCollections()
+	{
+		$db = new DB();
+		$namecleaner = new nameCleaning();
+		$consoletools = new ConsoleTools();
+		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID"))
+		{
+			if (mysqli_num_rows($res) > 0)
+			{
+				$timestart = TIME();
+				echo "Going to remake all the collections. This can be a long process, be patient.\n";
+				$bunchedcnt = $rescount = 0;
+				$cIDS = array();
+				while ($row = mysqli_fetch_assoc($res))
+				{
+					$newSHA1 = sha1($namecleaner->collectionsCleaner($row["bname"]).$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
+					if(!$cres)
+					{
+						$cIDS[] = $row["ID"];
+						$remadecnt++;
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$collectionID = $db->queryInsert($csql);
+					}
+					else
+					{
+						$collectionID = $cres["ID"];
+						//Update the collection table with the last seen date for the collection.
+						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
+					}
+					//Update the binaries with the new info.
+					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
+					$rescount++;
+					$consoletools->overWrite("Recreated: ".$consoletools->overWrite($rescount)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
+				}
+				//Remove the old collections.
+				$delcount = 0;
+				$delstart = TIME();
+				foreach (array_unique($cIDS) as $cID)
+				{
+					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
+					$delcount++;
+					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+				}
+				echo "Remade ".$remadecnt." collections in"$consoletools->convertTime($delstart)".\n";
+			}
+		}
 	}
 
 	public function getTopDownloads()
