@@ -1956,7 +1956,7 @@ class Releases
 			{
 				$timestart = TIME();
 				echo "Going to remake all the collections. This can be a long process, be patient.\n";
-				$remadecnt = $rescount = $delcount = 0;
+				$remadecnt = $delcount = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
@@ -1965,16 +1965,15 @@ class Releases
 					if(!$cres)
 					{
 						$cIDS[] = $row["ID"];
-						$remadecnt++;
 						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
+						$remadecnt++;
+						$consoletools->overWrite("Recreated: ".$remadecnt." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}
 					else
 						$collectionID = $cres["ID"];
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
-					$rescount++;
-					$consoletools->overWrite("Recreated: ".$rescount." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 				}
 				//Remove the old collections.
 				$delstart = TIME();
@@ -1984,7 +1983,7 @@ class Releases
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
-				echo "Remade ".$rescount." collections in".$consoletools->convertTime($timestart).".\n";
+				echo "Remade ".$remadecnt." collections in".$consoletools->convertTime($timestart).".\n";
 			}
 		}
 	}
