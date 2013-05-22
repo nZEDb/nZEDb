@@ -13,20 +13,20 @@
 			if ($type == "split")
 			{
 				//Get the first word of the quotes.
-				preg_match('/"([a-z0-9]+).+?"/i', $subject, $matches);
+				preg_match('/"(.+?)\.[a-z0-9].+?"/i', $subject, $matches);
 				//Season-Episode, EP# or year.
 				preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2);
 			}
 			//Parts/files
-			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}|( - \d\d -| \(\d\d\) -| - \d\d\.|\d{4} \d\d -) .+\.mp3/i', ' ', $subject);
+			$cleansubject = preg_replace('/(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}|(( - \d\d -| \(\d\d\) -| - \d\d\.|\d{4} \d\d -|) | - \d\d-).+\.mp3/i', ' ', $subject);
 			//Anything between the quotes. Too much variance within the quotes, so remove it completely.
 			$cleansubject = preg_replace('/\".+\"/i', ' ', $cleansubject);
 			//File extensions - If it was not quotes.
-			$cleansubject = preg_replace('/ [a-z0-9]+\.jpg|((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par(\s?2|")|zip|z{2,3})"?|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', ' ', $cleansubject);
+			$cleansubject = preg_replace('/ [a-z0-9]+-?\.jpg|((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par(\s?2|")|zip|z{2,3})"?|(\s|(\d{2,3})?\-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', ' ', $cleansubject);
 			//File Sizes - Non unique ones.
-			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes?|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}/i', ' ', $cleansubject);
+			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d{1,}KB\s(yENC)?|"?\s\d{1,}\sbytes?|(\-\s)?\d{1,}(\.|,)?\d{1,}\s(g|k|m)?B\s\-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}|yEnc \d+ /i', ' ', $cleansubject);
 			//Random stuff.
-			$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\) yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
+			$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 			$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
 			if ($type == "split" && isset($matches[1]))
 			{
@@ -35,14 +35,16 @@
 				else
 					return $cleansubject.$matches[1];
 			}
-			else if ($type !== "split" && strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 -]{1,8}$/i', $cleansubject))
+			else if ($type !== "split" && (strlen($cleansubject) <= 6 || preg_match('/^[a-z0-9 \-\$]{1,8}$/i', $cleansubject)))
 			{
-				preg_match('/"([a-z0-9]+).+?"/i', $subject, $matches);
-				preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2);
-				if (isset($matches2[0]))
-					return $cleansubject.$matches[1].$matches2[0];
-				else
-					return $cleansubject.$matches[1];
+				$one = $two = "";
+				if (preg_match('/.+"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
+					$one = $matches[1];
+				else if (preg_match('/^"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
+					$one = $matches[1];
+				if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|(19|20)\d\d/i', $subject, $matches2))
+					$two = $matches2[0];
+				return $cleansubject.$one.$two;
 			}
 			else
 				return $cleansubject;
