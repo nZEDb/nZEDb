@@ -948,7 +948,7 @@ INSERT INTO `site`
 	('minfilestoformrelease', 1),
 	('minsizetoformrelease', 0),
 	('maxsizetoformrelease', 0),
-	('maxsizetopostprocess', 0),
+	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),

@@ -59,8 +59,6 @@ class Nfo
 		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
 		$maxsize = $site->get()->maxsizetopostprocess * 1024 * 1024;
-		if ($maxsize == 0)
-			$maxsize = 107374182400;
 
 		$i = -1;
 		$nfocount = 0;

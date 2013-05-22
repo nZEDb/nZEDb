@@ -164,8 +164,6 @@ class PostProcess
 		$site = new Sites;
 
         $maxsize = $site->get()->maxsizetopostprocess * 1024 * 1024;
-        if ($maxsize == 0)
-            $maxsize = 107374182400;
 
 		$threads--;
 		$update_files = true;
