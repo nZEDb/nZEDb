@@ -948,6 +948,7 @@ INSERT INTO `site`
 	('minfilestoformrelease', 1),
 	('minsizetoformrelease', 0),
 	('maxsizetoformrelease', 0),
+	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
@@ -974,7 +975,7 @@ INSERT INTO `site`
 	('processjpg', 0),
 	('hashcheck', 0),
 	('debuginfo', 0),
-	('sqlpatch', '45');
+	('sqlpatch', '46');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
