@@ -313,7 +313,11 @@ class Binaries
 				}
 			}
 			if ($this->debug)
-				print_r(array_combine($colnames, $orignames));
+			{
+				$arr = array_combine($colnames, $orignames);
+				ksort($arr);
+				print_r($arr);
+			}
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg);
 			unset($msgs);
