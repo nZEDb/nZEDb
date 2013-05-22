@@ -33,8 +33,8 @@ function dogroup($group, $nntp)
 {
 	$binaries = new binaries();
 	$binaries->updateGroup($nntp, $group);
-	echo "Type y and press enter to continue, n to quit.\n";
-	if(trim(fgets(fopen("php://stdin","r"))) == 'y')
+	echo "Press enter to continue, type n and press enter to quit.\n";
+	if(trim(fgets(fopen("php://stdin","r"))) == '')
 		return true;
 	else
 		exit("Done.\n");
