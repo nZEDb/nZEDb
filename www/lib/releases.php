@@ -36,6 +36,7 @@ class Releases
 		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
+		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
 
 	public function get()
@@ -1918,7 +1919,7 @@ class Releases
 				while ($row = mysqli_fetch_assoc($res))
 				{
 					$newcolname = $namecleaner->collectionsCleaner($row["bname"], "split");
-					$newSHA1 = sha1($newname.$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$newSHA1 = sha1($newcolname.$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
