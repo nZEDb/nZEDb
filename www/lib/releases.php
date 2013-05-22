@@ -1956,7 +1956,7 @@ class Releases
 			{
 				$timestart = TIME();
 				echo "Going to remake all the collections. This can be a long process, be patient.\n";
-				$remadecnt = $rescount = 0;
+				$remadecnt = $rescount = $delcount = 0;
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
@@ -1970,18 +1970,13 @@ class Releases
 						$collectionID = $db->queryInsert($csql);
 					}
 					else
-					{
 						$collectionID = $cres["ID"];
-						//Update the collection table with the last seen date for the collection.
-						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
-					}
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
 					$rescount++;
 					$consoletools->overWrite("Recreated: ".$rescount." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 				}
 				//Remove the old collections.
-				$delcount = 0;
 				$delstart = TIME();
 				foreach (array_unique($cIDS) as $cID)
 				{
@@ -1989,7 +1984,7 @@ class Releases
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
-				echo "Remade ".$rescount." collections in".$consoletools->convertTime($delstart).".\n";
+				echo "Remade ".$rescount." collections in".$consoletools->convertTime($timestart).".\n";
 			}
 		}
 	}
