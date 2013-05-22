@@ -1950,7 +1950,7 @@ class Releases
 		$db = new DB();
 		$namecleaner = new nameCleaning();
 		$consoletools = new ConsoleTools();
-		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID"))
+		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID order by c.ID"))
 		{
 			if (mysqli_num_rows($res) > 0)
 			{
@@ -1979,14 +1979,14 @@ class Releases
 				//Remove the old collections.
 				$delstart = TIME();
 				echo "\n";
-				foreach (array_unique($cIDS) as $cID)
+				foreach ($cIDS as $cID)
 				{
 					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 					$delcount++;
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
 				// Delete previous failed attempts.
-				$db->query("DELETE FROM collections where collectionhash = 0");
+				$db->query('DELETE FROM collections where collectionhash = "0"');
 				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
 		}
