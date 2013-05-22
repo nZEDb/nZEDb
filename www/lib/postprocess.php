@@ -856,8 +856,10 @@ class PostProcess
 						{
 							if (isset($track["Album"]) && isset($track["Performer"]) && isset($track["Recorded_date"]))
 							{
-								preg_match('/\d{4}/', $track["Recorded_date"], $Year);
+								if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
 								$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+								else
+									$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 								$category = new Category();
 								$newcat = $category->determineCategory($newname, $catID["groupID"]);
 								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
