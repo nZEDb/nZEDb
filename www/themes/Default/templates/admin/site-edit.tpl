@@ -698,6 +698,14 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="debuginfo">Debug information</label>:</td>
+	<td>
+		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
+		<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 

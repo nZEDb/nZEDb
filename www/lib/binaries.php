@@ -27,6 +27,7 @@ class Binaries
 		$this->DoPartRepair = ($site->partrepair == "0") ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
+		$this->debug = ($site->debuginfo == "0") ? false : true;
 		
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
@@ -111,9 +112,7 @@ class Binaries
 			$this->partRepair($nntp, $groupArr);
 		}
 		else
-		{
 			echo "Part Repair Disabled... Skipping..." . $n;
-		}
 
 		//Get first and last part numbers from newsgroup
 		$last = $grouplast = $data['last'];
@@ -215,6 +214,8 @@ class Binaries
 	{
 		$db = new Db();
 		$namecleaning = new nameCleaning();
+		if ($this->debug)
+			$consoletools = new ConsoleTools();
 		$n = $this->n;
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
@@ -249,6 +250,8 @@ class Binaries
 		if (is_array($msgs))
 		{	
 			// Loop articles, figure out files/parts.
+			if ($this->debug)
+				$colnames = $orignames = array();
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
@@ -285,6 +288,11 @@ class Binaries
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim($partless));
 					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
+					if ($this->debug)
+					{
+						$colnames[] = $cleansubject;
+						$originames[] = $msg['Subject'];
+					}
 					
 					if(!isset($this->message[$subject]))
 					{
@@ -301,6 +309,8 @@ class Binaries
 					}
 				}
 			}
+			if ($this->debug)
+				print_r(array_unique(array_merge($colnames, $orignames)));
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg);
 			unset($msgs);
