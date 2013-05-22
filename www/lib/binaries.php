@@ -290,8 +290,11 @@ class Binaries
 					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
 					if ($this->debug)
 					{
-						$colnames[] = $cleansubject;
-						$originames[] = $msg['Subject'];
+						if (!in_array($cleansubject, $colnames))
+						{
+							$colnames[] = $cleansubject;
+							$orignames[] = $msg['Subject'];
+						}
 					}
 					
 					if(!isset($this->message[$subject]))
@@ -310,7 +313,7 @@ class Binaries
 				}
 			}
 			if ($this->debug)
-				print_r(array_unique(array_merge($colnames, $orignames)));
+				print_r(array_combine($colnames, $orignames));
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg);
 			unset($msgs);
