@@ -62,7 +62,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$db = new DB;
-	$arr = array("parts", "binaries", "collections", "partrepair", "groups"");
+	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
 		$filename = $argv[3]."/".$tbl.".sql";
