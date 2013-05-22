@@ -1917,15 +1917,16 @@ class Releases
 				$cIDS = $colnames = $binnames = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
-					$newSHA1 = sha1($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$newcolname = $namecleaner->collectionsCleaner($row["bname"], "split");
+					$newSHA1 = sha1($newname.$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
 						if ($this->debug)
 						{
-							if (!in_array($newSHA1, $binnames))
+							if (!in_array($newcolname, $binnames))
 							{
-								$colnames[] = $newSHA1;
+								$colnames[] = $newcolname;
 								$binnames[] = $row["bname"];
 							}
 						}
@@ -1943,7 +1944,7 @@ class Releases
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
 				}
-				if ($this->debug)
+				if ($this->debug && count($colnames) > 1 && count($binnames) > 1)
 				{
 					$arr = array_combine($colnames, $binnames);
 					ksort($arr);
