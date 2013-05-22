@@ -107,20 +107,20 @@ function start_apps()
 	}
 }
 
-function window_utilities()
+function window_utilities($session)
 {
 	shell_exec("tmux new-window -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
 	shell_exec("tmux splitw -v -p 50 'printf \"\033]2;postprocessing_additional\033\"'");
 	shell_exec("tmux splitw -h -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
-	shell_exec("tmux selectp -t 0 && tmux splitw -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
+	shell_exec("tmux selectp -t$session:0 && tmux splitw -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
 }
 
-function window_post()
+function window_post($session)
 {
 	shell_exec("tmux new-window -n post 'printf \"\033]2;postprocessing_nfos\033\"'");
 	shell_exec("tmux splitw -v -p 50 'printf \"\033]2;postprocessing_movies_tv\033\"'");
 	shell_exec("tmux splitw -h -p 50 'printf \"\033]2;postprocessing_books_games\033\"'");
-	shell_exec("tmux selectp -t 0 && tmux splitw -h -p 50 'printf \"\033]2;postproccessing_music_anidb\033\"'");
+	shell_exec("tmux selectp -t$session:0 && tmux splitw -h -p 50 'printf \"\033]2;postproccessing_music_anidb\033\"'");
 }
 
 
@@ -152,10 +152,10 @@ else
 	shell_exec("tmux selectp -t 0 && tmux splitw -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	shell_exec("tmux selectp -t 0 && tmux splitw -v -p 50 'printf \"\033]2;nzb-import-bulk\033\"'");
 	shell_exec("tmux selectp -t 2 && tmux splitw -v -p 67 'printf \"\033]2;backfill\033\"'");
-	shell_exec("tmux splitw -v -p 50 'printf \"\033]2;update_releases\033\"'");
+	shell_exec("tmux splitw -t$session:0 -v -p 50 'printf \"\033]2;update_releases\033\"'");
 
-	window_utilities();
-	//window_post();
+	window_utilities($session);
+	//window_post($session);
 	start_apps();
 	attach($DIR, $session);
 }
