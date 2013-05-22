@@ -163,7 +163,7 @@ class PostProcess
 		$rar = new RecursiveRarInfo();
 		$site = new Sites;
 
-        $maxsize = $site->get()->maxsizetoformrelease * 1024;
+        $maxsize = $site->get()->maxsizetoformrelease * 1024 * 1024;
         if ($maxsize == 0)
             $maxsize = 107374182400;
 
