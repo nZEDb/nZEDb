@@ -19,7 +19,7 @@ $hashcheck = $site->get()->hashcheck;
 if ( $hashcheck != '1' )
 {
     echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
-    echo "php ${DIR}/misc/testing/DB_scripts/resetCollections.php true\033[0m\n";
+    echo "php ${DIR}/misc/testing/DB_scripts/reset_Collections.php true\033[0m\n";
     exit(1);
 }
 
