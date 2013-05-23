@@ -129,13 +129,6 @@
 				</td>
 			</tr>
 
-			<tr>
-				<td style="width:160px;"><label for="BACKFILL_DELAY">Backfill Delay</label>:</td>
-				<td>
-					<input id="BACKFILL_DELAY" name="BACKFILL_DELAY" class="text" type="text" value="{$ftmux->BACKFILL_DELAY}" />
-					<div class="hint">If backfill is run on a new group before update_binaries has ran, it will result in error. This is the time, in seconds, between the script starting and the first time backfill runs. this is not to be confused with a sleep timer between loops.</div>
-				</td>
-			</tr>
 		</table>
 </fieldset>
 

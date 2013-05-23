@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1929";
+$version="0.1r1930";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -39,7 +39,6 @@ $proc = "SELECT
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
-	( SELECT value from tmux where setting = 'BACKFILL_DELAY' ) AS backfill_delay,
 	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) AS collections_kill,
 	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) AS postprocess_kill,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
@@ -349,7 +348,6 @@ while( $i > 0 )
 
 	if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
 	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
-	if ( @$proc_result[0]['backfill_delay'] != NULL ) { $backfill_delay = $proc_result[0]['backfill_delay']; }
 	if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
 	if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
 	if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
@@ -707,20 +705,7 @@ while( $i > 0 )
 			}
 
 			//run backfill
-			if (( $backfill == "TRUE" ) && ( TIME() - $time5 <= $backfill_delay ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
-			{
-				$run_time2 = relativeTime( $backfill_delay + $time5 );
-				$color = get_color();
-				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} will run in T[ $run_time2] - This is only necessary to ensure that the groups are pulled once with update_binaries before running backfill.\"' 2>&1 1> /dev/null");
-			}
-			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
-			{
-				$color = get_color();
-				$log = writelog($panes0[3]);
-				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python $DIR/misc/update_scripts/threaded_scripts/backfill_threaded.py group $log && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
-			}
-			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			if (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				$color = get_color();
 				$log = writelog($panes0[3]);
