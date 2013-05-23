@@ -3,7 +3,7 @@
     <h1>{$page->title}</h1>
 
 		<p>
-			Below is a list of all usenet groups available to be indexed. Click 'Activate' to start indexing a group.
+			Below is a list of all usenet groups available to be indexed. Click 'Activate' to start indexing a group. Backfill works independently of active.
 		</p>
     
 	{if $grouplist}
