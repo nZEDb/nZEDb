@@ -77,7 +77,7 @@ jQuery(function($){
 		innerWidth:"800px", innerHeight:"90%", initialWidth:"800px", initialHeight:"90%", speed:0, opacity:0.7
 	});
 	// Screenshot modal
-	$("table.data a.modal_prev").colorbox({maxWidth:"800px", maxHeight:"450px"});
+	$("table.data a.modal_prev").colorbox({maxWidth:"800px", maxHeight:"800x"});
 	
 	$("table.data a.modal_imdb").colorbox({	 // IMDB modal
 		href: function(){ return SERVERROOT + "movie/"+$(this).attr('name').substring(4)+'&modal'; },

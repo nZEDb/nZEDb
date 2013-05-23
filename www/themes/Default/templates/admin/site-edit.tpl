@@ -385,6 +385,13 @@
 		<div class="hint">The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
 	</td>
 </tr>
+<tr>
+	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess</label>:</td>
+	<td>
+		<input class="small" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
+	</td>
+</tr>
 
 <tr>
 	<td><label for="checkpasswordedrar">Check For Passworded Releases</label>:</td>
@@ -407,6 +414,14 @@
 	<td>
 		{html_options id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$fsite->showpasswordedrelease}
 		<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="lookupnfo">Process JPG</label>:</td>
+	<td>
+		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
+		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
 	</td>
 </tr>
 
@@ -481,6 +496,14 @@
 		<input class="tiny" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or 
 		<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$fsite->newgroupmsgstoscan}" /> Posts<br />
 		<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="safebackfilldate">Safe Backfill Date</label>:</td>
+	<td>
+		<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$fsite->safebackfilldate}" />
+		<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
 	</td>
 </tr>
 </table>
@@ -679,6 +702,14 @@
 	<td>
 		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
 		<div class="hint">Whether to update download counts when someone downloads a release.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="debuginfo">Debug information</label>:</td>
+	<td>
+		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
+		<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
 	</td>
 </tr>
 

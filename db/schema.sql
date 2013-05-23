@@ -34,7 +34,6 @@ CREATE TABLE `binaries` (
 		`binaryhash` VARCHAR(255) NOT NULL DEFAULT '0',
 		`partcheck` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`partsize` BIGINT UNSIGNED NOT NULL DEFAULT '0',
-		`importname` VARCHAR(255) NULL,
 		PRIMARY KEY  (`ID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -76,6 +75,7 @@ CREATE TABLE `releases`
 `nzbstatus` TINYINT NOT NULL DEFAULT 0,
 `nfostatus` TINYINT NOT NULL DEFAULT 0,
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
+`jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -418,6 +418,7 @@ CREATE TABLE `groups` (
   `minfilestoformrelease` INT(4) NULL,
   `minsizetoformrelease` BIGINT NULL,
   `active` TINYINT(1) NOT NULL DEFAULT '0',
+  `backfill` TINYINT(1) NOT NULL DEFAULT '0',
   `description` VARCHAR(255) NULL DEFAULT '',
   PRIMARY KEY  (`ID`),
   KEY `active` (`active`)
@@ -669,6 +670,7 @@ INSERT INTO category (ID, title, parentID) VALUES (3020, 'Video', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3030, 'Audiobook', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3040, 'Lossless', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3050, 'Other', 3000);
+INSERT INTO category (ID, title, parentID) VALUES (3060, 'Foreign', 3000);
 
 INSERT INTO category (ID, title, parentID) VALUES (4010, '0day', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4020, 'ISO', 4000);
@@ -702,6 +704,7 @@ INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
 
 DROP TABLE IF EXISTS `users`;
@@ -945,6 +948,7 @@ INSERT INTO `site`
 	('minfilestoformrelease', 1),
 	('minsizetoformrelease', 0),
 	('maxsizetoformrelease', 0),
+	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
@@ -967,7 +971,11 @@ INSERT INTO `site`
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
 	('catwebdl', 0),
-	('sqlpatch', '39');
+	('safebackfilldate', '2012-06-24'),
+	('processjpg', 0),
+	('hashcheck', 1),
+	('debuginfo', 0),
+	('sqlpatch', '46');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

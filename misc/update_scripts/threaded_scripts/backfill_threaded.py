@@ -55,10 +55,10 @@ cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
 groups = cur.fetchone();
 
 if sys.argv[1] == "all":
-	cur.execute("SELECT name from groups where active = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC")
+	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC")
 	datas = cur.fetchall()
 else:
-	cur.execute("SELECT name from groups where active = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
+	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
 	datas = cur.fetchall()
 
 class WorkerThread(threading.Thread):

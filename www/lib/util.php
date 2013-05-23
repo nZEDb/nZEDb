@@ -256,5 +256,34 @@ function cp437toUTF($str) {
 	}
 	return $out;	
 }
+
+// Function inpsired by c0r3@newznabforums for flags on the browse page.
+function release_flag ($x, $t)
+{
+	$y = "";
+	if(preg_match('/German(bed)?/i', $x))
+		$y = "de";
+	if(preg_match('/Danish/i', $x))
+		$y = "dk";
+	if(preg_match('/Spanish/i', $x))
+		$y = "es";
+	if(preg_match('/French|Vostfr/i', $x))
+		$y = "fr";
+	if(preg_match('/Italian| ita( |$)/i', $x))
+		$y = "it";
+	if(preg_match('/Flemish|Dutch| nl( |$)|NlSub/i', $x))
+		$y = "nl";
+	if(preg_match('/Swe(dish|sub)/i', $x))
+		$y = "se";
+	if ($y !== "" && $t == "browse")
+		return '<img src="./themes/Default/images/flags/'.$y.'.png" />';
+	else if ($t == "search")
+	{
+		if ($y == "")
+			return false;
+		else
+			return $y;
+	}
+}
 	
 ?>

@@ -40,8 +40,16 @@ else
 	if (isset($_GET['group_id']))
 	{
 		$id     = (int)$_GET['group_id'];
-		$status = isset($_GET['group_status']) ? (int)$_GET['group_status'] : 0;
-		print $group->updateGroupStatus($id, $status);
+		if(isset($_GET['group_status']))
+		{
+			$status = isset($_GET['group_status']) ? (int)$_GET['group_status'] : 0;
+			print $group->updateGroupStatus($id, $status);
+		}
+		if(isset($_GET['backfill_status']))
+		{
+			$status = isset($_GET['backfill_status']) ? (int)$_GET['backfill_status'] : 0;
+			print $group->updateBackfillStatus($id, $status);
+		}
 	}	
 }
 
