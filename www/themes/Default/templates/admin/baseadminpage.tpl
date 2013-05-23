@@ -9,7 +9,7 @@
 	<link href="{$smarty.const.WWW_TOP}/../themes/Default/styles/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_TOP}/../themes/Default/images/favicon.ico"/>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/jquery.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/jquery-1.9.1.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/sorttable.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/utils-admin.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/jquery.multifile.js"></script>
