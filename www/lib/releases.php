@@ -1380,8 +1380,8 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) as tmpTable)");
 
 		// Attempt to split bundled collections.
-		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
-		$this->splitBunchedCollections();
+		//$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
+		//$this->splitBunchedCollections();
 
 		// Set filecheck to 16 if theres a file that starts with 0.
 		$db->query("UPDATE collections c SET filecheck = 16 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 1 AND b.filenumber = 0".$where." GROUP BY c.ID) as tmpTable)");
@@ -1406,7 +1406,7 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck in (15, 16) GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck in (0, 1, 15, 16) ".$where);
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck in (0, 1, 10, 15, 16) ".$where);
 
 		echo $consoletools->convertTime(TIME() - $stage1);
 	}
