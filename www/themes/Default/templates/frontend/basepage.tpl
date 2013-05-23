@@ -14,8 +14,10 @@
 {/if}
 
 	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_TOP}/themes/Default/images/favicon.ico"/>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>
+    <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.qtip.js"></script>
+    <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/sorttable.js"></script>
 
 	<script type="text/javascript">
