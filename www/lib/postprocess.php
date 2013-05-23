@@ -305,7 +305,7 @@ class PostProcess
 						}
 					}
 					// Look for a JPG picture.
-					elseif (!preg_match('/flac|lossless|mp3|music|sound/i', $groupName) && $processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents['subject']))
+					elseif (!preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && $processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents['subject']))
 					{
 						if (isset($nzbcontents['segment']) && empty($jpgmsgid))
 						{
@@ -757,14 +757,14 @@ class PostProcess
 							{
 								$videofile = $rar->getFileData($file['name'], $file['source']);
 								if ($videofile !== false)
-									file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).".avi", $videofile);
+									@file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).".avi", $videofile);
 							}
 							// Extract an audio file from the compressed file.
 							elseif (preg_match('/'.$this->audiofileregex.'$/i', $file['name'], $ext))
 							{
 								$audiofile = $rar->getFileData($file['name'], $file['source']);
 								if ($audiofile !== false)
-									file_put_contents($tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $audiofile);
+									@file_put_contents($tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $audiofile);
 							}
 						}
 					}
