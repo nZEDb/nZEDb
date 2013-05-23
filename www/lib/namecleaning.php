@@ -43,7 +43,7 @@
 				if ($one == "" && $two == "")
 				{
 					$newname = preg_replace('/[a-z0-9]/i', '', $subject);
-					if (preg_match('/[\!@#\$%\^&\*\(\)\-={}\[\]\|\\:;\'<>\,\?\/_ ]{1,3}/', $newame, $matches3))
+					if (preg_match('/[\!@#\$%\^&\*\(\)\-={}\[\]\|\\:;\'<>\,\?\/_ ]{1,3}/', $newname, $matches3))
 						return $cleansubject.$matches3[0];
 				}
 				else
