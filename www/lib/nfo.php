@@ -13,7 +13,8 @@ class Nfo
 	{
 		$s = new Sites();
 		$site = $s->get();
-		$this-> nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
 	}
 	
@@ -64,7 +65,7 @@ class Nfo
 		$nfocount = 0;
 		while ((($nfocount) != $this->nzbs) && ($i >= -6))
 		{
-			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %d order by postdate desc limit %d,%d", $i, $maxsize, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %d order by postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
 			$nfocount = $db->getNumRows($res);
 			$i--;
 		}
