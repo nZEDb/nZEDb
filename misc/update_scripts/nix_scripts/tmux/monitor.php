@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1937";
+$version="0.1r1938";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -359,7 +359,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
 
-        if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
+	if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
