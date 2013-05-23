@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1935";
+$version="0.1r1936";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -14,9 +14,6 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
-
-$site = new Sites;
-$debug = $site->debuginfo;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -68,6 +65,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+        ( SELECT value from site where setting = 'debuginfo' ) AS debug,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -236,6 +234,7 @@ $console_releases_now = 0;
 $console_releases_proc = 0;
 $total_work_now = 0;
 $last_history = "";
+$debug = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -359,6 +358,8 @@ while( $i > 0 )
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
+
+        if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -493,7 +494,7 @@ while( $i > 0 )
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	if ($debug == "0")
+	if ($debug == "1")
 		$show_time = "/usr/bin/time";
 	else
 		$show_time = "";
