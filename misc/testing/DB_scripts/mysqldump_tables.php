@@ -33,7 +33,7 @@ if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "du
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --opt --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
@@ -64,7 +64,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		printf("Dumping $tbl.\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --opt --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
