@@ -95,10 +95,11 @@ Class NZBcontents
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 					if (strlen($fetchedBinary) > 10)
 					{
-					if ($this->echooutput)
-						echo "+";
-					return $fetchedBinary;
-					} else
+						if ($this->echooutput)
+							echo "+";
+						return $fetchedBinary;
+					}
+					else
 						return false;
 				}
 			}
@@ -146,7 +147,7 @@ Class NZBcontents
 			}
 			$ext = array_count_values($ext);
 			asort($ext);
-			if ( count($ext) > 0)
+			if (count($ext) > 0)
 				$avg = floor(array_sum($ext)/count($ext));
 			else
 				$avg = 1;
@@ -160,7 +161,7 @@ Class NZBcontents
 			$ext = array_keys($ext);
 			$ext = implode("|", $ext);
 			$notout = '/\.(\d{2,4}|apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf';
-			$notout = $notout .'|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip';
+			$notout = $notout.'|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip';
 
 			if (strlen($ext) > 0)
 				$notout = $notout."|".$ext;

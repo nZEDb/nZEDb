@@ -36,6 +36,7 @@ class Releases
 		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
+		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
 
 	public function get()
@@ -1379,8 +1380,8 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) as tmpTable)");
 
 		// Attempt to split bundled collections.
-		$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
-		$this->splitBunchedCollections();
+		//$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
+		//$this->splitBunchedCollections();
 
 		// Set filecheck to 16 if theres a file that starts with 0.
 		$db->query("UPDATE collections c SET filecheck = 16 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 1 AND b.filenumber = 0".$where." GROUP BY c.ID) as tmpTable)");
@@ -1405,7 +1406,7 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck in (15, 16) GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck in (0, 1, 15, 16) ".$where);
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck in (0, 1, 10, 15, 16) ".$where);
 
 		echo $consoletools->convertTime(TIME() - $stage1);
 	}
@@ -1914,13 +1915,22 @@ class Releases
 			{
 				echo "Extracting bunched up collections.\n";
 				$bunchedcnt = 0;
-				$cIDS = array();
+				$cIDS = $colnames = $binnames = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
-					$newSHA1 = sha1($namecleaner->collectionsCleaner($row["bname"], "split").$row["fromname"].$row["groupID"].$row["totalFiles"]);
+					$newcolname = $namecleaner->collectionsCleaner($row["bname"], "split");
+					$newSHA1 = sha1($newcolname.$row["fromname"].$row["groupID"].$row["totalFiles"]);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
+						if ($this->debug)
+						{
+							if (!in_array($newcolname, $binnames))
+							{
+								$colnames[] = $newcolname;
+								$binnames[] = $row["bname"];
+							}
+						}
 						$cIDS[] = $row["ID"];
 						$bunchedcnt++;
 						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
@@ -1934,6 +1944,12 @@ class Releases
 					}
 					//Update the binaries with the new info.
 					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row["bID"]));
+				}
+				if ($this->debug && count($colnames) > 1 && count($binnames) > 1)
+				{
+					$arr = array_combine($colnames, $binnames);
+					ksort($arr);
+					print_r($arr);
 				}
 				//Remove the old collections.
 				foreach (array_unique($cIDS) as $cID)
@@ -1995,6 +2011,8 @@ class Releases
 					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
 			}
+			else
+				$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 		}
 	}
 

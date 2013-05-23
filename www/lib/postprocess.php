@@ -33,6 +33,7 @@ class PostProcess
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -161,7 +162,7 @@ class PostProcess
 		$nntp = new Nntp;
 		$consoleTools = new ConsoleTools();
 		$rar = new RecursiveRarInfo();
-
+		$site = new Sites;
 		$threads--;
 		$update_files = true;
 
@@ -197,7 +198,7 @@ class PostProcess
 				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-				AND (r.haspreview = -1 and c.disablepreview = 0) order by r.postdate desc limit %d,%d", $i, floor(($this->addqty) * ($threads * 1.5)), $this->addqty);
+				AND (r.haspreview = -1 and c.disablepreview = 0) AND r.size < %d order by r.postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->addqty)*($threads * 1.5)), $this->addqty);
 				$result = $db->query($query);
 				if ($this->echooutput && count($result) > 0)
 					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
@@ -304,7 +305,7 @@ class PostProcess
 						}
 					}
 					// Look for a JPG picture.
-					elseif ($processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents['subject']) && !preg_match('/FLAC|MP3|WEB/i', $nzbcontents['subject']))
+					elseif (!preg_match('/flac|lossless|mp3|music|sound/i', $groupName) && $processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents['subject']))
 					{
 						if (isset($nzbcontents['segment']) && empty($jpgmsgid))
 						{
@@ -501,9 +502,7 @@ class PostProcess
 						if (is_dir($tmpPath))
 						{
 							$ri = new ReleaseImage;
-							if (@imagecreatefromjpeg($tmpPath."samplepicture.jpg") !== false)
-								$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
-							
+							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 							if ($blnTookJPG !== false)
 								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
 
@@ -857,7 +856,7 @@ class PostProcess
 							if (isset($track["Album"]) && isset($track["Performer"]) && isset($track["Recorded_date"]))
 							{
 								if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-								$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+									$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
 								else
 									$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 								$category = new Category();

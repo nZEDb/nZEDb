@@ -5,6 +5,7 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Nfo 
 {
@@ -12,7 +13,8 @@ class Nfo
 	{
 		$s = new Sites();
 		$site = $s->get();
-		$this-> nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
 	}
 	
@@ -55,13 +57,15 @@ class Nfo
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
+		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
+		$maxsize = $site->get()->maxsizetopostprocess * 1073741824;
 
 		$i = -1;
 		$nfocount = 0;
 		while ((($nfocount) != $this->nzbs) && ($i >= -6))
 		{
-			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 order by nfostatus desc, postdate desc limit %d,%d", $i, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %d order by postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
 			$nfocount = $db->getNumRows($res);
 			$i--;
 		}
