@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1936";
+$version="0.1r1937";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -65,7 +65,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
-        ( SELECT value from site where setting = 'debuginfo' ) AS debug,
+	( SELECT value from site where setting = 'debuginfo' ) AS debug,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
