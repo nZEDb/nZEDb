@@ -15,7 +15,7 @@ printf($mask, "==================================================", "===========
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
-    if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 order by first_record_postdate DESC %s", $limit)))
+    if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 and first_record_postdate is not NULL and last_updated is not NULL and last_updated is not NULL order by first_record_postdate DESC %s", $limit)))
     {
         foreach ($rels as $rel)
         {
@@ -26,7 +26,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 }
 else
 {
-	if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 order by first_record_postdate ASC %s", $limit)))
+	if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 and first_record_postdate is not NULL and last_updated is not NULL and last_updated is not NULL order by first_record_postdate ASC %s", $limit)))
 	{
 		foreach ($rels as $rel)
 		{
