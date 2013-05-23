@@ -23,7 +23,6 @@ if ( $hashcheck != '1' )
     exit(1);
 }
 
-
 if ( $patch < '46' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";

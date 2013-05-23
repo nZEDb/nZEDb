@@ -4,8 +4,9 @@ require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."/lib/postprocess.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
+require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1919";
+$version="0.1r1928";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -13,6 +14,9 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
+
+$site = new Sites;
+$debug = ($site->debuginfo == "0") ? false : true;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -491,8 +495,13 @@ while( $i > 0 )
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	$_php = "/usr/bin/time nice -n$niceness $PHP";
-	$_python = "/usr/bin/time nice -n$niceness python -OO";
+	if ($debug == "true")
+		$show_time = "/usr/bin/time";
+	else
+		$show_time = "";
+
+	$_php = $show_time." nice -n$niceness $PHP";
+	$_python = $show_time." nice -n$niceness python -OO";
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
 	if (( $i == 1 ) || ( $i % 3 == 0 ))
 		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false ";
