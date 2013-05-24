@@ -1279,6 +1279,8 @@ INSERT INTO tmux (setting, value) values ('OPTIMIZE','FALSE');
 INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400');
 INSERT INTO tmux (setting, value) values ('MONITOR_PATH', NULL);
 INSERT INTO tmux (setting, value) values ('WRITE_LOGS', 'FALSE');
+INSERT INTO tmux (setting, value) values ('SORTER', 'FALSE');
+INSERT INTO tmux (setting, value) values ('SORTER_TIMER', 30);
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

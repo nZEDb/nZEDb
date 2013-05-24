@@ -262,6 +262,27 @@
 </fieldset>
 
 <fieldset>
+	<legend>Misc Sorter</legend>
+		<table class="input">
+			<tr>
+				<td><label for="SORTER">Misc Sorter</label>:</td>
+				<td>
+					{html_radios id="SORTER" name='SORTER' values=$truefalse_names output=$truefalse_names selected=$ftmux->SORTER}
+					<div class="hint">Choose to run Misc Sorter true/false</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="SORTER_TIMER">Misc Sorter Sleep Timer</label>:</td>
+				<td>
+					<input id="SORTER_TIMER" name="SORTER_TIMER" class="text" type="text" value="{$ftmux->SORTER_TIMER}" />
+					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+		</table>
+</fieldset>
+
+<fieldset>
 	<legend>Update TV/Theater</legend>
 		<table class="input">
 			<tr>
