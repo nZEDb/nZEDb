@@ -743,7 +743,8 @@ class PostProcess
 							if (preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
-								if ($nfodata !== false)
+								$nzbcontents = new NZBcontents(true);
+								if ($nzbcontents->isNFO($nfodata))
 								{
 									$nfo = new Nfo($this->echooutput);
 									$nfo->addReleaseNfo($relid);
