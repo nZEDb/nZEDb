@@ -13,7 +13,7 @@ Class NZBcontents
 	{
 		$this->echooutput = $echooutput;
 	}
-	
+
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp)
 	{
 		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp))
@@ -28,6 +28,41 @@ Class NZBcontents
 		{
 			return false;
 		}
+	}
+
+	//
+	// Confirm that the .nfo file is not something else.
+	//
+	public function isNFO($possibleNFO)
+	{
+		$notin = '/(<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i';
+		$ok = false;
+		$maxsize = 45 * 1024;
+
+		if ($possibleNFO !== false)
+		{
+			if (!preg_match($notin, $possibleNFO))
+			{
+				$pNFOsize = strlen($possibleNFO);
+				if ($pNFOsize < $maxsize)
+				{
+					// exif_imagetype needs a minimum size or else it doesn't work.
+					if ($pNFOsize > 15)
+					{
+						// Check if it's a picture - EXIF.
+						if (@exif_imagetype($possibleNFO) == false)
+						{
+							// Check if it's a picture - JFIF.
+							if ($this->check_JFIF($possibleNFO) == false)
+							{
+								$ok = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $ok;
 	}
 
 	//
@@ -48,7 +83,7 @@ Class NZBcontents
 			$actualParts = 0;
 			$artificialParts = 0;
 			$messageid = "";
-			
+
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				// Get the completion while we are here...
@@ -56,7 +91,7 @@ Class NZBcontents
 				{
 					$actualParts++;
 				}
-				
+
 				$subject = $nzbcontents->attributes()->subject;
 				if(preg_match('/(?P<total>\d{1,4})\)$/', $subject, $parts))
 				{
@@ -65,7 +100,7 @@ Class NZBcontents
 
 				if ($foundnfo !== true)
 				{
-					if (preg_match('/\.\b(nfo|inf|ofn)\b/i', $subject))
+					if (preg_match('/\.\b(nfo|inf|ofn)\b(?![ \.\-])/i', $subject))
 					{
 						$messageid = $nzbcontents->segments->segment;
 						$foundnfo = true;
@@ -85,7 +120,7 @@ Class NZBcontents
 				$completion = 100;
 			}
 			$this->updateCompletion($completion, $relID);
-			
+
 			if ($foundnfo !== false)
 			{
 				if ($messageid !== "")
@@ -93,7 +128,7 @@ Class NZBcontents
 					$nfo->addReleaseNfo($relID);
 					$groupName = $groups->getByNameByID($groupID);
 					$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-					if (strlen($fetchedBinary) > 10)
+					if ($this->isNFO($fetchedBinary) == true)
 					{
 						if ($this->echooutput)
 							echo "+";
@@ -116,7 +151,6 @@ Class NZBcontents
 	//
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$notin = '/<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR/i';
 		$db = new DB();
 		$nfo = new NFO();
 		$nzb = new NZB();
@@ -129,7 +163,7 @@ Class NZBcontents
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
-			
+
 			//
 			// Ignore common file extensions from the post
 			//
@@ -154,7 +188,7 @@ Class NZBcontents
 
 			foreach($ext as $k => $v)
 			{
-				if ($v < $avg || $v == 1 || preg_match('/(nfo|inf|ofn)/i', $k))
+				if ($v < $avg || $v == 1 || preg_match('/\.(nfo|inf|ofn)/i', $k))
 					unset($ext[$k]);
 			}
 
@@ -178,32 +212,10 @@ Class NZBcontents
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
 						if ($possibleNFO !== false)
 						{
-							if (!preg_match($notin, $possibleNFO))
+							if ($this->isNFO($possibleNFO) == true)
 							{
-								$pNFOsize = strlen($possibleNFO);
-								if ($pNFOsize < 40000)
-								{
-									// exif_imagetype needs a minimum size or else it doesn't work.
-									if ($pNFOsize > 15)
-									{
-										// Check if it's a picture - EXIF.
-										if (@exif_imagetype($possibleNFO) == false)
-										{
-											// Check if it's a picture - JFIF.
-											if ($this->check_JFIF($possibleNFO) == false)
-											{
-												$fetchedBinary = $possibleNFO;
-												$foundnfo = true;
-											}
-										}
-									}
-									// It's smaller than 15 bytes so it's probably not a picture.
-									else
-									{
-										$fetchedBinary = $possibleNFO;
-										$foundnfo = true;
-									}
-								}
+								$fetchedBinary = $possibleNFO;
+								$foundnfo = true;
 							}
 						}
 						else
@@ -244,21 +256,21 @@ Class NZBcontents
 			return false;
 		}
 	}
-	
+
 	public function nzblist($guid='')
 	{
 		if (empty($guid))
 			return false;
-		
+
 		$nzb = new NZB();
 		$nzbpath = $nzb->getNZBPath($guid);
 		$nzb = array();
-		
+
 		if (file_exists($nzbpath))
 		{
 			$nzbpath = 'compress.zlib://'.$nzbpath;
 			$xmlObj = @simplexml_load_file($nzbpath);
-			
+
 			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb')
 			{
 				foreach($xmlObj->file as $file)
@@ -279,17 +291,17 @@ Class NZBcontents
 		else
 			return false;
 	}
-	
+
 	//
 	//	Check if the possible NFo is a JFIF.
 	//
 	function check_JFIF($filename)
 	{
 		$fp = @fopen($filename, 'r');
-		if ($fp) 
+		if ($fp)
 		{
 			// JFIF often (but not always) starts at offset 6.
-			if (fseek($fp, 6) == 0) 
+			if (fseek($fp, 6) == 0)
 			{
 				// JFIF header is 16 bytes.
 				if (($bytes = fread($fp, 16)) !== false)
@@ -307,7 +319,7 @@ Class NZBcontents
 			}
 		}
 	}
-	
+
 	//
 	//	Update the releases completion.
 	//
