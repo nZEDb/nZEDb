@@ -59,7 +59,12 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
+				if sys.argv[1] == "amazon":
+					subprocess.call(["php", pathname+"/postprocess_amazon.php", ""+dirname])
+				elif sys.argv[1] == "non_amazon":
+					subprocess.call(["php", pathname+"/postprocess_non_amazon.php", ""+dirname])
+				elif sys.argv[1] == "all":
+					subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
 			except Queue.Empty:
 				continue
 
