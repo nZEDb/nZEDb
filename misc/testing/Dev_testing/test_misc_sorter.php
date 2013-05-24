@@ -7,7 +7,6 @@ $sorter = new MiscSorter(true);
 $cat = 7000;
 $id = 0;
 
-
 if (isset($argv[1]))
 	$cat = $argv[1];
 

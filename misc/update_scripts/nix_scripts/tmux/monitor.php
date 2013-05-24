@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1947";
+$version="0.1r1950";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -29,6 +29,8 @@ $proc = "SELECT
 	( SELECT COUNT( groupID ) AS cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
 	( SELECT COUNT( groupID ) AS cnt from releases where nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( ID ) AS cnt FROM groups WHERE active = 1 ) AS active_groups,
+	( SELECT COUNT( ID ) AS cnt FROM groups WHERE backfill = 1 ) AS backfill_groups,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
 	( SELECT COUNT( ID ) from collections ) collections_table,
@@ -47,6 +49,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'NZBS' ) AS nzbs,
 	( SELECT value from tmux where setting = 'FIX_NAMES' ) AS fix_names,
 	( SELECT value from tmux where setting = 'FIX_CRAP' ) AS fix_crap,
+	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
 	( SELECT value from tmux where setting = 'POST' ) AS post,
 	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'RELEASES' ) AS releases_run,
@@ -59,6 +62,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'REL_TIMER' ) AS rel_timer,
 	( SELECT value from tmux where setting = 'FIX_TIMER' ) AS fix_timer,
 	( SELECT value from tmux where setting = 'CRAP_TIMER' ) AS crap_timer,
+	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
 	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
 	( SELECT value from tmux where setting = 'POST_TIMER' ) AS post_timer,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
@@ -100,6 +104,7 @@ function writelog( $pane )
 		return "";
 	}
 }
+
 function get_color()
 {
 	$from = 1;
@@ -160,6 +165,7 @@ $time5 = TIME();
 $time6 = TIME();
 $time7 = TIME();
 $time8 = TIME();
+$time9 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -236,6 +242,8 @@ $console_releases_proc = 0;
 $total_work_now = 0;
 $last_history = "";
 $debug = 0;
+$active_groups = 0;
+$backfill_groups = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -267,6 +275,12 @@ printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_d
 printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
 printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
 printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
+
+printf("\n\033[1;33m\n");
+printf($mask, "Groups", "Active", "Backfill");
+printf($mask, "====================", "====================", "====================");
+printf("\033[38;5;214m");
+printf($mask, "Activated", $active_groups, $backfill_groups);
 
 $monitor = 30;
 $i = 1;
@@ -331,6 +345,8 @@ while( $i > 0 )
 	if ( @$proc_result[0]['releases'] != NULL ) { $releases_loop = $proc_result[0]['releases']; }
 	if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_result[0]['nforemains']; }
 	if ( @$proc_result[0]['nfo'] != NULL ) { $nfo_now = $proc_result[0]['nfo']; }
+	if ( @$proc_result[0]['active_groups'] != NULL ) { $active_groups = $proc_result[0]['active_groups']; }
+	if ( @$proc_result[0]['backfill_groups'] != NULL ) { $backfill_groups = $proc_result[0]['backfill_groups']; }
 	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = $proc_result[0]['parts']; }
 	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
 	if ( @$proc_result[0]['collections_table'] != NULL ) { $collections_table = $proc_result[0]['collections_table']; }
@@ -352,6 +368,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
 	if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
 	if ( @$proc_result[0]['fix_crap'] != NULL ) { $fix_crap = $proc_result[0]['fix_crap']; }
+	if ( @$proc_result[0]['sorter'] != NULL ) { $sorter = $proc_result[0]['sorter']; }
 	if ( @$proc_result[0]['update_tv'] != NULL ) { $update_tv = $proc_result[0]['update_tv']; }
 	if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
 	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
@@ -369,6 +386,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['rel_timer'] != NULL ) { $rel_timer = $proc_result[0]['rel_timer']; }
 	if ( @$proc_result[0]['fix_timer'] != NULL ) { $fix_timer = $proc_result[0]['fix_timer']; }
 	if ( @$proc_result[0]['crap_timer'] != NULL ) { $crap_timer = $proc_result[0]['crap_timer']; }
+	if ( @$proc_result[0]['sorter_timer'] != NULL ) { $sorter_timer = $proc_result[0]['sorter_timer']; }
 	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
 	if ( @$proc_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_result[0]['post_kill_timer']; }
 	if ( @$proc_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_result[0]['tv_timer']; }
@@ -471,6 +489,12 @@ while( $i > 0 )
 	printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
 	printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
 
+	printf("\n\033[1;33m\n");
+	printf($mask, "Groups", "Active", "Backfill");
+	printf($mask, "====================", "====================", "====================");
+	printf("\033[38;5;214m");
+	printf($mask, "Activated", $active_groups, $backfill_groups);
+
 	//defrag the query cache every 15 minutes
 	if ( TIME() - $time1 >= $defrag )
 	{
@@ -488,8 +512,10 @@ while( $i > 0 )
 	//get list of panes by name
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
+	$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
+    $panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 
 	if (command_exist("php5"))
 		$PHP = "php5";
@@ -555,19 +581,33 @@ while( $i > 0 )
 		}
 
 		//remove crap releases
+		if ( $sorter == "TRUE" )
+		{
+			$color = get_color();
+			$log = writelog($panes1[2]);
+			shell_exec("tmux respawnp -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\" && \
+					$_php $DIR/misc/testing/Dev_testing/test_misc_sorter.php $log && date +\"%D %T\" && sleep $sorter_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Misc Sorter\"'");
+		}
+
+		//remove crap releases
 		if (( $fix_crap == "TRUE" ) && ( $i == 1 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					$_phpn $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					$_php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_crap == "TRUE" )
 		{
 			$color = get_color();
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					$_phpn $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					$_php $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -577,8 +617,8 @@ while( $i > 0 )
 
 		if ( $post == "TRUE" )
 		{
-			//run postprocess_releases
-			$history = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:1 | grep 2: | awk '{print $4;}'` );
+			//run postprocess_releases non amzon
+			$history = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
 			if ( $last_history != $history )
 			{
 				$last_history = $history;
@@ -588,24 +628,56 @@ while( $i > 0 )
 			{
 				if ( TIME() - $time3 >= $post_kill_timer )
 				{
-					shell_exec("tmux respawnp -k -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been terminated by Possible Hung thread\"'");
-					$wipe = `tmux clearhist -t ${tmux_session}:1.2`;
+					shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
+					$wipe = `tmux clearhist -t ${tmux_session}:2.0`;
 					$color = get_color();
 					$time3 = TIME();
 				}
 			}
-			$dead1 = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:1 | grep dead | grep 2: | wc -l` );
+			$dead1 = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep dead | grep 0: | wc -l` );
 			if ( $dead1 == 1 )
 				$time3 = TIME();
-			$log = writelog($panes1[2]);
-			shell_exec("tmux respawnp -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\" && \
-					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_threaded.py $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+			$log = writelog($panes2[0]);
+			shell_exec("tmux respawnp -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
+					$_python $DIR/misc/update_scripts/threaded_scripts/postprocess_threaded.py non_amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
 			$color = get_color();
-			shell_exec("tmux respawnp -k -t ${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Postprocess All\"'");
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess All\"'");
 		}
+
+        if ( $post == "TRUE" )
+        {
+            //run postprocess_releases amazon
+            $history = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep 1: | awk '{print $4;}'` );
+            if ( $last_history != $history )
+            {
+                $last_history = $history;
+                $time9 = TIME();
+            }
+            else
+            {
+                if ( TIME() - $time9 >= $post_kill_timer )
+                {
+                    shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been terminated by Possible Hung thread\"'");
+                    $wipe = `tmux clearhist -t ${tmux_session}:2.1`;
+                    $color = get_color();
+                    $time9 = TIME();
+                }
+            }
+            $dead1 = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep dead | grep 1: | wc -l` );
+            if ( $dead1 == 1 )
+                $time9 = TIME();
+            $log = writelog($panes2[1]);
+            shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
+                    $_python $DIR/misc/update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+        }
+        else
+        {
+            $color = get_color();
+            shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess All\"'");
+        }
 
 		//update tv and theaters
 		if (( $update_tv == "TRUE" ) && (( TIME() - $time4 >= $tv_timer ) || ( $i == 1 )))
@@ -791,6 +863,11 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
 		}
+		for ($g=0; $g<=1; $g++)
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
+		}
 	}
 	else
 	{
@@ -803,6 +880,11 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t ${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
+		}
+		for ($g=0; $g<=1; $g++)
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
 
