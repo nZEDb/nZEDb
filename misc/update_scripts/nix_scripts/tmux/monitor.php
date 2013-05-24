@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/tmux.php");
 require_once(WWW_DIR."/lib/site.php");
 
-$version="0.1r1930";
+$version="0.1r1947";
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
@@ -14,9 +14,6 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
-
-$site = new Sites;
-$debug = ($site->debuginfo == "0") ? false : true;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -68,6 +65,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from site where setting = 'debuginfo' ) AS debug,
 	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
 
 //flush query cache
@@ -161,6 +159,7 @@ $time4 = TIME();
 $time5 = TIME();
 $time6 = TIME();
 $time7 = TIME();
+$time8 = TIME();
 
 //initial values
 $newestname = "Unknown";
@@ -236,6 +235,7 @@ $console_releases_now = 0;
 $console_releases_proc = 0;
 $total_work_now = 0;
 $last_history = "";
+$debug = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -359,6 +359,8 @@ while( $i > 0 )
 	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
+
+	if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
 
 	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
 	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
@@ -493,13 +495,16 @@ while( $i > 0 )
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	if ($debug == "true")
+	if ($debug == "1")
 		$show_time = "/usr/bin/time";
 	else
 		$show_time = "";
 
 	$_php = $show_time." nice -n$niceness $PHP";
+	$_phpn = "nice -n$niceness $PHP";
 	$_python = $show_time." nice -n$niceness python -OO";
+	$_pythonn = "nice -n$niceness python -OO";
+
 	//$run_releases = "$_python $DIR/misc/update_scripts/threaded_scripts/releases_threaded.py";
 	if (( $i == 1 ) || ( $i % 3 == 0 ))
 		$run_releases = "$_php $DIR/misc/update_scripts/update_releases.php 6 false && $_php $DIR/misc/update_scripts/update_releases.php 1 false ";
@@ -518,22 +523,31 @@ while( $i > 0 )
 	if ( $running == "TRUE" )
 	{
 		//fix names
-		if (( $fix_names == "TRUE" ) && ( $i == 1 ))
+		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 3600 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes $log && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 4 true other yes $log && \
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 6 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
-		elseif ( $fix_names == "TRUE" )
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 < 3600 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes $log && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true other yes $log && \
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 >= 3600 ))
+ 		{
+ 			$color = get_color();
+			$log = writelog($panes1[0]);
+			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 3 true all yes $log && \
+					$_phpn $DIR/misc/testing/Release_scripts/fixReleaseNames.php 5 true all no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+			$time8 = TIME();
+			}
 		else
 		{
 			$color = get_color();
@@ -546,14 +560,14 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					$_phpn $DIR/misc/testing/Release_scripts/removeCrapReleases.php true full $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_crap == "TRUE" )
 		{
 			$color = get_color();
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.1 'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
+					$_phpn $DIR/misc/testing/Release_scripts/removeCrapReleases.php true 2 $log && date +\"%D %T\" && sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -599,7 +613,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.'echo \"\033[38;5;${color}m\" && \
-					nice -n$niceness $PHP $DIR/misc/update_scripts/update_theaters.php $log && nice -n$niceness $PHP $DIR/misc/update_scripts/update_tvschedule.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
+					$_phpn $DIR/misc/update_scripts/update_theaters.php $log && $_phpn $DIR/misc/update_scripts/update_tvschedule.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
 			$time4 = TIME();
 		}
 		elseif ( $update_tv == "TRUE" )
