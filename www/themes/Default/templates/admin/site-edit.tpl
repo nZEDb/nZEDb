@@ -388,7 +388,7 @@
 <tr>
 	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess</label>:</td>
 	<td>
-		<input class="small" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<input class="tiny" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
 		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
@@ -418,10 +418,18 @@
 </tr>
 
 <tr>
-	<td><label for="lookupnfo">Process JPG</label>:</td>
+	<td><label for="processjpg">Process JPG</label>:</td>
 	<td>
 		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
 		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processvideos">Process Videos</label>:</td>
+	<td>
+		{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$fsite->processvideos separator='<br />'}
+		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average. You must have ffmpeg for this.<br/></div>
 	</td>
 </tr>
 
@@ -602,35 +610,35 @@
 </tr>
 
 <tr>
-    <td><label for="postthreads">Postprocessing Threads</label>:</td>
-    <td>
-        <input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-        <div class="hint">The number of threads for postprocessing.</div>
-    </td>
+	<td><label for="postthreads">Postprocessing Threads</label>:</td>
+	<td>
+		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+		<div class="hint">The number of threads for postprocessing.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="binarythreads">Update Binaries Threads</label>:</td>
-    <td>
-        <input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-        <div class="hint">The number of threads for update_binaries.</div>
-    </td>
+	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
+	<td>
+		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<div class="hint">The number of threads for update_binaries.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="backfillthreads">Backfill Threads</label>:</td>
-    <td>
-        <input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-        <div class="hint">The number of threads for backfill.</div>
-    </td>
+	<td><label for="backfillthreads">Backfill Threads</label>:</td>
+	<td>
+		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<div class="hint">The number of threads for backfill.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="nzbthreads">Import-nzb Threads</label>:</td>
-    <td>
-        <input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-        <div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
-    </td>
+	<td><label for="nzbthreads">Import-nzb Threads</label>:</td>
+	<td>
+		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
+	</td>
 </tr>
 
 <tr>
@@ -668,7 +676,7 @@
 <tr>
 	<td><label for="maxmssgs">Max Messages</label>:</td>
 	<td>
-		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
+		<input class="tiny" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
 		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
 	</td>
 </tr>
@@ -676,7 +684,7 @@
 <tr>
 	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
 	<td>
-		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
+		<input class="tiny" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
 		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
 	</td>
 </tr>
@@ -684,7 +692,7 @@
 <tr>
 	<td><label for="maxpartrepair">Maximum repair per run</label>:</td>
 	<td>
-		<input class="small" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
+		<input class="tiny" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
 		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
 	</td>
 </tr>

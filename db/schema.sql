@@ -76,6 +76,7 @@ CREATE TABLE `releases`
 `nfostatus` TINYINT NOT NULL DEFAULT 0,
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
 `jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
+`videostatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -978,7 +979,8 @@ INSERT INTO `site`
 	('processjpg', 0),
 	('hashcheck', 1),
 	('debuginfo', 0),
-	('sqlpatch', '49');
+	('processvideos', 0),
+	('sqlpatch', '50');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

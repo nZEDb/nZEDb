@@ -526,7 +526,7 @@ class Movie
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." movie release(s).\n";
+				echo "Processing ".$db->getNumRows($res)." movie release(s) beginning at ".floor(($this->movieqty) * ($threads * 1.5))."\n";
 		
 			while ($arr = $db->fetchAssoc($res)) 
 			{

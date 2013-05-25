@@ -20,7 +20,7 @@
 			<tr>
 				<td style="width:160px;"><label for="MONITOR_DELAY">Monitor Loop Timer</label>:</td>
 				<td>
-					<input id="MONITOR_DELAY" name="MONITOR_DELAY" class="text" type="text" value="{$ftmux->MONITOR_DELAY}" />
+					<input id="MONITOR_DELAY" name="MONITOR_DELAY" class="tiny" type="text" value="{$ftmux->MONITOR_DELAY}" />
 					<div class="hint">The time between query refreshes of monitor information, in seconds. The lower the number, the more often it queries the database for numbers.</div>
 				</td>
 			</tr>
@@ -58,7 +58,7 @@
 			<tr>
 				<td style="width:160px;"><label for="SEQ_TIMER">Sequential Sleep Timer</label>:</td>
 				<td>
-					<input id="SEQ_TIMER" name="SEQ_TIMER" class="text" type="text" value="{$ftmux->SEQ_TIMER}" />
+					<input id="SEQ_TIMER" name="SEQ_TIMER" class="tiny" type="text" value="{$ftmux->SEQ_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -79,7 +79,7 @@
 			<tr>
 				<td style="width:160px;"><label for="BINS_TIMER">Update Binaries Sleep Timer</label>:</td>
 				<td>
-					<input id="BINS_TIMER" name="BINS_TIMER" class="text" type="text" value="{$ftmux->BINS_TIMER}" />
+					<input id="BINS_TIMER" name="BINS_TIMER" class="tiny" type="text" value="{$ftmux->BINS_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -108,7 +108,7 @@
 			<tr>
 				<td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
 				<td>
-					<input id="BACKFILL_QTY" name="BACKFILL_QTY" class="text" type="text" value="{$ftmux->BACKFILL_QTY}" />
+					<input id="BACKFILL_QTY" name="BACKFILL_QTY" class="tiny" type="text" value="{$ftmux->BACKFILL_QTY}" />
 					<div class="hint">When not running backfill intervals, you select the number of headers per group per thread to download.</div>
 				</td>
 			</tr>
@@ -116,7 +116,7 @@
 			<tr>
 				<td style="width:160px;"><label for="BACKFILL_GROUPS">Backfill Groups</label>:</td>
 				<td>
-					<input id="BACKFILL_GROUPS" name="BACKFILL_GROUPS" class="text" type="text" value="{$ftmux->BACKFILL_GROUPS}" />
+					<input id="BACKFILL_GROUPS" name="BACKFILL_GROUPS" class="tiny" type="text" value="{$ftmux->BACKFILL_GROUPS}" />
 					<div class="hint">When running backfill the groups are sorted so that the newest groups are backfilled first. Select the number of groups to backfill per loop.</div>
 				</td>
 			</tr>
@@ -124,7 +124,7 @@
 			<tr>
 				<td style="width:160px;"><label for="BACK_TIMER">Backfill Sleep Timer</label>:</td>
 				<td>
-					<input id="BACK_TIMER" name="BACK_TIMER" class="text" type="text" value="{$ftmux->BACK_TIMER}" />
+					<input id="BACK_TIMER" name="BACK_TIMER" class="tiny" type="text" value="{$ftmux->BACK_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -162,7 +162,7 @@
 			<tr>
 				<td style="width:160px;"><label for="IMPORT_TIMER">Import NZBS Sleep Timer</label>:</td>
 				<td>
-					<input id="IMPORT_TIMER" name="IMPORT_TIMER" class="text" type="text" value="{$ftmux->IMPORT_TIMER}" />
+					<input id="IMPORT_TIMER" name="IMPORT_TIMER" class="tiny" type="text" value="{$ftmux->IMPORT_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -183,7 +183,7 @@
 			<tr>
 				<td style="width:160px;"><label for="REL_TIMER">Update Releases Sleep Timer</label>:</td>
 				<td>
-					<input id="REL_TIMER" name="REL_TIMER" class="text" type="text" value="{$ftmux->REL_TIMER}" />
+					<input id="REL_TIMER" name="REL_TIMER" class="tiny" type="text" value="{$ftmux->REL_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -204,7 +204,7 @@
 			<tr>
 				<td style="width:160px;"><label for="POST_TIMER">Postprocess Sleep Timer</label>:</td>
 				<td>
-					<input id="POST_TIMER" name="POST_TIMER" class="text" type="text" value="{$ftmux->POST_TIMER}" />
+					<input id="POST_TIMER" name="POST_TIMER" class="tiny" type="text" value="{$ftmux->POST_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -212,7 +212,7 @@
 			<tr>
 				<td style="width:160px;"><label for="POST_KILL_TIMER">Postprocess Kill Timer</label>:</td>
 				<td>
-					<input id="POST_KILL_TIMER" name="POST_KILL_TIMER" class="text" type="text" value="{$ftmux->POST_KILL_TIMER}" />
+					<input id="POST_KILL_TIMER" name="POST_KILL_TIMER" class="tiny" type="text" value="{$ftmux->POST_KILL_TIMER}" />
 					<div class="hint">The time postprocess is allowed to run with no updates to the screen. Activity is detected when the history for the pane changes. The clock is restarted everytime activity is detected.</div>
 				</td>
 			</tr>
@@ -233,7 +233,7 @@
 			<tr>
 				<td style="width:160px;"><label for="FIX_TIMER">Fix Release Names Sleep Timer</label>:</td>
 				<td>
-					<input id="FIX_TIMER" name="FIX_TIMER" class="text" type="text" value="{$ftmux->FIX_TIMER}" />
+					<input id="FIX_TIMER" name="FIX_TIMER" class="tiny" type="text" value="{$ftmux->FIX_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -254,7 +254,7 @@
 			<tr>
 				<td style="width:160px;"><label for="CRAP_TIMER">Remove Crap Releases Sleep Timer</label>:</td>
 				<td>
-					<input id="CRAP_TIMER" name="CRAP_TIMER" class="text" type="text" value="{$ftmux->CRAP_TIMER}" />
+					<input id="CRAP_TIMER" name="CRAP_TIMER" class="tiny" type="text" value="{$ftmux->CRAP_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -275,7 +275,7 @@
 			<tr>
 				<td style="width:160px;"><label for="SORTER_TIMER">Misc Sorter Sleep Timer</label>:</td>
 				<td>
-					<input id="SORTER_TIMER" name="SORTER_TIMER" class="text" type="text" value="{$ftmux->SORTER_TIMER}" />
+					<input id="SORTER_TIMER" name="SORTER_TIMER" class="tiny" type="text" value="{$ftmux->SORTER_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
@@ -296,7 +296,7 @@
 			<tr>
 				<td style="width:160px;"><label for="TV_TIMER">Update TV and Theater Start Timer</label>:</td>
 				<td>
-					<input id="TV_TIMER" name="TV_TIMER" class="text" type="text" value="{$ftmux->TV_TIMER}" />
+					<input id="TV_TIMER" name="TV_TIMER" class="tiny" type="text" value="{$ftmux->TV_TIMER}" />
 					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
 				</td>
 			</tr>
@@ -309,7 +309,7 @@
 			<tr>
 				<td style="width:160px;"><label for="NICENESS">Niceness</label>:</td>
 				<td>
-					<input id="NICENESS" name="NICENESS" type="text" value="{$ftmux->NICENESS}" />
+					<input id="NICENESS" name="NICENESS" class="tiny" type="text" value="{$ftmux->NICENESS}" />
 					<div class="hint">This sets the 'nice'ness of each script, default is 19, the lowest, the highest is -20 anything between -1 and -20 require root/sudo to run</div>
 				</td>
 			</tr>
@@ -317,7 +317,7 @@
 			<tr>
 				<td style="width:160px;"><label for="DEFRAG_CACHE">Defrag Query Cache</label>:</td>
 				<td>
-					<input id="DEFRAG_CACHE" name="DEFRAG_CACHE" class="text" type="text" value="{$ftmux->DEFRAG_CACHE}" />
+					<input id="DEFRAG_CACHE" name="DEFRAG_CACHE" class="tiny" type="text" value="{$ftmux->DEFRAG_CACHE}" />
 					<div class="hint">The mysql query cache gets frogmented over time. Enter the time, in seconds, to defrag the query cache. <br/ >cmd: FLUSH QUERY CACHE;</div>
 				</td>
 			</tr>
@@ -325,7 +325,7 @@
 			<tr>
 				<td style="width:160px;"><label for="COLLECTIONS_KILL">Maximum Collections</label>:</td>
 				<td>
-					<input id="COLLECTIONS_KILL" name="COLLECTIONS_KILL" class="text" type="text" value="{$ftmux->COLLECTIONS_KILL}" />
+					<input id="COLLECTIONS_KILL" name="COLLECTIONS_KILL" class="tiny" type="text" value="{$ftmux->COLLECTIONS_KILL}" />
 					<div class="hint">Set this to any number above 0 and when it is exceeded, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
 			</tr>
@@ -333,7 +333,7 @@
 			<tr>
 				<td style="width:160px;"><label for="POSTPROCESS_KILL">Maximum Postprocess</label>:</td>
 				<td>
-					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="text" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
+					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="tiny" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
 					<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
 
