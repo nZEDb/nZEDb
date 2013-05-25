@@ -1377,33 +1377,34 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->query("UPDATE collections SET filecheck = 1 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) as tmpTable)");
+		$db->query("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID) in (c.totalFiles, c.totalFiles + 1)) AND c.totalFiles > 0 AND c.filecheck = 0 ". $where);
 
 		// Attempt to split bundled collections.
 		//$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
 		//$this->splitBunchedCollections();
 
 		// Set filecheck to 16 if theres a file that starts with 0.
-		$db->query("UPDATE collections c SET filecheck = 16 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.filecheck = 1 AND b.filenumber = 0".$where." GROUP BY c.ID) as tmpTable)");
+		$db->query("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0".$where." GROUP BY b.collectionID) AND c.totalFiles > 0 AND c.filecheck = 1");
+
 		// Set filecheck to 15 on everything left over.
 		$db->query("UPDATE collections set filecheck = 15 where filecheck = 1");
-		
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
 		{
 			// If filecheck 15, check if we have all the files then set part check.
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts)");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts) AND b.partcheck = 0");
+
 			// If filecheck 16, check if we have all the files+1(because of the 0) then set part check.
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1)");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1) AND b.partcheck = 0");
 		}
 		else
 		{
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 15 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts )");
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND b.partcheck = 0 AND c.filecheck = 16 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 )");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts ) AND b.partcheck = 0");
+			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID and c.groupID = ". $groupID . " GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 ) AND b.partcheck = 0");
 		}
-
+		
 		// Set file check to 2 if we have all the parts.
-		$db->query("UPDATE collections SET filecheck = 2 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON c.ID = b.collectionID WHERE b.partcheck = 1 AND c.filecheck in (15, 16) GROUP BY c.ID, c.totalFiles HAVING count(b.ID) >= c.totalFiles) as tmp)");
+		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) " . $where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck in (0, 1, 10, 15, 16) ".$where);
@@ -1680,6 +1681,12 @@ class Releases
 		$db = new DB;
 		$nzb = new Nzb;
 		$page = new Page;
+		$cat = new Category();
+		$s = new Sites();
+		$version = $s->version();
+		$site = $s->get();
+		$nzbsplitlevel = $site->nzbsplitlevel;
+		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$nzbcount = 0;
@@ -1693,7 +1700,7 @@ class Releases
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $page->site->nzbpath, true, $page->site->nzbsplitlevel)));
+				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat))
 				{
 					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
