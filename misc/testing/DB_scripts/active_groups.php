@@ -16,14 +16,15 @@ printf($mask, "==================================================", "===========
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
-    if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 and first_record_postdate is not NULL and last_updated is not NULL and last_updated is not NULL order by first_record_postdate DESC %s", $limit)))
-    {
-        foreach ($rels as $rel)
-        {
-            printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
-        }
-    }
-    printf("\033[0m");
+	if ($rels = $db->query(sprintf("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups where active = 1 and first_record_postdate is not NULL and last_updated is not NULL and last_updated is not NULL order by first_record_postdate DESC %s", $limit)))
+	{
+		foreach ($rels as $rel)
+		{
+			$headers = number_format($rel['headers downloaded']);
+			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
+		}
+	}
+	printf("\033[0m");
 }
 else
 {
@@ -31,7 +32,8 @@ else
 	{
 		foreach ($rels as $rel)
 		{
-			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $rel['headers downloaded']);
+			$headers = number_format($rel['headers downloaded']);
+			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
 		}
 	}
 	printf("\033[0m");
