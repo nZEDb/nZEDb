@@ -12,5 +12,5 @@ php.exe backfill.php "%userinp%"
 
 :ALL
 CD..
-php.exe backfill.php
+php.exe backfill.php all
 

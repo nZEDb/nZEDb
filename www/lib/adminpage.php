@@ -5,11 +5,16 @@ require_once(WWW_DIR."/lib/framework/basepage.php");
 require_once(WWW_DIR."/lib/users.php");
 
 class AdminPage extends BasePage
-{    
+{	
 	function AdminPage($allowmod = false)
 	{	
-		$this->template_dir = 'admin';
 		parent::BasePage();
+
+		$this->smarty->setTemplateDir(array(
+		    'user_admin' => WWW_DIR.'themes/'.$this->site->style.'/templates/admin',
+		    'admin' => WWW_DIR.'themes/Default/templates/admin',
+		    'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+		));
 		
 		$users = new Users();
 		if (!$users->isLoggedIn() || !isset($this->userdata["role"]))

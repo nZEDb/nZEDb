@@ -17,7 +17,7 @@ $page->smarty->assign('pagertotalitems',$releasecount);
 $page->smarty->assign('pageroffset',$offset);
 $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/release-list.php?offset=");
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $releaselist = $releases->getRange($offset, ITEMS_PER_PAGE);

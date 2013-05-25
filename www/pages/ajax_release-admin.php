@@ -36,7 +36,7 @@ switch($action)
 		
 	break;
 	case 'dodelete':
-		$releases->delete($_REQUEST["id"], true);
+		$releases->deleteSite($_REQUEST["id"]);
 	break;
 	default:
 		$page->show404();

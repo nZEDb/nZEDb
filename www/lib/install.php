@@ -2,6 +2,7 @@
 class Install {
 	public $DB_TYPE;
 	public $DB_HOST = "localhost";
+	public $DB_PORT = "3306";
 	public $DB_USER;
 	public $DB_PASSWORD;
 	public $DB_NAME = "nzedb";
@@ -104,6 +105,7 @@ class Install {
 	{
 		$tmpCfg = file_get_contents($this->INSTALL_DIR.'/config.php.tpl');
 		$tmpCfg = str_replace('%%DB_HOST%%', $this->DB_HOST, $tmpCfg);
+		$tmpCfg = str_replace('%%DB_PORT%%', $this->DB_PORT, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_USER%%', $this->DB_USER, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PASSWORD%%', $this->DB_PASSWORD, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_NAME%%', $this->DB_NAME, $tmpCfg);

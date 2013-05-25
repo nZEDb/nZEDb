@@ -4,6 +4,10 @@ From a command line:
 
 0. Misc :
 
+	For those using an older version of ubuntu, php 5.4 is required.
+	
+	Ubuntu 12.04 requires backports a user reported.
+	
 	Apparmor interferes with some of our files, here is how to disable it:
 
 	sudo /etc/init.d/apparmor stop
@@ -62,7 +66,7 @@ From a command line:
 	Create the site config:
 	sudo nano /etc/apache2/sites-available/nZEDb
 
-	Pate the following:
+	Paste the following:
 
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
@@ -81,7 +85,7 @@ From a command line:
 	sudo a2enmod rewrite
 	sudo service apache2 restart
 
-	*****If you get the following error:***********	
+	*****If you get the following error:**********
 	(Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName)
 	
 	sudo sh -c 'echo "ServerName localhost" >> /etc/apache2/conf.d/name' && sudo service apache2 restart
@@ -89,6 +93,7 @@ From a command line:
 
 5. Install unrar / ffmpeg / mediainfo / lame.
 
+	sudo apt-get install software-properties-common
 	sudo apt-get install unrar python-software-properties lame
 	sudo add-apt-repository ppa:jon-severinsson/ffmpeg
 	sudo add-apt-repository ppa:shiki/mediainfo
@@ -101,23 +106,11 @@ From a command line:
 	cd /var/www/
 	sudo chmod 777 .
 
-	sudo apt-get install ssh
-
-	Generate a key for git:
-
-	ssh-keygen -t rsa -C "ENTER.YOUR@EMAIL.HERE.com"
-
-	Get the key:
-
-	cat ~/.ssh/id_rsa.pub
-
-	Copy paste that into the git site.
-
-	Now you can clone the git:
-
-	git clone (git repo goes here)
+	git clone https://github.com/nZEDb/nZEDb.git
 
 	sudo chmod 777 nZEDb
+	cd nZEDb
+	sudo chmod -R 755 .
 	sudo chmod 777 /var/www/nZEDb/www/lib/smarty/templates_c
 	sudo chmod -R 777 /var/www/nZEDb/www/covers
 	sudo chmod 777 /var/www/nZEDb/www

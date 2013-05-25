@@ -17,15 +17,17 @@ $cfg = $cfg->getSession();
 if  ($page->isPostBack()) {
 	$cfg->doCheck = true;
 	$cfg->DB_HOST = trim($_POST['host']);
+    $cfg->DB_PORT = trim($_POST['sql_port']);
 	$cfg->DB_USER = trim($_POST['user']);
 	$cfg->DB_PASSWORD = trim($_POST['pass']);
 	$cfg->DB_NAME = trim($_POST['db']);
 	
-	$cfg->dbConnCheck = @mysql_connect($cfg->DB_HOST, $cfg->DB_USER, $cfg->DB_PASSWORD);
+	$cfg->dbConnCheck = @mysql_connect($cfg->DB_HOST, $cfg->DB_USER, $cfg->DB_PASSWORD, $cfg->DB_PORT);
 	if ($cfg->dbConnCheck === false) {
 		$cfg->error = true;
 	}
 	$cfg->dbNameCheck = mysql_select_db($cfg->DB_NAME);
+
 	if ($cfg->dbNameCheck === false) 
 	{
 		$result = @mysql_query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");	
@@ -35,7 +37,16 @@ if  ($page->isPostBack()) {
 			$cfg->error = true;
 		}
 	}
-	
+	else
+	{
+		$result = @mysql_query("DROP DATABASE ".$cfg->DB_NAME);
+        $result = @mysql_query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+        $cfg->dbNameCheck = mysql_select_db($cfg->DB_NAME);
+        if ($cfg->dbNameCheck === false)
+        {
+            $cfg->error = true;
+        }
+	}
 	if (!$cfg->error) {
 		$cfg->setSession();
 	

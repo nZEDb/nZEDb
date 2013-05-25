@@ -1,12 +1,13 @@
 REQUIREMENTS
 	PHP
-		php version 5.2 or higher (5.3 recommended, lower versions may give warnings on some functions)
+		php version 5.4 or higher
 		sessions enabled
-		memory limit at 256MB or more
-		minimum execution time of 60+ seconds
+		memory limit at 1024 or more
+		minimum execution time of 120+ seconds
 		make sure you update the php.ini for both web and cli
 		OpenSSL (if connecting to ssl usenet provider)
 		php register_globals off
+		exif support (check the ini file).
 
 	GD Imaging Library w/PHP integration
 

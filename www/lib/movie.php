@@ -24,6 +24,7 @@ class Movie
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
+		$this->service = "";
 		
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 	}
@@ -242,26 +243,19 @@ class Movie
 	{
 		$ri = new ReleaseImage();
 		
-		if ($this->echooutput)
+		if ($this->echooutput && $this->service == "")
 			echo "Fetching IMDB info from TMDB using IMDB ID: ".$imdbId."\n";
 		
 		//check themoviedb for imdb info
 		$tmdb = $this->fetchTmdbProperties($imdbId);
-		if (!$tmdb) 
-		{
-			if ($this->echooutput)
-				echo "Release not found in TMDB.\n";
-		}
 		
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
-		if (!$imdb) 
+		
+		if (!$imdb && !$tmdb)
 		{
-			if ($this->echooutput)
-				echo "Unable to get movie information from IMDB ID: ".$imdbId."\n";
-		}
-										
-		if (!$imdb && !$tmdb) {
+			if($this->echooutput && $this->service == "")
+				echo "Unable to get movie information for IMDB ID: ".$imdbId." on tmdb or imdb.com\n";
 			return false;
 		}
 		
@@ -328,6 +322,16 @@ class Movie
 		}
 		$mov['genre'] = html_entity_decode($mov['genre'], ENT_QUOTES, 'UTF-8');
 		
+		$mov['type'] = '';
+		if (isset($imdb['type']) && $imdb['type'] != '') {
+			$mov['type'] = $imdb['type'];
+		}
+		if (is_array($mov['type'])) {
+			$mov['type'] = implode(', ', array_unique($mov['type']));
+		}
+		$mov['type'] = ucwords(preg_replace('/[\.\_]/', ' ', $mov['type']));
+		$mov['type'] = html_entity_decode($mov['type'], ENT_QUOTES, 'UTF-8');
+
 		$mov['director'] = '';
 		if (isset($imdb['director']) && $imdb['director'] != '') { 
 			$mov['director'] = (is_array($imdb['director'])) ? implode(', ', array_unique($imdb['director'])) : $imdb['director'];
@@ -346,132 +350,126 @@ class Movie
 		}
 		$mov['language'] = html_entity_decode($mov['language'], ENT_QUOTES, 'UTF-8');
 
+		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
 		$query = sprintf("
 			INSERT INTO movieinfo 
-				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, director, actors, language, cover, backdrop, createddate, updateddate)
+				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate)
 			VALUES 
-				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 			ON DUPLICATE KEY UPDATE
-				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()", 
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
+				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, type=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()",
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
 		
 		$movieId = $db->queryInsert($query);
 
 		if ($movieId) {
-			if ($this->echooutput)
-				echo "Added/updated movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
+			if ($this->echooutput && $this->service == "")
+				echo "Added/updated movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
 		} else {
-			if ($this->echooutput)
-				echo "Nothing to update for movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id']."\n";
+			if ($this->echooutput && $this->service == "")
+				echo "Nothing to update for movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id']."\n";
 		}
 		
 		return $movieId;
 	}
 	
-	public function fetchTmdbProperties($imdbId)
+	public function fetchTmdbProperties($imdbId, $text=false)
 	{
-		$tmdb = new TMDb($this->apikey);
-		$lookupId = 'tt'.$imdbId;
-		$tmdbLookup = json_decode($tmdb->getMovie($lookupId, TMDb::IMDB));
-		if (!$tmdbLookup) { return false; }
-		$movie = array_shift($tmdbLookup);
-		if ($movie == 'Nothing found.') { return false; }
+		$tmdb = new TMDb($this->apikey, 'en'/*language, make it configurable in the future*/);
+		if ($text == false)
+			$lookupId = 'tt'.$imdbId;
+		else
+			$lookupId = $imdbId;
+		
+		try {$tmdbLookup = $tmdb->getMovie($lookupId);} 
+		catch (exception $e) {return false;}
+		
+		if (!$tmdbLookup) {return false;};
+		if (isset($tmdbLookup['status_code']) && $tmdbLookup['status_code'] !== 1) { return false;}
 
 		$ret = array();
-		$ret['title'] = $movie->name;
-		$ret['tmdb_id'] = $movie->id;
-		$ret['imdb_id'] = $imdbId;
-		$ret['rating'] = ($movie->rating == 0) ? '' : $movie->rating;
-		$ret['plot'] = $movie->overview;
-		$ret['year'] = date("Y", strtotime($movie->released));
-		if (isset($movie->genres) && sizeof($movie->genres) > 0) 
+		$ret['title'] = $tmdbLookup['title'];
+		$ret['tmdb_id'] = $tmdbLookup['id'];
+		$ImdbID = str_replace('tt','',$tmdbLookup['imdb_id']);
+		$ret['imdb_id'] = $ImdbID;
+		if (isset($tmdbLookup['vote_average'])) {$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];}
+		if (isset($tmdbLookup['tagline']))		{$ret['plot'] = $tmdbLookup['tagline'];}
+		if (isset($tmdbLookup['release_date'])) {$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));}
+		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0) 
 		{
 			$genres = array();
-			foreach($movie->genres as $genre) 
+			foreach($tmdbLookup['genres'] as $genre) 
 			{
-				$genres[] = $genre->name;
+				$genres[] = $genre['name'];
 			}
 			$ret['genre'] = $genres;
 		}
-		if (isset($movie->posters) && sizeof($movie->posters) > 0) 
+		if (isset($tmdbLookup['poster_path']) && sizeof($tmdbLookup['poster_path']) > 0) 
 		{
-			foreach($movie->posters as $poster) 
-			{
-				if ($poster->image->size == 'cover') 
-				{
-					$ret['cover'] = $poster->image->url;
-					break;
-				}
-			}
+			$ret['cover'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185".$tmdbLookup['poster_path'];
 		}
 		if (isset($movie->backdrops) && sizeof($movie->backdrops) > 0) 
 		{
-			foreach($movie->backdrops as $backdrop) 
-			{
-				if ($backdrop->image->size == 'original') 
-				{
-					$ret['backdrop'] = $backdrop->image->url;
-					break;
-				}
-			}
+			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original".$tmdbLookup['backdrop_path'];
 		}
 		return $ret;
 	}
 	
-    public function fetchImdbProperties($imdbId)
-    {
-        $imdb_regex = array(
-            'title'    => '/<title>(.*?)\s?\(.*?<\/title>/i',
+	public function fetchImdbProperties($imdbId)
+	{
+		$imdb_regex = array(
+			'title'	=> '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline'  => '/taglines:<\/h4>\s([^<]+)/i',
-			'plot'     => '/<p>\s<p>(.*?)\s<\/p>\s<\/p>/i',
-            'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
-			'year'     => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
-			'cover'    => '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
-        );
-        
-        $imdb_regex_multi = array(
-        	'genre'    => '/href="\/genre\/(.*?)\?/i',
-        	'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
-        );
+			'plot'	 => '/<p>\s<p>(.*?)\s<\/p>\s<\/p>/i',
+			'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
+			'year'	 => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
+			'cover'	=> '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
+		);
+		
+		$imdb_regex_multi = array(
+			'genre'	=> '/href="\/genre\/(.*?)\?/i',
+			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
+			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
+		);
 
-        $buffer = getUrl("http://akas.imdb.com/title/tt$imdbId/");
+		$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
 
-        // make sure we got some data
-        if ($buffer !== false && strlen($buffer))
-        {
-        	$ret = array();
-            foreach ($imdb_regex as $field => $regex)
-            {
-                if (preg_match($regex, $buffer, $matches))
-                {
-                    $match = $matches[1];
-                    $match = strip_tags(trim(rtrim(addslashes($match))));
-                    $ret[$field] = $match;
-                }
-            }
-            
-            foreach ($imdb_regex_multi as $field => $regex)
-            {
-                if (preg_match_all($regex, $buffer, $matches))
-                {
-                    $match = $matches[1];
-                    $match = array_map("trim", $match);
-                    $ret[$field] = $match;
-                }
-            }
-            
-            //actors
-            if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit))
-            {
+		// make sure we got some data
+		if ($buffer !== false && strlen($buffer))
+		{
+			$ret = array();
+			foreach ($imdb_regex as $field => $regex)
+			{
+				if (preg_match($regex, $buffer, $matches))
+				{
+					$match = $matches[1];
+					$match = strip_tags(trim(rtrim($match)));
+					$ret[$field] = $match;
+				}
+			}
+			
+			foreach ($imdb_regex_multi as $field => $regex)
+			{
+				if (preg_match_all($regex, $buffer, $matches))
+				{
+					$match = $matches[1];
+					$match = array_map("trim", $match);
+					$ret[$field] = $match;
+				}
+			}
+			
+			//actors
+			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit))
+			{
 				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER))
 				{
 					$ret['actors'] = $results[2];
 				} 
-            }
-            
-            //directors
+			}
+			
+			//directors
 			if (preg_match('/Directors?:([\s]+)?<\/h4>(.+)<\/div>/sU', $buffer, $hit))
 			{
 				if (preg_match_all('/"name">(.*?)<\/span>/is', $hit[0], $results, PREG_PATTERN_ORDER))
@@ -479,28 +477,60 @@ class Movie
 					$ret['director'] = $results[1];
 				} 
 			}
-            
-            return $ret;
-        }
-        return false;
-    }
-	
-	public function processMovieReleases()
+			
+			return $ret;
+		}
+		return false;
+	}
+
+	public function domovieupdate($buffer, $service, $id, $db, $processImdb = 1)
+	{
+		$nfo = new Nfo;
+		$imdbId = $nfo->parseImdb($buffer);
+		if ($imdbId !== false)
+		{
+			if ($service == "nfo")
+				$this->service = "nfo";
+			if ($this->echooutput && $this->service == "")
+				echo $service." found IMDBid: tt".$imdbId."\n";
+
+			$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $id));
+
+			//if set scan for imdb info
+			if ($processImdb == 1)
+			{
+				$movCheck = $this->getMovieInfo($imdbId);
+				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+				{
+					$movieId = $this->updateMovieInfo($imdbId);
+				}
+			}
+		}
+		unset($nfo);
+		return $imdbId;
+	}
+
+	public function processMovieReleases($threads=1)
 	{
 		$ret = 0;
 		$db = new DB();
-		$nfo = new Nfo;
 		$trakt = new Trakttv();
+		$googleban = false;
+		$googlelimit = 0;
+		$binglimit = 0;
+		$yahoolimit = 0;
+		$threads--;
 		
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where imdbID IS NULL and categoryID in ( select ID from category where parentID = %d ) limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
+		
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
 				echo "Processing ".$db->getNumRows($res)." movie release(s).\n";
 		
 			while ($arr = $db->fetchAssoc($res)) 
-			{				
-				$moviename = $this->parseMovieName($arr['searchname']);
+			{
+				$moviename = $this->parseMovieSearchName($arr['name']);
 				if ($moviename !== false)
 				{
 					if ($this->echooutput)
@@ -508,78 +538,129 @@ class Movie
 						
 					$traktimdbid = $trakt->traktMoviesummary($moviename, "imdbid");
 					if ($traktimdbid !== false)
+						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt',  $arr["ID"], $db);
+					else if ($googleban == false && $googlelimit <= 40)
 					{
-						$traktimdbid = str_replace('tt', '', $traktimdbid);
-						if ($this->echooutput)
-							echo 'Tratkt Found IMDBid: tt'.$traktimdbid."\n";
+						$moviename1 = str_replace(' ', '+', $moviename);
+						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($moviename1)."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
 						
-						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($traktimdbid), $arr["ID"]));
-						
-						$movCheck = $this->getMovieInfo($traktimdbid);
-						if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+						// make sure we got some data
+						if ($buffer !== false && strlen($buffer))
 						{
-							$movieId = $this->updateMovieInfo($traktimdbid);
+							$googlelimit++;
+							if (!preg_match('/To continue, please type the characters below/i', $buffer))
+							{
+								$imdbId = $this->domovieupdate($buffer, 'Google1', $arr["ID"], $db);
+								if ($imdbId === false)
+								{
+									if (preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result))
+									{
+										$buffer = getUrl("https://www.google.com/search?hl=en&as_q=".urlencode($result["name"])."&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+									
+										if ($buffer !== false && strlen($buffer))
+										{
+											$googlelimit++;
+											$imdbId = $this->domovieupdate($buffer, 'Google2',  $arr["ID"], $db);
+											if ($imdbId === false)
+											{
+												//no imdb id found, set to all zeros so we dont process again
+												$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								echo "Exceeded google.com request limit.. Using bing.com until next run.\n";
+								$googleban = true;
+							}
+						}
+					}
+					else if ($binglimit <= 40)
+					{
+						$moviename = str_replace(' ', '+', $moviename);
+						if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result))
+						{
+							$buffer = getUrl("http://www.bing.com/search?q=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+						
+							if ($buffer !== false && strlen($buffer))
+							{
+								$binglimit++;
+								$imdbId = $this->domovieupdate($buffer, 'Bing1',  $arr["ID"], $db);
+								if ($imdbId === false)
+								{
+									$buffer = getUrl("http://www.bing.com/search?q=".$result["name"]."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"]."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+									if ($buffer !== false && strlen($buffer))
+									{
+										$binglimit++;
+										$imdbId = $this->domovieupdate($buffer, 'Bing2',  $arr["ID"], $db);
+										if ($imdbId === false)
+										{
+											//no imdb id found, set to all zeros so we dont process again
+											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+										}
+									}
+								}
+							}
+						}
+					}
+					else if ($yahoolimit <= 40)
+					{
+						$moviename = str_replace(' ', '+', $moviename);
+						if(preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result))
+						{
+							$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."+".urlencode($result["year"])."&vs=imdb.com");
+						
+							if ($buffer !== false && strlen($buffer))
+							{
+								$yahoolimit++;
+								$imdbId = $this->domovieupdate($buffer, 'Yahoo1',  $arr["ID"], $db);
+								if ($imdbId === false)
+								{
+									$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."&vs=imdb.com");
+									if ($buffer !== false && strlen($buffer))
+									{
+										$yahoolimit++;
+										$imdbId = $this->domovieupdate($buffer, 'Yahoo2',  $arr["ID"], $db);
+										if ($imdbId === false)
+										{
+											//no imdb id found, set to all zeros so we dont process again
+											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+										}
+									}
+								}
+							}
 						}
 					}
 					else
 					{
-						$buffer = getUrl("http://www.google.com/search?source=ig&hl=en&rlz=&btnG=Google+Search&aq=f&oq=&q=".urlencode($moviename.' imdb'));
-	
-						// make sure we got some data
-						if ($buffer !== false && strlen($buffer))
-						{
-							$imdbId = $nfo->parseImdb($buffer);
-							if ($imdbId !== false) 
-							{
-								if ($this->echooutput)
-									echo 'Google found IMDBid: tt'.$imdbId."\n";
-							
-								//update release with imdb id
-								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-							
-								//check for existing movie entry
-								$movCheck = $this->getMovieInfo($imdbId);
-								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-								{
-									$movieId = $this->updateMovieInfo($imdbId);
-								}
-
-							}
-							else 
-							{
-								//no imdb id found, set to all zeros so we dont process again
-								$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-							}
-						
-						}
-						else 
-						{
-							//url fetch failed, will try next run
-						}
+						echo "Exceeded request limits on google.com bing.com and yahoo.com.\n";
+						break;
 					}
-				
 				}
 				else
 				{
 					//no valid movie name found, set to all zeros so we dont process again
 					$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-				}
-								
+				}				
 			}
 		}
-	
 	}
-	
-	public function parseMovieName($releasename)
+  
+  	public function parseMovieSearchName($releasename)
 	{
 		$cat = new Category;
-		if (!$cat->isMovieForeign($releasename)) {
+		if (!$cat->isMovieForeign($releasename))
+		{
 			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
+			if (!isset($matches['year']))
+			{
 				preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
 			}
 			
-			if (isset($matches['name'])) {
+			if (isset($matches['name']))
+			{
 				$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
 				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
 				return trim($name).$year;
@@ -599,6 +680,8 @@ class Movie
   {
 		$s = new Sites();
 		$site = $s->get();
+		if ($this->echooutput)
+			echo "Updating movie schedule using rotten tomatoes.\n";
 		if (isset($site->rottentomatokey))
 		{
 			$rt = new RottenTomato($site->rottentomatokey);  	
@@ -622,13 +705,14 @@ class Movie
 	  	$ret = $rt->getDVDReleases();
 	  	if ($ret != "")
 	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
+	  	if ($this->echooutput)
+			echo "Updated successfully.\n";
 	  }
   }
 	
 	public function updateInsUpcoming($source, $type, $info)
 	{
-  	$db = new DB();
-
+		$db = new DB();
 		$sql = sprintf("INSERT into upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
 				ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
 		$db->query($sql);

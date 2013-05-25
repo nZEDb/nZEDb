@@ -25,6 +25,7 @@ class SABnzbd
 	const PRIORITY_HIGH = 1;
 	const PRIORITY_NORMAL = 0;
 	const PRIORITY_LOW = -1;
+	const PRIORITY_PAUSED = -2;
 	
 	function SABnzbd(&$page)
 	{
@@ -66,7 +67,7 @@ class SABnzbd
 
 	public function sendToSab($guid)
 	{
-		$addToSabUrl = $this->url.'api/?mode=addurl&priority='.$this->priority.'&apikey='.$this->apikey;
+		$addToSabUrl = $this->url.'api?mode=addurl&priority='.$this->priority.'&apikey='.$this->apikey;
 		$nzbUrl = $this->serverurl.'getnzb/'.$guid.'&i='.$this->uid.'&r='.$this->rsstoken;
 		$addToSabUrl = $addToSabUrl.'&name='.urlencode($nzbUrl);
 		return getUrl($addToSabUrl);
@@ -74,14 +75,38 @@ class SABnzbd
 	
 	public function getQueue()
 	{
-		$queueUrl = $this->url."api/?mode=qstatus&output=json&apikey=".$this->apikey;
+		$queueUrl = $this->url."api?mode=qstatus&output=json&apikey=".$this->apikey;
 		return getUrl($queueUrl);
 	}
 	
 	public function delFromQueue($id)
 	{
-		$delUrl = $this->url."api/?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
+		$delUrl = $this->url."api?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
 		return getUrl($delUrl);
+	}
+	
+	public function pauseFromQueue($id)
+	{
+		$pauseUrl = $this->url."api?mode=queue&name=pause&value=".$id."&apikey=".$this->apikey;
+		return getUrl($pauseUrl);
+	}
+	
+	public function resumeFromQueue($id)
+	{
+		$resumeUrl = $this->url."api?mode=queue&name=resume&value=".$id."&apikey=".$this->apikey;
+		return getUrl($resumeUrl);
+	}
+	
+	public function pauseAll()
+	{
+		$pauseallUrl = $this->url."api?mode=pause"."&apikey=".$this->apikey;
+		return getUrl($pauseallUrl);
+	}
+	
+	public function resumeAll()
+	{
+		$resumeallUrl = $this->url."api?mode=resume"."&apikey=".$this->apikey;
+		return getUrl($resumeallUrl);
 	}
 	
 	public function checkCookie()

@@ -7,7 +7,7 @@ set limit=111111111111111111111111
 
 CD..
 php.exe update_binaries.php
-php.exe update_releases.php
+php.exe update_releases.php 1 true
 CD win_scripts
 
 set /a optimise=%optimise%+1

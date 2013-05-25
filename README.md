@@ -1,8 +1,10 @@
+We have made a patcher for MYSQL, in misc/testing/DB_scripts (patchmysql.php), please look out for patches as we add new features and run this script.
+
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
 
 Some of the differences between that version of newznab and our indexer are:
 
-	The ability to create releases without the user having to create a regex.
+	The ability to create releases without the user having to create a regex. (That old version of newznab did not have updated regex.)
 	Using the NZB file for post processing and fetching NFO files.
 	Finding NFO files without a .nfo extension.
 	Having both a subject name and a "clean" name and the ability to search either.
@@ -28,6 +30,7 @@ Installation:
 
 	Please view one of the two installation files in this folder.
 	If you are on windows, you can attempt to use a newznab guide.
+	PHP 5.4 is required, do not post bugs reports if you are using PHP 5.3.
 
 Post-Installation:
 
@@ -56,6 +59,27 @@ Post-Installation:
 	update_releases.php attempts to group these articles into releases and create NZB files.
 	
 	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
+
+	To clean up the release names, check out fixReleaseNames.php in misc/testing.
+	
+Notes:
+
+	We are not responsible for what is posted on the usenet.
+	
+	Everything indexed by this software is out of our control, if you have complaints, direct them to your usenet service provider.
+	
+	We are not responsible for what you do with this software.
+	
+	Windows is currently untested, we will not offer support for those having issues with windows.
+	
+	This software is offered as is, we classify it as "alpha", it has bugs, so be aware of this.
+
+<hr>
+The team:
+
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo <br /><br /k>
+<a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+<hr>
 
 Original Newznab readme:
 
@@ -268,4 +292,3 @@ HALL OF FAME
 	mobiKalw@newznab			testing
 	crudehung@newznab			nginx rewrite rules
 	www.famfamfam.com			icons
-

@@ -40,6 +40,7 @@ switch($action)
 				$page->title = "Newsgroup Add";
 				$group = array();
 				$group["active"] = "1";
+				$group["backfill"] = "1";
 				$group["first_record"] = "0";
 				$group["last_record"] = "0";
 				$group["backfill_target"] = "0";

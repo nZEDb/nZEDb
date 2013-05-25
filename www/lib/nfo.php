@@ -5,6 +5,7 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Nfo 
 {
@@ -12,7 +13,8 @@ class Nfo
 	{
 		$s = new Sites();
 		$site = $s->get();
-		$this-> nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
+		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
 	}
 	
@@ -30,10 +32,10 @@ class Nfo
 	
 	public function parseImdb($str) 
 	{
-		preg_match('/(imdb.*?)?(tt|Title\?)(\d{7})/i', $str, $matches);
-		if (isset($matches[3]) && !empty($matches[3])) 
+		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
+		if (isset($matches[1]) && !empty($matches[1]))
 		{
-			return trim($matches[3]);
+			return trim($matches[1]);
 		}
 		return false;
 	}
@@ -48,23 +50,34 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($processImdb=1, $processTvrage=1)
+	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
+		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
+		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
+		$maxsize = $site->get()->maxsizetopostprocess * 1073741824;
 
-		$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between -6 and -1 and nzbstatus = 1 order by adddate asc limit %d", $this->nzbs));
-		$nfocount = $db->getNumRows($res);
-		if ($nfocount >= 0)
+		$i = -1;
+		$nfocount = 0;
+		while ((($nfocount) != $this->nzbs) && ($i >= -6))
+		{
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %d order by postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$nfocount = $db->getNumRows($res);
+			$i--;
+		}
+
+		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
 				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s). * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
+			$movie = new Movie($this->echooutput);
 			while ($arr = $db->fetchAssoc($res))
 			{
 				$guid = $arr['guid'];
@@ -78,24 +91,7 @@ class Nfo
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
 
-					$imdbId = $this->parseImdb($fetchedBinary);
-					if ($imdbId !== false)
-					{
-						//update release with imdb id
-						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-
-						//if set scan for imdb info
-						if ($processImdb == 1)
-						{
-							$movie = new Movie();
-							//check for existing movie entry
-							$movCheck = $movie->getMovieInfo($imdbId);
-							if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-							{
-								$movieId = $movie->updateMovieInfo($imdbId);
-							}
-						}
-					}
+					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
 					$rageId = $this->parseRageId($fetchedBinary);
 					if ($rageId !== false)

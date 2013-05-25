@@ -11,8 +11,6 @@ require_once(WWW_DIR."/lib/site.php");
 	 
 	 class Books
 	 {
-		 const NUMTOPROCESSPERTIME = 125;
-		 
 		 function Books($echooutput=false)
 		 {
 			$this->echooutput = $echooutput;
@@ -21,6 +19,9 @@ require_once(WWW_DIR."/lib/site.php");
 			$this->pubkey = $site->amazonpubkey;
 			$this->privkey = $site->amazonprivkey;
 			$this->asstag = $site->amazonassociatetag;
+			$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
+			$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
+			
 			$this->imgSavePath = WWW_DIR.'covers/book/';
 		}
 		
@@ -226,12 +227,13 @@ require_once(WWW_DIR."/lib/site.php");
 			return $result;
 		}
 		
-		public function processBookReleases()
+		public function processBookReleases($threads=1)
 		{
+			$threads--;
 			$ret = 0;
 			$db = new DB();
 			
-			$res = $db->queryDirect(sprintf("SELECT name, ID from releases where bookinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_BOOKS, Books::NUMTOPROCESSPERTIME));
+			$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 order by adddate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
 			if ($db->getNumRows($res) > 0)
 			{
 				if ($this->echooutput)
@@ -239,26 +241,16 @@ require_once(WWW_DIR."/lib/site.php");
 				
 				while ($arr = $db->fetchAssoc($res)) 
 				{
-					$bookInfo = $this->parseTitle($arr['name']);
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['ID']);
 					if ($bookInfo !== false)
 					{
 						if ($this->echooutput)
-							echo 'Looking up: '.$bookInfo['author']." - ".$bookInfo['title']."\n";
+							echo 'Looking up: '.$bookInfo."\n";
 						
-						// Check for existing book entry.
-						$bookCheck = $this->getBookInfoByName($bookInfo['author'], $bookInfo['title']);
-						
-						if ($bookCheck === false)
+						$bookId = $this->updateBookInfo($bookInfo);
+						if ($bookId === false)
 						{
-							$bookId = $this->updateBookInfo($bookInfo);
-							if ($bookId === false)
-							{
-								$bookId = -2;
-							}
-						}
-						else 
-						{
-							$bookId = $bookCheck["ID"];
+							$bookId = -2;
 						}
 						
 						// Update release.
@@ -270,107 +262,50 @@ require_once(WWW_DIR."/lib/site.php");
 						// Could not parse release title.
 						$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 					}
+					usleep($this->sleeptime*1000);
 				}
 			}
 		}
 		
-		public function parseTitle($releasename)
+		public function parseTitle($releasename, $releaseID)
 		{
-			$result = array();
+			$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[\.\-_ ](Novel|TIA)([\.\-_ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
+			$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
+			$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 			
-			// Get name and author of the book from the name
-			
-			if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\s(\(|\[).+"/i', $releasename, $matches))
+			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
 			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
-			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-				
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
+				echo "Changing category to misc books: ".$releasename."\n";
+				$db = new DB();
+				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
+				return false;
 			}
-			else if(preg_match('/"(?P<author>.+)\s\-\s(?P<title>.+)\.[\w]+"/i', $releasename, $matches))
+			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
-			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-			
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
+				echo "Changing category to magazines: ".$releasename."\n";
+				$db = new DB();
+				$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
+				return false;
 			}
-			else if(preg_match('/"(?P<title>.+)(\.|\s)by(\.|\s)(?P<author>.+)(\[|\().+"/i', $releasename, $matches))
-			{
-				if (isset($matches['author']))
-				{
-					$author = $matches['author'];
-					// Replace dots or underscores with spaces.
-					$result['author'] = preg_replace('/(\.|_|\%20)/', ' ', $author);
-				}
-				if (isset($matches['title']))
-				{
-					$title = $matches['title'];
-					// Replace dots or underscores with spaces.
-					$result['title'] = preg_replace('/(\.|_|\%20)/', ' ', $title);
-				}
-			
-				$result['release'] = $releasename;
-				array_map("trim", $result);
-			
-				if (isset($result['title']) && !empty($result['title']) && isset($result['author']) && !empty($result['author']))
-					return $result;
-				else
-					return false;
-			}
+			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+				return $releasename;
 			else
 				return false;
 		}
-
+		
 		public function updateBookInfo($bookInfo)
 		{
 			$db = new DB();
 			$ri = new ReleaseImage();
 		
 			$book = array();
-			$amaztitle = $bookInfo['author']." ".$bookInfo['title'];
-			$amaz = $this->fetchAmazonProperties($amaztitle);
+			$amaz = $this->fetchAmazonProperties($bookInfo);
 			if (!$amaz) 
 				return false;
 				
 			$book['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
-			if (empty($con['title']))
-				$book['title'] = $bookInfo['title'];
 				
 			$book['author'] = (string) $amaz->Items->Item->ItemAttributes->Author;
-			if (empty($con['author']))
-				$book['author'] = $bookInfo['author'];
 				
 			$book['asin'] = (string) $amaz->Items->Item->ASIN;
 			
@@ -400,17 +335,24 @@ require_once(WWW_DIR."/lib/site.php");
 			$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
 			if ($book['pages'] == "")
 				$book['pages'] = 'null';
-				
-			if(isset($amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content))
+			
+			if(isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content))
 			{
-				$book['overview'] = (string) $amaz->Items->Item->ItemAttributes->EditorialReviews->EditorialReview->Content;
+				$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
 				if ($book['overview'] == "")
 					$book['overview'] = 'null';
 			}
 			else
-			{
 				$book['overview'] = 'null';
+			
+			if(isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name))
+			{
+				$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
+				if ($book['genre'] == "")
+					$book['genre'] = 'null';
 			}
+			else
+				$book['genre'] = 'null';
 			
 			$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
 			if ($book['coverurl'] != "")
@@ -418,14 +360,23 @@ require_once(WWW_DIR."/lib/site.php");
 			else
 				$book['cover'] = 0;
 			
-			$query = sprintf("INSERT INTO bookinfo  (`title`, `author`, `asin`, `isbn`, `ean`, `url`, `salesrank`, `publisher`, `publishdate`, `pages`, `overview`, `cover`, `createddate`, `updateddate`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $book['cover']);
+			$query = sprintf("INSERT INTO bookinfo  (`title`, `author`, `asin`, `isbn`, `ean`, `url`, `salesrank`, `publisher`, `publishdate`, `pages`, `overview`, `genre`, `cover`, `createddate`, `updateddate`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `genre` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
 			
 			$bookId = $db->queryInsert($query);
 
 			if ($bookId) 
 			{
 				if ($this->echooutput)
-					echo "Added/updated book: ".$book['author']." - ".$book['title'].".\n";
+				{
+					echo "Added/updated book: ";
+					if ($book['author'] !== "")
+						echo "Author: ".$book['author'].", ";
+					echo "Title: ".$book['title'];
+					if ($book['genre'] !== "null")
+						echo ", Genre: ".$book['genre'].".\n";
+					else
+						echo ".\n";
+				}
 
 				$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 			} 

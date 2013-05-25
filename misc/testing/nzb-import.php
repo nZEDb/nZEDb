@@ -164,7 +164,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					//unlink($nzbFile);
+					unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -218,7 +218,7 @@ else
 		}
 		if (!$importfailed)
 		{
-			$relguid = md5(uniqid());
+			$relguid = sha1(uniqid());
 			$nzb = new NZB();
 		
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
@@ -231,7 +231,7 @@ else
 						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 						{
 							$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
-							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour\033[0m".$n;
+							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m".$n;
 						} else {
 							categorize();
 							echo $n."Imported #".$nzbCount." nzb's in ".relativeTime($time);
@@ -247,7 +247,7 @@ else
 					$importfailed = true;
 				}
 				$nzbCount++;
-				///@unlink($nzbFile);
+				@unlink($nzbFile);
 			}
 		}
 	}

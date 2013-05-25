@@ -46,11 +46,17 @@ class Groups
 		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");		
 	}
 	
-    public function getActiveByDate()
-    {
-        $db = new DB();
-        return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY first_record_postdate DESC");
-    }
+	public function getActiveBackfill()
+	{			
+		$db = new DB();
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY name");		
+	}
+	
+	public function getActiveByDateBackfill()
+	{
+		$db = new DB();
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY first_record_postdate DESC");
+	}
 
 	public function getActiveIDs()
 	{			
@@ -78,11 +84,11 @@ class Groups
 		return $res["ID"];	
 	}
 	
-	// Set the first_record_postdate very high when the group is dead.
+	// Set the backfill to 0 when the group is backfilled to max.
 	public function disableForPost($name)
 	{
 		$db = new DB();
-		$db->queryOneRow(sprintf("update groups set first_record_postdate = %s where name = %s", $db->escapeString("2000-00-00 00:00:00"), $db->escapeString($name)));
+		$db->queryOneRow(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $db->escapeString($name)));
 	}
 
 	public function getCount($groupname="")
@@ -274,7 +280,7 @@ class Groups
 		else
 			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
 
-		return $db->query(sprintf("update groups set name=%s, description = %s, backfill_target = %s , active=%d, minfilestoformrelease=%s, minsizetoformrelease=%s where ID = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"] , $minfiles, $minsizetoformrelease, $group["id"] ));		
+		return $db->query(sprintf("update groups set name=%s, description = %s, backfill_target = %s , active=%d, backfill=%d, minfilestoformrelease=%s, minsizetoformrelease=%s where ID = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));		
 	}	
 
 	//
@@ -321,12 +327,20 @@ class Groups
 		return $ret;
 	}
 
-    public function updateGroupStatus($id, $status = 0)
-    {
-        $db = new DB();
-        $db->query(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
-        $status = ($status == 0) ? 'deactivated' : 'activated';
-        return "Group $id has been $status.";
-    }
+	public function updateGroupStatus($id, $status = 0)
+	{
+		$db = new DB();
+		$db->query(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
+		$status = ($status == 0) ? 'deactivated' : 'activated';
+		return "Group $id has been $status.";
+	}
+	
+	public function updateBackfillStatus($id, $status = 0)
+	{
+		$db = new DB();
+		$db->query(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
+		$status = ($status == 0) ? 'deactivated' : 'activated';
+		return "Group $id has been $status.";
+	}
 }
 ?>

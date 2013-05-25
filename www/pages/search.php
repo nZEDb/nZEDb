@@ -61,7 +61,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
 	
-	$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 
 }
@@ -105,7 +105,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
 	
-	$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 }
 
@@ -172,7 +172,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
 	
-	$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 }
 

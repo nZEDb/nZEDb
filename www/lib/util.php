@@ -33,39 +33,39 @@ function isWindows()
 
 function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 {
-    $arrData = array();
-    
-    // if input is object, convert into array
-    if (is_object($arrObjData)) {
-        $arrObjData = get_object_vars($arrObjData);
-    }
-    
-    if (is_array($arrObjData)) {
-        foreach ($arrObjData as $index => $value) {
-            if (is_object($value) || is_array($value)) {
-                $value = objectsIntoArray($value, $arrSkipIndices); // recursive call
-            }
-            if (in_array($index, $arrSkipIndices)) {
-                continue;
-            }
-            $arrData[$index] = $value;
-        }
-    }
-    return $arrData;
+	$arrData = array();
+	
+	// if input is object, convert into array
+	if (is_object($arrObjData)) {
+		$arrObjData = get_object_vars($arrObjData);
+	}
+	
+	if (is_array($arrObjData)) {
+		foreach ($arrObjData as $index => $value) {
+			if (is_object($value) || is_array($value)) {
+				$value = objectsIntoArray($value, $arrSkipIndices); // recursive call
+			}
+			if (in_array($index, $arrSkipIndices)) {
+				continue;
+			}
+			$arrData[$index] = $value;
+		}
+	}
+	return $arrData;
 }
 
 function safeFilename($filename) 
 {
-    $temp = $filename;
+	$temp = $filename;
  
-    $result = '';
-    for ($i=0; $i<strlen($temp); $i++) {
-        if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
-            $result = $result . $temp[$i];
-        }
-    }
+	$result = '';
+	for ($i=0; $i<strlen($temp); $i++) {
+		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
+			$result = $result . $temp[$i];
+		}
+	}
  
-    return $result;
+	return $result;
 }
 
 function runCmd($command, $debug=false) {
@@ -99,9 +99,12 @@ function getUrl($url, $method='get', $postdata='')
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
    	}
 	curl_setopt($ch, CURLOPT_URL, $url);
+	$header[] = "Accept-Language: en-us";
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
@@ -116,7 +119,7 @@ function getUrl($url, $method='get', $postdata='')
 
 function cp437toUTF($str) {
 	$out = '';
-    for ($i = 0; $i<strlen($str);$i++){	
+	for ($i = 0; $i<strlen($str);$i++){	
 		$ch = ord($str{$i});
 		//echo $ch.' ';
 		switch($ch){
@@ -251,7 +254,36 @@ function cp437toUTF($str) {
 			default : $out .= chr($ch);
 		}
 	}
-	return $out;    
+	return $out;	
+}
+
+// Function inpsired by c0r3@newznabforums for flags on the browse page.
+function release_flag ($x, $t)
+{
+	$y = "";
+	if(preg_match('/German(bed)?/i', $x))
+		$y = "de";
+	if(preg_match('/Danish/i', $x))
+		$y = "dk";
+	if(preg_match('/Spanish/i', $x))
+		$y = "es";
+	if(preg_match('/French|Vostfr/i', $x))
+		$y = "fr";
+	if(preg_match('/Italian| ita( |$)/i', $x))
+		$y = "it";
+	if(preg_match('/Flemish|Dutch| nl( |$)|NlSub/i', $x))
+		$y = "nl";
+	if(preg_match('/Swe(dish|sub)/i', $x))
+		$y = "se";
+	if ($y !== "" && $t == "browse")
+		return '<img src="./themes/Default/images/flags/'.$y.'.png" />';
+	else if ($t == "search")
+	{
+		if ($y == "")
+			return false;
+		else
+			return $y;
+	}
 }
 	
 ?>

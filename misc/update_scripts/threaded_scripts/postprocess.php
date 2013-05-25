@@ -1,45 +1,17 @@
 <?php
 
 require(dirname(__FILE__)."/../config.php");
-require_once(WWW_DIR."/lib/postprocess.php");
+require(WWW_DIR."/lib/postprocess.php");
 
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "nfos")
+if (isset($argv[1]) && is_numeric($argv[1]))
 {
-	$postprocess = new PostProcess(false);
-	$postprocess->processNfos();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "movies")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processMovies();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "music")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processMusic();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "games")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processGames();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "anime")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processAnime();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "tv")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processTV();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "additional")
-{
-	$postprocess = new PostProcess(false);
-	$postprocess->processAdditional();
-}
-else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "books")
-{
-    $postprocess = new PostProcess(false);
-    $postprocess->processBooks();
+	$postprocess = new PostProcess(true);
+	$postprocess->processAdditional($argv[1]);
+	$postprocess->processNfos($argv[1]);
+	$postprocess->processBooks($argv[1]);
+	$postprocess->processMovies($argv[1]);
+	$postprocess->processMusic($argv[1]);
+	$postprocess->processGames($argv[1]);
+	$postprocess->processAnime($argv[1]);
+	$postprocess->processTV($argv[1]);
 }

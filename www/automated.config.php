@@ -5,7 +5,7 @@ if(strlen($www_top) == 1)
 	$www_top = "";
 
 //
-// used everywhere an href is output, includes the full path to the nzedb install
+// used everywhere an href is output, includes the full path to the nZEDb install
 //
 define('WWW_TOP', $www_top);
 
@@ -18,6 +18,11 @@ define('WWW_DIR', realpath(dirname(__FILE__)).'/');
 // path to smarty files
 //
 define('SMARTY_DIR', WWW_DIR.'lib/smarty/');
+
+//
+// path to themes directory
+//
+define('THEMES_DIR', WWW_TOP.'themes');
 
 //
 // number of results per page

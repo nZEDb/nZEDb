@@ -34,7 +34,7 @@ $page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
-$pager = $page->smarty->fetch($page->getCommonTemplate("pager.tpl"));
+$pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $section = '';
@@ -53,6 +53,8 @@ elseif ($category != -1 && $grp == "")
 			$section = 'movies';
 		elseif ($cdata['parentID'] == Category::CAT_PARENT_MUSIC || $cdata['ID'] == Category::CAT_PARENT_MUSIC)
 			$section = 'music';
+		elseif ($cdata['parentID'] == Category::CAT_PARENT_BOOKS || $cdata['ID'] == Category::CAT_PARENT_BOOKS)
+			$section = 'books';
 	} else {
 		$page->show404();
 	}
@@ -64,7 +66,7 @@ elseif ($grp != "")
 $page->smarty->assign('section',$section);
 
 foreach($ordering as $ordertype) 
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;ob=".$ordertype."&amp;offset=0");	
+	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");	
 
 $page->smarty->assign('lastvisit',$page->userdata['lastlogin']);
 
