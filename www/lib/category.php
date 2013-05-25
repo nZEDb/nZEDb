@@ -215,7 +215,6 @@ class Category
 		$db = new DB();
 		$parent = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", substr($ID, 0, 1)."000")));
 		$cat = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", $ID)));
-		echo $cat."\n";
 		return $parent." ".$cat;
 	}
 	
