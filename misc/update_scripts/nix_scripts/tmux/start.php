@@ -11,6 +11,7 @@ $DIR = WWW_DIR."..";
 $tmux = new Tmux;
 $tmux_session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
+$powerline = $tmux->get()->POWERLINE;
 
 $site = New Sites();
 $patch = $site->get()->sqlpatch;
@@ -39,7 +40,7 @@ if ( $hashcheck != '1' )
     exit(1);
 }
 
-if ( $patch < '50' )
+if ( $patch < '51' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}/misc/testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -158,9 +159,14 @@ function attach($DIR, $tmux_session)
 }
 
 //create tmux
+if ( $powerline == "TRUE" )
+	$tmuxconfig = "$DIR/misc/update_scripts/nix_scripts/tmux/powerline/tmux.conf";
+else
+	$tmuxconfig = "$DIR/misc/update_scripts/nix_scripts/tmux/tmux.conf";
+
 if ( $seq == "TRUE" )
 {
-	shell_exec("tmux -f $DIR/misc/update_scripts/nix_scripts/tmux/tmux.conf new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
@@ -171,7 +177,7 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	shell_exec("tmux -f $DIR/misc/update_scripts/nix_scripts/tmux/tmux.conf new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.2 && tmux splitw -t$tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
