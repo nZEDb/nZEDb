@@ -87,6 +87,8 @@ CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
+CREATE INDEX ix_releases_relnamestatus on releases('relnamestatus');
+CREATE INDEX ix_releases_passwordstatus on releases('passwordstatus');
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -706,6 +708,7 @@ INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
+CREATE INDEX ix_category_status ON category('status');
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -975,7 +978,7 @@ INSERT INTO `site`
 	('processjpg', 0),
 	('hashcheck', 1),
 	('debuginfo', 0),
-	('sqlpatch', '46');
+	('sqlpatch', '49');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
