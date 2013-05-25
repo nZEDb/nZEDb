@@ -169,6 +169,7 @@ class PostProcess
 		$maxattemptstocheckpassworded = 5;
 		$tries = ($maxattemptstocheckpassworded * -1) -1;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
+		$processVideo = ($this->site->processvideos == "0") ? false : true;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
 		$processJPGSample = ($this->site->processjpg == "0") ? false : true;
@@ -239,7 +240,7 @@ class PostProcess
 
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
-				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = false;
+				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 				
 				if ($this->echooutput && $threads > 0)
@@ -445,6 +446,8 @@ class PostProcess
 						{
 							@file_put_contents($tmpPath.'sample.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+							if ($processVideo)
+								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 						}
 						unset($sampleBinary);
 					}
@@ -466,6 +469,8 @@ class PostProcess
 
 							if ($processSample && $blnTookSample === false)
 								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
+							if ($processVideo && $blnTookVideo === false)
+								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 
 							unset($mediafile);
 						}
@@ -535,6 +540,8 @@ class PostProcess
 								rename($tmpPath.$name[0], $tmpPath."sample.avi");
 								if ($processSample && $blnTookSample === false)
 									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']); 
+								if ($processVideo && $blnTookVideo === false)
+									$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 								if ($processMediainfo && $blnTookMediainfo === false)
 									$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
 								@unlink($tmpPath."sample.avi");
@@ -910,6 +917,46 @@ class PostProcess
 			}
 		}
 		// If an image was made, return true, else return false.
+		return $retval;
+	}
+
+	public function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
+	{
+		$retval = false;
+		$processSample = ($this->site->ffmpegpath != '') ? true : false;
+		if (!($processSample && is_dir($ramdrive) && ($releaseguid > 0)))
+			return $retval;
+
+		$ri = new ReleaseImage();
+		$db = new DB();
+		$samplefiles = glob($ramdrive.'*.*');
+		if (is_array($samplefiles))
+		{
+			foreach($samplefiles as $samplefile)
+			{
+				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
+				{
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet "'.$ramdrive.$releaseguid.'.ogv"');
+					if (is_dir($ramdrive))
+					{
+						@$all_files = scandir($ramdrive,1);
+						if(preg_match("/".$releaseguid."\.ogv/",$all_files[1]))
+						{
+							copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
+							$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+							$retval = true;
+						}
+
+						// Clean up all files.
+						foreach(glob($ramdrive.'*.ogv') as $v)
+						{
+							@unlink($v);
+						}
+					}
+				}
+			}
+		}
+		// If an video was made, return true, else return false.
 		return $retval;
 	}
 

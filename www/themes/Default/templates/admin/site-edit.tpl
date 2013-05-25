@@ -418,10 +418,18 @@
 </tr>
 
 <tr>
-	<td><label for="lookupnfo">Process JPG</label>:</td>
+	<td><label for="processjpg">Process JPG</label>:</td>
 	<td>
 		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
 		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processvideos">Process Videos</label>:</td>
+	<td>
+		{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$fsite->processvideos separator='<br />'}
+		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average. You must have ffmpeg for this.<br/></div>
 	</td>
 </tr>
 

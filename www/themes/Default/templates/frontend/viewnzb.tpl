@@ -273,7 +273,10 @@
 	{/if}
 
 	{if $release.haspreview == 1 && $userdata.canpreview == 1}
-	<tr><th>Preview:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/preview/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /></td></tr>
+		<tr><th>Preview:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/preview/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /> </td></tr>
+	{/if}
+	{if $release.videostatus == 1 && $userdata.canpreview == 1}
+	<tr><th>Video:</th><td><video width="450" controls><source src="{$smarty.const.WWW_TOP}/covers/video/{$release.guid}.ogv" type="video/ogg">Your browser does not support the video tag.</video></td></tr>
 	{/if}
 	{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
 	<tr><th>Sample:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/sample/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /></td></tr>
