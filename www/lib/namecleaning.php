@@ -1,4 +1,5 @@
 <?php
+require_once(WWW_DIR."/lib/groups.php");
 
 	//
 	//	Cleans names for collections/releases/imports/namefixer.
@@ -58,6 +59,32 @@
 		//
 		public function releaseCleaner($subject, $groupID="")
 		{
+			if ($groupID !== "")
+			{
+				$groups = new Groups();
+				$groupName = $groups->getByNameByID($groupID);
+				
+				/*if (preg_match('/alt\.binaries\.teevee/', $groupName))
+				{
+					//[140654]-[FULL]-[a.b.teevee]-[ Formula1.2013.Monaco.Grand.Prix.Practice.Three.720p.HDTV.x264-FAIRPLAY ]-[02/63] - "fairplay.formula1.2013.monaco.grand.prix.practice.three.720p.sample.par2" yEnc
+					$cleanerName = "";
+					if (preg_match('/^.+? (.+?) \]-/', $subject, $match))
+						$cleanerName = $match[1];
+					else
+						$cleanerName = $this->releaseCleanerHelper($subject);
+					
+					if (empty($cleanerName)) {return $subject;}
+					else {return $cleanerName;}
+				}
+				else*/
+					return $this->releaseCleanerHelper($subject);
+			}
+			else
+				return $this->releaseCleanerHelper($subject);
+		}
+
+		public function releaseCleanerHelper($name)
+		{
 			//File and part count.
 			$cleanerName = preg_replace('/(File )?(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
 			//Size.
@@ -80,7 +107,7 @@
 			if (empty($cleanerName)) {return $subject;}
 			else {return $cleanerName;}
 		}
-		
+
 		//
 		//	Cleans release name for the namefixer class.
 		//
