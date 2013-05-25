@@ -83,7 +83,7 @@ require_once(WWW_DIR."/lib/groups.php");
 				return $this->releaseCleanerHelper($subject);
 		}
 
-		public function releaseCleanerHelper($name)
+		public function releaseCleanerHelper($subject)
 		{
 			//File and part count.
 			$cleanerName = preg_replace('/(File )?(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
