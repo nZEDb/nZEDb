@@ -610,35 +610,35 @@
 </tr>
 
 <tr>
-    <td><label for="postthreads">Postprocessing Threads</label>:</td>
-    <td>
-        <input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-        <div class="hint">The number of threads for postprocessing.</div>
-    </td>
+	<td><label for="postthreads">Postprocessing Threads</label>:</td>
+	<td>
+		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+		<div class="hint">The number of threads for postprocessing.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="binarythreads">Update Binaries Threads</label>:</td>
-    <td>
-        <input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-        <div class="hint">The number of threads for update_binaries.</div>
-    </td>
+	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
+	<td>
+		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<div class="hint">The number of threads for update_binaries.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="backfillthreads">Backfill Threads</label>:</td>
-    <td>
-        <input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-        <div class="hint">The number of threads for backfill.</div>
-    </td>
+	<td><label for="backfillthreads">Backfill Threads</label>:</td>
+	<td>
+		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<div class="hint">The number of threads for backfill.</div>
+	</td>
 </tr>
 
 <tr>
-    <td><label for="nzbthreads">Import-nzb Threads</label>:</td>
-    <td>
-        <input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-        <div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
-    </td>
+	<td><label for="nzbthreads">Import-nzb Threads</label>:</td>
+	<td>
+		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
+	</td>
 </tr>
 
 <tr>
