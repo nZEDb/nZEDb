@@ -133,6 +133,8 @@ table.innerdata td { padding:2px; border-left-width:0; border-bottom-width:0; bo
 table.innerdata th { padding:2px; border-style: none; background-color:#EEE;}
 
 table.input th, table.input td { text-align: left; vertical-align:top; }
+a.browsename:active {text-decoration: none} 
+a.browsename:hover {text-decoration: underline}
 
 /*
 form inputs and helpers
