@@ -325,7 +325,7 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo "Received ".sizeof($msgsreceived)." articles of ".($last-$first+1)." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary.".$n;
+				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary.".$n;
 			
 			if (sizeof($rangenotreceived) > 0) {
 				switch($type)
