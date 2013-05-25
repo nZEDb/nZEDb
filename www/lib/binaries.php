@@ -381,7 +381,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$cleanerName = $namecleaning->releaseCleaner($subject);
+								$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
 								$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}

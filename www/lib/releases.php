@@ -1940,7 +1940,7 @@ class Releases
 						}
 						$cIDS[] = $row["ID"];
 						$bunchedcnt++;
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"], $row["groupID"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
 					}
 					else
@@ -1993,7 +1993,7 @@ class Releases
 					if(!$cres)
 					{
 						$cIDS[] = $row["ID"];
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row["bname"], $row["groupID"])), $db->escapeString($row["bname"]), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
 						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}
