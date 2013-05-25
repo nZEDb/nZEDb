@@ -388,7 +388,7 @@
 <tr>
 	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess</label>:</td>
 	<td>
-		<input class="small" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<input class="tiny" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
 		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
@@ -668,7 +668,7 @@
 <tr>
 	<td><label for="maxmssgs">Max Messages</label>:</td>
 	<td>
-		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
+		<input class="tiny" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
 		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
 	</td>
 </tr>
@@ -676,7 +676,7 @@
 <tr>
 	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
 	<td>
-		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
+		<input class="tiny" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
 		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
 	</td>
 </tr>
@@ -684,7 +684,7 @@
 <tr>
 	<td><label for="maxpartrepair">Maximum repair per run</label>:</td>
 	<td>
-		<input class="small" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
+		<input class="tiny" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
 		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
 	</td>
 </tr>
