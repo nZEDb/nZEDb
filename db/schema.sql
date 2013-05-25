@@ -980,7 +980,7 @@ INSERT INTO `site`
 	('hashcheck', 1),
 	('debuginfo', 0),
 	('processvideos', 0),
-	('sqlpatch', '50');
+	('sqlpatch', '51');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1237,55 +1237,56 @@ UNIQUE KEY `setting` (`setting`)
 
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900');
-INSERT INTO tmux (setting, value) values ('MONITOR_DELAY','30');
-INSERT INTO tmux (setting, value) values ('TMUX_SESSION','nZEDb');
-INSERT INTO tmux (setting, value) values ('BACKFILL_DELAY','30');
-INSERT INTO tmux (setting, value) values ('NICENESS','19');
-INSERT INTO tmux (setting, value) values ('BINARIES','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL','FALSE');
-INSERT INTO tmux (setting, value) values ('IMPORT','FALSE');
-INSERT INTO tmux (setting, value) values ('NZBS','/path/to/nzbs');
-INSERT INTO tmux (setting, value) values ('RUNNING','FALSE');
-INSERT INTO tmux (setting, value) values ('SEQUENTIAL','FALSE');
-INSERT INTO tmux (setting, value) values ('NFOS','FALSE');
-INSERT INTO tmux (setting, value) values ('POST','FALSE');
-INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
-INSERT INTO tmux (setting, value) values ('RELEASES_THREADED','FALSE');
-INSERT INTO tmux (setting, value) values ('FIX_NAMES','FALSE');
-INSERT INTO tmux (setting, value) values ('SEQ_TIMER','30');
-INSERT INTO tmux (setting, value) values ('BINS_TIMER','30');
-INSERT INTO tmux (setting, value) values ('BACK_TIMER','30');
-INSERT INTO tmux (setting, value) values ('IMPORT_TIMER','30');
-INSERT INTO tmux (setting, value) values ('REL_TIMER','30');
-INSERT INTO tmux (setting, value) values ('FIX_TIMER','30');
-INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
-INSERT INTO tmux (setting, value) values ('IMPORT_BULK','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL_QTY','100000');
-INSERT INTO tmux (setting, value) values ('COLLECTIONS_KILL','0');
-INSERT INTO tmux (setting, value) values ('POSTPROCESS_KILL','0');
-INSERT INTO tmux (setting, value) values ('CRAP_TIMER','30');
-INSERT INTO tmux (setting, value) values ('FIX_CRAP','FALSE');
-INSERT INTO tmux (setting, value) values ('TV_TIMER','43200');
-INSERT INTO tmux (setting, value) values ('UPDATE_TV','FALSE');
-INSERT INTO tmux (setting, value) values ('HTOP','FALSE');
-INSERT INTO tmux (setting, value) values ('NMON','FALSE');
-INSERT INTO tmux (setting, value) values ('BWMNG','FALSE');
-INSERT INTO tmux (setting, value) values ('MYTOP','FALSE');
-INSERT INTO tmux (setting, value) values ('CONSOLE','FALSE');
-INSERT INTO tmux (setting, value) values ('VNSTAT','FALSE');
-INSERT INTO tmux (setting, value) values ('VNSTAT_ARGS',NULL);
-INSERT INTO tmux (setting, value) values ('TCPTRACK','FALSE');
-INSERT INTO tmux (setting, value) values ('TCPTRACK_ARGS','-i eth0 port 443');
-INSERT INTO tmux (setting, value) values ('BACKFILL_GROUPS','4');
-INSERT INTO tmux (setting, value) values ('POST_KILL_TIMER','300');
-INSERT INTO tmux (setting, value) values ('OPTIMIZE','FALSE');
-INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400');
-INSERT INTO tmux (setting, value) values ('MONITOR_PATH', NULL);
-INSERT INTO tmux (setting, value) values ('WRITE_LOGS', 'FALSE');
-INSERT INTO tmux (setting, value) values ('SORTER', 'FALSE');
-INSERT INTO tmux (setting, value) values ('SORTER_TIMER', 30);
+INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
+	('MONITOR_DELAY','30'),
+	('TMUX_SESSION','nZEDb'),
+	('BACKFILL_DELAY','30'),
+	('NICENESS','19'),
+	('BINARIES','FALSE'),
+	('BACKFILL','FALSE'),
+	('IMPORT','FALSE'),
+	('NZBS','/path/to/nzbs'),
+	('RUNNING','FALSE'),
+	('SEQUENTIAL','FALSE'),
+	('NFOS','FALSE'),
+	('POST','FALSE'),
+	('RELEASES','FALSE'),
+	('RELEASES_THREADED','FALSE'),
+	('FIX_NAMES','FALSE'),
+	('SEQ_TIMER','30'),
+	('BINS_TIMER','30'),
+	('BACK_TIMER','30'),
+	('IMPORT_TIMER','30'),
+	('REL_TIMER','30'),
+	('FIX_TIMER','30'),
+	('POST_TIMER','30'),
+	('IMPORT_BULK','FALSE'),
+	('BACKFILL_TYPE','FALSE'),
+	('BACKFILL_QTY','100000'),
+	('COLLECTIONS_KILL','0'),
+	('POSTPROCESS_KILL','0'),
+	('CRAP_TIMER','30'),
+	('FIX_CRAP','FALSE'),
+	('TV_TIMER','43200'),
+	('UPDATE_TV','FALSE'),
+	('HTOP','FALSE'),
+	('NMON','FALSE'),
+	('BWMNG','FALSE'),
+	('MYTOP','FALSE'),
+	('CONSOLE','FALSE'),
+	('VNSTAT','FALSE'),
+	('VNSTAT_ARGS',NULL),
+	('TCPTRACK','FALSE'),
+	('TCPTRACK_ARGS','-i eth0 port 443'),
+	('BACKFILL_GROUPS','4'),
+	('POST_KILL_TIMER','300'),
+	('OPTIMIZE','FALSE'),
+	('OPTIMIZE_TIMER','86400'),
+	('MONITOR_PATH', NULL),
+	('WRITE_LOGS', 'FALSE'),
+	('SORTER', 'FALSE'),
+	('SORTER_TIMER', 30),
+	('POWERLINE', 'FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
