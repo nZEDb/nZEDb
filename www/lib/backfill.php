@@ -273,11 +273,11 @@ class Backfill
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
 		
-		echo "Group ".$data["group"]."'s oldest article is ".$data['first'].", newest is ".$data['last'].". The groups retention is: ".
+		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
-				" days.".$n."Our oldest article is: ".$groupArr['first_record']." which is (".
+				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days old). Our backfill target is article ".$targetpost." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
+				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 		
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
