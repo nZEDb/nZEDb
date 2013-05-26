@@ -936,22 +936,12 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet "'.$ramdrive.$releaseguid.'.ogv"');
-					if (is_dir($ramdrive))
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet -y "'.$ri->vidSavePath.$releaseguid.'.ogv"');
+					if (@file_exists($ri->vidSavePath.$releaseguid))
 					{
-						@$all_files = scandir($ramdrive,1);
-						if(preg_match("/".$releaseguid."\.ogv/",$all_files[1]))
-						{
-							copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
-							$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
-							$retval = true;
-						}
-
-						// Clean up all files.
-						foreach(glob($ramdrive.'*.ogv') as $v)
-						{
-							@unlink($v);
-						}
+						$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+						$retval = true;
+						break;
 					}
 				}
 			}
