@@ -271,7 +271,7 @@ table.data td.icons div.icon { opacity:.20; }
 .browseicons { width: 60px; opacity:.70; text-align:center; }
 .browsestats { width: 50px; text-align:right; font-size:0.9em; }
 .browsefiles { width: 35px; text-align:right; font-size:0.9em; }
-.browsesize { width: 57px; text-align:right; font-size:0.9em; }
+.browsesize { width: 58px; text-align:right; font-size:0.9em; }
 .browseposted { width: 43px; text-align:right; font-size:0.9em; }
 .browsecategory { width: 70px; text-align:right; font-size:0.9em; }
 div.icon_cart			{ background-image:url('../images/icons/cartup.png'); }
