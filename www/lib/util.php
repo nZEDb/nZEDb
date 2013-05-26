@@ -295,7 +295,7 @@ function release_fileicon ($x, $t)
 	else if(preg_match('/ (mp3|flac)( |$)/i', $x))
 		$y = "audio";
 	if ($y !== "" && $t == "browse")
-		return '<img src="./themes/Default/images/fileicons/'.$y.'.png" />';
+		return '<img src="./themes/Default/images/multimedia/'.$y.'.png" />';
 	else if ($t == "search")
 	{
 		if ($y == "")

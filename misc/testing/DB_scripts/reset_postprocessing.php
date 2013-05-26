@@ -22,22 +22,22 @@ if (isset($argv[1]) && $argv[1] === "all")
 	}
 	else
 	{
-		$db->query("update releases set consoleinfoID = NULL where consoleinfoID = -2");
+		$db->query("update releases set consoleinfoID = NULL where consoleinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." consoleinfoID's reset.\n";
-		$db->query("update releases set imdbID = NULL where imdbID = -2");
+		$db->query("update releases set imdbID = NULL where imdbID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." imdbID's reset.\n";
-		$db->query("update releases set musicinfoID = NULL where musicinfoID = -2");
+		$db->query("update releases set musicinfoID = NULL where musicinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." musicinfoID's reset.\n";
-		$db->query("update releases set rageID = NULL where rageID = -2");
+		$db->query("update releases set rageID = NULL where rageID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." rageID's reset.\n";
-		$db->query("update releases set bookinfoID = NULL where bookinfoID = -2");
+		$db->query("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." bookinfoID's reset.\n";
-		$db->query("update releases set nfostatus = -1 where nfostatus < -6 or nfostatus = 0");
+		$db->query("update releases set nfostatus = -1 where nfostatus <= 0");
 		$affected = $db->getAffectedRows();
 		echo $affected." nfos reset.\n";
 		$db->query("update releases set passwordstatus = -1, haspreview = -1 where haspreview = 0");
@@ -54,7 +54,7 @@ elseif (isset($argv[1]) && $argv[1] === "consoles")
 	}
 	else
 	{
-		$where = " where consoleinfoID = -2 and categoryID BETWEEN 1000 AND 1999";
+		$where = " where consoleinfoID in (-2, 0) and categoryID BETWEEN 1000 AND 1999";
 	}
 	$db->query("update releases set consoleinfoID = NULL".$where);
 	$affected = $db->getAffectedRows();
@@ -70,7 +70,7 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	}
 	else
 	{
-		$where = " where imdbID = -2 and categoryID BETWEEN 2000 AND 2999";
+		$where = " where imdbID in (-2, 0) and categoryID BETWEEN 2000 AND 2999";
 	}
 	$db->query("update releases set imdbID = NULL".$where);
 	$affected = $db->getAffectedRows();
@@ -85,7 +85,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 	}
 	else
 	{
-		$where = " where musicinfoID = -2 and categoryID BETWEEN 3000 AND 3999";
+		$where = " where musicinfoID in (-2, 0) and categoryID BETWEEN 3000 AND 3999";
 	}
 	$db->query("update releases set musicinfoID = NULL".$where);
 	$affected = $db->getAffectedRows();
@@ -113,7 +113,7 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 	}
 	else
 	{
-		$where = " where rageID = -2 and categoryID BETWEEN 5000 AND 5999";
+		$where = " where rageID in (-2, 0) and categoryID BETWEEN 5000 AND 5999";
 	}
 	$db->query("update releases set rageID = NULL".$where);
 	$affected = $db->getAffectedRows();
@@ -128,7 +128,7 @@ elseif (isset($argv[1]) && $argv[1] === "books")
 	}
 	else
 	{
-		$where = " where bookinfoID = -2 and categoryID BETWEEN 8000 AND 8999";
+		$where = " where bookinfoID in (-2, 0) and categoryID BETWEEN 8000 AND 8999";
 	}
 	$db->query("update releases set bookinfoID = NULL".$where);
 	$affected = $db->getAffectedRows();
@@ -143,7 +143,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 	}
 	else
 	{
-		$where = " where nfostatus < -6 or nfostatus = 0";
+		$where = " where nfostatus <= 0";
 	}
 	$db->query("update releases set nfostatus = -1".$where);
 	$affected = $db->getAffectedRows();
