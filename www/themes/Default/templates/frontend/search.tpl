@@ -113,10 +113,10 @@
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
-			<td class="browseicons">
-				<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
-				<div class="icon icon_cart" title="Add to Cart"></div>
+			<td class="browseicons" style="vertical-align:middle;">
+				<div class="icon icon_nzb" style="float:left;"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
 				{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+				<div class="icon icon_cart" title="Add to Cart" style="float:right;"></div>
 			</td>
 			<td class="item">
 				<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a><fileicon style="float:right; margin-left:3px; margin-top:-2px;">{if release_fileicon($result.searchname, search)}<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/{release_fileicon($result.searchname, search)}.png" />{/if}</fileicon><flag style="float:right">{if release_flag($result.searchname, search)}<img src="{$smarty.const.WWW_TOP}/themes/Default/images/flags/{release_flag($result.searchname, search)}.png" />{/if}</flag></label>
