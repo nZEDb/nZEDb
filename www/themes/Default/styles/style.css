@@ -268,7 +268,8 @@ div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor
 
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 table.data td.icons div.icon { opacity:.20; }
-.browseicons { width: 60px; opacity:.70; text-align:center; }
+.browseicons { width: 60px; opacity:.75; text-align:center; }
+.browseicons :hover { opacity:.40;}
 .browsestats { width: 50px; text-align:right; font-size:0.9em; }
 .browsefiles { width: 35px; text-align:right; font-size:0.9em; }
 .browsesize { width: 58px; text-align:right; font-size:0.9em; }
