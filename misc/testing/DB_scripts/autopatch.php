@@ -19,24 +19,31 @@ function command_exist($cmd) {
     return (empty($returnVal) ? false : true);
 }
 
-$output = exec("cd $DIR && git pull");
-echo "<pre>$output<pre>";
-
-
-#remove folders from smarty
-$smarty = $DIR."/www/lib/smarty/templates_c/";
-if ((count(glob("$smarty/*",GLOB_ONLYDIR))) > 0)
+if(isset($argv[1]) && $argv[1] == "true")
 {
-    echo "Removing old stuff from ".$smarty."\n";
-    $output = shell_exec("rm -r ".$smarty."/*");
-    echo "<pre>$output<pre>";
-}
+	$output = exec("cd $DIR && git pull");
+	echo "<pre>$output<pre>";
 
-if (command_exist("php5"))
-    $PHP = "php5";
+
+	#remove folders from smarty
+	$smarty = $DIR."/www/lib/smarty/templates_c/";
+	if ((count(glob("$smarty/*",GLOB_ONLYDIR))) > 0)
+	{
+		echo "Removing old stuff from ".$smarty."\n";
+		$output = shell_exec("rm -r ".$smarty."/*");
+		echo "<pre>$output<pre>";
+	}
+
+	if (command_exist("php5"))
+		$PHP = "php5";
+	else
+		$PHP = "php";
+	system("$PHP $DIR/misc/testing/DB_scripts/patchmysql.php");
+	$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+}
 else
-    $PHP = "php";
-system("$PHP $DIR/misc/testing/DB_scripts/patchmysql.php");
-$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+{
+	exit("This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.\nIf you are sure you want to run it, type php reset_truncate.php true\n");
+}
 
 ?>
