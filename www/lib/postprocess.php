@@ -920,7 +920,7 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 "'.$ramdrive.'zzzz%03d.jpg"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$ramdrive.'zzzz%03d.jpg"');
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
