@@ -50,7 +50,24 @@
 				<div class="icon icon_cart" title="Add to Cart" style="float:right;"></div>
 			</td>
 			<td class="item">
-			<label for="chk{$result.guid|substr:0:7}"> <a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>{if $result.videostatus ==1}<videoicon style="float:right; margin-left:3px; margin-top:-2px;"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png"" /></videoicon>{/if}<flag style="float:right">{release_flag($result.searchname, browse)}</flag></label value="Searchname">
+			<label for="chk{$result.guid|substr:0:7}">
+				<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+					{$result.searchname|escape:"htmlall"|truncate:150:"...":true}
+				</a>
+				<a class="title" style="float:right; margin-left:3px;" title="Browse {$result.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}">
+					{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":""}
+				</a>
+				{if $result.videostatus ==1}
+					<a class="title" title="This release has a video preview." href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+						<videoicon style="float:right; margin-left:3px; margin-top:-2px;">
+							<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" />
+						</videoicon>
+					</a>
+				{/if}
+				<flag style="float:right; margin-left:3px;">
+					{release_flag($result.searchname, browse)}
+				</flag>
+			</label value="Searchname">
 			
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />
