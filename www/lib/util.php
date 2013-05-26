@@ -285,5 +285,24 @@ function release_flag ($x, $t)
 			return $y;
 	}
 }
-	
+
+// Adds a small image to show the type, video audio etc..
+function release_fileicon ($x, $t)
+{
+	$y = "";
+	if(preg_match('/( |^)((480|720|1080)(i|p)|avc|divx|dvd(-?r(ip)?|\d)?|hd(rip|tv)|s\d{1,3}(d|e)\d{1,3}|(h|x)264|xvid)( |$)/i', $x))
+		$y = "video";
+	else if(preg_match('/ (mp3|flac)( |$)/i', $x))
+		$y = "audio";
+	if ($y !== "" && $t == "browse")
+		return '<img src="./themes/Default/images/fileicons/'.$y.'.png" />';
+	else if ($t == "search")
+	{
+		if ($y == "")
+			return false;
+		else
+			return $y;
+	}
+}
+
 ?>
