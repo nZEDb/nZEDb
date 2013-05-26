@@ -11,7 +11,8 @@ h3 { padding:10px 0 5px 0;}
 p, ul, ol { margin-top: 0; line-height: 240%;	text-align: justify; }
 ul, ol { }
 blockquote { }
-a { color: #4D9408; text-decoration: none;}
+a.group_deactive { color: rgb(0, 140, 0) }
+a { color: #B22222; text-decoration: none;}
 a:hover { text-decoration: underline; }
 a img { border: none; }
 img.left { float: left; margin: 7px 30px 0 0; }
@@ -50,9 +51,9 @@ page structure
 #sidebar li { margin-bottom: 30px; padding: 0 0 0 0;}
 #sidebar li ul { list-style-type: none;  list-style-position:inside; margin: 0px 10px; padding: 0; margin-left: 1em;}
 #sidebar li li { background-image: url('../images/bullet.jpg'); background-repeat: no-repeat; background-position: 0.7em 1.1em; margin: 0;	padding-left: .5em; padding-top: .8em;padding-bottom:10px; border-bottom: 1px solid #E9E8DD;}
-#sidebar li li a {padding: 0 0 0 20px; font-weight: normal; color: #808080;}
-#sidebar li li a:hover {color: #4D9408;}
-#sidebar li li:hover { cursor:pointer; background-color:#EEE; background-image: url('../images/bullet_hov.jpg');}
+#sidebar li li a {padding: 0 0 0 20px; font-weight: normal; color: rgb(178, 34, 34); text-decoration: none;}
+#sidebar li li a:hover {text-decoration: underline; color: rgb(178, 34, 34);}
+#sidebar li li:hover { cursor:pointer; background-color:#EEE; background-image: url('../images/bullet_hov.png');}
 
 #sidebar p { margin: 0; padding: 0px 14px;}
 #sidebar h2 { height: 30px; margin: 0 0 5px 0px; padding: 6px 0 2px 14px; font-size: 18px; font-weight: normal; color: #485459;}
@@ -116,7 +117,7 @@ table.data td { white-space:normal; vertical-align:top; padding:5px; border-colo
 table.data td.less { color: #888; font-size: 0.9em; white-space:nowrap; }
 table.data td.icons { white-space:nowrap; padding-left:0px; padding-right:0px; }
 table.data td.check {cursor:pointer;}
-table.highlight tr:hover td { background-color: #E1F0D9; }
+table.highlight tr:hover td { background-color: #FDF5E6; }
 table tr.alt { background-color: #F6F6F6; }
 table tr.new { background-color: #f6f8ff; }
 table.data em {font-weight:bolder; color:red;}
@@ -133,8 +134,6 @@ table.innerdata td { padding:2px; border-left-width:0; border-bottom-width:0; bo
 table.innerdata th { padding:2px; border-style: none; background-color:#EEE;}
 
 table.input th, table.input td { text-align: left; vertical-align:top; }
-a.browsename:active {text-decoration: none} 
-a.browsename:hover {text-decoration: underline}
 
 /*
 form inputs and helpers
@@ -158,7 +157,7 @@ div.pager .current {color:#fff; font-weight:bold; background-color:#777; padding
 /*
 round buttoning
 */
-.rndbtn { padding:0 4px 0 4px; margin-right:1px; border:1px #CCC solid; background-color:#EEE; -moz-border-radius: 4px;  -webkit-border-radius: 4px;}
+.rndbtn { padding:0 4px 0 4px; margin-right:1px; border:1px #CCC solid; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px;}
 table.highlight tr:hover .rndbtn, table tr.alt .rndbtn { background-color: #fff; }
 table.highlight tr:hover .rndbtn:hover { background-color: #DDD; }
 table.highlight tr:hover td.static { background-color: #FFF; }
@@ -176,6 +175,9 @@ mainly one-off styles used on individual pages
 pre#nfo { font-family: "Courier New", "DejaVu Sans Mono", monospace; font-size: 12px; line-height: 13px; }
 
 div.resextra { padding-top:7px; color: #555; font-size: 0.9em; height:16px; }
+div.resextra a.browsename { color: #B22222; font-size: 0.9em; }
+a.browsename:active {text-decoration: none} 
+a.browsename:hover {text-decoration: underline}
 div.resextra a { color: #555; text-decoration:none; }
 div.resextra div.admin { float:right; }
 div.resextra div.btns {float:left; }
