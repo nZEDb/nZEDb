@@ -127,9 +127,11 @@
 					{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":""}
 					</a>
 					{if $result.videostatus == 1}
-						<videoicon style="float:right; margin-left:3px; margin-top:-2px;">
-							<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" />
-						</videoicon>
+						<a class="title" title="This release has a video preview." href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+							<videoicon style="float:right; margin-left:3px; margin-top:-2px;">
+								<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" />
+							</videoicon>
+						</a>
 					{/if}
 					{if release_flag($result.searchname, search)}
 						<flag style="float:right; margin-left:3px;">
