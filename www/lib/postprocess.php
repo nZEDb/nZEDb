@@ -23,7 +23,6 @@ require_once(WWW_DIR."/lib/zipinfo.php");
 
 class PostProcess
 {
-
 	function PostProcess($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
@@ -802,6 +801,7 @@ class PostProcess
 			// Load the ZIP file or data.
 			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db);
 			if ($files !== false)
+			{
 				foreach ($files as $file)
 				{
 					if ($file['pass'])
@@ -816,7 +816,7 @@ class PostProcess
 					$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 					$retval[] = array('name'=>$file['name'], 'source'=>"main", 'range'=>$file['range']);
 				}
-		}
+			}
 			else
 				$this->ignorenumbered = true;
 		}

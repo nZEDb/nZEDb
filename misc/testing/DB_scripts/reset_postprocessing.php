@@ -25,7 +25,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->query("update releases set consoleinfoID = NULL where consoleinfoID = -2");
 		$affected = $db->getAffectedRows();
 		echo $affected." consoleinfoID's reset.\n";
-		$db->query("update releases set imdbID = NULL where imdbID = -2");
+		$db->query("update releases set imdbID = NULL where imdbID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." imdbID's reset.\n";
 		$db->query("update releases set musicinfoID = NULL where musicinfoID = -2");
@@ -70,7 +70,7 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	}
 	else
 	{
-		$where = " where imdbID = -2 and categoryID BETWEEN 2000 AND 2999";
+		$where = " where imdbID in (-2, 0) and categoryID BETWEEN 2000 AND 2999";
 	}
 	$db->query("update releases set imdbID = NULL".$where);
 	$affected = $db->getAffectedRows();
