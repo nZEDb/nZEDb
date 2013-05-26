@@ -111,11 +111,11 @@ class Backfill
 			return;
 		}
 
-		echo "Group ".$data["group"].": server has ".$data['first']." - ".$data['last'].", or ~".
+		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
-				" days.".$n."Local first = ".$groupArr['first_record']." (".
+				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days).  Backfill target of ".$groupArr['backfill_target']."days is post $targetpost".$n;
+				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
 		
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+50000)
@@ -148,7 +148,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".($last-$first+1)." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
+			echo "Getting ".(number_format($last-$first+1))." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
@@ -273,11 +273,11 @@ class Backfill
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
 		
-		echo "Group ".$data["group"]."'s oldest article is ".$data['first'].", newest is ".$data['last'].". The groups retention is: ".
+		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
-				" days.".$n."Our oldest article is: ".$groupArr['first_record']." which is (".
+				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days old). Our backfill target is article ".$targetpost." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
+				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 		
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
@@ -390,7 +390,7 @@ class Backfill
 		$pddebug = false;
 		if ($debug)
 		{
-			echo "INFO: Finding article for ".$group.$days." days back.".$n;
+			echo "INFO: Finding article for ".$group." ".$days." days back.".$n;
 		}
 		
 		$data = $nntp->selectGroup($group);
@@ -406,7 +406,7 @@ class Backfill
 		$lowerbound = $data['first'];
 		if ($debug)
 		{
-			echo "Total Articles: ".$totalnumberofarticles." Newest: ".$upperbound." Oldest: ".$lowerbound.$n."Goal: ".date("r", $goaldate)." ($goaldate).".$n;
+			echo "Total Articles: ".number_format($totalnumberofarticles)." Newest: ".number_format($upperbound)." Oldest: ".number_format($lowerbound).$n."Goal: ".date("r", $goaldate)." ($goaldate).".$n;
 		}
 		if ($data['last'] == PHP_INT_MAX)
 		{

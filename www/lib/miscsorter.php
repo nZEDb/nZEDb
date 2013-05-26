@@ -182,7 +182,7 @@ class MiscSorter {
 
 		if ($name != '')
 		{
-			$query = $query.", `name` = ".$this->db->escapeString($name).", `searchname` = ".$this->db->escapeString($name);
+			$query = $query/*.", `name` = ".$this->db->escapeString($name)*/.", `searchname` = ".$this->db->escapeString($name);
 		}
 		switch ($type) {
 			case 'imdb':

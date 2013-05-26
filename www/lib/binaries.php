@@ -160,7 +160,7 @@ class Binaries
 		if($total > 0)
 		{
 			echo "Group ".$data["group"]." has ".number_format($total)." new articles.".$n;
-			echo "Server oldest: ".$data['first']." Server newest: ".$data['last']." Local newest: ".$groupArr['last_record'].$n.$n;
+			echo "Server oldest: ".number_format($data['first'])." Server newest: ".number_format($data['last'])." Local newest: ".number_format($groupArr['last_record']).$n.$n;
 			if ($groupArr['last_record'] == 0)
 				echo "New group starting with ".(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan." days" : $this->NewGroupMsgsToScan." messages")." worth.".$n;
 			
@@ -179,7 +179,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				
-				echo "Getting ".number_format($last-$first+1)." articles (".$first." to ".$last.") from ".str_replace('alt.binaries','a.b',$data["group"])." - ".number_format($grouplast - $last)." in queue".$n;
+				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".str_replace('alt.binaries','a.b',$data["group"])." - ".number_format($grouplast - $last)." in queue".$n;
 				flush();
 				
 				//get headers from newsgroup
@@ -205,7 +205,7 @@ class Binaries
 		}
 		else
 		{
-			echo "No new articles for ".$data["group"]." (first $first last $last total $total) grouplast ".$groupArr['last_record'].$n.$n;
+			echo "No new articles for ".$data["group"]." (first ".number_format($first)." last ".number_format($last)." total ".number_format($total).") grouplast ".number_format($groupArr['last_record']).$n.$n;
 
 		}
 	}
@@ -325,7 +325,7 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo "Received ".sizeof($msgsreceived)." articles of ".($last-$first+1)." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary.".$n;
+				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary.".$n;
 			
 			if (sizeof($rangenotreceived) > 0) {
 				switch($type)
@@ -381,7 +381,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$cleanerName = $namecleaning->releaseCleaner($subject);
+								$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
 								$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
