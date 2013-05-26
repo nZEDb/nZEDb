@@ -41,7 +41,7 @@ require_once dirname(__FILE__).'/rarinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.2
+ * @version    1.3
  */
 class RecursiveRarInfo extends RarInfo
 {
@@ -74,7 +74,7 @@ class RecursiveRarInfo extends RarInfo
 		if (empty($this->blocks)) {return false;}
 
 		if (empty($this->archives)) foreach ($this->getBlocks() as $block) {
-			if ($block['head_type'] == self::BLOCK_FILE) {
+			if ($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE) {
 
 				// Check the file extensions (lazy!)
 				$ext = pathinfo($block['file_name'], PATHINFO_EXTENSION);
@@ -108,8 +108,9 @@ class RecursiveRarInfo extends RarInfo
 			return $this->archives[$filename];
 
 		foreach ($this->blocks as $block) {
-			if ($block['head_type'] == self::BLOCK_FILE && $block['file_name'] == $filename) {
-
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			  && $block['file_name'] == $filename && empty($block['is_dir'])
+			 ) {
 				// Create the new archive object
 				$rar = new self;
 				$start = $this->start + $block['offset'] + $block['head_size'];
@@ -122,7 +123,7 @@ class RecursiveRarInfo extends RarInfo
 				}
 
 				// Make any error messages more specific
-				if ($block['method'] != self::METHOD_STORE && $rar->error) {
+				if ($block['method'] != self::METHOD_STORE && $block['method'] != self::R50_METHOD_STORE && $rar->error) {
 					$rar->error = 'The archive is compressed and cannot be read';
 				}
 				if (isset($block['has_password']) || $rar->isEncrypted) {
