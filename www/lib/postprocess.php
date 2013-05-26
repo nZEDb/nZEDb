@@ -936,7 +936,7 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet "'.$ri->vidSavePath.$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet -y "'.$ri->vidSavePath.$releaseguid.'.ogv"');
 					if (@file_exists($ri->vidSavePath.$releaseguid))
 					{
 						$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
