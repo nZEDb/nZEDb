@@ -119,7 +119,7 @@
 				<div class="icon icon_cart" title="Add to Cart" style="float:right;"></div>
 			</td>
 			<td class="item">
-				<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a><fileicon style="float:right; margin-left:3px; margin-top:-2px;">{if release_fileicon($result.searchname, search)}<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/{release_fileicon($result.searchname, search)}.png" />{/if}</fileicon><flag style="float:right">{if release_flag($result.searchname, search)}<img src="{$smarty.const.WWW_TOP}/themes/Default/images/flags/{release_flag($result.searchname, search)}.png" />{/if}</flag></label>
+				<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if $result.videostatus == 1}<videoicon style="float:right; margin-left:3px; margin-top:-2px;"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" /></videoicon>{/if}{if release_flag($result.searchname, search)}<flag style="float:right"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/flags/{release_flag($result.searchname, search)}.png" /></flag>{/if}</label>
 
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />
