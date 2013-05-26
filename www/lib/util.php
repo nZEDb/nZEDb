@@ -91,7 +91,7 @@ function checkStatus($code) {
 	return ($code == 0) ? true : false;
 }
 
-function getUrl($url, $method='get', $postdata='')
+function getUrl($url, $method='get', $postdata='', $language="")
 {
 	$ch = curl_init();
 	if ($method == 'post') {
@@ -99,7 +99,34 @@ function getUrl($url, $method='get', $postdata='')
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
    	}
 	curl_setopt($ch, CURLOPT_URL, $url);
-	$header[] = "Accept-Language: en-us";
+	if ($language == "")
+		$header[] = "Accept-Language: en-us";
+	else if ($language == "da")
+		$header[] = "Accept-Language: da";
+	else if ($language == "en")
+		$header[] = "Accept-Language: en-us";
+	else if ($language == "es")
+		$header[] = "Accept-Language: es";
+	else if ($language == "fi")
+		$header[] = "Accept-Language: fi";
+	else if ($language == "fr")
+		$header[] = "Accept-Language: fr-fr";
+	else if ($language == "de")
+		$header[] = "Accept-Language: de-de";
+	else if ($language == "it")
+		$header[] = "Accept-Language: it";
+	else if ($language == "nl")
+		$header[] = "Accept-Language: nl";
+	else if ($language == "no")
+		$header[] = "Accept-Language: no";
+	else if ($language == "po")
+		$header[] = "Accept-Language: po";
+	else if ($language == "ru")
+		$header[] = "Accept-Language: ru";
+	else if ($language == "sv")
+		$header[] = "Accept-Language: sv";
+	else if ($language == "tlh")
+		$header[] = "Accept-Language: tlh";
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
