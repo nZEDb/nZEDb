@@ -959,7 +959,7 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -vframes 500 -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogv"');
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
