@@ -941,6 +941,7 @@ class PostProcess
 					{
 						$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
 						$retval = true;
+						break;
 					}
 				}
 			}
