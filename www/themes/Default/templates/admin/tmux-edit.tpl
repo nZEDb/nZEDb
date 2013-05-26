@@ -336,6 +336,7 @@
 					<input id="POSTPROCESS_KILL" name="POSTPROCESS_KILL" class="tiny" type="text" value="{$ftmux->POSTPROCESS_KILL}" />
 					<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update binaries will be terminated. 0 disables.</div>
 				</td>
+			</tr>
 
 			<tr>
 				<td style="width:160px;"><label for="WRITE_LOGS">Logging</label>:</td>
