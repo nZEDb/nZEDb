@@ -6,12 +6,13 @@ require_once(WWW_DIR."/lib/tmux.php");
 
 $db = new DB();
 $DIR = WWW_DIR."/..";
+$dbname = DB_NAME;
 
 function command_exist($cmd) {
-    $returnVal = shell_exec("which $cmd");
-    return (empty($returnVal) ? false : true);
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
 }
-
+	
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	$tmux = new Tmux;
@@ -22,23 +23,26 @@ if(isset($argv[1]) && $argv[1] == "true")
 	sleep($sleep);
 
 
-	$output = exec("cd $DIR && git pull");
-	echo "<pre>$output<pre>";
+	system("cd $DIR && git pull");
 
-
-	#remove folders from smarty
-	$smarty = $DIR."/www/lib/smarty/templates_c/";
-	if ((count(glob("$smarty/*",GLOB_ONLYDIR))) > 0)
+	//remove folders from smarty
+	$smarty = $DIR."www/lib/smarty/templates_c/";
+	if ((count(glob("$smarty/*"))) > 0)
 	{
 		echo "Removing old stuff from ".$smarty."\n";
-		$output = shell_exec("rm -r ".$smarty."/*");
-		echo "<pre>$output<pre>";
+		system("sudo rm -r ".$smarty."/*");
+	}
+	else
+	{
+		echo "Nothing to remove from ".$smarty."\n";
 	}
 
 	if (command_exist("php5"))
 		$PHP = "php5";
 	else
 		$PHP = "php";
+
+	echo "Patching database - $dbname\n";
 	system("$PHP $DIR/misc/testing/DB_scripts/patchmysql.php");
 	$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
 }
