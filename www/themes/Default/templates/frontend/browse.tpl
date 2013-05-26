@@ -55,7 +55,7 @@
 				{/if}
 
 				<div class="resextra">
-				<a class="browsename" style="font-size:0.9em; color:rgb(77, 148, 8);" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
+				<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
 					<div class="btns" style="float:right">
 						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
 						{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb rndbtn" rel="movie" >Cover</a>{/if}
