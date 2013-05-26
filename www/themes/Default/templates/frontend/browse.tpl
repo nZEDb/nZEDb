@@ -50,7 +50,7 @@
 				<div class="icon icon_cart" title="Add to Cart" style="float:right;"></div>
 			</td>
 			<td class="item">
-			<label for="chk{$result.guid|substr:0:7}"> <a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a><fileicon style="float:right; margin-left:3px; margin-top:-2px;">{release_fileicon($result.searchname, browse)}</fileicon>    <flag style="float:right">{release_flag($result.searchname, browse)}</flag></label value="Searchname">
+			<label for="chk{$result.guid|substr:0:7}"> <a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>{if $result.videostatus ==1}<videoicon style="float:right; margin-left:3px; margin-top:-2px;"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png"" /></videoicon>{/if}<flag style="float:right">{release_flag($result.searchname, browse)}</flag></label value="Searchname">
 			
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />
