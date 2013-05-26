@@ -44,7 +44,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 }
 else
 {
-	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php updateGitandPatchMysql.php true\n");
+	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php autopatcher.php true\n");
 }
 
 ?>
