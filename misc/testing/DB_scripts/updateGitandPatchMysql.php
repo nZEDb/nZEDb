@@ -7,13 +7,6 @@ require_once(WWW_DIR."/lib/tmux.php");
 $db = new DB();
 $DIR = WWW_DIR."/..";
 
-$tmux = new Tmux;
-$delay = $tmux->get()->MONITOR_DELAY;
-$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
-$sleep = $delay + 120;
-echo "Waiting $sleep seconds for all panes to shutdown\n";
-sleep($sleep);
-
 function command_exist($cmd) {
     $returnVal = shell_exec("which $cmd");
     return (empty($returnVal) ? false : true);
@@ -21,6 +14,14 @@ function command_exist($cmd) {
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
+	$tmux = new Tmux;
+	$delay = $tmux->get()->MONITOR_DELAY;
+	$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
+	$sleep = $delay + 120;
+	echo "Waiting $sleep seconds for all panes to shutdown\n";
+	sleep($sleep);
+
+
 	$output = exec("cd $DIR && git pull");
 	echo "<pre>$output<pre>";
 
