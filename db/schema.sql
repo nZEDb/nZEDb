@@ -980,7 +980,9 @@ INSERT INTO `site`
 	('hashcheck', 1),
 	('debuginfo', 0),
 	('processvideos', 0),
-	('sqlpatch', '51');
+	('imdburl', 0),
+	('imdblanguage', 'en')
+	('sqlpatch', '53');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

@@ -25,6 +25,8 @@ class Movie
 		$this->apikey = $site->tmdbkey;
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = "";
+		$this->imdburl = ($site->imdburl == "0") ? false : true;
+		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 	}
@@ -377,7 +379,7 @@ class Movie
 	
 	public function fetchTmdbProperties($imdbId, $text=false)
 	{
-		$tmdb = new TMDb($this->apikey, 'en'/*language, make it configurable in the future*/);
+		$tmdb = new TMDb($this->apikey, $this->imdblanguage);
 		if ($text == false)
 			$lookupId = 'tt'.$imdbId;
 		else
@@ -434,7 +436,10 @@ class Movie
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
-		$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
+		if ($this->imdburl === false)
+			$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
+		else
+			$buffer = getUrl("http://akas.imdb.com/title/tt$imdbId/");
 
 		// make sure we got some data
 		if ($buffer !== false && strlen($buffer))
