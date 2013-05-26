@@ -185,7 +185,7 @@ class PostProcess
 		//
 		if ($id != '')
 		{
-			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
 			left join category c on c.ID = r.categoryID
 			where r.ID = %d", $id);
 			$result = $db->query($query);
@@ -196,7 +196,7 @@ class PostProcess
 			$result = 0;
 			while ((count($result) != $this->addqty) && ($i >= $tries))
 			{
-				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) AND r.size < %d order by r.postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->addqty)*($threads * 1.5)), $this->addqty);
@@ -384,7 +384,7 @@ class PostProcess
 						if (preg_match($this->supportfiles.")/i", $rarFile['subject']))
 							continue;
 
-						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile['subject'])) // removed \d{2,3}
+						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile['subject']))
 						{
 							$this->doecho("Not matched and skipping ".$rarFile['subject']);
 							continue;
@@ -402,7 +402,7 @@ class PostProcess
 						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 						{
-//							$this->doecho("New files don't seem to contribute.");
+							//$this->doecho("New files don't seem to contribute.");
 							continue;
 						}
 
@@ -413,7 +413,7 @@ class PostProcess
 						if ($fetchedBinary !== false)
 						{
 							$notinfinite++;
-							$relFiles = $this->processReleaseFiles($fetchedBinary, $tmpPath, $rel['ID']);
+							$relFiles = $this->processReleaseFiles($fetchedBinary, $tmpPath, $rel['ID'], $rel['nfostatus']);
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
 
@@ -585,7 +585,7 @@ class PostProcess
 
 						if ($row === false)
 						{
-//							$this->doecho("adding missing file ".$rel['guid']);
+							//$this->doecho("adding missing file ".$rel['guid']);
 							$rf->add($rel['ID'], $file['name'], $file['size'], $file['createddate'], $file['passworded'] );
 						}
 					}
@@ -623,7 +623,7 @@ class PostProcess
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0, $db)
+	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0, $db, $nfostatus)
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo;
@@ -649,12 +649,13 @@ class PostProcess
 		$files = $zip->getFileList();
 		$dataarray = array();
 		if ($files !== false)
+		{
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				// Extract a NFO from the rar.
-				if ($file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
+				if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 				{
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
@@ -667,6 +668,7 @@ class PostProcess
 					}
 				}
 			}
+		}
 
 		if ($data)
 		{
@@ -688,7 +690,7 @@ class PostProcess
 	}
 
 	// Open the rar, see if it has a password, attempt to get a file.
-	function processReleaseFiles($fetchedBinary, $tmpPath, $relid)
+	function processReleaseFiles($fetchedBinary, $tmpPath, $relid, $nfostatus)
 	{
 		$retval = array();
 		$rar = new RecursiveRarInfo();
@@ -763,7 +765,7 @@ class PostProcess
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
 
 							// Extract a NFO from the rar.
-							if ($file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
+							if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
 								$nzbcontents = new NZBcontents(true);
@@ -799,7 +801,7 @@ class PostProcess
 		else
 		{
 			// Load the ZIP file or data.
-			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db);
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db, $nfostatus);
 			if ($files !== false)
 			{
 				foreach ($files as $file)
