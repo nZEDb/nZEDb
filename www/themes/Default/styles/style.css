@@ -260,7 +260,7 @@ movie, console and music modals with backdrop images.
 /* 
 icons and multioperation buttons
 */
-input.nzb_check_all { margin-left:5px; }
+input.nzb_check_all { margin-left:6px; }
 #nzb_multi_operations_form { clear: both; }
 div.nzb_multi_operations { color:#888; display:inline; float:right; text-align: right; clear: both; }
 div.nzb_multi_operations input { color:#888; background-color:#fff; border:1px solid #ddd; }
