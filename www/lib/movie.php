@@ -569,7 +569,7 @@ class Movie
 											if ($imdbId === false)
 											{
 												//no imdb id found, set to all zeros so we dont process again
-												$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+												$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 											}
 										}
 									}
@@ -603,7 +603,7 @@ class Movie
 										if ($imdbId === false)
 										{
 											//no imdb id found, set to all zeros so we dont process again
-											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+											$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 										}
 									}
 								}
@@ -631,7 +631,7 @@ class Movie
 										if ($imdbId === false)
 										{
 											//no imdb id found, set to all zeros so we dont process again
-											$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+											$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 										}
 									}
 								}
@@ -647,7 +647,7 @@ class Movie
 				else
 				{
 					//no valid movie name found, set to all zeros so we dont process again
-					$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 				}				
 			}
 		}
