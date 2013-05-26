@@ -927,7 +927,8 @@ class PostProcess
 						if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
 						{
 							$ri->saveImage($releaseguid.'_thumb', $ramdrive.$all_files[1], $ri->imgSavePath, 800, 600);
-							$retval = true;
+							if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
+								$retval = true;
 						}
 
 						// Clean up all files.
@@ -935,6 +936,8 @@ class PostProcess
 						{
 							@unlink($v);
 						}
+						if ($retval === true)
+							break;
 					}
 				}
 			}
@@ -965,9 +968,15 @@ class PostProcess
 						@$all_files = scandir($ramdrive,1);
 						if(preg_match("/".$releaseguid."\.ogv/",$all_files[1]))
 						{
-							copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
-							$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
-							$retval = true;
+							if (filesize($ramdrive.$releaseguid.".ogv") > 4096)
+							{
+								copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
+								if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
+								{
+									$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+									$retval = true;
+								}
+							}
 						}
 
 						// Clean up all files.
@@ -975,6 +984,8 @@ class PostProcess
 						{
 							@unlink($v);
 						}
+						if ($retval === true)
+							break;
 					}
 				}
 			}
