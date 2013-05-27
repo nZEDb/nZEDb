@@ -233,6 +233,10 @@ VALUES ('series', 'TV Series',
 	'Browse TV Series.', 1, 50);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('predb', 'PreDB', 
+	'Browse PreDB.', 1, 51);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('calendar', 'TV Calendar', 
 	'View what\'s on TV.', 1, 53);
 
@@ -1006,7 +1010,7 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '57');
+	('sqlpatch', '58');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

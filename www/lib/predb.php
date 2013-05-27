@@ -217,5 +217,11 @@ Class Predb
 		}
 		return $updated;
 	}
+	
+	public function getAll()
+	{			
+		$db = new DB();
+		return $db->query("SELECT * FROM predb ORDER BY adddate DESC");
+	}
 }
 ?>
