@@ -44,6 +44,12 @@
 		{html_radios id="disablepreview" name='disablepreview' values=$status_ids output=$status_names selected=$category.disablepreview separator='<br />'}
 	</td>
 </tr>
+<tr>
+	<td>Minimum File Size:</td>
+	<td>
+		<input type="text" class="short" name="minsize" value="{$category.minsize}" />
+	</td>
+</tr>
 
 <tr>
 	<td></td>
