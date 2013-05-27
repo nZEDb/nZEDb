@@ -12,13 +12,11 @@
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/namefixer.php");
-require_once(FS_ROOT."/../../../www/lib/srrdb.php");
-require_once(FS_ROOT."/../../../www/lib/predbme.php");
+require_once(FS_ROOT."/../../../www/lib/predb.php");
 
 $n = "\n";
 $namefixer = new Namefixer;
-$srr = new SRRDB(true);
-$pdm = new PredbMe(true);
+$predb = new Predb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
@@ -30,13 +28,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,1,1,1);
-					$pdm->parseTitles(1,1,1,1);
+					$predb->parseTitles(1,1,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,1,1,1);
-					$pdm->parseTitles(2,1,1,1);
+					$predb->parseTitles(2,1,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -63,13 +59,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,1,1,2);
-					$pdm->parseTitles(1,1,1,2);
+					$predb->parseTitles(1,1,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,1,1,2);
-					$pdm->parseTitles(2,1,1,2);
+					$predb->parseTitles(2,1,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -103,13 +97,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,1,2,1);
-					$pdm->parseTitles(1,1,2,1);
+					$predb->parseTitles(1,1,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,1,2,1);
-					$pdm->parseTitles(2,1,2,1);
+					$predb->parseTitles(2,1,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -136,13 +128,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,1,2,2);
-					$pdm->parseTitles(1,1,2,2);
+					$predb->parseTitles(1,1,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,1,2,2);
-					$pdm->parseTitles(2,1,2,2);
+					$predb->parseTitles(2,1,2,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -183,13 +173,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,2,1,1);
-					$pdm->parseTitles(1,2,1,1);
+					$predb->parseTitles(1,2,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,2,1,1);
-					$pdm->parseTitles(2,2,1,1);
+					$predb->parseTitles(2,2,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -216,13 +204,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,2,1,2);
-					$pdm->parseTitles(1,2,1,2);
+					$predb->parseTitles(1,2,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,2,1,2);
-					$pdm->parseTitles(2,2,1,2);
+					$predb->parseTitles(2,2,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -256,13 +242,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,2,2,1);
-					$pdm->parseTitles(1,2,2,1);
+					$predb->parseTitles(1,2,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,2,2,1);
-					$pdm->parseTitles(2,2,2,1);
+					$predb->parseTitles(2,2,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -289,13 +273,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$srr->parseTitles(1,2,2,2);
-					$pdm->parseTitles(1,2,2,2);
+					$predb->parseTitles(1,2,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$srr->parseTitles(2,2,2,2);
-					$pdm->parseTitles(2,2,2,2);
+					$predb->parseTitles(2,2,2,2);
 				}
 				else if ($argv[1] == 3)
 				{

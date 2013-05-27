@@ -10,7 +10,7 @@ require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
-require_once(WWW_DIR."/lib/predbme.php");
+require_once(WWW_DIR."/lib/predb.php");
 require_once(WWW_DIR."/lib/rarinfo.php");
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/releaseextra.php");
@@ -18,7 +18,6 @@ require_once(WWW_DIR."/lib/releasefiles.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
 require_once(WWW_DIR."/lib/rrarinfo.php");
 require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/srrdb.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/zipinfo.php");
@@ -46,8 +45,7 @@ class PostProcess
 
 	public function processAll($threads=1)
 	{
-		$this->processSRRDB();
-		$this->processPredbMe();
+		$this->processPredb();
 		$this->processAdditional($threads);
 		$this->processNfos($threads);
 		$this->processMovies($threads);
@@ -59,25 +57,14 @@ class PostProcess
 	}
 
 	//
-	// Fetch titles from srrdb.com
+	// Fetch titles from predb sites.
 	//
-	public function processSRRDB()
+	public function processPredb()
 	{
-		$srrdb = new SRRDB;
-		$titles = $srrdb->retrieveTitles();
+		$predb = new Predb;
+		$titles = $predb->combinePre();
 		if ($this->echooutput && $titles > 0)
-			echo "Fetched ".$titles." new title(s) from srrdb.com\n";
-	}
-
-	//
-	// Fetch titles from predb.me
-	//
-	public function processPredbMe()
-	{
-		$srrdb = new PredbMe;
-		$titles = $srrdb->retrieveTitles();
-		if ($this->echooutput && $titles > 0)
-			echo "Fetched ".$titles." new title(s) from predb.me\n";
+			echo "Fetched ".$titles." new title(s) from predb sources.\n";
 	}
 
 	//
