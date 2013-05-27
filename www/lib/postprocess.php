@@ -206,10 +206,12 @@ class PostProcess
 
 		$tmpPath1 = $tmpPath;
 		
-		// Insert mirco sleep to reduce MySQL load spikes
+		// Insert mirco sleep to reduce DB load spikes 
+		// 1st process is not delayed, 2nd by stagger time, 3rd by 2x stagger, 4th 3x etc
                 if ($threads > 1)
                 {
-                         usleep(($threads - 1) * 300000);
+                	$stagger = 300000;
+                        usleep(($threads - 1) * $stagger);
                 }
 
 		//
