@@ -17,6 +17,7 @@ require_once(WWW_DIR."/lib/releasefiles.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
 require_once(WWW_DIR."/lib/rrarinfo.php");
 require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/srrdb.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/zipinfo.php");
@@ -44,6 +45,7 @@ class PostProcess
 
 	public function processAll($threads=1)
 	{
+		$this->processSRRDB();
 		$this->processAdditional($threads);
 		$this->processNfos($threads);
 		$this->processMovies($threads);
@@ -52,6 +54,17 @@ class PostProcess
 		$this->processAnime($threads);
 		$this->processTv($threads);
 		$this->processBooks($threads);
+	}
+
+	//
+	// Fetch titles from srrdb.com
+	//
+	public function processSRRDB()
+	{
+		$srrdb = new SRRDB;
+		$titles = $srrdb->retrieveTitles();
+		if ($this->echooutput && $titles > 0)
+			echo "Fetched ".$titles." new title(s) from srrdb.com\n";
 	}
 
 	//
