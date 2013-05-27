@@ -1014,13 +1014,8 @@ INSERT INTO `site`
 	('debuginfo', 0),
 	('processvideos', 0),
 	('imdburl', 0),
-<<<<<<< .merge_file_Ol1ncG
 	('imdblanguage', 'en'),
-	('sqlpatch', '55');
-=======
-	('imdblanguage', 'en')
 	('sqlpatch', '56');
->>>>>>> .merge_file_fmMzhH
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
