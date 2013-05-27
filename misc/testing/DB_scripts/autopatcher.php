@@ -1,36 +1,41 @@
 <?php
 
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/tmux.php");
+require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/tmux.php");
 
 $db = new DB();
-$DIR = WWW_DIR."/..";
+$DIR = MISC_DIR;
+$smarty = SMARTY_DIR."templates_c/";
 $dbname = DB_NAME;
 
 function command_exist($cmd) {
 	$returnVal = shell_exec("which $cmd");
 	return (empty($returnVal) ? false : true);
 }
-	
+
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	$tmux = new Tmux;
+	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
-	$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
-	$sleep = $delay + 120;
-	echo "Waiting $sleep seconds for all panes to shutdown\n";
-	sleep($sleep);
 
+	if ( $running == "TRUE" )
+	{
+		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
+		$sleep = $delay + 120;
+		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
+		sleep($sleep);
+	}
 
 	system("cd $DIR && git pull");
 
 	//remove folders from smarty
-	$smarty = $DIR."www/lib/smarty/templates_c/";
-	if ((count(glob("$smarty/*"))) > 0)
+	if ((count(glob("${smarty}*"))) > 0)
 	{
 		echo "Removing old stuff from ".$smarty."\n";
-		system("sudo rm -r ".$smarty."/*");
+		system("sudo rm -r ".$smarty."*");
+		system("sudo chmod 777 ".$smarty);
 	}
 	else
 	{
@@ -43,8 +48,12 @@ if(isset($argv[1]) && $argv[1] == "true")
 		$PHP = "php";
 
 	echo "Patching database - $dbname\n";
-	system("$PHP $DIR/misc/testing/DB_scripts/patchmysql.php");
-	$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+	system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
+	if ( $running == "TRUE" )
+	{
+		echo "Starting tmux scripts\n";
+		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+	}
 }
 else
 {
