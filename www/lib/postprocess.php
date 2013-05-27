@@ -205,6 +205,12 @@ class PostProcess
 			$tmpPath = $tmpPath.'/';
 
 		$tmpPath1 = $tmpPath;
+		
+		// Insert mirco sleep to reduce MySQL load spikes
+                if ($threads > 1)
+                {
+                         usleep(($threads - 1) * 300000);
+                }
 
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
