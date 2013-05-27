@@ -1014,7 +1014,11 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
+<<<<<<< HEAD
 	('sqlpatch', '55');
+=======
+	('sqlpatch', '54');
+>>>>>>> 39df17b9c5d3de1928f9234245573c6882bb7aa8
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
