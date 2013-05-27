@@ -174,36 +174,27 @@ CREATE INDEX ix_releasecomment_releaseID ON releasecomment (`releaseID`);
 CREATE INDEX ix_releasecomment_userID ON releasecomment (`userID`);
 
 
-DROP TABLE IF EXISTS `srrdb`;
-CREATE TABLE `srrdb` 
+DROP TABLE IF EXISTS `predb`;
+CREATE TABLE `predb` 
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `title` VARCHAR(255) NOT NULL DEFAULT '',
-`pubDate` DATETIME DEFAULT NULL,
+`nfo` VARCHAR(500) NULL,
+`size` VARCHAR(50) NULL,
+`category` VARCHAR(255) NULL,
+`predate` DATETIME DEFAULT NULL,
 `adddate` DATETIME DEFAULT NULL,
+`source` VARCHAR(50) NOT NULL DEFAULT '',
+`md5` VARCHAR(255) NOT NULL DEFAULT '0',
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-INSERT IGNORE INTO `srrdb` (`title`, `pubDate`, `adddate`) VALUES ('FIRST_CHECK_DO_NOT_DELETE_THIS', '2013-05-26 10:07:25', '2013-05-26 10:07:25');
-
-CREATE INDEX ix_srrdb_title ON srrdb(`title`);
-CREATE INDEX ix_srrdb_pubDate ON srrdb(`pubDate`);
-CREATE INDEX ix_srrdb_adddate ON srrdb(`adddate`);
-
-
-DROP TABLE IF EXISTS `predbme`;
-CREATE TABLE `predbme` 
-(
-`ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`title` VARCHAR(255) NOT NULL DEFAULT '',
-`adddate` DATETIME DEFAULT NULL,
-PRIMARY KEY  (`ID`)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-INSERT IGNORE INTO `predbme` (`title`, `adddate`) VALUES ('FIRST_CHECK_DO_NOT_DELETE_THIS', '2013-05-26 10:07:25');
-
-CREATE INDEX ix_predbme_title ON predbme(`title`);
-CREATE INDEX ix_predbme_adddate ON predbme(`adddate`);
+CREATE INDEX ix_predb_title ON predb(`title`);
+CREATE INDEX ix_predb_nfo ON predb(`nfo`);
+CREATE INDEX ix_predb_predate ON predb(`predate`);
+CREATE INDEX ix_predb_adddate ON predb(`adddate`);
+CREATE INDEX ix_predb_source ON predb(`source`);
+CREATE INDEX ix_predb_md5 ON predb(`md5`);
 
 
 DROP TABLE IF EXISTS `menu`;
@@ -240,6 +231,10 @@ VALUES ('upcoming', 'Theatres',
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('series', 'TV Series', 
 	'Browse TV Series.', 1, 50);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('predb', 'PreDB', 
+	'Browse PreDB.', 1, 51);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('calendar', 'TV Calendar', 
@@ -1015,7 +1010,7 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '56');
+	('sqlpatch', '58');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
