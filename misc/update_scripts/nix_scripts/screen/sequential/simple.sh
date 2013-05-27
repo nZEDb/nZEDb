@@ -28,6 +28,7 @@ if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
 then
 	LASTOPTIMIZE=`date +%s`
 	echo "Cleaning DB..."
+	$PHP ${TEST_PATH}/fixReleaseNames.php 1 true all yes
 	$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 	$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
 	$PHP ${TEST_PATH}/removeCrapReleases.php true 2
