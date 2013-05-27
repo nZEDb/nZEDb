@@ -97,7 +97,7 @@ class Category
 		if ($activeonly)
 			$act = sprintf(" where c.status = %d %s ", Category::STATUS_ACTIVE, $exccatlist ) ;
 
-		return $db->query("select c.ID, concat(cp.title, ' > ',c.title) as title, cp.ID as parentID, c.status from category c inner join category cp on cp.ID = c.parentID ".$act." ORDER BY c.ID");
+		return $db->query("select c.ID, concat(cp.title, ' > ',c.title) as title, cp.ID as parentID, c.status, c.minsize from category c inner join category cp on cp.ID = c.parentID ".$act." ORDER BY c.ID");
 	}
 
 	public function isParent($cid)
@@ -136,7 +136,7 @@ class Category
 	public function getById($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.ID, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID from category c left outer join category cp on cp.ID = c.parentID where c.ID = %d", $id));
+		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.ID, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID, c.minsize from category c left outer join category cp on cp.ID = c.parentID where c.ID = %d", $id));
 	}
 
 	public function getByIds($ids)
@@ -145,10 +145,10 @@ class Category
 		return $db->query(sprintf("SELECT concat(cp.title, ' > ',c.title) as title from category c inner join category cp on cp.ID = c.parentID where c.ID in (%s)", implode(',', $ids)));
 	}
 
-	public function update($id, $status, $desc, $disablepreview)
+	public function update($id, $status, $desc, $disablepreview, $minsize)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update category set disablepreview = %d, status = %d, description = %s where ID = %d", $disablepreview, $status, $db->escapeString($desc), $id));
+		return $db->query(sprintf("update category set disablepreview = %d, status = %d, description = %s, minsize = %d  where ID = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
 	}
 
 	public function getForMenu($excludedcats=array())
