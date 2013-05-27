@@ -949,7 +949,7 @@ INSERT INTO `site`
     ('releasethreads', 1),
     ('nzbthreads', 1),
 	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
-	('amazonpsrivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
+	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
 	('amazonassociatetag', 'n01369-20'),
 	('tmdbkey', '9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
