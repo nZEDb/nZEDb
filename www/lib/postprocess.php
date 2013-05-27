@@ -206,7 +206,7 @@ class PostProcess
 
 		$tmpPath1 = $tmpPath;
 		
-		// Insert mirco sleep to reduce DB load spikes 
+		// Mirco sleep to reduce DB load spikes - In micro seconds
 		// 1st process is not delayed, 2nd by stagger time, 3rd by 2x stagger, 4th 3x etc
                 if ($threads > 1)
                 {
