@@ -670,7 +670,8 @@ CREATE TABLE category
 `parentID` INT NULL,
 `status` INT NOT NULL DEFAULT '1',
 `description` varchar(255) null,
-`disablepreview` tinyint(1) NOT NULL default '0'
+`disablepreview` tinyint(1) NOT NULL default '0',
+`minsize` BIGINT UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=100000 ;
 
 INSERT INTO category (ID, title) VALUES (1000, 'Console');
@@ -1013,8 +1014,13 @@ INSERT INTO `site`
 	('debuginfo', 0),
 	('processvideos', 0),
 	('imdburl', 0),
+<<<<<<< .merge_file_Ol1ncG
 	('imdblanguage', 'en'),
 	('sqlpatch', '55');
+=======
+	('imdblanguage', 'en')
+	('sqlpatch', '56');
+>>>>>>> .merge_file_fmMzhH
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
