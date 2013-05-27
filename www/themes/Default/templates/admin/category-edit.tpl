@@ -45,9 +45,9 @@
 	</td>
 </tr>
 <tr>
-	<td>Minimum File Size:</td>
+	<td>Minimum File Size In Bytes:</td>
 	<td>
-		<input type="text" class="short" name="minsize" value="{$category.minsize}" />
+		<input type="text" class="long" name="minsize" value="{$category.minsize}" />
 	</td>
 </tr>
 
