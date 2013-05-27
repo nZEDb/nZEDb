@@ -16,12 +16,12 @@
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			<td class="less">{$result.title}</td>
-			<td class="less">{$result.adddate}</td>
-			<td class="less">{$result.predate}</td>
-			<td class="less">{$result.source}</td>
-			<td class="less">{$result.category}</td>
-			<td class="less">{$result.size}</td>
+			<td class="predb">{$result.title}</td>
+			<td class="predb">{$result.adddate}</td>
+			<td class="predb">{$result.predate}</td>
+			<td class="predb">{$result.source}</td>
+			<td class="predb">{$result.category}</td>
+			<td class="predb">{$result.size}</td>
 		</tr>
 	{/foreach}
 
