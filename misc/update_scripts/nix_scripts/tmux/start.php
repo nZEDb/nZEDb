@@ -76,7 +76,9 @@ shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR
 
 //reset collections dateadded to now
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1 hour)");
+$db->query("update collections set dateadded = now() WHERE dateadded < (now() - interval 1 hour)");
+if ( $db->getAffectedRows() > 0 )
+	echo $db->getAffectedRows()." collections reset\n";
 
 function start_apps($tmux_session)
 {
@@ -172,7 +174,7 @@ else
 
 if ( $seq == "TRUE" )
 {
-	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
@@ -184,7 +186,7 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.2 && tmux splitw -t$tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");

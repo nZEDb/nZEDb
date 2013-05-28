@@ -1,5 +1,5 @@
 # Print out Memory, cpu and load using https://github.com/thewtex/tmux-mem-cpu-load
-mem_app=/var/www/nZEDb/misc/update_scripts/nix_scripts/tmux/bin/tmux-mem-cpu-load
+mem_app=bin/tmux-mem-cpu-load
 run_segment() {
 type $mem_app >/dev/null 2>&1
 if [ "$?" -ne 0 ]; then
