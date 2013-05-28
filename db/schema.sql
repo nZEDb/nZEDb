@@ -1006,7 +1006,7 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '58');
+	('sqlpatch', '59');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
