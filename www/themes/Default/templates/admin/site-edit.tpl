@@ -634,6 +634,14 @@
 </tr>
 
 <tr>
+	<td><label for="postdelay">Postprocessing Threads Delay</label>:</td>
+	<td>
+		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />
+		<div class="hint">The time in milliseconds to delay postprocessing threaded startup. This will reduce bursting to mysql.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
 	<td>
 		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />

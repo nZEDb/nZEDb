@@ -524,6 +524,13 @@ class Movie
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
+		$site = new Sites;
+        if ($threads > 1)
+        {
+            $stagger = $site->get()->postdelay;
+            usleep($threads * $stagger * 1000);
+        }
+
 		$threads--;
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));

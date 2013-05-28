@@ -175,6 +175,12 @@ class PostProcess
 		$consoleTools = new ConsoleTools();
 		$rar = new RecursiveRarInfo();
 		$site = new Sites;
+		if ($threads > 1)
+		{
+			$stagger = $site->get()->postdelay;
+			usleep($threads * $stagger * 1000);
+		}
+
 		$threads--;
 		$update_files = true;
 
