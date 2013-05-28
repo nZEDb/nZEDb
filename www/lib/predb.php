@@ -2,6 +2,8 @@
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/site.php");
+
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
@@ -10,7 +12,10 @@ Class Predb
 {
 	function Predb($echooutput=false)
 	{
+		$s = new Sites();
+		$this->site = $s->get();
 		$this->echooutput = $echooutput;
+		$this->predbhashcheck = ($this->site->predbhashcheck == "0") ? false : true;
 	}
 	
 	// Retrieve pre info from predb sources and store them in the DB.
@@ -329,41 +334,44 @@ Class Predb
 				}
 			}
 		}
-		if($this->echooutput)
+		if($this->predbhashcheck)
 		{
-			$te = "";
-			if ($time == 1)
-				$te = " in the past 3 hours";
-			echo "Fixing search names".$te." using the predb md5.\n";
-		}
-		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus < 2 and r.categoryID = 7010".$tq))
-		{
-			while ($row = mysqli_fetch_assoc($res))
+			if($this->echooutput)
 			{
-				if ($row["title"] !== $row["searchname"])
+				$te = "";
+				if ($time == 1)
+					$te = " in the past 3 hours";
+				echo "Fixing search names".$te." using the predb md5.\n";
+			}
+			if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus < 2 and r.categoryID = 7010".$tq))
+			{
+				while ($row = mysqli_fetch_assoc($res))
 				{
-					$category = new Category();
-					$determinedcat = $category->determineCategory($row["title"], $row["groupID"]);
+					if ($row["title"] !== $row["searchname"])
+					{
+						$category = new Category();
+						$determinedcat = $category->determineCategory($row["title"], $row["groupID"]);
 					
-					if ($echo == 1)
-					{
-						if ($namestatus == 1)
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
-						else
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
-					}
-					if ($this->echooutput)
-					{
-						$groups = new Groups();
+						if ($echo == 1)
+						{
+							if ($namestatus == 1)
+								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+							else
+								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+						}
+						if ($this->echooutput)
+						{
+							$groups = new Groups();
 						
-						echo"New name: ".$row["title"]."\n".
-							"Old name: ".$row["searchname"]."\n".
-							"New cat:  ".$category->getNameByID($determinedcat)."\n".
-							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
-							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
-							"Method:   "."predb md5: ".$row["source"]."\n"."\n";
+							echo"New name: ".$row["title"]."\n".
+								"Old name: ".$row["searchname"]."\n".
+								"New cat:  ".$category->getNameByID($determinedcat)."\n".
+								"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+								"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+								"Method:   "."predb md5: ".$row["source"]."\n"."\n";
+						}
+						$updated++;
 					}
-					$updated++;
 				}
 			}
 		}

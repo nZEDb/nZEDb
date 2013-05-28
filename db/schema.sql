@@ -1011,7 +1011,10 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '59');
+	('partretentionhours', 72),
+	('postdelay', 300),
+	('predbhashcheck', 0),
+	('sqlpatch', '62');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
