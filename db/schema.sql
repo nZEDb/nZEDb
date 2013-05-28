@@ -982,6 +982,7 @@ INSERT INTO `site`
 	('maxsizetoformrelease', 0),
 	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
+	('partretentionhours', 72),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
 	('deletepasswordedrelease', 0),
@@ -1010,7 +1011,10 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '59');
+	('partretentionhours', 72),
+	('postdelay', 300),
+	('predbhashcheck', 0),
+	('sqlpatch', '62');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

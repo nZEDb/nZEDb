@@ -125,7 +125,7 @@
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 
-	{if $reVideo.releaseID|@count > 0}
+	{if $reVideo.releaseID|@count > 0 || $reAudio|@count > 0}
 	<tr><th>Media Info:</th>
 		<td style="padding:0;">
 			<table style="width:100%;" class="innerdata highlight">
@@ -312,7 +312,7 @@
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possible Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}

@@ -293,13 +293,18 @@ require_once(WWW_DIR."/lib/site.php");
 				return false;
 		}
 		
-		public function updateBookInfo($bookInfo)
+		public function updateBookInfo($bookInfo = '', $amazdata = null)
 		{
 			$db = new DB();
 			$ri = new ReleaseImage();
 		
 			$book = array();
-			$amaz = $this->fetchAmazonProperties($bookInfo);
+
+			if ($bookInfo != '')
+				$amaz = $this->fetchAmazonProperties($bookInfo);
+			elseif ($amazdata != null)
+				$amaz = $amazdata;
+
 			if (!$amaz) 
 				return false;
 				
@@ -328,7 +333,7 @@ require_once(WWW_DIR."/lib/site.php");
 			if ($book['publisher'] == "")
 				$book['publisher'] = 'null';
 			
-			$book['publishdate'] = (string) $amaz->Items->Item->ItemAttributes->PublicationDate;
+			$book['publishdate'] = date("Y-m-d", strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
 			if ($book['publishdate'] == "")
 				$book['publishdate'] = 'null';
 			
@@ -388,3 +393,4 @@ require_once(WWW_DIR."/lib/site.php");
 			return $bookId;
 		}
 	}
+?>
