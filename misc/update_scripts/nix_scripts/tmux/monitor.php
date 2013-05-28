@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2125";
+$version="0.1r2132";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -14,6 +14,7 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
+$powerline = $tmux->get()->POWERLINE;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -315,7 +316,7 @@ while( $i > 0 )
 	}
 
 	//get start values from $qry
-	if ( $i == 1 ) 
+	if ( $i == 1 )
 	{
 		if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_result[0]['nforemains']; }
 		if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_result[0]['console']; }
@@ -525,8 +526,8 @@ while( $i > 0 )
 	$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-    $panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
-    $panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
+	$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
+	$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
 
 	if (command_exist("php5"))
 		$PHP = "php5";
@@ -708,38 +709,38 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t ${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess All\"'");
 		}
 
-        if ( $post == "TRUE" )
-        {
-            //run postprocess_releases amazon
-            $history = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep 1: | awk '{print $4;}'` );
-            if ( $last_history != $history )
-            {
-                $last_history = $history;
-                $time9 = TIME();
-            }
-            else
-            {
-                if ( TIME() - $time9 >= $post_kill_timer )
-                {
-                    shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been terminated by Possible Hung thread\"'");
-                    $wipe = `tmux clearhist -t ${tmux_session}:2.1`;
-                    $color = get_color();
-                    $time9 = TIME();
-                }
-            }
-            $dead1 = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep dead | grep 1: | wc -l` );
-            if ( $dead1 == 1 )
-                $time9 = TIME();
-            $log = writelog($panes2[1]);
-            shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
+		if ( $post == "TRUE" )
+		{
+			//run postprocess_releases amazon
+			$history = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep 1: | awk '{print $4;}'` );
+			if ( $last_history != $history )
+			{
+				$last_history = $history;
+				$time9 = TIME();
+			}
+			else
+			{
+				if ( TIME() - $time9 >= $post_kill_timer )
+				{
+					shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been terminated by Possible Hung thread\"'");
+					$wipe = `tmux clearhist -t ${tmux_session}:2.1`;
+					$color = get_color();
+					$time9 = TIME();
+				}
+			}
+			$dead1 = str_replace( " ", '', `tmux list-panes -t ${tmux_session}:2 | grep dead | grep 1: | wc -l` );
+			if ( $dead1 == 1 )
+				$time9 = TIME();
+			$log = writelog($panes2[1]);
+			shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
 					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
-                    $_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
-        }
-        else
-        {
-            $color = get_color();
-            shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess All\"'");
-        }
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess All\"'");
+		}
 
 		//update tv and theaters
 		if (( $update_tv == "TRUE" ) && (( TIME() - $time4 >= $tv_timer ) || ( $i == 1 )))
@@ -781,14 +782,14 @@ while( $i > 0 )
 			//run update_binaries
 			$color = get_color();
 			$log = writelog($panes0[2]);
-			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 3600 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && \
 						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
+			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 3600 ))
 			{
 				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \

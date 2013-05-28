@@ -25,7 +25,7 @@ function writelog( $pane )
 	$logs = $tmux->get()->WRITE_LOGS;
 	if ( $logs == "TRUE" )
 	{
-	    return "2>&1 | tee -a $path/$pane-$getdate.log";
+		return "2>&1 | tee -a $path/$pane-$getdate.log";
 	}
 	else
 	{
@@ -35,12 +35,12 @@ function writelog( $pane )
 
 if ( $hashcheck != '1' )
 {
-    echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
-    echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
-    exit(1);
+	echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
+	echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
+	exit(1);
 }
 
-if ( $patch < '59' )
+if ( $patch < '60' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -76,7 +76,9 @@ shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR
 
 //reset collections dateadded to now
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now() WHERE dateadded > (now() - interval 1 hour)");
+$db->query("update collections set dateadded = now() WHERE dateadded < (now() - interval 1 hour)");
+if ( $db->getAffectedRows() > 0 )
+	echo $db->getAffectedRows()." collections reset\n";
 
 function start_apps($tmux_session)
 {
@@ -137,16 +139,14 @@ function window_utilities($tmux_session)
 
 function window_post($tmux_session)
 {
-	shell_exec("tmux new-window -t$tmux_session -n post 'printf \"\033]2;postprocessing_amazon\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_non_amazon\033\"'");
-	//shell_exec("tmux splitw -t$tmux_session:2 -h -p 50 'printf \"\033]2;postprocessing_books_games\033\"'");
-	//shell_exec("tmux selectp -t 0 && tmux splitw -t$tmux_session:2 -h -p 50 'printf \"\033]2;postproccessing_music_anidb\033\"'");
+	shell_exec("tmux new-window -t$tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\"'");
+	shell_exec("tmux splitw -t$tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
 function window_optimize($tmux_session)
 {
-    shell_exec("tmux new-window -t$tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
-    shell_exec("tmux splitw -t$tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
+	shell_exec("tmux new-window -t$tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
+	shell_exec("tmux splitw -t$tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
 function attach($DIR, $tmux_session)
@@ -156,9 +156,9 @@ function attach($DIR, $tmux_session)
 	else
 		$PHP = "php";
 
-    //get list of panes by name
-    $panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-    $panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
+	//get list of panes by name
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
 	shell_exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
 	shell_exec("tmux select-window -t$tmux_session:0 && tmux attach-session -d -t$tmux_session");
@@ -172,19 +172,19 @@ else
 
 if ( $seq == "TRUE" )
 {
-	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-    window_optimize($tmux_session);
+	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }
 else
 {
-	shell_exec("tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 	shell_exec("tmux selectp -t$tmux_session:0.2 && tmux splitw -t$tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
