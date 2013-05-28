@@ -1,6 +1,6 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
 
 //
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
