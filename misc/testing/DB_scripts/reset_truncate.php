@@ -1,6 +1,6 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
 
 //
 //	This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.

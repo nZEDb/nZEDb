@@ -24,10 +24,11 @@ Class Predb
 		{
 			$newwomble = $this->retrieveWomble();
 			$newzenet = $this->retrieveZenet();
+			$newprelist = $this->retrievePrelist();
 			$neworly = $this->retrieveOrlydb();
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
-			$newnames = $newwomble+$newzenet+$neworly+$newsrr+$newpdme;
+			$newnames = $newwomble+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
 		}
@@ -122,6 +123,57 @@ Class Predb
 		return $newnames;
 	}
 	
+	public function retrievePrelist()
+	{
+		$db = new DB;
+		$newnames = 0;
+
+		$buffer = getUrl("http://www.prelist.ws/");
+		if ($buffer !== false && strlen($buffer))
+		{
+			$ret = array();
+			if (preg_match_all('/<small><span.+?<\/span><\/small>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (!preg_match('/NUKED/', $m) && preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<title>.+?)<\/a>.+?(b>\[ (?P<size>.+?) \]<\/b)?/si', $m, $matches2))
+						{
+							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							if ($oldname["title"] == $matches2["title"])
+								continue;
+							else
+							{
+								if (!isset($matches2["size"]) && empty($matches["size"]))
+									$size = "NULL";
+								else
+									$size = $db->escapeString(round($matches2["size"]));
+								
+								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$newnames++;
+							}
+						}
+						else if (preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<category1>.+?)<\/a.+">(?P<title>.+?)<\/a>/si', $m, $matches2))
+						{
+							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							if ($oldname["title"] == $matches2["title"])
+								continue;
+							else
+							{
+								$category = $db->escapeString($matches2["category"].", ".$matches2["category1"]);
+								
+								$db->query(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$newnames++;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $newnames;
+	}
+	
 	public function retrieveOrlydb()
 	{
 		$db = new DB;
@@ -203,8 +255,6 @@ Class Predb
 					$newnames++;
 				}
 			}
-			if ($newnames == 0)
-				$db->query(sprintf("UPDATE predbme SET adddate = now() where ID = %d", $newestrel["ID"]));
 		}
 		return $newnames;
 	}

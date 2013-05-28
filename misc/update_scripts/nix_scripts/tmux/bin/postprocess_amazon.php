@@ -1,7 +1,7 @@
 <?php
 
-require(dirname(__FILE__)."/../config.php");
-require(WWW_DIR."/lib/postprocess.php");
+require_once(dirname(__FILE__)."/../../../config.php");
+require_once(WWW_DIR."lib/postprocess.php");
 
 if (isset($argv[1]) && is_numeric($argv[1]))
 {

@@ -74,10 +74,10 @@ class WorkerThread(threading.Thread):
 				dirname = self.threadID.get(True, 0.05)
 				print '\n%s: Backfill %s started.' % (self.name, dirname)
 				if type[0] == "TRUE":
-					subprocess.call(["php", pathname+"/backfill_interval.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+dirname])
 					#subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
 				else:
-					subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_other.php", ""+dirname])
 					#subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
 			except Queue.Empty:

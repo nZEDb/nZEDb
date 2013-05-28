@@ -417,6 +417,44 @@
 				</td>
 			</tr>
 
+
+		</table>
+</fieldset>
+
+<fieldset>
+	<legend>Optimize and Patch</legend>
+		<table class="input">
+			<tr>
+				<td><label for="OPTIMIZE">Optimize Database</label>:</td>
+				<td>
+					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE}
+					<div class="hint">Choose to optimize you database true/false<br />This is not affected by TMUX Running</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Start Timer</label>:</td>
+				<td>
+					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="tiny" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
+					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td><label for="PATCHDB">Patch the Database</label>:</td>
+				<td>
+					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB}
+					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails.<br />This is not affected by TMUX Running</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="PATCHDB_TIMER">Patch Database Start Timer</label>:</td>
+				<td>
+					<input id="PATCHDB_TIMER" name="PATCHDB_TIMER" class="tiny" type="text" value="{$ftmux->PATCHDB_TIMER}" />
+					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.<br />This does not run separately if Optimize Database = TRUE</div>
+				</td>
+			</tr>
 		</table>
 </fieldset>
 
