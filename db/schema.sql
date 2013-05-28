@@ -77,6 +77,7 @@ CREATE TABLE `releases`
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
 `jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
+`audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1013,7 +1014,8 @@ INSERT INTO `site`
 	('partretentionhours', 72),
 	('postdelay', 300),
 	('predbhashcheck', 0),
-	('sqlpatch', '62');
+	('processaudiosample', 0),
+	('sqlpatch', '63');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
