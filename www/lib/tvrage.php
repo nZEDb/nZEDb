@@ -3,6 +3,7 @@ require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/trakttv.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class TvRage
 {	
@@ -457,10 +458,16 @@ class TvRage
 	
 	public function processTvReleases($threads=1, $lookupTvRage=true)
 	{
-		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
+		$site = new Sites;
+        if ($threads > 1)
+        {
+            $stagger = $site->get()->postdelay;
+            usleep($threads * $stagger * 1000);
+        }
+		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
 		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
