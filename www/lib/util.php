@@ -91,7 +91,7 @@ function checkStatus($code) {
 	return ($code == 0) ? true : false;
 }
 
-function getUrl($url, $method='get', $postdata='')
+function getUrl($url, $method='get', $postdata='', $language="")
 {
 	$ch = curl_init();
 	if ($method == 'post') {
@@ -99,7 +99,15 @@ function getUrl($url, $method='get', $postdata='')
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
    	}
 	curl_setopt($ch, CURLOPT_URL, $url);
-	$header[] = "Accept-Language: en-us";
+	if ($language == "")
+		$language = "en-us";
+	else if ($language == "en")
+		$language = "en-us";
+	else if ($language == "fr")
+		$language = "fr-fr";
+	else if ($language == "de")
+		$language = "de-de";
+	$header[] = "Accept-Language: ".$language;
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -295,7 +303,7 @@ function release_fileicon ($x, $t)
 	else if(preg_match('/ (mp3|flac)( |$)/i', $x))
 		$y = "audio";
 	if ($y !== "" && $t == "browse")
-		return '<img src="./themes/Default/images/fileicons/'.$y.'.png" />';
+		return '<img src="./themes/Default/images/multimedia/'.$y.'.png" />';
 	else if ($t == "search")
 	{
 		if ($y == "")

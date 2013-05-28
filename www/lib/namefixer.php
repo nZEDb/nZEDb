@@ -16,56 +16,6 @@ class Namefixer
 	}
 	
 	//
-	// Attempts to fix release names using the release name.
-	//
-	public function fixNamesWithNames($time, $echo, $cats, $namestatus)
-	{
-		$db = new DB();
-		$type = "Release Name, ";
-		$query = "SELECT name as textstring, searchname, categoryID, groupID, ID as releaseID from releases where categoryID != 5070 and relnamestatus = 1";
-		
-		//24 hours, other cats
-		if ($time == 1 && $cats == 1)
-		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour) and (categoryID like \"1090\" or categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
-		}
-		//24 hours, all cats
-		if ($time == 1 && $cats == 2)
-		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour)"." order by releaseID asc");
-		}
-		//other cats
-		if ($time == 2 && $cats == 1)
-		{
-			$relres = $db->queryDirect($query." and (categoryID like \"1090\" or categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
-		}
-		//all cats
-		if ($time == 2 && $cats == 2)
-		{
-			$relres = $db->queryDirect($query." order by releaseID asc");
-		}
-		
-		$rowcount = $db->getAffectedRows();
-		
-		if ($rowcount > 0)
-		{
-			while ($relrow = $db->fetchArray($relres))
-			{
-				$this->checkName($relrow, $echo, $type, $namestatus);
-				$this->checked++;
-				if ($this->checked % 500 == 0)
-					echo $this->checked." names processed.\n\n";
-			}
-			if ($echo == 1)
-				echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
-			else
-				echo $this->fixed." releases could have their names changed. ".$this->checked." release names were checked.\n";
-		}
-		else
-			echo "Nothing to fix.\n";
-	}
-	
-	//
 	//	Attempts to fix release names using the NFO.
 	//
 	public function fixNamesWithNfo($time, $echo, $cats, $namestatus)

@@ -10,6 +10,7 @@ require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/predb.php");
 require_once(WWW_DIR."/lib/rarinfo.php");
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/releaseextra.php");
@@ -23,7 +24,6 @@ require_once(WWW_DIR."/lib/zipinfo.php");
 
 class PostProcess
 {
-
 	function PostProcess($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
@@ -45,6 +45,7 @@ class PostProcess
 
 	public function processAll($threads=1)
 	{
+		$this->processPredb();
 		$this->processAdditional($threads);
 		$this->processNfos($threads);
 		$this->processMovies($threads);
@@ -53,6 +54,17 @@ class PostProcess
 		$this->processAnime($threads);
 		$this->processTv($threads);
 		$this->processBooks($threads);
+	}
+
+	//
+	// Fetch titles from predb sites.
+	//
+	public function processPredb()
+	{
+		$predb = new Predb;
+		$titles = $predb->combinePre();
+		if ($this->echooutput && $titles > 0)
+			echo "Fetched ".$titles." new title(s) from predb sources.\n";
 	}
 
 	//
@@ -186,7 +198,7 @@ class PostProcess
 		//
 		if ($id != '')
 		{
-			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
 			left join category c on c.ID = r.categoryID
 			where r.ID = %d", $id);
 			$result = $db->query($query);
@@ -197,7 +209,7 @@ class PostProcess
 			$result = 0;
 			while ((count($result) != $this->addqty) && ($i >= $tries))
 			{
-				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID from releases r
+				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
 				left join category c on c.ID = r.categoryID
 				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
 				AND (r.haspreview = -1 and c.disablepreview = 0) AND r.size < %d order by r.postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->addqty)*($threads * 1.5)), $this->addqty);
@@ -385,7 +397,7 @@ class PostProcess
 						if (preg_match($this->supportfiles.")/i", $rarFile['subject']))
 							continue;
 
-						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile['subject'])) // removed \d{2,3}
+						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile['subject']))
 						{
 							$this->doecho("Not matched and skipping ".$rarFile['subject']);
 							continue;
@@ -403,7 +415,7 @@ class PostProcess
 						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 						{
-//							$this->doecho("New files don't seem to contribute.");
+							//$this->doecho("New files don't seem to contribute.");
 							continue;
 						}
 
@@ -414,7 +426,7 @@ class PostProcess
 						if ($fetchedBinary !== false)
 						{
 							$notinfinite++;
-							$relFiles = $this->processReleaseFiles($fetchedBinary, $tmpPath, $rel['ID']);
+							$relFiles = $this->processReleaseFiles($fetchedBinary, $tmpPath, $rel['ID'], $rel['nfostatus']);
 							if ($this->password)
 								$passStatus[] = Releases::PASSWD_RAR;
 
@@ -586,7 +598,7 @@ class PostProcess
 
 						if ($row === false)
 						{
-//							$this->doecho("adding missing file ".$rel['guid']);
+							//$this->doecho("adding missing file ".$rel['guid']);
 							$rf->add($rel['ID'], $file['name'], $file['size'], $file['createddate'], $file['passworded'] );
 						}
 					}
@@ -624,7 +636,7 @@ class PostProcess
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0, $db)
+	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0, $db, $nfostatus)
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo;
@@ -650,12 +662,13 @@ class PostProcess
 		$files = $zip->getFileList();
 		$dataarray = array();
 		if ($files !== false)
+		{
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				// Extract a NFO from the rar.
-				if ($file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
+				if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 				{
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
@@ -668,6 +681,7 @@ class PostProcess
 					}
 				}
 			}
+		}
 
 		if ($data)
 		{
@@ -689,7 +703,7 @@ class PostProcess
 	}
 
 	// Open the rar, see if it has a password, attempt to get a file.
-	function processReleaseFiles($fetchedBinary, $tmpPath, $relid)
+	function processReleaseFiles($fetchedBinary, $tmpPath, $relid, $nfostatus)
 	{
 		$retval = array();
 		$rar = new RecursiveRarInfo();
@@ -764,7 +778,7 @@ class PostProcess
 							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
 
 							// Extract a NFO from the rar.
-							if ($file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
+							if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
 							{
 								$nfodata = $rar->getFileData($file['name'], $file['source']);
 								$nzbcontents = new NZBcontents(true);
@@ -800,8 +814,9 @@ class PostProcess
 		else
 		{
 			// Load the ZIP file or data.
-			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db);
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db, $nfostatus);
 			if ($files !== false)
+			{
 				foreach ($files as $file)
 				{
 					if ($file['pass'])
@@ -816,7 +831,7 @@ class PostProcess
 					$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 					$retval[] = array('name'=>$file['name'], 'source'=>"main", 'range'=>$file['range']);
 				}
-		}
+			}
 			else
 				$this->ignorenumbered = true;
 		}
@@ -918,14 +933,15 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet "'.$ramdrive.'zzzz%03d.jpg"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$ramdrive.'zzzz%03d.jpg"');
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
 						if(preg_match("/zzzz\d{3}\.jpg/",$all_files[1]))
 						{
 							$ri->saveImage($releaseguid.'_thumb', $ramdrive.$all_files[1], $ri->imgSavePath, 800, 600);
-							$retval = true;
+							if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
+								$retval = true;
 						}
 
 						// Clean up all files.
@@ -933,6 +949,8 @@ class PostProcess
 						{
 							@unlink($v);
 						}
+						if ($retval === true)
+							break;
 					}
 				}
 			}
@@ -957,15 +975,21 @@ class PostProcess
 			{
 				if (preg_match("/".$this->videofileregex."$/i",$samplefile))
 				{
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -vframes 500 -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogv"');
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
 						if(preg_match("/".$releaseguid."\.ogv/",$all_files[1]))
 						{
-							copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
-							$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
-							$retval = true;
+							if (filesize($ramdrive.$releaseguid.".ogv") > 4096)
+							{
+								copy($ramdrive.$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
+								if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
+								{
+									$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+									$retval = true;
+								}
+							}
 						}
 
 						// Clean up all files.
@@ -973,6 +997,8 @@ class PostProcess
 						{
 							@unlink($v);
 						}
+						if ($retval === true)
+							break;
 					}
 				}
 			}

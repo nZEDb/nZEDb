@@ -13,6 +13,7 @@
 		<th>parent</th>
 		<th>active</th>
 		<th>disable preview</th>
+		<th>minimum size</th>
 	</tr>
 	
 	{foreach from=$categorylist item=category}
@@ -28,6 +29,7 @@
 		</td>
 		<td>{if $category.status == "1"}Active{elseif $category.status == "2"}Disabled{else}Hidden{/if}</td>
 		<td>{if $category.disablepreview == "1"}Yes{else}No{/if}</td>
+		<td>{$category.minsize}</td>
 	</tr>
 	{/foreach}
 

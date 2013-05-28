@@ -125,7 +125,7 @@
 <table class="input">
 
 <tr>
-	<td><label for="style">Categorize Language</label>:</td>
+	<td><label for="catlanguage">Categorize Language</label>:</td>
 	<td>
 		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
 		<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
@@ -145,6 +145,22 @@
 	<td>
 		{html_radios id="catwebdl" name='catwebdl' values=$yesno_ids output=$yesno_names selected=$fsite->catwebdl separator='<br />'}
 		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="imdburl">IMDB.com</label>:</td>
+	<td>
+		{html_options class="imdburl" id="imdburl" name='imdburl' values=$imdb_urls output=$imdburl_names selected=$fsite->imdburl}
+		<div class="hint">Akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="imdblanguage">IMDB/Tmdb Language</label>:</td>
+	<td>
+		{html_options class="imdblanguage" id="imdblanguage" name='imdblanguage' values=$imdblang_ids output=$imdblang_names selected=$fsite->imdblanguage}
+		<div class="hint">Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)</div>
 	</td>
 </tr>
 
@@ -605,7 +621,7 @@
 	<td><label for="amazonsleep">Amazon sleep time</label>:</td>
 	<td>
 		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
-		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by 3. https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</div>
+		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
 	</td>
 </tr>
 
