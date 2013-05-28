@@ -139,10 +139,8 @@ function window_utilities($tmux_session)
 
 function window_post($tmux_session)
 {
-	shell_exec("tmux new-window -t$tmux_session -n post 'printf \"\033]2;postprocessing_amazon\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_non_amazon\033\"'");
-	//shell_exec("tmux splitw -t$tmux_session:2 -h -p 50 'printf \"\033]2;postprocessing_books_games\033\"'");
-	//shell_exec("tmux selectp -t 0 && tmux splitw -t$tmux_session:2 -h -p 50 'printf \"\033]2;postproccessing_music_anidb\033\"'");
+	shell_exec("tmux new-window -t$tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\"'");
+	shell_exec("tmux splitw -t$tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
 function window_optimize($tmux_session)
