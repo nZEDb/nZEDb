@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE HTML>, <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+{*<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> *}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -14,7 +15,8 @@
 {/if}
 
 	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_TOP}/themes/Default/images/favicon.ico"/>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery-1.9.1.js"></script>
+{*	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery-1.9.1.js"></script>*}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>
     <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.qtip.js"></script>
     <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
