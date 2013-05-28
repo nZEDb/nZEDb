@@ -72,8 +72,6 @@ foreach ($apps as &$value)
 	}
 }
 
-shell_exec("if ! $(python -c \"import MySQLdb\" &> /dev/null); then echo \"ERROR: not installed not usable\" >&2; exit 2; fi");
-
 //reset collections dateadded to now
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
 $db->query("update collections set dateadded = now() WHERE dateadded < (now() - interval 1 hour)");
