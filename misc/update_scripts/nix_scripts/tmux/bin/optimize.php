@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(dirname(__FILE__)."/../../../config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 
@@ -19,6 +19,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	$tmux = new Tmux;
 	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
+	$patch = $tmux->get()->PATCHDB;
 
 	if ( $running == "TRUE" )
 	{
@@ -28,26 +29,32 @@ if(isset($argv[1]) && $argv[1] == "true")
 		sleep($sleep);
 	}
 
-	system("cd $DIR && git pull");
-
-	//remove folders from smarty
-	if ((count(glob("${smarty}*"))) > 0)
+	if ( $patch == "TRUE" )
 	{
-		echo "Removing old stuff from ".$smarty."\n";
-		system("rm -r ".$smarty."*");
-	}
-	else
-	{
-		echo "Nothing to remove from ".$smarty."\n";
+		system("cd $DIR && git pull");
+
+		//remove folders from smarty
+		if ((count(glob("${smarty}*"))) > 0)
+		{
+			echo "Removing old stuff from ".$smarty."\n";
+			system("rm -r ".$smarty."*");
+		}
+		else
+		{
+			echo "Nothing to remove from ".$smarty."\n";
+		}
+
+		if (command_exist("php5"))
+			$PHP = "php5";
+		else
+			$PHP = "php";
+
+		echo "Patching database - $dbname\n";
+		system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
 	}
 
-	if (command_exist("php5"))
-		$PHP = "php5";
-	else
-		$PHP = "php";
+	require_once(MISC_DIR."update_scripts/optimise_db.php");
 
-	echo "Patching database - $dbname\n";
-	system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
 	if ( $running == "TRUE" )
 	{
 		echo "Starting tmux scripts\n";

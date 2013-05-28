@@ -60,11 +60,11 @@ class WorkerThread(threading.Thread):
 			try:
 				dirname = self.threadID.get(True, 0.05)
 				if sys.argv[1] == "amazon":
-					subprocess.call(["php", pathname+"/postprocess_amazon.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+dirname])
 				elif sys.argv[1] == "non_amazon":
-					subprocess.call(["php", pathname+"/postprocess_non_amazon.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_non_amazon.php", ""+dirname])
 				elif sys.argv[1] == "all":
-					subprocess.call(["php", pathname+"/postprocess.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess.php", ""+dirname])
 			except Queue.Empty:
 				continue
 
@@ -102,3 +102,4 @@ def main(args):
 if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
+
