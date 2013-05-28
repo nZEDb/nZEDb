@@ -15,9 +15,9 @@ class TvRage
 		$s = new Sites();
 		$site = $s->get();
 		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
-		
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->echooutput = $echooutput;
-		
+
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
 		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid="; 	
 		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=".TvRage::APIKEY;
@@ -462,11 +462,10 @@ class TvRage
 		$db = new DB();
 		$trakt = new Trakttv();
 		$site = new Sites;
-        if ($threads > 1)
-        {
-            $stagger = $site->get()->postdelay;
-            usleep($threads * $stagger * 1000);
-        }
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
 		$threads--;
 
 		// get all releases without a rageid which are in a tv category.

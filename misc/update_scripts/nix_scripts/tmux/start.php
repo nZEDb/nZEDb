@@ -25,7 +25,7 @@ function writelog( $pane )
 	$logs = $tmux->get()->WRITE_LOGS;
 	if ( $logs == "TRUE" )
 	{
-	    return "2>&1 | tee -a $path/$pane-$getdate.log";
+		return "2>&1 | tee -a $path/$pane-$getdate.log";
 	}
 	else
 	{
@@ -35,9 +35,9 @@ function writelog( $pane )
 
 if ( $hashcheck != '1' )
 {
-    echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
-    echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
-    exit(1);
+	echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
+	echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
+	exit(1);
 }
 
 if ( $patch < '60' )
@@ -145,8 +145,8 @@ function window_post($tmux_session)
 
 function window_optimize($tmux_session)
 {
-    shell_exec("tmux new-window -t$tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
-    shell_exec("tmux splitw -t$tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
+	shell_exec("tmux new-window -t$tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
+	shell_exec("tmux splitw -t$tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
 function attach($DIR, $tmux_session)
@@ -156,9 +156,9 @@ function attach($DIR, $tmux_session)
 	else
 		$PHP = "php";
 
-    //get list of panes by name
-    $panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-    $panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
+	//get list of panes by name
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
 	shell_exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
 	shell_exec("tmux select-window -t$tmux_session:0 && tmux attach-session -d -t$tmux_session");
@@ -178,7 +178,7 @@ if ( $seq == "TRUE" )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-    window_optimize($tmux_session);
+	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }
