@@ -60,7 +60,7 @@ Class Predb
 							$oldname = $db->queryOneRow(sprintf("SELECT title, source, ID FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
 							if ($oldname["title"] == $matches2["title"])
 							{
-								if ($oldname["source"] == $matches2["source"])
+								if ($oldname["source"] == "womble")
 									continue;
 								else
 								{
