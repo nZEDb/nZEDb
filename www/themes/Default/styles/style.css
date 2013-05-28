@@ -63,7 +63,7 @@ page structure
 /*
 browse by category top menu
 */
-#menu 
+#menu
 {
 	height:33px;
 	float: left;
@@ -77,7 +77,7 @@ browse by category top menu
 
 .menupic {padding-left:15px;}
 
-#menulink 
+#menulink
 {
 	float: left;
 	margin-left: 5px;
@@ -113,10 +113,15 @@ data tables, most lists.
 #browsetable, #coverstable, #forumtable { margin-top: 10px; clear: both; }
 table.data { border-collapse:collapse; }
 table.data th { text-align:left; vertical-align:top; background-color:#DDD; border-color: #AAA; border-width: 1px; border-style: solid; padding:3px; font-style:bolder; text-transform:capitalize;}
-table.data td { white-space:normal; vertical-align:top; padding:5px; border-color: #AAA; border-width: 1px; border-style: solid; }
+table.data td { white-space:normal; border-color: #AAA; border-width: 1px; border-style: solid; }
 table.data td.less { color: #888; font-size: 0.9em; white-space:nowrap; }
-table.data td.icons { white-space:nowrap; padding-left:0px; padding-right:0px; }
-table.data td.check {cursor:pointer;}
+table.data td.icons { width: 64px; margin-left: auto; margin-right: auto; white-space:nowrap; padding-left:0px; padding-right:0px; }
+table.data td.category { width: 70px; text-align:center; font-size:0.9em; }
+table.data td.posted { width: 40px; text-align:center; font-size:0.9em; }
+table.data td.size { width: 56px; text-align:center; font-size:0.9em; }
+table.data td.files { width: 30px; text-align:center; font-size:0.9em; }
+table.data td.stats { width: 52px; text-align:center; font-size:0.9em; }
+table.data td.check { width: 6px; cursor:pointer;}
 table.highlight tr:hover td { background-color: #FDF5E6; }
 table tr.alt { background-color: #F6F6F6; }
 table tr.new { background-color: #f6f8ff; }
@@ -163,7 +168,7 @@ div.pager .current {color:#fff; font-weight:bold; background-color:#777; padding
 /*
 round buttoning
 */
-.rndbtn { padding:0 4px 0 4px; margin-right:1px; border:1px #CCC solid; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px;}
+.rndbtn { padding:2px 2px 2px 2px; margin:1px 2px 1px 1px; border:1px #CCC solid; border-radius: 3px; -moz-border-radius: 3px;  -webkit-border-radius: 3px;}
 table.highlight tr:hover .rndbtn, table tr.alt .rndbtn { background-color: #fff; }
 table.highlight tr:hover .rndbtn:hover { background-color: #DDD; }
 table.highlight tr:hover td.static { background-color: #FFF; }
@@ -182,7 +187,7 @@ pre#nfo { font-family: "Courier New", "DejaVu Sans Mono", monospace; font-size: 
 
 div.resextra { padding-top:7px; color: #555; font-size: 0.9em; height:16px; }
 div.resextra a.browsename { color: #B22222; font-size: 0.9em; }
-a.browsename:active {text-decoration: none} 
+a.browsename:active {text-decoration: none}
 a.browsename:hover {text-decoration: underline}
 div.resextra a { color: #555; text-decoration:none; }
 div.resextra div.admin { float:right; }
@@ -220,28 +225,28 @@ div.nosearchresults ul { line-height: 150%;}
 
 span.warning { color: red; }
 
-/*! Newznab tooltip style */
-.ui-tooltip-newznab .ui-tooltip-titlebar,
-.ui-tooltip-newznab .ui-tooltip-content{
+/*! nZEDb tooltip style */
+.ui-tooltip-nzedb .ui-tooltip-titlebar,
+.ui-tooltip-nzedb .ui-tooltip-content{
 	border-color: #90D93F;
 	color: #3F6219;
 }
 
-	.ui-tooltip-newznab .ui-tooltip-content{
+	.ui-tooltip-nzedb .ui-tooltip-content{
 		background-color: #CAED9E;
 	}
 
-	.ui-tooltip-newznab .ui-tooltip-titlebar{
+	.ui-tooltip-nzedb .ui-tooltip-titlebar{
 		background-color: #B0DE78;
 		color:white;
 	}
 
-	.ui-tooltip-newznab .ui-state-default .ui-tooltip-icon{
+	.ui-tooltip-nzedb .ui-state-default .ui-tooltip-icon{
 		background-position: -42px 0;
 	}
 
 .rarfilelist {cursor:pointer;}
-/*.tooltiphead {background-color:#A9DB66; padding:5px;color:white; font-weight:bold; margin:-5px -10px 5px -10px;}*/
+.tooltiphead {background-color:#A9DB66; padding:5px;color:white; font-weight:bold; margin:-5px -10px 5px -10px;}
 .ui-tooltip ul {padding:0; margin:0;line-height: 160%;}
 .ui-tooltip li {list-style-type:none;}
 
@@ -263,7 +268,7 @@ movie, console and music modals with backdrop images.
 #musicinfo img.cover { float:right;  margin:20px 20px 0 20px; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #333; -webkit-box-shadow: 3px 6px 8px -4px #333; box-shadow: 3px 6px 8px -4px #333; }
 #musicinfo p {text-align: left; line-height: 180%;}
 
-/* 
+/*
 icons and multioperation buttons
 */
 input.nzb_check_all { margin-left:6px; }
@@ -273,14 +278,7 @@ div.nzb_multi_operations input { color:#888; background-color:#fff; border:1px s
 div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor:pointer; }
 
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
-table.data td.icons div.icon { opacity:.20; }
-.browseicons { width: 60px; opacity:.75; text-align:center; }
-.browseicons :hover { opacity:.40;}
-.browsestats { width: 50px; text-align:right; font-size:0.9em; }
-.browsefiles { width: 35px; text-align:right; font-size:0.9em; }
-.browsesize { width: 58px; text-align:right; font-size:0.9em; }
-.browseposted { width: 43px; text-align:right; font-size:0.9em; }
-.browsecategory { width: 70px; text-align:right; font-size:0.9em; }
+table.data td.icons div.icon { opacity:.30; }
 div.icon_cart			{ background-image:url('../images/icons/cartup.png'); }
 div.icon_cart_clicked	{ background-image:url('../images/icons/cartdown.png'); }
 div.icon_nzb			{ background-image:url('../images/icons/nzbup.png'); }
@@ -336,7 +334,7 @@ div.icon_check			{ background-image:url('../images/icons/check.png'); }
         .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
 
 /*
-    The following fixes png-transparency for IE6.  
+    The following fixes png-transparency for IE6.
 */
 .cboxIE #cboxTopLeft{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/colorbox/internet_explorer/borderTopLeft.png, sizingMethod='scale');}
 .cboxIE #cboxTopCenter{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/colorbox/internet_explorer/borderTopCenter.png, sizingMethod='scale');}
