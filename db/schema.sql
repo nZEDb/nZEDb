@@ -982,6 +982,7 @@ INSERT INTO `site`
 	('maxsizetoformrelease', 0),
 	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
+	('partretentionhours', 72),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
 	('deletepasswordedrelease', 0),
