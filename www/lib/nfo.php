@@ -52,13 +52,18 @@ class Nfo
 	
 	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
-		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
 		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
+		if ($threads > 1)
+		{
+			$stagger = $site->get()->postdelay;
+			usleep($threads * $stagger * 1000);
+		}
+		$threads--;
 
 		$i = -1;
 		$nfocount = 0;
