@@ -442,10 +442,18 @@
 </tr>
 
 <tr>
-	<td><label for="processvideos">Process Videos</label>:</td>
+	<td><label for="processvideos">Process Video Samples</label>:</td>
 	<td>
 		{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$fsite->processvideos separator='<br />'}
-		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average. You must have ffmpeg for this.<br/></div>
+		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processaudiosample">Process Audio Samples</label>:</td>
+	<td>
+		{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$fsite->processaudiosample separator='<br />'}
+		<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
 	</td>
 </tr>
 
