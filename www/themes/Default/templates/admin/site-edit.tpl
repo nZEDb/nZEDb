@@ -674,6 +674,14 @@
 </tr>
 
 <tr>
+	<td><label for="partretentionhours">Part Retention Hours</label>:</td>
+	<td>
+		<input class="tiny" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
+		<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="releasecompletion">Release Completion</label>:</td>
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
