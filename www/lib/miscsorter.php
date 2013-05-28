@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(WWW_DIR."/lib/books.php");
 
 
 class MiscSorter {
@@ -107,8 +108,7 @@ class MiscSorter {
 				$m = strtolower($str);
 
 				$x = 0;
-
-				if ($m == 'audiobook') {
+				if ($m == 'imdb') {
 					$x = -11;
 				} else if ($m == 'anidb.net') {
 					$x = -10;
@@ -120,7 +120,7 @@ class MiscSorter {
 					$x = -7;
 				}  else if ($m == 'tvrage') {
 					$x = -6;
-				} else if ($m == 'imdb') {
+				} else if ($m == 'audiobook') {
 					$x = -5;
 				}  else if ($m == 'os') {
 					$x = -4;
@@ -310,10 +310,11 @@ class MiscSorter {
 			}
 		}
 
-		$movie = $this->movie->getMovieInfo($imdb);
-
 		$name1 = $name;
 
+		if ($imdb > 0)
+		{
+			$movie = $this->movie->getMovieInfo($imdb);
 		foreach (explode(" ", $movie['title']." ".$movie['year']) as $word)
 		{
 			echo "word ".$word."\n";;
@@ -326,16 +327,130 @@ class MiscSorter {
 			}
 			$name1 = $name2;
 		}
+		}
 		$name1 = trim($name1);
-echo "$name1\n";
-
 		$name1 = preg_replace('/[ \-\_]{2,}/', ' ', $name1);
 		$name1 = preg_replace('/ {2,}/', ' ', $name1);
 		$name1 = preg_replace('/ /', ' ', $name1);
+		if ($imdb > 0)
 		$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n."_";
+		else
+			$name = $name1." ".$n."_";
 		return trim($name);
 
 	}
+
+	function doAmazon ($name, $id, $nfo = "", $q, $region = 'com', $case = false, $nfo ='', $row = '')
+	{
+		$s = new Sites();
+		$site = $s->get();
+		$amazon = new AmazonProductAPI($site->amazonpubkey, $site->amazonprivkey, $site->amazonassociatetag);
+		$ok = false;
+echo $case."\n";
+		try {
+			switch ($case)
+			{
+				case 'upc':
+					$amaz = $amazon->getItemByUpc(trim($q), $region);
+					break;
+				case 'asin':
+					$amaz = $amazon->getItemByAsin(trim($q), $region);
+					break;
+				case 'isbn':
+					$amaz = $amazon->searchProducts(trim($q), '', "ISBN");
+					break;
+			}
+		} catch (Exception $e) {
+			echo 'Caught exception: ',  $e->getMessage(), "\n";
+			unset($s);
+			unset($amaz);
+			unset($amazon);
+			return $ok;
+		}
+		if (!isset($amaz->Items->Item))
+			return $ok;
+
+		$type = $amaz->Items->Item->ItemAttributes->ProductGroup;
+		switch ($type)
+		{
+			case 'Book':
+			case 'eBooks':
+				$audiobook  = false;
+				$v = (string) $amaz->Items->Item->ItemAttributes->Format;
+					if (stripos($v, "audiobook") !== false)
+						$audiobook = true;
+
+				$new = (string) $amaz->Items->Item->ItemAttributes->Author;
+				$new = $new . " - ". (string) $amaz->Items->Item->ItemAttributes->Title;
+				$name = $this->nc->fixerCleaner($new);
+
+				$query = "SELECT ID  FROM `bookinfo` WHERE `asin` = '".(string) $amaz->Items->Item->ASIN."'";
+				$rel = $this->db->query($query);
+				if (count($rel) == 0)
+				{
+					$book = new Books();
+					$bookId = $book->updateBookInfo('', $amaz);
+					unset($book);
+				} else {
+					$bookId = $rel[0]['ID'];
+				}
+
+				$query = "SELECT * FROM releases INNER JOIN releaseaudio ON releases.ID = releaseaudio.releaseID WHERE releases.ID = $id";
+				$rel = $this->db->query($query);
+				if (count($rel) > 0 || $audiobook)
+				{
+					$ok = $this->dodbupdate($id, Category::CAT_MUSIC_AUDIOBOOK, $name, $bookId, 'book');
+				} else {
+					$ok = $this->dodbupdate($id, Category::CAT_BOOKS_EBOOK, $name, $bookId, 'book');
+				}
+				unset($rel);
+				break;
+
+			case 'Digital Music Track':
+			case 'Digital Music Album':
+			case 'Music':
+				$new = (string) $amaz->Items->Item->ItemAttributes->Artist;
+				if ($new != '')
+					$new = $new .  " - ";
+				$new = $new .(string) $amaz->Items->Item->ItemAttributes->Title;
+				$name = $this->nc->fixerCleaner($new);
+
+				$query = "SELECT *  FROM `musicinfo` WHERE `asin` = '".(string) $amaz->Items->Item->ASIN."'";
+				$rel = $this->db->query($query);
+				if (count($rel) == 0)
+				{
+					$music = new Music();
+//					$musicId = $music->updateMusicInfo('', '', $amaz)
+					unset($music);
+				} else {
+					$musicId = $rel[0]['ID'];
+				}
+
+//				$ok = $this->dodbupdate($id, 3010, $name, $musicId, 'music');
+				break;
+
+				case 'Movies':
+				case 'DVD':
+				$new = (string) $amaz->Items->Item->ItemAttributes->Title;
+				$new = $new . " (" . substr((string) $amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
+				$new = $this->moviename ($nfo, 0, $new);
+				$name = $this->nc->fixerCleaner($new);
+				$ok = $this->dodbupdate($id, Category::CAT_MOVIE_OTHER, $name);
+
+				break;
+
+			default:
+				echo "* * * * * * uncatched amazon category $type ".$name;
+				break;
+		}
+	//echo  $query."\n";
+
+		unset($s);
+		unset($amaz);
+		unset($amazon);
+		return $ok;
+	}
+
 
 	function matchnfo ($case, $nfo, $row)
 	{
@@ -493,6 +608,49 @@ echo "$name1\n";
 				$ok = $this->dodbupdate($row['ID'], Category::CAT_BOOKS_COMICS, '');
 				break;
 
+			case "asin":
+			case "isbn":
+			case "amazon.":
+			case "upc":
+				$ok = false;
+				if ($case == 'asin' || $case == 'isbn')
+				{
+					preg_match('/(?:isbn|asin)[ \:\.=]*? *?([a-zA-Z0-9\-\.]{8,20}?)/iU', $nfo, $set);
+var_dump($set);
+					if (isset($set[1]))
+					{
+						$set[1] = preg_replace('/[\-\.]/', '', $set[1]);
+echo "asin ".$set[1]."\n";
+						if (strlen($set[1])>13)
+							break;
+						if (isset($set[1]))
+						{
+							$set[2] = $set[1];
+							$set[1] = "com";
+						}
+					}
+				} else if ($case == 'amazon.') {
+					preg_match('/amazon\.([a-z]*?\.?[a-z]{2,3}?)\/.*\/dp\/([a-zA-Z0-9]{8,10}?)/iU', $nfo, $set);
+					$case = 'asin';
+				} else if ($case == 'upc') {
+					preg_match('/UPC\:?? *?([a-zA-Z0-9]*?)/iU', $nfo, $set);
+						if (isset($set[1]))
+						{
+							$set[2] = $set[1];
+							$set[1] = "All";
+						}
+				} else {
+					echo "* * * * * error in amazon";
+					break;
+				}
+
+				if (count($set) > 1)
+				{
+					var_dump($set);
+ 					$ok = $this->doAmazon ($row['name'], $row['ID'], $nfo, $set[2], $set[1], $case, $nfo, $row);
+				}
+				break;
+
 
 
 
@@ -568,4 +726,4 @@ echo "$name1\n";
 		}
 	}
 }
-
+?>

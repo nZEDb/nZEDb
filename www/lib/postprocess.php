@@ -34,7 +34,7 @@ class PostProcess
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
+
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
@@ -175,11 +175,6 @@ class PostProcess
 		$consoleTools = new ConsoleTools();
 		$rar = new RecursiveRarInfo();
 		$site = new Sites;
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-
 		$threads--;
 		$update_files = true;
 
@@ -260,7 +255,7 @@ class PostProcess
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
-				
+
 				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
@@ -275,7 +270,7 @@ class PostProcess
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
 				$hasrar = 0;
 				$this->password = $notmatched = false;
-				
+
 				$nzbfiles = $nzbcontents->nzblist($rel['guid']);
 				if (!$nzbfiles)
 					continue;
@@ -537,7 +532,7 @@ class PostProcess
 					}
 					$nntp->doQuit();
 				}
-				
+
 				// Last attempt to get image/mediainfo/audioinfo, using an extracted file.
 				if (($blnTookSample === false || $blnTookAudioinfo === false || $blnTookMediainfo === false) && is_dir($tmpPath))
 				{
@@ -546,17 +541,17 @@ class PostProcess
 					{
 						foreach ($files as $file)
 						{
-							if ($blnTookAudioinfo === false && $processAudioinfo && is_file($tmpPath.$file) && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name)) 
+							if ($blnTookAudioinfo === false && $processAudioinfo && is_file($tmpPath.$file) && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
 							{
 								rename($tmpPath.$name[0], $tmpPath."audiofile.".$name[2]);
 								$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
 								@unlink($tmpPath."sample.".$name[2]);
 							}
-							if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name)) 
+							if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
 							{
 								rename($tmpPath.$name[0], $tmpPath."sample.avi");
 								if ($processSample && $blnTookSample === false)
-									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']); 
+									$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 								if ($processVideo && $blnTookVideo === false)
 									$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel['guid']);
 								if ($processMediainfo && $blnTookMediainfo === false)
@@ -590,7 +585,7 @@ class PostProcess
 				}
 				else
 					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
-				
+
 				$db->query($sql);
 
 				if ($update_files)
@@ -740,7 +735,7 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			if ($files !== false)
+			if ($files !== false && $files[0]["compressed"] != 1)
 			{
 				foreach ($files as $file)
 				{
@@ -775,7 +770,7 @@ class PostProcess
 							}
 						}*/
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx)$/i", $file['name']) && count($files) > 0)
-						{	
+						{
 							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 							$range = mt_rand(0,32767);
 							if (isset($file['range']))
@@ -814,6 +809,13 @@ class PostProcess
 						}
 					}
 				}
+			}
+			else
+			{
+				$rarfile = $tmpPath.'rarfile.rar';
+				file_put_contents($rarfile, $fetchedBinary);
+				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
+				$output = runCmd($execstring, false, true);
 			}
 		}
 		else
@@ -911,6 +913,8 @@ class PostProcess
 								$category = new Category();
 								$newcat = $category->determineCategory($newname, $catID["groupID"]);
 								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
+								$re = new ReleaseExtra();
+								$re->addFromXml($releaseID, $xmlarray);
 								$retval = true;
 								break;
 							}

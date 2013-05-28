@@ -236,14 +236,17 @@ class Music
 		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $releasedate, $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));		
 	}
 	
-	public function updateMusicInfo($title, $year)
+	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
 		$db = new DB();
 		$gen = new Genres();
 		$ri = new ReleaseImage();
 		
 		$mus = array();
-		$amaz = $this->fetchAmazonProperties($title);
+		if ($title != '')
+			$amaz = $this->fetchAmazonProperties($title);
+		elseif ($amazdata != null)
+			$amaz = $amazdata;
 		if (!$amaz) 
 			return false;
 		
