@@ -15,6 +15,11 @@ define('WWW_TOP', $www_top);
 define('WWW_DIR', realpath(dirname(__FILE__)).'/');
 
 //
+// used to refer to the /misc class files
+//
+define('MISC_DIR', realpath(dirname(__FILE__)).'/../misc/');
+
+//
 // path to smarty files
 //
 define('SMARTY_DIR', WWW_DIR.'lib/smarty/');

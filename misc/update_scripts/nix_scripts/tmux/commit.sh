@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cd /var/www/nZEDb
-git pull origin dev
+git pull
 commit=`git log | grep "^commit" | wc -l`
 commit=`expr $commit + 1`
 
