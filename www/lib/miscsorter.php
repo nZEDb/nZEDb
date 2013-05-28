@@ -506,11 +506,6 @@ echo "$name1\n";
 		$this->idarr = $this->getIDs ($category);
 		if ($id != 0)
 			$this->idarr = $id;
-		else
-		{
-			$this->doecho("No Releases to process");
-			return;
-		}
 
 		$query = "SELECT uncompress(releasenfo.nfo) AS nfo, releases.ID, releases.guid, releases.`fromname`, releases.`name`,
 	releases.searchname, groups.`name` AS gname, releases.groupID FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
@@ -573,3 +568,4 @@ echo "$name1\n";
 		}
 	}
 }
+
