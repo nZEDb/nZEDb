@@ -280,7 +280,7 @@ Class Predb
 		if ($cats == 1)
 			$ct = " and (r.categoryID like \"1090\" or r.categoryID like \"2020\" or r.categoryID like \"3050\" or r.categoryID like \"6050\" or r.categoryID like \"5050\" or r.categoryID like \"7010\" or r.categoryID like \"8050\")";
 		
-		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and relnamestatus < 2".$tq.$ct))
+		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus < 2".$tq.$ct))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
