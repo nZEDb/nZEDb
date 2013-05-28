@@ -1093,6 +1093,7 @@ CREATE TABLE `genres`
   `ID` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `type` INT( 4 ) NULL DEFAULT NULL,
+  `disabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 

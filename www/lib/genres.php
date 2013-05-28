@@ -28,6 +28,18 @@ class Genres
 			
 		return $db->query($sql);
 	}
+
+	public function getById($id)
+        {
+                $db = new DB();
+                return $db->queryOneRow(sprintf("SELECT * from genres where ID = %d", $id));
+        }
+
+	public function update($id, $disabled) {
+                $db = new DB();
+		return $db->query(sprintf("update genres set disabled = %d where ID = %d", $disabled, $id));
+	}
+
 }
 
 ?>
