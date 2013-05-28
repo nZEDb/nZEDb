@@ -14,18 +14,25 @@ function command_exist($cmd) {
 	return (empty($returnVal) ? false : true);
 }
 
+if (command_exist("php5"))
+	$PHP = "php5";
+else
+	$PHP = "php";
+
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	$tmux = new Tmux;
 	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
 	$patch = $tmux->get()->PATCHDB;
+	$restart = "false";
 
 	if ( $running == "TRUE" )
 	{
 		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
 		$sleep = $delay + 120;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
+		$restart = "true";
 		sleep($sleep);
 	}
 
@@ -44,18 +51,12 @@ if(isset($argv[1]) && $argv[1] == "true")
 			echo "Nothing to remove from ".$smarty."\n";
 		}
 
-		if (command_exist("php5"))
-			$PHP = "php5";
-		else
-			$PHP = "php";
-
 		echo "Patching database - $dbname\n";
 		system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
 	}
 
-	require_once(MISC_DIR."update_scripts/optimise_db.php");
-
-	if ( $running == "TRUE" )
+	system("$PHP ${DIR}update_scripts/optimise_db.php");
+	if ( $restart = "true" )
 	{
 		echo "Starting tmux scripts\n";
 		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");

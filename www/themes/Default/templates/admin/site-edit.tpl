@@ -682,6 +682,14 @@
 </tr>
 
 <tr>
+	<td><label for="partretentionhours">Part Retention Hours</label>:</td>
+	<td>
+		<input class="tiny" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
+		<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="releasecompletion">Release Completion</label>:</td>
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
@@ -734,6 +742,14 @@
 	<td>
 		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
 		<div class="hint">Whether to update download counts when someone downloads a release.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="predbhashcheck">PreDB Hash</label>:</td>
+	<td>
+		{html_radios id="predbhashcheck" name='predbhashcheck' values=$yesno_ids output=$yesno_names selected=$fsite->predbhashcheck separator='<br />'}
+		<div class="hint">When fixReleasenames.php predb runs, should it try to look for names using the MD5 hash (this slows it down quite a bit).</div>
 	</td>
 </tr>
 
