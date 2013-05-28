@@ -23,10 +23,11 @@ Class Predb
 		if (strtotime($newestrel["adddate"]) < time()-600)
 		{
 			$newwomble = $this->retrieveWomble();
+			$newzenet = $this->retrieveZenet();
 			$neworly = $this->retrieveOrlydb();
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
-			$newnames = $newwomble+$neworly+$newsrr+$newpdme;
+			$newnames = $newwomble+$newzenet+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
 		}
@@ -66,6 +67,51 @@ Class Predb
 									$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 								
 								$db->query(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->escapeString("womble"), $db->escapeString(md5($matches2["title"]))));
+								$newnames++;
+							}	
+						}
+					}
+				}
+			}
+		}
+		return $newnames;
+	}
+	
+	public function retrieveZenet()
+	{
+		$db = new DB;
+		$newnames = 0;
+
+		$buffer = getUrl("http://pre.zenet.org/live.php");
+		if ($buffer !== false && strlen($buffer))
+		{
+			$ret = array();
+			if (preg_match_all('/<tr bgcolor=".+?<\/tr>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<tr bgcolor=".+?<td.+?">(?P<date>.+?)<\/td.+?<td.+?(<font.+?">(?P<category>.+?)<\/a.+?|">(?P<category1>NUKE)+?)?<\/td.+?<td.+?">(?P<title>.+?)-<a.+?<\/td.+?<td.+<td.+?(">(?P<size1>[\d.]+)<b>(?P<size2>.+?)<\/b>.+)?<\/tr>/s', $m, $matches2))
+						{
+							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							if ($oldname["title"] == $matches2["title"])
+								continue;
+							else
+							{
+								if (!isset($matches2["size1"]) && empty($matches["size1"]))
+									$size = "NULL";
+								else
+									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
+								
+								if (isset($matches2["category"]) && !empty($matches2["category"]))
+									$category = $db->escapeString($matches2["category"]);
+								else if (isset($matches2["category1"]) && !empty($matches2["category1"]))
+									$category = $db->escapeString($matches2["category1"]);
+								else
+									$category = "NULL";
+								
+								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}	
 						}
@@ -216,6 +262,12 @@ Class Predb
 			}
 		}
 		return $updated;
+	}
+	
+	public function getAll()
+	{			
+		$db = new DB();
+		return $db->query("SELECT * FROM predb ORDER BY adddate DESC");
 	}
 }
 ?>

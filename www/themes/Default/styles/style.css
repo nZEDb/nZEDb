@@ -136,6 +136,12 @@ table.innerdata th { padding:2px; border-style: none; background-color:#EEE;}
 table.input th, table.input td { text-align: left; vertical-align:top; }
 
 /*
+predb
+*/
+
+.predb { color:#000; }
+
+/*
 form inputs and helpers
 */
 div.hint, div.hint a {font-size:0.9em; font-style:italic; color:#999;}
