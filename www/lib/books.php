@@ -301,7 +301,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$book = array();
 
 			if ($bookInfo != '')
-			$amaz = $this->fetchAmazonProperties($bookInfo);
+				$amaz = $this->fetchAmazonProperties($bookInfo);
 			elseif ($amazdata != null)
 				$amaz = $amazdata;
 
@@ -393,3 +393,4 @@ require_once(WWW_DIR."/lib/site.php");
 			return $bookId;
 		}
 	}
+?>

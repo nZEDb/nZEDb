@@ -1,11 +1,11 @@
 <?php
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/site.php");
+require(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/site.php");
 
 $dir = WWW_DIR;
+$misc = MISC_DIR;
 $site = new Sites;
 $db = new DB;
 $level = $site->get()->nzbsplitlevel;
@@ -23,10 +23,10 @@ else
 	$from = $argv[1];
 	echo "Copying nzbs from ".$from."\n";
 	system("cp -R ".$from."/* ".$dir."../nzbfiles/");
-    echo "Copying nzbs from ".$from."/../www/covers\n";
+    echo "Copying covers from ".$from."/../www/covers\n";
 	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
 	echo "Setting nzbstatus for all releases\n";
 	$db->query("update releases set nzbstatus = 1");
-	system("php ".$dir."../misc/testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
+	system("php ".$misc."testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
 }
 ?>

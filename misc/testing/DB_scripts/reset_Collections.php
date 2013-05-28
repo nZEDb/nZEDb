@@ -1,6 +1,6 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/releases.php");
+require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/releases.php");
 
 //
 //	This script resets all collections and is required.
@@ -17,4 +17,3 @@ else
 	exit("This script resets all collections and is required.\nIf you are sure you want to run it, type php reset_Collections.php true\n");
 }
 ?>
-

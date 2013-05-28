@@ -49,7 +49,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    4.3
+ * @version    4.4
  */
 class RarInfo extends ArchiveReader
 {
@@ -389,7 +389,7 @@ class RarInfo extends ArchiveReader
 	 *
 	 * @param   boolean  $format  should the block data be formatted?
 	 * @param   boolean  $asHex   should numeric values be displayed as hexadecimal?
-	 * @return  array    list of blocks
+	 * @return  array|boolean  list of blocks, of false if none available
 	 */
 	public function getBlocks($format=true, $asHex=false)
 	{
@@ -420,7 +420,7 @@ class RarInfo extends ArchiveReader
 	 * files in the archive.
 	 *
 	 * @param   boolean  $skipDirs  should directory entries be skipped?
-	 * @return  mixed    false if no file blocks available, or array of file records
+	 * @return  array|boolean  list of file record, or false if none available
 	 */
 	public function getFileList($skipDirs=false)
 	{
@@ -445,7 +445,7 @@ class RarInfo extends ArchiveReader
 	 * Returns a summary list of any RAR 5.0 Quick Open cached file headers.
 	 *
 	 * @param   boolean  $skipDirs  should directory entries be skipped?
-	 * @return  mixed    false if no file blocks available, or array of file records
+	 * @return  array|boolean  list of file record, or false if none available
 	 */
 	public function getQuickOpenFileList($skipDirs=false)
 	{
@@ -553,9 +553,7 @@ class RarInfo extends ArchiveReader
 
 		// Use hexadecimal values?
 		if ($asHex) {
-			array_walk_recursive($b, function(&$value, $key) {
-				$value = is_numeric($value) ? base_convert($value, 10, 16) : $value;
-			});
+			array_walk_recursive($b, array('self', 'convert2hex'));
 		}
 
 		// Sanity check filename length
@@ -704,11 +702,11 @@ class RarInfo extends ArchiveReader
 	}
 
 	/**
-	 * Returns the position of the RAR marker/signature in the stored data or file.
+	 * Returns the position of the archive marker/signature in the stored data or file.
 	 *
-	 * @return  mixed  Marker position, or false if block is missing
+	 * @return  mixed  Marker position, or false if marker is missing
 	 */
-	protected function findRarMarker()
+	protected function findMarker()
 	{
 		try {
 			$buff = $this->read(min($this->length, $this->maxReadBytes));
@@ -732,10 +730,10 @@ class RarInfo extends ArchiveReader
 	protected function analyze()
 	{
 		// Find the RAR marker, if there is one
-		$startPos = $this->findRarMarker();
+		$startPos = $this->findMarker();
 		if ($this->format == self::FMT_RAR50)
 		{
-			// Start after the marker signature
+			// Start after the RAR 5.0 marker signature
 			$this->seek($startPos + strlen($this->markerRar50));
 
 		} elseif ($startPos === false && !$this->isFragment) {
@@ -771,7 +769,9 @@ class RarInfo extends ArchiveReader
 			$this->blocks[] = $block;
 
 			// Skip to the next block, if any
-			$this->seek($block['next_offset']);
+			if ($this->offset != $block['next_offset']) {
+				$this->seek($block['next_offset']);
+			}
 
 			// Sanity check
 			if ($block['offset'] == $this->offset) {
@@ -1232,7 +1232,9 @@ class RarInfo extends ArchiveReader
 
 			// Add the extra record
 			$block['extra'][] = $rec;
-			$this->seek($rec['next']);
+			if ($this->offset != $rec['next']) {
+				$this->seek($rec['next']);
+			}
 		}
 	}
 
@@ -1244,7 +1246,7 @@ class RarInfo extends ArchiveReader
 	 * flag (where 0 = end of the sequence), the remaining 7 bits are the value.
 	 * The maximum value is an unsigned 64-bit integer in a 10-byte sequence.
 	 *
-	 * @return  integer/float  the variable length value, or zero on under/overflow
+	 * @return  integer|float  the variable length value, or zero on under/overflow
 	 */
 	protected function getVarInt()
 	{

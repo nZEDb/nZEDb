@@ -34,6 +34,9 @@ class PostProcess
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
+		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
+		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -175,6 +178,10 @@ class PostProcess
 		$consoleTools = new ConsoleTools();
 		$rar = new RecursiveRarInfo();
 		$site = new Sites;
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		} 
 		$threads--;
 		$update_files = true;
 
@@ -809,7 +816,9 @@ class PostProcess
 						}
 					}
 				}
-			} else {
+			}
+			else
+			{
 				$rarfile = $tmpPath.'rarfile.rar';
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
@@ -874,11 +883,11 @@ class PostProcess
 		return $retval;
 	}
 
-	// Attempt to get a release name from a audio file.
+	// Attempt to get mediainfo/sample/title from a audio file.
 	public function getAudioinfo($ramdrive,$audioinfo,$releaseID)
 	{
 		$db = new DB();
-		$retval = false;
+		$retval = $audval = false;
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
 		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
@@ -894,28 +903,57 @@ class PostProcess
 			{
 				if (preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
-					$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
-					if (is_array($xmlarray))
+					if ($retval === false)
 					{
-						$xmlarray = implode("\n",$xmlarray);
-						$xmlObj = @simplexml_load_string($xmlarray);
-						$arrXml = objectsIntoArray($xmlObj);
-						foreach ($arrXml["File"]["track"] as $track)
+						$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						if (is_array($xmlarray))
 						{
-							if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+							$xmlarray = implode("\n",$xmlarray);
+							$xmlObj = @simplexml_load_string($xmlarray);
+							$arrXml = objectsIntoArray($xmlObj);
+							foreach ($arrXml["File"]["track"] as $track)
 							{
-								if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-									$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
-								else
-									$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-								$category = new Category();
-								$newcat = $category->determineCategory($newname, $catID["groupID"]);
-								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
-								$re = new ReleaseExtra();
-								$re->addFromXml($releaseID, $xmlarray);
-								$retval = true;
-								break;
+								if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+								{
+									if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+										$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+									else
+										$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
+									$category = new Category();
+									$newcat = $category->determineCategory($newname, $catID["groupID"]);
+									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
+									$re = new ReleaseExtra();
+									$re->addFromXml($releaseID, $xmlarray);
+									$retval = true;
+									if($this->processAudioSample === false)
+										break;
+								}
 							}
+						}
+					}
+					if($this->processAudioSample && $audval === false)
+					{
+						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$samplefile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
+						if (is_dir($ramdrive))
+						{
+							@$all_files = scandir($ramdrive,1);
+							if(preg_match("/".$releaseguid."\.ogg/",$all_files[1]))
+							{
+								copy($ramdrive.$releaseguid.".ogg", $this->audSavePath.$releaseguid.".ogg");
+								if(@file_exists($this->audSavePath.$releaseguid.".ogg"))
+								{
+									$db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE guid = %d",$releaseguid));
+									$audval = true;
+								}
+							}
+
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogg') as $v)
+							{
+								@unlink($v);
+							}
+							if ($retval === true && $audval === true)
+								break;
 						}
 					}
 				}

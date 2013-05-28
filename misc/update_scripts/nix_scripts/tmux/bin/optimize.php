@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(dirname(__FILE__)."/../../../config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 
@@ -14,41 +14,49 @@ function command_exist($cmd) {
 	return (empty($returnVal) ? false : true);
 }
 
+if (command_exist("php5"))
+	$PHP = "php5";
+else
+	$PHP = "php";
+
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	$tmux = new Tmux;
 	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
+	$patch = $tmux->get()->PATCHDB;
+	$restart = "false";
 
 	if ( $running == "TRUE" )
 	{
 		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
 		$sleep = $delay + 120;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
+		$restart = "true";
 		sleep($sleep);
 	}
 
-	system("cd $DIR && git pull");
-
-	//remove folders from smarty
-	if ((count(glob("${smarty}*"))) > 0)
+	if ( $patch == "TRUE" )
 	{
-		echo "Removing old stuff from ".$smarty."\n";
-		system("rm -r ".$smarty."*");
-	}
-	else
-	{
-		echo "Nothing to remove from ".$smarty."\n";
+		system("cd $DIR && git pull");
+
+		//remove folders from smarty
+		if ((count(glob("${smarty}*"))) > 0)
+		{
+			echo "Removing old stuff from ".$smarty."\n";
+			system("rm -r ".$smarty."*");
+		}
+		else
+		{
+			echo "Nothing to remove from ".$smarty."\n";
+		}
+
+		echo "Patching database - $dbname\n";
+		system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
 	}
 
-	if (command_exist("php5"))
-		$PHP = "php5";
-	else
-		$PHP = "php";
-
-	echo "Patching database - $dbname\n";
-	system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
-	if ( $running == "TRUE" )
+	system("$PHP ${DIR}update_scripts/optimise_db.php");
+	if ( $restart = "true" )
 	{
 		echo "Starting tmux scripts\n";
 		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");

@@ -77,6 +77,7 @@ CREATE TABLE `releases`
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
 `jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
+`audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1010,7 +1011,11 @@ INSERT INTO `site`
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage', 'en'),
-	('sqlpatch', '58');
+	('partretentionhours', 72),
+	('postdelay', 300),
+	('predbhashcheck', 0),
+	('processaudiosample', 0),
+	('sqlpatch', '63');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1316,7 +1321,9 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('WRITE_LOGS', 'FALSE'),
 	('SORTER', 'FALSE'),
 	('SORTER_TIMER', 30),
-	('POWERLINE', 'FALSE');
+	('POWERLINE', 'FALSE'),
+	('PATCHDB', 'FALSE'),
+	('PATCHDB_TIMER', '21600');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

@@ -16,6 +16,7 @@ class Nfo
 		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
 		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 	
 	public function addReleaseNfo($relid)
@@ -52,13 +53,17 @@ class Nfo
 	
 	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
-		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
 		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
+		$threads--;
 
 		$i = -1;
 		$nfocount = 0;

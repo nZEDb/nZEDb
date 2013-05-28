@@ -244,7 +244,7 @@ class Music
 		
 		$mus = array();
 		if ($title != '')
-		$amaz = $this->fetchAmazonProperties($title);
+			$amaz = $this->fetchAmazonProperties($title);
 		elseif ($amazdata != null)
 			$amaz = $amazdata;
 		if (!$amaz) 

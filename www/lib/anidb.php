@@ -3,6 +3,7 @@ require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/releaseimage.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class AniDB
 {
@@ -16,6 +17,7 @@ class AniDB
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = WWW_DIR.'covers/anime/';
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 
 	public function animetitlesUpdate()
@@ -198,10 +200,15 @@ class AniDB
 
 	public function processAnimeReleases($threads=1)
 	{
-		$threads--;
 		$db = new DB();
 		$ri = new ReleaseImage();
+		$site = new Sites;
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
 
+		$threads--;
 		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL and nzbstatus = 1 AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d order by adddate desc limit %d,%d )", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));
 
 		if ($db->getNumRows($results) > 0) {

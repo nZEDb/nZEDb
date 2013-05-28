@@ -27,7 +27,7 @@ class Movie
 		$this->service = "";
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
@@ -524,6 +524,12 @@ class Movie
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
+		$site = new Sites;
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
+
 		$threads--;
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
@@ -571,9 +577,29 @@ class Movie
 												//no imdb id found, set to all zeros so we dont process again
 												$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 											}
+											else
+												continue;
+										}
+										else
+										{
+											$googleban = true;
+											if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+												continue;
+											else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+												continue;
 										}
 									}
+									else
+									{
+										$googleban = true;
+										if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+										else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+									}
 								}
+								else
+									continue;
 							}
 							else
 							{
@@ -583,6 +609,13 @@ class Movie
 								else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
 									continue;
 							}
+						}
+						else
+						{
+							if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+								continue;
+							else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+								continue;
 						}
 					}
 					else if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
@@ -596,7 +629,10 @@ class Movie
 					}
 				}
 				else
-					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));			
+				{
+					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
+					continue;
+				}		
 			}
 		}
 	}

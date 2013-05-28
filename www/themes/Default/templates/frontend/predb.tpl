@@ -19,7 +19,38 @@
 			<td class="predb">{$result.title}</td>
 			<td class="predb">{$result.adddate}</td>
 			<td class="predb">{$result.predate}</td>
-			<td class="predb">{$result.source}</td>
+			<td class="predb">
+				{if {$result.source} == orlydb}
+					<a title="Visit ORLYDB" href="http://www.orlydb.com/">
+						ORLYDB.com
+					</a>
+				{/if}
+				{if {$result.source} == predbme}
+					<a title="Visit PreDB.me" href="http://predb.me/">
+						PreDB.me
+					</a>
+				{/if}
+				{if {$result.source} == prelist}
+					<a title="Visit Prelist" href="http://pre.zenet.org/">
+						Prelist.ws
+					</a>
+				{/if}
+				{if {$result.source} == srrdb}
+					<a title="Visit srrDB" href="http://www.srrdb.com/">
+						srrDB.com
+					</a>
+				{/if}
+				{if {$result.source} == womble}
+					<a title="Visit Womble" href="http://nzb.isasecret.com/">
+						Womble's NZB Index
+					</a>
+				{/if}
+				{if {$result.source} == zenet}
+					<a title="Visit ZEnet" href="http://pre.zenet.org/">
+						ZEnet.org
+					</a>
+				{/if}
+			</td>
 			<td class="predb">{$result.category}</td>
 			<td class="predb">{$result.size}</td>
 		</tr>

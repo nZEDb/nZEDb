@@ -1,10 +1,10 @@
-  
+
 <h1>Search</h1>
 
 	<div><center>
 		<a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
 	</center></div><br/>
-	
+
 	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b></center>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
@@ -31,7 +31,7 @@
 			<tr>
 				<th><label for="searchadvsubject">Usenet Name</label>:</th>
 				<td><input class="searchadv" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
-			</tr>			
+			</tr>
 			<tr>
 				<th><label for="searchadvposter">Poster</label>:</th>
 				<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
@@ -81,7 +81,7 @@
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 
-{$site->adbrowse}	
+{$site->adbrowse}
 
 <form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 
@@ -98,7 +98,6 @@
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
 	{/if}
 </div>
-
 <table style="width:100%;" class="data highlight icons" id="browsetable">
 	<tr>
 		<th></th>
@@ -113,71 +112,55 @@
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
-			<td class="browseicons" style="vertical-align:middle;">
-				<div class="icon icon_nzb" style="float:left;"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+			<td class="icons">
+				<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+				<div class="icon icon_cart" title="Add to Cart"></div>
 				{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
-				<div class="icon icon_cart" title="Add to Cart" style="float:right;"></div>
 			</td>
 			<td class="item">
-				<label for="chk{$result.guid|substr:0:7}">
-					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-						{$result.searchname|escape:"htmlall"|replace:".":" "}
-					</a>
-					<a class="title" style="float:right; margin-left:3px;" title="Browse {$result.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}">
-					{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":""}
-					</a>
-					{if $result.videostatus == 1}
-						<a class="title" title="This release has a video preview." href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-							<videoicon style="float:right; margin-left:3px; margin-top:-2px;">
-								<img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" />
-							</videoicon>
-						</a>
-					{/if}
-					{if release_flag($result.searchname, search)}
-						<flag style="float:right; margin-left:3px;">
-							<img src="{$smarty.const.WWW_TOP}/themes/Default/images/flags/{release_flag($result.searchname, search)}.png" />
-						</flag>
-					{/if}
-				</label>
+			<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
 
 				{if $result.passwordstatus == 1}
 					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />
 				{elseif $result.passwordstatus == 2}
-					<img title="Contains .cab/ace Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Contains .cab/ace Archive" />
+					<img title="Contains .cab/ace/rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Contains .cab/ace/rar Archive" />
 				{/if}
-				
+
 				<div class="resextra">
-					<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
+				<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
 					<div class="btns" style="float:right">
-						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
-						{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>{/if}
+						{release_flag($result.searchname, browse)}
+						{if $result.videostatus == 1}<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev rndbtn" rel="preview"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" /></a>{/if}
+						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
+						{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb rndbtn" rel="movie" >Cover</a>{/if}
 						{if $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtn" rel="preview">Preview</a>{/if}
 						{if $result.jpgstatus == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtn" rel="preview">Sample</a>{/if}
+						{if $result.musicinfoID > 0}<a href="#" name="name{$result.musicinfoID}" title="View music info" class="modal_music rndbtn" rel="music" >Cover</a>{/if}
+						{if $result.consoleinfoID > 0}<a href="#" name="name{$result.consoleinfoID}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>{/if}
 						{if $result.rageID > 0}<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a>{/if}
 						{if $result.anidbID > 0}<a class="rndbtn" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a>{/if}
-						{if $result.consoleinfoID > 0}<a href="#" name="name{$result.consoleinfoID}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>{/if}
-						{if $result.musicinfoID > 0}<a href="#" name="name{$result.musicinfoID}" title="View music info" class="modal_music rndbtn" rel="music" >Cover</a>{/if}
-						{if $result.tvairdate != ""}<span class="rndbtn" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
+						{if $result.tvairdate != ""}<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
 						{if $result.reID > 0}<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>{/if}
+                        {if $result.group_name != ""}<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>{/if}
 					</div>
 				</div>
 			</td>
-			<td class="browsecategory"><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryID}">{$result.category_name}</a></td>
-			<td class="browseposted" title="{$result.postdate}">{$result.postdate|timeago}</td>
-			<td class="browsesize" width="55">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br />{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
-			<td class="browsefiles">
+			<td class="category"><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryID}">{$result.category_name}</a></td>
+			<td class="posted" title="{$result.postdate}">{$result.postdate|timeago}</td>
+			<td class="size">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br />{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
+			<td class="files">
 				<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 				{if $result.rarinnerfilecount > 0}
 					<div class="rarfilelist">
-						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip" />				
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip" />
 					</div>
 				{/if}
 			</td>
-			<td class="browsestats" nowrap="nowrap"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
-			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="id[]" value="{$result.guid}" /></td>
+			<td class="stats" nowrap="nowrap"><a title="View comments" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
+			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}" /></td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 <br/>
 

@@ -442,10 +442,18 @@
 </tr>
 
 <tr>
-	<td><label for="processvideos">Process Videos</label>:</td>
+	<td><label for="processvideos">Process Video Samples</label>:</td>
 	<td>
 		{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$fsite->processvideos separator='<br />'}
-		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average. You must have ffmpeg for this.<br/></div>
+		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processaudiosample">Process Audio Samples</label>:</td>
+	<td>
+		{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$fsite->processaudiosample separator='<br />'}
+		<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
 	</td>
 </tr>
 
@@ -634,6 +642,14 @@
 </tr>
 
 <tr>
+	<td><label for="postdelay">Postprocessing Threads Delay</label>:</td>
+	<td>
+		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />
+		<div class="hint">The time in milliseconds to delay postprocessing threaded startup. This will reduce bursting to mysql.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
 	<td>
 		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
@@ -670,6 +686,14 @@
 	<td>
 		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
 		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="partretentionhours">Part Retention Hours</label>:</td>
+	<td>
+		<input class="tiny" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
+		<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
 	</td>
 </tr>
 
@@ -726,6 +750,14 @@
 	<td>
 		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
 		<div class="hint">Whether to update download counts when someone downloads a release.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="predbhashcheck">PreDB Hash</label>:</td>
+	<td>
+		{html_radios id="predbhashcheck" name='predbhashcheck' values=$yesno_ids output=$yesno_names selected=$fsite->predbhashcheck separator='<br />'}
+		<div class="hint">When fixReleasenames.php predb runs, should it try to look for names using the MD5 hash (this slows it down quite a bit).</div>
 	</td>
 </tr>
 
