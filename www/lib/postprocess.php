@@ -34,7 +34,7 @@ class PostProcess
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
-
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
@@ -177,8 +177,7 @@ class PostProcess
 		$site = new Sites;
 		if ($threads > 1)
 		{
-			$stagger = $site->get()->postdelay;
-			usleep($threads * $stagger * 1000);
+			usleep($this->sleeptime*1000*($threads - 1));
 		}
 
 		$threads--;

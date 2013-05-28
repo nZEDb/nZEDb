@@ -17,6 +17,7 @@ class AniDB
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = WWW_DIR.'covers/anime/';
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 
 	public function animetitlesUpdate()
@@ -202,11 +203,10 @@ class AniDB
 		$db = new DB();
 		$ri = new ReleaseImage();
 		$site = new Sites;
-        if ($threads > 1)
-        {
-            $stagger = $site->get()->postdelay;
-            usleep($threads * $stagger * 1000);
-        }
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
 
 		$threads--;
 		$results = $db->queryDirect(sprintf("SELECT searchname, ID FROM releases WHERE anidbID is NULL and nzbstatus = 1 AND categoryID IN ( SELECT ID FROM category WHERE categoryID = %d order by adddate desc limit %d,%d )", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));

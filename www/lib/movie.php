@@ -27,7 +27,7 @@ class Movie
 		$this->service = "";
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
@@ -525,11 +525,10 @@ class Movie
 		$googleban = false;
 		$googlelimit = 0;
 		$site = new Sites;
-        if ($threads > 1)
-        {
-            $stagger = $site->get()->postdelay;
-            usleep($threads * $stagger * 1000);
-        }
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
 
 		$threads--;
 		
