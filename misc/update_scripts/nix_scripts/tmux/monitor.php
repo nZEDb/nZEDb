@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2115";
+$version="0.1r2126";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -14,6 +14,7 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
+$powerline = $tmux->get()->POWERLINE;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -33,6 +34,7 @@ $proc = "SELECT
 	( SELECT COUNT( ID ) AS cnt FROM groups WHERE backfill = 1 ) AS backfill_groups,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
+	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate desc limit 1 ) AS newestpre,
 	( SELECT COUNT( ID ) from collections ) collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
@@ -171,7 +173,8 @@ $time9 = TIME();
 
 //initial values
 $newestname = "Unknown";
-$newestdate = TIME();
+$newestadd = TIME();
+$newestpre = TIME();
 $releases_now_formatted = 0;
 $releases_since_start = 0;
 $work_diff = 0;
@@ -255,7 +258,8 @@ passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
-printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
+printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
+printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
@@ -312,7 +316,7 @@ while( $i > 0 )
 	}
 
 	//get start values from $qry
-	if ( $i == 1 ) 
+	if ( $i == 1 )
 	{
 		if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_result[0]['nforemains']; }
 		if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_result[0]['console']; }
@@ -403,7 +407,8 @@ while( $i > 0 )
 
 	if ( @$proc_result[0]['releases'] ) { $releases_now = $proc_result[0]['releases']; }
 	if ( @$proc_result[0]['newestaddname'] ) { $newestname = $proc_result[0]['newestaddname']; }
-	if ( @$proc_result[0]['newestadd'] ) { $newestdate = $proc_result[0]['newestadd']; }
+	if ( @$proc_result[0]['newestpre'] ) { $newestpre = $proc_result[0]['newestpre']; }
+	if ( @$proc_result[0]['newestadd'] ) { $newestadd = $proc_result[0]['newestadd']; }
 
 	//calculate releases difference
 	$releases_misc_diff = number_format( $releases_now - $releases_start );
@@ -457,7 +462,8 @@ while( $i > 0 )
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
-	printf($mask1, "Release Added:", relativeTime("$newestdate")."ago");
+	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
+	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	if ( $post == "TRUE" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
@@ -727,6 +733,7 @@ while( $i > 0 )
                 $time9 = TIME();
             $log = writelog($panes2[1]);
             shell_exec("tmux respawnp -t ${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
+					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
                     $_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
         }
         else
@@ -775,14 +782,14 @@ while( $i > 0 )
 			//run update_binaries
 			$color = get_color();
 			$log = writelog($panes0[2]);
-			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			if (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 3600 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && \
 						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
+			elseif (( $binaries == "TRUE" ) && ( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 3600 ))
 			{
 				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
