@@ -16,6 +16,7 @@ class Nfo
 		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
 		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 	
 	public function addReleaseNfo($relid)
@@ -60,8 +61,7 @@ class Nfo
 		$nzbcontents = new NZBcontents($this->echooutput);
 		if ($threads > 1)
 		{
-			$stagger = $site->get()->postdelay;
-			usleep($threads * $stagger * 1000);
+			usleep($this->sleeptime*1000*($threads - 1));
 		}
 		$threads--;
 
