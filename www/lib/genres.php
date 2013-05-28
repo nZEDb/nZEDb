@@ -6,6 +6,9 @@ class Genres
 {
 	const CONSOLE_TYPE = Category::CAT_PARENT_GAME;
 	const MUSIC_TYPE = Category::CAT_PARENT_MUSIC;
+
+	const STATUS_ENABLED = 0;
+	const STATUS_DISABLED = 1;
 	
 	public function getGenres($type='', $activeonly=false)
 	{

@@ -33,7 +33,8 @@ switch($action)
       break;   
 }
 
-$page->smarty->assign('status_names', array( 'Yes', 'No', 'Disabled'));
+$page->smarty->assign('status_ids', array(Genres::STATUS_ENABLED,Genres::STATUS_DISABLED));
+$page->smarty->assign('status_names', array( 'No', 'Yes'));
 
 $page->content = $page->smarty->fetch('musicgenre-edit.tpl');
 $page->render();
