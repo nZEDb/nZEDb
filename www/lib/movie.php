@@ -571,9 +571,29 @@ class Movie
 												//no imdb id found, set to all zeros so we dont process again
 												$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 											}
+											else
+												continue;
+										}
+										else
+										{
+											$googleban = true;
+											if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+												continue;
+											else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+												continue;
 										}
 									}
+									else
+									{
+										$googleban = true;
+										if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+										else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+									}
 								}
+								else
+									continue;
 							}
 							else
 							{
@@ -583,6 +603,13 @@ class Movie
 								else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
 									continue;
 							}
+						}
+						else
+						{
+							if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+								continue;
+							else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+								continue;
 						}
 					}
 					else if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
@@ -596,7 +623,10 @@ class Movie
 					}
 				}
 				else
-					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));			
+				{
+					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
+					continue;
+				}		
 			}
 		}
 	}

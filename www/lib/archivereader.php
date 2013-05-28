@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.2
+ * @version    2.3
  */
 abstract class ArchiveReader
 {
@@ -49,7 +49,7 @@ abstract class ArchiveReader
 	 *
 	 * @param   integer  $low   the low 32 bits
 	 * @param   integer  $high  the high 32 bits
-	 * @return  float/integer
+	 * @return  float|integer
 	 */
 	public static function int64($low, $high)
 	{
@@ -77,8 +77,8 @@ abstract class ArchiveReader
 	/**
 	 * Converts Windows FILETIME format timestamps to UNIX timestamps.
 	 *
-	 * @param   integer  $low   low FILETIME byte
-	 * @param   integer  $high  high FILETIME byte
+	 * @param   integer  $low   the low 32 bits
+	 * @param   integer  $high  the high 32 bits
 	 * @return  integer  UNIX timestamp
 	 */
 	public static function win2unixtime($low, $high)
@@ -86,7 +86,20 @@ abstract class ArchiveReader
 		$ushift = 116444736000000000;
 		$ftime  = self::int64($low, $high);
 
-		return floor(($ftime - $ushift) / 10000000);
+		return (int) floor(($ftime - $ushift) / 10000000);
+	}
+
+	/**
+	 * Converts a numeric value passed by reference to a hexadecimal string.
+	 *
+	 * @param   mixed  $value  the numeric value to convert
+	 * @return  void
+	 */
+	public static function convert2hex(&$value)
+	{
+		if (is_numeric($value)) {
+			$value = base_convert($value, 10, 16);
+		}
 	}
 
 	/**
@@ -96,7 +109,7 @@ abstract class ArchiveReader
 	 * limitations - filesize() returns a signed long - and so needs hackery.
 	 *
 	 * @param   string   $file  full path to the file
-	 * @return  integer/float   the file size in bytes
+	 * @return  integer|float   the file size in bytes
 	 */
 	public static function getFileSize($file)
 	{
@@ -126,7 +139,7 @@ abstract class ArchiveReader
 	{
 		$suffix = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		for ($i = 0; $bytes > 1024 && isset($suffix[$i+1]); $i++) {$bytes /= 1024;}
-		return round($bytes,$round).' '.$suffix[$i];
+		return round($bytes, $round).' '.$suffix[$i];
 	}
 
 	// ------ Instance variables and methods ---------------------------------------
