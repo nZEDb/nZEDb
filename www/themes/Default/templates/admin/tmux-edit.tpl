@@ -350,7 +350,7 @@
 				<td style="width:160px;"><label for="POWERLINE">Powerline Status Bar</label>:</td>
 				<td>
 					{html_radios id="POWERLINE" name='POWERLINE' values=$truefalse_names output=$truefalse_names selected=$ftmux->POWERLINE}
-					<div class="hint">Choose to use the Powerline tmux status bar. To make this pretty, you need to install a patched font. This can be found on <a href="https://github.com/jonnyboy/powerline-fonts">my fork</a> or <a href="https://github.com/Lokaltog/powerline-fonts">the original git</a><br \>You may need to edit the tumx.conf file located in tmux/powerline to the correct path. You will need to copy the default theme located at powerline/powerline/themes/default.sh to powerline/powerline/themes/tmux.sh and edit that file for what is displayed, colors, etc. One other file needs edited for path is powerline/powerline/segments/tmux_mem_cpu_load.sh.</div>
+					<div class="hint">Choose to use the Powerline tmux status bar. To make this pretty, you need to install a patched font. This can be found on <a href="https://github.com/jonnyboy/powerline-fonts">my fork</a> or <a href="https://github.com/Lokaltog/powerline-fonts">the original git</a><br \>You will need to copy the default theme located at powerline/powerline/themes/default.sh to powerline/powerline/themes/tmux.sh and edit that file for what is displayed, colors, etc.</div>
 				</td>
 			</tr>
 		</table>
