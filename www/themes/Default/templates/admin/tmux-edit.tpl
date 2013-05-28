@@ -436,7 +436,7 @@
 				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Start Timer</label>:</td>
 				<td>
 					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="tiny" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
-					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
+					<div class="hint">This is a start timer. The default is 24 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
 				</td>
 			</tr>
 
