@@ -52,9 +52,27 @@ Class Predb
 					{
 						if (preg_match('/<tr bgcolor=#[df]{6}>.+?<td>(?P<date>.+?)<\/td>(.+?right>(?P<size1>.+?)&nbsp;(?P<size2>.+?)<\/td.+?)?<td>(?P<category>.+?)<\/td.+?<a href=.+?(<a href="(?P<nfo>.+?)">nfo<\/a>.+)?<td>(?P<title>.+?)<\/td.+tr>/s', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							$oldname = $db->queryOneRow(sprintf("SELECT title, source, ID FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
 							if ($oldname["title"] == $matches2["title"])
-								continue;
+							{
+								if ($oldname["source"] == $matches2["source"])
+									continue;
+								else
+								{
+									if (!isset($matches2["size1"]) && empty($matches["size1"]))
+										$size = "NULL";
+									else
+										$size = $db->escapeString($matches2["size1"].$matches2["size2"]);
+								
+									if ($matches2["nfo"] == "")
+										$nfo = "NULL";
+									else
+										$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
+								
+									$db->query(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = FROM_UNIXTIME(".strtotime($matches2["date"])."), adddate = now(), source = %s where ID = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->escapeString("womble"), $oldname["ID"]));
+									$newnames++;
+								}
+							}
 							else
 							{
 								if (!isset($matches2["size1"]) && empty($matches["size1"]))
@@ -278,7 +296,7 @@ Class Predb
 			$tq = " and r.adddate > (now() - interval 3 hour)";
 		$ct = "";
 		if ($cats == 1)
-			$ct = " and (r.categoryID like \"1090\" or r.categoryID like \"2020\" or r.categoryID like \"3050\" or r.categoryID like \"6050\" or r.categoryID like \"5050\" or r.categoryID like \"7010\" or r.categoryID like \"8050\")";
+			$ct = " and r.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050)";
 		
 		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus < 2".$tq.$ct))
 		{
@@ -305,10 +323,48 @@ Class Predb
 							"New cat:  ".$category->getNameByID($determinedcat)."\n".
 							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
 							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
-							"Method:   "."predb: ".$row["source"]."\n"."\n";
+							"Method:   "."predb titles: ".$row["source"]."\n"."\n";
 					}
+					$updated++;
 				}
-				$updated++;
+			}
+		}
+		if($this->echooutput)
+		{
+			$te = "";
+			if ($time == 1)
+				$te = " in the past 3 hours";
+			echo "Fixing search names".$te." using the predb md5.\n";
+		}
+		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus < 2 and r.categoryID = 7010".$tq))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				if ($row["title"] !== $row["searchname"])
+				{
+					$category = new Category();
+					$determinedcat = $category->determineCategory($row["title"], $row["groupID"]);
+					
+					if ($echo == 1)
+					{
+						if ($namestatus == 1)
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+						else
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+					}
+					if ($this->echooutput)
+					{
+						$groups = new Groups();
+						
+						echo"New name: ".$row["title"]."\n".
+							"Old name: ".$row["searchname"]."\n".
+							"New cat:  ".$category->getNameByID($determinedcat)."\n".
+							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+							"Method:   "."predb md5: ".$row["source"]."\n"."\n";
+					}
+					$updated++;
+				}
 			}
 		}
 		return $updated;
