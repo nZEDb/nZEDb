@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2172";
+$version="0.1r2182";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -609,25 +609,23 @@ while( $i > 0 )
 	if ( $running == "TRUE" )
 	{
 		//fix names
-		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 3600 ))
+		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 7200 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true other yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
-		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 < 3600 ))
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 < 7200 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true other yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
-		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 >= 3600 ))
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 >= 7200 ))
  		{
  			$color = get_color();
 			$log = writelog($panes1[0]);
