@@ -40,7 +40,10 @@ Class Predb
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
 			$matched = $this->matchPredb();
 			if ($matched > 0 && $this->echooutput)
-				echo "Matched ".$matched." predb titles to release search names.\n";
+				echo "Matched ".$matched." predDB titles to release search names.\n";
+			$nfos = $this->matchNfo();
+			if ($nfos > 0 && $this->echooutput)
+				echo "Added ".$nfos." missing NFOs from preDB sources.\n";
 		}
 		return $newnames;
 	}
@@ -347,6 +350,33 @@ Class Predb
 			return $updated;
 		}
 	}
+	
+	// Look if the release is missing an nfo.
+	public function matchNfo()
+	{
+		$db = new DB();
+		$nfos = 0;
+		if($this->echooutput)
+			echo "Matching up predb NFOs with releases missing an NFO.\n";
+			
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = r.releaseID where p.nfo is not null and r.nfostatus = 0"))
+		{
+			$nfo = new Nfo($this->echooutput);
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$buffer = getUrl($row["nfo"]);
+				if ($buffer !== false && strlen($buffer))
+				{
+					$nfo->addReleaseNfo($row["ID"]);
+					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
+					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
+					$nfos++;
+				}
+			}
+			return $nfos;
+		}
+	}
+	
 	
 	// Matches the names within the predb table to release files and subjects (names). In the future, use the MD5.
 	public function parseTitles($time, $echo, $cats, $namestatus)
