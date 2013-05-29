@@ -455,7 +455,6 @@ class Music
 	{
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?(19\d{2}|20[0-1][0-9])/', $releasename, $name))
 		{
-			
 			$result = array();
 			$result["year"] = $name[3];
 			

@@ -401,7 +401,7 @@ Class Predb
 							"New cat:  ".$category->getNameByID($determinedcat)."\n".
 							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
 							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
-							"Method:   "."predb->releases; source: ".$row["source"]."\n"."\n";
+							"Method:   "."predb->releases; source: ".$b["source"]."\n"."\n";
 					}
 					$updated++;
 				}
@@ -433,7 +433,7 @@ Class Predb
 							"New cat:  ".$category->getNameByID($determinedcat)."\n".
 							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
 							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
-							"Method:   "."predb->releases; source: ".$row["source"]."\n"."\n";
+							"Method:   "."predb->releases; source: ".$b["source"]."\n"."\n";
 					}
 					$updated++;
 				}
