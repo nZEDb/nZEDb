@@ -28,6 +28,11 @@
 			<td class="predb">{$result.adddate}</td>
 			<td class="predb">{$result.predate}</td>
 			<td class="predb">
+				{if {$result.source} == omgwtfnzbs}
+					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
+						omgwtfnzbs.org
+					</a>
+				{/if}
 				{if {$result.source} == orlydb}
 					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://www.orlydb.com/">
 						ORLYDB.com
