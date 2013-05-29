@@ -2,6 +2,7 @@
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/site.php");
 
 /*
