@@ -294,9 +294,9 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb titles with release search names.\n";
 			
-		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID = null"))
+		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
 		{
-			while ($row = mysqli_fetc_assoc($res))
+			while ($row = mysqli_fetch_assoc($res))
 			{
 				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
 				$updated++;
