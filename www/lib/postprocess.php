@@ -508,7 +508,7 @@ class PostProcess
 						if (strlen($audioBinary) > 100)
 						{
 							@file_put_contents($tmpPath.'audio.'.$audiotype, $audioBinary);
-							$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['guid']);
+							$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid']);
 						}
 						unset($audioBinary);
 					}
@@ -551,7 +551,7 @@ class PostProcess
 							if ($blnTookAudioinfo === false && $processAudioinfo && is_file($tmpPath.$file) && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
 							{
 								rename($tmpPath.$name[0], $tmpPath."audiofile.".$name[2]);
-								$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
+								$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['ID']);
 								@unlink($tmpPath."sample.".$name[2]);
 							}
 							if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
@@ -884,7 +884,7 @@ class PostProcess
 	}
 
 	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive,$audioinfo,$releaseID)
+	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseID)
 	{
 		$db = new DB();
 		$retval = $audval = false;
