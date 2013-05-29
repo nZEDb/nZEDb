@@ -303,7 +303,7 @@ Class Predb
 		if ($cats == 1)
 			$ct = " and r.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050)";
 		
-		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus < 2".$tq.$ct))
+		/*if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus = 1".$tq.$ct))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
@@ -315,7 +315,7 @@ Class Predb
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 						else
 							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 					}
@@ -333,8 +333,8 @@ Class Predb
 					$updated++;
 				}
 			}
-		}
-		if($this->predbhashcheck)
+		}*/
+		/*if($this->predbhashcheck)
 		{
 			if($this->echooutput)
 			{
@@ -343,7 +343,7 @@ Class Predb
 					$te = " in the past 3 hours";
 				echo "Fixing search names".$te." using the predb md5.\n";
 			}
-			if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus < 2 and r.categoryID = 7010".$tq))
+			if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus in = 1 and r.categoryID = 7010".$tq))
 			{
 				while ($row = mysqli_fetch_assoc($res))
 				{
@@ -355,7 +355,7 @@ Class Predb
 						if ($echo == 1)
 						{
 							if ($namestatus == 1)
-								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 							else
 								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 						}
@@ -372,6 +372,70 @@ Class Predb
 						}
 						$updated++;
 					}
+				}
+			}
+		}*/
+		if($res = $db->queryDirect("SELECT r.name, r.searchname, r.categoryID, r.groupID, r.ID from releases r where r.relnamestatus in (1, 3)".$tq.$ct))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$a = $db->query("SELECT title, source, md5 from predb where (title like '%${row["name"]}%' or md5 like '%${row["name"]}%')");
+				foreach ($a as $b)
+				{
+					$category = new Category();
+					$determinedcat = $category->determineCategory($b["title"], $row["groupID"]);
+					
+					if ($echo == 1)
+					{
+						if ($namestatus == 1)
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+						else
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+					}
+					if ($this->echooutput)
+					{
+						$groups = new Groups();
+						
+						echo"New name: ".$b["title"]."\n".
+							"Old name: ".$row["searchname"]."\n".
+							"New cat:  ".$category->getNameByID($determinedcat)."\n".
+							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+							"Method:   "."predb->releases; source: ".$row["source"]."\n"."\n";
+					}
+					$updated++;
+				}
+			}
+		}
+		if($res = $db->queryDirect("SELECT distinct rf.name, r.ID, r.groupID, r.categoryID, r.searchname from releases r inner join releasefiles rf on rf.releaseID = r.ID where r.relnamestatus in (1, 3)"))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$a = $db->query("SELECT title, source, md5 from predb where (title like '%${row["name"]}%' or md5 like '%${row["name"]}%')");
+				foreach ($a as $b)
+				{
+					$category = new Category();
+					$determinedcat = $category->determineCategory($b["title"], $row["groupID"]);
+					
+					if ($echo == 1)
+					{
+						if ($namestatus == 1)
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+						else
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+					}
+					if ($this->echooutput)
+					{
+						$groups = new Groups();
+						
+						echo"New name: ".$b["title"]."\n".
+							"Old name: ".$row["searchname"]."\n".
+							"New cat:  ".$category->getNameByID($determinedcat)."\n".
+							"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+							"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+							"Method:   "."predb->releases; source: ".$row["source"]."\n"."\n";
+					}
+					$updated++;
 				}
 			}
 		}

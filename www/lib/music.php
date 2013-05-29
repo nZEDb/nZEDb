@@ -415,7 +415,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT searchname, categoryID, ID, relnamestatus from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus > 0 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
+		$res = $db->queryDirect(sprintf("SELECT searchname, categoryID, ID, relnamestatus, groupID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus in (1, 2, 3) and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -442,7 +442,11 @@ class Music
 
 					// Update release.
 					if ($arr["relnamestatus"] !== "3")
-						$db->query(sprintf("UPDATE releases SET musicinfoID = %d, searchname = %s, relnamestatus = 3 WHERE ID = %d", $albumId, $db->escapeString($newname), $arr["ID"]));
+					{
+						$category = new Category;
+						$determinedcat = $category->determineCategory($newname, $arr["groupID"]);
+						$db->query(sprintf("UPDATE releases SET musicinfoID = %d, searchname = %s, relnamestatus = 3, categoryID = %d WHERE ID = %d", $albumId, $db->escapeString($newname), $determinedcat, $arr["ID"]));
+					}
 					else
 						$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
