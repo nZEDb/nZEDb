@@ -415,7 +415,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT searchname, categoryID, ID, groupID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus in (1, 2, 3) and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus in (1, 2, 3) and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(($this->musicqty) * ($threads * 1.5)), $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
@@ -423,13 +423,10 @@ class Music
 						
 			while ($arr = $db->fetchAssoc($res)) 
 			{				
-				$album = $this->parseArtist($arr['searchname'], $arr['categoryID']);
+				$album = $this->parseArtist($arr['searchname']);
 				if ($album !== false)
 				{
-					if ($album["ext"] !== "")
-						$newname = $album["name"].' ('.$album["year"].') '.$album["ext"];
-					else
-						$newname = $album["name"].' ('.$album["year"].')';
+					$newname = $album["name"].' ('.$album["year"].')';
 					
 					if ($this->echooutput)
 						echo 'Looking up: '.$newname."\n";
@@ -454,25 +451,13 @@ class Music
 		}
 	}
 	
-	public function parseArtist($releasename, $categoryID)
+	public function parseArtist($releasename)
 	{
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?(19\d{2}|20[0-1][0-9])/', $releasename, $name))
 		{
-			$ext = "";
-			if (preg_match('/(FLAC|MP3| SAT |WEB)/i', $releasename, $source))
-			{
-				if ($source[1] != "FLAC" && $source[1] == ('FM' || 'MP3' || ' SAT ' || 'WEB')){ $ext = "MP3"; }
-				else if ($source[1] =="FLAC"){ $ext = "FLAC"; }
-			}
-			else
-			{
-				if ($categoryID !== "3040" && $categoryID == "3010"){ $ext = "MP3"; }
-				elseif ($categoryID == "3040"){ $ext = "FLAC"; }
-			}
 			
 			$result = array();
 			$result["year"] = $name[3];
-			$result["ext"] = $ext;
 			
 			$newname = preg_replace('/ (\d{1,2} \d{1,2} )?(Bootleg|Boxset|Clean.+Version|Compiled by.+|\dCD|Digipak|DIRFIX|DVBS|FLAC|(Ltd )?(Deluxe|Limited|Special).+Edition|Promo|PROOF|Reissue|Remastered|REPACK|RETAIL(.+UK)?|SACD|Sampler|SAT|Summer.+Mag|UK.+Import|Deluxe.+Version|VINYL|WEB)/i', ' ', $name[1]);
 			$newname = preg_replace('/ ([a-z]+[0-9]+[a-z]+[0-9]+.+|[a-z]{2,}[0-9]{2,}?.+|3FM|B00[a-z0-9]+|BRC482012|H056|UXM1DW086|(4WCD|ATL|bigFM|CDP|DST|ERE|FIM|MBZZ|MSOne|MVRD|QEDCD|RNB|SBD|SFT|ZYX) \d.+)/i', ' ', $newname);
