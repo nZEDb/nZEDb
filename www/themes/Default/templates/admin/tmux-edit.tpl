@@ -129,6 +129,13 @@
 				</td>
 			</tr>
 
+			<tr>
+				<td style="width:160px;"><label for="PROGRESSIVE">Variable Sleep Timer</label>:</td>
+				<td>
+					{html_radios id="PROGRESSIVE" name='PROGRESSIVE' values=$truefalse_names output=$truefalse_names selected=$ftmux->PROGRESSIVE}
+					<div class="hint">This will vary the backfill sleep depending on how many collections you have.<br />ie 50k collections would make sleep timer 100 seconds and 20k releases would make sleep timer 40 seconds.</div>
+				</td>
+			</tr>
 		</table>
 </fieldset>
 

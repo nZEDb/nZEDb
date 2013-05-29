@@ -3,6 +3,7 @@ require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 $db = new DB();
+$count = 0;
 passthru("clear");
 printf("\033[1;33mThis script will show all Active Groups.\nAn optional first argument of true/false is used to sort the display by first_record_postdate in descending order.\nAn optional second argument will limit the return to that number of groups.\nTo sort the active groups by first_record_postdate and display only 20 groups run:\n  php active_groups.php true 20\n\033[0m\n\n");
 if (isset($argv[2]) && is_numeric($argv[2]) )
@@ -22,9 +23,10 @@ if (isset($argv[1]) && $argv[1] === "true")
 		{
 			$headers = number_format($rel['headers downloaded']);
 			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
+			$count += $rel['headers downloaded'];
 		}
 	}
-	printf("\033[0m");
+	printf(number_format($count)." headers downloaded\033[0m\n");
 }
 else
 {
@@ -34,9 +36,9 @@ else
 		{
 			$headers = number_format($rel['headers downloaded']);
 			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
+			$count += $rel['headers downloaded'];
 		}
 	}
-	printf("\033[0m");
+	printf(number_format($count)." headers downloaded\033[0m\n");
 }
 ?>
-

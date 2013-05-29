@@ -2,6 +2,7 @@
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/site.php");
 
 /*
@@ -15,7 +16,6 @@ Class Predb
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
-		$this->predbhashcheck = ($this->site->predbhashcheck == "0") ? false : true;
 	}
 	
 	// Retrieve pre info from predb sources and store them in the DB.
@@ -27,15 +27,24 @@ Class Predb
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
 		if (strtotime($newestrel["adddate"]) < time()-600)
 		{
+			if ($this->echooutput)
+				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
+			$newomgwtf = $this->retrieveOmgwtfnzbs();
 			$newzenet = $this->retrieveZenet();
 			$newprelist = $this->retrievePrelist();
 			$neworly = $this->retrieveOrlydb();
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
-			$newnames = $newwomble+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
+			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
+			$matched = $this->matchPredb();
+			if ($matched > 0 && $this->echooutput)
+				echo "Matched ".$matched." predDB titles to release search names.\n";
+			$nfos = $this->matchNfo();
+			if ($nfos > 0 && $this->echooutput)
+				echo "Added ".$nfos." missing NFOs from preDB sources.\n";
 		}
 		return $newnames;
 	}
@@ -48,7 +57,6 @@ Class Predb
 		$buffer = getUrl("http://nzb.isasecret.com/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -101,6 +109,52 @@ Class Predb
 		return $newnames;
 	}
 	
+	public function retrieveOmgwtfnzbs()
+	{
+		$db = new DB;
+		$newnames = 0;
+
+		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<title>(?P<title>.+?)<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2))
+						{
+							$oldname = $db->queryOneRow(sprintf("SELECT title, source, ID FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							if ($oldname["title"] == $matches2["title"])
+							{
+								if ($oldname["source"] == "womble")
+								{
+									continue;
+								}
+								else
+								{
+									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
+								
+									$db->query(sprintf("UPDATE predb SET size = %s, category = %s, predate = FROM_UNIXTIME(".strtotime($matches2["date"])."), adddate = now(), source = %s where ID = %d", $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $oldname["ID"]));
+									$newnames++;
+								}
+							}
+							else
+							{
+								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
+								
+								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
+								$newnames++;
+							}	
+						}
+					}
+				}
+			}
+		}
+		return $newnames;
+	}
+	
 	public function retrieveZenet()
 	{
 		$db = new DB;
@@ -109,7 +163,6 @@ Class Predb
 		$buffer = getUrl("http://pre.zenet.org/live.php");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<tr bgcolor=".+?<\/tr>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -154,7 +207,6 @@ Class Predb
 		$buffer = getUrl("http://www.prelist.ws/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<small><span.+?<\/span><\/small>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -205,7 +257,6 @@ Class Predb
 		$buffer = getUrl("http://www.orlydb.com/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match))
 			{
 				if (preg_match_all('/<div>.+<\/div>/s', $match["1"], $matches))
@@ -282,6 +333,52 @@ Class Predb
 		return $newnames;
 	}
 	
+	// When a searchname is the same as the title, tie it to the predb.
+	public function matchPredb()
+	{
+		$db = new DB();
+		$updated = 0;
+		if($this->echooutput)
+			echo "Matching up predb titles with release search names.\n";
+			
+		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				$updated++;
+			}
+			return $updated;
+		}
+	}
+	
+	// Look if the release is missing an nfo.
+	public function matchNfo()
+	{
+		$db = new DB();
+		$nfos = 0;
+		if($this->echooutput)
+			echo "Matching up predb NFOs with releases missing an NFO.\n";
+			
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus = 0"))
+		{
+			$nfo = new Nfo($this->echooutput);
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$buffer = getUrl($row["nfo"]);
+				if ($buffer !== false && strlen($buffer))
+				{
+					$nfo->addReleaseNfo($row["ID"]);
+					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
+					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
+					$nfos++;
+				}
+			}
+			return $nfos;
+		}
+	}
+	
+	
 	// Matches the names within the predb table to release files and subjects (names). In the future, use the MD5.
 	public function parseTitles($time, $echo, $cats, $namestatus)
 	{
@@ -303,7 +400,7 @@ Class Predb
 		if ($cats == 1)
 			$ct = " and r.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050)";
 		
-		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus < 2".$tq.$ct))
+		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus = 1".$tq.$ct))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
@@ -315,7 +412,7 @@ Class Predb
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 						else
 							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
 					}
@@ -334,43 +431,79 @@ Class Predb
 				}
 			}
 		}
-		if($this->predbhashcheck)
+		if($this->echooutput)
 		{
-			if($this->echooutput)
+			$te = "";
+			if ($time == 1)
+				$te = " in the past 3 hours";
+			echo "Fixing search names".$te." using the predb md5.\n";
+		}
+		if ($res = $db->queryDirect("select r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010".$tq))
+		{
+			while($row = mysqli_fetch_assoc($res))
 			{
-				$te = "";
-				if ($time == 1)
-					$te = " in the past 3 hours";
-				echo "Fixing search names".$te." using the predb md5.\n";
-			}
-			if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.md5, '%') or rf.name like concat('%', p.md5, '%')) and r.relnamestatus < 2 and r.categoryID = 7010".$tq))
-			{
-				while ($row = mysqli_fetch_assoc($res))
+				if (preg_match("/[a-f0-9]{32}/i", $row["name"], $matches))
 				{
-					if ($row["title"] !== $row["searchname"])
+					$a = $db->query("select title, source from predb where md5 = '".$matches[0]."'");
+					foreach ($a as $b)
 					{
-						$category = new Category();
-						$determinedcat = $category->determineCategory($row["title"], $row["groupID"]);
-					
-						if ($echo == 1)
+						if ($b["title"] !== $row["searchname"])
 						{
-							if ($namestatus == 1)
-								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 2 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
-							else
-								$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $row["ID"]));
-						}
-						if ($this->echooutput)
-						{
-							$groups = new Groups();
+							$category = new Category();
+							$determinedcat = $category->determineCategory($b["title"], $row["groupID"]);
+
+							if ($echo == 1)
+							{
+								if ($namestatus == 1)
+									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($b["title"]), $determinedcat, $row["ID"]));
+								else
+									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($b["title"]), $determinedcat, $row["ID"]));
+							}
+							if ($this->echooutput)
+							{
+								$groups = new Groups();
 						
-							echo"New name: ".$row["title"]."\n".
-								"Old name: ".$row["searchname"]."\n".
-								"New cat:  ".$category->getNameByID($determinedcat)."\n".
-								"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
-								"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
-								"Method:   "."predb md5: ".$row["source"]."\n"."\n";
+								echo"New name: ".$b["title"]."\n".
+									"Old name: ".$row["searchname"]."\n".
+									"New cat:  ".$category->getNameByID($determinedcat)."\n".
+									"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+									"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+									"Method:   "."predb md5 release name: ".$b["source"]."\n"."\n";
+							}
+							$updated++;
 						}
-						$updated++;
+					}
+				}
+				else if (preg_match("/[a-f0-9]{32}/i", $row["filename"], $matches))
+				{
+					$a = $db->query("select title, source from predb where md5 = '".$matches[0]."'");
+					foreach ($a as $b)
+					{
+						if ($b["title"] !== $row["searchname"])
+						{
+							$category = new Category();
+							$determinedcat = $category->determineCategory($b["title"], $row["groupID"]);
+
+							if ($echo == 1)
+							{
+								if ($namestatus == 1)
+									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($b["title"]), $determinedcat, $row["ID"]));
+								else
+									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($b["title"]), $determinedcat, $row["ID"]));
+							}
+							if ($this->echooutput)
+							{
+								$groups = new Groups();
+						
+								echo"New name: ".$b["title"]."\n".
+									"Old name: ".$row["searchname"]."\n".
+									"New cat:  ".$category->getNameByID($determinedcat)."\n".
+									"Old cat:  ".$category->getNameByID($row["categoryID"])."\n".
+									"Group:    ".$groups->getByNameByID($row["groupID"])."\n".
+									"Method:   "."predb md5 file name: ".$b["source"]."\n"."\n";
+							}
+							$updated++;
+						}
 					}
 				}
 			}
@@ -378,10 +511,17 @@ Class Predb
 		return $updated;
 	}
 	
-	public function getAll()
+	public function getAll($offset, $offset2)
 	{			
 		$db = new DB();
-		return $db->query("SELECT * FROM predb ORDER BY adddate DESC");
+		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p left join releases r on p.releaseID = r.ID ORDER BY p.adddate DESC limit %d,%d", $offset, $offset2));
+	}
+	
+	public function getCount()
+	{			
+		$db = new DB();
+		$count = $db->queryOneRow("SELECT count(*) as cnt from predb");
+		return $count["cnt"];
 	}
 }
 ?>

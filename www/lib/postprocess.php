@@ -508,7 +508,7 @@ class PostProcess
 						if (strlen($audioBinary) > 100)
 						{
 							@file_put_contents($tmpPath.'audio.'.$audiotype, $audioBinary);
-							$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['guid']);
+							$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['ID']);
 						}
 						unset($audioBinary);
 					}
@@ -551,7 +551,7 @@ class PostProcess
 							if ($blnTookAudioinfo === false && $processAudioinfo && is_file($tmpPath.$file) && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
 							{
 								rename($tmpPath.$name[0], $tmpPath."audiofile.".$name[2]);
-								$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->mediainfopath, $rel['ID']);
+								$blnTookAudioinfo = $this->getAudioinfo($tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['ID']);
 								@unlink($tmpPath."sample.".$name[2]);
 							}
 							if (is_file($tmpPath.$file) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
@@ -884,7 +884,7 @@ class PostProcess
 	}
 
 	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive,$audioinfo,$releaseID)
+	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid, $releaseID)
 	{
 		$db = new DB();
 		$retval = $audval = false;
@@ -892,7 +892,7 @@ class PostProcess
 		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
-		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, groupID FROM releases WHERE ID = %d", $releaseID));
+		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
 			return $retval;
 
@@ -921,7 +921,8 @@ class PostProcess
 										$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 									$category = new Category();
 									$newcat = $category->determineCategory($newname, $catID["groupID"]);
-									$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
+									if ($catID["relnamestatus"] != "3")
+										$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
 									$re = new ReleaseExtra();
 									$re->addFromXml($releaseID, $xmlarray);
 									$retval = true;
@@ -933,7 +934,7 @@ class PostProcess
 					}
 					if($this->processAudioSample && $audval === false)
 					{
-						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$samplefile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
+						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$audiofile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
 						if (is_dir($ramdrive))
 						{
 							@$all_files = scandir($ramdrive,1);
