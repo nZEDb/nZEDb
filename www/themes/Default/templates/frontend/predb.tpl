@@ -21,32 +21,32 @@
 			<td class="predb">{$result.predate}</td>
 			<td class="predb">
 				{if {$result.source} == orlydb}
-					<a title="Visit ORLYDB" href="http://www.orlydb.com/">
+					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://www.orlydb.com/">
 						ORLYDB.com
 					</a>
 				{/if}
 				{if {$result.source} == predbme}
-					<a title="Visit PreDB.me" href="http://predb.me/">
+					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/">
 						PreDB.me
 					</a>
 				{/if}
 				{if {$result.source} == prelist}
-					<a title="Visit Prelist" href="http://pre.zenet.org/">
+					<a title="Visit Prelist" href="{$site->dereferrer_link}http://pre.zenet.org/">
 						Prelist.ws
 					</a>
 				{/if}
 				{if {$result.source} == srrdb}
-					<a title="Visit srrDB" href="http://www.srrdb.com/">
+					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/">
 						srrDB.com
 					</a>
 				{/if}
 				{if {$result.source} == womble}
-					<a title="Visit Womble" href="http://nzb.isasecret.com/">
+					<a title="Visit Womble" href="{$site->dereferrer_link}http://nzb.isasecret.com/">
 						Womble's NZB Index
 					</a>
 				{/if}
 				{if {$result.source} == zenet}
-					<a title="Visit ZEnet" href="http://pre.zenet.org/">
+					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/">
 						ZEnet.org
 					</a>
 				{/if}
