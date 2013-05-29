@@ -1013,9 +1013,8 @@ INSERT INTO `site`
 	('imdblanguage', 'en'),
 	('partretentionhours', 72),
 	('postdelay', 300),
-	('predbhashcheck', 0),
 	('processaudiosample', 0),
-	('sqlpatch', '63');
+	('sqlpatch', '64');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

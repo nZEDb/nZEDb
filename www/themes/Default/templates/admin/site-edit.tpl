@@ -754,14 +754,6 @@
 </tr>
 
 <tr>
-	<td><label for="predbhashcheck">PreDB Hash</label>:</td>
-	<td>
-		{html_radios id="predbhashcheck" name='predbhashcheck' values=$yesno_ids output=$yesno_names selected=$fsite->predbhashcheck separator='<br />'}
-		<div class="hint">When fixReleasenames.php predb runs, should it try to look for names using the MD5 hash (this slows it down quite a bit).</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="debuginfo">Debug information</label>:</td>
 	<td>
 		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}

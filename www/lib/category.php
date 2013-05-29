@@ -1358,7 +1358,7 @@ class Category
 				return true;
 			}
 		}
-		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2,})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[\.\-_ ]FM.+MP3[\.\-_ ]|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d[\.\-_ ]|[\.\-_ ](19|20)\d\d.+(SAT|WEB)[\.\-_ ]| MP3$/i', $releasename))
+		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2,})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[\.\-_ ]FM.+MP3[\.\-_ ]|\-web\-(19|20)\d\d(\.|\s)|[\.\-_ ](SAT|WEB).+(19|20)\d\d([\.\-_ ]|$)|[\.\-_ ](19|20)\d\d.+(SAT|WEB)([\.\-_ ]|$)| MP3$/i', $releasename))
 		{
 			if($this->isMusicForeign($releasename))
 			{ 
