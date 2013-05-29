@@ -934,7 +934,7 @@ class PostProcess
 					}
 					if($this->processAudioSample && $audval === false)
 					{
-						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$samplefile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
+						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$audiofile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
 						if (is_dir($ramdrive))
 						{
 							@$all_files = scandir($ramdrive,1);
