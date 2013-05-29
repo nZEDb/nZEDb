@@ -16,7 +16,15 @@
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			<td class="predb">{$result.title}</td>
+			<td class="predb">
+				{if isset($result.guid)}
+					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
+						{$result.title|escape:"htmlall"}
+					</a>
+				{else}
+					{$result.title|escape:"htmlall"}
+				{/if}
+			</td>
 			<td class="predb">{$result.adddate}</td>
 			<td class="predb">{$result.predate}</td>
 			<td class="predb">
@@ -51,7 +59,87 @@
 					</a>
 				{/if}
 			</td>
-			<td class="predb">{$result.category}</td>
+			<td class="predb">
+				{if {$result.category} == 'MP3'}
+					<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'XXX'}
+					<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'DVDR'}
+					<a class="title" title="View category DVDR" href="{$smarty.const.WWW_TOP}/browse?t=2070">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'TV-X264'}
+					<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'TV-x264'}
+					<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'tv-hd'}
+					<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'XVID'}
+					<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'movies-sd'}
+					<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'X264'}
+					<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == '0DAY'}
+					<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'TV-XVID'}
+					<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'tv-sd'}
+					<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'XBOX360'}
+					<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'PDA'}
+					<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'BLURAY'}
+					<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'MVID'}
+					<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'GAMES'}
+					<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'EBOOK'}
+					<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=8000">
+						{$result.category}
+					</a>
+				{elseif {$result.category} == 'FLAC'}
+					<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">
+						{$result.category}
+					</a>
+				{else}
+					{$result.category}
+				{/if}
+			</td>
 			<td class="predb">{$result.size}</td>
 		</tr>
 	{/foreach}
