@@ -1014,7 +1014,7 @@ INSERT INTO `site`
 	('partretentionhours', 72),
 	('postdelay', 300),
 	('processaudiosample', 0),
-	('sqlpatch', '64');
+	('sqlpatch', '65');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1322,7 +1322,8 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('SORTER_TIMER', 30),
 	('POWERLINE', 'FALSE'),
 	('PATCHDB', 'FALSE'),
-	('PATCHDB_TIMER', '21600');
+	('PATCHDB_TIMER', '21600'),
+	('PROGRESSIVE', 'FALSE');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

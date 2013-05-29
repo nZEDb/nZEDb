@@ -546,134 +546,6 @@
 <table class="input">
 
 <tr>
-	<td><label for="maxaddprocessed">Maximum add PP per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
-		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxpartsprocessed">Maximum add PP parts downloaded</label>:</td>
-	<td>
-		<input class="tiny" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
-		<div class="hint">If a part fails to download while post processing, this will retry up to the amount you set, then give up.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="passchkattempts">Maximum add PP parts checked</label>:</td>
-	<td>
-		<input class="tiny" id="passchkattempts" name="passchkattempts" type="text" value="{$fsite->passchkattempts}" />
-		<div class="hint">This overrides the above setting if set above 1. How many parts to check for a password before giving up. This slows down post processing massively, better to leave it 1.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
-		<div class="hint">The maximum amount of NFO files to process per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
-		<div class="hint">The maximum amount of TV shows to process with TVRage per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
-	<td>
-		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
-		<div class="hint">The maximum amount of movies to process with IMDB per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
-		<div class="hint">The maximum amount of anime to process with anidb per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
-		<div class="hint">The maximum amount of music to process with amazon per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
-		<div class="hint">The maximum amount of games to process with amazon per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
-	<td>
-		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
-		<div class="hint">The maximum amount of books to process with amazon per run.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="amazonsleep">Amazon sleep time</label>:</td>
-	<td>
-		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
-		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="postthreads">Postprocessing Threads</label>:</td>
-	<td>
-		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-		<div class="hint">The number of threads for postprocessing.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="postdelay">Postprocessing Threads Delay</label>:</td>
-	<td>
-		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />
-		<div class="hint">The time in milliseconds to delay postprocessing threaded startup. This will reduce bursting to mysql.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
-	<td>
-		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-		<div class="hint">The number of threads for update_binaries.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="backfillthreads">Backfill Threads</label>:</td>
-	<td>
-		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-		<div class="hint">The number of threads for backfill.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="nzbthreads">Import-nzb Threads</label>:</td>
-	<td>
-		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
 	<td>
 		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
@@ -758,6 +630,146 @@
 	<td>
 		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
 		<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Advanced - Postprocessing Settings</legend>
+<table class="input">
+<tr>
+	<td><label for="maxaddprocessed">Maximum add PP per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
+		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run. Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxpartsprocessed">Maximum add PP parts downloaded</label>:</td>
+	<td>
+		<input class="tiny" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
+		<div class="hint">If a part fails to download while post processing, this will retry up to the amount you set, then give up.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="passchkattempts">Maximum add PP parts checked</label>:</td>
+	<td>
+		<input class="tiny" id="passchkattempts" name="passchkattempts" type="text" value="{$fsite->passchkattempts}" />
+		<div class="hint">This overrides the above setting if set above 1. How many parts to check for a password before giving up. This slows down post processing massively, better to leave it 1.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
+		<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
+		<div class="hint">The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
+	<td>
+		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
+		<div class="hint">The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
+		<div class="hint">The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
+		<div class="hint">The maximum amount of music to process with amazon per run. This does not use an NNTP connection.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
+		<div class="hint">The maximum amount of games to process with amazon per run. This does not use an NNTP connection.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
+		<div class="hint">The maximum amount of books to process with amazon per run. This does not use an NNTP connection</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="amazonsleep">Amazon sleep time</label>:</td>
+	<td>
+		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
+		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Advanced - Threaded Settings</legend>
+<table class="input">
+<tr>
+	<td><label for="postthreads">Postprocessing Threads</label>:</td>
+	<td>
+		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+		<div class="hint">The number of threads for postprocessing.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="postdelay">Postprocessing Threads Delay</label>:</td>
+	<td>
+		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />
+		<div class="hint">The time in milliseconds to delay postprocessing threaded startup. This will reduce bursting to mysql.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
+	<td>
+		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<div class="hint">The number of threads for update_binaries.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="backfillthreads">Backfill Threads</label>:</td>
+	<td>
+		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<div class="hint">The number of threads for backfill.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nzbthreads">Import-nzb Threads</label>:</td>
+	<td>
+		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
 	</td>
 </tr>
 
