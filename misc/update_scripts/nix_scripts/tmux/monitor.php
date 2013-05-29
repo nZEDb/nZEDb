@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2193";
+$version="0.1r2194";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -599,7 +599,7 @@ while( $i > 0 )
 		$log = writelog($panes3[1]);
 		shell_exec("tmux respawnp -t ${tmux_session}:3.1 'echo \"\033[38;5;${color}m\" && \
 				$_php ${DIR}update_scripts/nix_scripts/tmux/bin/optimize.php true $log && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-		$time6 = TIME();
+		$time5 = TIME();
 	}
 	elseif ( $optimize_tables == "TRUE" )
 	{
