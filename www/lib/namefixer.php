@@ -8,8 +8,8 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 /* Values of relnamestatus:
  * 0 : New release, just inserted into the table.
  * 1 : Categorized release.
- * 2 : Fixed with namefixer or predb.
- * 3 : Fixed with post proc (from mp3 tags or music.php).
+ * 2 : Fixed with namefixer.
+ * 3 : Fixed with post proc (from mp3 tags or music.php) or predb.
  */
 
 class Namefixer
