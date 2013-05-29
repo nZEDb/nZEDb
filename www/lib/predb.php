@@ -360,7 +360,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 			
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = r.releaseID where p.nfo is not null and r.nfostatus = 0"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus = 0"))
 		{
 			$nfo = new Nfo($this->echooutput);
 			while ($row = mysqli_fetch_assoc($res))
