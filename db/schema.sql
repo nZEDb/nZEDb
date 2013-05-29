@@ -187,6 +187,7 @@ CREATE TABLE `predb`
 `adddate` DATETIME DEFAULT NULL,
 `source` VARCHAR(50) NOT NULL DEFAULT '',
 `md5` VARCHAR(255) NOT NULL DEFAULT '0',
+`releaseID` INT NULL,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -196,6 +197,7 @@ CREATE INDEX ix_predb_predate ON predb(`predate`);
 CREATE INDEX ix_predb_adddate ON predb(`adddate`);
 CREATE INDEX ix_predb_source ON predb(`source`);
 CREATE INDEX ix_predb_md5 ON predb(`md5`);
+CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
 
 
 DROP TABLE IF EXISTS `menu`;
@@ -1014,7 +1016,7 @@ INSERT INTO `site`
 	('partretentionhours', 72),
 	('postdelay', 300),
 	('processaudiosample', 0),
-	('sqlpatch', '65');
+	('sqlpatch', '66');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
