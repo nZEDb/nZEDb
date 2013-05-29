@@ -26,6 +26,8 @@ Class Predb
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
 		if (strtotime($newestrel["adddate"]) < time()-600)
 		{
+			if ($this->echooutput)
+				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
 			$newzenet = $this->retrieveZenet();
 			$newprelist = $this->retrievePrelist();
@@ -35,6 +37,9 @@ Class Predb
 			$newnames = $newwomble+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
+			$matched = $this->matchPredb();
+			if ($matched > 0 && $this->echooutput)
+				echo "Matched ".$matched." predb titles to release search names.\n";
 		}
 		return $newnames;
 	}
@@ -279,6 +284,25 @@ Class Predb
 			}
 		}
 		return $newnames;
+	}
+	
+	// When a searchname is the same as the title, tie it to the predb.
+	public function matchPredb()
+	{
+		$db = new DB();
+		$updated = 0;
+		if($this->echooutput)
+			echo "Matching up predb titles with release search names.\n";
+			
+		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID = null"))
+		{
+			while ($row = mysqli_fetc_assoc($res))
+			{
+				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				$updated++;
+			}
+			return $updated;
+		}
 	}
 	
 	// Matches the names within the predb table to release files and subjects (names). In the future, use the MD5.
