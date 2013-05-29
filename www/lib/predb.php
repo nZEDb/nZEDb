@@ -29,12 +29,13 @@ Class Predb
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
+			$newomgwtf = $this->retrieveOmgwtfnzbs();
 			$newzenet = $this->retrieveZenet();
 			$newprelist = $this->retrievePrelist();
 			$neworly = $this->retrieveOrlydb();
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
-			$newnames = $newwomble+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
+			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
 			$matched = $this->matchPredb();
@@ -52,7 +53,6 @@ Class Predb
 		$buffer = getUrl("http://nzb.isasecret.com/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -105,6 +105,52 @@ Class Predb
 		return $newnames;
 	}
 	
+	public function retrieveOmgwtfnzbs()
+	{
+		$db = new DB;
+		$newnames = 0;
+
+		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<title>(?P<title>.+?)<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2))
+						{
+							$oldname = $db->queryOneRow(sprintf("SELECT title, source, ID FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
+							if ($oldname["title"] == $matches2["title"])
+							{
+								if ($oldname["source"] == "womble")
+								{
+									continue;
+								}
+								else
+								{
+									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
+								
+									$db->query(sprintf("UPDATE predb SET size = %s, category = %s, predate = FROM_UNIXTIME(".strtotime($matches2["date"])."), adddate = now(), source = %s where ID = %d", $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $oldname["ID"]));
+									$newnames++;
+								}
+							}
+							else
+							{
+								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
+								
+								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
+								$newnames++;
+							}	
+						}
+					}
+				}
+			}
+		}
+		return $newnames;
+	}
+	
 	public function retrieveZenet()
 	{
 		$db = new DB;
@@ -113,7 +159,6 @@ Class Predb
 		$buffer = getUrl("http://pre.zenet.org/live.php");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<tr bgcolor=".+?<\/tr>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -158,7 +203,6 @@ Class Predb
 		$buffer = getUrl("http://www.prelist.ws/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match_all('/<small><span.+?<\/span><\/small>/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
@@ -209,7 +253,6 @@ Class Predb
 		$buffer = getUrl("http://www.orlydb.com/");
 		if ($buffer !== false && strlen($buffer))
 		{
-			$ret = array();
 			if (preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match))
 			{
 				if (preg_match_all('/<div>.+<\/div>/s', $match["1"], $matches))
