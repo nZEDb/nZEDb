@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2185";
+$version="0.1r2187";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -33,8 +33,9 @@ $proc = "SELECT
 	( SELECT COUNT( ID ) AS cnt FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) AS cnt FROM groups WHERE backfill = 1 ) AS backfill_groups,
 	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
-	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate desc limit 1 ) AS newestpre,
+	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate DESC limit 1 ) AS newestadd,
+	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
+	( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
 	( SELECT COUNT( ID ) from collections ) collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
@@ -75,7 +76,7 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from site where setting = 'debuginfo' ) AS debug,
-	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
+	( SELECT name from releases order by adddate DESC limit 1 ) AS newestaddname";
 
 //flush query cache
 $qcache = "FLUSH QUERY CACHE";
@@ -176,6 +177,8 @@ $time9 = TIME();
 $newestname = "Unknown";
 $newestadd = TIME();
 $newestpre = TIME();
+$oldestcollection = TIME();
+
 $releases_now_formatted = 0;
 $releases_since_start = 0;
 $work_diff = 0;
@@ -261,6 +264,7 @@ printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
+printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
@@ -369,6 +373,7 @@ while( $i > 0 )
 	if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
 	if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
 	if ( @$proc_result[0]['progressive'] != NULL ) { $progressive = $proc_result[0]['progressive']; }
+	if ( @$proc_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_result[0]['oldestcollection']; }
 
 	if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
 	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
@@ -466,6 +471,7 @@ while( $i > 0 )
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
+	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 	if ( $post == "TRUE" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
