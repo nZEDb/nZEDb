@@ -10,10 +10,10 @@ if (!isset($argv[1]) && !is_numeric($argv[1]))
 	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142).\nIf you have already ran this script in the past, your status is saved, so you can go further.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
 
 $db = new DB;
-$predbv = $db->queryOneRow("SELECT predbversion as v from site");
-if ($argv[1] < $predbversion["v"])
-	exit("You have already reached file ".$predbversion["v"]." please select a higher file.\n");
-else if ($argv[1] >= $predbversion["v"])
+$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
+if ($argv[1] < $predbv["v"])
+	exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
+else if ($argv[1] >= $predbv["v"])
 	$filenums = $argv[1];
 else if ($argv[1] == 0 || $argv[1] > 142)
 	exit("Wrong argument. It must be a number between 1 and 142.\n");
@@ -28,7 +28,7 @@ foreach (range($filenums, 142) as $filenumber)
 		@file_put_contents($zipfile, $ziphandle);
 		fclose($ziphandle);
 	}
-	
+
 	if (file_exists($zipfile))
 	{
 		if($handle = gzopen($zipfile, "r"))
@@ -37,14 +37,14 @@ foreach (range($filenums, 142) as $filenumber)
 			$file = WWW_DIR."data".$filenump.".txt";
 			if (!file_exists($file))
 			{
-				$txthandle = fopen($zipfile, 'r')
+				$txthandle = fopen($zipfile, 'r');
 				@file_put_contents($file, $contents);
 				fclose($txthandle);
 				gzclose($file);
 				unlink($zipfile);
 			}
-			
-			if (file_exists($file)
+
+			if (file_exists($file))
 			{
 				$db->query("LOAD DATA INFILE ".'"'.$file.'"'." INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '".'"'."' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)");
 				unlink($file);
