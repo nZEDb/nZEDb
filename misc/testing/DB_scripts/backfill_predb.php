@@ -68,7 +68,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 					unlink($file);
 					$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
 					$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
-					$predb->parseTitles(1, 1, 2, 1, 1);
+					$predb->parseTitles(2, 1, 2, 1, 1);
 					$predb->matchPredb();
 				}
 				else
