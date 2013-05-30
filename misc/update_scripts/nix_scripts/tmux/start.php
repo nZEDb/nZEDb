@@ -17,6 +17,11 @@ $site = New Sites();
 $patch = $site->get()->sqlpatch;
 $hashcheck = $site->get()->hashcheck;
 
+//check if session exists
+$session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
+if ( $session != 0 )
+	exit("\033[1;33mtmux session:".$tmux_session." is already running, aborting.\033[0m\n\n");
+
 function writelog( $pane )
 {
 	$path = dirname(__FILE__)."/logs";
@@ -58,7 +63,7 @@ if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 }
 
 function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd");
+	$returnVal = exec("which $cmd");
 	return (empty($returnVal) ? false : true);
 }
 
@@ -74,7 +79,7 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now() WHERE dateadded < (now() - interval 1 hour)");
+$db->query("update collections set dateadded = now()");
 if ( $db->getAffectedRows() > 0 )
 	echo $db->getAffectedRows()." collections reset\n";
 
@@ -93,58 +98,58 @@ function start_apps($tmux_session)
 
 	if (( $htop == "TRUE" ) && (command_exist("htop")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n htop 'printf \"\033]2;htop\033\" && htop'");
+		exec("tmux new-window -t $tmux_session -n htop 'printf \"\033]2;htop\033\" && htop'");
 	}
 
 	if (( $nmon == "TRUE" ) && (command_exist("nmon")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n nmon 'printf \"\033]2;nmon\033\" && nmon -t'");
+		exec("tmux new-window -t $tmux_session -n nmon 'printf \"\033]2;nmon\033\" && nmon -t'");
 	}
 
 	if (( $vnstat == "TRUE" ) && (command_exist("vnstat")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n vnstat 'printf \"\033]2;vnstat\033\" && watch -n10 \"vnstat ${vnstat_args}\"'");
+		exec("tmux new-window -t $tmux_session -n vnstat 'printf \"\033]2;vnstat\033\" && watch -n10 \"vnstat ${vnstat_args}\"'");
 	}
 
 	if (( $tcptrack == "TRUE" ) && (command_exist("tcptrack")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n tcptrack 'printf \"\033]2;tcptrack\033\" && tcptrack ${tcptrack_args}'");
+		exec("tmux new-window -t $tmux_session -n tcptrack 'printf \"\033]2;tcptrack\033\" && tcptrack ${tcptrack_args}'");
 	}
 
 	if (( $bwmng == "TRUE" ) && (command_exist("bwm-ng")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n bwm-ng 'printf \"\033]2;bwm-ng\033\" && bwm-ng'");
+		exec("tmux new-window -t $tmux_session -n bwm-ng 'printf \"\033]2;bwm-ng\033\" && bwm-ng'");
 	}
 
 	if (( $mytop == "TRUE" ) && (command_exist("mytop")))
 	{
-		shell_exec("tmux new-window -t$tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
+		exec("tmux new-window -t $tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
 	}
 
 	if ( $console_bash == "TRUE" )
 	{
-		shell_exec("tmux new-window -t$tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
+		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
 	}
 }
 
 function window_utilities($tmux_session)
 {
-	shell_exec("tmux new-window -t$tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
-	shell_exec("tmux selectp -t 0 && tmux splitw -t$tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
+	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\\\"'");
+	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\\\"'");
+	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\\\"'");
+	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\\\"'");
 }
 
 function window_post($tmux_session)
 {
-	shell_exec("tmux new-window -t$tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
+	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\\\"'");
+	exec("tmux splitw -t $tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\\\"'");
 }
 
 function window_optimize($tmux_session)
 {
-	shell_exec("tmux new-window -t$tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
+	exec("tmux new-window -t $tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\\\"'");
+	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\\\"'");
 }
 
 function attach($DIR, $tmux_session)
@@ -155,24 +160,24 @@ function attach($DIR, $tmux_session)
 		$PHP = "php";
 
 	//get list of panes by name
-	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+	$panes_win_1 = exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
-	shell_exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
-	shell_exec("tmux select-window -t$tmux_session:0 && tmux attach-session -d -t$tmux_session");
+	exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
+	exec("tmux select-window -t $tmux_session:0 && tmux attach-session -d -t $tmux_session");
 }
 
-//create tmux
+//create tmux session
 if ( $powerline == "TRUE" )
-	$tmuxconfig = "${DIR}update_scripts/nix_scripts/tmux/powerline/tmux.conf";
+	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/powerline/tmux.conf";
 else
-	$tmuxconfig = "${DIR}update_scripts/nix_scripts/tmux/tmux.conf";
+	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
 
 if ( $seq == "TRUE" )
 {
-	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
-	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
-	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session 'printf \"\033]2;Monitor\033\\\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -h -p 67 'printf \"\033]2;update_releases\033\\\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -v -p 33 'printf \"\033]2;nzb-import-bulk\033\\\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
@@ -182,11 +187,11 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
-	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
-	shell_exec("tmux selectp -t$tmux_session:0.0 && tmux splitw -t$tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
-	shell_exec("tmux selectp -t$tmux_session:0.2 && tmux splitw -t$tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
-	shell_exec("tmux splitw -t$tmux_session:0 -v -p 50 'printf \"\033]2;update_releases\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session 'printf \"\033]2;Monitor\033\\\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -h -p 67 'printf \"\033]2;update_binaries\033\\\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -v -p 33 'printf \"\033]2;nzb-import\033\\\"'");
+	exec("tmux selectp -t $tmux_session:0.2 && tmux splitw -t $tmux_session -v -p 67 'printf \"\033]2;backfill\033\\\"'");
+	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\\\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
@@ -195,4 +200,3 @@ else
 	attach($DIR, $tmux_session);
 }
 ?>
-
