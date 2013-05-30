@@ -19,7 +19,7 @@ else if ($argv[1] == 0 || $argv[1] > 142)
 	exit("Wrong argument. It must be a number between 1 and 142.\n");
 
 $done = 0;
-foreach (range($filenums, 142) as $filenumber)
+foreach (range($predbv["v"], $filenums) as $filenumber)
 {
 	$filenump = str_pad($filenumber, 3, '0', STR_PAD_LEFT);
 	$zipfile = WWW_DIR."data".$filenump.".gz";
@@ -40,7 +40,7 @@ foreach (range($filenums, 142) as $filenumber)
 				$txthandle = fopen($zipfile, 'r');
 				@file_put_contents($file, $contents);
 				fclose($txthandle);
-				gzclose($file);
+				gzclose($handle);
 				unlink($zipfile);
 			}
 
