@@ -125,7 +125,7 @@
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 
-	{if $reVideo.releaseID|@count > 0}
+	{if $reVideo.releaseID|@count > 0 || $reAudio|@count > 0}
 	<tr><th>Media Info:</th>
 		<td style="padding:0;">
 			<table style="width:100%;" class="innerdata highlight">
@@ -278,6 +278,9 @@
 	{if $release.videostatus == 1 && $userdata.canpreview == 1}
 	<tr><th>Video:</th><td><video width="450" controls><source src="{$smarty.const.WWW_TOP}/covers/video/{$release.guid}.ogv" type="video/ogg">Your browser does not support the video tag.</video></td></tr>
 	{/if}
+	{if $release.audiostatus == 1 && $userdata.canpreview == 1}
+	<tr><th>Audio:</th><td><audio controls><source src="{$smarty.const.WWW_TOP}/covers/audiosample/{$release.guid}.ogg" type="audio/ogg">Your browser does not support the audio element.</audio></td></tr>
+	{/if}
 	{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
 	<tr><th>Sample:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/sample/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /></td></tr>
 	{/if}
@@ -312,7 +315,7 @@
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possible Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}

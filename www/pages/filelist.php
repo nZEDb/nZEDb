@@ -38,7 +38,7 @@ if (isset($_GET["id"]))
 	$page->smarty->assign('pager', $pager);
 
 	$page->smarty->assign('rel', $rel);
-	$page->smarty->assign('files', array_slice($ret, $offset, $offset+50));
+	$page->smarty->assign('files', array_slice($ret, $offset, ITEMS_PER_PAGE));
 
 	$page->title = "File List";
 	$page->meta_title = "View Nzb file list";

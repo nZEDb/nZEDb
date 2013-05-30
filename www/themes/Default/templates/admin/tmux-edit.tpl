@@ -129,6 +129,13 @@
 				</td>
 			</tr>
 
+			<tr>
+				<td style="width:160px;"><label for="PROGRESSIVE">Variable Sleep Timer</label>:</td>
+				<td>
+					{html_radios id="PROGRESSIVE" name='PROGRESSIVE' values=$truefalse_names output=$truefalse_names selected=$ftmux->PROGRESSIVE}
+					<div class="hint">This will vary the backfill sleep depending on how many collections you have.<br />ie 50k collections would make sleep timer 100 seconds and 20k releases would make sleep timer 40 seconds.</div>
+				</td>
+			</tr>
 		</table>
 </fieldset>
 
@@ -436,7 +443,7 @@
 				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Start Timer</label>:</td>
 				<td>
 					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="tiny" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
-					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
+					<div class="hint">This is a start timer. The default is 24 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
 				</td>
 			</tr>
 

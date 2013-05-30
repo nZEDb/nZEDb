@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2132";
+$version="0.1r2201";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -21,21 +21,24 @@ $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER
 
 //needs to be processed query
 $proc = "SELECT
-	( SELECT COUNT( groupID ) AS cnt from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
-	( SELECT COUNT( groupID ) AS cnt from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( groupID ) AS cnt from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 and nzbstatus = 1 ) AS audio,
-	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
-	( SELECT COUNT( groupID ) AS cnt from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
-	( SELECT COUNT( groupID ) AS cnt from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( groupID ) AS cnt from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
-	( SELECT COUNT( groupID ) AS cnt from releases where nzbstatus = 1 ) AS releases,
-	( SELECT COUNT( groupID ) AS cnt FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT( ID ) AS cnt FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( ID ) AS cnt FROM groups WHERE backfill = 1 ) AS backfill_groups,
-	( SELECT COUNT( groupID ) AS cnt FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate desc limit 1 ) AS newestadd,
-	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate desc limit 1 ) AS newestpre,
+	( SELECT COUNT( groupID ) from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
+	( SELECT COUNT( groupID ) from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
+	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 and nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+	( SELECT COUNT( groupID ) from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+	( SELECT COUNT( groupID ) from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
+	( SELECT COUNT( groupID ) from releases where nzbstatus = 1 ) AS releases,
+	( SELECT COUNT( groupID ) FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
+	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
+	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
+	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate DESC limit 1 ) AS newestadd,
+	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
+	( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
 	( SELECT COUNT( ID ) from collections ) collections_table,
+	( SELECT COUNT( ID ) from predb ) predb,
+	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) predb_matched,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
@@ -73,8 +76,9 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'PATCHDB' ) AS patchdb,
 	( SELECT value from tmux where setting = 'PATCHDB_TIMER' ) AS patchdb_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from site where setting = 'debuginfo' ) AS debug,
-	( SELECT name from releases order by adddate desc limit 1 ) AS newestaddname";
+	( SELECT name from releases order by adddate DESC limit 1 ) AS newestaddname";
 
 //flush query cache
 $qcache = "FLUSH QUERY CACHE";
@@ -175,6 +179,8 @@ $time9 = TIME();
 $newestname = "Unknown";
 $newestadd = TIME();
 $newestpre = TIME();
+$oldestcollection = TIME();
+
 $releases_now_formatted = 0;
 $releases_since_start = 0;
 $work_diff = 0;
@@ -186,6 +192,7 @@ $music_diff = 0;
 $movie_diff = 0;
 $console_diff = 0;
 $nfo_diff = 0;
+$pre_diff = 0;
 
 $misc_percent = 0;
 $book_percent = 0;
@@ -195,6 +202,7 @@ $music_percent = 0;
 $movie_percent = 0;
 $console_percent = 0;
 $nfo_percent = 0;
+$pre_percent = 0;
 
 $work_start = 0;
 $releases_start = 0;
@@ -229,6 +237,8 @@ $tvrage_releases_proc_start = 0;
 $book_releases_proc_start = 0;
 $work_remaining_start = 0;
 $nfo_remaining_start = 0;
+$predb_matched = 0;
+$predb = 0;
 
 $misc_releases_now = 0;
 $work_remaining_now = 0;
@@ -260,6 +270,7 @@ printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
+printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
@@ -272,6 +283,7 @@ printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
+printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -319,6 +331,7 @@ while( $i > 0 )
 	if ( $i == 1 )
 	{
 		if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_result[0]['nforemains']; }
+		if ( @$proc_result[0]['predb_matched'] != NULL ) { $predb_matched_start = $proc_result[0]['predb_matched']; }
 		if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_result[0]['console']; }
 		if ( @$proc_result[0]['movies'] != NULL ) { $movie_releases_proc_start = $proc_result[0]['movies']; }
 		if ( @$proc_result[0]['audio'] != NULL ) { $music_releases_proc_start = $proc_result[0]['audio']; }
@@ -359,6 +372,10 @@ while( $i > 0 )
 	if ( @$proc_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_result[0]['binaries_table']; }
 	if ( @$proc_result[0]['parts_table'] != NULL ) { $parts_table = $proc_result[0]['parts_table']; }
 
+
+	if ( @$proc_result[0]['predb'] != NULL ) { $predb = $proc_result[0]['predb']; }
+	if ( @$proc_result[0]['predb_matched'] != NULL ) { $predb_matched = $proc_result[0]['predb_matched']; }
+
 	if ( @$proc_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_result[0]['collections_kill']; }
 	if ( @$proc_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_result[0]['postprocess_kill']; }
 
@@ -367,6 +384,8 @@ while( $i > 0 )
 	if ( @$proc_result[0]['monitor'] != NULL ) { $monitor = $proc_result[0]['monitor']; }
 	if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
 	if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
+	if ( @$proc_result[0]['progressive'] != NULL ) { $progressive = $proc_result[0]['progressive']; }
+	if ( @$proc_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_result[0]['oldestcollection']; }
 
 	if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
 	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
@@ -419,6 +438,7 @@ while( $i > 0 )
 	if ( $i == 1 ) { $total_work_start = $total_work_now; }
 
 	$nfo_diff = number_format( $nfo_remaining_now - $nfo_remaining_start );
+	$pre_diff = number_format( $predb_matched - $predb_matched_start );
 	$console_diff = number_format( $console_releases_proc - $console_releases_proc_start );
 	$movie_diff = number_format( $movie_releases_proc - $movie_releases_proc_start );
 	$music_diff = number_format( $music_releases_proc - $music_releases_proc_start );
@@ -434,6 +454,7 @@ while( $i > 0 )
 
 	if ( $releases_now != 0 ) {
 		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
+		$pre_percent = sprintf( "%02s", floor(( $predb / $releases_now) * 100 ));
 		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
 		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
 		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
@@ -443,6 +464,7 @@ while( $i > 0 )
 		$misc_percent = sprintf( "%02s", floor(( $misc_releases_now / $releases_now) * 100 ));
 	} else {
 		$nfo_percent = 0;
+		$pre_percent = 0;
 		$console_percent = 0;
 		$movie_percent = 0;
 		$music_percent = 0;
@@ -464,6 +486,7 @@ while( $i > 0 )
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
+	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 	if ( $post == "TRUE" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time3));
@@ -489,6 +512,7 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
+	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -591,7 +615,7 @@ while( $i > 0 )
 		$log = writelog($panes3[1]);
 		shell_exec("tmux respawnp -t ${tmux_session}:3.1 'echo \"\033[38;5;${color}m\" && \
 				$_php ${DIR}update_scripts/nix_scripts/tmux/bin/optimize.php true $log && date +\"%D %T\" && sleep 10' 2>&1 1> /dev/null");
-		$time6 = TIME();
+		$time5 = TIME();
 	}
 	elseif ( $optimize_tables == "TRUE" )
 	{
@@ -607,25 +631,23 @@ while( $i > 0 )
 	if ( $running == "TRUE" )
 	{
 		//fix names
-		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 3600 ))
+		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 7200 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true other yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
-		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 < 3600 ))
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 < 7200 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t ${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true other yes $log && \
 					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true other no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
-		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 >= 3600 ))
+		elseif (( $fix_names == "TRUE" ) && ( TIME() - $time8 >= 7200 ))
  		{
  			$color = get_color();
 			$log = writelog($panes1[0]);
@@ -801,25 +823,25 @@ while( $i > 0 )
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
-						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+						$run_releases $log && date +\"%D %T\" && echo \"backfill has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && \
-						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+						$run_releases $log && date +\"%D %T\" && echo \"binaries has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill == "TRUE" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -k -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log && \
-						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+						$run_releases $log && date +\"%D %T\" && echo \"binaries has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				$time7 = TIME();
 			}
 			elseif ( $releases_run == "TRUE" )
 			{
 				shell_exec("tmux respawnp -t ${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
-						$run_releases && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+						$run_releases && date +\"%D %T\" && echo \"binaries and backfill has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
 			{
@@ -854,19 +876,23 @@ while( $i > 0 )
 			}
 
 			//run backfill
+			if ( $progressive == "TRUE" )
+				$backsleep = floor($collections_table / 500);
+			else
+				$backsleep = $back_timer;
 			if (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				$color = get_color();
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 4800 ))
 			{
 				$color = get_color();
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -k -t ${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log && date +\"%D %T\" && sleep $back_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
 				$time7 = TIME();
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))

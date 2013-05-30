@@ -16,7 +16,7 @@ jQuery(function($){
 			return false;
 		}
 	});
-	
+
 	$(".forumreplysubmit").click(function(e) {
 		if ($.trim($("#addReply").val()) == "")
 		{
@@ -24,22 +24,22 @@ jQuery(function($){
 			return false;
 		}
 	});
-	
+
 	$(".check").click(function(e) {
 		if (!$(e.target).is('input'))
 			$(this).children(".nzb_check").attr('checked', !$(this).children(".nzb_check").attr('checked'));
 	});
-	
+
 	$(".descmore").click(function(e) {
 		$(".descinitial").hide();
 		$(".descfull").show();
 		return false;
 	});
-	
+
 	$('.nzb_check_all').change(function(){
 		$('table.data tr td input:checkbox').attr('checked',$(this).attr('checked'));
 	});
-	
+
 	$('.nzb_check_all_season').change(function(){
 		var season = $(this).attr('name');
 		$('table.data tr td input:checkbox').each( function(i, row) {
@@ -78,13 +78,13 @@ jQuery(function($){
 	});
 	// Screenshot modal
 	$("table.data a.modal_prev").colorbox({maxWidth:"800px", maxHeight:"800x"});
-	
+
 	$("table.data a.modal_imdb").colorbox({	 // IMDB modal
 		href: function(){ return SERVERROOT + "movie/"+$(this).attr('name').substring(4)+'&modal'; },
 		title: function(){ return $(this).parent().parent().children('a.title').text(); },
 		innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
 	}).click(function(){
-		$('#colorbox').removeClass().addClass('cboxMovie');	
+		$('#colorbox').removeClass().addClass('cboxMovie');
 	});
 
 	$("table.data a.modal_music").colorbox({	 // Music modal
@@ -92,21 +92,21 @@ jQuery(function($){
 		title: function(){ return $(this).parent().parent().children('a.title').text(); },
 		innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
 	}).click(function(){
-		$('#colorbox').removeClass().addClass('cboxMusic');	
+		$('#colorbox').removeClass().addClass('cboxMusic');
 	});
 	$("table.data a.modal_console").colorbox({	 // Console modal
 		href: function(){ return SERVERROOT + "consolemodal/"+$(this).attr('name').substring(4)+'&modal'; },
 		title: function(){ return $(this).parent().parent().children('a.title').text(); },
 		innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
 	}).click(function(){
-		$('#colorbox').removeClass().addClass('cboxConsole');	
+		$('#colorbox').removeClass().addClass('cboxConsole');
 	});
 	$("table.data a.modal_book").colorbox({	 // Book modal
 		href: function(){ return SERVERROOT + "bookmodal/"+$(this).attr('name').substring(4)+'&modal'; },
 		title: function(){ return $(this).parent().parent().children('a.title').text(); },
 		innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
 	}).click(function(){
-		$('#colorbox').removeClass().addClass('cboxBook');	
+		$('#colorbox').removeClass().addClass('cboxBook');
 	});
 
 
@@ -235,13 +235,13 @@ jQuery(function($){
 	$('.mmenu').click(function(){
 		document.location=$(this).children('a').attr('href');
 		return false;
-	});	
-	
+	});
+
 	// mmenu_new
 	$('.mmenu_new').click(function(){
 		window.open($(this).children('a').attr('href'));
 		return false;
-	});	
+	});
 
 	// searchraw.tpl, viewfilelist.tpl -- checkbox operations
 	// selections
@@ -272,7 +272,7 @@ jQuery(function($){
 		var rowNum = $(e.target).parent().parent()[0].rowIndex ;
 	    if (last1) last2 = last1;
 		last1 = rowNum;
-		
+
 		// perform range selection
 		if (e.shiftKey && last1 && last2) {
 			if (last1 < last2)
@@ -289,7 +289,7 @@ jQuery(function($){
 
 		var $checkbox = $('table.data tr:nth-child('+(rowNum+1)+') td.selection INPUT[type="checkbox"]');
 		$checkbox.attr('checked', !$checkbox.attr('checked'));
-    
+
 		return false;
 	});
 
@@ -299,14 +299,14 @@ jQuery(function($){
 	{
 		$('#divInvite').slideToggle('fast');
 	});
-	
+
 	// send an invite
-	$('#frmSendInvite').submit(function() 
+	$('#frmSendInvite').submit(function()
 	{
 		var inputEmailto = $("#txtInvite").val();
 		if (isValidEmailAddress(inputEmailto))
 		{
-		
+
 			// no caching of results
 			var rand_no = Math.random();
 			$.ajax({
@@ -321,7 +321,7 @@ jQuery(function($){
 				$("#divInviteError").hide();
 			  },
 			  error: function(xhr,err,e) { alert( "Error in ajax_profile: " + err ); }
-			});			
+			});
 		}
 		else
 		{
@@ -337,9 +337,9 @@ jQuery(function($){
 		$(this).parent().parent().parent().children(".mlextra").show();
 		return false;
 	});
-	
+
 	// lookup tmdb for a movie
-	$('#frmMyMovieLookup').submit(function() 
+	$('#frmMyMovieLookup').submit(function()
 	{
 		var movSearchText = $("#txtsearch").val();
 		// no caching of results
@@ -353,12 +353,12 @@ jQuery(function($){
 			$("#divMovResults").html(data);
 		  },
 		  error: function(xhr,err,e) { alert( "Error in ajax_mymovies: " + err ); }
-		});			
+		});
 
 		return false;
-	});	
-	
-	
+	});
+
+
 	// file list tooltip
 	$(".rarfilelist").each(function() {
 		var guid = $(this).children('img').attr('alt');
@@ -382,7 +382,7 @@ jQuery(function($){
 				at: 'bottom left',
 			},
 			style: {
-			    classes: 'ui-tooltip-newznab',
+			    classes: 'qtip-dark qtip-shadow qtip-rounded',
 				width: { max: 500 },
 				tip: { // Now an object instead of a string
 	        		corner: 'topRight', // We declare our corner within the object using the corner sub-option
@@ -394,7 +394,7 @@ jQuery(function($){
 			}
 		});
 	});
-	
+
 	// seriesinfo tooltip
 	$(".seriesinfo").each(function() {
 		var guid = $(this).attr('title');
@@ -414,11 +414,11 @@ jQuery(function($){
 			  }
 			},
 			style: {
-			  classes: 'ui-tooltip-newznab'
+			  classes: 'qtip-dark qtip-shadow qtip-rounded'
 			}
 		});
 	});
-	
+
 	// mediainfo tooltip
 	$(".mediainfo").each(function() {
 		var guid = $(this).attr('title');
@@ -438,7 +438,7 @@ jQuery(function($){
 			  }
 			},
 			style: {
-				classes: 'ui-tooltip-newznab',
+				classes: 'qtip-dark qtip-shadow qtip-rounded',
 				width: { max: 500 },
 				tip: { // Now an object instead of a string
 					corner: 'topLeft', // We declare our corner within the object using the corner sub-option
@@ -465,13 +465,13 @@ URLDecode:function(s){var o=s;var binVal,t;var r=/(%[^%]{2})/;
 });
 
 
-function isValidEmailAddress(emailAddress) 
+function isValidEmailAddress(emailAddress)
 {
 	var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
 	return pattern.test(emailAddress);
 }
 
-function mymovie_del(imdbID, btn) 
+function mymovie_del(imdbID, btn)
 {
 		var rand_no = Math.random();
 		$.ajax({
@@ -484,12 +484,12 @@ function mymovie_del(imdbID, btn)
 				$(btn).prev("a").show();
 		  },
 		  error: function(xhr,err,e) {  }
-		});			
+		});
 
 		return false;
 }
 
-function mymovie_add(imdbID, btn) 
+function mymovie_add(imdbID, btn)
 {
 		$(btn).hide();
 		$(btn).next("a").show();
@@ -503,7 +503,7 @@ function mymovie_add(imdbID, btn)
 		  {
 		  },
 		  error: function(xhr,err,e) {  }
-		});			
+		});
 
 		return false;
 }
@@ -512,13 +512,13 @@ function mymovie_add(imdbID, btn)
 // qtip growl
 $(document).ready(function()
 {
-   
+
    window.createGrowl = function(tipText /*, tipTitle, persistent*/) {
       // Use the last visible jGrowl qtip as our positioning target
       var target = $('.qtip.jgrowl:visible:last');
       var tipTitle = 'Attention!';
       var persistent = false;
- 
+
       // Create your jGrowl qTip...
       $(document.body).qtip({
          // Any content config you want here really.... go wild!
@@ -539,25 +539,25 @@ $(document).ready(function()
             event: false, // Don't show it on a regular event
             ready: true, // Show it when ready (rendered)
             effect: function() { $(this).stop(0,1).fadeIn(400); }, // Matches the hide effect
-            
+
             // Custom option for use with the .get()/.set() API, awesome!
             persistent: persistent
          },
          hide: {
             event: false, // Don't hide it on a regular event
-            effect: function(api) { 
+            effect: function(api) {
                // Do a regular fadeOut, but add some spice!
                $(this).stop(0,1).fadeOut(400).queue(function() {
                   // Destroy this tooltip after fading out
                   api.destroy();
- 
+
                   // Update positions
                   updateGrowls();
                })
             }
          },
          style: {
-            classes: 'jgrowl ui-tooltip-newznab ui-tooltip-rounded', // Some nice visual classes
+            classes: 'jgrowl qtip-dark qtip-shadow qtip-rounded', // Some nice visual classes
             tip: false // No tips for this one (optional ofcourse)
          },
          events: {
@@ -569,35 +569,35 @@ $(document).ready(function()
       })
       .removeData('qtip');
    };
- 
+
    // Make it a window property see we can call it outside via updateGrowls() at any point
    window.updateGrowls = function() {
       // Loop over each jGrowl qTip
       var each = $('.qtip.jgrowl:not(:animated)');
       each.each(function(i) {
          var api = $(this).data('qtip');
- 
+
          // Set the target option directly to prevent reposition() from being called twice.
          api.options.position.target = !i ? $(document.body) : each.eq(i - 1);
          api.set('position.at', (!i ? 'top' : 'bottom') + ' right');
       });
    };
- 
+
    // Setup our timer function
    function timer(event) {
       var api = $(this).data('qtip'),
          lifespan = 5000; // 5 second lifespan
-      
+
       // If persistent is set to true, don't do anything.
       if(api.get('show.persistent') === true) { return; }
- 
+
       // Otherwise, start/clear the timer depending on event type
       clearTimeout(api.timer);
       if(event.type !== 'mouseover') {
          api.timer = setTimeout(api.hide, lifespan);
       }
    }
- 
+
    // Utilise delegate so we don't have to rebind for every qTip!
    $(document).delegate('.qtip.jgrowl', 'mouseover mouseout', timer);
 });
