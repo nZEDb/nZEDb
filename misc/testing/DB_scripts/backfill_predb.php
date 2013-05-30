@@ -78,7 +78,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 						exit("ERROR: TXT file missing.\n");
 				}
 				else
-					exit("ERROR: Unable to oepn zip file.\n");
+					exit("ERROR: Unable to open zip file.\n");
 			}
 			else
 				exit("ERROR: ZIP file missing.\n");
