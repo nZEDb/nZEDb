@@ -12,10 +12,16 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
 	if ($argv[1] < $predbv["v"])
 		exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
-	else if ($argv[1] >= $predbv["v"])
-		$filenums = $argv[1];
+	else if ($predbv["v"] == 142)
+		exit("You are at the maximum backfill.\n");
 	else if ($argv[1] == 0 || $argv[1] > 142)
 		exit("Wrong argument. It must be a number between 1 and 142.\n");
+	else if ($argv[1] + $predbv["v"] > 142)
+		$filenums = 142-$predbv["v"];
+	else if ($argv[1] >= $predbv["v"])
+		$filenums = $argv[1];
+	
+	echo "Going to download and insert ".$filenums." preDB backfills, you are currently at backfill # ".$predbv["v"].".\n";
 
 	$done = 0;
 	foreach (range($predbv["v"], $filenums) as $filenumber)
