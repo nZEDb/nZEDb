@@ -90,5 +90,5 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	exit("\n");
 }
 else
-	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\nIt is a good idea to do a little at a time if you are uncertain, instead of doing all 142 in 1 go.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
+	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex\:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\nIt is a good idea to do a little at a time if you are uncertain, instead of doing all 142 in 1 go.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
 ?>
