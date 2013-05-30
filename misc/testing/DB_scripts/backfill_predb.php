@@ -14,18 +14,18 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	$predb = new Predb;
 	$consoletools = new ConsoleTools;
 	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
-	if ($argv[1] < $predbv["v"])
-		exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
-	else if ($predbv["v"] == 142)
+	if ($predbv["v"] == 142)
 		exit("You are at the maximum backfill.\n");
 	else if ($argv[1] == 0 || $argv[1] > 142)
 		exit("Wrong argument. It must be a number between 1 and 142.\n");
+	else if ($argv[1] < $predbv["v"])
+		$filenums = $predbv["v"]+$argv[1];
 	else if ($argv[1] + $predbv["v"] > 142)
 		$filenums = 142-$predbv["v"];
 	else if ($argv[1] >= $predbv["v"])
 		$filenums = $argv[1];
 	
-	echo "Going to download and insert ".$filenums." preDB backfills, you are currently at backfill # ".$predbv["v"].".\n";
+	echo "Going to download and insert preDB backfills, you are currently at backfill # ".$predbv["v"].".\n";
 
 	$done = $total = 0;
 	foreach (range($predbv["v"], $filenums) as $filenumber)
@@ -81,6 +81,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 		else
 			echo "ERROR: ZIP file missing.\n";
 	}
+	echo "\n";
 }
 else
 	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\nIt is a good idea to do a little at a time if you are uncertain, instead of doing all 142 in 1 go.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
