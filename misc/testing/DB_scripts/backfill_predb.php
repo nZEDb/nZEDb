@@ -42,52 +42,55 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 				{
 					fwrite($zipfile, fread($gitfile, 1024*8), 1024*8);
 				}
-			}
-			if ($gitfile)
-				fclose($gitfile);
-			if ($zipfile);
-				fclose($zipfile);
-
-			if (file_exists($zippath))
-			{
-				if($handle = gzopen($zippath, "rb"))
-				{
-					$file = WWW_DIR."data".$filenump.".txt";
-					$txthandle = fopen($file, "w");
 				
-					while($string = gzread($handle, 4096))
+				if ($gitfile)
+					fclose($gitfile);
+				if ($zipfile);
+					fclose($zipfile);
+
+				if (file_exists($zippath))
+				{
+					if($handle = gzopen($zippath, "rb"))
 					{
-						fwrite($txthandle, $string, strlen($string));
-					}
-					gzclose($handle);
-					gzclose($txthandle);
-					unlink($zippath);
-					if (file_exists($file))
-					{
-						chmod($file, 0777);
-						$insert = $db->queryDirect(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
-						if(!$insert)
+						$file = WWW_DIR."data".$filenump.".txt";
+						$txthandle = fopen($file, "w");
+				
+						while($string = gzread($handle, 4096))
 						{
-							unlink($file);
-							exit("MySQL Error: ".$db->Error()."\n");
+							fwrite($txthandle, $string, strlen($string));
 						}
-						unlink($file);
-						$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
-						$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
-						$predb->parseTitles(2, 1, 2, 1, 1);
-						$predb->matchPredb();
-						$done++;
-						$total = $total + 10000;
-						$consoletools->overWrite("We are currently at backfill ".$filenumber.", we have done ".$done." backfills this run, for a total of ".$total." rows.");
+						gzclose($handle);
+						fclose($txthandle);
+						unlink($zippath);
+						if (file_exists($file))
+						{
+							chmod($file, 0777);
+							$insert = $db->queryDirect(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+							if(!$insert)
+							{
+								unlink($file);
+								exit("MySQL Error: ".$db->Error()."\n");
+							}
+							unlink($file);
+							$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
+							$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
+							$predb->parseTitles(2, 1, 2, 1, 1);
+							$predb->matchPredb();
+							$done++;
+							$total = $total + 10000;
+							$consoletools->overWrite("You are currently at backfill ".$filenumber.", you have done ".$done." backfills this run, for a total of ".$total." rows.");
+						}
+						else
+							exit("ERROR: TXT file missing.\n");
 					}
 					else
-						exit("ERROR: TXT file missing.\n");
+						exit("ERROR: Unable to gzopen the gzip file.\n");
 				}
 				else
-					exit("ERROR: Unable to open zip file.\n");
+					exit("ERROR: gzip file is missing.\n");
 			}
 			else
-				exit("ERROR: ZIP file missing.\n");
+				exit("ERROR: Unable to open the gzip file.\n");
 		}
 		else
 			exit("ERROR: Problem contacting github.com\n");
