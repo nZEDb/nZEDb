@@ -46,7 +46,7 @@ foreach (range($predbv["v"], $filenums) as $filenumber)
 
 			if (file_exists($file))
 			{
-				$db->query("LOAD DATA INFILE ".'"'.$file.'"'." INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '".'"'."' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)");
+				$db->query(sprintf("LOAD DATA INFILE ".'"'.$file.'"'." INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '%s' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", '"'));
 				unlink($file);
 				$db->query(sprintf("UPDATE site SET value = %d WHERE setting = 'predbversion'", $filenumber));
 			}
