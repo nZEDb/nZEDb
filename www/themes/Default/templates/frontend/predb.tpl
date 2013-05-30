@@ -28,6 +28,9 @@
 			<td class="predb">{$result.adddate}</td>
 			<td class="predb">{$result.predate}</td>
 			<td class="predb">
+				{if {$result.source} == backfill}
+					Backfill
+				{/if}
 				{if {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
 						omgwtfnzbs.org
@@ -63,6 +66,7 @@
 						ZEnet.org
 					</a>
 				{/if}
+				
 			</td>
 			<td class="predb">
 				{if {$result.category} == 'MP3'}
@@ -145,7 +149,14 @@
 					{$result.category}
 				{/if}
 			</td>
-			<td class="predb">{$result.size}</td>
+			<td class="predb">
+				{if {$result.size} == 0}
+				{elseif is_numeric({$result.size})}
+					{$result.size}MB
+				{else}
+					{$result.size}
+				{/if}
+			</td>
 		</tr>
 	{/foreach}
 
