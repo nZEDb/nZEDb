@@ -47,41 +47,46 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 				fclose($gitfile);
 			if ($zipfile);
 				fclose($zipfile);
-		}
-		if (file_exists($zippath))
-		{
-			if($handle = gzopen($zippath, "rb"))
+
+			if (file_exists($zippath))
 			{
-				$file = WWW_DIR."data".$filenump.".txt";
-				$txthandle = fopen($file, "w");
+				if($handle = gzopen($zippath, "rb"))
+				{
+					$file = WWW_DIR."data".$filenump.".txt";
+					$txthandle = fopen($file, "w");
 				
-				while($string = gzread($handle, 4096))
-				{
-					fwrite($txthandle, $string, strlen($string));
-				}
-				gzclose($handle);
-				gzclose($txthandle);
-				unlink($zippath);
-				if (file_exists($file))
-				{
-					$db->query(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
-					unlink($file);
-					$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
-					$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
-					$predb->parseTitles(2, 1, 2, 1, 1);
-					$predb->matchPredb();
+					while($string = gzread($handle, 4096))
+					{
+						fwrite($txthandle, $string, strlen($string));
+					}
+					gzclose($handle);
+					gzclose($txthandle);
+					unlink($zippath);
+					if (file_exists($file))
+					{
+						$db->query(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+						unlink($file);
+						$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
+						$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
+						$predb->parseTitles(2, 1, 2, 1, 1);
+						$predb->matchPredb();
+						$done++;
+						$total = $total + 10000;
+						$consoletools->overWrite("We are currently at backfill ".$filenumber.", we have done ".$done." backfills this run, for a total of ".$total." rows.");
+					}
+					else
+						exit("ERROR: TXT file missing.\n");
 				}
 				else
-					echo "ERROR: TXT file missing.\n";
+					exit("ERROR: Unable to oepn zip file.\n");
 			}
-			$done++;
-			$total = $total + 10000;
-			$consoletools->overWrite("We are currently at backfill ".$filenumber.", we have done ".$done." backfills this run, for a total of ".$total." rows.");
+			else
+				exit("ERROR: ZIP file missing.\n");
 		}
 		else
-			echo "ERROR: ZIP file missing.\n";
+			exit("ERROR: Problem contacting github.com\n");
 	}
-	echo "\n";
+	exit("\n");
 }
 else
 	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\nIt is a good idea to do a little at a time if you are uncertain, instead of doing all 142 in 1 go.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
