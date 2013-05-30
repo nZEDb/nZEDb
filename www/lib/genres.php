@@ -82,6 +82,13 @@ class Genres
 		return $db->query(sprintf("update genres set disabled = %d where ID = %d", $disabled, $id));
 	}
 
+	public function getDisabledIDs()
+        {
+                $db = new DB();
+                return $db->queryDirect("SELECT ID from genres where disabled = 1");
+        }
+
+
 }
 
 ?>
