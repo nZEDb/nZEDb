@@ -2,7 +2,7 @@
 <h1>{$page->title}</h1>
 
 <p>
-	Disable a music genre to prevent releases in this genre.
+	Disable a music genre to prevent releases in the genre.
 </p>
 
 <div style="position:relative;margin-bottom:5px;">
