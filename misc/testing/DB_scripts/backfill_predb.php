@@ -6,59 +6,69 @@ require_once(WWW_DIR."/lib/framework/db.php");
  * Downloads predb titles from github and stores them in the predb table.
  */
 
-if (!isset($argv[1]) && !is_numeric($argv[1]))
-	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
-
-$db = new DB;
-$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
-if ($argv[1] < $predbv["v"])
-	exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
-else if ($argv[1] >= $predbv["v"])
-	$filenums = $argv[1];
-else if ($argv[1] == 0 || $argv[1] > 142)
-	exit("Wrong argument. It must be a number between 1 and 142.\n");
-
-$done = 0;
-foreach (range($predbv["v"], $filenums) as $filenumber)
+if (isset($argv[1]) && is_numeric($argv[1]))
 {
-	$filenump = str_pad($filenumber, 3, '0', STR_PAD_LEFT);
-	$zipfile = WWW_DIR."data".$filenump.".gz";
-	if (!file_exists($zipfile))
-	{	$ziphandle = fopen("https://github.com/nZEDb/pre-info/raw/master/data".$filenump.".gz", 'r');
-		file_put_contents($zipfile, $ziphandle);
-		fclose($ziphandle);
-	}
+	$db = new DB;
+	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
+	if ($argv[1] < $predbv["v"])
+		exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
+	else if ($argv[1] >= $predbv["v"])
+		$filenums = $argv[1];
+	else if ($argv[1] == 0 || $argv[1] > 142)
+		exit("Wrong argument. It must be a number between 1 and 142.\n");
 
-	if (file_exists($zipfile))
+	$done = 0;
+	foreach (range($predbv["v"], $filenums) as $filenumber)
 	{
-		if($handle = gzopen($zipfile, "r"))
+		$filenump = str_pad($filenumber, 3, '0', STR_PAD_LEFT);
+		$gitfile = fopen("https://github.com/nZEDb/pre-info/raw/master/datafiles/data".$filenump.".gz", "rb");
+		if($gitfile)
 		{
-			$contents = gzread($handle, filesize($zipfile));
-			$file = WWW_DIR."data".$filenump.".txt";
-			if (!file_exists($file))
+			$zippath = WWW_DIR."data".$filenump.".gz";
+			$zipfile = fopen($zippath, "wb");
+			if($zipfile)
 			{
-				$txthandle = fopen($zipfile, 'r');
-				file_put_contents($file, $contents);
-				fclose($txthandle);
-				gzclose($handle);
-				unlink($zipfile);
+				while(!feof($gitfile))
+				{
+					fwrite($zipfile, fread($gitfile, 1024*8), 1024*8);
+				}
 			}
-
-			if (file_exists($file))
-			{
-				$db->query(sprintf("LOAD DATA INFILE ".'"'.$file.'"'." INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '%s' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", '"'));
-				unlink($file);
-				$db->query(sprintf("UPDATE site SET value = %d WHERE setting = 'predbversion'", $filenumber));
-			}
-			else
-				echo "ERROR: TXT file missing.\n";
+			if ($gitfile)
+				fclose($gitfile);
+			if ($zipfile);
+				fclose($zipfile);
 		}
-		$done++;
-		echo "We are currently at backfill ".$filenumber.", we have done ".$done." backfills so far.\n";
+		if (file_exists($zippath))
+		{
+			if($handle = gzopen($zippath, "rb"))
+			{
+				$file = WWW_DIR."data".$filenump.".txt";
+				$txthandle = fopen($file, "w");
+				
+				while($string = gzread($handle, 4096))
+				{
+					fwrite($txthandle, $string, strlen($string));
+				}
+				gzclose($handle);
+				gzclose($txthandle);
+				unlink($zippath);
+				if (file_exists($file))
+				{
+					$db->query(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+					unlink($file);
+					$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
+					$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
+				}
+				else
+					echo "ERROR: TXT file missing.\n";
+			}
+			$done++;
+			echo "We are currently at backfill ".$filenumber.", we have done ".$done." backfills so far.\n";
+		}
+		else
+			echo "ERROR: ZIP file missing.\n";
 	}
-	else
-		echo "ERROR: ZIP file missing.\n";
-	sleep(1);
 }
-
+else
+	exit("This script inserts pre info into the preDB mysql table from a dump made 5/29/2013.\nSupply an argument ex:(php backfill_predb.php 3), 3 will backfill 30000, you can backfill up to 1.42 million (142 as an argument).\nIf you have already ran this script in the past, your status is saved, so you can go further.\nIt is a good idea to do a little at a time if you are uncertain, instead of doing all 142 in 1 go.\n\nMake sure there are no data###.zip or data###.txt in the www folder before starting.\n");
 ?>
