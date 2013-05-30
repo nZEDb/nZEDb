@@ -64,6 +64,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 					unlink($zippath);
 					if (file_exists($file))
 					{
+						chmod($file, 0777);
 						$db->query(sprintf("LOAD DATA INFILE %s INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
 						unlink($file);
 						$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
