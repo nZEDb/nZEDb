@@ -572,6 +572,24 @@ class PostProcess
 					}
 				}
 
+				if($processJPGSample && $blnTookJPG === false)
+				{
+					if (is_dir($tmpPath))
+					{
+						@$all_files = scandir($tmpPath,1);
+						foreach($all_files as $file)
+						{
+							if(preg_match("/\.jpg$/",$file))
+							{
+								$ri = new ReleaseImage;
+									$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath.$file, $ri->jpgSavePath, 650, 650);
+								if ($blnTookJPG !== false)
+									$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
+							}
+						}
+					}
+				}
+
 				// Set up release values.
 
 				$hpsql = '';
