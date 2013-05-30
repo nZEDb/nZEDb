@@ -1,5 +1,7 @@
 <?php
 require(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."/lib/consoletools.php");
+require_once(WWW_DIR."/lib/predb.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 /*
@@ -9,6 +11,8 @@ require_once(WWW_DIR."/lib/framework/db.php");
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
 	$db = new DB;
+	$predb = new Predb;
+	$consoletools = new ConsoleTools;
 	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
 	if ($argv[1] < $predbv["v"])
 		exit("You have already reached file ".$predbv["v"]." please select a higher file.\n");
@@ -23,7 +27,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	
 	echo "Going to download and insert ".$filenums." preDB backfills, you are currently at backfill # ".$predbv["v"].".\n";
 
-	$done = 0;
+	$done = $total = 0;
 	foreach (range($predbv["v"], $filenums) as $filenumber)
 	{
 		$filenump = str_pad($filenumber, 3, '0', STR_PAD_LEFT);
@@ -64,12 +68,15 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 					unlink($file);
 					$db->query(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
 					$db->query("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
+					$predb->parseTitles(1, 1, 2, 1, 1);
+					$predb->matchPredb();
 				}
 				else
 					echo "ERROR: TXT file missing.\n";
 			}
 			$done++;
-			echo "We are currently at backfill ".$filenumber.", we have done ".$done." backfills so far.\n";
+			$total = $total + 10000;
+			$consoletools->overWrite("We are currently at backfill ".$filenumber.", we have done ".$done." backfills this run, for a total of ".$total." rows.");
 		}
 		else
 			echo "ERROR: ZIP file missing.\n";
