@@ -1016,7 +1016,8 @@ INSERT INTO `site`
 	('partretentionhours', 72),
 	('postdelay', 300),
 	('processaudiosample', 0),
-	('sqlpatch', '67');
+	('predbversion', 1),
+	('sqlpatch', '68');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

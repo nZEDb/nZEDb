@@ -380,18 +380,18 @@ Class Predb
 	
 	
 	// Matches the names within the predb table to release files and subjects (names). In the future, use the MD5.
-	public function parseTitles($time, $echo, $cats, $namestatus)
+	public function parseTitles($time, $echo, $cats, $namestatus, $md5="")
 	{
 		$db = new DB();
 		$updated = 0;
 		
-		if($this->echooutput)
+		/*if($backfill = "" && $this->echooutput)
 		{
 			$te = "";
 			if ($time == 1)
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb titles.\n";
-		}
+		}*/
 		
 		$tq = "";
 		if ($time == 1)
@@ -400,7 +400,7 @@ Class Predb
 		if ($cats == 1)
 			$ct = " and r.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050)";
 		
-		if($res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus = 1".$tq.$ct))
+		/*if($backfill = "" && $res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus = 1".$tq.$ct))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
@@ -430,7 +430,7 @@ Class Predb
 					$updated++;
 				}
 			}
-		}
+		}*/
 		if($this->echooutput)
 		{
 			$te = "";
@@ -438,7 +438,7 @@ Class Predb
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb md5.\n";
 		}
-		if ($res = $db->queryDirect("select r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010".$tq))
+		if ($res = $db->queryDirect("select r.ID, r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010".$tq))
 		{
 			while($row = mysqli_fetch_assoc($res))
 			{
