@@ -63,7 +63,7 @@ if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 }
 
 function command_exist($cmd) {
-	$returnVal = exec("which $cmd");
+	$returnVal = exec("which $cmd 2>/dev/null");
 	return (empty($returnVal) ? false : true);
 }
 

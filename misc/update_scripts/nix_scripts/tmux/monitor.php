@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2223";
+$version="0.1r2224";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -159,7 +159,7 @@ function relativeTime($_time) {
 }
 
 function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd");
+	$returnVal = shell_exec("which $cmd 2>/dev/null");
 	return (empty($returnVal) ? false : true);
 }
 
