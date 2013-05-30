@@ -13,7 +13,11 @@ class Genres
 	public function getGenres($type='', $activeonly=false)
 	{
 		$db = new DB();
-		
+		return $db->query($this->getListQuery($type, $activeonly));
+	}
+
+	private function getListQuery($type='', $activeonly=false)
+	{
 		if (!empty($type))
 			$typesql = sprintf(" and genres.type = %d", $type);
 		else
@@ -29,7 +33,42 @@ class Genres
 		else
 			$sql = sprintf("select genres.* from genres where 1 %s order by title", $typesql);		
 			
+		return $sql;
+	}
+
+	public function getRange($type='', $activeonly=false, $start, $num)
+	{
+		$db = new DB();
+		$sql = $this->getListQuery($type, $activeonly);
+
+		$limit = " LIMIT ".$start.",".$num;
+		$sql = $sql.$limit;
+
 		return $db->query($sql);
+
+	}
+
+	public function getCount($type='', $activeonly=false)
+	{
+		$db = new DB();
+		
+		if (!empty($type))
+			$typesql = sprintf(" and genres.type = %d", $type);
+		else
+			$typesql = '';
+		
+		if ($activeonly)
+		{
+			$sql = sprintf("SELECT count(*) as num  FROM genres INNER JOIN (SELECT DISTINCT genreID FROM musicinfo) X ON X.genreID = genres.ID %s
+			UNION
+			SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreID FROM consoleinfo) X ON X.genreID = genres.ID %s
+			ORDER BY title", $typesql, $typesql);
+		}
+		else
+			$sql = sprintf("select count(*) as num from genres where 1 %s order by title", $typesql);		
+			
+		$res = $db->queryOneRow($sql);
+		return $res["num"];
 	}
 
 	public function getById($id)

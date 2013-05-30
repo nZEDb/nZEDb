@@ -5,6 +5,19 @@
 	Disable a music genre to prevent releases in this genre.
 </p>
 
+<div style="position:relative;margin-bottom:5px;">
+        <td class="less" id="alldel">
+
+		<div>
+			{$pager}
+		</div>
+
+                <a href="{$smarty.const.WWW_TOP}/musicgenre-list.php?activeonly=1">Genres With Releases</a> | <a href="{$smarty.const.WWW_TOP}/musicgenr
+e-list.php">All Genres</a>
+        </td>
+</div>
+
+
 <table style="margin-top:10px;" class="data Sortable highlight">
 
 	<tr>
@@ -23,3 +36,8 @@
 
 
 </table>
+<div style="position:relative;margin-top:5px;">
+	<div style="position:absolute;">
+		{$pager}
+	</div>
+</div>
