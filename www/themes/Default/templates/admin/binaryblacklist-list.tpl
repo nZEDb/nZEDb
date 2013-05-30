@@ -17,9 +17,9 @@
 		<th style="width:25px;">edit</th>
 		<th>description</th>
 		<th style="width:40px;">delete</th>
+		<th>type</th>
 		<th>field</th>
 		<th>status</th>
-		<th>type</th>
 		<th>regex</th>
 	</tr>
 	
