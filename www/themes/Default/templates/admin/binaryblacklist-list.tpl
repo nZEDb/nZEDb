@@ -32,7 +32,11 @@
 		<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.ID})">Delete</a></td>
 		<td>{if $bin.optype==1}Black{else}White{/if}</td>
 		<td>{if $bin.msgcol==1}Subject{elseif $bin.msgcol==2}Poster{else}MessageID{/if}</td>
-		<td>{if $bin.status==1}Active{else}Disabled{/if}</td>
+		{if $bin.status==1}
+			<td style="color:#00CC66">Active</td>
+		{else}
+			<td style="color:#FF0000">Disabled</td>
+		{/if}
 		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.ID}">{$bin.regex|escape:html|truncate:50:"...":true}</a></td>
 	</tr>
 	{/foreach}
