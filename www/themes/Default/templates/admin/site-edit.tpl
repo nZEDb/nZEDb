@@ -737,7 +737,7 @@
 	<td><label for="postthreads">Postprocessing Threads</label>:</td>
 	<td>
 		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-		<div class="hint">The number of threads for postprocessing.</div>
+		<div class="hint">The number of threads for postprocessing. If using tmux scripts, this will use twice this number, since there are 2 panes for postprocessing.</div>
 	</td>
 </tr>
 
