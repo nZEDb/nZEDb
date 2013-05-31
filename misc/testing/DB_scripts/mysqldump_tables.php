@@ -27,7 +27,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	printf("Dumping $dbname\n");
 	if (file_exists($filename))
 		newname($filename);
-	$command = "mysqldump --opt --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname | gzip -9 > $filename";
+	$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname | gzip -9 > $filename";
 	system($command);
 }
 elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
@@ -52,7 +52,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
@@ -83,7 +83,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		printf("Dumping $tbl.\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
