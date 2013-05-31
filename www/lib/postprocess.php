@@ -843,6 +843,8 @@ class PostProcess
 					// Error while unraring, use the parent file info
 					foreach ($files as $file)
 							{
+						if (isset($file['name']))
+						{
 						$range = mt_rand(0,32767);
 						if (isset($file['range']))
 							$range = $file['range'];
@@ -852,6 +854,7 @@ class PostProcess
 					}
 				}
 			}
+		}
 			else
 			{
 			// Not a rar file, try it as a ZIP file.
