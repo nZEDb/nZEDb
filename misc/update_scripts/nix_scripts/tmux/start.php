@@ -63,7 +63,7 @@ if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 }
 
 function command_exist($cmd) {
-	$returnVal = exec("which $cmd");
+	$returnVal = exec("which $cmd 2>/dev/null");
 	return (empty($returnVal) ? false : true);
 }
 
@@ -134,22 +134,22 @@ function start_apps($tmux_session)
 
 function window_utilities($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\\\"'");
-	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\\\"'");
-	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\\\"'");
-	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\\\"'");
+	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
+	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\"'");
+	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
+	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
 }
 
 function window_post($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\\\"'");
-	exec("tmux splitw -t $tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\\\"'");
+	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\"'");
+	exec("tmux splitw -t $tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
 function window_optimize($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\\\"'");
-	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\\\"'");
+	exec("tmux new-window -t $tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
+	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
 function attach($DIR, $tmux_session)
@@ -175,9 +175,9 @@ else
 
 if ( $seq == "TRUE" )
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session 'printf \"\033]2;Monitor\033\\\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -h -p 67 'printf \"\033]2;update_releases\033\\\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -v -p 33 'printf \"\033]2;nzb-import-bulk\033\\\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -vv -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
@@ -187,11 +187,11 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session 'printf \"\033]2;Monitor\033\\\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -h -p 67 'printf \"\033]2;update_binaries\033\\\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session -v -p 33 'printf \"\033]2;nzb-import\033\\\"'");
-	exec("tmux selectp -t $tmux_session:0.2 && tmux splitw -t $tmux_session -v -p 67 'printf \"\033]2;backfill\033\\\"'");
-	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\\\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -vv -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	exec("tmux selectp -t $tmux_session:0.2 && tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
+	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
