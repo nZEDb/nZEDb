@@ -55,6 +55,9 @@ class MiscSorter {
 
 	function nfopos ($nfo, $str)
 	{
+		$nfo = preg_replace('/[ \t\_\.\?]/Ui', " ", $nfo);
+		$nfo = preg_replace('/  +/', " ", $nfo);
+		$nfo = preg_replace('/^\s+?/Umi', "", $nfo);
 		$pos = stripos($nfo, $str);
 		if ($pos !== false)
 			return $pos/strlen($nfo);
@@ -71,8 +74,7 @@ class MiscSorter {
 			$thecategory[] = $c['ID'];
 
 		$thecategory = implode(", ", $thecategory);
-
-		$query = sprintf("SELECT ID FROM releases WHERE releases.categoryID IN ( %s ) limit %d", $thecategory, $this->qty);
+		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND relnamestatus = 1 AND releases.categoryID IN ( %s ) limit %d", $thecategory, $this->qty);
 		$res = $this->db->query($query);
 
 		if (count($res) == 0)
@@ -165,9 +167,12 @@ class MiscSorter {
 
 		do {
 			$original = $name;
-			$name = preg_replace("/[\x01-\x1f\_\!\?\[\{\}\]\/\:\|]+/iU", " ", $name);
+			$name = preg_replace("/[\{\[\(]\d+[ \.\-\/]+\d+[\]\}\)]/iU", " ", $name);
+			$name = preg_replace("/[\x01-\x1f\!\?\[\{\}\]\/\:\|]+/iU", " ", $name);
 			$name = preg_replace("/  +/iU", " ", $name);
 			$name = preg_replace("/^[\s\.]+|[\s\.]{2,}$/iU", "", $name);
+			$name = preg_replace("/ \- \- /iU", " - ", $name);
+			$name = preg_replace("/^[\s\-\_\.]/iU", "", $name);
 			$name = trim($name);
 		} while ($original != $name);
 
@@ -178,7 +183,7 @@ class MiscSorter {
 	{
 		if ($debug == '')
 			$debug = $this->DEBUGGING;
-		$query = "UPDATE `releases` SET  `categoryID` = $cat";
+		$query = "UPDATE `releases` SET  `categoryID` = $cat, relnamestatus = 4";
 
 		if ($name != '')
 		{
@@ -451,6 +456,105 @@ echo $case."\n";
 		return $ok;
 	}
 
+	function domusicfiles ($row)
+	{
+		$nzbcontents = new NZBcontents();
+
+		$m3u = '';
+		$alt = '';
+		$mp3 = false;
+		$mp3name = '';
+		$files = 0;
+		$extras = 0;
+
+		$nzbfiles = $nzbcontents->nzblist($row['guid']);
+
+		if ($nzbfiles)
+		{
+			$name = $row['name'];
+
+			$name = preg_replace("/\//",' ', $name);
+
+	//		echo "$name\n";
+
+			$name = preg_quote($name);
+
+
+
+			foreach($nzbfiles as $nzbsubject)
+			{
+
+				$sub = $nzbsubject['subject']."\n";
+
+				$sub = preg_replace("/$name/i",'', $sub);
+
+//				echo "doing music file = $sub\n";
+
+				if (preg_match('/\.(vol\d{1,3}?\+\d{1,3}?|par2|nfo\b|sfv|par\b|p\d{1,3}?|sv\b)/iU', $sub))
+				{
+					$extras++;
+					$alt = preg_replace('/(\.vol\d{1,3}?\+\d{1,3}?|\.par2|\.[a-z][a-z0-9]{2})+?".+?/iU', '', $sub);
+				}
+
+				if (preg_match('/\.mp3|\.flac/', $sub, $matches))
+				{
+					$mp3name = preg_replace('/(\.mp3".+?)/iU', '.mp3', $sub);
+					$mp3name = preg_replace('/(\.flac".+?)/iU', '.flac', $sub);
+					$mp3name = preg_replace('/(?iU)^[^\"]+\"(0\d+?-?(00)??)??/iU', '', $mp3name);
+
+					$mp3 = true;
+					$files++;
+				}
+
+				if (preg_match('/\.m3u|\"00+[ \-\_\.]+?|\.nfo\b|\.sfv/iU', $sub, $matches))
+				{
+					if (preg_match('/\.url|playlist/iU', $sub))
+					{
+						continue;
+					}
+					$sub = preg_replace('/(\.vol\d{1,3}?\+\d{1,3}?|\.par2|\.[a-z][a-z0-9]{2})+?".+?/iU', '', $sub);
+
+					$m3u = preg_replace('/(?iU)^[^\"]+\"(0\d+?-?(00)??)??/iU', '', $sub);
+				}
+
+			}
+		}
+		$name = '';
+
+		if ( count($nzbfiles) > 0)
+		{
+
+//			echo (($m3u != '' || ($files + $extras) / count($nzbfiles) > 0.7) && $mp3)." ".$mp3." ".$m3u."\n";
+
+			if (($m3u != '' || (($files + $extras) / count($nzbfiles) > 0.7)) && $mp3)
+			{
+				$name = $m3u;
+
+				if ($files == 1)
+					$name = $mp3name;
+
+				if (empty($name))
+				{
+//					$name = matchnames($row['name'], $alt);
+				}
+
+//				echo $row['guid']." ".$name.' '.$mp3.' '.($files + $extras) / count($nzbfiles)."\n";
+
+			}
+
+//			echo (($m3u != '' || ($files + $extras) / count($nzbfiles) > 0.7) && $mp3)." ".$mp3." ".$m3u."\n";
+
+		}
+
+		$name = $this->cleanname($name);
+		$name = preg_replace("/\.[a-z][a-z0-9]{2,3}($|\" yenc)/i", "", $name);
+		unset($file);
+		unset($nzbfiles);
+		unset($nzbinfo);
+		unset($nzb);
+
+		return $name;
+	}
 
 	function matchnfo ($case, $nfo, $row)
 	{
@@ -724,6 +828,49 @@ echo "asin ".$set[1]."\n";
 				}
 			}
 		}
+	}
+
+	function musicnzb($id = '')
+	{
+		if (!empty($id))
+			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID WHERE releases.ID = ($id)"; // AND NOT (`imdbID` > 1 OR `rageID` > 1 OR `musicinfoID` is not null OR `consoleinfoID` is not null OR `bookinfoID` is not null )";
+		else
+			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID where categoryID = ".Category::CAT_MISC."  and nfostatus >= 0 AND passwordstatus >= 0 AND relnamestatus = 1 AND not (`imdbID` is not null OR `rageID` > 0 OR `musicinfoID` is not null OR `consoleinfoID` is not null OR `bookinfoID` is not null)";
+
+		$res = $this->db->queryDirect($query);
+echo "$query\n";
+		echo "doing nzb music files match\n";
+		while ($row =  $this->db->fetchAssoc($res))
+		{
+			$hash = $this->getHash($row['name']);
+			if ($hash !== false)
+				$row['searchname'] = $hash;
+
+			$frommail = $row['fromname'];
+
+		//	trigger_error("doing part 2".$row['ID']);
+			$query = "SELECT releasevideo.releaseID FROM releasevideo WHERE releasevideo.releaseID = ".$row['ID'];
+			$rel = $this->db->queryOneRow($query);
+
+			if ($rel !== false)
+				continue;
+
+//			echo "\n".$row['guid']."\n";
+
+			$query = 'SELECT releasenfo.releaseID, uncompress(releasenfo.nfo) AS nfo FROM releasenfo WHERE releasenfo.releaseID = '.$row['ID'];
+			$rel = $this->db->queryOneRow($query);
+
+			$nfo = '';
+			if ($rel !== false)
+				if ($rel['releaseID'] == $row['ID'])
+					$nfo = $rel['nfo'];
+
+			$name = $this->domusicfiles($row);
+			if ($name !=' ' && $name !='')
+				$ok = $this->dodbupdate($row['ID'], Category::CAT_MUSIC_MP3, $name);
+
+		}
+
 	}
 }
 ?>
