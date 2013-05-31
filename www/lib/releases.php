@@ -1774,13 +1774,7 @@ class Releases
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$remcount = 0;
-		$passcount = 0;
-		$dupecount = 0;
-		$relsizecount = 0;
-		$completioncount = 0;
-		$disabledcount = 0;
-		$disabledgenrecount = 0;
+		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 
@@ -1859,17 +1853,20 @@ class Releases
 			}
 		}
 
-		if ($genrelist = $genres->getDisabledIDs()) {
-			foreach ($genrelist as $genre) {
+		// Disabled music genres.
+		if ($genrelist = $genres->getDisabledIDs())
+		{
+			foreach ($genrelist as $genre)
+			{
 				$rels = $db->query(sprintf("select ID, guid from releases inner join (select ID as mid from musicinfo where musicinfo.genreID = %d) mi on releases.musicinfoID = mid", $genre['ID']));
-				foreach ($rels as $rel) {
+				foreach ($rels as $rel)
+				{
 					$disabledgenrecount++;
 					$this->fastDelete($rel['ID'], $rel['guid'], $this->site);
 				}
 			}
 		}
-#bookmark
-		
+
 		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted, ".$disabledcount." from disabled categoteries, ".$disabledgenrecount." from disabled music genres";
 		if($this->completion > 0)
 			echo ", ".$completioncount." under ".$this->completion."% completion. Removed ".$reccount." parts/binaries/collection rows.".$n;
