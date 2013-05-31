@@ -1,0 +1,42 @@
+<?php
+
+require_once("config.php");
+require_once(WWW_DIR."/lib/adminpage.php");
+require_once(WWW_DIR."/lib/genres.php");
+
+$page = new AdminPage();
+
+$genres = new Genres();
+
+$page->title = "Music Genres";
+
+$activeOnly = isset($_REQUEST['activeonly']);
+
+$count = $genres->getCount(Genres::MUSIC_TYPE, $activeOnly);
+
+$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+
+$page->smarty->assign('pagertotalitems', $count);
+$page->smarty->assign('pageroffset', $offset);
+$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
+
+if ($activeOnly) {
+	$activeOnlySearch = "activeonly=1&amp;";
+}
+else {
+	$activeOnlySearch = "";
+}
+
+$page->smarty->assign('pagerquerybase', WWW_TOP."/musicgenre-list.php?".$activeOnlySearch."offset=");
+
+$pager = $page->smarty->fetch('pager.tpl');
+$page->smarty->assign('pager', $pager);
+
+$genrelist = $genres->getRange(Genres::MUSIC_TYPE, $activeOnly, $offset, ITEMS_PER_PAGE);
+
+$page->smarty->assign('genrelist',$genrelist);	
+
+$page->content = $page->smarty->fetch('musicgenre-list.tpl');
+$page->render();
+
+?>
