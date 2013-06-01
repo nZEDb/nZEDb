@@ -149,7 +149,8 @@ predb
 /*
 form inputs and helpers
 */
-div.hint, div.hint a {font-size:0.9em; font-style:italic; color:#999;}
+div.hint, div.hint a { font-size:0.9em; font-style:italic; color:#999;}
+div.explanation { padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; margin-bottom:20px; }
 div.hint { margin-bottom:10px;}
 input.long {width:400px; }
 input.short { width:40px; }
