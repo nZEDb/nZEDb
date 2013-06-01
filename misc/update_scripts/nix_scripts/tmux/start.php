@@ -45,7 +45,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '67' )
+if ( $patch < '70' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -175,7 +175,7 @@ else
 
 if ( $seq == "TRUE" )
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -vv -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
@@ -187,7 +187,7 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -vv -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
 	exec("tmux selectp -t $tmux_session:0.2 && tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
