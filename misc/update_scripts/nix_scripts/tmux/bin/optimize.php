@@ -30,7 +30,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	if ( $running == "TRUE" )
 	{
 		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
-		$sleep = $delay + 120;
+		$sleep = $delay;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
 		$restart = "true";
 		sleep($sleep);
@@ -38,13 +38,13 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	if ( $patch == "TRUE" )
 	{
-		system("cd $DIR && git pull");
+		exec("cd $DIR && git pull");
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0)
 		{
 			echo "Removing old stuff from ".$smarty."\n";
-			system("rm -r ".$smarty."*");
+			exec("rm -r ".$smarty."*");
 		}
 		else
 		{
@@ -52,10 +52,25 @@ if(isset($argv[1]) && $argv[1] == "true")
 		}
 
 		echo "Patching database - $dbname\n";
-		system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
+		exec("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
 	}
 
-	system("$PHP ${DIR}update_scripts/optimise_db.php");
+	$alltables = $db->query("show table status where Data_free > 0");
+	$tablecnt = sizeof($alltables);
+	foreach ($alltables as $tablename)
+	{
+		$name = $tablename['Name'];
+		echo "Optimizing table: ".$name.".\n";
+		if (strtolower($tablename['Engine']) == "myisam")
+			$db->queryDirect("REPAIR TABLE `".$name."`");
+		$db->queryDirect("OPTIMIZE TABLE `".$name."`");
+		$db->queryDirect("FLUSH TABLES");
+	}
+	if ($tablecnt = 1)
+		echo $tablecnt." table Optimized\n";
+	else
+		echo $tablecnt." tables Optimized\n";
+
 	if ( $restart = "true" )
 	{
 		echo "Starting tmux scripts\n";
@@ -64,7 +79,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 }
 else
 {
-	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php autopatcher.php true\n");
+	exit("If you have set the settings in adin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n");
 }
 
 ?>

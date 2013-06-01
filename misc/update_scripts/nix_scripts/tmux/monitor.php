@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2278";
+$version="0.1r2284";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -15,6 +15,7 @@ $db_name = DB_NAME;
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
+$running = $tmux->get()->RUNNING;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -47,7 +48,6 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) AS postprocess_kill,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) AS niceness,
-	( SELECT value from tmux where setting = 'RUNNING' ) AS running,
 	( SELECT value from tmux where setting = 'BINARIES' ) AS binaries_run,
 	( SELECT value from tmux where setting = 'BACKFILL' ) AS backfill,
 	( SELECT value from tmux where setting = 'IMPORT' ) AS import,
@@ -311,7 +311,7 @@ while( $i > 0 )
 	$getdate = gmDate("Ymd");
 
 	//run queries
-	if ((( TIME() - $time2 ) >= $monitor ) || ( $i == 1 )) {
+	if (((( TIME() - $time2 ) >= $monitor ) && ( $running == "TRUE" )) || ( $i == 1 )) {
 		//get microtime to at start of queries
 		$query_timer_start=microtime_float();
 		$result = @$db->query($qry);
@@ -387,7 +387,6 @@ while( $i > 0 )
 	if ( @$proc_result[0]['progressive'] != NULL ) { $progressive = $proc_result[0]['progressive']; }
 	if ( @$proc_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_result[0]['oldestcollection']; }
 
-	if ( @$proc_result[0]['running'] != NULL ) { $running = $proc_result[0]['running']; }
 	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
 	if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
 	if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }

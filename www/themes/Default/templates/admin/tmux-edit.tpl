@@ -10,8 +10,8 @@
     <legend>Tmux - How It Works</legend>
 	<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
 		Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
-		This allows for scripts that crash to be restarted without user intervention.</div>
-	<div class="explanation">You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+		This allows for scripts that crash to be restarted without user intervention.<br /><br />
+		You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
 </fieldset>
 
 <fieldset>
@@ -460,7 +460,7 @@
 				<td><label for="PATCHDB">Patch the Database</label>:</td>
 				<td>
 					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB}
-					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails.<br />This is not affected by TMUX Running</div>
+					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails. If monitor.php is updated during a git pull, a manual restart will be required.<br />This is not affected by TMUX Running</div>
 				</td>
 			</tr>
 
