@@ -7,6 +7,14 @@
 {/if}
 
 <fieldset>
+    <legend>Tmux - How It Works</legend>
+	<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
+		Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
+		This allows for scripts that crash to be restarted without user intervention.<br /><br />
+		You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+</fieldset>
+
+<fieldset>
 	<legend>Monitor</legend>
 		<table class="input">
 			<tr>
@@ -40,8 +48,13 @@
 					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=512M,mode=777 0 0</div>
 				</td>
 			</tr>
-
 		</table>
+		<div class="explanation">Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br />
+			There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br /><br />
+			The 'In Process' column has 2 sets of numbers, the total for each category that needs to be postprocessed and inside the parenthesis is the difference from when the script started to what it is now.
+			The 'In Database' column also has 2 sets of numbers, the total releases for each category and inside the parenthesis is the percentage that category is to the total number of releases.
+			The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.
+			The 'In Database' Misc means the number of releases that have not been categorized in any other category.</div>
 </fieldset>
 
 <fieldset>
@@ -92,19 +105,15 @@
 			<tr>
 				<td><label for="BACKFILL">Backfill</label>:</td>
 				<td>
-					{html_radios id="BACKFILL" name='BACKFILL' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL}
-					<div class="hint">Choose to run backfill true/false. Backfill gets from your first_record back. It is not recommended to set "Backfill Quantity" > 20k as this will overwhelm the collections table. Small increments is faster for update_releases.</div>
+					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}
+					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
+						Disabled - Disables backfill from running.<br />
+						Interval - Newest - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by backfill days (set in admin-view groups).<br />
+						Interval - Oldest - Backfills the number of groups as set in tmux (sorted by most backfilled in time), by backfill days (set in admin-view groups). This completes the smallest groups first.<br />
+						All - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
+						These settings are all per loop. Approximately every 60 minutes, every activated backfill group will be backfilled. This is to allow imcomplete collections to be completed and/or the 2 hour delay reset.</div>
 				</td>
 			</tr>
-
-			<tr>
-				<td><label for="BACKFILL_TYPE">Backfill Intervals</label>:</td>
-				<td>
-					{html_radios id="BACKFILL_TYPE" name='BACKFILL_TYPE' values=$truefalse_names output=$truefalse_names selected=$ftmux->BACKFILL_TYPE}
-					<div class="hint">Choose to run Backfill Intervals true/false. True will download everything per group upto your backfill days set in admin/view group, one group per thread. False will download "Backfill Quantity" headers per group until backfill days is reached.</div>
-				</td>
-			</tr>
-
 			<tr>
 				<td style="width:160px;"><label for="BACKFILL_QTY">Backfill Quantity</label>:</td>
 				<td>
@@ -451,7 +460,7 @@
 				<td><label for="PATCHDB">Patch the Database</label>:</td>
 				<td>
 					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB}
-					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails.<br />This is not affected by TMUX Running</div>
+					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails. If monitor.php is updated during a git pull, a manual restart will be required.<br />This is not affected by TMUX Running</div>
 				</td>
 			</tr>
 

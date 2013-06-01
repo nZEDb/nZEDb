@@ -72,23 +72,21 @@ class Genres
 	}
 
 	public function getById($id)
-        {
-                $db = new DB();
-                return $db->queryOneRow(sprintf("SELECT * from genres where ID = %d", $id));
-        }
+	{
+		$db = new DB();
+		return $db->queryOneRow(sprintf("SELECT * from genres where ID = %d", $id));
+	}
 
-	public function update($id, $disabled) {
-                $db = new DB();
+	public function update($id, $disabled)
+	{
+		$db = new DB();
 		return $db->query(sprintf("update genres set disabled = %d where ID = %d", $disabled, $id));
 	}
 
 	public function getDisabledIDs()
-        {
-                $db = new DB();
-                return $db->queryDirect("SELECT ID from genres where disabled = 1");
-        }
-
-
+	{
+		$db = new DB();
+		return $db->queryDirect("SELECT ID from genres where disabled = 1");
+	}
 }
-
 ?>
