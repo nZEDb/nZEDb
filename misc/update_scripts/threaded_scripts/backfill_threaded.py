@@ -77,7 +77,7 @@ class WorkerThread(threading.Thread):
 				dirname = self.threadID.get(True, 0.05)
 				if sys.argv[1] == "all":
 					print '\n%s: Backfill All %s started.' % (self.name, dirname)
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_other.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+dirname])
 				if type[0] == "3":
 					print '\n%s: Backfill Interval by Oldest %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../backfill.php", ""+dirname])

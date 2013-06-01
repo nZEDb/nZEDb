@@ -720,7 +720,7 @@ echo $case."\n";
 				if ($case == 'asin' || $case == 'isbn')
 				{
 					preg_match('/(?:isbn|asin)[ \:\.=]*? *?([a-zA-Z0-9\-\.]{8,20}?)/iU', $nfo, $set);
-var_dump($set);
+//var_dump($set);
 					if (isset($set[1]))
 					{
 						$set[1] = preg_replace('/[\-\.]/', '', $set[1]);
@@ -750,7 +750,7 @@ echo "asin ".$set[1]."\n";
 
 				if (count($set) > 1)
 				{
-					var_dump($set);
+					//var_dump($set);
  					$ok = $this->doAmazon ($row['name'], $row['ID'], $nfo, $set[2], $set[1], $case, $nfo, $row);
 				}
 				break;
