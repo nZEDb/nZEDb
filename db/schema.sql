@@ -1017,7 +1017,7 @@ INSERT INTO `site`
 	('postdelay', 300),
 	('processaudiosample', 0),
 	('predbversion', 1),
-	('sqlpatch', '69');
+	('sqlpatch', '70');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
