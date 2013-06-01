@@ -122,10 +122,12 @@ class DB
 
 		foreach ($alltables as $tablename)
 		{
-			$name = $tablename['Name'];
-			echo "Optimizing table: ".$name.".\n";
-			$this->queryDirect("REPAIR TABLE `".$name."`");
-			$this->queryDirect("OPTIMIZE TABLE `".$name."`");
+			$ret[] = $tablename['Name'];
+			echo "Optimizing table: ".$tablename['Name'].".\n";
+			if (strtolower($tablename['Engine']) == "myisam")
+				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
+			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
+			$this->queryDirect("FLUSH TABLES");
 		}
 		return $tablecnt;
 	}
