@@ -182,7 +182,7 @@ class PostProcess
 		if ($threads > 1)
 		{
 			usleep($this->sleeptime*1000*($threads - 1));
-		} 
+		}
 		$threads--;
 		$update_files = true;
 
@@ -239,6 +239,7 @@ class PostProcess
 				else
 					$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 			}
+			$nntpconnected = false;
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -267,12 +268,12 @@ class PostProcess
 				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
-					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount['cnt']--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
 				$groups = new Groups;
-				$groupName = $groups->getByNameByID($rel["groupID"]);
+				$groupName = $groups->getByNameByID($rel['groupID']);
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
@@ -412,16 +413,16 @@ class PostProcess
 						}
 
 						$size = $db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
-						if (is_numeric($size["size"]) && $size["size"] > $bytes)
+						if (is_numeric($size['size']) && $size['size'] > $bytes)
 							continue;
 
 						// Do 10% of files if the size didn't change, in order to grab a different archive volume.
-						if (is_numeric($size["size"]) && $size["size"] == $lsize)
+						if (is_numeric($size['size']) && $size['size'] == $lsize)
 							$i++;
 						else
 							$i = 0;
 
-						$lsize = $size["size"];
+						$lsize = $size['size'];
 						if ($i > count($nzbfiles)/ 10)
 						{
 							//$this->doecho("New files don't seem to contribute.");
@@ -432,6 +433,7 @@ class PostProcess
 						$mid = array_slice((array)$rarFile['segment'], 0, 1);
 
 						$nntp->doConnect();
+						$bingroup = $groupName;
 						$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 						if ($fetchedBinary !== false)
 						{
@@ -529,7 +531,7 @@ class PostProcess
 						@file_put_contents($tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($tmpPath))
 						{
-							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
+							$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 							if ($blnTookJPG !== false)
 								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
 
@@ -561,7 +563,7 @@ class PostProcess
 								}
 								if ($processJPGSample && $blnTookJPG === false && preg_match("/\.jpg$/",$file))
 								{
-									$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath.$file, $ri->jpgSavePath, 650, 650);
+									$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $tmpPath.$file, $ri->jpgSavePath, 650, 650);
 									if ($blnTookJPG !== false)
 										$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
 								}
@@ -594,15 +596,15 @@ class PostProcess
 
 				$size = $db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
 				if (max($passStatus) > 0)
-					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
-				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
+					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel['ID']);
+				elseif ($hasrar && ((isset($size['size']) && (is_null($size['size']) || $size['size'] == 0)) || !isset($size['size'])))
 				{
 					if (!$blnTookSample)
 						$hpsql = '';
-					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1  %s where ID = %d",  $hpsql, $rel["ID"]);
+					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1  %s where ID = %d",  $hpsql, $rel['ID']);
 				}
 				else
-					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
+					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel['ID']);
 
 				$db->query($sql);
 
@@ -626,8 +628,8 @@ class PostProcess
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
 				$size = $db->queryOneRow(sprintf("SELECT count(releasefiles.releaseID) as count FROM releasefiles WHERE releasefiles.releaseID = %d", $rel['ID']));
-				if ($size["count"] > 0)
-					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", $size["count"], $rel['ID']));
+				if ($size['count'] > 0)
+					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", $size['count'], $rel['ID']));
 
 				// If samples exist from previous runs, set flags.
 				if (file_exists($ri->imgSavePath.$rel['guid']."_thumb.jpg"))
@@ -692,7 +694,7 @@ class PostProcess
 		{
 			foreach ($files as $file)
 			{
-				$thisdata = $zip->getFileData($file["name"]);
+				$thisdata = $zip->getFileData($file['name']);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				// Extract a NFO from the rar.
 				if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
@@ -754,7 +756,7 @@ class PostProcess
 			}
 
 			$tmp = $rar->getSummary(true, false);
-			if ($tmp["is_encrypted"])
+			if ($tmp['is_encrypted'])
 			{
 				$this->doecho("Archive is password encrypted.");
 				$this->password = true;
@@ -762,7 +764,7 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			if ($files !== false && $files[0]["compressed"] != 1)
+			if ($files !== false && $files[0]['compressed'] != 1)
 			{
 				// If archive is not stored compressed, process data
 				foreach ($files as $file)
@@ -960,7 +962,7 @@ class PostProcess
 			return $retval;
 
 		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
+		if (!preg_match('/^3\d{3}|7010/', $catID['ID']))
 			return $retval;
 
 		$audiofiles = glob($ramdrive.'*.*');
@@ -978,19 +980,19 @@ class PostProcess
 							$xmlarray = implode("\n",$xmlarray);
 							$xmlObj = @simplexml_load_string($xmlarray);
 							$arrXml = objectsIntoArray($xmlObj);
-							if (isset($arrXml["File"]["track"]))
+							if (isset($arrXml['File']['track']))
 							{
-								foreach ($arrXml["File"]["track"] as $track)
+								foreach ($arrXml['File']['track'] as $track)
 								{
-									if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+									if (isset($track['Album']) && isset($track['Performer']) && !empty($track['Recorded_date']))
 									{
-										if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+										if (preg_match('/(?:19|20)\d{2}/', $track['Recorded_date'], $Year))
+											$newname = $track['Performer']." - ".$track['Album']." (".$Year[0].") ".strtoupper($ext[1]);
 										else
-											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
+											$newname = $track['Performer']." - ".$track['Album']." ".strtoupper($ext[1]);
 										$category = new Category();
-										$newcat = $category->determineCategory($newname, $catID["groupID"]);
-										if ($catID["relnamestatus"] != "3")
+										$newcat = $category->determineCategory($newname, $catID['groupID']);
+										if ($catID['relnamestatus'] != "3")
 											$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
