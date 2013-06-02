@@ -26,8 +26,8 @@ function smarty_modifier_timeAgo( $date)
                         'Hour', 'Hrs',  // 5,5 
                         'Day', 'Days');
 
-      $sec = time() - (( strtotime($date)) ? strtotime($date) : $date); 
-
+      $sec = time() - (( !is_numeric($date) && strtotime($date)) ? strtotime($date) : $date);
+      
       if ( $sec <= 0) return $timeStrings[0]; 
        
       if ( $sec < 2) return $sec." ".$timeStrings[1]; 

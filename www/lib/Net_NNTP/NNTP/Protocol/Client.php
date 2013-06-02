@@ -62,15 +62,21 @@
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2011 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
- * @version    SVN: $Id: Client.php 317347 2011-09-26 20:26:12Z janpascal $
+ * @version    SVN: $Id: Client.php 330426 2013-05-31 14:41:46Z janpascal $
  * @link       http://pear.php.net/package/Net_NNTP
  * @see
  */
+
+// Warn about PHP bugs
+if (version_compare(PHP_VERSION, '5.2.11') === 0) {
+    trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
+}
 
 /**
  *
  */
 require_once 'PEAR.php';
+//require_once 'Net/NNTP/Error.php';
 require_once 'Responsecode.php';
 
 
@@ -118,7 +124,7 @@ define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
  * @category   Net
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
- * @version    package: 1.5.0RC2 (beta)
+ * @version    package: 1.5.0 (stable)
  * @version    api: 0.9.0 (alpha)
  * @access     private
  * @see        Net_NNTP_Client
@@ -151,6 +157,14 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     var $_logger = null;
 
+	/**
+	*
+	*
+	* @var     int
+	* @access  private
+	*/
+	var $_timeout = 15;
+
     // }}}
     // {{{ constructor
 
@@ -175,7 +189,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @access public
      */
     function getPackageVersion() {
-	return '1.5.0RC2';
+	return '1.5.0';
     }
 
     // }}}
@@ -514,7 +528,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	return $this->throwError('Command not permitted / Access restriction / Permission denied', $code, $text);
     	    	break;
     	    default:
-    	    	//return $this->throwError("Unexpected response: '$text'", $code, $text);
+    	    	return $this->throwError("Unexpected response: '$text'", $code, $text);
     	}
     }
 
@@ -572,8 +586,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	//
     	if (is_null($timeout)) {
-    	    $timeout = 15;
+			$timeout = $this->_timeout;
     	}
+		$this->_timeout = $timeout;
 
     	// Open Connection
     	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
@@ -585,6 +600,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	}
 
     	$this->_socket = $R;
+		stream_set_timeout($this->_socket, $this->_timeout);
 
     	//
     	if ($this->_logger) {
@@ -830,7 +846,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	                     'count' => $response_arr[0]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
-				//return $this->throwError(' No such news group. ', $response, $this->_currentStatusResponse());
+    	    	return $this->throwError('No such news group', $response, $this->_currentStatusResponse());
     	    	break;
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);

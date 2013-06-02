@@ -21,6 +21,8 @@ $hashcheck = $site->get()->hashcheck;
 $session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
 if ( $session != 0 )
 	exit("\033[1;33mtmux session:".$tmux_session." is already running, aborting.\033[0m\n\n");
+else
+	echo "The above is just a TMUX notice, it is saying TMUX, that you do not have a TMUX session currently running. It is not an error. It is TMUX\n";
 
 function writelog( $pane )
 {

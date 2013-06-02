@@ -84,7 +84,7 @@ require_once 'Protocol/Client.php';
  *
  * @category   Net
  * @package    Net_NNTP
- * @version    package: 1.5.0RC2 (beta) 
+ * @version    package: 1.5.0 (stable) 
  * @version    api: 0.9.0 (alpha)
  * @access     public
  * @see        Net_NNTP_Protocol_Client
@@ -699,7 +699,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
         // Construct header
         $header  = "Newsgroups: $groups\r\n";
         $header .= "Subject: $subject\r\n";
-        $header .= "X-poster: PEAR::Net_NNTP v1.5.0RC2 (beta)\r\n";
+        $header .= "X-poster: PEAR::Net_NNTP v1.5.0 (stable)\r\n";
     	if ($additional !== null) {
     	    $header .= $additional;
     	}
