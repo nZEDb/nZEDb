@@ -239,7 +239,6 @@ class PostProcess
 				else
 					$ppcount = $db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 			}
-			$nntpconnected = false;
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -268,12 +267,12 @@ class PostProcess
 				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
-					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount['cnt']--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
 				$groups = new Groups;
-				$groupName = $groups->getByNameByID($rel['groupID']);
+				$groupName = $groups->getByNameByID($rel["groupID"]);
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
@@ -347,6 +346,7 @@ class PostProcess
 				$bytes = min( 1024*1024*1024, $rel['size'] * 0.85);
 				$this->password = $foundcontent = false;
 				$lsize = $i = 0;
+				$first = 'crazy';
 				$rarpart = array();
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
@@ -360,15 +360,16 @@ class PostProcess
 							if (preg_match($this->supportfiles."|nfo|inf|ofn)/i", $v['subject']))
 								continue;
 
-							if (preg_match('/\.(part0*1|part0+|r0+|r0*1|0+|0*10?)(\.rar)?($|\")/i', $v['subject'], $tmp))
+							if (preg_match('/\.(rar|'.$first.')($|\")/i', $v['subject']))
 							{
 								$rarpart[] = $nzbfiles[$k];
 								unset($nzbfiles[$k]);
 							}
-							elseif (preg_match('/\.(rar|zip)($|\")/i', $v['subject']) && !preg_match('/\.(part\d+|r\d+)/i', $v['subject'], $tmp))
+							elseif ($first === 'crazy' && preg_match('/\.(part0*1|part0+|r0+|r0*1|0+|0*10?|zip)(\.rar)*($|\")/i', $v['subject'], $tmp))
 							{
 								$rarpart[] = $nzbfiles[$k];
 								unset($nzbfiles[$k]);
+								$first = $tmp[1];
 							}
 						}
 					}
@@ -393,6 +394,8 @@ class PostProcess
 						}
 						else
 						{
+							if ($foundcontent === true)
+								break;
 							if ($notinfinite > $this->partsqty)
 								break;
 						}
@@ -413,16 +416,16 @@ class PostProcess
 						}
 
 						$size = $db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
-						if (is_numeric($size['size']) && $size['size'] > $bytes)
+						if (is_numeric($size["size"]) && $size["size"] > $bytes)
 							continue;
 
 						// Do 10% of files if the size didn't change, in order to grab a different archive volume.
-						if (is_numeric($size['size']) && $size['size'] == $lsize)
+						if (is_numeric($size["size"]) && $size["size"] == $lsize)
 							$i++;
 						else
 							$i = 0;
 
-						$lsize = $size['size'];
+						$lsize = $size["size"];
 						if ($i > count($nzbfiles)/ 10)
 						{
 							//$this->doecho("New files don't seem to contribute.");
@@ -531,7 +534,7 @@ class PostProcess
 						@file_put_contents($tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($tmpPath))
 						{
-							$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
+							$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 							if ($blnTookJPG !== false)
 								$db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel['ID']));
 
@@ -596,15 +599,15 @@ class PostProcess
 
 				$size = $db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel['ID']);
 				if (max($passStatus) > 0)
-					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel['ID']);
-				elseif ($hasrar && ((isset($size['size']) && (is_null($size['size']) || $size['size'] == 0)) || !isset($size['size'])))
+					$sql = sprintf("update releases set passwordstatus = %d %s where ID = %d", max($passStatus), $hpsql, $rel["ID"]);
+				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
 				{
 					if (!$blnTookSample)
 						$hpsql = '';
-					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1  %s where ID = %d",  $hpsql, $rel['ID']);
+					$sql = sprintf("update releases set passwordstatus = passwordstatus - 1  %s where ID = %d",  $hpsql, $rel["ID"]);
 				}
 				else
-					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel['ID']);
+					$sql = sprintf("update releases set passwordstatus = %s %s where ID = %d", Releases::PASSWD_NONE, $hpsql, $rel["ID"]);
 
 				$db->query($sql);
 
@@ -628,8 +631,8 @@ class PostProcess
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
 				$size = $db->queryOneRow(sprintf("SELECT count(releasefiles.releaseID) as count FROM releasefiles WHERE releasefiles.releaseID = %d", $rel['ID']));
-				if ($size['count'] > 0)
-					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", $size['count'], $rel['ID']));
+				if ($size["count"] > 0)
+					$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d WHERE ID = %d", $size["count"], $rel['ID']));
 
 				// If samples exist from previous runs, set flags.
 				if (file_exists($ri->imgSavePath.$rel['guid']."_thumb.jpg"))
@@ -694,7 +697,7 @@ class PostProcess
 		{
 			foreach ($files as $file)
 			{
-				$thisdata = $zip->getFileData($file['name']);
+				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				// Extract a NFO from the rar.
 				if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
@@ -756,7 +759,7 @@ class PostProcess
 			}
 
 			$tmp = $rar->getSummary(true, false);
-			if ($tmp['is_encrypted'])
+			if ($tmp["is_encrypted"])
 			{
 				$this->doecho("Archive is password encrypted.");
 				$this->password = true;
@@ -764,7 +767,7 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			if ($files !== false && $files[0]['compressed'] != 1)
+			if ($files !== false && $files[0]["compressed"] != 1)
 			{
 				// If archive is not stored compressed, process data
 				foreach ($files as $file)
@@ -799,125 +802,79 @@ class PostProcess
 								}
 							}
 						}*/
-						$range = mt_rand(0,32767);
-						if (isset($file['range']))
-							$range = $file['range'];
-						$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range, 'size'=>$file['size'], 'date'=>$file['date'], 'pass'=>$file['pass']);
-					}
-				}
-			}
-			else
-			{
-				// File is compressed, use unrar to get the content
-				$rarfile = $tmpPath.'rarfile.rar';
-				file_put_contents($rarfile, $fetchedBinary);
-				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
-				$output = runCmd($execstring, false, true);
-
-				if (preg_match("/ok/",  $output[count($output)-1]))
-				{
-					// If unrar returned 'ok', use the extracted files to populate releasefiles.
-					$files = scandir($tmpPath);
-					
-					foreach($files as $file)
-					{
-						if ($rar->open($tmpPath.$file, true))
-							$rarfiles = $rar->getArchiveFileList();
-						$range = mt_rand(0,32767);
-						if (isset($file['range']))
-							$range = $file['range'];
-
-						$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range, 'size'=>$file['size'], 'date'=>$file['date'], 'pass'=>$file['pass']);
-					}
-				}
-				else
-				{
-					// Error while unraring, use the parent file info.
-					foreach ($files as $file)
-					{
-						if (isset($file['name']))
+						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx)$/i", $file['name']) && count($files) > 0)
 						{
+							$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
 							$range = mt_rand(0,32767);
 							if (isset($file['range']))
 								$range = $file['range'];
+							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range);
 
-							$retval[] = array('name'=>$file['name'], 'source'=>$file['source'], 'range'=>$range, 'size'=>$file['size'], 'date'=>$file['date'], 'pass'=>$file['pass']);
+							// Extract a NFO from the rar.
+							if ($nfostatus < 1 && $file['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file['name']))
+							{
+								$nfodata = $rar->getFileData($file['name'], $file['source']);
+								$nzbcontents = new NZBcontents(true);
+								if ($nzbcontents->isNFO($nfodata))
+								{
+									$this->doecho("adding nfo");
+									$nfo = new Nfo($this->echooutput);
+									$nfo->addReleaseNfo($relid);
+									$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfodata), $relid));
+									$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+								}
+
+							}
+							// Extract a video file from the compressed file.
+							elseif (preg_match('/'.$this->videofileregex.'$/i', $file['name']))
+							{
+								$videofile = $rar->getFileData($file['name'], $file['source']);
+								if ($videofile !== false)
+									@file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).".avi", $videofile);
+							}
+							// Extract an audio file from the compressed file.
+							elseif (preg_match('/'.$this->audiofileregex.'$/i', $file['name'], $ext))
+							{
+								$audiofile = $rar->getFileData($file['name'], $file['source']);
+								if ($audiofile !== false)
+									@file_put_contents($tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $audiofile);
+							}
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-		// Not a rar file, try it as a ZIP file.
-		$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db, $nfostatus);
-		if ($files !== false)
-		{
-			foreach ($files as $file)
+			else
 			{
-				if ($file['pass'])
-				{
-					$this->password = true;
-					break;
-				}
-
-				if (!isset($file['range']))
-					$file['range'] = 0;
-
-				$retval[] = array('name'=>$file['name'], 'source'=>"main", 'range'=>$file['range'], 'size'=>$file['size'], 'date'=>$file['date'], 'pass'=>$file['pass']);
+				$rarfile = $tmpPath.'rarfile.rar';
+				file_put_contents($rarfile, $fetchedBinary);
+				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
+				$output = runCmd($execstring, false, true);
 			}
 		}
 		else
-			// Not a compressed file, but segmented.
-			$this->ignorenumbered = true;
-		}
-
-		// Use found content to populate releasefiles, nfo, and create multimedia files.
-		foreach ($retval as $k => $v)
 		{
-			if (!preg_match($this->supportfiles."|part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx)$/i", $v['name']) && count($retval) > 0)
+			// Load the ZIP file or data.
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid, $db, $nfostatus);
+			if ($files !== false)
 			{
-				// Only process if not a support file, rar/zip or file segment.
-				$rf->add($relid, $v['name'], $v['size'], $v['date'], $v['pass'] );
-				// Extract a NFO from the rar.
-				if ($nfostatus < 1 && $v['size'] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $v['name']))
+				foreach ($files as $file)
 				{
-					$nfodata = $rar->getFileData($v['name'], $v['source']);
-					$nzbcontents = new NZBcontents(true);
-					if ($nzbcontents->isNFO($nfodata))
+					if ($file['pass'])
 					{
-						$this->doecho("adding nfo");
-						$nfo = new Nfo($this->echooutput);
-						$nfo->addReleaseNfo($relid);
-						$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfodata), $relid));
-						$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						$this->password = true;
+						break;
 					}
 
-				}
-				// Extract a video file from the compressed file.
-				elseif (preg_match('/'.$this->videofileregex.'$/i', $v['name']))
-				{
-					$videofile = $rar->getFileData($v['name'], $v['source']);
-					if ($videofile !== false)
-						@file_put_contents($tmpPath.'sample_'.mt_rand(0,99999).".avi", $videofile);
-				}
-				// Extract an audio file from the compressed file.
-				elseif (preg_match('/'.$this->audiofileregex.'$/i', $v['name'], $ext))
-				{
-					$audiofile = $rar->getFileData($v['name'], $v['source']);
-					if ($audiofile !== false)
-						@file_put_contents($tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $audiofile);
+					if (!isset($file['range']))
+						$file['range'] = 0;
+
+					$rf->add($relid, $file['name'], $file['size'], $file['date'], $file['pass'] );
+					$retval[] = array('name'=>$file['name'], 'source'=>"main", 'range'=>$file['range']);
 				}
 			}
 			else
-			{
-				unset($retval[$k]);
-			}
+				$this->ignorenumbered = true;
 		}
-
-		if (count($retval) == 0)
-			$retval = false;
-
 		unset($fetchedBinary, $rar, $rf, $db, $nfo);
 		return $retval;
 	}
@@ -962,7 +919,7 @@ class PostProcess
 			return $retval;
 
 		$catID = $db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $catID['ID']))
+		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
 			return $retval;
 
 		$audiofiles = glob($ramdrive.'*.*');
@@ -986,13 +943,13 @@ class PostProcess
 								{
 									if (isset($track['Album']) && isset($track['Performer']) && !empty($track['Recorded_date']))
 									{
-										if (preg_match('/(?:19|20)\d{2}/', $track['Recorded_date'], $Year))
-											$newname = $track['Performer']." - ".$track['Album']." (".$Year[0].") ".strtoupper($ext[1]);
+										if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
 										else
-											$newname = $track['Performer']." - ".$track['Album']." ".strtoupper($ext[1]);
+											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 										$category = new Category();
-										$newcat = $category->determineCategory($newname, $catID['groupID']);
-										if ($catID['relnamestatus'] != "3")
+										$newcat = $category->determineCategory($newname, $catID["groupID"]);
+										if ($catID["relnamestatus"] != "3")
 											$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
@@ -1064,6 +1021,7 @@ class PostProcess
 							if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
 								$retval = true;
 						}
+
 						// Clean up all files.
 						foreach(glob($ramdrive.'*.jpg') as $v)
 						{
