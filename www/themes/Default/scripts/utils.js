@@ -27,7 +27,7 @@ jQuery(function($){
 
 	$(".check").click(function(e) {
 		if (!$(e.target).is('input'))
-			$(this).children(".nzb_check").attr('checked', !$(this).children(".nzb_check").attr('checked'));
+			$(this).children(".nzb_check").prop('checked', !$(this).children(".nzb_check").prop('checked'));
 	});
 
 	$(".descmore").click(function(e) {
@@ -37,14 +37,14 @@ jQuery(function($){
 	});
 
 	$('.nzb_check_all').change(function(){
-		$('table.data tr td input:checkbox').attr('checked',$(this).attr('checked'));
+		$('table.data tr td input:checkbox').prop('checked',$(this).prop('checked'));
 	});
 
 	$('.nzb_check_all_season').change(function(){
 		var season = $(this).attr('name');
 		$('table.data tr td input:checkbox').each( function(i, row) {
 			if ($(row).attr('name') == season) {
-				$(row).attr('checked', !$(row).attr('checked'));
+				$(row).prop('checked', !$(row).prop('checked'));
 			}
 		});
 	});
@@ -131,7 +131,7 @@ jQuery(function($){
 				guids.push(guid);
 		        createGrowl( 'Added to Cart' );
 			}
-			$(this).attr('checked', false);
+			$(this).prop('checked', false);
 		});
 		$.post( SERVERROOT + "cart?add=" + guids);
 	});
@@ -146,7 +146,7 @@ jQuery(function($){
 			        createGrowl( 'Added to Queue' );
 				});
 			}
-			$(this).attr('checked', false);
+			$(this).prop('checked', false);
 		});
 	});
 	//front end admin functions
@@ -247,24 +247,24 @@ jQuery(function($){
 	// selections
 	var last1, last2;
 	$(".checkbox_operations .select_all").click(function(){
-	    $("table.data INPUT[type='checkbox']").attr('checked', true).trigger('change');
+	    $("table.data INPUT[type='checkbox']").prop('checked', true).trigger('change');
 		return false;
 	});
 	$(".checkbox_operations .select_none").click(function(){
-	    $("table.data INPUT[type='checkbox']").attr('checked', false).trigger('change');
+	    $("table.data INPUT[type='checkbox']").prop('checked', false).trigger('change');
 		return false;
 	});
 	$(".checkbox_operations .select_invert").click(function(){
 	    $("table.data INPUT[type='checkbox']").each( function() {
-	        $(this).attr('checked', !$(this).attr('checked')).trigger('change');
+	        $(this).prop('checked', !$(this).prop('checked')).trigger('change');
 	    });
 		return false;
 	});
 	$(".checkbox_operations .select_range").click(function(){
 		if (last1 && last2 && last1 < last2)
-	    	$("table.data INPUT[type='checkbox']").slice(last1,last2).attr('checked', true).trigger('change');
+	    	$("table.data INPUT[type='checkbox']").slice(last1,last2).prop('checked', true).trigger('change');
 		else if (last1 && last2)
-	    	$("table.data INPUT[type='checkbox']").slice(last2,last1).attr('checked', true).trigger('change');
+	    	$("table.data INPUT[type='checkbox']").slice(last2,last1).prop('checked', true).trigger('change');
 		return false;
 	});
 	$('table.data td.check INPUT[type="checkbox"]').click(function(e) {
@@ -276,9 +276,9 @@ jQuery(function($){
 		// perform range selection
 		if (e.shiftKey && last1 && last2) {
 			if (last1 < last2)
-		    	$("table.data INPUT[type='checkbox']").slice(last1,last2).attr('checked', true).trigger('change');
+		    	$("table.data INPUT[type='checkbox']").slice(last1,last2).prop('checked', true).trigger('change');
 			else
-		    	$("table.data INPUT[type='checkbox']").slice(last2,last1).attr('checked', true).trigger('change');
+		    	$("table.data INPUT[type='checkbox']").slice(last2,last1).prop('checked', true).trigger('change');
 		}
 	});
 	$('table.data a.data_filename').click(function(e) { // click filenames to select
@@ -288,7 +288,7 @@ jQuery(function($){
 		last1 = rowNum;
 
 		var $checkbox = $('table.data tr:nth-child('+(rowNum+1)+') td.selection INPUT[type="checkbox"]');
-		$checkbox.attr('checked', !$checkbox.attr('checked'));
+		$checkbox.prop('checked', !$checkbox.prop('checked'));
 
 		return false;
 	});
