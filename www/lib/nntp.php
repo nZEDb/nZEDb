@@ -7,13 +7,13 @@ require_once(WWW_DIR."/lib/Net_NNTP/NNTP/Client.php");
 class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
-	
+
 	function doConnect() 
 	{
 		if ($this->_isConnected())
 			return true;
 		$enc = false;
-		
+
 		$s = new Sites();
 		$site = $s->get();
 		$compressionstatus = $site->compressedheaders;
@@ -49,7 +49,7 @@ class Nntp extends Net_NNTP_Client
 			return $ret && $ret2;
 		}
 	}
-	
+
 	//
 	//	No compression.
 	//

@@ -27,7 +27,6 @@ class Movie
 		$this->service = "";
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
@@ -525,11 +524,6 @@ class Movie
 		$googleban = false;
 		$googlelimit = 0;
 		$site = new Sites;
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-
 		$threads--;
 		
 		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
