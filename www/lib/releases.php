@@ -1582,8 +1582,10 @@ class Releases
 		echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
 		$stage4dot5 = TIME();
 
-		if ($resrel = $db->query("SELECT r.ID, r.guid from releases r left outer join category cat on cat.ID = r.categoryID where r.size < cat.minsize"))
-		{
+		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
+
+		foreach ($catresrel as $catrowrel) {
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1680,7 +1682,7 @@ class Releases
 			}
 		}
 
-		$delcount = $minsizecount+$maxsizecount+$minfilecount;
+		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
 		if ($delcount > 0)
 				echo "Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
 		echo $consoletools->convertTime(TIME() - $stage4dot5);
