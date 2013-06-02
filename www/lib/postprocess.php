@@ -64,7 +64,7 @@ class PostProcess
 	//
 	public function processPredb()
 	{
-		$predb = new Predb;
+		$predb = new Predb($this->echooutput);
 		$titles = $predb->combinePre();
 		if ($this->echooutput && $titles > 0)
 			echo "Fetched ".$titles." new title(s) from predb sources.\n";
