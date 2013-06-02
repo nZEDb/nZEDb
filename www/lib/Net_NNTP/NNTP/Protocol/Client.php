@@ -151,6 +151,15 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     var $_logger = null;
 
+    /**
+     *
+     *
+     * @var     int
+     * @access  private
+     */
+	var $_timeout = 15;
+
+
     // }}}
     // {{{ constructor
 
@@ -572,8 +581,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	//
     	if (is_null($timeout)) {
-    	    $timeout = 15;
+    	    $timeout = $this->_timeout;
     	}
+    	$this->_timeout = $timeout;
 
     	// Open Connection
     	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
@@ -585,6 +595,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	}
 
     	$this->_socket = $R;
+    	stream_set_timeout($this->_socket, $this->_timeout);
 
     	//
     	if ($this->_logger) {
