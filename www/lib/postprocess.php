@@ -875,7 +875,7 @@ class PostProcess
 		// Use found content to populate releasefiles, nfo, and create multimedia files.
 		foreach ($retval as $k => $v)
 		{
-			if (!preg_match($this->supportfiles."|part\d+|rar|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx)$/i", $v['name']) && count($retval) > 0)
+			if (!preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx)$/i", $v['name']) && count($retval) > 0)
 			{
 				// Only process if not a support file, rar/zip or file segment.
 				$rf->add($relid, $v['name'], $v['size'], $v['date'], $v['pass'] );
