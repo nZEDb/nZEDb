@@ -1017,7 +1017,7 @@ INSERT INTO `site`
 	('postdelay', 300),
 	('processaudiosample', 0),
 	('predbversion', 1),
-	('sqlpatch', '68');
+	('sqlpatch', '70');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1100,6 +1100,7 @@ CREATE TABLE `genres`
   `ID` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `type` INT( 4 ) NULL DEFAULT NULL,
+  `disabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1277,10 +1278,9 @@ UNIQUE KEY `setting` (`setting`)
 INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('MONITOR_DELAY','30'),
 	('TMUX_SESSION','nZEDb'),
-	('BACKFILL_DELAY','30'),
 	('NICENESS','19'),
 	('BINARIES','FALSE'),
-	('BACKFILL','FALSE'),
+	('BACKFILL','0'),
 	('IMPORT','FALSE'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
@@ -1298,7 +1298,6 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('FIX_TIMER','30'),
 	('POST_TIMER','30'),
 	('IMPORT_BULK','FALSE'),
-	('BACKFILL_TYPE','FALSE'),
 	('BACKFILL_QTY','100000'),
 	('COLLECTIONS_KILL','0'),
 	('POSTPROCESS_KILL','0'),

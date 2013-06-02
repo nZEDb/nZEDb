@@ -42,6 +42,13 @@ A: Article collections with poorly named subjects or incomplete collections are 
 Q: I'm having x issue not in the readme or FAQ.
 A: Please do some research first. If you can't solve the issue, we have a channel on IRC, server : synirc, channel #nZEDB
 
+Q: I have converted my mysql tables to InnoDB and the ibdata file keeps getting bigger, even after I optimize the tables?
+A: You should follow the recommendations found on these 2 webpages.
+   http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261
+   http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation
+   Be sure to add to you InnoDB section: 	expand_fast_index_creation = 1
+									        innodb_merge_sort_block_size = 1G
+
 Please do not open issues on github if the question is already asked. Take a few minutes to look at the titles of other issues.
 Do not expect us to implement requested features in a short amount of time.
 Some requested features we will not implement, you are free to clone the git.
