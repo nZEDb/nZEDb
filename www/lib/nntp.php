@@ -23,22 +23,23 @@ class Nntp extends Net_NNTP_Client
 		$retries = 5;
 		while($retries >= 1)
 		{
+			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
 
 			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
 			if(PEAR::isError($ret))
 			{
-				echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
-				die();
+				if ($retries < 1)
+					echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
 			}
 			if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
 			{
 				$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
 				if(PEAR::isError($ret2)) 
 				{
-					echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
-					die();
+					if ($retries < 1)
+						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
 				}
 			}
 			if($compressionstatus == "1")
@@ -46,7 +47,6 @@ class Nntp extends Net_NNTP_Client
 				$this->enableCompression();
 			}
 			return $ret && $ret2;
-			$retries--;
 		}
 	}
 	
