@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2305";
+$version="0.1r2306";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -43,39 +43,39 @@ $proc = "SELECT
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
-	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) AS collections_kill,
-	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) AS postprocess_kill,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) AS niceness,
 	( SELECT value from tmux where setting = 'BINARIES' ) AS binaries_run,
 	( SELECT value from tmux where setting = 'BACKFILL' ) AS backfill,
 	( SELECT value from tmux where setting = 'IMPORT' ) AS import,
 	( SELECT value from tmux where setting = 'NZBS' ) AS nzbs,
-	( SELECT value from tmux where setting = 'FIX_NAMES' ) AS fix_names,
-	( SELECT value from tmux where setting = 'FIX_CRAP' ) AS fix_crap,
-	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
 	( SELECT value from tmux where setting = 'POST' ) AS post,
-	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'RELEASES' ) AS releases_run,
 	( SELECT value from tmux where setting = 'RELEASES_THREADED' ) AS releases_threaded,
-	( SELECT value from tmux where setting = 'MYSQL_PROC' ) AS process_list,
+	( SELECT value from tmux where setting = 'FIX_NAMES' ) AS fix_names,
 	( SELECT value from tmux where setting = 'SEQ_TIMER' ) AS seq_timer,
 	( SELECT value from tmux where setting = 'BINS_TIMER' ) AS bins_timer,
 	( SELECT value from tmux where setting = 'BACK_TIMER' ) AS back_timer,
 	( SELECT value from tmux where setting = 'IMPORT_TIMER' ) AS import_timer,
 	( SELECT value from tmux where setting = 'REL_TIMER' ) AS rel_timer,
 	( SELECT value from tmux where setting = 'FIX_TIMER' ) AS fix_timer,
-	( SELECT value from tmux where setting = 'CRAP_TIMER' ) AS crap_timer,
-	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
-	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
 	( SELECT value from tmux where setting = 'POST_TIMER' ) AS post_timer,
+	( SELECT value from tmux where setting = 'COLLECTIONS_KILL' ) AS collections_kill,
+	( SELECT value from tmux where setting = 'POSTPROCESS_KILL' ) AS postprocess_kill,
+	( SELECT value from tmux where setting = 'CRAP_TIMER' ) AS crap_timer,
+	( SELECT value from tmux where setting = 'FIX_CRAP' ) AS fix_crap,
+	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
+	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
 	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
+	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
+	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
 	( SELECT value from tmux where setting = 'PATCHDB' ) AS patchdb,
 	( SELECT value from tmux where setting = 'PATCHDB_TIMER' ) AS patchdb_timer,
-	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
+	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
 	( SELECT value from site where setting = 'debuginfo' ) AS debug,
 	( SELECT name from releases order by adddate DESC limit 1 ) AS newestaddname";
 
@@ -397,10 +397,10 @@ while( $i > 0 )
 	if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
 	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
 	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
-	if ( @$proc_result[0]['process_list'] != NULL ) { $process_list = $proc_result[0]['process_list']; }
 	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
 	if ( @$proc_result[0]['patchdb'] != NULL ) { $patchdb = $proc_result[0]['patchdb']; }
 	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
+	if ( @$proc_result[0]['dehash'] != NULL ) { $dehash = $proc_result[0]['dehash']; }
 
 	if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
 
@@ -662,7 +662,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Fix Release Names\"'");
 		}
 
-		//remove crap releases
+		//misc sorter
 		if ( $sorter == "TRUE" )
 		{
 			$color = get_color();
@@ -674,6 +674,20 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Misc Sorter\"'");
+		}
+
+		//dehash releases
+		if ( $dehash == "TRUE" )
+		{
+			$color = get_color();
+			$log = writelog($panes1[3]);
+			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\" && \
+					$_php ${DIR}testing/Dev_testing/nzbx_ws_hashdecrypt_loop.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
+		}
+		else
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Decrypt Hashes\"'");
 		}
 
 		//remove crap releases
@@ -780,12 +794,12 @@ while( $i > 0 )
 		{
 			$run_time = relativeTime( $tv_timer + $time4 );
 			$color = get_color();
-			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t${tmux_session}:1.4 'echo \"\033[38;5;${color}m\n${panes1[4]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
 		}
 		else
 		{
 			$color = get_color();
-			shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Update TV/Theater\"'");
+			shell_exec("tmux respawnp -k -t${tmux_session}:1.4 'echo \"\033[38;5;${color}m\n${panes1[4]} has been disabled/terminated by Update TV/Theater\"'");
 		}
 
 		if ( $seq == "TRUE" )
@@ -950,7 +964,7 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
 		}
-		for ($g=0; $g<=3; $g++)
+		for ($g=0; $g<=4; $g++)
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
@@ -968,7 +982,7 @@ while( $i > 0 )
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
 		}
-		for ($g=0; $g<=3; $g++)
+		for ($g=0; $g<=4; $g++)
 		{
 			$color = get_color();
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");

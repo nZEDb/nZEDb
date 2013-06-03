@@ -299,6 +299,27 @@
 </fieldset>
 
 <fieldset>
+	<legend>Decrypt Hashes</legend>
+		<table class="input">
+			<tr>
+				<td><label for="DEHASH">Decrypt Hash Based Release Names</label>:</td>
+				<td>
+					{html_radios id="DEHASH" name='DEHASH' values=$truefalse_names output=$truefalse_names selected=$ftmux->DEHASH}
+					<div class="hint">Choose to run Decrypt Hashes true/false</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="DEHASH_TIMER">Decryt Hashes Sleep Timer</label>:</td>
+				<td>
+					<input id="DEHASH_TIMER" name="DEHASH_TIMER" class="tiny" type="text" value="{$ftmux->DEHASH_TIMER}" />
+					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+		</table>
+</fieldset>
+
+<fieldset>
 	<legend>Update TV/Theater</legend>
 		<table class="input">
 			<tr>
