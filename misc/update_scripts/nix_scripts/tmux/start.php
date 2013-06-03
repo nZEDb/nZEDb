@@ -138,7 +138,7 @@ function window_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
 	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\"'");
-	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
+	exec("tmux splitw -t $tmux_session:1 -h -p 33 'printf \"\033]2;updateTVandTheaters\033\"'");
 	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
 	exec("tmux selectp -t 2 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
