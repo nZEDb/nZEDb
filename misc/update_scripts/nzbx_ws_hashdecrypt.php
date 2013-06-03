@@ -17,9 +17,9 @@ function isPreDBActive()
     return getReleaseName("0f4e871131b1d05c0010093021b521ca");
 }
 
-if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
-    die("PreDB Maintenance");
-}
+// if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
+//    die("PreDB Maintenance");
+//}
 
 function isInnerActive()
 {
@@ -54,6 +54,9 @@ function updaterelease($foundName, $id, $groupname)
 }
 $results = getReleasez();
 foreach ($results as $result) {
+    if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
+    die("PreDB Maintenance");
+    }
     $x = substr($result['name'],0,32);
     if (!strstr($x, '.') == TRUE) {
         if (!strstr($x, ' ') == TRUE) {
