@@ -1325,7 +1325,9 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('POWERLINE', 'FALSE'),
 	('PATCHDB', 'FALSE'),
 	('PATCHDB_TIMER', '21600'),
-	('PROGRESSIVE', 'FALSE');
+	('PROGRESSIVE', 'FALSE')
+	('DEHASH','FALSE'),
+	('DEHASH_TIMER','30');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 
