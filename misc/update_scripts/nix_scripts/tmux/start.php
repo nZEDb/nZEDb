@@ -47,7 +47,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '70' )
+if ( $patch < '71' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -140,6 +140,7 @@ function window_utilities($tmux_session)
 	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\"'");
 	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
 	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
+	exec("tmux selectp -t 2 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
 function window_post($tmux_session)
