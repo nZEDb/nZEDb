@@ -401,9 +401,7 @@ class RarInfo extends ArchiveReader
 		$ret = array();
 		foreach ($this->blocks as $block) {
 			$b = $this->formatBlock($block, $asHex);
-			if ($b['head_type'] == self::R50_BLOCK_SERVICE
-			 && $b['file_name'] == self::R50_SERVICE_QUICKOPEN
-			) {
+			if ($b['head_type'] == self::R50_BLOCK_SERVICE && $b['file_name'] == self::R50_SERVICE_QUICKOPEN) {
 				// Format any cached blocks
 				foreach ($b['cache_data'] as &$cache) {
 					$cache['data'] = $this->formatBlock($cache['data'], $asHex);

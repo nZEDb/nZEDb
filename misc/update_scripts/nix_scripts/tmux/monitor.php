@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2302";
+$version="0.1r2305";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -15,7 +15,6 @@ $db_name = DB_NAME;
 $tmux = new Tmux;
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
-$running = $tmux->get()->RUNNING;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -311,6 +310,7 @@ while( $i > 0 )
 	$getdate = gmDate("Ymd");
 
 	//run queries
+	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time2 ) >= $monitor ) && ( $running == "TRUE" )) || ( $i == 1 )) {
 		//get microtime to at start of queries
 		$query_timer_start=microtime_float();
@@ -453,7 +453,7 @@ while( $i > 0 )
 
 	if ( $releases_now != 0 ) {
 		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
-		$pre_percent = sprintf( "%02s", floor(( $predb / $releases_now) * 100 ));
+		$pre_percent = sprintf( "%02s", floor(( $predb_matched / $releases_now) * 100 ));
 		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
 		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
 		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
