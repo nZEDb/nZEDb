@@ -183,6 +183,7 @@
 				</td>
 			</tr>
 		</table>
+		<div class="explanation">This will import all nzbs in the given path. If in your path you have nzbs in the root folder and subfolders(regardless of nzbs inside), threaded scripts will ignore all nzbs in the root path. Then each subfolder is threaded.</div>
 </fieldset>
 
 <fieldset>
@@ -296,6 +297,7 @@
 				</td>
 			</tr>
 		</table>
+		<div class="explanation">Misc Sorter only works on the misc category(7000). It will throw an error if you have no releases in 7000 that need to be postprocessed. This works by collecting keywords from the nfo, if enough keywords are present, then an assumption is made as to which category it belongs.</div>
 </fieldset>
 
 <fieldset>
@@ -317,6 +319,7 @@
 				</td>
 			</tr>
 		</table>
+		<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.</div>
 </fieldset>
 
 <fieldset>
@@ -493,6 +496,7 @@
 				</td>
 			</tr>
 		</table>
+		<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</div>
 </fieldset>
 
 <input type="submit" value="Save Tmux Settings" />

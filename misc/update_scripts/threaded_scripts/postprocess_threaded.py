@@ -59,7 +59,9 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				if sys.argv[1] == "amazon":
+				if sys.argv[1] == "additional":
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional.php", ""+dirname])
+				elif sys.argv[1] == "amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+dirname])
 				elif sys.argv[1] == "non_amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_non_amazon.php", ""+dirname])

@@ -10,30 +10,30 @@ import re
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 def readConfig():
-		Configfile = pathname+"/../../../www/config.php"
-		file = open( Configfile, "r")
+	Configfile = pathname+"/../../../www/config.php"
+	file = open( Configfile, "r")
 
-		# Match a config line
-		m = re.compile('^define\(\'([A-Z_]+)\', \'?(.*?)\'?\);$', re.I)
+	# Match a config line
+	m = re.compile('^define\(\'([A-Z_]+)\', \'?(.*?)\'?\);$', re.I)
 
-		# The config object
-		config = {}
-		config['DB_PORT']=3306
-		for line in file.readlines():
-			match = m.search( line )
-			if match:
-				value = match.group(2)
+	# The config object
+	config = {}
+	config['DB_PORT']=3306
+	for line in file.readlines():
+		match = m.search( line )
+		if match:
+			value = match.group(2)
 
-				# filter boolean
-				if "true" is value:
-					value = True
-				elif "false" is value:
-					value = False
+			# filter boolean
+			if "true" is value:
+				value = True
+			elif "false" is value:
+				value = False
 
-				# Add to the config
-				#config[ match.group(1).lower() ] = value	   # Lower case example
-				config[ match.group(1) ] = value
-		return config
+			# Add to the config
+			#config[ match.group(1).lower() ] = value	   # Lower case example
+			config[ match.group(1) ] = value
+	return config
 
 # Test
 config = readConfig()

@@ -41,8 +41,12 @@ function getReleasez($i)
 {
 	$db = new DB();
 	$run = $i*30;
-	echo "Beginning Decrypt Hashed Releases 30 releases starting at $run\n";
-	return $db->query(sprintf("SELECT * FROM `releases` WHERE `fromname` = 'HaShTaG@nzb.file' ORDER BY ID DESC LIMIT %d, 30", $run));
+	$result = $db->query(sprintf("SELECT * FROM `releases` WHERE `fromname` = 'HaShTaG@nzb.file' ORDER BY ID DESC LIMIT %d, 30", $run));
+	if (count($result) > 0)
+		echo "Beginning Decrypt Hashed Releases 30 releases starting at $run\n";
+	else
+		$i = 0;
+	return $result;
 }
 
 function updaterelease($foundName, $id, $groupname)
@@ -50,13 +54,13 @@ function updaterelease($foundName, $id, $groupname)
 	$db  = new DB();
 	$rel = new Releases();
 	$cat = new Category();
-	
+
 	$cleanRelName = $foundName;
 	$catid		= $cat->determineCategory($groupname, $foundName);
-	
-	$db->query(sprintf("UPDATE releases SET name = %s,  searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
 
+	$db->query(sprintf("UPDATE releases SET name = %s,  searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
 }
+$counter = 0;
 $i = 0;
 while(1)
 {
@@ -76,6 +80,7 @@ while(1)
 									if (strstr($r, '-') == TRUE) {
 										if (ENABLE_ECHO == TRUE) {
 											echo "Release found " . $r . "\n";
+											$counter++;
 										}
 										updaterelease($r, $result['ID'], $result['name']);
 									}
@@ -87,6 +92,7 @@ while(1)
 			}
 		}
 	}
+	echo $counter." releases matched\n";
 	sleep($sleep);
 }
 ?>
