@@ -57,22 +57,24 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	$alltables = $db->query("show table status where Data_free > 0");
 	$tablecnt = sizeof($alltables);
-	foreach ($alltables as $tablename)
+	if ($tablecnt > 0)
 	{
-		$name = $tablename['Name'];
-		echo "Optimizing table: ".$name.".\n";
-		if (strtolower($tablename['Engine']) == "myisam")
-			$db->queryDirect("REPAIR TABLE `".$name."`");
-		$db->queryDirect("OPTIMIZE TABLE `".$name."`");
-		if (strtolower($tablename['Engine']) == "myisam")
-			$db->queryDirect("FLUSH TABLES");
+		foreach ($alltables as $tablename)
+		{
+			$name = $tablename['Name'];
+			echo "Optimizing table: ".$name.".\n";
+			if (strtolower($tablename['Engine']) == "myisam")
+				$db->queryDirect("REPAIR TABLE `".$name."`");
+			$db->queryDirect("OPTIMIZE TABLE `".$name."`");
+			if (strtolower($tablename['Engine']) == "myisam")
+				$db->queryDirect("FLUSH TABLES");
+		}
+		if ($tablecnt = 1)
+			echo $tablecnt." table Optimized\n";
+		else
+			echo $tablecnt." tables Optimized\n";
 	}
-	if ($tablecnt = 1)
-		echo $tablecnt." table Optimized\n";
-	else
-		echo $tablecnt." tables Optimized\n";
-
-	if ( $restart = "true" )
+	if ( $restart == "true" )
 	{
 		echo "Starting tmux scripts\n";
 		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
