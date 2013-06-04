@@ -145,7 +145,8 @@ function window_utilities($tmux_session)
 
 function window_post($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_non_amazon\033\"'");
+	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
+	exec("tmux splitw -t $tmux_session:2 -v -p 67 'printf \"\033]2;postprocessing_non_amazon\033\"'");
 	exec("tmux splitw -t $tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
