@@ -37,7 +37,8 @@ foreach ($y as $z) {
 function getReleasez()
 {
     $db = new DB();
-    return $db->query(sprintf("SELECT * FROM `releases` WHERE `fromname` = 'HaShTaG@nzb.file' ORDER BY ID LIMIT 0, 30"));
+    $result = $db->query(sprintf("SELECT * FROM releases WHERE dehashstatus = 0 AND fromname = 'HaShTaG@nzb.file' LIMIT 1000"));
+    return $result;
 }
 
 function updaterelease($foundName, $id, $groupname)
@@ -53,10 +54,12 @@ function updaterelease($foundName, $id, $groupname)
     
 }
 $results = getReleasez();
+$db = new DB();
 foreach ($results as $result) {
     if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
     die("PreDB Maintenance");
     }
+    $processed = FALSE;
     $x = substr($result['name'],0,32);
     if (!strstr($x, '.') == TRUE) {
         if (!strstr($x, ' ') == TRUE) {
@@ -67,10 +70,8 @@ foreach ($results as $result) {
                         if (strlen($r) > 5) {
                             if (!strstr($r, 'cloudflare') == TRUE) {
                                 if (strstr($r, '-') == TRUE) {
-                                    if (ENABLE_ECHO == TRUE) {
-                                        echo "Release found " . $r . "\n";
-                                    }
                                     updaterelease($r, $result['ID'], $result['name']);
+				    $processed = TRUE;
                                 }
                             }
                         }
@@ -79,6 +80,17 @@ foreach ($results as $result) {
             }
         }
     }
+}
+if ($processed == TRUE) {
+    if (ENABLE_ECHO == TRUE) {
+        echo "Release found " . $r . "\n";
+    }
+    $db->query(sprintf("update releases set dehashstatus = 1 where ID = %s", $result['ID']));
+} else {
+    if (ENABLE_ECHO == TRUE) {
+    echo $result['name']." not found\n";
+    }
+    $db->query(sprintf("update releases set dehashstatus = -1 where ID = %s", $result['ID']));
 }
 }
 ?>
