@@ -37,7 +37,7 @@ foreach ($y as $z) {
 function getReleasez()
 {
     $db = new DB();
-    $result = $db->query(sprintf("SELECT * FROM releases WHERE dehashstatus = 0 AND fromname = 'HaShTaG@nzb.file' LIMIT 100"));
+    $result = $db->query(sprintf("SELECT * FROM releases WHERE dehashstatus = 0 AND fromname = 'HaShTaG@nzb.file' LIMIT 1000"));
     return $result;
 }
 
@@ -70,9 +70,6 @@ foreach ($results as $result) {
                         if (strlen($r) > 5) {
                             if (!strstr($r, 'cloudflare') == TRUE) {
                                 if (strstr($r, '-') == TRUE) {
-                                    if (ENABLE_ECHO == TRUE) {
-                                        echo "Release found " . $r . "\n";
-                                    }
                                     updaterelease($r, $result['ID'], $result['name']);
 				    $processed = TRUE;
                                 }
