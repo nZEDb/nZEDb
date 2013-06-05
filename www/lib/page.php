@@ -1,9 +1,9 @@
 <?php
-require_once(WWW_DIR."lib/framework/basepage.php");
-require_once(WWW_DIR."lib/content.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/users.php");
-require_once(WWW_DIR."lib/menu.php");
+require_once(WWW_DIR."/lib/framework/basepage.php");
+require_once(WWW_DIR."/lib/content.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/users.php");
+require_once(WWW_DIR."/lib/menu.php");
 
 class Page extends BasePage
 {
@@ -52,4 +52,5 @@ class Page extends BasePage
 		parent::render();
 	}
 }
+
 ?>

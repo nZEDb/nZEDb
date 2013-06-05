@@ -1,7 +1,8 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/nzb.php");
-require_once(WWW_DIR."lib/nfo.php");
+
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/nzb.php");
+require_once(WWW_DIR."/lib/nfo.php");
 
 /*
  * Gets information contained within the NZB.

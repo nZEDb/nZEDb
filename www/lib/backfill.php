@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/nntp.php");
-require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/nntp.php");
+require_once(WWW_DIR."/lib/binaries.php");
 
 class Backfill 
 {

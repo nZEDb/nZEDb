@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."/lib/framework/db.php");
 
 class ReleaseExtra
-{
+{	
 	public function makeCodecPretty($codec)
 	{
 		if(preg_match("/DX50|DIVX|DIV3/i",$codec))
@@ -28,23 +28,23 @@ class ReleaseExtra
 	{
 		// hopefully nothing will use this soon and it can be deleted
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from releasevideo where releaseID = %d", $id));
+		return $db->queryOneRow(sprintf("select * from releasevideo where releaseID = %d", $id));	
 	}
 	public function getVideo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from releasevideo where releaseID = %d", $id));
+		return $db->queryOneRow(sprintf("select * from releasevideo where releaseID = %d", $id));	
 	}
 	public function getAudio($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("select * from releaseaudio where releaseID = %d order by audioID ASC", $id));
+		return $db->query(sprintf("select * from releaseaudio where releaseID = %d order by audioID ASC", $id));	
 	}
 	public function getSubs($id)
 	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf("SELECT group_concat(subslanguage SEPARATOR ', ') as subs FROM `releasesubs` WHERE `releaseID` = %d ORDER BY `subsID` ASC", $id));	
-	}
+	}	
 	public function getBriefByGuid($guid)
 	{
 		$db = new DB();
@@ -54,8 +54,8 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf("select releasevideo.* from releasevideo inner join releases r on r.ID = releasevideo.releaseID where r.guid = %s ", $db->escapeString($guid)));	
-	}
-
+	}	
+	
 	public function delete($id)
 	{
 		$db = new DB();
@@ -76,7 +76,7 @@ class ReleaseExtra
 			{
 				if (isset($track["@attributes"]) && isset($track["@attributes"]["type"]))
 				{
-
+					
 
 					if ($track["@attributes"]["type"] == "General")
 					{
@@ -177,7 +177,7 @@ class ReleaseExtra
 							$releaseID, $audioID,$db->escapeString($audioformat),$db->escapeString($audiomode), $db->escapeString($audiobitratemode), 	$db->escapeString($audiobitrate), $db->escapeString($audiochannels),$db->escapeString($audiosamplerate), $db->escapeString($audiolibrary),$db->escapeString($audiolanguage),$db->escapeString($audiotitle));
 		return $db->queryInsert($sql);
 	}
-
+	
 	public function addSubs($releaseID, $subsID, $subslanguage)
 	{
 		$db = new DB();
@@ -193,13 +193,13 @@ class ReleaseExtra
 		$db = new DB();
 		return $db->queryOneRow(sprintf("select * from releaseextrafull where releaseID = %d", $id));	
 	}
-
+	
 	public function deleteFull($id)
 	{
 		$db = new DB();
 		return $db->query(sprintf("delete from releaseextrafull where releaseID = %d", $id));	
 	}
-
+	
 	public function addFull($id, $xml)
 	{
 		$db = new DB();

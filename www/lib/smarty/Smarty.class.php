@@ -569,7 +569,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * default file permissions
      * @var int
      */
-    public $_file_perms = 0764;
+    public $_file_perms = 0644;
     /**
      * default dir permissions
      * @var int

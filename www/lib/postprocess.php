@@ -1,26 +1,26 @@
 <?php
-require_once(WWW_DIR."lib/anidb.php");
-require_once(WWW_DIR."lib/books.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/console.php");
-require_once(WWW_DIR."lib/consoletools.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/movie.php");
-require_once(WWW_DIR."lib/music.php");
-require_once(WWW_DIR."lib/nfo.php");
-require_once(WWW_DIR."lib/nntp.php");
-require_once(WWW_DIR."lib/nzbcontents.php");
-require_once(WWW_DIR."lib/predb.php");
-require_once(WWW_DIR."lib/rarinfo.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/releaseextra.php");
-require_once(WWW_DIR."lib/releasefiles.php");
-require_once(WWW_DIR."lib/releaseimage.php");
-require_once(WWW_DIR."lib/rrarinfo.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/tvrage.php");
-require_once(WWW_DIR."lib/util.php");
-require_once(WWW_DIR."lib/zipinfo.php");
+require_once(WWW_DIR."/lib/anidb.php");
+require_once(WWW_DIR."/lib/books.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/console.php");
+require_once(WWW_DIR."/lib/consoletools.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/movie.php");
+require_once(WWW_DIR."/lib/music.php");
+require_once(WWW_DIR."/lib/nfo.php");
+require_once(WWW_DIR."/lib/nntp.php");
+require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/predb.php");
+require_once(WWW_DIR."/lib/rarinfo.php");
+require_once(WWW_DIR."/lib/releases.php");
+require_once(WWW_DIR."/lib/releaseextra.php");
+require_once(WWW_DIR."/lib/releasefiles.php");
+require_once(WWW_DIR."/lib/releaseimage.php");
+require_once(WWW_DIR."/lib/rrarinfo.php");
+require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/tvrage.php");
+require_once(WWW_DIR."/lib/util.php");
+require_once(WWW_DIR."/lib/zipinfo.php");
 
 class PostProcess
 {
@@ -38,7 +38,7 @@ class PostProcess
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 
-		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
+		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
 		$this->DEBUG_ECHO = false;
@@ -491,12 +491,12 @@ class PostProcess
 						{
 							$mediafile = $tmpPath.'media.avi';
 							@file_put_contents($mediafile, $mediaBinary);
-							
+							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
+
 							if ($processSample && $blnTookSample === false)
 								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
 							unset($mediafile);
 						}
@@ -1094,4 +1094,3 @@ class PostProcess
 	}
 }
 ?>
-
