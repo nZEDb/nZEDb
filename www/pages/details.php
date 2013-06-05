@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/releasefiles.php");
-require_once(WWW_DIR."/lib/releasecomments.php");
-require_once(WWW_DIR."/lib/releaseextra.php");
-require_once(WWW_DIR."/lib/tvrage.php");
-require_once(WWW_DIR."/lib/anidb.php");
+require_once(WWW_DIR."lib/releases.php");
+require_once(WWW_DIR."lib/releasefiles.php");
+require_once(WWW_DIR."lib/releasecomments.php");
+require_once(WWW_DIR."lib/releaseextra.php");
+require_once(WWW_DIR."lib/tvrage.php");
+require_once(WWW_DIR."lib/anidb.php");
 
 if (!$users->isLoggedIn())
 	$page->show403();
@@ -23,14 +23,14 @@ if (isset($_GET["id"]))
 
 	if ($page->isPostBack())
 			$rc->addComment($data["ID"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']); 
-	
+
 	$nfo = $releases->getReleaseNfo($data["ID"], false);
 	$reVideo = $re->getVideo($data["ID"]);
 	$reAudio = $re->getAudio($data["ID"]);
 	$reSubs = $re->getSubs($data["ID"]);
 	$comments = $rc->getComments($data["ID"]);
 	$similars = $releases->searchSimilar($data["ID"], $data["searchname"], 6, $page->userdata["categoryexclusions"]);
-	
+
 	$rage = '';
 	if ($data["rageID"] != '')
 	{
@@ -43,13 +43,13 @@ if (isset($_GET["id"]))
 				$seriesnames[] = $r['releasetitle'];
 				if (!empty($r['description']))
 					$seriesdescription[] = $r['description'];
-				
+
 				if (!empty($r['country']))
 					$seriescountry[] = $r['country'];
-					
+
 				if (!empty($r['genre']))
 					$seriesgenre[] = $r['genre'];
-					
+
 				if (!empty($r['imgdata'])) {
 					$seriesimg[] = $r['imgdata'];
 					$seriesid[] = $r['ID'];
@@ -65,20 +65,20 @@ if (isset($_GET["id"]))
 			);
 		}
 	}
-	
+
 	$anidb = '';
 	$AniDBAPIArray = '';
 	if ($data["anidbID"] > 0)
 	{
 		$AniDBAPIArray = $AniDB->getAnimeInfo($data["anidbID"]);
 	}
-	
+
 	$mov = '';
 	if ($data['imdbID'] != '') {
-		require_once(WWW_DIR."/lib/movie.php");
+		require_once(WWW_DIR."lib/movie.php");
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbID']);
-		
+
 		if ($mov) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 			$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
@@ -86,31 +86,31 @@ if (isset($_GET["id"]))
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
 		}
 	}
-	
+
 	$mus = '';
 	if ($data['musicinfoID'] != '') {
-		require_once(WWW_DIR."/lib/music.php");
+		require_once(WWW_DIR."lib/music.php");
 		$music = new Music();
 		$mus = $music->getMusicInfo($data['musicinfoID']);
-	}	
-	
+	}
+
 	$con = '';
 	if ($data['consoleinfoID'] != '') {
-		require_once(WWW_DIR."/lib/console.php");
+		require_once(WWW_DIR."lib/console.php");
 		$c = new Console();
 		$con = $c->getConsoleInfo($data['consoleinfoID']);
-	}		
-	
+	}
+
 	$boo = '';
 	if ($data['bookinfoID'] != '') {
-		require_once(WWW_DIR."/lib/books.php");
+		require_once(WWW_DIR."lib/books.php");
 		$b = new Books();
 		$boo = $b->getBookInfo($data['bookinfoID']);
 	}
-	
+
 	$rf = new ReleaseFiles;
 	$releasefiles = $rf->get($data["ID"]);
-	
+
 	$page->smarty->assign('releasefiles',$releasefiles);
 	$page->smarty->assign('release',$data);
 	$page->smarty->assign('reVideo',$reVideo);
@@ -130,7 +130,7 @@ if (isset($_GET["id"]))
 	$page->meta_title = "View NZB";
 	$page->meta_keywords = "view,nzb,description,details";
 	$page->meta_description = "View NZB for".$data["searchname"] ;
-	
+
 	$page->content = $page->smarty->fetch('viewnzb.tpl');
 	$page->render();
 }
