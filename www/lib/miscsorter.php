@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
-require_once(WWW_DIR."/lib/books.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/movie.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/books.php");
 
 
 class MiscSorter {

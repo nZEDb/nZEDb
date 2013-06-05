@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR."/lib/binaries.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/Net_NNTP/NNTP/Client.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."lib/Net_NNTP/NNTP/Client.php");
 
 class Nntp extends Net_NNTP_Client
 {

@@ -1,9 +1,9 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/amazon.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/amazon.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/releaseimage.php");
+require_once(WWW_DIR."lib/site.php");
 
 	/*
 	 *	Class for fetching book info from amazon.com.

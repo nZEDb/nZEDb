@@ -1,9 +1,9 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/groups.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/site.php");
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.

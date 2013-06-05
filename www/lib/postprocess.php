@@ -1,26 +1,26 @@
 <?php
-require_once(WWW_DIR."/lib/anidb.php");
-require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/console.php");
-require_once(WWW_DIR."/lib/consoletools.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/music.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/nzbcontents.php");
-require_once(WWW_DIR."/lib/predb.php");
-require_once(WWW_DIR."/lib/rarinfo.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/releaseextra.php");
-require_once(WWW_DIR."/lib/releasefiles.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/rrarinfo.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/tvrage.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/zipinfo.php");
+require_once(WWW_DIR."lib/anidb.php");
+require_once(WWW_DIR."lib/books.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/console.php");
+require_once(WWW_DIR."lib/consoletools.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/movie.php");
+require_once(WWW_DIR."lib/music.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/nntp.php");
+require_once(WWW_DIR."lib/nzbcontents.php");
+require_once(WWW_DIR."lib/predb.php");
+require_once(WWW_DIR."lib/rarinfo.php");
+require_once(WWW_DIR."lib/releases.php");
+require_once(WWW_DIR."lib/releaseextra.php");
+require_once(WWW_DIR."lib/releasefiles.php");
+require_once(WWW_DIR."lib/releaseimage.php");
+require_once(WWW_DIR."lib/rrarinfo.php");
+require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."lib/tvrage.php");
+require_once(WWW_DIR."lib/util.php");
+require_once(WWW_DIR."lib/zipinfo.php");
 
 class PostProcess
 {
@@ -38,7 +38,7 @@ class PostProcess
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 
-		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|QT|RM|RMVB|TS|VOB|WMV)';
+		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
 		$this->DEBUG_ECHO = false;
@@ -473,7 +473,7 @@ class PostProcess
 							@file_put_contents($tmpPath.'sample.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo)
-								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
+								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["ID"], $rel["guid"]);
 						}
 						unset($sampleBinary);
 					}
@@ -491,12 +491,12 @@ class PostProcess
 						{
 							$mediafile = $tmpPath.'media.avi';
 							@file_put_contents($mediafile, $mediaBinary);
-							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
 							if ($processSample && $blnTookSample === false)
 								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo && $blnTookVideo === false)
-								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
+								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["ID"], $rel["guid"]);
+							//$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
 							unset($mediafile);
 						}
@@ -574,9 +574,9 @@ class PostProcess
 									if ($processSample && $blnTookSample === false)
 										$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 									if ($processVideo && $blnTookVideo === false)
-										$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-									if ($processMediainfo && $blnTookMediainfo === false)
-										$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
+										$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["ID"], $rel["guid"]);
+									//if ($processMediainfo && $blnTookMediainfo === false)
+										//$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
 									@unlink($tmpPath."sample.avi");
 
 									if ($blnTookSample)
@@ -882,6 +882,30 @@ class PostProcess
 	{
 		$retval = false;
 		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
+		if (!($processMediainfo && file_exists($ramdrive) && ($releaseID > 0)))
+			return $retval;
+
+		if (is_file($ramdrive) && preg_match("/".$this->videofileregex."$/i",$ramdrive))
+		{
+			$xmlarray = runCmd('"'.$mediainfo.'" --Output=XML "'.$ramdrive.'"');
+			if (is_array($xmlarray))
+			{
+				$xmlarray = implode("\n",$xmlarray);
+				//var_dump($xmlarray);
+				$re = new ReleaseExtra();
+				$re->addFull($releaseID,$xmlarray);
+				$re->addFromXml($releaseID,$xmlarray);
+				$retval = true;
+			}
+		}
+		return $retval;
+	}
+
+/*	// Attempt to get mediafio xml from a video file.
+	public function getMediainfo($ramdrive,$mediainfo,$releaseID)
+	{
+		$retval = false;
+		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
 		if (!($processMediainfo && is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
@@ -896,6 +920,7 @@ class PostProcess
 					if (is_array($xmlarray))
 					{
 						$xmlarray = implode("\n",$xmlarray);
+						var_dump($xmlarray);
 						$re = new ReleaseExtra();
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
@@ -906,7 +931,7 @@ class PostProcess
 		}
 		return $retval;
 	}
-
+*/
 	// Attempt to get mediainfo/sample/title from a audio file.
 	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid, $releaseID)
 	{
@@ -927,9 +952,10 @@ class PostProcess
 			{
 				if (is_file($audiofile) && preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
-					if ($retval === false)
+					if (!$this->processAudioSample && $retval === false)
 					{
 						$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						//var_dump($xmlarray);
 						if (is_array($xmlarray))
 						{
 							$xmlarray = implode("\n",$xmlarray);
@@ -970,8 +996,39 @@ class PostProcess
 								if(preg_match("/".$releaseguid."\.ogg/",$file))
 								{
 									copy($ramdrive.$releaseguid.".ogg", $this->audSavePath.$releaseguid.".ogg");
-									if(@file_exists($this->audSavePath.$releaseguid.".ogg"))
+									$audiofile = $this->audSavePath.$releaseguid.".ogg";
+									if(@file_exists($audiofile))
 									{
+										$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+										//var_dump($xmlarray);
+										if (is_array($xmlarray))
+										{
+											$xmlarray = implode("\n",$xmlarray);
+											$xmlObj = @simplexml_load_string($xmlarray);
+											$arrXml = objectsIntoArray($xmlObj);
+											if (isset($arrXml["File"]["track"]))
+											{
+												foreach ($arrXml["File"]["track"] as $track)
+												{
+													if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+													{
+														if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+															$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+														else
+															$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
+														$category = new Category();
+														$newcat = $category->determineCategory($newname, $catID["groupID"]);
+														if ($catID["relnamestatus"] != "3")
+															$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($newname), $newcat, $releaseID));
+														$re = new ReleaseExtra();
+														$re->addFromXml($releaseID, $xmlarray);
+														$retval = true;
+														if($this->processAudioSample === false)
+															break;
+													}
+												}
+											}
+										}
 										$db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
 									}
@@ -1035,7 +1092,7 @@ class PostProcess
 		return $retval;
 	}
 
-	public function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
+	public function getVideo($ramdrive, $ffmpeginfo, $releaseID, $releaseguid)
 	{
 		$retval = false;
 		$processSample = ($this->site->ffmpegpath != '') ? true : false;
@@ -1064,7 +1121,8 @@ class PostProcess
 									@copy($ramdrive."zzzz".$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
 									if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
 									{
-										$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+										$blnTookMediainfo = $this->getMediainfo($ri->vidSavePath.$releaseguid.".ogv", $this->site->mediainfopath, $releaseID);
+										$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = '%s'",$releaseguid));
 										$retval = true;
 									}
 								}
@@ -1094,3 +1152,4 @@ class PostProcess
 	}
 }
 ?>
+
