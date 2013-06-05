@@ -215,11 +215,10 @@ class PostProcess
 			$result = 0;
 			while ((count($result) != $this->addqty) && ($i >= $tries))
 			{
-				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
-				left join category c on c.ID = r.categoryID
-				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-				AND (r.haspreview = -1 and c.disablepreview = 0) AND r.size < %s order by r.postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->addqty)*($threads * 1.5)), $this->addqty);
-				$result = $db->query($query);
+				$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
+					left join category c on c.ID = r.categoryID
+					where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
+					order by r.postdate desc limit %d,%d", $this->maxsize*1073741824, $i, floor(($this->addqty)*($threads * 1.5)), $this->addqty));
 				if ($this->echooutput && count($result) > 0)
 					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
 				$i--;
