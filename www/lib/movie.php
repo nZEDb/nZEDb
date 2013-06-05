@@ -1,13 +1,13 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/TMDb.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/rottentomato.php");
-require_once(WWW_DIR."/lib/trakttv.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/TMDb.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."lib/util.php");
+require_once(WWW_DIR."lib/releaseimage.php");
+require_once(WWW_DIR."lib/rottentomato.php");
+require_once(WWW_DIR."lib/trakttv.php");
 
 class Movie
 {

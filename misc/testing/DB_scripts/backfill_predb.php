@@ -1,8 +1,8 @@
 <?php
 require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/consoletools.php");
-require_once(WWW_DIR."/lib/predb.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."lib/consoletools.php");
+require_once(WWW_DIR."lib/predb.php");
+require_once(WWW_DIR."lib/framework/db.php");
 
 /*
  * Downloads predb titles from github and stores them in the predb table.

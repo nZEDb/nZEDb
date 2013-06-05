@@ -1,9 +1,9 @@
 <?php
 
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/groups.php");
+require_once(WWW_DIR."lib/namecleaning.php");
 
 /* Values of relnamestatus:
  * 0 : New release, just inserted into the table.

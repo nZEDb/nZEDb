@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."lib/groups.php");
 
 	//
 	//	Cleans names for collections/releases/imports/namefixer.
