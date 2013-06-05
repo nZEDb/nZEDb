@@ -28,7 +28,7 @@ class NZB
 			$version = $site->version();
 		}
 
-		$fp = gzopen($path, 'w5'); 
+		$fp = gzopen($path, 'w6'); 
 		if ($fp)
 		{
 			gzwrite($fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); 
@@ -87,7 +87,7 @@ class NZB
 	{
 		$page = new Page;
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
-		$fp = gzopen($path, 'w5');
+		$fp = gzopen($path, 'w6');
 		if ($fp)
 		{
 			gzwrite ($fp, file_get_contents($nzb));
