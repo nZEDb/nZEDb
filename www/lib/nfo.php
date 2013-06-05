@@ -7,9 +7,9 @@ require_once(WWW_DIR."lib/groups.php");
 require_once(WWW_DIR."lib/nzbcontents.php");
 require_once(WWW_DIR."lib/site.php");
 
-class Nfo 
+class Nfo
 {
-	function Nfo($echooutput=false) 
+	function Nfo($echooutput=false)
 	{
 		$s = new Sites();
 		$site = $s->get();
@@ -17,20 +17,20 @@ class Nfo
 		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
 	}
-	
+
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID) VALUE (%d)", $relid));		
+		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID) VALUE (%d)", $relid));
 	}
-	
+
 	public function deleteReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from releasenfo where releaseID = %d", $relid));		
+		return $db->query(sprintf("delete from releasenfo where releaseID = %d", $relid));
 	}
-	
-	public function parseImdb($str) 
+
+	public function parseImdb($str)
 	{
 		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
 		if (isset($matches[1]) && !empty($matches[1]))
@@ -39,17 +39,17 @@ class Nfo
 		}
 		return false;
 	}
-	
-	public function parseRageId($str) 
+
+	public function parseRageId($str)
 	{
 		preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches);
-		if (isset($matches[1])) 
+		if (isset($matches[1]))
 		{
 			return trim($matches[1]);
 		}
 		return false;
 	}
-	
+
 	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
 		$ret = 0;
@@ -72,8 +72,8 @@ class Nfo
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
-//				if ($nfocount > 0)
-//					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+				if ($nfocount > 0)
+					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
@@ -83,8 +83,6 @@ class Nfo
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
-				if ($this->echooutput)
-					echo "\nNFO Processing on ".$arr['name'];
 				if ($fetchedBinary !== false)
 				{
 					//insert nfo into database
