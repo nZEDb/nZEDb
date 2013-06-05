@@ -1,26 +1,26 @@
 <?php
-require_once(WWW_DIR."lib/anidb.php");
-require_once(WWW_DIR."lib/books.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/console.php");
-require_once(WWW_DIR."lib/consoletools.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/movie.php");
-require_once(WWW_DIR."lib/music.php");
-require_once(WWW_DIR."lib/nfo.php");
-require_once(WWW_DIR."lib/nntp.php");
-require_once(WWW_DIR."lib/nzbcontents.php");
-require_once(WWW_DIR."lib/predb.php");
-require_once(WWW_DIR."lib/rarinfo.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/releaseextra.php");
-require_once(WWW_DIR."lib/releasefiles.php");
-require_once(WWW_DIR."lib/releaseimage.php");
-require_once(WWW_DIR."lib/rrarinfo.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/tvrage.php");
-require_once(WWW_DIR."lib/util.php");
-require_once(WWW_DIR."lib/zipinfo.php");
+require_once(WWW_DIR."/lib/anidb.php");
+require_once(WWW_DIR."/lib/books.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/console.php");
+require_once(WWW_DIR."/lib/consoletools.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/movie.php");
+require_once(WWW_DIR."/lib/music.php");
+require_once(WWW_DIR."/lib/nfo.php");
+require_once(WWW_DIR."/lib/nntp.php");
+require_once(WWW_DIR."/lib/nzbcontents.php");
+require_once(WWW_DIR."/lib/predb.php");
+require_once(WWW_DIR."/lib/rarinfo.php");
+require_once(WWW_DIR."/lib/releases.php");
+require_once(WWW_DIR."/lib/releaseextra.php");
+require_once(WWW_DIR."/lib/releasefiles.php");
+require_once(WWW_DIR."/lib/releaseimage.php");
+require_once(WWW_DIR."/lib/rrarinfo.php");
+require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/tvrage.php");
+require_once(WWW_DIR."/lib/util.php");
+require_once(WWW_DIR."/lib/zipinfo.php");
 
 class PostProcess
 {
@@ -491,12 +491,12 @@ class PostProcess
 						{
 							$mediafile = $tmpPath.'media.avi';
 							@file_put_contents($mediafile, $mediaBinary);
-							
+							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
+
 							if ($processSample && $blnTookSample === false)
 								$blnTookSample = $this->getSample($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							$blnTookMediainfo = $this->getMediainfo($tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
 							unset($mediafile);
 						}
@@ -1064,7 +1064,7 @@ class PostProcess
 									@copy($ramdrive."zzzz".$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
 									if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
 									{
-										$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %d",$releaseguid));
+										$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
 										$retval = true;
 									}
 								}
@@ -1094,4 +1094,3 @@ class PostProcess
 	}
 }
 ?>
-

@@ -1,10 +1,11 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/categorygerman.php");
-require_once(WWW_DIR."lib/categorydanish.php");
-require_once(WWW_DIR."lib/categoryfrench.php");
+
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/categorygerman.php");
+require_once(WWW_DIR."/lib/categorydanish.php");
+require_once(WWW_DIR."/lib/categoryfrench.php");
 
 class Category
 {

@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."/lib/framework/db.php");
 
 class Tmux
 {
