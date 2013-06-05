@@ -496,7 +496,8 @@
 				</td>
 			</tr>
 		</table>
-		<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</div>
+		<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because, for MyIsam, it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</br />
+			If you are using Percona, then you can try adding expand_fast_index_creation = 1 and innodb_merge_sort_block_size = 1G to your my.cnf before do the above procedures. This is based on <a href="http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation">Improved InnoDB fast index creation</a> and it may improve your InnoDB optimization.</div>
 </fieldset>
 
 <input type="submit" value="Save Tmux Settings" />

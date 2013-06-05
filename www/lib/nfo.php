@@ -1,11 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/tvrage.php");
-require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/nzbcontents.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/nntp.php");
+require_once(WWW_DIR."lib/movie.php");
+require_once(WWW_DIR."lib/tvrage.php");
+require_once(WWW_DIR."lib/groups.php");
+require_once(WWW_DIR."lib/nzbcontents.php");
+require_once(WWW_DIR."lib/site.php");
 
 class Nfo 
 {
@@ -72,8 +72,8 @@ class Nfo
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
-				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+//				if ($nfocount > 0)
+//					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
@@ -83,6 +83,8 @@ class Nfo
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
+				if ($this->echooutput)
+					echo "\nNFO Processing on ".$arr['name'];
 				if ($fetchedBinary !== false)
 				{
 					//insert nfo into database
