@@ -1,9 +1,9 @@
 <?php
-require_once(WWW_DIR."lib/util.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/trakttv.php");
-require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."/lib/util.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/trakttv.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class TvRage
 {	
