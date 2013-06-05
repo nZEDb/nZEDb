@@ -48,7 +48,7 @@ cur.execute("select value from site where setting = 'nzbthreads'");
 run_threads = cur.fetchone();
 cur.execute("select value from tmux where setting = 'NZBS'");
 nzbs = cur.fetchone();
-cur.execute("select value from tmux where setting = 'IMPORT-BULK'");
+cur.execute("select value from tmux where setting = 'IMPORT_BULK'");
 bulk = cur.fetchone();
 
 print "Sorting Folders in "+nzbs[0]+", be patient."
