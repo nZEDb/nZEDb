@@ -75,7 +75,7 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.dir_q.get(True, 0.05)
-				if bulk == "FALSE":
+				if bulk[0] == "FALSE":
 					print '\n%s: Import from %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
 					self.result_q.put((self.name, dirname))
