@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2333";
+$version="0.1r2334";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -21,29 +21,29 @@ $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT name from releases order by adddate DESC limit 1 ) AS newestaddname,
-	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate DESC limit 1 ) AS newestadd,
 	( SELECT COUNT( groupID ) from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
 	( SELECT COUNT( groupID ) from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 and nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID in (3010, 3040, 3050) and nzbstatus = 1 ) AS audio,
 	( SELECT COUNT( groupID ) from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
 	( SELECT COUNT( groupID ) from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
 	( SELECT COUNT( groupID ) from releases where nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( groupID ) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
 	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
-	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
 	( SELECT COUNT( ID ) from collections ) AS collections_table,
-	( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb";
 
 $proc_tmux = "SELECT
+    ( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
+    ( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
+    ( SELECT name from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
+    ( SELECT UNIX_TIMESTAMP(adddate) from releases nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
@@ -429,9 +429,9 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['binariessize'] != NULL ) { $binaries_size_gb = $proc_work_result[0]['binariessize']; }
 
 	if ( @$proc_work_result[0]['releases'] ) { $releases_now = $proc_work_result[0]['releases']; }
-	if ( @$proc_work_result[0]['newestaddname'] ) { $newestname = $proc_work_result[0]['newestaddname']; }
-	if ( @$proc_work_result[0]['newestpre'] ) { $newestpre = $proc_work_result[0]['newestpre']; }
-	if ( @$proc_work_result[0]['newestadd'] ) { $newestadd = $proc_work_result[0]['newestadd']; }
+	if ( @$proc_tmux_result[0]['newestaddname'] ) { $newestname = $proc_tmux_result[0]['newestaddname']; }
+	if ( @$proc_tmux_result[0]['newestpre'] ) { $newestpre = $proc_tmux_result[0]['newestpre']; }
+	if ( @$proc_tmux_result[0]['newestadd'] ) { $newestadd = $proc_tmux_result[0]['newestadd']; }
 
 	//calculate releases difference
 	$releases_misc_diff = number_format( $releases_now - $releases_start );

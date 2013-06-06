@@ -11,6 +11,7 @@ class NZB
 	//
 	function writeNZBforReleaseId($relid, $relguid, $name, $catId, $path, $echooutput=false, $version=null, $cat=null)
 	{
+		echo "Here\n";
 		if ($relid == "" || $relguid == "" || $path == "")
 		{
 			return false;
@@ -65,7 +66,7 @@ class NZB
 			gzclose($fp);
 			if (file_exists($path))
 			{
-				chmod($path, 0777); // chage the mod to fix issues some users have with file permissions
+				chmod($path, 0777); // change the chmod to fix issues some users have with file permissions
 				return true;
 			}
 			else
@@ -92,7 +93,7 @@ class NZB
 		{
 			gzwrite ($fp, file_get_contents($nzb));
 			gzclose($fp);
-			chmod($path, 0764); // chage the mod to fix issues some users have with file permissions
+			chmod($path, 0777); // change the chmod to fix issues some users have with file permissions
 			return true;
 		}
 		else
@@ -110,6 +111,8 @@ class NZB
 			$site = $s->get();
 			//echo "create site #2\n";
 			$sitenzbpath = $site->nzbpath;
+			if (substr($sitenzbpath, strlen($sitenzbpath) - 1) != '/')
+			    $sitenzbpath = $sitenzbpath."/";
 			$levelsToSplit = $site->nzbsplitlevel;
 		}
 

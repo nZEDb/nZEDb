@@ -11,6 +11,7 @@ require_once(WWW_DIR."/lib/namecleaning.php");
  * 2 : Fixed with namefixer.
  * 3 : Fixed with post proc (from mp3 tags or music.php) or predb.
  * 4 : Fixed with misc_sorter.
+ * 5 : Fixed with decrypt hashes.
  */
 
 class Namefixer

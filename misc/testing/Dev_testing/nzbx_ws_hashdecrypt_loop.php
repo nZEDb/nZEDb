@@ -12,17 +12,7 @@ $tmux = new Tmux;
 
 function getReleaseName($md5)
 {
-	$ctx = stream_context_create(array(
-	'http' => array(
-	'timeout' => 5
-			)
-		)
-	);
-	$buffer = @file_get_contents("http://nzbx.ws/decrypt/x0/?hash=" . $md5, $ctx);
-    if ($buffer === false)
-		return false;
-	else
-		return $buffer;
+	return file_get_contents("http://nzbx.ws/decrypt/x0/?hash=" . $md5);
 }
 
 function isPreDBActive()
@@ -106,3 +96,4 @@ while(1)
 	sleep($sleep);
 }
 ?>
+

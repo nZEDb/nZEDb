@@ -6,6 +6,7 @@ require_once(WWW_DIR."/lib/backfill.php");
 require_once(WWW_DIR."/lib/consoletools.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(WWW_DIR."/lib/import.php");
 
 class Binaries
 {
@@ -305,13 +306,13 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
+						}
 					}
+
 					if((int)$matches[1] > 0)
 					{
 						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
 					}
-					//if(preg_match('/.nzb/',$this->message[$subject]))
-						//$db->$queryDirect(sprintf("INSERT IGNORE INTO nzbs %s, %s, %s, %s, %s", $msg['Message-ID'], $groupArr['name'], $msg['Number'], $message[$subject], $message[$subject]['Date']));
 				}
 			}
 
