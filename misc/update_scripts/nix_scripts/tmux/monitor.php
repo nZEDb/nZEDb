@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2334";
+$version="0.1r2340";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -29,7 +29,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( groupID ) from releases where nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( groupID ) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
@@ -43,7 +43,7 @@ $proc_tmux = "SELECT
     ( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
     ( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
     ( SELECT name from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
-    ( SELECT UNIX_TIMESTAMP(adddate) from releases nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
+    ( SELECT UNIX_TIMESTAMP(adddate) from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
@@ -310,6 +310,7 @@ while( $i > 0 )
 	$time_loop_start = microtime_float();
 
 	$getdate = gmDate("Ymd");
+	$proc_tmux_result = @$db->query($proc_tmux);
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
@@ -328,9 +329,6 @@ while( $i > 0 )
 	} else {
 		$runloop = "false";
 	}
-
-	//get tmux settings every loop
-	$proc_tmux_result = @$db->query($proc_tmux);
 
 	//get start values from $qry
 	if ( $i == 1 )

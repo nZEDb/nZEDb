@@ -6,7 +6,6 @@ require_once(WWW_DIR."/lib/backfill.php");
 require_once(WWW_DIR."/lib/consoletools.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
-require_once(WWW_DIR."/lib/import.php");
 
 class Binaries
 {
@@ -306,7 +305,6 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
-						}
 					}
 
 					if((int)$matches[1] > 0)
