@@ -4,6 +4,7 @@ require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/nzb.php");
+require_once(WWW_DIR."lib/consoletools.php");
 
 $n = "\n";
 $db = new DB;
@@ -19,12 +20,23 @@ $sitenzbpath = $site->nzbpath;
 $newLevel = $argv[1];
 $sourcePath = $argv[2];
 
-echo "Reorganizing files to Level " . $newLevel . " from: " . $sourcePath. " This could take a while... " . $n;	
 $filestoprocess = Array();
 $iFilesProcessed = 0;
+$iFilesCounted = 0;
 $time = TIME();
 
 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourcePath));
+$consoleTools = new ConsoleTools();
+foreach($objects as $filestoprocess => $nzbFile)
+{
+    if($nzbFile->getExtension() != "gz")
+        continue;
+	$consoleTools->overWrite("Getting filecount: ".$iFilesCounted++." nzbs  ");
+}
+$time1 = TIME();
+
+echo $n."Reorganizing files to Level " . $newLevel . " from: " . $sourcePath. " This could take a while... ".$n;
+$consoleTools = new ConsoleTools();
 foreach($objects as $filestoprocess => $nzbFile)
 {
 	if($nzbFile->getExtension() != "gz")
@@ -37,10 +49,12 @@ foreach($objects as $filestoprocess => $nzbFile)
 	{
 		//echo $newFileName . $n;
 		rename($nzbFile, $newFileName);
-		chmod($newFileName, 0764); // chage the mod to fix issues some users have with file permissions
+		chmod($newFileName, 0777); // change the chmod to fix issues some users have with file permissions
 	}
-
 	$iFilesProcessed++;
+	$est = (int)((TIME() -$time1)/$iFilesProcessed*($iFilesCounted-$iFilesProcessed)/60);
+	$perc = (int)($iFilesProcessed/$iFilesCounted*100);
+	$consoleTools->overWrite("Reorganized ".$iFilesProcessed."/".$iFilesCounted."(".$perc."%) - est. ".$est." minutes  ");
 }
 
 $db->query(sprintf("update site set value = %s where setting = 'nzbsplitlevel'", $argv[1]));

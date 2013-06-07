@@ -48,7 +48,7 @@ cur.execute("select value from site where setting = 'nzbthreads'");
 run_threads = cur.fetchone();
 cur.execute("select value from tmux where setting = 'NZBS'");
 nzbs = cur.fetchone();
-cur.execute("select value from tmux where setting = 'IMPORT-BULK'");
+cur.execute("select value from tmux where setting = 'IMPORT_BULK'");
 bulk = cur.fetchone();
 
 print "Sorting Folders in "+nzbs[0]+", be patient."
@@ -75,7 +75,7 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.dir_q.get(True, 0.05)
-				if bulk == "FALSE":
+				if bulk[0] == "FALSE":
 					print '\n%s: Import from %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
 					self.result_q.put((self.name, dirname))

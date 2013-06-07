@@ -6,7 +6,6 @@ require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
 require_once(FS_ROOT."/../../www/lib/category.php");
-require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
 require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();

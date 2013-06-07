@@ -215,11 +215,10 @@ class PostProcess
 			$result = 0;
 			while ((count($result) != $this->addqty) && ($i >= $tries))
 			{
-				$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
-				left join category c on c.ID = r.categoryID
-				where nzbstatus = 1 and (r.passwordstatus between %d and -1)
-				AND (r.haspreview = -1 and c.disablepreview = 0) AND r.size < %s order by r.postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->addqty)*($threads * 1.5)), $this->addqty);
-				$result = $db->query($query);
+				$result = $db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
+					left join category c on c.ID = r.categoryID
+					where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
+					order by r.postdate desc limit %d,%d", $this->maxsize*1073741824, $i, floor(($this->addqty)*($threads * 1.5)), $this->addqty));
 				if ($this->echooutput && count($result) > 0)
 					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
 				$i--;
@@ -284,7 +283,7 @@ class PostProcess
 				foreach ($nzbfiles as $nzbcontents)
 				{
 					// Check if it's not a nfo, par2 etc...
-					if (preg_match($this->supportfiles."|nfo|inf|ofn)/i",$nzbcontents["subject"]))
+					if (preg_match($this->supportfiles."|nfo\b|inf\b|ofn\b)($|[ \"\)\]\-])/i",$nzbcontents['subject']))
 						continue;
 
 					// Check if it's a rar/zip.
@@ -355,7 +354,7 @@ class PostProcess
 						$nzbfiles = $this->subval_sort($nzbfiles, "subject");
 						foreach ($nzbfiles as $k => $v)
 						{
-							if (preg_match($this->supportfiles."|nfo|inf|ofn)/i", $v["subject"]))
+							if (preg_match($this->supportfiles."|nfo\b|inf\b|ofn\b)($|[ \"\)\]\-])/i", $v['subject']))
 								continue;
 
 							if (preg_match('/\.(rar|'.$first.')($|\")/i', $v["subject"]))
@@ -969,9 +968,10 @@ class PostProcess
 							{
 								if(preg_match("/".$releaseguid."\.ogg/",$file))
 								{
-									copy($ramdrive.$releaseguid.".ogg", $this->audSavePath.$releaseguid.".ogg");
+									@copy($ramdrive.$releaseguid.".ogg", $this->audSavePath.$releaseguid.".ogg");
 									if(@file_exists($this->audSavePath.$releaseguid.".ogg"))
 									{
+										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
 									}
@@ -1064,6 +1064,7 @@ class PostProcess
 									@copy($ramdrive."zzzz".$releaseguid.".ogv", $ri->vidSavePath.$releaseguid.".ogv");
 									if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
 									{
+										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
 										$db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
 										$retval = true;
 									}
