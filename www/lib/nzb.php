@@ -11,7 +11,6 @@ class NZB
 	//
 	function writeNZBforReleaseId($relid, $relguid, $name, $catId, $path, $echooutput=false, $version=null, $cat=null)
 	{
-		echo "Here\n";
 		if ($relid == "" || $relguid == "" || $path == "")
 		{
 			return false;
