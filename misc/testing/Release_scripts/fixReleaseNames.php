@@ -3,7 +3,7 @@
 /*
  * This script attemps to clean release names using the NFO, file name and release name.
  * A good way to use this script is to use it in this order: php fixReleaseNames.php 3 true other yes
- * php fixReleaseNames.php 5 true other yes    php fixReleaseNames.php 1 true other yes
+ * php fixReleaseNames.php 5 true other yes
  * If you used the 4th argument yes, but you want to reset the status,
  * there is another script called resetRelnameStatus.php
  */
@@ -12,9 +12,11 @@
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/namefixer.php");
+require_once(FS_ROOT."/../../../www/lib/predb.php");
 
 $n = "\n";
 $namefixer = new Namefixer;
+$predb = new Predb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
@@ -26,11 +28,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,1,1);
+					$predb->parseTitles(1,1,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,1,1);
+					$predb->parseTitles(2,1,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -57,11 +59,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,1,2);
+					$predb->parseTitles(1,1,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,1,2);
+					$predb->parseTitles(2,1,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -95,11 +97,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,2,1);
+					$predb->parseTitles(1,1,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,2,1);
+					$predb->parseTitles(2,1,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -126,11 +128,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,2,2);
+					$predb->parseTitles(1,1,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,2,2);
+					$predb->parseTitles(2,1,2,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -171,11 +173,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,1,1);
+					$predb->parseTitles(1,2,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,1,1);
+					$predb->parseTitles(2,2,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -202,11 +204,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,1,2);
+					$predb->parseTitles(1,2,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,1,2);
+					$predb->parseTitles(2,2,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -240,11 +242,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,1);
+					$predb->parseTitles(1,2,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,1);
+					$predb->parseTitles(2,2,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -271,11 +273,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,2);
+					$predb->parseTitles(1,2,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,2);
+					$predb->parseTitles(2,2,2,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -312,8 +314,8 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 else
 {
 	exit("ERROR: You must supply 4 arguments.".$n.
-			"php fixReleaseNames.php 1 false other no ...: Fix release names, using the usenet subject in the past 6 hours.".$n.
-			"php fixReleaseNames.php 2 false other no ...: Fix release names, using the usenet subject.".$n.
+			"php fixReleaseNames.php 1 false other no ...: Fix release names, using the usenet subject in the past 3 hours with predb information.".$n.
+			"php fixReleaseNames.php 2 false other no ...: Fix release names, using the usenet subject with predb information.".$n.
 			"php fixReleaseNames.php 3 false other no ...: Fix release names using NFO in the past 6 hours.".$n.
 			"php fixReleaseNames.php 4 false other no ...: Fix release names using NFO.".$n.
 			"php fixReleaseNames.php 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.".$n.

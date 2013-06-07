@@ -31,7 +31,12 @@ class DB
 
 	public function escapeString($str)
 	{
+		if (is_null($str))
+		{
+			return "NULL";
+		} else {
 		return "'".DB::$db->real_escape_string($str)."'";
+	}
 	}
 
 	public function makeLookupTable($rows, $keycol)
@@ -87,6 +92,11 @@ class DB
 			$rows[] = $row;
 
 		$result->free_result();
+
+		$error = $this->Error();
+		if ($error != '')
+			echo "MySql error: $error\n";
+
 		return $rows;
 	}
 
@@ -112,10 +122,12 @@ class DB
 
 		foreach ($alltables as $tablename)
 		{
-			$name = $tablename['Name'];
-			echo "Optimizing table: ".$name.".\n";
-			$this->queryDirect("REPAIR TABLE `".$name."`");
-			$this->queryDirect("OPTIMIZE TABLE `".$name."`");
+			$ret[] = $tablename['Name'];
+			echo "Optimizing table: ".$tablename['Name'].".\n";
+			if (strtolower($tablename['Engine']) == "myisam")
+				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
+				$this->queryDirect("FLUSH TABLES");
+			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
 		}
 		return $tablecnt;
 	}

@@ -28,7 +28,7 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  * @package Smarty
- * @version 3.1-DEV
+ * @version 3.1.13
  */
 
 /**
@@ -113,7 +113,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
     /**
      * smarty version
      */
-    const SMARTY_VERSION = 'Smarty-3.1-DEV';
+    const SMARTY_VERSION = 'Smarty-3.1.13';
 
     /**
      * define variable scopes
@@ -574,7 +574,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * default dir permissions
      * @var int
      */
-    public $_dir_perms = 0771;
+    public $_dir_perms = 0755;
     /**
      * block tag hierarchy
      * @var array

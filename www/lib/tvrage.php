@@ -3,6 +3,7 @@ require_once(WWW_DIR."/lib/util.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/trakttv.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class TvRage
 {	
@@ -14,9 +15,8 @@ class TvRage
 		$s = new Sites();
 		$site = $s->get();
 		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
-		
 		$this->echooutput = $echooutput;
-		
+
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
 		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid="; 	
 		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=".TvRage::APIKEY;
@@ -455,12 +455,13 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
-	public function processTvReleases($threads=0, $lookupTvRage=true)
+	public function processTvReleases($threads=1, $lookupTvRage=true)
 	{
-		$threads--;
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
+		$site = new Sites;
+		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
 		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));

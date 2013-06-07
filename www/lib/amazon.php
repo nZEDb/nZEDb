@@ -119,9 +119,9 @@
 		 * @param array $parameters parameters to query around
 		 * @return simpleXmlObject xml query response
 		 */
-		private function queryAmazon($parameters)
+		private function queryAmazon($parameters, $region = "com")
 		{
-			return aws_signed_request("com", $parameters, $this->public_key, $this->private_key, $this->associate_tag);
+			return aws_signed_request($region, $parameters, $this->public_key, $this->private_key, $this->associate_tag);
 		}
 		
 		
@@ -135,7 +135,7 @@
 		 */
 		public function searchProducts($search, $category, $searchType = "UPC", $searchNode="")
 		{
-			$allowedTypes = array("UPC", "TITLE", "ARTIST", "KEYWORD", "NODE");
+			$allowedTypes = array("UPC", "TITLE", "ARTIST", "KEYWORD", "NODE", "ISBN");
 			$allowedCategories = array("Music", "DVD", "VideoGames", "MP3Downloads");
 			
 			switch($searchType) 
@@ -147,9 +147,17 @@
 													"ResponseGroup" => "Medium");
 								break;
 				
+				case "ISBN" :    $parameters = array("Operation"     => "ItemLookup",
+													"ItemId"        => $search,
+													"SearchIndex"   => AmazonProductAPI::BOOKS,
+													"IdType"        => "ISBN",
+													"ResponseGroup" => "Medium");
+								break;
+
 				case "TITLE" :  $parameters = array("Operation"	 => "ItemSearch",
 													//"Title"	  	=> $search,
 													"Keywords"	 	=> $search,
+													"Sort"		=> "relevancerank",
 													"SearchIndex"   => $category,
 													"ResponseGroup" => "Large");
 								break;
@@ -200,13 +208,13 @@
 		 * @param int $asin_code ASIN code of the product to search
 		 * @return mixed simpleXML object
 		 */
-		public function getItemByAsin($asin_code)
+		public function getItemByAsin($asin_code, $region = "com")
 		{
 			$parameters = array("Operation"	 => "ItemLookup",
 								"ItemId"		=> $asin_code,
 								"ResponseGroup" => "Medium");
 								
-			$xml_response = $this->queryAmazon($parameters);
+			$xml_response = $this->queryAmazon($parameters, $region);
 			
 			return $this->verifyXmlResponse($xml_response);
 		}
@@ -233,7 +241,7 @@
 	}
 		
 
-	function  aws_signed_request($region,$params,$public_key,$private_key,$associate_tag)
+	function  aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = "")
 	{
 		
 		if ($public_key !== "" && $private_key !== "" && $associate_tag !== "")
@@ -283,7 +291,7 @@
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL,$request);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
 			$xml_response = curl_exec($ch);

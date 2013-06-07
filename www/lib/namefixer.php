@@ -5,6 +5,15 @@ require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
 
+/* Values of relnamestatus:
+ * 0 : New release, just inserted into the table.
+ * 1 : Categorized release.
+ * 2 : Fixed with namefixer.
+ * 3 : Fixed with post proc (from mp3 tags or music.php) or predb.
+ * 4 : Fixed with misc_sorter.
+ * 5 : Fixed with decrypt hashes.
+ */
+
 class Namefixer
 {
 	
@@ -13,56 +22,6 @@ class Namefixer
 		$this->relid = 0;
 		$this->fixed = 0;
 		$this->checked = 0;
-	}
-	
-	//
-	// Attempts to fix release names using the release name.
-	//
-	public function fixNamesWithNames($time, $echo, $cats, $namestatus)
-	{
-		$db = new DB();
-		$type = "Release Name, ";
-		$query = "SELECT name as textstring, searchname, categoryID, groupID, ID as releaseID from releases where categoryID != 5070 and relnamestatus = 1";
-		
-		//24 hours, other cats
-		if ($time == 1 && $cats == 1)
-		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour) and (categoryID like \"1090\" or categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
-		}
-		//24 hours, all cats
-		if ($time == 1 && $cats == 2)
-		{
-			$relres = $db->queryDirect($query." and adddate > (now() - interval 6 hour)"." order by releaseID asc");
-		}
-		//other cats
-		if ($time == 2 && $cats == 1)
-		{
-			$relres = $db->queryDirect($query." and (categoryID like \"1090\" or categoryID like \"2020\" or categoryID like \"3050\" or categoryID like \"6050\" or categoryID like \"5050\" or categoryID like \"7010\" or categoryID like \"8050\")"." order by releaseID asc");
-		}
-		//all cats
-		if ($time == 2 && $cats == 2)
-		{
-			$relres = $db->queryDirect($query." order by releaseID asc");
-		}
-		
-		$rowcount = $db->getAffectedRows();
-		
-		if ($rowcount > 0)
-		{
-			while ($relrow = $db->fetchArray($relres))
-			{
-				$this->checkName($relrow, $echo, $type, $namestatus);
-				$this->checked++;
-				if ($this->checked % 500 == 0)
-					echo $this->checked." names processed.\n\n";
-			}
-			if ($echo == 1)
-				echo $this->fixed." releases have had their names changed out of: ".$this->checked." names.\n";
-			else
-				echo $this->fixed." releases could have their names changed. ".$this->checked." release names were checked.\n";
-		}
-		else
-			echo "Nothing to fix.\n";
 	}
 	
 	//
@@ -77,17 +36,17 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and (rel.categoryID like \"1090\" or rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and (rel.categoryID like \"1090\" or rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
@@ -127,17 +86,17 @@ class Namefixer
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and (rel.categoryID like \"1090\" or rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and (rel.categoryID like \"1090\" or rel.categoryID like \"2020\" or rel.categoryID like \"3050\" or rel.categoryID like \"6050\" or rel.categoryID like \"5050\" or rel.categoryID like \"7010\" or rel.categoryID like \"8050\") group by rel.ID"." order by releaseID asc");
+			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)

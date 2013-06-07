@@ -18,6 +18,7 @@ class Console
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
+		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		
 		$this->imgSavePath = WWW_DIR.'covers/console/';
 	}
@@ -491,7 +492,7 @@ class Console
 		return $result;
 	}
 	
-	public function processConsoleReleases($threads=0)
+	public function processConsoleReleases($threads=1)
 	{
 		$threads--;
 		$db = new DB();
@@ -552,6 +553,7 @@ class Console
 					if($type == 2)
 						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
 				}
+				usleep($this->sleeptime*1000);
 			}
 		}
 	}

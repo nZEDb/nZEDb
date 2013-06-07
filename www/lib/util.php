@@ -91,7 +91,7 @@ function checkStatus($code) {
 	return ($code == 0) ? true : false;
 }
 
-function getUrl($url, $method='get', $postdata='')
+function getUrl($url, $method='get', $postdata='', $language="")
 {
 	$ch = curl_init();
 	if ($method == 'post') {
@@ -99,7 +99,15 @@ function getUrl($url, $method='get', $postdata='')
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
    	}
 	curl_setopt($ch, CURLOPT_URL, $url);
-	$header[] = "Accept-Language: en-us";
+	if ($language == "")
+		$language = "en-us";
+	else if ($language == "en")
+		$language = "en-us";
+	else if ($language == "fr")
+		$language = "fr-fr";
+	else if ($language == "de")
+		$language = "de-de";
+	$header[] = "Accept-Language: ".$language;
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -256,5 +264,53 @@ function cp437toUTF($str) {
 	}
 	return $out;	
 }
-	
+
+// Function inpsired by c0r3@newznabforums for flags on the browse page.
+function release_flag ($x, $t)
+{
+	$y = "";
+	if(preg_match('/German(bed)?/i', $x))
+		$y = "de";
+	if(preg_match('/Danish/i', $x))
+		$y = "dk";
+	if(preg_match('/Spanish/i', $x))
+		$y = "es";
+	if(preg_match('/French|Vostfr/i', $x))
+		$y = "fr";
+	if(preg_match('/Italian| ita( |$)/i', $x))
+		$y = "it";
+	if(preg_match('/Flemish|Dutch| nl( |$)|NlSub/i', $x))
+		$y = "nl";
+	if(preg_match('/Swe(dish|sub)/i', $x))
+		$y = "se";
+	if ($y !== "" && $t == "browse")
+		return '<img src="./themes/Default/images/flags/'.$y.'.png" />';
+	else if ($t == "search")
+	{
+		if ($y == "")
+			return false;
+		else
+			return $y;
+	}
+}
+
+// Adds a small image to show the type, video audio etc..
+function release_fileicon ($x, $t)
+{
+	$y = "";
+	if(preg_match('/( |^)((480|720|1080)(i|p)|avc|divx|dvd(-?r(ip)?|\d)?|hd(rip|tv)|s\d{1,3}(d|e)\d{1,3}|(h|x)264|xvid)( |$)/i', $x))
+		$y = "video";
+	else if(preg_match('/ (mp3|flac)( |$)/i', $x))
+		$y = "audio";
+	if ($y !== "" && $t == "browse")
+		return '<img src="./themes/Default/images/multimedia/'.$y.'.png" />';
+	else if ($t == "search")
+	{
+		if ($y == "")
+			return false;
+		else
+			return $y;
+	}
+}
+
 ?>

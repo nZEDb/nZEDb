@@ -24,8 +24,12 @@ class Movie
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
-		
+		$this->service = "";
+		$this->imdburl = ($site->imdburl == "0") ? false : true;
+		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
+		$this->binglimit = 0;
+		$this->yahoolimit = 0;
 	}
 	
 	public function getMovieInfo($imdbId)
@@ -242,26 +246,19 @@ class Movie
 	{
 		$ri = new ReleaseImage();
 		
-		if ($this->echooutput)
+		if ($this->echooutput && $this->service == "")
 			echo "Fetching IMDB info from TMDB using IMDB ID: ".$imdbId."\n";
 		
 		//check themoviedb for imdb info
 		$tmdb = $this->fetchTmdbProperties($imdbId);
-		if (!$tmdb) 
-		{
-			if ($this->echooutput)
-				echo "Release not found in TMDB.\n";
-		}
 		
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
-		if (!$imdb) 
+		
+		if (!$imdb && !$tmdb)
 		{
-			if ($this->echooutput)
-				echo "Unable to get movie information from IMDB ID: ".$imdbId."\n";
-		}
-										
-		if (!$imdb && !$tmdb) {
+			if($this->echooutput && $this->service == "")
+				echo "Unable to get movie information for IMDB ID: ".$imdbId." on tmdb or imdb.com\n";
 			return false;
 		}
 		
@@ -328,6 +325,16 @@ class Movie
 		}
 		$mov['genre'] = html_entity_decode($mov['genre'], ENT_QUOTES, 'UTF-8');
 		
+		$mov['type'] = '';
+		if (isset($imdb['type']) && $imdb['type'] != '') {
+			$mov['type'] = $imdb['type'];
+		}
+		if (is_array($mov['type'])) {
+			$mov['type'] = implode(', ', array_unique($mov['type']));
+		}
+		$mov['type'] = ucwords(preg_replace('/[\.\_]/', ' ', $mov['type']));
+		$mov['type'] = html_entity_decode($mov['type'], ENT_QUOTES, 'UTF-8');
+
 		$mov['director'] = '';
 		if (isset($imdb['director']) && $imdb['director'] != '') { 
 			$mov['director'] = (is_array($imdb['director'])) ? implode(', ', array_unique($imdb['director'])) : $imdb['director'];
@@ -346,25 +353,26 @@ class Movie
 		}
 		$mov['language'] = html_entity_decode($mov['language'], ENT_QUOTES, 'UTF-8');
 
+		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
 		$query = sprintf("
 			INSERT INTO movieinfo 
-				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, director, actors, language, cover, backdrop, createddate, updateddate)
+				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate)
 			VALUES 
-				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 			ON DUPLICATE KEY UPDATE
-				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()", 
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
-		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($mov['title']), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
+				imdbID=%d, tmdbID=%s, title=%s, rating=%s, tagline=%s, plot=%s, year=%s, genre=%s, type=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW()",
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
+		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
 		
 		$movieId = $db->queryInsert($query);
 
 		if ($movieId) {
-			if ($this->echooutput)
-				echo "Added/updated movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
+			if ($this->echooutput && $this->service == "")
+				echo "Added/updated movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
 		} else {
-			if ($this->echooutput)
-				echo "Nothing to update for movie: ".$mov['title']." (".$mov['year'].") - ".$mov['imdb_id']."\n";
+			if ($this->echooutput && $this->service == "")
+				echo "Nothing to update for movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id']."\n";
 		}
 		
 		return $movieId;
@@ -372,7 +380,7 @@ class Movie
 	
 	public function fetchTmdbProperties($imdbId, $text=false)
 	{
-		$tmdb = new TMDb($this->apikey, 'en'/*language, make it configurable in the future*/);
+		$tmdb = new TMDb($this->apikey, $this->imdblanguage);
 		if ($text == false)
 			$lookupId = 'tt'.$imdbId;
 		else
@@ -425,10 +433,14 @@ class Movie
 		
 		$imdb_regex_multi = array(
 			'genre'	=> '/href="\/genre\/(.*?)\?/i',
-			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i'
+			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
+			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
-		$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/");
+		if ($this->imdburl === false)
+			$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
+		else
+			$buffer = getUrl("http://akas.imdb.com/title/tt$imdbId/");
 
 		// make sure we got some data
 		if ($buffer !== false && strlen($buffer))
@@ -439,7 +451,7 @@ class Movie
 				if (preg_match($regex, $buffer, $matches))
 				{
 					$match = $matches[1];
-					$match = strip_tags(trim(rtrim(addslashes($match))));
+					$match = strip_tags(trim(rtrim($match)));
 					$ret[$field] = $match;
 				}
 			}
@@ -476,44 +488,54 @@ class Movie
 		}
 		return false;
 	}
-	
-	public function processMovieReleases($threads=0)
+
+	public function domovieupdate($buffer, $service, $id, $db, $processImdb = 1)
 	{
-		$threads--;
-		$db = new DB();
-		// Using name.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty)), "name");
-		// Using searchname.
-		$this->doprocessMovieReleases($db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and relnamestatus = 2 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty)), "searchname");
+		$nfo = new Nfo;
+		$imdbId = $nfo->parseImdb($buffer);
+		if ($imdbId !== false)
+		{
+			if ($service == "nfo")
+				$this->service = "nfo";
+			if ($this->echooutput && $this->service == "")
+				echo $service." found IMDBid: tt".$imdbId."\n";
+
+			$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $id));
+
+			//if set scan for imdb info
+			if ($processImdb == 1)
+			{
+				$movCheck = $this->getMovieInfo($imdbId);
+				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
+				{
+					$movieId = $this->updateMovieInfo($imdbId);
+				}
+			}
+		}
+		unset($nfo);
+		return $imdbId;
 	}
-	
-	public function doprocessMovieReleases($res, $type)
+
+	public function processMovieReleases($threads=1)
 	{
 		$ret = 0;
 		$db = new DB();
-		$nfo = new Nfo;
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
-		$binglimit = 0;
-		$yahoolimit = 0;
-		
+		$site = new Sites;
+		$threads--;
+
+		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
+
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)
-			{
-				if($type == "name")
-					echo "Processing ".$db->getNumRows($res)." movie release(s) using usenet subject.\n";
-				if($type == "searchname")
-					echo "Processing ".$db->getNumRows($res)." movie release(s) using fixed named from fixReleaseNames.php.\n";
-			}
+				echo "Processing ".$db->getNumRows($res)." movie release(s) beginning at ".floor(($this->movieqty) * ($threads * 1.5))."\n";
 		
 			while ($arr = $db->fetchAssoc($res)) 
 			{
-				if($type == "name")		
-					$moviename = $this->parseMovieName($arr['name']);
-				if($type == "searchname")
-					$moviename = $this->parseMovieSearchName($arr['name']);
+				$moviename = $this->parseMovieSearchName($arr['name']);
 				if ($moviename !== false)
 				{
 					if ($this->echooutput)
@@ -521,19 +543,7 @@ class Movie
 						
 					$traktimdbid = $trakt->traktMoviesummary($moviename, "imdbid");
 					if ($traktimdbid !== false)
-					{
-						$traktimdbid = str_replace('tt', '', $traktimdbid);
-						if ($this->echooutput)
-							echo 'Tratkt Found IMDBid: tt'.$traktimdbid."\n";
-						
-						$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($traktimdbid), $arr["ID"]));
-						
-						$movCheck = $this->getMovieInfo($traktimdbid);
-						if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-						{
-							$movieId = $this->updateMovieInfo($traktimdbid);
-						}
-					}
+						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt',  $arr["ID"], $db);
 					else if ($googleban == false && $googlelimit <= 40)
 					{
 						$moviename1 = str_replace(' ', '+', $moviename);
@@ -545,23 +555,8 @@ class Movie
 							$googlelimit++;
 							if (!preg_match('/To continue, please type the characters below/i', $buffer))
 							{
-								$imdbId = $nfo->parseImdb($buffer);
-								if ($imdbId !== false) 
-								{
-									if ($this->echooutput)
-										echo 'Google1 found IMDBid: tt'.$imdbId."\n";
-							
-									//update release with imdb id
-									$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-							
-									//check for existing movie entry
-									$movCheck = $this->getMovieInfo($imdbId);
-									if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-									{
-										$movieId = $this->updateMovieInfo($imdbId);
-									}
-								}
-								else 
+								$imdbId = $this->domovieupdate($buffer, 'Google1', $arr["ID"], $db);
+								if ($imdbId === false)
 								{
 									if (preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result))
 									{
@@ -570,224 +565,222 @@ class Movie
 										if ($buffer !== false && strlen($buffer))
 										{
 											$googlelimit++;
-											$imdbId = $nfo->parseImdb($buffer);
-											if ($imdbId !== false) 
-											{
-												if ($this->echooutput)
-													echo 'Google2 found IMDBid: tt'.$imdbId."\n";
-												
-												$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-												
-												$movCheck = $this->getMovieInfo($imdbId);
-												if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-												{
-													$movieId = $this->updateMovieInfo($imdbId);
-												}
-											}
-											else
+											$imdbId = $this->domovieupdate($buffer, 'Google2',  $arr["ID"], $db);
+											if ($imdbId === false)
 											{
 												//no imdb id found, set to all zeros so we dont process again
-												$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
+												$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 											}
+											else
+												continue;
+										}
+										else
+										{
+											$googleban = true;
+											if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+												continue;
+											else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+												continue;
 										}
 									}
+									else
+									{
+										$googleban = true;
+										if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+										else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+											continue;
+									}
 								}
+								else
+									continue;
 							}
 							else
 							{
-								echo "Exceeded google.com request limit.. Using bing.com until next run.\n";
 								$googleban = true;
+								if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+									continue;
+								else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+									continue;
 							}
 						}
-					}
-					else if ($binglimit <= 40)
-					{
-						$moviename = str_replace(' ', '+', $moviename);
-						preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result);
-						$buffer = getUrl("http://www.bing.com/search?q=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
-						
-						if ($buffer !== false && strlen($buffer))
+						else
 						{
-							$binglimit++;
-							$imdbId = $nfo->parseImdb($buffer);
-							if ($imdbId !== false) 
-							{
-								if ($this->echooutput)
-									echo 'Bing1 found IMDBid: tt'.$imdbId."\n";
-									
-								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-									
-								$movCheck = $this->getMovieInfo($imdbId);
-								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-								{
-									$movieId = $this->updateMovieInfo($imdbId);
-								}
-							}
-							else 
-							{
-								$buffer = getUrl("http://www.bing.com/search?q=".$result["name"]."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"]."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
-								if ($buffer !== false && strlen($buffer))
-								{
-									$binglimit++;
-									$imdbId = $nfo->parseImdb($buffer);
-									if ($imdbId !== false) 
-									{
-										if ($this->echooutput)
-											echo 'Bing2 found IMDBid: tt'.$imdbId."\n";
-										
-										$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-										
-										$movCheck = $this->getMovieInfo($imdbId);
-										if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-										{
-											$movieId = $this->updateMovieInfo($imdbId);
-										}
-									}
-									else
-									{
-										//no imdb id found, set to all zeros so we dont process again
-										$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-									}
-								}
-							}
+							if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+								continue;
+							else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+								continue;
 						}
 					}
-					else if ($yahoolimit <= 40)
-					{
-						$moviename = str_replace(' ', '+', $moviename);
-						preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))/i', $moviename, $result);
-						$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."+".urlencode($result["year"])."&vs=imdb.com");
-						
-						if ($buffer !== false && strlen($buffer))
-						{
-							$yahoolimit++;
-							$imdbId = $nfo->parseImdb($buffer);
-							if ($imdbId !== false) 
-							{
-								if ($this->echooutput)
-									echo 'Yahoo1 found IMDBid: tt'.$imdbId."\n";
-									
-								$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-									
-								$movCheck = $this->getMovieInfo($imdbId);
-								if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-								{
-									$movieId = $this->updateMovieInfo($imdbId);
-								}
-							}
-							else 
-							{
-								$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."&vs=imdb.com");
-								if ($buffer !== false && strlen($buffer))
-								{
-									$yahoolimit++;
-									$imdbId = $nfo->parseImdb($buffer);
-									if ($imdbId !== false) 
-									{
-										if ($this->echooutput)
-											echo 'Yahoo2 found IMDBid: tt'.$imdbId."\n";
-										
-										$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $arr["ID"]));
-										
-										$movCheck = $this->getMovieInfo($imdbId);
-										if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000))
-										{
-											$movieId = $this->updateMovieInfo($imdbId);
-										}
-									}
-									else
-									{
-										//no imdb id found, set to all zeros so we dont process again
-										$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-									}
-								}
-							}
-						}
-					}
+					else if ($this->bingSearch($moviename, $arr["ID"], $db) === true)
+						continue;
+					else if ($this->yahooSearch($moviename, $arr["ID"], $db) === true)
+						continue;
 					else
 					{
 						echo "Exceeded request limits on google.com bing.com and yahoo.com.\n";
+						break;
 					}
 				}
 				else
 				{
-					//no valid movie name found, set to all zeros so we dont process again
-					$db->query(sprintf("UPDATE releases SET imdbID = %d WHERE ID = %d", 0, $arr["ID"]));
-				}				
+					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
+					continue;
+				}		
 			}
 		}
 	}
-	
-	public function parseMovieName($releasename)
+
+	public function bingSearch($moviename, $relID, $db)
 	{
-				$cat = new Category;
-		if (!$cat->isMovieForeign($releasename)) 
+		if ($this->binglimit <= 40)
 		{
-			if (preg_match('/[\s\[](?:("|\s|\d{1,4}\/\d{1.4}}))(?P<name>.*?)(?:(dvd.+|xvid))?[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
+			$moviename = str_replace(' ', '+', $moviename);
+			if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result))
 			{
-				if (!isset($matches['year'])) 
+				if (isset($result["year"]) && !empty($result["year"]))
 				{
-					preg_match('/[\s\[](?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
+					$buffer = getUrl("http://www.bing.com/search?q=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"].urlencode($result["year"])."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+					if ($buffer !== false && strlen($buffer))
+					{
+						$this->binglimit++;
+						$imdbId = $this->domovieupdate($buffer, 'Bing1',  $relID, $db);
+						if ($imdbId === false)
+						{
+							$buffer = getUrl("http://www.bing.com/search?q=".$result["name"]."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"]."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+							if ($buffer !== false && strlen($buffer))
+							{
+								$this->binglimit++;
+								$imdbId = $this->domovieupdate($buffer, 'Bing2',  $relID, $db);
+								if ($imdbId === false)
+								{
+									$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+									return true;
+								}
+								else
+									return true;
+							}
+							else
+								return false;
+						}
+						else
+							return true;
+					}
+					else
+						return false;
 				}
-			
-				if (isset($matches['name'])) 
+				else
 				{
-					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
-					$name = str_replace('-', ' ', $name);
-					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
-					$name = preg_replace('/\s{1,}/', ' ', $name);
-					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-					return trim($name).$year;
+					$buffer = getUrl("http://www.bing.com/search?q=".$result["name"]."+".urlencode("site:imdb.com")."&qs=n&form=QBRE&pq=".$result["name"]."+".urlencode("site:imdb.com")."&sc=4-38&sp=-1&sk=");
+					if ($buffer !== false && strlen($buffer))
+					{
+						$this->binglimit++;
+						$imdbId = $this->domovieupdate($buffer, 'Bing2',  $relID, $db);
+						if ($imdbId === false)
+						{
+							$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+							return true;
+						}
+						else
+							return true;
+					}
+					else
+						return false;
 				}
 			}
-			else if (preg_match('/"(?P<name>.*?)[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
+			else
 			{
-				if (!isset($matches['year'])) 
-				{
-					preg_match('/"(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
-				}
-			
-				if (isset($matches['name'])) 
-				{
-					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
-					$name = str_replace('-', ' ', $name);
-					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
-					$name = preg_replace('/\s{1,}/', ' ', $name);
-					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-					return trim($name).$year;
-				}
-			}
-			else if (preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>(19|20)\d\d)/i', $releasename, $matches))
-			{
-				if (!isset($matches['year'])) 
-				{
-					preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
-				}
-			
-				if (isset($matches['name'])) 
-				{
-					$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
-					$name = str_replace('-', ' ', $name);
-					$name = str_replace(array(':', '!', '<', '>', '*', '(', ')'), '', $name);
-					$name = preg_replace('/\s{1,}/', ' ', $name);
-					$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-					return trim($name).$year;
-				}
+				$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+				return true;
 			}
 		}
-		return false;
+		else
+			return false;
 	}
-  
+
+	public function yahooSearch($moviename, $relID, $db)
+	{
+		if ($this->yahoolimit <= 40)
+		{
+			$moviename = str_replace(' ', '+', $moviename);
+			if(preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result))
+			{
+				if (isset($result["year"]) && !empty($result["year"]))
+				{
+					$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."+".urlencode($result["year"])."&vs=imdb.com");
+					if ($buffer !== false && strlen($buffer))
+					{
+						$this->yahoolimit++;
+						$imdbId = $this->domovieupdate($buffer, 'Yahoo1',  $relID, $db);
+						if ($imdbId === false)
+						{
+							$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."&vs=imdb.com");
+							if ($buffer !== false && strlen($buffer))
+							{
+								$this->yahoolimit++;
+								$imdbId = $this->domovieupdate($buffer, 'Yahoo2',  $relID, $db);
+								if ($imdbId === false)
+								{
+									$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+									return true;
+								}
+								else
+								{
+									return true;
+								}
+							}
+							else
+								return false;
+						}
+						else
+							return true;
+					}
+					return false;
+				}
+				else
+				{
+					$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=".$result["name"]."&vs=imdb.com");
+					if ($buffer !== false && strlen($buffer))
+					{
+						$this->yahoolimit++;
+						$imdbId = $this->domovieupdate($buffer, 'Yahoo2',  $relID, $db);
+						if ($imdbId === false)
+						{
+							$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+							return true;
+						}
+						else
+							return true;
+					}
+					else
+						return false;
+				}
+			}
+			else
+			{
+				$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
   	public function parseMovieSearchName($releasename)
 	{
 		$cat = new Category;
-		if (!$cat->isMovieForeign($releasename)) {
+		if (!$cat->isMovieForeign($releasename))
+		{
 			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
+			if (!isset($matches['year']))
+			{
 				preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
 			}
 			
-			if (isset($matches['name'])) {
+			if (isset($matches['name']))
+			{
 				$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
 				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
 				return trim($name).$year;

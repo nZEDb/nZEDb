@@ -49,16 +49,19 @@ cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();
 cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
 seq = cur.fetchone();
-cur.execute("select value from tmux where setting = 'BACKFILL_TYPE'");
+cur.execute("select value from tmux where setting = 'BACKFILL'");
 type = cur.fetchone();
 cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
 groups = cur.fetchone();
 
-if sys.argv[1] == "all":
-	cur.execute("SELECT name from groups where active = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC")
+if type[0] == "3" and sys.argv[1] != "all":
+	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate ASC limit %d" %(int(groups[0])))
+	datas = cur.fetchall()
+elif sys.argv[1] == "all":
+	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC")
 	datas = cur.fetchall()
 else:
-	cur.execute("SELECT name from groups where active = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
+	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
 	datas = cur.fetchall()
 
 class WorkerThread(threading.Thread):
@@ -72,13 +75,18 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				print '\n%s: Backfill %s started.' % (self.name, dirname)
-				if type[0] == "TRUE":
-					subprocess.call(["php", pathname+"/backfill_interval.php", ""+dirname])
-					#subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
-				else:
-					subprocess.call(["php", pathname+"/backfill_other.php", ""+dirname])
-					#subprocess.call(["echo", pathname+"/backfill_other.php", ""+dirname])
+				if sys.argv[1] == "all":
+					print '\n%s: Backfill All %s started.' % (self.name, dirname)
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+dirname])
+				if type[0] == "3":
+					print '\n%s: Backfill Interval by Oldest %s started.' % (self.name, dirname)
+					subprocess.call(["php", pathname+"/../backfill.php", ""+dirname])
+				elif type[0] == "1":
+					print '\n%s: Backfill Interval by Newest %s started.' % (self.name, dirname)
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+dirname])
+				elif type[0] == "2":
+					print '\n%s: Backfill All %s started.' % (self.name, dirname)
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_other.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
 			except Queue.Empty:
 				continue

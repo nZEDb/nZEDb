@@ -34,7 +34,6 @@ CREATE TABLE `binaries` (
 		`binaryhash` VARCHAR(255) NOT NULL DEFAULT '0',
 		`partcheck` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`partsize` BIGINT UNSIGNED NOT NULL DEFAULT '0',
-		`importname` VARCHAR(255) NULL,
 		PRIMARY KEY  (`ID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -76,6 +75,10 @@ CREATE TABLE `releases`
 `nzbstatus` TINYINT NOT NULL DEFAULT 0,
 `nfostatus` TINYINT NOT NULL DEFAULT 0,
 `relnamestatus` TINYINT NOT NULL DEFAULT 0,
+`jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
+`videostatus` TINYINT(1) NOT NULL DEFAULT 0,
+`audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
+`dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -87,6 +90,8 @@ CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
+CREATE INDEX ix_releases_relnamestatus on releases('relnamestatus');
+CREATE INDEX ix_releases_passwordstatus on releases('passwordstatus');
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -171,6 +176,31 @@ CREATE INDEX ix_releasecomment_releaseID ON releasecomment (`releaseID`);
 CREATE INDEX ix_releasecomment_userID ON releasecomment (`userID`);
 
 
+DROP TABLE IF EXISTS `predb`;
+CREATE TABLE `predb` 
+(
+`ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`title` VARCHAR(255) NOT NULL DEFAULT '',
+`nfo` VARCHAR(500) NULL,
+`size` VARCHAR(50) NULL,
+`category` VARCHAR(255) NULL,
+`predate` DATETIME DEFAULT NULL,
+`adddate` DATETIME DEFAULT NULL,
+`source` VARCHAR(50) NOT NULL DEFAULT '',
+`md5` VARCHAR(255) NOT NULL DEFAULT '0',
+`releaseID` INT NULL,
+PRIMARY KEY  (`ID`)
+) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE INDEX ix_predb_title ON predb(`title`);
+CREATE INDEX ix_predb_nfo ON predb(`nfo`);
+CREATE INDEX ix_predb_predate ON predb(`predate`);
+CREATE INDEX ix_predb_adddate ON predb(`adddate`);
+CREATE INDEX ix_predb_source ON predb(`source`);
+CREATE INDEX ix_predb_md5 ON predb(`md5`);
+CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
+
+
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` 
 (
@@ -205,6 +235,10 @@ VALUES ('upcoming', 'Theatres',
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('series', 'TV Series', 
 	'Browse TV Series.', 1, 50);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('predb', 'PreDB', 
+	'Browse PreDB.', 1, 51);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
 VALUES ('calendar', 'TV Calendar', 
@@ -357,6 +391,7 @@ CREATE TABLE `movieinfo`
   `plot` varchar(1024) NOT NULL,
   `year` varchar(4) NOT NULL,
   `genre` varchar(64) NOT NULL,
+  `type` varchar(32) NOT NULL,
   `director` VARCHAR(64) NOT NULL,
   `actors` VARCHAR(2000) NOT NULL,
   `language` VARCHAR(64) NOT NULL,
@@ -417,6 +452,7 @@ CREATE TABLE `groups` (
   `minfilestoformrelease` INT(4) NULL,
   `minsizetoformrelease` BIGINT NULL,
   `active` TINYINT(1) NOT NULL DEFAULT '0',
+  `backfill` TINYINT(1) NOT NULL DEFAULT '0',
   `description` VARCHAR(255) NULL DEFAULT '',
   PRIMARY KEY  (`ID`),
   KEY `active` (`active`)
@@ -633,7 +669,8 @@ CREATE TABLE category
 `parentID` INT NULL,
 `status` INT NOT NULL DEFAULT '1',
 `description` varchar(255) null,
-`disablepreview` tinyint(1) NOT NULL default '0'
+`disablepreview` tinyint(1) NOT NULL default '0',
+`minsize` BIGINT UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=100000 ;
 
 INSERT INTO category (ID, title) VALUES (1000, 'Console');
@@ -668,6 +705,7 @@ INSERT INTO category (ID, title, parentID) VALUES (3020, 'Video', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3030, 'Audiobook', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3040, 'Lossless', 3000);
 INSERT INTO category (ID, title, parentID) VALUES (3050, 'Other', 3000);
+INSERT INTO category (ID, title, parentID) VALUES (3060, 'Foreign', 3000);
 
 INSERT INTO category (ID, title, parentID) VALUES (4010, '0day', 4000);
 INSERT INTO category (ID, title, parentID) VALUES (4020, 'ISO', 4000);
@@ -701,7 +739,9 @@ INSERT INTO category (ID, title, parentID) VALUES (8020, 'Comics', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8030, 'Magazines', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
+INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
+CREATE INDEX ix_category_status ON category('status');
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -897,7 +937,7 @@ INSERT INTO `site`
 	('siteseed', MD5(UUID())),
 	('tandc', '<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
 	('registerstatus', 0),
-	('style', '/'),
+	('style', 'Default'),
 	('home_link', '/'),
 	('dereferrer_link', ''),
 	('nzbpath', '/your/path/to/nzbs/'),
@@ -944,6 +984,7 @@ INSERT INTO `site`
 	('minfilestoformrelease', 1),
 	('minsizetoformrelease', 0),
 	('maxsizetoformrelease', 0),
+	('maxsizetopostprocess', 100),
 	('releaseretentiondays', 0),
 	('checkpasswordedrar', 0),
 	('showpasswordedrelease', 0),
@@ -963,7 +1004,21 @@ INSERT INTO `site`
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
 	('catlanguage', 0),
-	('sqlpatch', '31');
+	('amazonsleep', 1000),
+	('passchkattempts', 1),
+	('catwebdl', 0),
+	('safebackfilldate', '2012-06-24'),
+	('processjpg', 0),
+	('hashcheck', 1),
+	('debuginfo', 0),
+	('processvideos', 0),
+	('imdburl', 0),
+	('imdblanguage', 'en'),
+	('partretentionhours', 72),
+	('postdelay', 300),
+	('processaudiosample', 0),
+	('predbversion', 1),
+	('sqlpatch', '72');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -999,6 +1054,7 @@ CREATE TABLE `bookinfo` (
   `publishdate` datetime DEFAULT NULL,
   `pages` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overview` varchar(3000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `genre` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cover` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `createddate` datetime NOT NULL,
   `updateddate` datetime NOT NULL,
@@ -1045,6 +1101,7 @@ CREATE TABLE `genres`
   `ID` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `type` INT( 4 ) NULL DEFAULT NULL,
+  `disabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1202,6 +1259,7 @@ INSERT INTO `genres`
   ('SynthPop', 3000),
   ('Electronica', 3000);
 
+DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
   
 	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1218,51 +1276,59 @@ UNIQUE KEY `setting` (`setting`)
 
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900');
-INSERT INTO tmux (setting, value) values ('MONITOR_DELAY','30');
-INSERT INTO tmux (setting, value) values ('TMUX_SESSION','nZEDb');
-INSERT INTO tmux (setting, value) values ('BACKFILL_DELAY','30');
-INSERT INTO tmux (setting, value) values ('NICENESS','19');
-INSERT INTO tmux (setting, value) values ('BINARIES','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL','FALSE');
-INSERT INTO tmux (setting, value) values ('IMPORT','FALSE');
-INSERT INTO tmux (setting, value) values ('NZBS','/path/to/nzbs');
-INSERT INTO tmux (setting, value) values ('RUNNING','FALSE');
-INSERT INTO tmux (setting, value) values ('SEQUENTIAL','FALSE');
-INSERT INTO tmux (setting, value) values ('NFOS','FALSE');
-INSERT INTO tmux (setting, value) values ('POST','FALSE');
-INSERT INTO tmux (setting, value) values ('RELEASES','FALSE');
-INSERT INTO tmux (setting, value) values ('RELEASES_THREADED','FALSE');
-INSERT INTO tmux (setting, value) values ('FIX_NAMES','FALSE');
-INSERT INTO tmux (setting, value) values ('SEQ_TIMER','30');
-INSERT INTO tmux (setting, value) values ('BINS_TIMER','30');
-INSERT INTO tmux (setting, value) values ('BACK_TIMER','30');
-INSERT INTO tmux (setting, value) values ('IMPORT_TIMER','30');
-INSERT INTO tmux (setting, value) values ('REL_TIMER','30');
-INSERT INTO tmux (setting, value) values ('FIX_TIMER','30');
-INSERT INTO tmux (setting, value) values ('POST_TIMER','30');
-INSERT INTO tmux (setting, value) values ('IMPORT_BULK','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL_TYPE','FALSE');
-INSERT INTO tmux (setting, value) values ('BACKFILL_QTY','100000');
-INSERT INTO tmux (setting, value) values ('COLLECTIONS_KILL','0');
-INSERT INTO tmux (setting, value) values ('POSTPROCESS_KILL','0');
-INSERT INTO tmux (setting, value) values ('CRAP_TIMER','30');
-INSERT INTO tmux (setting, value) values ('FIX_CRAP','FALSE');
-INSERT INTO tmux (setting, value) values ('TV_TIMER','43200');
-INSERT INTO tmux (setting, value) values ('UPDATE_TV','FALSE');
-INSERT INTO tmux (setting, value) values ('HTOP','FALSE');
-INSERT INTO tmux (setting, value) values ('NMON','FALSE');
-INSERT INTO tmux (setting, value) values ('BWMNG','FALSE');
-INSERT INTO tmux (setting, value) values ('MYTOP','FALSE');
-INSERT INTO tmux (setting, value) values ('CONSOLE','FALSE');
-INSERT INTO tmux (setting, value) values ('VNSTAT','FALSE');
-INSERT INTO tmux (setting, value) values ('VNSTAT_ARGS',NULL);
-INSERT INTO tmux (setting, value) values ('TCPTRACK','FALSE');
-INSERT INTO tmux (setting, value) values ('TCPTRACK_ARGS','-i eth0 port 443');
-INSERT INTO tmux (setting, value) values ('BACKFILL_GROUPS','4');
-INSERT INTO tmux (setting, value) values ('POST_KILL_TIMER','300');
-INSERT INTO tmux (setting, value) values ('OPTIMIZE','FALSE');
-INSERT INTO tmux (setting, value) values ('OPTIMIZE_TIMER','86400')
+INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
+	('MONITOR_DELAY','30'),
+	('TMUX_SESSION','nZEDb'),
+	('NICENESS','19'),
+	('BINARIES','FALSE'),
+	('BACKFILL','0'),
+	('IMPORT','FALSE'),
+	('NZBS','/path/to/nzbs'),
+	('RUNNING','FALSE'),
+	('SEQUENTIAL','FALSE'),
+	('NFOS','FALSE'),
+	('POST','FALSE'),
+	('RELEASES','FALSE'),
+	('RELEASES_THREADED','FALSE'),
+	('FIX_NAMES','FALSE'),
+	('SEQ_TIMER','30'),
+	('BINS_TIMER','30'),
+	('BACK_TIMER','30'),
+	('IMPORT_TIMER','30'),
+	('REL_TIMER','30'),
+	('FIX_TIMER','30'),
+	('POST_TIMER','30'),
+	('IMPORT_BULK','FALSE'),
+	('BACKFILL_QTY','100000'),
+	('COLLECTIONS_KILL','0'),
+	('POSTPROCESS_KILL','0'),
+	('CRAP_TIMER','30'),
+	('FIX_CRAP','FALSE'),
+	('TV_TIMER','43200'),
+	('UPDATE_TV','FALSE'),
+	('HTOP','FALSE'),
+	('NMON','FALSE'),
+	('BWMNG','FALSE'),
+	('MYTOP','FALSE'),
+	('CONSOLE','FALSE'),
+	('VNSTAT','FALSE'),
+	('VNSTAT_ARGS',NULL),
+	('TCPTRACK','FALSE'),
+	('TCPTRACK_ARGS','-i eth0 port 443'),
+	('BACKFILL_GROUPS','4'),
+	('POST_KILL_TIMER','300'),
+	('OPTIMIZE','FALSE'),
+	('OPTIMIZE_TIMER','86400'),
+	('MONITOR_PATH', NULL),
+	('WRITE_LOGS', 'FALSE'),
+	('SORTER', 'FALSE'),
+	('SORTER_TIMER', 30),
+	('POWERLINE', 'FALSE'),
+	('PATCHDB', 'FALSE'),
+	('PATCHDB_TIMER', '21600'),
+	('PROGRESSIVE', 'FALSE'),
+	('DEHASH','FALSE'),
+	('DEHASH_TIMER','30');
 
 INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
 VALUES 

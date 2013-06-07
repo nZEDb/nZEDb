@@ -17,11 +17,12 @@ class Installpage
 		
 		$this->smarty = new Smarty();
 
-		$this->smarty->template_dir = realpath('../templates/Default/templates/install/');
-				
-		$this->smarty->compile_dir  = realpath('../lib/smarty/templates_c/');
-		$this->smarty->config_dir   = realpath('../lib/smarty/configs/');
-		$this->smarty->cache_dir	= realpath('../lib/smarty/cache/');
+		$this->smarty->setTemplateDir(realpath('../install/templates/'));
+
+		$this->smarty->setCompileDir(realpath('../lib/smarty/templates_c/'));
+		$this->smarty->setConfigDir(realpath('../lib/smarty/configs/'));
+		$this->smarty->setCacheDir(realpath('../lib/smarty/cache/'));
+	
 	}	
 	
 	public function addToHead($headcontent) 

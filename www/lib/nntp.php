@@ -7,44 +7,49 @@ require_once(WWW_DIR."/lib/Net_NNTP/NNTP/Client.php");
 class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
-	
+
 	function doConnect() 
 	{
 		if ($this->_isConnected())
 			return true;
 		$enc = false;
-		
+
 		$s = new Sites();
 		$site = $s->get();
 		$compressionstatus = $site->compressedheaders;
 		unset($s);
 		unset($site);
-		
-		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
-			$enc = 'ssl';
 
-		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
-		if(PEAR::isError($ret))
+		$retries = 5;
+		while($retries >= 1)
 		{
-			echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
-			die();
-		}
-		if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
-		{
-			$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-			if(PEAR::isError($ret2)) 
+			$retries--;
+			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
+				$enc = 'ssl';
+
+			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+			if(PEAR::isError($ret))
 			{
-				echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
-				die();
+				if ($retries < 1)
+					echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
 			}
+			if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
+			{
+				$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
+				if(PEAR::isError($ret2)) 
+				{
+					if ($retries < 1)
+						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
+				}
+			}
+			if($compressionstatus == "1")
+			{
+				$this->enableCompression();
+			}
+			return $ret && $ret2;
 		}
-		if($compressionstatus == "1")
-		{
-			$this->enableCompression();
-		}
-		return $ret && $ret2;
 	}
-	
+
 	//
 	//	No compression.
 	//
@@ -105,7 +110,36 @@ class Nntp extends Net_NNTP_Client
 
 		return $message;
 	}
-	
+
+	function get_Article($groupname, $partMsgId)
+	{
+		$summary = $this->selectGroup($groupname);
+		$message = $dec = '';
+
+		if (PEAR::isError($summary))
+		{
+			echo $summary->getMessage();
+			return false;
+		}
+
+		$body = $this->getArticle($partMsgId, true);
+		if (PEAR::isError($body))
+		{
+			echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
+			return false;
+		}
+
+		$message = $this->decodeYenc($body);
+		if (!$message)
+		{
+			echo "Yenc decode failure";
+			return false;
+        }
+
+		return $message;
+	}
+
+
 	function getMessages($groupname, $msgIds)
 	{
 		$body = '';
@@ -322,7 +356,7 @@ class Nntp extends Net_NNTP_Client
 		// Throw an error if we get out of the loop.
 		if (!feof($this->_socket)) 
 		{
-			return "Error: unexpected fgets() fail.\n";
+			return "\nError: unexpected fgets() fail.\n";
 		}
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
 	}
