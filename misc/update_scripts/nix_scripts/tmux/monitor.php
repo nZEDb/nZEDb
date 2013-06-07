@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2340";
+$version="0.1r2341";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -284,7 +284,7 @@ printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
-printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
+printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -499,7 +499,7 @@ while( $i > 0 )
 	printf($mask, "Collections", "Binaries", "Parts");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table)."(Act)", number_format($binaries_table)."(Est)", number_format($parts_table)."(Est)");
+	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
@@ -518,7 +518,7 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
+	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
