@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2342";
+$version="0.1r2343";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -79,6 +79,7 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'PATCHDB_TIMER' ) AS patchdb_timer,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
+	( SELECT value from tmux where setting = 'DEHASH_TIMER' ) AS dehash_timer,
 	( SELECT value from site where setting = 'debuginfo' ) AS debug";
 
 //flush query cache
@@ -420,6 +421,7 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_tmux_result[0]['tv_timer']; }
 	if ( @$proc_tmux_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_tmux_result[0]['optimize_timer']; }
 	if ( @$proc_tmux_result[0]['patchdb_timer'] != NULL ) { $patchdb_timer = $proc_tmux_result[0]['patchdb_timer']; }
+	if ( @$proc_tmux_result[0]['dehash_timer'] != NULL ) { $dehash_timer = $proc_tmux_result[0]['dehash_timer']; }
 
 	if ( @$proc_work_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_work_result[0]['binaries']; }
 	if ( @$proc_work_result[0]['binaries'] != NULL ) { $binaries_total = $proc_work_result[0]['binaries_total']; }
@@ -689,7 +691,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\" && \
-					$_php ${DIR}testing/Dev_testing/nzbx_ws_hashdecrypt_loop.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
+					$_php ${DIR}upda_scripts/nzbx_ws_hashdecrypt.php $log && date +\"%D %T\" && sleep $dehash_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
