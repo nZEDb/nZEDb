@@ -126,8 +126,8 @@ class DB
 			echo "Optimizing table: ".$tablename['Name'].".\n";
 			if (strtolower($tablename['Engine']) == "myisam")
 				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
+				$this->queryDirect("FLUSH TABLES");
 			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
-			$this->queryDirect("FLUSH TABLES");
 		}
 		return $tablecnt;
 	}

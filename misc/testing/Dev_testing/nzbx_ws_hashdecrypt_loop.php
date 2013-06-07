@@ -41,7 +41,7 @@ function getReleasez($i)
 {
 	$db = new DB();
 	$run = $i*30;
-	$result = $db->query(sprintf("SELECT * FROM `releases` WHERE `fromname` = 'HaShTaG@nzb.file' ORDER BY ID DESC LIMIT %d, 30", $run));
+	$result = $db->query(sprintf("SELECT * FROM `releases` WHERE dehashstatus = 0 AND `fromname` = 'HaShTaG@nzb.file' ORDER BY ID DESC LIMIT %d, 30", $run));
 	if (count($result) > 0)
 		echo "Beginning Decrypt Hashed Releases 30 releases starting at $run\n";
 	else
@@ -67,7 +67,9 @@ while(1)
 	$sleep = $tmux->get()->DEHASH_TIMER;
 	$results = getReleasez($i);
 	$i++;
+	$db = new DB();
 	foreach ($results as $result) {
+		$processed = FALSE;
 		$x = substr($result['name'],0,32);
 		if (!strstr($x, '.') == TRUE) {
 			if (!strstr($x, ' ') == TRUE) {
@@ -78,11 +80,8 @@ while(1)
 							if (strlen($r) > 5) {
 								if (!strstr($r, 'cloudflare') == TRUE) {
 									if (strstr($r, '-') == TRUE) {
-										if (ENABLE_ECHO == TRUE) {
-											echo "Release found " . $r . "\n";
-											$counter++;
-										}
 										updaterelease($r, $result['ID'], $result['name']);
+										$processed = TRUE;
 									}
 								}
 							}
@@ -91,8 +90,21 @@ while(1)
 				}
 			}
 		}
+		if ($processed == TRUE) {
+			if (ENABLE_ECHO == TRUE) {
+				echo "Release found " . $r . "\n";
+				$counter++;
+			}
+			$db->query(sprintf("update releases set dehashstatus = 1 where ID = %s", $result['ID']));
+		} else {
+			if (ENABLE_ECHO == TRUE) {
+				echo $result['name']." not found\n";
+			}
+			$db->query(sprintf("update releases set dehashstatus = -1 where ID = %s", $result['ID']));
+		}
 	}
 	echo $counter." releases matched\n";
 	sleep($sleep);
 }
 ?>
+

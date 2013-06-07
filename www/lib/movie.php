@@ -525,9 +525,9 @@ class Movie
 		$googlelimit = 0;
 		$site = new Sites;
 		$threads--;
-		
+
 		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
-		
+
 		if ($db->getNumRows($res) > 0)
 		{	
 			if ($this->echooutput)

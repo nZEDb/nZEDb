@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2318";
+$version="0.1r2345";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -20,27 +20,30 @@ $powerline = $tmux->get()->POWERLINE;
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
 
 //needs to be processed query
-$proc = "SELECT
-	( SELECT COUNT( groupID ) from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
-	( SELECT COUNT( groupID ) from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID BETWEEN 3000 AND 3999 and nzbstatus = 1 ) AS audio,
-	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where (categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)))) AS pc,
+$proc_work = "SELECT
 	( SELECT COUNT( groupID ) from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
-	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+	( SELECT COUNT( groupID ) from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
+	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID in (3010, 3040, 3050) and nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( groupID ) from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
 	( SELECT COUNT( groupID ) from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
 	( SELECT COUNT( groupID ) from releases where nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( groupID ) FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
-	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
-	( SELECT UNIX_TIMESTAMP(adddate) from releases order by adddate DESC limit 1 ) AS newestadd,
-	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
-	( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT COUNT( ID ) from collections ) collections_table,
-	( SELECT COUNT( ID ) from predb ) predb,
-	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) predb_matched,
+	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
+	( SELECT COUNT( ID ) from collections ) AS collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb";
+
+$proc_tmux = "SELECT
+    ( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
+    ( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
+    ( SELECT name from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
+    ( SELECT UNIX_TIMESTAMP(adddate) from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
 	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
@@ -76,8 +79,8 @@ $proc = "SELECT
 	( SELECT value from tmux where setting = 'PATCHDB_TIMER' ) AS patchdb_timer,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
-	( SELECT value from site where setting = 'debuginfo' ) AS debug,
-	( SELECT name from releases order by adddate DESC limit 1 ) AS newestaddname";
+	( SELECT value from tmux where setting = 'DEHASH_TIMER' ) AS dehash_timer,
+	( SELECT value from site where setting = 'debuginfo' ) AS debug";
 
 //flush query cache
 $qcache = "FLUSH QUERY CACHE";
@@ -282,7 +285,7 @@ printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
-printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
+printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -308,8 +311,9 @@ while( $i > 0 )
 	$time_loop_start = microtime_float();
 
 	$getdate = gmDate("Ymd");
+	$proc_tmux_result = @$db->query($proc_tmux);
 
-	//run queries
+	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time2 ) >= $monitor ) && ( $running == "TRUE" )) || ( $i == 1 )) {
 		//get microtime to at start of queries
@@ -320,7 +324,7 @@ while( $i > 0 )
 		{
 			$initquery[$sub['parentID']] = $sub['cnt'];
 		}
-		$proc_result = @$db->query($proc);
+		$proc_work_result = @$db->query($proc_work);
 		$time2 = TIME();
 		$runloop = "true";
 	} else {
@@ -330,17 +334,17 @@ while( $i > 0 )
 	//get start values from $qry
 	if ( $i == 1 )
 	{
-		if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_result[0]['nforemains']; }
-		if ( @$proc_result[0]['predb_matched'] != NULL ) { $predb_matched_start = $proc_result[0]['predb_matched']; }
-		if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_result[0]['console']; }
-		if ( @$proc_result[0]['movies'] != NULL ) { $movie_releases_proc_start = $proc_result[0]['movies']; }
-		if ( @$proc_result[0]['audio'] != NULL ) { $music_releases_proc_start = $proc_result[0]['audio']; }
-		if ( @$proc_result[0]['pc'] != NULL ) { $pc_releases_proc_start = $proc_result[0]['pc']; }
-		if ( @$proc_result[0]['tv'] != NULL ) { $tvrage_releases_proc_start = $proc_result[0]['tv']; }
-		if ( @$proc_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_result[0]['book']; }
-		if ( @$proc_result[0]['work'] != NULL ) { $work_remaining_start = $proc_result[0]['work']; }
-		if ( @$proc_result[0]['work'] != NULL ) { $work_start = $proc_result[0]['work']; }
-		if ( @$proc_result[0]['releases'] != NULL ) { $releases_start = $proc_result[0]['releases']; }
+		if ( @$proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_work_result[0]['nforemains']; }
+		if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_matched_start = $proc_work_result[0]['predb_matched']; }
+		if ( @$proc_work_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_work_result[0]['console']; }
+		if ( @$proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc_start = $proc_work_result[0]['movies']; }
+		if ( @$proc_work_result[0]['audio'] != NULL ) { $music_releases_proc_start = $proc_work_result[0]['audio']; }
+		if ( @$proc_work_result[0]['pc'] != NULL ) { $pc_releases_proc_start = $proc_work_result[0]['pc']; }
+		if ( @$proc_work_result[0]['tv'] != NULL ) { $tvrage_releases_proc_start = $proc_work_result[0]['tv']; }
+		if ( @$proc_work_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_work_result[0]['book']; }
+		if ( @$proc_work_result[0]['work'] != NULL ) { $work_remaining_start = $proc_work_result[0]['work']; }
+		if ( @$proc_work_result[0]['work'] != NULL ) { $work_start = $proc_work_result[0]['work']; }
+		if ( @$proc_work_result[0]['releases'] != NULL ) { $releases_start = $proc_work_result[0]['releases']; }
 	}
 
 	//get values from $qry
@@ -353,80 +357,81 @@ while( $i > 0 )
 	if ( @$initquery['7000'] != NULL ) { $misc_releases_now = $initquery['7000']; }
 
 	//get values from $proc
-	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc = $proc_result[0]['console']; }
-	if ( @$proc_result[0]['console'] != NULL ) { $console_releases_proc = $proc_result[0]['console']; }
-	if ( @$proc_result[0]['movies'] != NULL ) { $movie_releases_proc = $proc_result[0]['movies']; }
-	if ( @$proc_result[0]['audio'] != NULL ) { $music_releases_proc = $proc_result[0]['audio']; }
-	if ( @$proc_result[0]['pc'] != NULL ) { $pc_releases_proc = $proc_result[0]['pc']; }
-	if ( @$proc_result[0]['tv'] != NULL ) { $tvrage_releases_proc = $proc_result[0]['tv']; }
-	if ( @$proc_result[0]['book'] != NULL ) { $book_releases_proc = $proc_result[0]['book']; }
-	if ( @$proc_result[0]['work'] != NULL ) { $work_remaining_now = $proc_result[0]['work']; }
-	if ( @$proc_result[0]['releases'] != NULL ) { $releases_loop = $proc_result[0]['releases']; }
-	if ( @$proc_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_result[0]['nforemains']; }
-	if ( @$proc_result[0]['nfo'] != NULL ) { $nfo_now = $proc_result[0]['nfo']; }
-	if ( @$proc_result[0]['active_groups'] != NULL ) { $active_groups = $proc_result[0]['active_groups']; }
-	if ( @$proc_result[0]['backfill_groups'] != NULL ) { $backfill_groups = $proc_result[0]['backfill_groups']; }
-	if ( @$proc_result[0]['parts'] != NULL ) { $parts_rows = $proc_result[0]['parts']; }
-	if ( @$proc_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_result[0]['partsize']; }
-	if ( @$proc_result[0]['collections_table'] != NULL ) { $collections_table = $proc_result[0]['collections_table']; }
-	if ( @$proc_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_result[0]['binaries_table']; }
-	if ( @$proc_result[0]['parts_table'] != NULL ) { $parts_table = $proc_result[0]['parts_table']; }
+	if ( @$proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
+	if ( @$proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
+	if ( @$proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc = $proc_work_result[0]['movies']; }
+	if ( @$proc_work_result[0]['audio'] != NULL ) { $music_releases_proc = $proc_work_result[0]['audio']; }
+	if ( @$proc_work_result[0]['pc'] != NULL ) { $pc_releases_proc = $proc_work_result[0]['pc']; }
+	if ( @$proc_work_result[0]['tv'] != NULL ) { $tvrage_releases_proc = $proc_work_result[0]['tv']; }
+	if ( @$proc_work_result[0]['book'] != NULL ) { $book_releases_proc = $proc_work_result[0]['book']; }
+	if ( @$proc_work_result[0]['work'] != NULL ) { $work_remaining_now = $proc_work_result[0]['work']; }
+	if ( @$proc_work_result[0]['releases'] != NULL ) { $releases_loop = $proc_work_result[0]['releases']; }
+	if ( @$proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
+	if ( @$proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
+	if ( @$proc_work_result[0]['active_groups'] != NULL ) { $active_groups = $proc_work_result[0]['active_groups']; }
+	if ( @$proc_work_result[0]['backfill_groups'] != NULL ) { $backfill_groups = $proc_work_result[0]['backfill_groups']; }
+	if ( @$proc_work_result[0]['parts'] != NULL ) { $parts_rows = $proc_work_result[0]['parts']; }
+	if ( @$proc_work_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_work_result[0]['partsize']; }
+	if ( @$proc_work_result[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result[0]['collections_table']; }
+	if ( @$proc_work_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result[0]['binaries_table']; }
+	if ( @$proc_work_result[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result[0]['parts_table']; }
 
 
-	if ( @$proc_result[0]['predb'] != NULL ) { $predb = $proc_result[0]['predb']; }
-	if ( @$proc_result[0]['predb_matched'] != NULL ) { $predb_matched = $proc_result[0]['predb_matched']; }
+	if ( @$proc_work_result[0]['predb'] != NULL ) { $predb = $proc_work_result[0]['predb']; }
+	if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result[0]['predb_matched']; }
 
-	if ( @$proc_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_result[0]['collections_kill']; }
-	if ( @$proc_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_result[0]['postprocess_kill']; }
+	if ( @$proc_tmux_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
+	if ( @$proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
 
-	if ( @$proc_result[0]['defrag'] != NULL ) { $defrag = $proc_result[0]['defrag']; }
-	if ( @$proc_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_result[0]['tmux_session']; }
-	if ( @$proc_result[0]['monitor'] != NULL ) { $monitor = $proc_result[0]['monitor']; }
-	if ( @$proc_result[0]['backfill'] != NULL ) { $backfill = $proc_result[0]['backfill']; }
-	if ( @$proc_result[0]['niceness'] != NULL ) { $niceness = $proc_result[0]['niceness']; }
-	if ( @$proc_result[0]['progressive'] != NULL ) { $progressive = $proc_result[0]['progressive']; }
-	if ( @$proc_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_result[0]['oldestcollection']; }
+	if ( @$proc_tmux_result[0]['defrag'] != NULL ) { $defrag = $proc_tmux_result[0]['defrag']; }
+	if ( @$proc_tmux_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_tmux_result[0]['tmux_session']; }
+	if ( @$proc_tmux_result[0]['monitor'] != NULL ) { $monitor = $proc_tmux_result[0]['monitor']; }
+	if ( @$proc_tmux_result[0]['backfill'] != NULL ) { $backfill = $proc_tmux_result[0]['backfill']; }
+	if ( @$proc_tmux_result[0]['niceness'] != NULL ) { $niceness = $proc_tmux_result[0]['niceness']; }
+	if ( @$proc_tmux_result[0]['progressive'] != NULL ) { $progressive = $proc_tmux_result[0]['progressive']; }
+	if ( @$proc_tmux_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_tmux_result[0]['oldestcollection']; }
 
-	if ( @$proc_result[0]['binaries_run'] != NULL ) { $binaries = $proc_result[0]['binaries_run']; }
-	if ( @$proc_result[0]['import'] != NULL ) { $import = $proc_result[0]['import']; }
-	if ( @$proc_result[0]['nzbs'] != NULL ) { $nzbs = $proc_result[0]['nzbs']; }
-	if ( @$proc_result[0]['fix_names'] != NULL ) { $fix_names = $proc_result[0]['fix_names']; }
-	if ( @$proc_result[0]['fix_crap'] != NULL ) { $fix_crap = $proc_result[0]['fix_crap']; }
-	if ( @$proc_result[0]['sorter'] != NULL ) { $sorter = $proc_result[0]['sorter']; }
-	if ( @$proc_result[0]['update_tv'] != NULL ) { $update_tv = $proc_result[0]['update_tv']; }
-	if ( @$proc_result[0]['post'] != NULL ) { $post = $proc_result[0]['post']; }
-	if ( @$proc_result[0]['releases_run'] != NULL ) { $releases_run = $proc_result[0]['releases_run']; }
-	if ( @$proc_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_result[0]['releases_threaded']; }
-	if ( @$proc_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_result[0]['optimize_tables']; }
-	if ( @$proc_result[0]['patchdb'] != NULL ) { $patchdb = $proc_result[0]['patchdb']; }
-	if ( @$proc_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_result[0]['monitor_path']; }
-	if ( @$proc_result[0]['dehash'] != NULL ) { $dehash = $proc_result[0]['dehash']; }
+	if ( @$proc_tmux_result[0]['binaries_run'] != NULL ) { $binaries = $proc_tmux_result[0]['binaries_run']; }
+	if ( @$proc_tmux_result[0]['import'] != NULL ) { $import = $proc_tmux_result[0]['import']; }
+	if ( @$proc_tmux_result[0]['nzbs'] != NULL ) { $nzbs = $proc_tmux_result[0]['nzbs']; }
+	if ( @$proc_tmux_result[0]['fix_names'] != NULL ) { $fix_names = $proc_tmux_result[0]['fix_names']; }
+	if ( @$proc_tmux_result[0]['fix_crap'] != NULL ) { $fix_crap = $proc_tmux_result[0]['fix_crap']; }
+	if ( @$proc_tmux_result[0]['sorter'] != NULL ) { $sorter = $proc_tmux_result[0]['sorter']; }
+	if ( @$proc_tmux_result[0]['update_tv'] != NULL ) { $update_tv = $proc_tmux_result[0]['update_tv']; }
+	if ( @$proc_tmux_result[0]['post'] != NULL ) { $post = $proc_tmux_result[0]['post']; }
+	if ( @$proc_tmux_result[0]['releases_run'] != NULL ) { $releases_run = $proc_tmux_result[0]['releases_run']; }
+	if ( @$proc_tmux_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
+	if ( @$proc_tmux_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_tmux_result[0]['optimize_tables']; }
+	if ( @$proc_tmux_result[0]['patchdb'] != NULL ) { $patchdb = $proc_tmux_result[0]['patchdb']; }
+	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
+	if ( @$proc_tmux_result[0]['dehash'] != NULL ) { $dehash = $proc_tmux_result[0]['dehash']; }
 
-	if ( @$proc_result[0]['debug'] != NULL ) { $debug = $proc_result[0]['debug']; }
+	if ( @$proc_tmux_result[0]['debug'] != NULL ) { $debug = $proc_tmux_result[0]['debug']; }
 
-	if ( @$proc_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_result[0]['seq_timer']; }
-	if ( @$proc_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_result[0]['bins_timer']; }
-	if ( @$proc_result[0]['back_timer'] != NULL ) { $back_timer = $proc_result[0]['back_timer']; }
-	if ( @$proc_result[0]['import_timer'] != NULL ) { $import_timer = $proc_result[0]['import_timer']; }
-	if ( @$proc_result[0]['rel_timer'] != NULL ) { $rel_timer = $proc_result[0]['rel_timer']; }
-	if ( @$proc_result[0]['fix_timer'] != NULL ) { $fix_timer = $proc_result[0]['fix_timer']; }
-	if ( @$proc_result[0]['crap_timer'] != NULL ) { $crap_timer = $proc_result[0]['crap_timer']; }
-	if ( @$proc_result[0]['sorter_timer'] != NULL ) { $sorter_timer = $proc_result[0]['sorter_timer']; }
-	if ( @$proc_result[0]['post_timer'] != NULL ) { $post_timer = $proc_result[0]['post_timer']; }
-	if ( @$proc_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_result[0]['post_kill_timer']; }
-	if ( @$proc_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_result[0]['tv_timer']; }
-	if ( @$proc_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_result[0]['optimize_timer']; }
-	if ( @$proc_result[0]['patchdb_timer'] != NULL ) { $patchdb_timer = $proc_result[0]['patchdb_timer']; }
+	if ( @$proc_tmux_result[0]['seq_timer'] != NULL ) { $seq_timer = $proc_tmux_result[0]['seq_timer']; }
+	if ( @$proc_tmux_result[0]['bins_timer'] != NULL ) { $bins_timer = $proc_tmux_result[0]['bins_timer']; }
+	if ( @$proc_tmux_result[0]['back_timer'] != NULL ) { $back_timer = $proc_tmux_result[0]['back_timer']; }
+	if ( @$proc_tmux_result[0]['import_timer'] != NULL ) { $import_timer = $proc_tmux_result[0]['import_timer']; }
+	if ( @$proc_tmux_result[0]['rel_timer'] != NULL ) { $rel_timer = $proc_tmux_result[0]['rel_timer']; }
+	if ( @$proc_tmux_result[0]['fix_timer'] != NULL ) { $fix_timer = $proc_tmux_result[0]['fix_timer']; }
+	if ( @$proc_tmux_result[0]['crap_timer'] != NULL ) { $crap_timer = $proc_tmux_result[0]['crap_timer']; }
+	if ( @$proc_tmux_result[0]['sorter_timer'] != NULL ) { $sorter_timer = $proc_tmux_result[0]['sorter_timer']; }
+	if ( @$proc_tmux_result[0]['post_timer'] != NULL ) { $post_timer = $proc_tmux_result[0]['post_timer']; }
+	if ( @$proc_tmux_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_tmux_result[0]['post_kill_timer']; }
+	if ( @$proc_tmux_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_tmux_result[0]['tv_timer']; }
+	if ( @$proc_tmux_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_tmux_result[0]['optimize_timer']; }
+	if ( @$proc_tmux_result[0]['patchdb_timer'] != NULL ) { $patchdb_timer = $proc_tmux_result[0]['patchdb_timer']; }
+	if ( @$proc_tmux_result[0]['dehash_timer'] != NULL ) { $dehash_timer = $proc_tmux_result[0]['dehash_timer']; }
 
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_result[0]['binaries']; }
-	if ( @$proc_result[0]['binaries'] != NULL ) { $binaries_total = $proc_result[0]['binaries_total']; }
+	if ( @$proc_work_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_work_result[0]['binaries']; }
+	if ( @$proc_work_result[0]['binaries'] != NULL ) { $binaries_total = $proc_work_result[0]['binaries_total']; }
 
-	if ( @$proc_result[0]['binariessize'] != NULL ) { $binaries_size_gb = $proc_result[0]['binariessize']; }
+	if ( @$proc_work_result[0]['binariessize'] != NULL ) { $binaries_size_gb = $proc_work_result[0]['binariessize']; }
 
-	if ( @$proc_result[0]['releases'] ) { $releases_now = $proc_result[0]['releases']; }
-	if ( @$proc_result[0]['newestaddname'] ) { $newestname = $proc_result[0]['newestaddname']; }
-	if ( @$proc_result[0]['newestpre'] ) { $newestpre = $proc_result[0]['newestpre']; }
-	if ( @$proc_result[0]['newestadd'] ) { $newestadd = $proc_result[0]['newestadd']; }
+	if ( @$proc_work_result[0]['releases'] ) { $releases_now = $proc_work_result[0]['releases']; }
+	if ( @$proc_tmux_result[0]['newestaddname'] ) { $newestname = $proc_tmux_result[0]['newestaddname']; }
+	if ( @$proc_tmux_result[0]['newestpre'] ) { $newestpre = $proc_tmux_result[0]['newestpre']; }
+	if ( @$proc_tmux_result[0]['newestadd'] ) { $newestadd = $proc_tmux_result[0]['newestadd']; }
 
 	//calculate releases difference
 	$releases_misc_diff = number_format( $releases_now - $releases_start );
@@ -496,7 +501,7 @@ while( $i > 0 )
 	printf($mask, "Collections", "Binaries", "Parts");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table)."(Act)", number_format($binaries_table)."(Est)", number_format($parts_table)."(Est)");
+	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
@@ -515,7 +520,7 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")(matched)",number_format($predb)."(".$pre_percent."%)");
+	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -686,7 +691,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\" && \
-					$_php ${DIR}testing/Dev_testing/nzbx_ws_hashdecrypt_loop.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
+					$_php ${DIR}update_scripts/nzbx_ws_hashdecrypt.php $log && date +\"%D %T\" && sleep $dehash_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{

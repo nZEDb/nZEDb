@@ -58,6 +58,11 @@ class MiscSorter {
 		$nfo = preg_replace('/[ \t\_\.\?]/Ui', " ", $nfo);
 		$nfo = preg_replace('/  +/', " ", $nfo);
 		$nfo = preg_replace('/^\s+?/Umi', "", $nfo);
+
+		$str = preg_replace('/[ \t\_\.\?]/Ui', " ", $str);
+		$str = preg_replace('/  +/', " ", $str);
+		$str = preg_replace('/^\s+?/Umi', "", $str);
+
 		$pos = stripos($nfo, $str);
 		if ($pos !== false)
 			return $pos/strlen($nfo);
@@ -68,12 +73,16 @@ class MiscSorter {
 
 	function getIDs ($cat)
 	{
-		$cats = $this->cat->getChildren($cat);
+		if ($cat > 0)
+			$cats = $this->cat->getChildren($cat);
+		else
+			$cats = $this->cat->get(true, array());
 		$thecategory = array();
 		foreach ($cats as $c)
 			$thecategory[] = $c['ID'];
 
 		$thecategory = implode(", ", $thecategory);
+		//var_dump($thecategory);
 		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND relnamestatus = 1 AND releases.categoryID IN ( %s ) limit %d", $thecategory, $this->qty);
 		$res = $this->db->query($query);
 
@@ -231,6 +240,7 @@ class MiscSorter {
 		$ok = false;
 
 		$nfo = preg_replace("/[^\x09-\x80]|\?/", "", $nfo);
+		$nfo = preg_replace("/[\x01-\x09\x0e-\x20]/", " ", $nfo);
 
 //		$pattern = '/(?<!fine[ \-]|release[ \-])(?:\btitle|\bname|release)\b(?![ \-]type|[ \-]info(?:rmation)?|[ \-]date|[ \-]name|notes)(?:[\-\:\.\}\[\s]+?)([a-z0-9\.\- \(\)\']+?)/Ui';
 		$pattern = '/(?<!fine[ \-\.])(?:\btitle|\bname|release)\b(?![ \-\.]type|[ \-\.]info(?:rmation)?|[ \-\.]date|[ \-\.]name|[ \-\.]notes)(?:[\-\:\.\}\[\s]+?)([a-z0-9\.\- \(\)\']+?)/Ui';
@@ -243,7 +253,9 @@ class MiscSorter {
 		$pattern = '/[\s\_\.\:\xb0-\x{3000}]{2,}([a-z0-9].+v(?:er(?:sion)?)?[\.\s]*?\d+\.\d(?:\.\d+)?.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/Uui';
 		$set1 = preg_split($pattern,  $nfo, 0, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 		if (isset($set1[1]))
+		{
 			$pos1 = $this->nfopos ($nfo, $set1[1]);
+		}
 		else
 			$pos1 = false;
 		if ((isset($set1[1]) && $pos1 !== false && (real) $pos > (real) $pos1) || $pos === false)
@@ -320,25 +332,25 @@ class MiscSorter {
 		if ($imdb > 0)
 		{
 			$movie = $this->movie->getMovieInfo($imdb);
-		foreach (explode(" ", $movie['title']." ".$movie['year']) as $word)
-		{
-			echo "word ".$word."\n";;
-			$tmp = preg_split("/$word/i", $name1);
-			$name2 = '';
-
-			foreach ($tmp as $t)
+			foreach (explode(" ", $movie['title']." ".$movie['year']) as $word)
 			{
-				$name2 = $name2." ".$t;
+				echo "word ".$word."\n";;
+				$tmp = preg_split("/$word/i", $name1);
+				$name2 = '';
+
+				foreach ($tmp as $t)
+				{
+					$name2 = $name2." ".$t;
+				}
+				$name1 = $name2;
 			}
-			$name1 = $name2;
-		}
 		}
 		$name1 = trim($name1);
 		$name1 = preg_replace('/[ \-\_]{2,}/', ' ', $name1);
 		$name1 = preg_replace('/ {2,}/', ' ', $name1);
 		$name1 = preg_replace('/ /', ' ', $name1);
 		if ($imdb > 0)
-		$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n."_";
+			$name = $movie['title']." (".$movie['year'].") ".$name1." ".$n."_";
 		else
 			$name = $name1." ".$n."_";
 		return trim($name);
@@ -774,60 +786,60 @@ echo "asin ".$set[1]."\n";
 	releases.ID INNER JOIN groups ON releases.groupID = groups.ID WHERE releases.ID in ($this->idarr) order by RAND()";
 
 		$res = $this->db->queryDirect($query);
-		while ($row =  $this->db->fetchAssoc($res))
-		{
-			$hash = $this->getHash($row['name']);
-			if ($hash !== false)
-				$row['searchname'] = $hash;
-
-			$nfo = utf8_decode($row['nfo']);
-
-			if (strlen($nfo) > 100)
+		if (strlen($this->idarr) > 0)
+			while ($row =  $this->db->fetchAssoc($res))
 			{
-				$pattern = '/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|(isbn)|(UPC\b)|(comic book)|(comix)|(tv series)|(\bos\b)|(documentaries)|(documentary)|(doku)|(macintosh)|(dmg)|(mac[ _\.\-]??os[ _\.\-]??x??)|(\bos\b\s??x??)|(\bosx\b)';
-				$pattern = $pattern . '|(\bios\b)|(iphone)|(ipad)|(ipod)|(pdtv)|(hdtv)|(video streams)|(movie)|(audiobook)|(audible)|(recorded books)|(spoken book)|(speech)|(read by)\:?|(narrator)\:?|(narrated by)';
-				$pattern = $pattern . '|(dvd)|(ntsc)|(m4v)|(mov\b)|(avi\b)|(xvid)|(divx)|(mkv)|(amazon\.)[a-z]{2,3}.*\/dp\/|(anidb.net).*aid=|(\blame\b)|(\btrack)|(trax)|(t r a c k)|(music)|(44.1kHz)|video (game)|type:(game)|(game) Type|(game)[ \.]+|(platform)|(console)|\b(win(?:dows|all|xp)\b)|(\bwin\b)';
-				$pattern = $pattern . '|(m3u)|(flac\b)|(application)|(plugin)|(\bcrack\b)|(install\b)|(setup)|(magazin)|(x264)|(h264)|(itunes\.apple\.com\/)|(sport)|(deportes)|(nhl)|(nfl)|(\bnba)|(ncaa)|(album)|(\bepub\b)|(mobi)|format\W+?[^\r]*(pdf)/iU';
+				$hash = $this->getHash($row['name']);
+				if ($hash !== false)
+					$row['searchname'] = $hash;
 
-				$matches = preg_split($pattern, $nfo, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+				$nfo = utf8_decode($row['nfo']);
 
-				array_shift($matches);
-
-				$matches = $this->doarray($matches);
-
-				foreach($matches as $m)
+				if (strlen($nfo) > 100)
 				{
-					if (isset($m))
-						$case = preg_replace('/ /', '', $m);
-					else
-						$case = '';
+					$pattern = '/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|(isbn)|(UPC\b)|(comic book)|(comix)|(tv series)|(\bos\b)|(documentaries)|(documentary)|(doku)|(macintosh)|(dmg)|(mac[ _\.\-]??os[ _\.\-]??x??)|(\bos\b\s??x??)|(\bosx\b)';
+					$pattern = $pattern . '|(\bios\b)|(iphone)|(ipad)|(ipod)|(pdtv)|(hdtv)|(video streams)|(movie)|(audiobook)|(audible)|(recorded books)|(spoken book)|(speech)|(read by)\:?|(narrator)\:?|(narrated by)';
+					$pattern = $pattern . '|(dvd)|(ntsc)|(m4v)|(mov\b)|(avi\b)|(xvid)|(divx)|(mkv)|(amazon\.)[a-z]{2,3}.*\/dp\/|(anidb.net).*aid=|(\blame\b)|(\btrack)|(trax)|(t r a c k)|(music)|(44.1kHz)|video (game)|type:(game)|(game) Type|(game)[ \.]+|(platform)|(console)|\b(win(?:dows|all|xp)\b)|(\bwin\b)';
+					$pattern = $pattern . '|(m3u)|(flac\b)|(application)|(plugin)|(\bcrack\b)|(install\b)|(setup)|(magazin)|(x264)|(h264)|(itunes\.apple\.com\/)|(sport)|(deportes)|(nhl)|(nfl)|(\bnba)|(ncaa)|(album)|(\bepub\b)|(mobi)|format\W+?[^\r]*(pdf)/iU';
 
-					if (($m == 'os' || $m == 'platform' || $m == 'console') && preg_match('/(?:\bos\b(?: type)??|platform|console)[ \.\:\}]+(\w+?).??(\w*?)/iU', $nfo, $set))
+					$matches = preg_split($pattern, $nfo, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+
+					array_shift($matches);
+
+					$matches = $this->doarray($matches);
+
+					foreach($matches as $m)
 					{
+						if (isset($m))
+							$case = preg_replace('/ /', '', $m);
+						else
+							$case = '';
 
-						if (isset($set[1]))
+						if (($m == 'os' || $m == 'platform' || $m == 'console') && preg_match('/(?:\bos\b(?: type)??|platform|console)[ \.\:\}]+(\w+?).??(\w*?)/iU', $nfo, $set))
 						{
-			//	var_dump($set);
-							$case = strtolower($set[1]);
+
+							if (isset($set[1]))
+							{
+				//	var_dump($set);
+								$case = strtolower($set[1]);
+							}
+							if (strlen($set[2]) && (stripos($set[2], 'mac') !== false || stripos($set[2], 'osx') !== false))
+							{
+								$case = strtolower($set[2]);
+							}
 						}
-						if (strlen($set[2]) && (stripos($set[2], 'mac') !== false || stripos($set[2], 'osx') !== false))
-						{
-							$case = strtolower($set[2]);
-						}
+
+						$pos = $this->nfopos ($nfo, $m);
+						echo "$case $pos ".$row['guid']."\n";
+
+						if ($pos !== false && $pos > 0.55 && $case != 'imdb')
+							continue;
+
+						if ($this->matchnfo($case, $nfo, $row))
+							continue(2);
 					}
-
-					$pos = $this->nfopos ($nfo, $m);
-
-					if ($pos !== false && $pos > 0.55 && $case != 'imdb')
-						continue;
-
-					echo "$case ".round($pos/strlen($nfo)*100, 0)." ".$row['guid']."\n";
-
-					if ($this->matchnfo($case, $nfo, $row))
-						continue(2);
 				}
 			}
-		}
 	}
 
 	function musicnzb($id = '')

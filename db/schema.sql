@@ -78,6 +78,7 @@ CREATE TABLE `releases`
 `jpgstatus` TINYINT(1) NOT NULL DEFAULT 0,
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
+`dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1017,7 +1018,7 @@ INSERT INTO `site`
 	('postdelay', 300),
 	('processaudiosample', 0),
 	('predbversion', 1),
-	('sqlpatch', '70');
+	('sqlpatch', '72');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
