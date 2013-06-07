@@ -51,24 +51,27 @@ function updaterelease($foundName, $id, $groupname)
 	
 }
 $results = getReleasez();
-$db = new DB();
-foreach ($results as $result) {
-	if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
-	die("PreDB Maintenance");
-	}
-	$processed = FALSE;
-	$x = substr($result['name'],0,32);
-	if (!strstr($x, '.') == TRUE) {
-		if (!strstr($x, ' ') == TRUE) {
-			if (!strstr($x, '_') == TRUE) {
-				if (!strstr($x, '(') == TRUE) {
-					if (!strstr($x, '-') == TRUE) {
-						$r = getReleaseName($result['name']);
-						if (strlen($r) > 5) {
-							if (!strstr($r, 'cloudflare') == TRUE) {
-								if (strstr($r, '-') == TRUE) {
-									updaterelease($r, $result['ID'], $result['name']);
-								$processed = TRUE;
+if (count($results) > 0)
+{
+	$db = new DB();
+	foreach ($results as $result) {
+		if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
+			die("PreDB Maintenance");
+		}
+		$processed = FALSE;
+		$x = substr($result['name'],0,32);
+		if (!strstr($x, '.') == TRUE) {
+			if (!strstr($x, ' ') == TRUE) {
+				if (!strstr($x, '_') == TRUE) {
+					if (!strstr($x, '(') == TRUE) {
+						if (!strstr($x, '-') == TRUE) {
+							$r = getReleaseName($result['name']);
+							if (strlen($r) > 5) {
+								if (!strstr($r, 'cloudflare') == TRUE) {
+									if (strstr($r, '-') == TRUE) {
+										updaterelease($r, $result['ID'], $result['name']);
+									$processed = TRUE;
+									}
 								}
 							}
 						}
@@ -76,19 +79,21 @@ foreach ($results as $result) {
 				}
 			}
 		}
-	}
-	if ($processed == TRUE) {
-		if (ENABLE_ECHO == TRUE)
-		{
-			echo "Release found " . $r . "\n";
+		if ($processed == TRUE) {
+			if (ENABLE_ECHO == TRUE)
+			{
+				echo "Release found " . $r . "\n";
+			}
+			$db->query(sprintf("update releases set dehashstatus = 1 where ID = %s", $result['ID']));
+		} else {
+			if (ENABLE_ECHO == TRUE)
+			{
+				echo $result['name']." not found\n";
+			}
+			$db->query(sprintf("update releases set dehashstatus = -1 where ID = %s", $result['ID']));
 		}
-		$db->query(sprintf("update releases set dehashstatus = 1 where ID = %s", $result['ID']));
-	} else {
-		if (ENABLE_ECHO == TRUE)
-		{
-			echo $result['name']." not found\n";
-		}
-		$db->query(sprintf("update releases set dehashstatus = -1 where ID = %s", $result['ID']));
 	}
 }
+else
+	echo "All inner-sanctum releases have been processed.\n";
 ?>
