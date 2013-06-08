@@ -73,4 +73,3 @@ SAMPLE APACHE VHOST CONFIG
 	        LogLevel warn
 	        ServerSignature Off
 	</VirtualHost>
-
