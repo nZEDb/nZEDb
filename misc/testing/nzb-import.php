@@ -96,7 +96,6 @@ else
 		$importfailed = false;
 		$nzb = file_get_contents($nzbFile);
 
-		libxml_use_internal_errors(true);
 		$xml = @simplexml_load_string($nzb);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 		{

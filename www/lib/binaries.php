@@ -307,29 +307,12 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					/*if(preg_match('/.nzb\"/', $msg['Subject']))
-					{
-						$nzbparts = 0;
-						$totalparts = 1;
-						if(preg_match('/\((?P<part>\d*)\/(?P<total>\d*)\)/', $msg['Subject'], $matchesparts))
-						{
-							$nzbparts = $matchesparts['part'];
-							$totalparts = $matchesparts['total'];
-						}
-						//echo $nzbparts." - ".$this->message[$subject]['CollectionHash']."\n";
-						$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values ('%s', '%s', '%s', '%s', '%s', %d, %d, %d, FROM_UNIXTIME('%s'))", substr($msg['Message-ID'],1,-1), $groupArr['name'], $msg['Number'], $subject, $this->message[$subject]['CollectionHash'], (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $this->message[$subject]['Date']));
-						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
-						//var_dump($msg);
-    				}*/
-
 					if((int)$matches[1] > 0)
 					{
 						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
 					}
 				}
 			}
-
-			//require("/var/www/nZEDb/getnzbs.php");
 
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
