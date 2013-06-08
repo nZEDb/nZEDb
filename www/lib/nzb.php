@@ -160,24 +160,25 @@ class NZB
 		foreach($xml->file as $file) 
 		{
 			//subject
+			//var_dump($file);
 			$title = $file->attributes()->subject;
 			if (preg_match('/\.par2/i', $title)) 
 				$num_pars++;
 
 			$result[$i]['title'] = "$title";
-			
+
 			if (preg_match('/\.(\d{2,3}|7z|ace|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|cue|deb|divx|doc|dot|eml|enc|exe|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|jpg|js|lua|m|m3u|mm|mov|mp3|mpg|nfo|nzb|odc|odf|odg|odi|odp|ods|odt|ogg|par2|parity|pdf|pgp|php|pl|png|ppt|ps|py|r\d{2,3}|ram|rar|rb|rm|rpm|rtf|sfv|sig|sql|srs|swf|sxc|sxd|sxi|sxw|tar|tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|zip)[" ](?!(\)|\-))/i', $file->attributes()->subject, $ext))
 			{
 				if (preg_match('/\.(r\d{2,3})/i', $ext[0], $extrar))
 					$ext[1] = "rar";
-				
+
 				$result[$i]['ext'] = strtolower($ext[1]);
 			}
 			else
 			{
 				$result[$i]['ext'] = "";
 			}
-			
+
 			//filesize
 			$filesize = $numsegs = 0;
 			foreach($file->segments->segment as $segment)
@@ -186,28 +187,31 @@ class NZB
 				$numsegs++;
 			}
 			$result[$i]['size'] = $filesize;
-			
+
 			//file completion
 			preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $title, $parts);
 			$result[$i]['partstotal'] = $parts['total'];
 			$result[$i]['partsactual'] = $numsegs;
-			
-			if (!isset($result[$i]["groups"]))
-				$result[$i]["groups"] = array();
-			if (!isset($result[$i]["segments"]))
-				$result[$i]["segments"] = array();
+
+			if (!isset($result[$i]['groups']))
+				$result[$i]['groups'] = array();
+			if (!isset($result[$i]['segments']))
+				$result[$i]['segments'] = array();
 
 			foreach ($file->groups->group as $g)
-				$result[$i]["groups"] =  array_merge($result[$i]["groups"], (array) $g);
+			{
+				array_push($result[$i]['groups'], (string)$g);
+			}
 
 			foreach ($file->segments->segment as $s)
-				$result[$i]['segments'] = array_merge($result[$i]["segments"], (array) $s);
+			{
+				array_push($result[$i]['segments'], (string)$s);
+			}
 
 			unset($result[$i]['segments']['@attributes']);
 
 			$i++;
 		}
-	   
 		return $result;
 	}
 
