@@ -35,6 +35,7 @@ class DB
 		{
 			return "NULL";
 		} else {
+		$str = preg_replace("/[\x01-\x20\x80-\xff]/", " ", $str);
 		return "'".DB::$db->real_escape_string($str)."'";
 	}
 	}
