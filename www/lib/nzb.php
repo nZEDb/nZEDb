@@ -192,6 +192,19 @@ class NZB
 			$result[$i]['partstotal'] = $parts['total'];
 			$result[$i]['partsactual'] = $numsegs;
 			
+			if (!isset($result[$i]["groups"]))
+				$result[$i]["groups"] = array();
+			if (!isset($result[$i]["segments"]))
+				$result[$i]["segments"] = array();
+
+			foreach ($file->groups->group as $g)
+				$result[$i]["groups"] =  array_merge($result[$i]["groups"], (array) $g);
+
+			foreach ($file->segments->segment as $s)
+				$result[$i]['segments'] = array_merge($result[$i]["segments"], (array) $s);
+
+			unset($result[$i]['segments']['@attributes']);
+
 			$i++;
 		}
 	   
