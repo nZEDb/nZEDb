@@ -421,7 +421,15 @@
 	<td><label for="deletepasswordedrelease">Delete Passworded Releases</label>:</td>
 	<td>
 		{html_radios id="deletepasswordedrelease" name='deletepasswordedrelease' values=$yesno_ids output=$yesno_names selected=$fsite->deletepasswordedrelease separator='<br />'}
-		<div class="hint">Whether to delete releases which are passworded or potentially passworded.<br/></div>
+		<div class="hint">Whether to delete releases which are passworded passworded.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="deletepossiblerelease">Delete Possibly Passworded Releases</label>:</td>
+	<td>
+		{html_radios id="deletepossiblerelease" name='deletepossiblerelease' values=$yesno_ids output=$yesno_names selected=$fsite->deletepossiblerelease separator='<br />'}
+		<div class="hint">Whether to delete releases which are potentially passworded.<br/></div>
 	</td>
 </tr>
 
