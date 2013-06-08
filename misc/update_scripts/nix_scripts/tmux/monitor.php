@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2345";
+$version="0.1r2355";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -639,7 +639,7 @@ while( $i > 0 )
 	if ( $running == "TRUE" )
 	{
 		//fix names
-		if (( $fix_names == "TRUE" ) && ( $i == 1 ) && ( TIME() - $time8 < 7200 ))
+		if (( $fix_names == "TRUE" ) && ( $i == 1 ))
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);

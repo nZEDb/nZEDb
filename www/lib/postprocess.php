@@ -335,6 +335,7 @@ class PostProcess
 				ob_end_clean();
 
 				$nzbfiles = $nzb->nzbFileList($nzbfile);
+				//var_dump($nzbfiles);
 				if (!$nzbfiles)
 					continue;
 
@@ -357,40 +358,40 @@ class PostProcess
 					// Look for a sample.
 					if ($processSample && preg_match("/sample/i", $nzbcontents["title"]) && !preg_match("/\.(jpg|jpeg)/i", $nzbcontents["title"]))
 					{
-						if (isset($nzbcontents["segments"]) && empty($samplemsgid))
+						if (isset($nzbcontents['segments']) && empty($samplemsgid))
 						{
 							$samplegroup = $groupName;
-							$samplemsgid[] = $nzbcontents["segments"][0];
-							$samplemsgid[] = $nzbcontents["segments"][1];
+							$samplemsgid[] = $nzbcontents['segments'][0];
+							$samplemsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 					// Look for a media file.
 					elseif ($processMediainfo && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i', $nzbcontents["title"]) && !preg_match("/sample/i", $nzbcontents["title"]))
 					{
-						if (isset($nzbcontents["segments"]) && empty($mediamsgid))
+						if (isset($nzbcontents['segments']) && empty($mediamsgid))
 						{
 							$mediagroup = $groupName;
-							$mediamsgid[] = $nzbcontents["segments"][0];
+							$mediamsgid[] = $nzbcontents['segments'][0];
 						}
 					}
 					// Look for a audio file.
 					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $nzbcontents["title"], $type))
 					{
-						if (isset($nzbcontents["segments"]) && empty($audiomsgid))
+						if (isset($nzbcontents['segments']) && empty($audiomsgid))
 						{
 							$audiogroup = $groupName;
 							$audiotype = $type[1];
-							$audiomsgid[] = $nzbcontents["segments"][0];
+							$audiomsgid[] = $nzbcontents['segments'][0];
 						}
 					}
 					// Look for a JPG picture.
 					elseif (!preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && $processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents["title"]))
 					{
-						if (isset($nzbcontents["segments"]) && empty($jpgmsgid))
+						if (isset($nzbcontents['segments']) && empty($jpgmsgid))
 						{
 							$jpggroup = $groupName;
-							$jpgmsgid[] = $nzbcontents["segments"][0];
-							$jpgmsgid[] = $nzbcontents["segments"][1];
+							$jpgmsgid[] = $nzbcontents['segments'][0];
+							$jpgmsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 				}

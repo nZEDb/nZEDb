@@ -122,17 +122,17 @@ class Nntp extends Net_NNTP_Client
 			return false;
 		}
 
-		$body = $this->getArticle($partMsgId, true);
+		$body = $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 		{
-			echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
+			//echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
 			return false;
 		}
 
 		$message = $this->decodeYenc($body);
 		if (!$message)
 		{
-			echo "Yenc decode failure";
+			//echo "Yenc decode failure";
 			return false;
         }
 
