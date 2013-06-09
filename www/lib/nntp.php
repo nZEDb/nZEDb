@@ -134,7 +134,7 @@ class Nntp extends Net_NNTP_Client
 		{
 			//echo "Yenc decode failure";
 			return false;
-        }
+		}
 
 		return $message;
 	}

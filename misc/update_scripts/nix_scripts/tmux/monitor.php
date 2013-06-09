@@ -1,5 +1,4 @@
 <?php
-
 require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."lib/postprocess.php");
 require_once(WWW_DIR."lib/framework/db.php");
@@ -907,7 +906,15 @@ while( $i > 0 )
 				$backsleep = floor($collections_table / 500);
 			else
 				$backsleep = $back_timer;
-			if (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+
+			if (( $backfill == "4" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			{
+				$color = get_color();
+				$log = writelog($panes0[3]);
+				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
+			}
+			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				$color = get_color();
 				$log = writelog($panes0[3]);
