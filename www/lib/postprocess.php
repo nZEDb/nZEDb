@@ -362,7 +362,8 @@ class PostProcess
 						{
 							$samplegroup = $groupName;
 							$samplemsgid[] = $nzbcontents['segments'][0];
-							$samplemsgid[] = $nzbcontents['segments'][1];
+							if (count($nzbcontents['segments']) >= 2)
+								$samplemsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 					// Look for a media file.
@@ -372,6 +373,8 @@ class PostProcess
 						{
 							$mediagroup = $groupName;
 							$mediamsgid[] = $nzbcontents['segments'][0];
+							//if (count($nzbcontents['segments']) >= 2)
+								//$mediamsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 					// Look for a audio file.
@@ -382,6 +385,8 @@ class PostProcess
 							$audiogroup = $groupName;
 							$audiotype = $type[1];
 							$audiomsgid[] = $nzbcontents['segments'][0];
+							//if (count($nzbcontents['segments']) >= 2)
+								//$audiomsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 					// Look for a JPG picture.
@@ -391,7 +396,8 @@ class PostProcess
 						{
 							$jpggroup = $groupName;
 							$jpgmsgid[] = $nzbcontents['segments'][0];
-							$jpgmsgid[] = $nzbcontents['segments'][1];
+							if (count($nzbcontents['segments']) >= 2)
+								$jpgmsgid[] = $nzbcontents['segments'][1];
 						}
 					}
 				}
@@ -867,42 +873,44 @@ class PostProcess
 				$this->size = $files[0]["size"] * 1.005;
 				$this->sum = $this->segsize;
 				$this->adj = 1;
-
+				if (!isset($output))
+					$output = array();
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $tmpPath.'rarfile.rar';
 				file_put_contents($rarfile, $fetchedBinary);
-				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
-				$output = runCmd($execstring, false, true);
-
-				if (preg_match("/ok/",  $output[count($output)-1]))
+				if (file_exists($rarfile))
 				{
-					// If unrar returned 'ok', use the extracted files to populate releasefiles.
-					$files = scandir($tmpPath);
-
-					foreach($files as $file)
-						{
-						if ($rar->open($tmpPath.$file, true))
-							$rarfiles = $rar->getArchiveFileList();
-							$range = mt_rand(0,32767);
-							if (isset($file["range"]))
-								$range = $file["range"];
-
-						$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
-					}
-				}
-				else
-				{
-					// Error while unraring, use the parent file info.
-					foreach ($files as $file)
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -ierr -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
+					@$output = runCmd($execstring, false, true);
+					if (count($output) != 0 && preg_match("/ok/",  $output[count($output)-1]))
 					{
-						if (isset($file["name"]))
+						// If unrar returned 'ok', use the extracted files to populate releasefiles.
+						$files = scandir($tmpPath);
+						foreach($files as $file)
 						{
-							$range = mt_rand(0,32767);
-							if (isset($file["range"]))
-								$range = $file["range"];
-
-							$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
+							if ($rar->open($tmpPath.$file, true))
+							{
+								$rarfiles = $rar->getArchiveFileList();
+								$range = mt_rand(0,32767);
+								if (isset($file["range"]))
+									$range = $file["range"];
+								$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
+							}
+						}
+					}
+					else
+					{
+						// Error while unraring, use the parent file info.
+						foreach ($files as $file)
+						{
+							if (isset($file["name"]))
+							{
+								$range = mt_rand(0,32767);
+								if (isset($file["range"]))
+									$range = $file["range"];
+								$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
+							}
 						}
 					}
 				}
@@ -1004,7 +1012,7 @@ class PostProcess
 			{
 				if (is_file($mediafile) && preg_match("/".$this->videofileregex."$/i",$mediafile))
 				{
-					$xmlarray = runCmd('"'.$mediainfo.'" --Output=XML "'.$mediafile.'"');
+					@$xmlarray = runCmd('"'.$mediainfo.'" --Output=XML "'.$mediafile.'"');
 					if (is_array($xmlarray))
 					{
 						$xmlarray = implode("\n",$xmlarray);
@@ -1041,7 +1049,7 @@ class PostProcess
 				{
 					if ($retval === false)
 					{
-						$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
 						if (is_array($xmlarray))
 						{
 							$xmlarray = implode("\n",$xmlarray);

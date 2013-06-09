@@ -41,10 +41,15 @@ require_once dirname(__FILE__).'/rarinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.3
+ * @version    1.6
  */
 class RecursiveRarInfo extends RarInfo
 {
+	/**
+	 * The source path label of the main parent archive.
+	 */
+	const MAIN_SOURCE = 'main';
+
 	/**
 	 * Cached list of any embedded archive objects.
 	 * @var array
@@ -74,19 +79,29 @@ class RecursiveRarInfo extends RarInfo
 		if (empty($this->blocks)) {return false;}
 
 		if (empty($this->archives)) foreach ($this->getBlocks() as $block) {
-			if ($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE) {
-
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			 && !empty($block['file_name']) && empty($block['is_dir'])
+			) {
 				// Check the file extensions (lazy!)
 				$ext = pathinfo($block['file_name'], PATHINFO_EXTENSION);
 				if (preg_match('/(rar|r[0-9]+)/', $ext)) {
-					$this->archives[$block['file_name']] = $this->getArchive($block['file_name']);
+					if ($archive = $this->getArchive($block['file_name'])) {
+						$this->archives[$block['file_name']] = $archive;
+					}
 				}
 			}
 		}
 
 		// Return a summary or object list
-		return $summary ? array_map(function ($rar) {return $rar->getSummary(true);},
-			$this->archives) : $this->archives;
+		if ($summary) {
+			$ret = array();
+			foreach ($this->archives as $name => $archive) {
+				$ret[$name] = $archive->getSummary(true);
+			}
+			return $ret;
+		}
+
+		return $this->archives;
 	}
 
 	/**
@@ -109,17 +124,16 @@ class RecursiveRarInfo extends RarInfo
 
 		foreach ($this->blocks as $block) {
 			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
-			  && $block['file_name'] == $filename && empty($block['is_dir'])
-			 ) {
+			  && !empty($block['file_name']) && empty($block['is_dir']) && $block['file_name'] == $filename
+			) {
 				// Create the new archive object
 				$rar = new self;
 				$start = $this->start + $block['offset'] + $block['head_size'];
+				$end   = min($this->end, $start + $block['pack_size'] - 1);
 				if ($this->file) {
-					$end = min($this->end, $start + $block['pack_size'] - 1);
 					$rar->open($this->file, $this->isFragment, array($start, $end));
 				} else {
-					$length = min($this->length, $block['pack_size']);
-					$rar->setData(substr($this->data, $start, $length), $this->isFragment);
+					$rar->setData($this->data, $this->isFragment, array($start, $end));
 				}
 
 				// Make any error messages more specific
@@ -140,8 +154,8 @@ class RecursiveRarInfo extends RarInfo
 
 	/**
 	 * Provides the contents of the current archive in a flat list, optionally
-	 * recursing through all embedded archives as well, and appends a 'source'
-	 * field to each item with the archive source path.
+	 * recursing through all embedded archives as well, with a 'source' field
+	 * added to each item that includes the archive source path.
 	 *
 	 * @param   boolean  $recurse   list all archive contents recursively?
 	 * @param   string   $source    the archive source of the file item
@@ -154,7 +168,7 @@ class RecursiveRarInfo extends RarInfo
 
 		// Start with the main parent
 		if ($source == null) {
-			$source = 'main';
+			$source = self::MAIN_SOURCE;
 			$ret = $this->getFileList();
 			foreach ($ret as &$file) {$file['source'] = $source;}
 		}
@@ -264,9 +278,11 @@ class RecursiveRarInfo extends RarInfo
 			return parent::getFileRangeInfo($filename);
 
 		// Get the range info from the archive file list
-		$source = (strpos($source, 'main') !== 0) ? 'main > '.$source : $source;
+		$source = (strpos($source, self::MAIN_SOURCE) !== 0) ? (self::MAIN_SOURCE.' > '.$source) : $source;
 		foreach ($this->getArchiveFileList(true) as $file) {
-			if ($file['name'] == $filename && $file['source'] == $source && empty($file['is_dir'])) {
+			if (!empty($file['name']) && empty($file['is_dir']) && $file['name'] == $filename
+			 && $file['source'] == $source
+			) {
 				return explode('-', $file['range']);
 			}
 		}

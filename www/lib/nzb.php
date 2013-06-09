@@ -207,9 +207,8 @@ class NZB
 			{
 				array_push($result[$i]['segments'], (string)$s);
 			}
-
+			//var_dump($result);
 			unset($result[$i]['segments']['@attributes']);
-
 			$i++;
 		}
 		return $result;

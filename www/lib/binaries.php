@@ -222,7 +222,6 @@ class Binaries
 		$n = $this->n;
 		$backfill = new Backfill();
 		$groups = new Groups;
-		$binaries = new Binaries();
 		$this->startGroup = microtime(true);
 		$site = new Sites;
 		$backthread = $site->get()->backfillthreads;
@@ -257,12 +256,14 @@ class Binaries
 		}
 		if ($backthread === $threads)
 		{
+			$binaries = new Binaries();
 			//echo "Thread number ".$threads."\n";
-			$db->query(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($last), $groupArr['ID']));
+			//$db->query(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($last), $groupArr['ID']));
 			//printf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($last), $groupArr['ID']);
-			$last_record_postdate = $backfill->postdate($nntp,$last,false);
-			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
+			//$last_record_postdate = $backfill->postdate($nntp,$last,false);
+			//$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			//printf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']);
+			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			$worked = number_format(20000 * $threads);
 			echo str_replace('alt.binaries','a.b',$data["group"])." processed ".$worked." parts $n $n";
@@ -367,12 +368,29 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
+					if(preg_match('/.nzb\"/', $msg['Subject']))
+					{
+						$nzbparts = 0;
+						$totalparts = 1;
+						if(preg_match('/\((?P<part>\d*)\/(?P<total>\d*)\)/', $msg['Subject'], $matchesparts))
+						{
+							$nzbparts = $matchesparts['part'];
+							$totalparts = $matchesparts['total'];
+						}
+						//echo $nzbparts." - ".$this->message[$subject]['CollectionHash']."\n";
+						//$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
+						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
+						//var_dump($msg);
+					}
+
 					if((int)$matches[1] > 0)
 					{
 						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
 					}
 				}
 			}
+
+			//require("/var/www/nZEDb/getnzbs.php");
 
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{

@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.3
+ * @version    2.4
  */
 abstract class ArchiveReader
 {
@@ -119,6 +119,9 @@ abstract class ArchiveReader
 
 		// Hack for Windows
 		if (DIRECTORY_SEPARATOR === '\\') {
+			if (! extension_loaded('com_dotnet')) {
+				return trim(shell_exec('for %f in ('.escapeshellarg($file).') do @echo %~zf')) + 0;
+			}
 			$com = new COM('Scripting.FileSystemObject');
 			$f = $com->GetFile($file);
 			return $f->Size + 0;

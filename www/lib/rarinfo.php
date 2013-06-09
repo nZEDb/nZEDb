@@ -49,7 +49,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    4.4
+ * @version    4.6
  */
 class RarInfo extends ArchiveReader
 {
@@ -401,7 +401,9 @@ class RarInfo extends ArchiveReader
 		$ret = array();
 		foreach ($this->blocks as $block) {
 			$b = $this->formatBlock($block, $asHex);
-			if ($b['head_type'] == self::R50_BLOCK_SERVICE && $b['file_name'] == self::R50_SERVICE_QUICKOPEN) {
+			if ($b['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
+			 && $b['file_name'] == self::R50_SERVICE_QUICKOPEN
+			) {
 				// Format any cached blocks
 				foreach ($b['cache_data'] as &$cache) {
 					$cache['data'] = $this->formatBlock($cache['data'], $asHex);
@@ -428,8 +430,8 @@ class RarInfo extends ArchiveReader
 		// Build the file list
 		$ret = array();
 		foreach ($this->blocks as $block) {
-			if ($block['head_type'] == self::BLOCK_FILE
-			 || $block['head_type'] == self::R50_BLOCK_FILE
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			 && !empty($block['file_name'])
 			) {
 				if ($skipDirs && !empty($block['is_dir'])) {continue;}
 				$ret[] = $this->getFileBlockSummary($block);
@@ -452,7 +454,7 @@ class RarInfo extends ArchiveReader
 
 		$ret = array();
 		foreach ($this->blocks as $block) {
-			if ($block['head_type'] == self::R50_BLOCK_SERVICE
+			if ($block['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
 			 && $block['file_name'] == self::R50_SERVICE_QUICKOPEN
 			) {
 				// Build the cached file header list
@@ -541,10 +543,14 @@ class RarInfo extends ArchiveReader
 
 		// Add block descriptors
 		$b['type'] = isset($this->blockNames[$block['head_type']]) ? $this->blockNames[$block['head_type']] : 'Unknown';
-		if ($block['head_type'] == self::BLOCK_SUB && isset($this->subblockNames[$block['file_name']])) {
+		if ($block['head_type'] == self::BLOCK_SUB && !empty($block['file_name'])
+		 && isset($this->subblockNames[$block['file_name']])
+		) {
 			$b['sub_type'] = $this->subblockNames[$block['file_name']];
 		}
-		if ($block['head_type'] == self::R50_BLOCK_SERVICE && isset($this->serviceNames[$block['file_name']])) {
+		if ($block['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
+		 && isset($this->serviceNames[$block['file_name']])
+		) {
 			$b['name'] = $this->serviceNames[$block['file_name']];
 		}
 		$b += $block;
@@ -603,9 +609,8 @@ class RarInfo extends ArchiveReader
 	protected function getFileRangeInfo($filename)
 	{
 		foreach ($this->blocks as $block) {
-			if (($block['head_type'] == self::BLOCK_FILE
-			  || $block['head_type'] == self::R50_BLOCK_FILE)
-			  && empty($block['is_dir'])
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			  && empty($block['is_dir']) && !empty($block['file_name'])
 			  && $block['file_name'] == $filename
 			) {
 				$start = $this->start + $block['offset'] + $block['head_size'];
@@ -765,6 +770,10 @@ class RarInfo extends ArchiveReader
 
 			// Add the current block to the list
 			$this->blocks[] = $block;
+
+			// Bail if this is an encrypted archive
+			if ($this->isEncrypted)
+				break;
 
 			// Skip to the next block, if any
 			if ($this->offset != $block['next_offset']) {
