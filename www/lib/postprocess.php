@@ -940,7 +940,7 @@ class PostProcess
 				// Only process if not a support file, rar/zip or file segment.
 				$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"] );
 							// Extract a NFO from the rar.
-				if ($nfostatus < 1 && $v["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $v["name"]))
+				if ($v["size"] > 100 && $v["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $v["name"]))
 							{
 					$nfodata = $rar->getFileData($v["name"], $v["source"]);
 								$nzbcontents = new NZBcontents(true);
