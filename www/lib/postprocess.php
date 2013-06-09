@@ -807,7 +807,7 @@ class PostProcess
 			if ($files !== false && $files[0]["compressed"] == 0 && $files[0]["name"] != $this->name)
 			{
 				$this->name = $files[0]["name"];
-				$this->size = $files[0]["size"] * 1.005;
+				$this->size = $files[0]["size"] * 0.9;
 				$this->sum = 0;
 				$this->adj = 0;
 
