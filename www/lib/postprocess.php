@@ -808,7 +808,7 @@ class PostProcess
 			if ($files !== false && $files[0]["compressed"] == 0 && $files[0]["name"] != $this->name)
 			{
 				$this->name = $files[0]["name"];
-				$this->size = $files[0]["size"] * 1.005;
+				$this->size = $files[0]["size"] * 0.9;
 				$this->sum = 0;
 				$this->adj = 0;
 
@@ -941,7 +941,7 @@ class PostProcess
 				// Only process if not a support file, rar/zip or file segment.
 				$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"] );
 							// Extract a NFO from the rar.
-				if ($nfostatus < 1 && $v["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $v["name"]))
+				if ($v["size"] > 100 && $v["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $v["name"]))
 							{
 					$nfodata = $rar->getFileData($v["name"], $v["source"]);
 								$nzbcontents = new NZBcontents(true);
