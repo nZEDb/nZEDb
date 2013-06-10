@@ -59,7 +59,7 @@ datas = [name for name in os.listdir(nzbs[0]) if os.path.isdir(os.path.join(nzbs
 if len(datas) == 0:
 	datas = nzbs
 
-#for sub in datas:
+#for sub in datas[0]:
 #	print sub
 
 #sys.exit()
@@ -75,7 +75,7 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.dir_q.get(True, 0.05)
-				if bulk[0] == "FALSE":
+				if bulk[0] == 'FALSE':
 					print '\n%s: Import from %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
 					self.result_q.put((self.name, dirname))
@@ -113,7 +113,7 @@ def main(args):
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
-		if bulk == "FALSE":
+		if bulk[0] == 'FALSE':
 			print '\n%s: Import from %s finished.' % (result[0], result[1])
 		else:
 			print '\n%s: Import-Bulk from %s finished.' % (result[0], result[1])
