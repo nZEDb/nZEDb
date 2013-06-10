@@ -574,7 +574,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * default dir permissions
      * @var int
      */
-    public $_dir_perms = 0771;
+    public $_dir_perms = 0755;
     /**
      * block tag hierarchy
      * @var array

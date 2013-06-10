@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.1
+ * @version    2.3
  */
 abstract class ArchiveReader
 {
@@ -49,7 +49,7 @@ abstract class ArchiveReader
 	 *
 	 * @param   integer  $low   the low 32 bits
 	 * @param   integer  $high  the high 32 bits
-	 * @return  float/integer
+	 * @return  float|integer
 	 */
 	public static function int64($low, $high)
 	{
@@ -75,13 +75,41 @@ abstract class ArchiveReader
 	}
 
 	/**
+	 * Converts Windows FILETIME format timestamps to UNIX timestamps.
+	 *
+	 * @param   integer  $low   the low 32 bits
+	 * @param   integer  $high  the high 32 bits
+	 * @return  integer  UNIX timestamp
+	 */
+	public static function win2unixtime($low, $high)
+	{
+		$ushift = 116444736000000000;
+		$ftime  = self::int64($low, $high);
+
+		return (int) floor(($ftime - $ushift) / 10000000);
+	}
+
+	/**
+	 * Converts a numeric value passed by reference to a hexadecimal string.
+	 *
+	 * @param   mixed  $value  the numeric value to convert
+	 * @return  void
+	 */
+	public static function convert2hex(&$value)
+	{
+		if (is_numeric($value)) {
+			$value = base_convert($value, 10, 16);
+		}
+	}
+
+	/**
 	 * Calculates the size of the given file.
 	 *
 	 * This is fiddly on 32-bit systems for sizes larger than 2GB due to internal
 	 * limitations - filesize() returns a signed long - and so needs hackery.
 	 *
 	 * @param   string   $file  full path to the file
-	 * @return  integer/float   the file size in bytes
+	 * @return  integer|float   the file size in bytes
 	 */
 	public static function getFileSize($file)
 	{
@@ -93,11 +121,11 @@ abstract class ArchiveReader
 		if (DIRECTORY_SEPARATOR === '\\') {
 			$com = new COM('Scripting.FileSystemObject');
 			$f = $com->GetFile($file);
-			return abs($f->Size);
+			return $f->Size + 0;
 		}
 
 		// Hack for *nix
-		return abs(trim(shell_exec('stat -c %s '.escapeshellarg($file))));
+		return trim(shell_exec('stat -c %s '.escapeshellarg($file))) + 0;
 	}
 
 	/**
@@ -111,7 +139,7 @@ abstract class ArchiveReader
 	{
 		$suffix = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		for ($i = 0; $bytes > 1024 && isset($suffix[$i+1]); $i++) {$bytes /= 1024;}
-		return round($bytes,$round).' '.$suffix[$i];
+		return round($bytes, $round).' '.$suffix[$i];
 	}
 
 	// ------ Instance variables and methods ---------------------------------------
@@ -433,7 +461,6 @@ abstract class ArchiveReader
 	 */
 	protected function saveRange(array $range, $destination)
 	{
-
 		// Check that the requested range is valid
 		$original = array($this->start, $this->end, $this->length);
 		if (!$this->setRange($range)) {
@@ -443,15 +470,15 @@ abstract class ArchiveReader
 
 		// Write the buffered data to disk
 		$this->seek(0);
-		@$fh = fopen($destination, 'wb');
+		$fh = fopen($destination, 'wb');
 		$rlen = $this->length;
 		$written = 0;
 		while ($this->offset < $this->length) {
 			$data = $this->read(min(1024, $rlen));
 			$rlen -= strlen($data);
-			@$written += fwrite($fh, $data);
+			$written += fwrite($fh, $data);
 		}
-		@fclose($fh);
+		fclose($fh);
 
 		// Restore the original range
 		list($this->start, $this->end, $this->length) = $original;

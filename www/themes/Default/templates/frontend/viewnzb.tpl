@@ -125,7 +125,7 @@
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 
-	{if $reVideo.releaseID|@count > 0}
+	{if $reVideo.releaseID|@count > 0 || $reAudio|@count > 0}
 	<tr><th>Media Info:</th>
 		<td style="padding:0;">
 			<table style="width:100%;" class="innerdata highlight">
@@ -273,7 +273,16 @@
 	{/if}
 
 	{if $release.haspreview == 1 && $userdata.canpreview == 1}
-	<tr><th>Preview:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/preview/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /></td></tr>
+		<tr><th>Preview:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/preview/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /> </td></tr>
+	{/if}
+	{if $release.videostatus == 1 && $userdata.canpreview == 1}
+	<tr><th>Video:</th><td><video width="450" controls><source src="{$smarty.const.WWW_TOP}/covers/video/{$release.guid}.ogv" type="video/ogg">Your browser does not support the video tag.</video></td></tr>
+	{/if}
+	{if $release.audiostatus == 1 && $userdata.canpreview == 1}
+	<tr><th>Audio:</th><td><audio controls><source src="{$smarty.const.WWW_TOP}/covers/audiosample/{$release.guid}.ogg" type="audio/ogg">Your browser does not support the audio element.</audio></td></tr>
+	{/if}
+	{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
+	<tr><th>Sample:</th><td><img width="450" src="{$smarty.const.WWW_TOP}/covers/sample/{$release.guid}_thumb.jpg" alt="{$release.searchname|escape:"htmlall"} screenshot" /></td></tr>
 	{/if}
 
 	<tr><th>Size:</th><td>{$release.size|fsize_format:"MB"}{if $release.completion > 0}&nbsp;({if $release.completion < 100}<span class="warning">{$release.completion}%</span>{else}{$release.completion}%{/if}){/if}</td></tr>
@@ -306,7 +315,7 @@
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possible Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}
@@ -315,8 +324,8 @@
 	<tr><th>Added:</th><td title="{$release.adddate}">{$release.adddate|date_format} ({$release.adddate|daysago})</td></tr>
 	<tr id="guid{$release.guid}"><th>Download:</th><td>
 		<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
-		<div class="icon icon_cart" title="Add to Cart"></div>
 		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+		<div class="icon icon_cart" title="Add to Cart"></div>
 	</td></tr>
 
 	{if $similars|@count > 1}

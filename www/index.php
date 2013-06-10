@@ -20,6 +20,7 @@ switch($page->page) {
 	case 'sendtosab':
 	case 'browse':
 	case 'browsegroup':
+	case 'predb':
 	case 'search':
 	case 'apihelp':
 	case 'movies':

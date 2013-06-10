@@ -6,12 +6,11 @@
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
-	define('FS_ROOT', realpath(dirname(__FILE__)));
-	require_once(FS_ROOT."/../../../www/config.php");
-	require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-	require_once(FS_ROOT."/../../../www/lib/releases.php");
-	require_once(FS_ROOT."/../../../www/lib/site.php");
-	require_once(FS_ROOT."/../../../www/lib/consoletools.php");
+	require_once(dirname(__FILE__)."/../../../www/config.php");
+	require_once(WWW_DIR."lib/framework/db.php");
+	require_once(WWW_DIR."lib/releases.php");
+	require_once(WWW_DIR."lib/site.php");
+	require_once(WWW_DIR."lib/consoletools.php");
 
 	$db = new Db;
 	$s = new Sites();
@@ -29,7 +28,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 
 	echo "Resetting groups.\n";
 	$db->query("UPDATE groups SET first_record=0, first_record_postdate=NULL, last_record=0, last_record_postdate=NULL");
-	
+	echo "Set releaseID's in predb to null.\n";
+	$db->query("UPDATE predb SET releaseID=NULL");
+
 	$relids = $db->query(sprintf("SELECT ID, guid FROM releases"));
 	echo "Deleting ".sizeof($relids)." releases and NZB's.\n";
 	$releases = new Releases();
@@ -41,7 +42,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 	}
 
-	echo "\n"."Deleted ".$relcount." release(s). This script ran for ";
+	if ($relcount > 0)
+		echo "\n";
+	echo "Deleted ".$relcount." release(s). This script ran for ";
 	echo $consoletools->convertTime(TIME() - $timestart);
 	echo ".\n";
 }

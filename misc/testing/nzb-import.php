@@ -6,7 +6,6 @@ require_once(FS_ROOT."/../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../www/lib/binaries.php");
 require_once(FS_ROOT."/../../www/lib/page.php");
 require_once(FS_ROOT."/../../www/lib/category.php");
-require_once(FS_ROOT."/../../www/lib/mysqlBulk.inc.php");
 require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
@@ -218,7 +217,7 @@ else
 		}
 		if (!$importfailed)
 		{
-			$relguid = md5(uniqid());
+			$relguid = sha1(uniqid());
 			$nzb = new NZB();
 		
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));

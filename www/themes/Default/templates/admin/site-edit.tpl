@@ -125,7 +125,7 @@
 <table class="input">
 
 <tr>
-	<td><label for="style">Categorize Language</label>:</td>
+	<td><label for="catlanguage">Categorize Language</label>:</td>
 	<td>
 		{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
 		<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
@@ -145,6 +145,22 @@
 	<td>
 		{html_radios id="catwebdl" name='catwebdl' values=$yesno_ids output=$yesno_names selected=$fsite->catwebdl separator='<br />'}
 		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="imdburl">IMDB.com</label>:</td>
+	<td>
+		{html_options class="imdburl" id="imdburl" name='imdburl' values=$imdb_urls output=$imdburl_names selected=$fsite->imdburl}
+		<div class="hint">Akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="imdblanguage">IMDB/Tmdb Language</label>:</td>
+	<td>
+		{html_options class="imdblanguage" id="imdblanguage" name='imdblanguage' values=$imdblang_ids output=$imdblang_names selected=$fsite->imdblanguage}
+		<div class="hint">Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)</div>
 	</td>
 </tr>
 
@@ -385,6 +401,13 @@
 		<div class="hint">The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
 	</td>
 </tr>
+<tr>
+	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess</label>:</td>
+	<td>
+		<input class="tiny" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
+	</td>
+</tr>
 
 <tr>
 	<td><label for="checkpasswordedrar">Check For Passworded Releases</label>:</td>
@@ -407,6 +430,30 @@
 	<td>
 		{html_options id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$fsite->showpasswordedrelease}
 		<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processjpg">Process JPG</label>:</td>
+	<td>
+		{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$fsite->processjpg separator='<br />'}
+		<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processvideos">Process Video Samples</label>:</td>
+	<td>
+		{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$fsite->processvideos separator='<br />'}
+		<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="processaudiosample">Process Audio Samples</label>:</td>
+	<td>
+		{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$fsite->processaudiosample separator='<br />'}
+		<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
 	</td>
 </tr>
 
@@ -483,6 +530,14 @@
 		<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
 	</td>
 </tr>
+
+<tr>
+	<td><label for="safebackfilldate">Safe Backfill Date</label>:</td>
+	<td>
+		<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$fsite->safebackfilldate}" />
+		<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
+	</td>
+</tr>
 </table>
 </fieldset>
 
@@ -491,10 +546,104 @@
 <table class="input">
 
 <tr>
+	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
+	<td>
+		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
+		<div class="hint">Levels deep to store the nzb Files.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="releaseretentiondays">Release Retention</label>:</td>
+	<td>
+		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
+		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="partretentionhours">Part Retention Hours</label>:</td>
+	<td>
+		<input class="tiny" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
+		<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="releasecompletion">Release Completion</label>:</td>
+	<td>
+		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
+		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="crossposttime">Crossposted Time Check</label>:</td>
+	<td>
+		<input class="tiny" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
+		<div class="hint">The time in hours to check for crossposted releases.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxmssgs">Max Messages</label>:</td>
+	<td>
+		<input class="tiny" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
+		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
+	<td>
+		<input class="tiny" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
+		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxpartrepair">Maximum repair per run</label>:</td>
+	<td>
+		<input class="tiny" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
+		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="partrepair">Part Repair</label>:</td>
+	<td>
+		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
+		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="grabstatus">Update grabs</label>:</td>
+	<td>
+		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
+		<div class="hint">Whether to update download counts when someone downloads a release.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="debuginfo">Debug information</label>:</td>
+	<td>
+		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
+		<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Advanced - Postprocessing Settings</legend>
+<table class="input">
+<tr>
 	<td><label for="maxaddprocessed">Maximum add PP per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
-		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.</div>
+		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run. Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 	</td>
 </tr>
 
@@ -518,7 +667,7 @@
 	<td><label for="maxnfoprocessed">Maximum NFO files per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
-		<div class="hint">The maximum amount of NFO files to process per run.</div>
+		<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 	</td>
 </tr>
 
@@ -526,7 +675,7 @@
 	<td><label for="maxrageprocessed">Maximum TVRage per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
-		<div class="hint">The maximum amount of TV shows to process with TVRage per run.</div>
+		<div class="hint">The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
 
@@ -534,7 +683,7 @@
 	<td><label for="maximdbprocessed">Maximum movies per run</label>:</td>
 	<td>
 		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
-		<div class="hint">The maximum amount of movies to process with IMDB per run.</div>
+		<div class="hint">The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
 
@@ -542,7 +691,7 @@
 	<td><label for="maxanidbprocessed">Maximum anidb per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
-		<div class="hint">The maximum amount of anime to process with anidb per run.</div>
+		<div class="hint">The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
 
@@ -550,7 +699,7 @@
 	<td><label for="maxmusicprocessed">Maximum music per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
-		<div class="hint">The maximum amount of music to process with amazon per run.</div>
+		<div class="hint">The maximum amount of music to process with amazon per run. This does not use an NNTP connection.</div>
 	</td>
 </tr>
 
@@ -558,7 +707,7 @@
 	<td><label for="maxgamesprocessed">Maximum games per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
-		<div class="hint">The maximum amount of games to process with amazon per run.</div>
+		<div class="hint">The maximum amount of games to process with amazon per run. This does not use an NNTP connection.</div>
 	</td>
 </tr>
 
@@ -566,7 +715,7 @@
 	<td><label for="maxbooksprocessed">Maximum books per run</label>:</td>
 	<td>
 		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
-		<div class="hint">The maximum amount of books to process with amazon per run.</div>
+		<div class="hint">The maximum amount of books to process with amazon per run. This does not use an NNTP connection</div>
 	</td>
 </tr>
 
@@ -574,111 +723,53 @@
 	<td><label for="amazonsleep">Amazon sleep time</label>:</td>
 	<td>
 		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
-		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by 3. https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</div>
+		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+<fieldset>
+<legend>Advanced - Threaded Settings</legend>
+<table class="input">
+<tr>
+	<td><label for="postthreads">Postprocessing Threads</label>:</td>
+	<td>
+		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+		<div class="hint">The number of threads for postprocessing. If using tmux scripts, this will use twice this number, since there are 2 panes for postprocessing.</div>
 	</td>
 </tr>
 
 <tr>
-    <td><label for="postthreads">Postprocessing Threads</label>:</td>
-    <td>
-        <input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-        <div class="hint">The number of threads for postprocessing.</div>
-    </td>
-</tr>
-
-<tr>
-    <td><label for="binarythreads">Update Binaries Threads</label>:</td>
-    <td>
-        <input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-        <div class="hint">The number of threads for update_binaries.</div>
-    </td>
-</tr>
-
-<tr>
-    <td><label for="backfillthreads">Backfill Threads</label>:</td>
-    <td>
-        <input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-        <div class="hint">The number of threads for backfill.</div>
-    </td>
-</tr>
-
-<tr>
-    <td><label for="nzbthreads">Import-nzb Threads</label>:</td>
-    <td>
-        <input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-        <div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
-    </td>
-</tr>
-
-<tr>
-	<td><label for="nzbsplitlevel">Nzb File Path Level Deep</label>:</td>
+	<td><label for="postdelay">Postprocessing Threads Delay</label>:</td>
 	<td>
-		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
-		<div class="hint">Levels deep to store the nzb Files.</div>
+		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />
+		<div class="hint">The time in milliseconds to delay postprocessing threaded startup. This will reduce bursting to mysql.</div>
 	</td>
 </tr>
 
 <tr>
-	<td><label for="releaseretentiondays">Release Retention</label>:</td>
+	<td><label for="binarythreads">Update Binaries Threads</label>:</td>
 	<td>
-		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
-		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
+		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<div class="hint">The number of threads for update_binaries.</div>
 	</td>
 </tr>
 
 <tr>
-	<td><label for="releasecompletion">Release Completion</label>:</td>
+	<td><label for="backfillthreads">Backfill Threads</label>:</td>
 	<td>
-		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
-		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<div class="hint">The number of threads for backfill.</div>
 	</td>
 </tr>
 
 <tr>
-	<td><label for="crossposttime">Crossposted Time Check</label>:</td>
+	<td><label for="nzbthreads">Import-nzb Threads</label>:</td>
 	<td>
-		<input class="tiny" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
-		<div class="hint">The time in hours to check for crossposted releases.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxmssgs">Max Messages</label>:</td>
-	<td>
-		<input class="small" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
-		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxnzbsprocessed">Maximum NZBs stage5</label>:</td>
-	<td>
-		<input class="small" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
-		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="maxpartrepair">Maximum repair per run</label>:</td>
-	<td>
-		<input class="small" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
-		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="partrepair">Part Repair</label>:</td>
-	<td>
-		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
-		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="grabstatus">Update grabs</label>:</td>
-	<td>
-		{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$fsite->grabstatus separator='<br />'}
-		<div class="hint">Whether to update download counts when someone downloads a release.</div>
+		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
 	</td>
 </tr>
 

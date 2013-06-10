@@ -12,9 +12,11 @@
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/namefixer.php");
+require_once(FS_ROOT."/../../../www/lib/predb.php");
 
 $n = "\n";
 $namefixer = new Namefixer;
+$predb = new Predb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
@@ -26,11 +28,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,1,1);
+					$predb->parseTitles(1,1,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,1,1);
+					$predb->parseTitles(2,1,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -57,11 +59,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,1,2);
+					$predb->parseTitles(1,1,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,1,2);
+					$predb->parseTitles(2,1,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -95,11 +97,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,2,1);
+					$predb->parseTitles(1,1,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,2,1);
+					$predb->parseTitles(2,1,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -126,11 +128,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,1,2,2);
+					$predb->parseTitles(1,1,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,1,2,2);
+					$predb->parseTitles(2,1,2,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -171,11 +173,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,1,1);
+					$predb->parseTitles(1,2,1,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,1,1);
+					$predb->parseTitles(2,2,1,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -202,11 +204,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,1,2);
+					$predb->parseTitles(1,2,1,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,1,2);
+					$predb->parseTitles(2,2,1,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -240,11 +242,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,1);
+					$predb->parseTitles(1,2,2,1);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,1);
+					$predb->parseTitles(2,2,2,1);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -271,11 +273,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			{
 				if ($argv[1] == 1)
 				{
-					$namefixer->fixNamesWithNames(1,2,2,2);
+					$predb->parseTitles(1,2,2,2);
 				}
 				else if ($argv[1] == 2)
 				{
-					$namefixer->fixNamesWithNames(2,2,2,2);
+					$predb->parseTitles(2,2,2,2);
 				}
 				else if ($argv[1] == 3)
 				{
@@ -312,16 +314,15 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 else
 {
 	exit("ERROR: You must supply 4 arguments.".$n.
+			"php fixReleaseNames.php 1 false other no ...: Fix release names, using the usenet subject in the past 3 hours with predb information.".$n.
+			"php fixReleaseNames.php 2 false other no ...: Fix release names, using the usenet subject with predb information.".$n.
 			"php fixReleaseNames.php 3 false other no ...: Fix release names using NFO in the past 6 hours.".$n.
 			"php fixReleaseNames.php 4 false other no ...: Fix release names using NFO.".$n.
 			"php fixReleaseNames.php 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.".$n.
 			"php fixReleaseNames.php 6 false other no ...: Fix release names in misc categories using File Name.".$n.
 			"The 2nd argument false will display the results, but not change the name, type true to have the names changed.".$n.
 			"The 3rd argument other will only do against other categories, to do against all categories use all.".$n.
-			"The 4th argument yes will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.".$n.$n.
-			"The following 2 are not recommended anymore.".$n.
-			"php fixReleaseNames.php 1 false other no ...: Fix release names, using the usenet subject in the past 6 hours.".$n.
-			"php fixReleaseNames.php 2 false other no ...: Fix release names, using the usenet subject.".$n.$n);
+			"The 4th argument yes will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.".$n.$n);
 }
 
 ?>

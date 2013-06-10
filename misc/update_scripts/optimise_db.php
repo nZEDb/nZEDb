@@ -1,6 +1,6 @@
 <?php
 
-require(dirname(__FILE__)."/config.php");
+require_once(dirname(__FILE__)."/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
 $db = new DB;
@@ -10,5 +10,3 @@ if ($tablecnt > 0)
 	exit ("Optimized ".$tablecnt." MYSQL tables succesfuly.\n");
 else
 	exit ("No MYSQL tables to optimize.\n");
-
-?>

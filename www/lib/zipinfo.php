@@ -51,7 +51,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.4
+ * @version    1.5
  */
 class ZipInfo extends ArchiveReader
 {
@@ -440,7 +440,8 @@ class ZipInfo extends ArchiveReader
 		while ($this->offset < $this->length) try {
 
 			// Get the next record header
-			if (($record = $this->getNextRecord()) === false) {continue;}
+			if (($record = $this->getNextRecord()) === false)
+				continue;
 
 			// Process the current record by type
 			$this->processRecord($record);
@@ -449,7 +450,9 @@ class ZipInfo extends ArchiveReader
 			$this->records[] = $record;
 
 			// Skip to the next record, if any
-			$this->seek($record['next_offset']);
+			if ($this->offset != $record['next_offset']) {
+				$this->seek($record['next_offset']);
+			}
 
 			// Sanity check
 			if ($record['offset'] == $this->offset) {

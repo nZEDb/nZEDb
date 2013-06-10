@@ -88,7 +88,7 @@
 				</div>
 			</td>
 			<td colspan="7" class="left" id="guid{$result.guid}">
-				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.artist|stripslashes|escape:"htmlall"} - {$result.title|stripslashes|escape:"htmlall"}</a> (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/music?year={$result.year}">{$result.year}</a>)</h2>
+				<h2><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{if $result.artist != ""}{$result.artist|stripslashes|escape:"htmlall"} - {/if}{$result.title|stripslashes|escape:"htmlall"}</a> (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/music?year={$result.year}">{$result.year}</a>)</h2>
 				{if $result.genre != ""}<b>Genre:</b> {$result.genre|escape:"htmlall"}<br />{/if}
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher|escape:"htmlall"}<br />{/if}
 				{if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br />{/if}
@@ -103,8 +103,8 @@
 					<br />
 					<div class="icon"><input type="checkbox" class="nzb_check" value="{$result.guid}" /></div>
 					<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
-					<div class="icon icon_cart" title="Add to Cart"></div>
 					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+					<div class="icon icon_cart" title="Add to Cart"></div>
 				</div>
 			</td>
 		</tr>

@@ -64,15 +64,15 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 $page->smarty->assign('passwd_ids', array(1,0));
 $page->smarty->assign('passwd_names', array( 'Deep (requires unrar)', 'None'));
 
-/*
- *0 = English
- *2 = Danish
- *3 = French
- *1 = German
- */
-
+/*0 = English, 2 = Danish, 3 = French, 1 = German*/
 $page->smarty->assign('langlist_ids', array(0,2,3,1));
 $page->smarty->assign('langlist_names', array( 'English', 'Danish', 'French', 'German'));
+
+$page->smarty->assign('imdblang_ids', array( 'en', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'tlh', 'no', 'po', 'ru', 'es', 'sv'));
+$page->smarty->assign('imdblang_names', array( 'English', 'Danish', 'Dutch', 'Finnish', 'French', 'German', 'Italian', 'Klingon', 'Norwegian', 'Polish', 'Russian', 'Spanish', 'Swedish'));
+
+$page->smarty->assign('imdb_urls', array(0,1));
+$page->smarty->assign('imdburl_names', array( 'imdb.com', 'akas.imdb.com'));
 
 $page->smarty->assign('menupos_ids', array(0,1,2));
 $page->smarty->assign('menupos_names', array( 'Right', 'Left', 'Top'));
