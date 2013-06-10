@@ -690,6 +690,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\" && \
+					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
 					$_php ${DIR}update_scripts/nzbx_ws_hashdecrypt.php $log && date +\"%D %T\" && sleep $dehash_timer' 2>&1 1> /dev/null");
 		}
 		else
@@ -743,7 +744,6 @@ while( $i > 0 )
 				$time3 = TIME();
 			$log = writelog($panes2[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
-					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		else
@@ -762,7 +762,6 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py non_amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 			else
 				shell_exec("tmux respawnp -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
-						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py non_amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		else
@@ -781,7 +780,6 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 			else
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
-						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log && \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		else
@@ -912,7 +910,8 @@ while( $i > 0 )
 				$color = get_color();
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
