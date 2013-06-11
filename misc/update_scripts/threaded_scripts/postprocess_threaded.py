@@ -79,7 +79,7 @@ def main(args):
 	threadID = Queue.Queue()
 
 	# Create the "thread pool"
-	pool = [WorkerThread(threadID=threadID) for i in range(1, int(run_threads[0]))]
+	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
 
 	# Start all threads
 	for thread in pool:

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2367";
+$version="0.1r2375";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -793,7 +793,7 @@ while( $i > 0 )
 		{
 			$color = get_color();
 			$log = writelog($panes1[3]);
-			shell_exec("tmux respawnp -t${tmux_session}:1.'echo \"\033[38;5;${color}m\" && \
+			shell_exec("tmux respawnp -t${tmux_session}:1.4 'echo \"\033[38;5;${color}m\" && \
 					$_phpn ${DIR}update_scripts/update_theaters.php $log && $_phpn ${DIR}update_scripts/update_tvschedule.php $log && date +\"%D %T\"' 2>&1 1> /dev/null");
 			$time4 = TIME();
 		}

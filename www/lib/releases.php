@@ -1,22 +1,22 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/binaries.php");
-require_once(WWW_DIR."/lib/users.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/consoletools.php");
-require_once(WWW_DIR."/lib/nzb.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/zipfile.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/releasefiles.php");
-require_once(WWW_DIR."/lib/releaseextra.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/releasecomments.php");
-require_once(WWW_DIR."/lib/postprocess.php");
-require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/users.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/consoletools.php");
+require_once(WWW_DIR."lib/nzb.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/zipfile.php");
+require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."lib/util.php");
+require_once(WWW_DIR."lib/releasefiles.php");
+require_once(WWW_DIR."lib/releaseextra.php");
+require_once(WWW_DIR."lib/releaseimage.php");
+require_once(WWW_DIR."lib/releasecomments.php");
+require_once(WWW_DIR."lib/postprocess.php");
+require_once(WWW_DIR."lib/groups.php");
+require_once(WWW_DIR."lib/namecleaning.php");
 
 class Releases
 {
@@ -1531,7 +1531,7 @@ class Releases
 		if ($this->echooutput)
 			echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT 1000"))
+		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
@@ -2110,12 +2110,12 @@ class Releases
 	{
 		$db = new DB();
 		return $db->query("SELECT concat(cp.title, ' > ', category.title) as title, COUNT(*) AS count
-FROM category
-left outer join category cp on cp.ID = category.parentID
-INNER JOIN releases ON releases.categoryID = category.ID
-WHERE releases.adddate > NOW() - INTERVAL 1 WEEK
-GROUP BY concat(cp.title, ' > ', category.title)
-ORDER BY COUNT(*) DESC");
+							FROM category
+							left outer join category cp on cp.ID = category.parentID
+							INNER JOIN releases ON releases.categoryID = category.ID
+							WHERE releases.adddate > NOW() - INTERVAL 1 WEEK
+							GROUP BY concat(cp.title, ' > ', category.title)
+							ORDER BY COUNT(*) DESC");
 	}
 
 }

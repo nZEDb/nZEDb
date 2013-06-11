@@ -34,7 +34,7 @@ foreach ($y as $z)
 function getReleasez()
 {
 	$db = new DB();
-	$result = $db->query(sprintf("SELECT * FROM releases WHERE dehashstatus = 0 AND fromname = 'HaShTaG@nzb.file' LIMIT 100"));
+	$result = $db->query(sprintf("SELECT * FROM releases WHERE dehashstatus = 0 AND fromname = 'HaShTaG@nzb.file' LIMIT 25"));
 	return $result;
 }
 

@@ -45,7 +45,7 @@ con = None
 # The MYSQL connection.
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
 cur = con.cursor()
-cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY name DESC limit 1")
+cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate ASC limit 1")
 datas = cur.fetchall()
 cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();
@@ -98,7 +98,7 @@ def main(args):
 	result_q = Queue.Queue()
 
 	# Create the "thread pool"
-	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(1, int(run_threads[0]))]
+	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
 
 	# Start all threads
 	for thread in pool:
