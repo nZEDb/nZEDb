@@ -119,6 +119,7 @@
 						Safe - Backfills 1 group until finished, using the number of threads allotted in admin.<br \>
 						Interval - Newest - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by backfill days (set in admin-view groups).<br />
 						Interval - Oldest - Backfills the number of groups as set in tmux (sorted by most backfilled in time), by backfill days (set in admin-view groups). This completes the smallest groups first.<br />
+						All - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
 						These settings are all per loop. Approximately every 60 minutes, every activated backfill group will be backfilled. This is to allow imcomplete collections to be completed and/or the 2 hour delay reset.</div>
 				</td>
 			</tr>

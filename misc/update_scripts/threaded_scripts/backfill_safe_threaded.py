@@ -125,6 +125,7 @@ def main(args):
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
 		thread.join()
+		print "All threads dead"
 
 if __name__ == '__main__':
 	import sys
