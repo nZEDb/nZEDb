@@ -51,7 +51,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.5
+ * @version    1.6
  */
 class ZipInfo extends ArchiveReader
 {
@@ -229,14 +229,17 @@ class ZipInfo extends ArchiveReader
 	public function getSummary($full=false, $skipDirs=false, $central=false)
 	{
 		$summary = array(
-			'zip_file' => $this->file,
-			'file_size' => $this->fileSize,
-			'data_size' => $this->dataSize,
-			'use_range' => "{$this->start}-{$this->end}",
+			'file_name'  => $this->file,
+			'file_size'  => $this->fileSize,
+			'data_size'  => $this->dataSize,
+			'use_range'  => "{$this->start}-{$this->end}",
 			'file_count' => $this->fileCount,
 		);
 		if ($full) {
 			$summary['file_list'] = $this->getFileList($skipDirs, $central);
+		}
+		if ($this->error) {
+			$summary['error'] = $this->error;
 		}
 
 		return $summary;
@@ -246,7 +249,7 @@ class ZipInfo extends ArchiveReader
 	 * Returns a list of the ZIP records found in the file/data in human-readable
 	 * format (for debugging purposes only).
 	 *
-	 * @return  array  list of stored records
+	 * @return  array|boolean  list of stored records, or false if none available
 	 */
 	public function getRecords()
 	{
@@ -276,7 +279,7 @@ class ZipInfo extends ArchiveReader
 	 * limited) Local File record data. Valid file records include directory entries,
 	 * but these can be skipped.
 	 *
-	 * @return  mixed  false if no records available, or array of file records
+	 * @return  array|boolean  list of file records, or false if none are available
 	 */
 	public function getFileList($skipDirs=false, $central=false)
 	{
@@ -287,7 +290,7 @@ class ZipInfo extends ArchiveReader
 		$ret = array();
 		foreach ($this->records as $record) {
 			if (($central && $record['type'] == self::RECORD_CENTRAL_FILE)
-				|| (!$central && $record['type'] == self::RECORD_LOCAL_FILE)
+			|| (!$central && $record['type'] == self::RECORD_LOCAL_FILE)
 			) {
 				if ($skipDirs && !empty($record['is_dir'])) {continue;}
 				$ret[] = $this->getFileRecordSummary($record);
@@ -404,8 +407,11 @@ class ZipInfo extends ArchiveReader
 	 *
 	 * @return  mixed  start position, or false if no valid signature found
 	 */
-	protected function findMarkerRecord()
+	public function findMarker()
 	{
+		if ($this->markerPosition !== null)
+			return $this->markerPosition;
+
 		// Buffer the data to search
 		try {
 			$buff = $this->read(min($this->length, $this->maxReadBytes));
@@ -416,10 +422,10 @@ class ZipInfo extends ArchiveReader
 
 		// Try to find the first Local File record
 		if (($pos = strpos($buff, self::RECORD_LOCAL_FILE)) !== false)
-			return $pos;
+			return $this->markerPosition = $pos;
 
 		// Otherwise this could be an empty ZIP file
-		return strpos($buff, self::RECORD_ENDCENTRAL);
+		return $this->markerPosition = strpos($buff, self::RECORD_ENDCENTRAL);
 	}
 
 	/**
@@ -430,7 +436,7 @@ class ZipInfo extends ArchiveReader
 	protected function analyze()
 	{
 		// Find the first record signature, if there is one
-		if (($startPos = $this->findMarkerRecord()) === false) {
+		if (($startPos = $this->findMarker()) === false) {
 			$this->error = 'Could not find any records, not a valid ZIP file';
 			return false;
 		}
@@ -465,6 +471,12 @@ class ZipInfo extends ArchiveReader
 		} catch (Exception $e) {
 			if ($this->error) {$this->close(); return false;}
 			break;
+		}
+
+		// Check for valid records
+		if (empty($this->records)) {
+			$this->error = 'No valid ZIP records were found';
+			return false;
 		}
 
 		// Analysis was successful

@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.4
+ * @version    2.5
  */
 abstract class ArchiveReader
 {
@@ -278,13 +278,18 @@ abstract class ArchiveReader
 	/**
 	 * Magic method for accessing protected properties.
 	 *
-	 * @return  mixed
+	 * @param   string  $name  the property name
+	 * @return  mixed   the property value
+	 * @throws  RuntimeException
 	 * @throws  LogicException
 	 */
 	public function __get($name)
 	{
 		// For backwards compatibility
 		if ($name == 'file') {return $this->file;}
+
+		if (!isset($this->$name))
+			throw new RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
 
 		throw new LogicException('Cannot access protected property '.get_class($this).'::$'.$name);
 	}
@@ -293,17 +298,25 @@ abstract class ArchiveReader
 	 * Convenience method that outputs a summary list of the archive information,
 	 * useful for pretty-printing.
 	 *
-	 * @return  array  archive summary
+	 * @param   boolean  $full  return a full summary?
+	 * @return  array    archive summary
 	 */
-	abstract public function getSummary();
+	abstract public function getSummary($full=false);
 
 	/**
 	 * Parses the stored archive info and returns a list of records for each of the
 	 * files in the archive.
 	 *
-	 * @return  mixed  an array of file records or false if none are available
+	 * @return  array|boolean  list of file records, or false if none are available
 	 */
 	abstract public function getFileList();
+
+	/**
+	 * Returns the position of the archive marker/signature.
+	 *
+	 * @return  mixed  Marker position, or false if none found
+	 */
+	abstract public function findMarker();
 
 	/**
 	 * Path to the archive file (if any).
@@ -376,6 +389,12 @@ abstract class ArchiveReader
 	 * @var integer
 	 */
 	protected $offset = 0;
+
+	/**
+	 * The position of the marker/signature relative to the $start position.
+	 * @var integer
+	 */
+	protected $markerPosition;
 
 	/**
 	 * Parses the archive data and stores the results locally.
@@ -460,7 +479,7 @@ abstract class ArchiveReader
 	 *
 	 * @param   array   $range        the absolute start and end positions
 	 * @param   string  $destination  full path of the file to create
-	 * @return  integer/boolean  number of bytes written or false on error
+	 * @return  integer|boolean  number of bytes written or false on error
 	 */
 	protected function saveRange(array $range, $destination)
 	{
@@ -603,6 +622,7 @@ abstract class ArchiveReader
 		$this->error = '';
 		$this->isFragment = false;
 		$this->fileCount = 0;
+		$this->markerPosition = null;
 	}
 
 } // End ArchiveInfo class

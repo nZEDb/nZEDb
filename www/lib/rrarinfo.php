@@ -3,7 +3,7 @@
 require_once dirname(__FILE__).'/rarinfo.php';
 
 /**
- * RecursiveRarInfo class.
+ * RecursiveRarInfo class [DEPRECATED].
  *
  * This is an example implementation of a class for recursively inspecting the
  * contents of RAR archives packed within RAR archives (Store method only).
@@ -38,10 +38,11 @@ require_once dirname(__FILE__).'/rarinfo.php';
  *
  * </code>
  *
- * @author     Hecks
- * @copyright  (c) 2010-2013 Hecks
- * @license    Modified BSD
- * @version    1.6
+ * @author      Hecks
+ * @copyright   (c) 2010-2013 Hecks
+ * @license     Modified BSD
+ * @version     1.6
+ * @deprecated  Replaced by ArchiveInfo
  */
 class RecursiveRarInfo extends RarInfo
 {
