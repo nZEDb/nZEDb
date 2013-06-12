@@ -7,8 +7,10 @@ import MySQLdb as mdb
 import subprocess
 import string
 import re
+from nntplib import NNTP
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+
 def readConfig():
 	Configfile = pathname+"/../../../www/config.php"
 	file = open( Configfile, "r")
@@ -41,48 +43,40 @@ config = readConfig()
 con = None
 # The MYSQL connection.
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
-
-# The group names.
 cur = con.cursor()
-cur.execute("select value from site where setting = 'nzbthreads'");
+cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate ASC limit 1")
+datas = cur.fetchall()
+cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();
-cur.execute("select value from tmux where setting = 'NZBS'");
-nzbs = cur.fetchone();
-cur.execute("select value from tmux where setting = 'IMPORT_BULK'");
-bulk = cur.fetchone();
 
-print "Sorting Folders in "+nzbs[0]+", be patient."
-#datas = sorted(os.walk(nzbs[0]))
-#datas = os.listdir(nzbs[0])
-#datas = [d for d in os.listdir(nzbs[0]) if os.path.isdir(d)]
-datas = [name for name in os.listdir(nzbs[0]) if os.path.isdir(os.path.join(nzbs[0], name))]
-if len(datas) == 0:
-	datas = nzbs
+if not datas:
+	print "No Groups enabled for backfill"
+	sys.exit()
 
-#for sub in datas[0]:
-#	print sub
+s = NNTP(config['NNTP_SERVER'], 119, config['NNTP_USERNAME'], config['NNTP_PASSWORD'],)
+resp, count, first, last, name = s.group(datas[0][0])
+print 'Group', name, 'has', count, 'articles, range', first, 'to', last
+print datas[0][1]
+geteach = (datas[0][1] - long(first)) / int(run_threads[0])
+if geteach > 20000:
+	geteach = 20000
+resp = s.quit()
 
-#sys.exit()
 
 class WorkerThread(threading.Thread):
-	def __init__(self, dir_q, result_q):
+	def __init__(self, threadID, result_q):
 		super(WorkerThread, self).__init__()
-		self.dir_q = dir_q
+		self.threadID = threadID
 		self.result_q = result_q
 		self.stoprequest = threading.Event()
 
 	def run(self):
 		while not self.stoprequest.isSet():
 			try:
-				dirname = self.dir_q.get(True, 0.05)
-				if bulk[0] == 'FALSE':
-					print '\n%s: Import from %s started.' % (self.name, dirname)
-					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
-					self.result_q.put((self.name, dirname))
-				else:
-					print '\n%s: Import-Bulk from %s started.' % (self.name, dirname)
-					subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+dirname])
-					self.result_q.put((self.name, dirname))
+				dirname = self.threadID.get(True, 0.05)
+				#print '\n%s: Backfill All %s started.' % (self.name, dirname)
+				subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+dirname])
+				self.result_q.put((self.name, dirname))
 			except Queue.Empty:
 				continue
 
@@ -92,11 +86,11 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	dir_q = Queue.Queue()
+	threadID = Queue.Queue()
 	result_q = Queue.Queue()
 
 	# Create the "thread pool"
-	pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(int(run_threads[0]))]
+	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
 
 	# Start all threads
 	for thread in pool:
@@ -106,17 +100,18 @@ def main(args):
 	work_count = 0
 	for gnames in datas:
 		work_count += 1
-		dir_q.put(os.path.join(nzbs[0],gnames))
+		threadID.put(gnames[0])
 
-	print 'Assigned %s folders to workers' % work_count
+	threads = int(run_threads[0])
+	for i in range(0, threads):
+		threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - 1, datas[0][1] - i * geteach - geteach, i+1))
+		#threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - geteach, datas[0][1] - i * geteach - 1, i+1))
+		work_count += 1
+
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
-		if bulk[0] == 'FALSE':
-			print '\n%s: Import from %s finished.' % (result[0], result[1])
-		else:
-			print '\n%s: Import-Bulk from %s finished.' % (result[0], result[1])
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it
@@ -127,3 +122,7 @@ if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
 
+final = ("%s %d %s" %(datas[0][0], datas[0][1] - int(run_threads[0]) * geteach, geteach))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+group = ("%s %d" %(datas[0][0], 1000))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])

@@ -49,7 +49,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    4.4
+ * @version    4.7
  */
 class RarInfo extends ArchiveReader
 {
@@ -204,7 +204,7 @@ class RarInfo extends ArchiveReader
 	const R50_FILE_DIRECTORY     = 0x0001;
 	const R50_FILE_UTIME         = 0x0002;
 	const R50_FILE_CRC32         = 0x0004;
-	const R50_FILE_UNPUNKONW     = 0x0008;
+	const R50_FILE_UNPUNKNOWN    = 0x0008;
 
 	// Flags for R50_BLOCK_ENDARC
 	const R50_ENDARC_NEXT_VOLUME = 0x0001;
@@ -358,15 +358,15 @@ class RarInfo extends ArchiveReader
 	public function getSummary($full=false, $skipDirs=false)
 	{
 		$summary = array(
-			'rar_file' => $this->file,
-			'file_size' => $this->fileSize,
-			'data_size' => $this->dataSize,
-			'use_range' => "{$this->start}-{$this->end}",
-			'is_volume' => (int) $this->isVolume,
-			'has_auth' => (int) $this->hasAuth,
+			'file_name'    => $this->file,
+			'file_size'    => $this->fileSize,
+			'data_size'    => $this->dataSize,
+			'use_range'    => "{$this->start}-{$this->end}",
+			'is_volume'    => (int) $this->isVolume,
+			'has_auth'     => (int) $this->hasAuth,
 			'has_recovery' => (int) $this->hasRecovery,
 			'is_encrypted' => (int) $this->isEncrypted,
-			'rar_format' => $this->format,
+			'rar_format'   => $this->format,
 		);
 		if ($this->comments) {
 			$summary['comments'] = $this->comments;
@@ -389,7 +389,7 @@ class RarInfo extends ArchiveReader
 	 *
 	 * @param   boolean  $format  should the block data be formatted?
 	 * @param   boolean  $asHex   should numeric values be displayed as hexadecimal?
-	 * @return  array|boolean  list of blocks, of false if none available
+	 * @return  array|boolean  list of blocks, or false if none available
 	 */
 	public function getBlocks($format=true, $asHex=false)
 	{
@@ -401,7 +401,9 @@ class RarInfo extends ArchiveReader
 		$ret = array();
 		foreach ($this->blocks as $block) {
 			$b = $this->formatBlock($block, $asHex);
-			if ($b['head_type'] == self::R50_BLOCK_SERVICE && $b['file_name'] == self::R50_SERVICE_QUICKOPEN) {
+			if ($b['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
+			 && $b['file_name'] == self::R50_SERVICE_QUICKOPEN
+			) {
 				// Format any cached blocks
 				foreach ($b['cache_data'] as &$cache) {
 					$cache['data'] = $this->formatBlock($cache['data'], $asHex);
@@ -418,7 +420,7 @@ class RarInfo extends ArchiveReader
 	 * files in the archive.
 	 *
 	 * @param   boolean  $skipDirs  should directory entries be skipped?
-	 * @return  array|boolean  list of file record, or false if none available
+	 * @return  array|boolean  list of file records, or false if none are available
 	 */
 	public function getFileList($skipDirs=false)
 	{
@@ -428,8 +430,8 @@ class RarInfo extends ArchiveReader
 		// Build the file list
 		$ret = array();
 		foreach ($this->blocks as $block) {
-			if ($block['head_type'] == self::BLOCK_FILE
-			 || $block['head_type'] == self::R50_BLOCK_FILE
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			 && !empty($block['file_name'])
 			) {
 				if ($skipDirs && !empty($block['is_dir'])) {continue;}
 				$ret[] = $this->getFileBlockSummary($block);
@@ -452,7 +454,7 @@ class RarInfo extends ArchiveReader
 
 		$ret = array();
 		foreach ($this->blocks as $block) {
-			if ($block['head_type'] == self::R50_BLOCK_SERVICE
+			if ($block['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
 			 && $block['file_name'] == self::R50_SERVICE_QUICKOPEN
 			) {
 				// Build the cached file header list
@@ -541,10 +543,14 @@ class RarInfo extends ArchiveReader
 
 		// Add block descriptors
 		$b['type'] = isset($this->blockNames[$block['head_type']]) ? $this->blockNames[$block['head_type']] : 'Unknown';
-		if ($block['head_type'] == self::BLOCK_SUB && isset($this->subblockNames[$block['file_name']])) {
+		if ($block['head_type'] == self::BLOCK_SUB && !empty($block['file_name'])
+		 && isset($this->subblockNames[$block['file_name']])
+		) {
 			$b['sub_type'] = $this->subblockNames[$block['file_name']];
 		}
-		if ($block['head_type'] == self::R50_BLOCK_SERVICE && isset($this->serviceNames[$block['file_name']])) {
+		if ($block['head_type'] == self::R50_BLOCK_SERVICE && !empty($block['file_name'])
+		 && isset($this->serviceNames[$block['file_name']])
+		) {
 			$b['name'] = $this->serviceNames[$block['file_name']];
 		}
 		$b += $block;
@@ -603,9 +609,8 @@ class RarInfo extends ArchiveReader
 	protected function getFileRangeInfo($filename)
 	{
 		foreach ($this->blocks as $block) {
-			if (($block['head_type'] == self::BLOCK_FILE
-			  || $block['head_type'] == self::R50_BLOCK_FILE)
-			  && empty($block['is_dir'])
+			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
+			  && empty($block['is_dir']) && !empty($block['file_name'])
 			  && $block['file_name'] == $filename
 			) {
 				$start = $this->start + $block['offset'] + $block['head_size'];
@@ -620,15 +625,13 @@ class RarInfo extends ArchiveReader
 	 * Searches for a valid File header in the data or file, and moves the current
 	 * pointer to its starting offset.
 	 *
-	 * This (VERY SLOW) hack is only useful when handling RAR file fragments.
+	 * This (VERY SLOW) hack is only useful when handling RAR file fragments, and
+	 * only with RAR format 1.5 - 4.x.
 	 *
 	 * @return  boolean  false if no valid File header is found
 	 */
 	protected function findFileHeader()
 	{
-		// Not supported for RAR 5.0
-		if ($this->format == self::FMT_RAR50) {return false;}
-
 		$length = min($this->length, $this->maxReadBytes);
 		while ($this->offset < $length) try {
 
@@ -645,6 +648,8 @@ class RarInfo extends ArchiveReader
 				if ($this->sanityCheckFileHeader($block)) {
 
 					// A valid File header was found
+					$this->markerPosition = $block['offset'];
+					$this->format = self::FMT_RAR15;
 					$this->seek($block['offset']);
 					return true;
 				}
@@ -668,6 +673,9 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function checkFileHeaderCRC($block)
 	{
+		// Not supported for RAR 5.0
+		if ($this->format == self::FMT_RAR50) {return false;}
+
 		try {
 			$this->seek($block['offset'] + 2);
 			$data = $this->read($block['head_size'] - 2);
@@ -688,6 +696,9 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function sanityCheckFileHeader($block, $limit=3)
 	{
+		// Not supported for RAR 5.0
+		if ($this->format == self::FMT_RAR50) {return false;}
+
 		$fail  = 0;
 		$fail += ($block['host_os'] > 5);
 		$fail += ($block['method'] > 0x35);
@@ -704,8 +715,11 @@ class RarInfo extends ArchiveReader
 	 *
 	 * @return  mixed  Marker position, or false if marker is missing
 	 */
-	protected function findMarker()
+	public function findMarker()
 	{
+		if ($this->markerPosition !== null)
+			return $this->markerPosition;
+
 		try {
 			$buff = $this->read(min($this->length, $this->maxReadBytes));
 			$this->rewind();
@@ -714,7 +728,7 @@ class RarInfo extends ArchiveReader
 			} elseif (($pos = strpos($buff, $this->markerRar50)) !== false) {
 				$this->format = self::FMT_RAR50;
 			}
-			return $pos;
+			return $this->markerPosition = $pos;
 		} catch (Exception $e) {
 			return false;
 		}
@@ -765,6 +779,10 @@ class RarInfo extends ArchiveReader
 
 			// Add the current block to the list
 			$this->blocks[] = $block;
+
+			// Bail if this is an encrypted archive
+			if ($this->isEncrypted)
+				break;
 
 			// Skip to the next block, if any
 			if ($this->offset != $block['next_offset']) {

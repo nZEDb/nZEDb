@@ -17,7 +17,7 @@ Class Predb
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
 	}
-	
+
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
@@ -39,16 +39,16 @@ Class Predb
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
-			$matched = $this->matchPredb();
-			if ($matched > 0 && $this->echooutput)
-				echo "Matched ".$matched." predDB titles to release search names.\n";
-			$nfos = $this->matchNfo();
-			if ($nfos > 0 && $this->echooutput)
-				echo "Added ".$nfos." missing NFOs from preDB sources.\n";
 		}
+		$matched = $this->matchPredb();
+		if ($matched > 0 && $this->echooutput)
+			echo "Matched ".$matched." predDB titles to release search names.\n";
+		$nfos = $this->matchNfo();
+		if ($nfos > 0 && $this->echooutput)
+			echo "Added ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
 	}
-	
+
 	public function retrieveWomble()
 	{
 		$db = new DB;
@@ -108,7 +108,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	public function retrieveOmgwtfnzbs()
 	{
 		$db = new DB;
@@ -135,7 +135,7 @@ Class Predb
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-								
+
 									$db->query(sprintf("UPDATE predb SET size = %s, category = %s, predate = FROM_UNIXTIME(".strtotime($matches2["date"])."), adddate = now(), source = %s where ID = %d", $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $oldname["ID"]));
 									$newnames++;
 								}
@@ -143,10 +143,10 @@ Class Predb
 							else
 							{
 								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-								
+
 								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
-							}	
+							}
 						}
 					}
 				}
@@ -154,7 +154,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	public function retrieveZenet()
 	{
 		$db = new DB;
@@ -180,17 +180,17 @@ Class Predb
 									$size = "NULL";
 								else
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-								
+
 								if (isset($matches2["category"]) && !empty($matches2["category"]))
 									$category = $db->escapeString($matches2["category"]);
 								else if (isset($matches2["category1"]) && !empty($matches2["category1"]))
 									$category = $db->escapeString($matches2["category1"]);
 								else
 									$category = "NULL";
-								
+
 								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
-							}	
+							}
 						}
 					}
 				}
@@ -198,7 +198,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	public function retrievePrelist()
 	{
 		$db = new DB;
@@ -288,7 +288,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	public function retrieveSrr()
 	{
 		$db = new DB;
@@ -310,7 +310,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	public function retrievePredbme()
 	{
 		$db = new DB;
@@ -332,7 +332,7 @@ Class Predb
 		}
 		return $newnames;
 	}
-	
+
 	// When a searchname is the same as the title, tie it to the predb.
 	public function matchPredb()
 	{
@@ -340,7 +340,7 @@ Class Predb
 		$updated = 0;
 		if($this->echooutput)
 			echo "Matching up predb titles with release search names.\n";
-			
+
 		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
@@ -351,7 +351,7 @@ Class Predb
 			return $updated;
 		}
 	}
-	
+
 	// Look if the release is missing an nfo.
 	public function matchNfo()
 	{
@@ -359,7 +359,7 @@ Class Predb
 		$nfos = 0;
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
-			
+
 		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus = 0"))
 		{
 			$nfo = new Nfo($this->echooutput);
@@ -377,14 +377,13 @@ Class Predb
 			return $nfos;
 		}
 	}
-	
-	
+
 	// Matches the names within the predb table to release files and subjects (names). In the future, use the MD5.
 	public function parseTitles($time, $echo, $cats, $namestatus, $md5="")
 	{
 		$db = new DB();
 		$updated = 0;
-		
+
 		/*if($backfill = "" && $this->echooutput)
 		{
 			$te = "";
@@ -392,14 +391,14 @@ Class Predb
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb titles.\n";
 		}*/
-		
+
 		$tq = "";
 		if ($time == 1)
 			$tq = " and r.adddate > (now() - interval 3 hour)";
 		$ct = "";
 		if ($cats == 1)
 			$ct = " and r.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050)";
-		
+
 		/*if($backfill = "" && $res = $db->queryDirect("SELECT r.searchname, r.categoryID, r.groupID, p.source, p.title, r.ID from releases r left join releasefiles rf on rf.releaseID = r.ID, predb p where (r.name like concat('%', p.title, '%') or rf.name like concat('%', p.title, '%')) and r.relnamestatus = 1".$tq.$ct))
 		{
 			while ($row = mysqli_fetch_assoc($res))
@@ -408,7 +407,7 @@ Class Predb
 				{
 					$category = new Category();
 					$determinedcat = $category->determineCategory($row["title"], $row["groupID"]);
-					
+
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
@@ -419,7 +418,7 @@ Class Predb
 					if ($this->echooutput)
 					{
 						$groups = new Groups();
-						
+
 						echo"New name: ".$row["title"]."\n".
 							"Old name: ".$row["searchname"]."\n".
 							"New cat:  ".$category->getNameByID($determinedcat)."\n".
@@ -462,7 +461,7 @@ Class Predb
 							if ($this->echooutput)
 							{
 								$groups = new Groups();
-						
+
 								echo"New name: ".$b["title"]."\n".
 									"Old name: ".$row["searchname"]."\n".
 									"New cat:  ".$category->getNameByID($determinedcat)."\n".
@@ -494,7 +493,7 @@ Class Predb
 							if ($this->echooutput)
 							{
 								$groups = new Groups();
-						
+
 								echo"New name: ".$b["title"]."\n".
 									"Old name: ".$row["searchname"]."\n".
 									"New cat:  ".$category->getNameByID($determinedcat)."\n".
