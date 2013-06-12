@@ -43,12 +43,12 @@ function updaterelease($foundName, $id, $groupname)
 	$db  = new DB();
 	$rel = new Releases();
 	$cat = new Category();
-	
+
 	$cleanRelName = $foundName;
 	$catid		= $cat->determineCategory($groupname, $foundName);
-	
-	$db->query(sprintf("UPDATE releases SET name = %s,  searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
-	
+
+	$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
+
 }
 $results = getReleasez();
 if (count($results) > 0)
@@ -84,7 +84,7 @@ if (count($results) > 0)
 			{
 				echo "Release found " . $r . "\n";
 			}
-			$db->query(sprintf("update releases set dehashstatus = 1 where ID = %s", $result['ID']));
+			$db->query(sprintf("update releases set dehashstatus = 1, relnamestatus = 3 where ID = %s", $result['ID']));
 		} else {
 			if (ENABLE_ECHO == TRUE)
 			{

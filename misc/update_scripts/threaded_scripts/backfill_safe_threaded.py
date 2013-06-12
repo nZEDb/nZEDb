@@ -8,7 +8,6 @@ import subprocess
 import string
 import re
 from nntplib import NNTP
-import ssl
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
@@ -61,13 +60,6 @@ print datas[0][1]
 geteach = (datas[0][1] - long(first)) / int(run_threads[0])
 if geteach > 20000:
 	geteach = 20000
-
-
-
-#sys.exit()
-
-
-#resp, subs = s.xhdr('subject', first + '-' + last)
 resp = s.quit()
 
 
@@ -125,8 +117,12 @@ def main(args):
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
 		thread.join()
-		print "All threads dead"
 
 if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
+
+final = ("%s %d %s" %(datas[0][0], datas[0][1] - int(run_threads[0]) * geteach, geteach))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+group = ("%s %d" %(datas[0][0], 1000))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])

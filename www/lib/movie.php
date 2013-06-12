@@ -30,6 +30,7 @@ class Movie
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 	
 	public function getMovieInfo($imdbId)
@@ -524,15 +525,19 @@ class Movie
 		$googleban = false;
 		$googlelimit = 0;
 		$site = new Sites;
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
 		$threads--;
 
-		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
+		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
 
 		if ($db->getNumRows($res) > 0)
-		{	
+		{
 			if ($this->echooutput)
 				echo "Processing ".$db->getNumRows($res)." movie release(s) beginning at ".floor(($this->movieqty) * ($threads * 1.5))."\n";
-		
+
 			while ($arr = $db->fetchAssoc($res)) 
 			{
 				$moviename = $this->parseMovieSearchName($arr['name']);
@@ -540,7 +545,7 @@ class Movie
 				{
 					if ($this->echooutput)
 						echo 'Looking up: '.$moviename."\n";
-						
+
 					$traktimdbid = $trakt->traktMoviesummary($moviename, "imdbid");
 					if ($traktimdbid !== false)
 						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt',  $arr["ID"], $db);

@@ -464,7 +464,7 @@ class TvRage
 		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by adddate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
 		
 		if ($this->echooutput)
 		{

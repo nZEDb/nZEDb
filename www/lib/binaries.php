@@ -28,7 +28,6 @@ class Binaries
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->debug = ($site->debuginfo == "0") ? false : true;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 
 		$this->blackList = array(); //cache of our black/white list
 		$this->message = array();
@@ -211,66 +210,6 @@ class Binaries
 		}
 	}
 
-	function getRange($group, $first, $last, $threads)
-	{
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-
-		$db = new DB();
-		$n = $this->n;
-		$backfill = new Backfill();
-		$groups = new Groups;
-		$this->startGroup = microtime(true);
-		$site = new Sites;
-		$backthread = $site->get()->backfillthreads;
-
-		$groupArr = $groups->getByName($group);
-		$nntp = new Nntp();
-		$nntp->doConnect();
-
-		// Connect to server
-		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data))
-		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
-			$nntp->doQuit();
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Reconnected but could not select group (bad name?): {$group}".$n;
-				return;
-			}
-		}
-
-		echo 'Processing '.$groupArr['name']." ==> ".$threads." ==>".number_format($first)." to ".number_format($last).$n;
-
-		$this->startLoop = microtime(true);
-		$lastId = $this->scan($nntp, $groupArr, $last, $first);
-		if ($lastId === false)
-		{
-			//scan failed - skip group
-			return;
-		}
-		if ($backthread === $threads)
-		{
-			$binaries = new Binaries();
-			//echo "Thread number ".$threads."\n";
-			//$db->query(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($last), $groupArr['ID']));
-			//printf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($last), $groupArr['ID']);
-			//$last_record_postdate = $backfill->postdate($nntp,$last,false);
-			//$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
-			//printf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']);
-			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
-			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			$worked = number_format(20000 * $threads);
-			echo str_replace('alt.binaries','a.b',$data["group"])." processed ".$worked." parts $n $n";
-		}
-		$nntp->doQuit();
-	}
-
 	function scan($nntp, $groupArr, $first, $last, $type='update')
 	{
 		$db = new Db();
@@ -280,6 +219,7 @@ class Binaries
 		$n = $this->n;
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
+		$this->startLoop = microtime(true);
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
@@ -738,7 +678,7 @@ class Binaries
 	}
 
 	public function getBlacklistByID($id)
-	{
+	{			
 		$db = new DB();
 		return $db->queryOneRow(sprintf("select * from binaryblacklist where ID = %d ", $id));		
 	}

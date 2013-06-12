@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2377";
+$version="0.1r2378";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -720,7 +720,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 		}
 
-		if ( $post == "TRUE" )
+		if (( $post == "TRUE" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
 		{
 			//run postprocess_releases additional
 			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -752,7 +752,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess All\"'");
 		}
 
-		if ( $post == "TRUE" )
+		if (( $post == "TRUE" ) && (( $movie_releases_proc > 0 ) || ( $tvrage_releases_proc > 0 )))
 		{
 			//run postprocess_releases non amazon
 			$color = get_color();
@@ -770,7 +770,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess All\"'");
 		}
 
-		if ( $post == "TRUE" )
+		if (( $post == "TRUE" ) && (( $music_releases_proc > 0 ) || ( $book_releases_proc > 0 ) || ( $console_releases_proc > 0 )))
 		{
 			//run postprocess_releases amazon
 			$color = get_color();
@@ -828,14 +828,22 @@ while( $i > 0 )
 			//run update_binaries
 			$color = get_color();
 			$log = writelog($panes0[2]);
-			if (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 3600 ))
+
+			if (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 3600 ))
+			{
+				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
+						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
+                        $_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+                        $run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
+            }
+			elseif (( $binaries == "TRUE" ) && ( $backfill != "4" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 3600 ))
 			{
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && \
 						$run_releases $log && date +\"%D %T\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 3600 ))
+			elseif (( $binaries == "TRUE" ) && ( $backfill != "4" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 >= 3600 ))
 			{
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
@@ -849,13 +857,20 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 						$run_releases $log && date +\"%D %T\" && echo \"backfill has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			elseif (( $backfill == "4" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			{
+				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+						$run_releases $log && date +\"%D %T\" && echo \"binaries has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
+            }
+
+			elseif (( $backfill != "0" ) && ( $backfill != "4" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log && \
 						$run_releases $log && date +\"%D %T\" && echo \"binaries has been disabled/terminated by Exceeding Limits\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $backfill != "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
+			elseif (( $backfill != "0" ) && ( $backfill != "4" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log && \
@@ -910,8 +925,7 @@ while( $i > 0 )
 				$color = get_color();
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time7 <= 4800 ))
 			{

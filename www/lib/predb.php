@@ -509,15 +509,15 @@ Class Predb
 		}
 		return $updated;
 	}
-	
+
 	public function getAll($offset, $offset2)
-	{			
+	{
 		$db = new DB();
 		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p left join releases r on p.releaseID = r.ID ORDER BY p.adddate DESC limit %d,%d", $offset, $offset2));
 	}
-	
+
 	public function getCount()
-	{			
+	{
 		$db = new DB();
 		$count = $db->queryOneRow("SELECT count(*) as cnt from predb");
 		return $count["cnt"];
