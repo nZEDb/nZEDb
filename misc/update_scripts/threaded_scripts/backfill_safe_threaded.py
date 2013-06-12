@@ -7,7 +7,7 @@ import MySQLdb as mdb
 import subprocess
 import string
 import re
-from nntplib import NNTP
+import nntplib
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
@@ -53,7 +53,8 @@ if not datas:
 	print "No Groups enabled for backfill"
 	sys.exit()
 
-s = NNTP(config['NNTP_SERVER'], 119, config['NNTP_USERNAME'], config['NNTP_PASSWORD'],)
+s = nntplib.connect(config['NNTP_SERVER'], config['NNTP_PORT'], config['NNTP_SSLENABLED'], config['NNTP_USERNAME'], config['NNTP_PASSWORD'])
+
 resp, count, first, last, name = s.group(datas[0][0])
 print 'Group', name, 'has', count, 'articles, range', first, 'to', last
 print datas[0][1]
@@ -62,6 +63,7 @@ if geteach > 20000:
 	geteach = 20000
 resp = s.quit()
 
+#sys.exit()
 
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID, result_q):
