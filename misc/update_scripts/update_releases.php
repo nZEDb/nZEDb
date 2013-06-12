@@ -13,19 +13,19 @@ if (isset($argv[1]) && isset($argv[2]))
 	$releases = new Releases;
 	if ($argv[1] == 1 && $argv[2] == "true")
 	{
-		$releases->processReleases(1, 1, $groupName);
+		$releases->processReleases(1, 1, $groupName, true);
 	}
 	else if ($argv[1] == 1 && $argv[2] == "false")
 	{
-		$releases->processReleases(1, 2, $groupName);
+		$releases->processReleases(1, 2, $groupName, true);
 	}
 	else if ($argv[1] == 2 && $argv[2] == "true")
 	{
-		$releases->processReleases(2, 1, $groupName);
+		$releases->processReleases(2, 1, $groupName, true);
 	}
 	else if ($argv[1] == 2 && $argv[2] == "false")
 	{
-		$releases->processReleases(2, 2, $groupName);
+		$releases->processReleases(2, 2, $groupName, true);
 	}
 	else if ($argv[1] == 4 && ($argv[2] == "true" || $argv[2] == "false"))
 	{

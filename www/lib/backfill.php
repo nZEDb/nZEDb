@@ -13,6 +13,7 @@ class Backfill
 		$site = $s->get();
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 
 	//
@@ -465,6 +466,65 @@ class Backfill
 	private function daysOld($timestamp)
 	{
 		return round((time()-$timestamp)/86400, 1);
+	}
+
+	function getRange($group, $first, $last, $threads)
+	{
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
+
+		$db = new DB();
+		$n = $this->n;
+		$groups = new Groups;
+		$this->startGroup = microtime(true);
+		$site = new Sites;
+		$backthread = $site->get()->backfillthreads;
+		$binaries = new Binaries;
+
+		$groupArr = $groups->getByName($group);
+		$nntp = new Nntp();
+		$nntp->doConnect();
+
+		// Connect to server
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data))
+		{
+			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			$nntp->doQuit();
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Reconnected but could not select group (bad name?): {$group}".$n;
+				return;
+			}
+		}
+
+		echo 'Processing '.$groupArr['name']." ==> ".$threads." ==>".number_format($first)." to ".number_format($last).$n;
+
+		$this->startLoop = microtime(true);
+		$lastId = $binaries->scan($nntp, $groupArr, $last, $first);
+		if ($lastId === false)
+		{
+			//scan failed - skip group
+			return;
+		}
+		$nntp->doQuit();
+	}
+
+	function getFinal($group, $first)
+	{
+		$db = new DB();
+		$nntp = new Nntp();
+		$nntp->doConnect();
+		$groups = new Groups;
+		$groupArr = $groups->getByName($group);
+		$data = $nntp->selectGroup($groupArr['name']);
+		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+		$nntp->doQuit();
+		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
 	}
 }
 ?>

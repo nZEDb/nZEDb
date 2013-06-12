@@ -8,6 +8,7 @@ $db = new DB();
 $DIR = MISC_DIR;
 $smarty = SMARTY_DIR."templates_c/";
 $dbname = DB_NAME;
+$restart = "false";
 
 function command_exist($cmd) {
 	$returnVal = shell_exec("which $cmd");
@@ -23,9 +24,10 @@ if(isset($argv[1]) && $argv[1] == "true")
 	if ( $running == "TRUE" )
 	{
 		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
-		$sleep = $delay + 120;
+		$sleep = $delay;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
 		sleep($sleep);
+		$restart = "true";
 	}
 
 	system("cd $DIR && git pull");
@@ -34,7 +36,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	if ((count(glob("${smarty}*"))) > 0)
 	{
 		echo "Removing old stuff from ".$smarty."\n";
-		system("rm -r ".$smarty."*");
+		system("rm -rf ".$smarty."*");
 	}
 	else
 	{
@@ -48,7 +50,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	echo "Patching database - $dbname\n";
 	system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
-	if ( $running == "TRUE" )
+	if ( $restart == "true" )
 	{
 		echo "Starting tmux scripts\n";
 		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");

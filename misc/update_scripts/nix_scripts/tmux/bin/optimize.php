@@ -44,7 +44,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 		if ((count(glob("${smarty}*"))) > 0)
 		{
 			echo "Removing old stuff from ".$smarty."\n";
-			exec("rm -r ".$smarty."*");
+			exec("rm -rf ".$smarty."*");
 		}
 		else
 		{

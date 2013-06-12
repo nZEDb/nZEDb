@@ -17,7 +17,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->query("truncate table bookinfo");
 		$db->query("truncate table releasenfo");
 		$db->query("truncate table releaseextrafull");
-		$db->query("update releases set consoleinfoID = NULL, imdbID = NULL, musicinfoID = NULL, bookinfoID = NULL, rageID = NULL, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
+		$db->query("update releases set consoleinfoID = NULL, imdbID = NULL, musicinfoID = NULL, bookinfoID = NULL, rageID = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
 		$affected = $db->getAffectedRows();
 		echo $affected." releases reset.\n";
 	}
@@ -32,7 +32,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->query("update releases set musicinfoID = NULL where musicinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." musicinfoID's reset.\n";
-		$db->query("update releases set rageID = NULL where rageID in (-2, 0)");
+		$db->query("update releases set rageID = -1 where rageID <= 0 or rageID IS NULL");
 		$affected = $db->getAffectedRows();
 		echo $affected." rageID's reset.\n";
 		$db->query("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
