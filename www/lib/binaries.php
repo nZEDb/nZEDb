@@ -308,7 +308,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-/*					if(preg_match('/.nzb\"/', $msg['Subject']))
+					if(preg_match('/.nzb\"/', $msg['Subject']))
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -322,7 +322,7 @@ class Binaries
 						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
 						//var_dump($msg);
 					}
-*/
+
 					if((int)$matches[1] > 0)
 					{
 						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
