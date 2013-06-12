@@ -578,6 +578,14 @@
 </tr>
 
 <tr>
+	<td><label for="miscotherretentionhours">Misc->Other Retention Hours</label>:</td>
+	<td>
+		<input class="tiny" id="miscotherhours" name="miscotherretentionhours" type="text" value="{$fsite->miscotherretentionhours}" />
+		<div class="hint">The number of hours releases categorized as Misc->Other will be retained.  Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="releasecompletion">Release Completion</label>:</td>
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />

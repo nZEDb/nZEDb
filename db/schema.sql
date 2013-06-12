@@ -1019,7 +1019,8 @@ INSERT INTO `site`
 	('processaudiosample', 0),
 	('predbversion', 1),
 	('deletepossiblerelease', 0),
-	('sqlpatch', '74');
+	('miscotherretentionhours',0),
+	('sqlpatch', '75');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
