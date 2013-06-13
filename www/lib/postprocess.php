@@ -1,27 +1,27 @@
 <?php
-require_once(WWW_DIR."/lib/anidb.php");
-require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/console.php");
-require_once(WWW_DIR."/lib/consoletools.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/music.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/nzb.php");
-require_once(WWW_DIR."/lib/nzbcontents.php");
-require_once(WWW_DIR."/lib/predb.php");
-require_once(WWW_DIR."/lib/rarinfo.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/releaseextra.php");
-require_once(WWW_DIR."/lib/releasefiles.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/rrarinfo.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/tvrage.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/zipinfo.php");
+require_once(WWW_DIR."lib/anidb.php");
+require_once(WWW_DIR."lib/books.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/console.php");
+require_once(WWW_DIR."lib/consoletools.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/movie.php");
+require_once(WWW_DIR."lib/music.php");
+require_once(WWW_DIR."lib/nfo.php");
+require_once(WWW_DIR."lib/nntp.php");
+require_once(WWW_DIR."lib/nzb.php");
+require_once(WWW_DIR."lib/nzbcontents.php");
+require_once(WWW_DIR."lib/predb.php");
+require_once(WWW_DIR."lib/rarinfo/rarinfo.php");
+require_once(WWW_DIR."lib/releases.php");
+require_once(WWW_DIR."lib/releaseextra.php");
+require_once(WWW_DIR."lib/releasefiles.php");
+require_once(WWW_DIR."lib/releaseimage.php");
+require_once(WWW_DIR."lib/rarinfo/rrarinfo.php");
+require_once(WWW_DIR."lib/site.php");
+require_once(WWW_DIR."lib/tvrage.php");
+require_once(WWW_DIR."lib/util.php");
+require_once(WWW_DIR."lib/rarinfo/zipinfo.php");
 
 class PostProcess
 {
@@ -881,7 +881,7 @@ class PostProcess
 				file_put_contents($rarfile, $fetchedBinary);
 				if (file_exists($rarfile))
 				{
-					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -ierr -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
 					@$output = runCmd($execstring, false, true);
 					if (count($output) != 0 && preg_match("/ok/",  $output[count($output)-1]))
 					{

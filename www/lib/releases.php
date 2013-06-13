@@ -1914,12 +1914,12 @@ class Releases
 
 		}
 
-		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted, ".$disabledcount." from disabled categoteries, ".$disabledgenrecount." from disabled music genres, ".$miscothercount." from misc->other";
+		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
-			echo ", ".$completioncount." under ".$this->completion."% completion. Removed ".$reccount." parts/binaries/collection rows.".$n;
+			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
 		else
 			if ($this->echooutput)
-				echo ". Removed ".$reccount." parts/binaries/collection rows.".$n;
+				echo ". Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
 
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage7).".".$n;
@@ -1976,7 +1976,7 @@ class Releases
 
 		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
 		if ($this->echooutput)
-			echo "Completed adding ".$releasesAdded." releases in ".$timeUpdate.". ".array_shift($cremain)." collections waiting to be created (still incomplete or in queue for creation).".$n;
+			echo "Completed adding ".number_format($releasesAdded)." releases in ".$timeUpdate.". ".number_format(array_shift($cremain))." collections waiting to be created (still incomplete or in queue for creation).".$n;
 		return $releasesAdded;
 	}
 
@@ -2090,7 +2090,7 @@ class Releases
 				}
 				// Delete previous failed attempts.
 				$db->query('DELETE FROM collections where collectionhash = "0"');
-				
+
 				if ($this->hashcheck == 0)
 					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				if ($this->echooutput)
