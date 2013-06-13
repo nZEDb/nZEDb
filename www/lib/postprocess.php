@@ -881,7 +881,7 @@ class PostProcess
 				file_put_contents($rarfile, $fetchedBinary);
 				if (file_exists($rarfile))
 				{
-					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -ierr -r -kb -or -p- -y "'.$rarfile.'" "'.$tmpPath.'"';
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -r -kb -p- -y -inul "'.$rarfile.'" "'.$tmpPath.'"';
 					@$output = runCmd($execstring, false, true);
 					if (count($output) != 0 && preg_match("/ok/",  $output[count($output)-1]))
 					{
@@ -1215,4 +1215,3 @@ class PostProcess
 		$db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $db->escapeString($guid)));
 	}
 }
-?>
