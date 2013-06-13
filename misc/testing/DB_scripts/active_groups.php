@@ -12,8 +12,18 @@ else
 	$limit = "";
 
 $mask = "\033[1;33m%-50.50s %22.22s %22.22s %22.22s %22.22s\n";
-printf($mask, "Group Name", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded");
+if ($rels = $db->query("select name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) as 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days from groups"))
+{
+	foreach ($rels as $rel)
+	{
+		$count += $rel['headers downloaded'];
+	}
+}
+
+printf($mask, "Group Name => ".number_format($count)." downloaded", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded");
 printf($mask, "==================================================", "======================", "======================", "======================", "======================");
+
+
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
@@ -26,7 +36,6 @@ if (isset($argv[1]) && $argv[1] === "true")
 			$count += $rel['headers downloaded'];
 		}
 	}
-	printf(number_format($count)." headers downloaded\033[0m\n");
 }
 else
 {
@@ -39,6 +48,5 @@ else
 			$count += $rel['headers downloaded'];
 		}
 	}
-	printf(number_format($count)." headers downloaded\033[0m\n");
 }
 ?>

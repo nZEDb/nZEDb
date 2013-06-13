@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2385";
+$version="0.1r2393";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -43,7 +43,6 @@ $proc_tmux = "SELECT
     ( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
     ( SELECT name from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
     ( SELECT UNIX_TIMESTAMP(adddate) from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
-	( SELECT value from tmux where setting = 'DEFRAG_CACHE' ) AS defrag,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) AS niceness,
@@ -80,9 +79,6 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
 	( SELECT value from tmux where setting = 'DEHASH_TIMER' ) AS dehash_timer,
 	( SELECT value from site where setting = 'debuginfo' ) AS debug";
-
-//flush query cache
-$qcache = "FLUSH QUERY CACHE";
 
 //get microtime
 function microtime_float()
@@ -535,14 +531,6 @@ while( $i > 0 )
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "Activated", $active_groups, $backfill_groups);
-
-	//defrag the query cache every 15 minutes
-	if ( TIME() - $time1 >= $defrag )
-	{
-		$result = @$db->query($qcache);
-		printf($mask2, "Query cache cleaned", "", "");
-		$time1 = TIME();
-	}
 
 	//get microtime at end of queries
 	if ( $runloop == "true" )

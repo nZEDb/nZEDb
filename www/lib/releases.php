@@ -1794,7 +1794,7 @@ class Releases
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = 0;
+		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 
@@ -1899,7 +1899,22 @@ class Releases
 			}
 		}
 
-		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted, ".$disabledcount." from disabled categoteries, ".$disabledgenrecount." from disabled music genres";
+		// misc other
+		if ($page->site->miscotherretentionhours > 0) {
+			$sql = sprintf("select ID, guid from releases where categoryID = %s AND adddate <= CURRENT_DATE - INTERVAL %d HOUR",
+			CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
+
+			if ($resrel = $db->query($sql)) {
+				foreach ($resrel as $rowrel)
+				{
+					$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
+					$miscothercount ++;
+				}
+			}
+
+		}
+
+		echo "Removed releases : ".$remcount." past retention, ".$passcount." passworded, ".$dupecount." crossposted, ".$disabledcount." from disabled categoteries, ".$disabledgenrecount." from disabled music genres, ".$miscothercount." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
 			echo ", ".$completioncount." under ".$this->completion."% completion. Removed ".$reccount." parts/binaries/collection rows.".$n;
 		else
