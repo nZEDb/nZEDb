@@ -364,14 +364,6 @@
 			</tr>
 
 			<tr>
-				<td style="width:160px;"><label for="DEFRAG_CACHE">Defrag Query Cache</label>:</td>
-				<td>
-					<input id="DEFRAG_CACHE" name="DEFRAG_CACHE" class="tiny" type="text" value="{$ftmux->DEFRAG_CACHE}" />
-					<div class="hint">The mysql query cache gets frogmented over time. Enter the time, in seconds, to defrag the query cache. <br/ >cmd: FLUSH QUERY CACHE;</div>
-				</td>
-			</tr>
-
-			<tr>
 				<td style="width:160px;"><label for="COLLECTIONS_KILL">Maximum Collections</label>:</td>
 				<td>
 					<input id="COLLECTIONS_KILL" name="COLLECTIONS_KILL" class="tiny" type="text" value="{$ftmux->COLLECTIONS_KILL}" />
