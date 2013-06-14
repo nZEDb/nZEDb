@@ -113,7 +113,7 @@ function writelog( $pane )
 function get_color()
 {
 	$from = 1;
-	$to = 231;
+	$to = 100;
 	$exceptions = array( 4, 8, 16, 17, 18, 19, 52, 53, 59, 60, 67 );
 	sort($exceptions); // lets us use break; in the foreach reliably
 	$number = mt_rand($from, $to - count($exceptions)); // or mt_rand()
