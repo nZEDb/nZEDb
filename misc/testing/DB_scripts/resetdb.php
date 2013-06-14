@@ -12,7 +12,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	require_once(WWW_DIR."lib/site.php");
 	require_once(WWW_DIR."lib/consoletools.php");
 
-	$db = new Db;
+	$db = new Db();
 	$s = new Sites();
 	$consoletools = new ConsoleTools();
 	$site = $s->get();

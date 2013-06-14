@@ -7,7 +7,7 @@ require_once(WWW_DIR."lib/nzb.php");
 require_once(WWW_DIR."lib/consoletools.php");
 
 $n = "\n";
-$db = new DB;
+$db = new DB();
 
 if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to and the source directory  (You would use: 3 /var/www/nZEDb/nzbfiles/ to move it to 3 levels deep)".$n);

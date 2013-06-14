@@ -22,7 +22,7 @@ Class Predb
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
 		if (strtotime($newestrel["adddate"]) < time()-600)
@@ -51,7 +51,7 @@ Class Predb
 
 	public function retrieveWomble()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://nzb.isasecret.com/");
@@ -111,7 +111,7 @@ Class Predb
 
 	public function retrieveOmgwtfnzbs()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
@@ -157,7 +157,7 @@ Class Predb
 
 	public function retrieveZenet()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://pre.zenet.org/live.php");
@@ -201,7 +201,7 @@ Class Predb
 
 	public function retrievePrelist()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.prelist.ws/");
@@ -251,7 +251,7 @@ Class Predb
 	
 	public function retrieveOrlydb()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.orlydb.com/");
@@ -291,7 +291,7 @@ Class Predb
 
 	public function retrieveSrr()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://www.srrdb.com/feed/srrs');
 		if ($releases !== false)
@@ -313,7 +313,7 @@ Class Predb
 
 	public function retrievePredbme()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://predb.me/?rss');
 		if ($releases !== false)

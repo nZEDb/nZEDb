@@ -14,7 +14,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 if (isset($argv[1]) && $argv[1] == "full")
 {
-	$db = new DB;
+	$db = new DB();
 	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
 	
 	if (sizeof($res) > 0)
@@ -51,7 +51,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 }
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
-	$db = new DB;
+	$db = new DB();
 	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus in (0, 1)");
 	
 	if (sizeof($res) > 0)

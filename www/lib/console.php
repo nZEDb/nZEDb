@@ -201,7 +201,7 @@ class Console
 	
 	public function getBrowseBy()
 	{
-		$db = new Db;
+		$db = new DB();
 		
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();

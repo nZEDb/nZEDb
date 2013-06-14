@@ -241,10 +241,10 @@ class PostProcess
 	//
 	public function processAdditional($threads=1, $id = '')
 	{
-		$nntp = new Nntp;
+		$nntp = new Nntp();
 		$consoleTools = new ConsoleTools();
-		$ri = new ReleaseImage;
-		$site = new Sites;
+		$ri = new ReleaseImage();
+		$site = new Sites();
 		if ($threads > 1)
 		{
 			usleep($this->sleeptime*1000*($threads - 1));
@@ -326,16 +326,17 @@ class PostProcess
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
-
+				echo "\n".$rel['guid']."\n";
+/*
 				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
 					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-
+*/
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
 				$nzb = new NZB(true);
-				$groups = new Groups;
+				$groups = new Groups();
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
@@ -496,10 +497,9 @@ class PostProcess
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, 2);
 
-							//$nntp->doConnect();
+							$nntp->doConnect();
 							$bingroup = $groupName;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-							//$nntp->doQuit();
 //							echo "\n{$rarFile['title']} {$this->size} {$this->sum} {$this->segsize} {$this->adj}\n";
 
 							if ($fetchedBinary !== false)
@@ -520,7 +520,6 @@ class PostProcess
 							}
 							else
 								$notinfinite = $notinfinite + 0.2;
-							//$nntp->doQuit();
 						}
 					}
 
@@ -612,9 +611,8 @@ class PostProcess
 				// Download and process sample image.
 				if(!empty($samplemsgid) && $processSample && $blnTookSample === false)
 				{
-					//$nntp->doConnect();
+					$nntp->doConnect();
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-					//$nntp->doQuit();
 					if ($sampleBinary !== false)
 					{
 						if (strlen($sampleBinary) > 100)
@@ -626,7 +624,6 @@ class PostProcess
 						}
 						unset($sampleBinary);
 					}
-					//$nntp->doQuit();
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
@@ -652,15 +649,13 @@ class PostProcess
 						}
 						unset($mediaBinary);
 					}
-					//$nntp->doQuit();
 				}
 
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if(!empty($audiomsgid) && $processAudioinfo && $blnTookAudioinfo === false)
 				{
-					//$nntp->doConnect();
+					$nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					//$nntp->doQuit();
 					if ($audioBinary !== false)
 					{
 						if (strlen($audioBinary) > 100)
@@ -670,15 +665,13 @@ class PostProcess
 						}
 						unset($audioBinary);
 					}
-					//$nntp->doQuit();
 				}
 
 				// Download JPG file.
 				if(!empty($jpgmsgid) && $processJPGSample && $blnTookJPG === false)
 				{
-					//$nntp->doConnect();
+					$nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					//$nntp->doQuit();
 					if ($jpgBinary !== false)
 					{
 						@file_put_contents($this->tmpPath."samplepicture.jpg", $jpgBinary);
@@ -698,7 +691,6 @@ class PostProcess
 						}
 						unset($jpgBinary);
 					}
-					//$nntp->doQuit();
 				}
 
 				// Set up release values.
@@ -725,7 +717,7 @@ class PostProcess
 				// If update_files is true, the add previously found files to releasefiles.
 				if ($update_files)
 				{
-					$rf = new ReleaseFiles;
+					$rf = new ReleaseFiles();
 					foreach ($oldreleasefiles as $file)
 					{
 						$query = sprintf("SELECT *  FROM `releasefiles` WHERE `releaseID` = %d AND `name` LIKE '%s' AND `size` = %s", $rel["ID"], $file["name"], $file["size"]);
@@ -795,7 +787,7 @@ class PostProcess
 //				var_dump($files);
 			}
 
-			$rf = new ReleaseFiles;
+			$rf = new ReleaseFiles();
 			$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]);
 
 			if ($tmpdata !== false)
@@ -836,7 +828,7 @@ class PostProcess
 	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0)
 	{
 		// Load the ZIP file or data.
-		$zip = new ZipInfo;
+		$zip = new ZipInfo();
 
 		if ($open)
 			$zip->open($fetchedBinary, true);
@@ -969,7 +961,7 @@ class PostProcess
 	{
 		$retval = array();
 		$rar = new ArchiveInfo();
-		$rf = new ReleaseFiles;
+		$rf = new ReleaseFiles();
 		$this->password = false;
 
 //		echo "\n$name ".preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \"\)\]\-])/i", $name)."\n";
@@ -1080,8 +1072,8 @@ class PostProcess
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath."rarfile".mt_rand(0,32767).".rar";
 				file_put_contents($rarfile, $fetchedBinary);
-				//$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
-				//$output = runCmd($execstring, false, true);
+				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
+				$output = runCmd($execstring, false, true);
 				foreach ($files as $file)
 				{
 					if (isset($file["name"]))

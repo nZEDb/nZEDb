@@ -305,7 +305,7 @@ class Users
 	
 	public function signup($uname, $pass, $email, $host, $role = Users::ROLE_USER, $invites=Users::DEFAULT_INVITES, $invitecode="", $forceinvitemode=false)
 	{
-		$site = new Sites;
+		$site = new Sites();
 		$s = $site->get();
 		
 		$uname = trim($uname);

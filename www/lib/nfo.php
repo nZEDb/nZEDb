@@ -56,7 +56,7 @@ class Nfo
 		$db = new DB();
 		$nntp = new Nntp();
 		$groups = new Groups();
-		$site = new Sites;
+		$site = new Sites();
 		$nzbcontents = new NZBcontents($this->echooutput);
 		$threads--;
 

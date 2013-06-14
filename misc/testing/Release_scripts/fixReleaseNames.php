@@ -15,7 +15,7 @@ require_once(FS_ROOT."/../../../www/lib/namefixer.php");
 require_once(FS_ROOT."/../../../www/lib/predb.php");
 
 $n = "\n";
-$namefixer = new Namefixer;
+$namefixer = new Namefixer();
 $predb = new Predb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))

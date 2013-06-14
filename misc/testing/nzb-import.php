@@ -10,7 +10,7 @@ require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
-$page = new Page;
+$page = new Page();
 $n = "\n";
 
 if (!isset($argv[1]))

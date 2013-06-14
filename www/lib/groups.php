@@ -297,7 +297,7 @@ class Groups
 		else
 		{
 			$db = new DB();
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			$nntp->doConnect();
 			$groups = $nntp->getGroups();
 			$nntp->doQuit();

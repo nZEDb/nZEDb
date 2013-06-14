@@ -200,7 +200,7 @@ require_once(WWW_DIR."/lib/site.php");
 		
 		public function getBrowseBy()
 		{
-			$db = new Db;
+			$db = new DB();
 		
 			$browseby = ' ';
 			$browsebyArr = $this->getBrowseByOptions();

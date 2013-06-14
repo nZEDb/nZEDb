@@ -45,7 +45,7 @@ class Binaries
 			$relss->resetCollections();
 		}
 		$n = $this->n;
-		$groups = new Groups;
+		$groups = new Groups();
 		$res = $groups->getActive();
 		$s = new Sites();
 		$counter = 1;
@@ -490,7 +490,7 @@ class Binaries
 		$n = $this->n;
 		
 		// Get all parts in partrepair table.
-		$db = new DB;
+		$db = new DB();
 		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 		
@@ -562,7 +562,7 @@ class Binaries
 	
 	private function addMissingParts($numbers, $groupID) 
 	{
-		$db = new DB;
+		$db = new DB();
 		$insertStr = "INSERT INTO partrepair (numberID, groupID) VALUES ";
 		foreach($numbers as $number)
 		{

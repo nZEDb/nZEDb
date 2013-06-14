@@ -5,13 +5,13 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2399";
+$version="0.1r2402";
 
 $db = new DB();
 $DIR = MISC_DIR;
 $db_name = DB_NAME;
 
-$tmux = new Tmux;
+$tmux = new Tmux();
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
 
@@ -98,7 +98,7 @@ function writelog( $pane )
 {
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
-	$tmux = new Tmux;
+	$tmux = new Tmux();
 	$logs = $tmux->get()->WRITE_LOGS;
 	if ( $logs == "TRUE" )
 	{

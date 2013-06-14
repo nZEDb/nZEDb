@@ -1242,7 +1242,7 @@ class Releases
 	//
 	public function getZipped($guids)
 	{
-		$nzb = new NZB;
+		$nzb = new NZB();
 		$zipfile = new zipfile();
 
 		foreach ($guids as $guid)
@@ -1351,7 +1351,7 @@ class Releases
 	public function categorizeRelease($type, $where="", $echooutput=false)
 	{
 		$db = new DB();
-		$cat = new Category;
+		$cat = new Category();
 		$consoletools = new consoleTools();
 		$relcount = 0;
 
@@ -1426,7 +1426,7 @@ class Releases
 
 	public function processReleasesStage2($groupID, $echooutput=false)
 	{
-		$db = new DB;
+		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
@@ -1444,7 +1444,7 @@ class Releases
 
 	public function processReleasesStage3($groupID, $echooutput=false)
 	{
-		$db = new DB;
+		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$minsizecounts = 0;
@@ -1537,7 +1537,7 @@ class Releases
 
 	public function processReleasesStage4($groupID, $echooutput=false)
 	{
-		$db = new DB;
+		$db = new DB();
 		$page = new Page();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
@@ -1598,7 +1598,7 @@ class Releases
 	 */
 	public function processReleasesStage4dot5($groupID, $echooutput=false)
 	{
-		$db = new DB;
+		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$minsizecount = 0;
@@ -1719,9 +1719,9 @@ class Releases
 
 	public function processReleasesStage5($groupID, $echooutput=false)
 	{
-		$db = new DB;
-		$nzb = new Nzb;
-		$page = new Page;
+		$db = new DB();
+		$nzb = new Nzb();
+		$page = new Page();
 		$cat = new Category();
 		$s = new Sites();
 		$version = $s->version();
@@ -1775,7 +1775,7 @@ class Releases
 
 	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false)
 	{
-		$db = new DB;
+		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
 		$where = (!empty($groupID)) ? "WHERE relnamestatus = 0 AND groupID = " . $groupID : "WHERE relnamestatus = 0";
@@ -1804,8 +1804,8 @@ class Releases
 
 	public function processReleasesStage7($groupID, $echooutput=false)
 	{
-		$db = new DB;
-		$page = new Page;
+		$db = new DB();
+		$page = new Page();
 		$category = new Category();
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
