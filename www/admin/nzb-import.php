@@ -102,9 +102,9 @@ if (!empty($argc) || $page->isPostBack() )
 
 			$skipCheck = false;
 			$i=0;
-			$firstname = [];
-			$postername = [];
-			$postdate = [];
+			$firstname = array();
+			$postername = array();
+			$postdate = array();
 			$totalFiles = 0;
 			$totalsize = 0;
 			

@@ -114,7 +114,7 @@ function get_color()
 {
 	$from = 1;
 	$to = 100;
-	$exceptions = array( 4, 8, 16, 17, 18, 19, 52, 53, 59, 60, 67 );
+	$exceptions = array(  4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60, 67, 82, 83, 84, 85, 86, 87);
 	sort($exceptions); // lets us use break; in the foreach reliably
 	$number = mt_rand($from, $to - count($exceptions)); // or mt_rand()
 	foreach ($exceptions as $exception) {
