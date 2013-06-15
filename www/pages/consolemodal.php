@@ -34,5 +34,3 @@ if (isset($_GET["id"]) && ctype_digit($_GET["id"]))
 	else
 		$page->render();
 }
-
-?>

@@ -202,5 +202,3 @@ $page->smarty->assign('sadvanced', ($searchtype != "basic"));
 
 $page->content = $page->smarty->fetch('search.tpl');
 $page->render();
-
-?>

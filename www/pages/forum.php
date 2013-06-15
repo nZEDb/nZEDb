@@ -35,5 +35,3 @@ $page->meta_description = "Forum";
 	
 $page->content = $page->smarty->fetch('forum.tpl');
 $page->render();
-
-?>

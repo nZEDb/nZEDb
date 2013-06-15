@@ -42,5 +42,3 @@ switch($action)
 		$page->show404();
 	break;
 }
-
-?>

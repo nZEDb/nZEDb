@@ -82,12 +82,3 @@ function buildURL($type, $name, $url, $freq='daily', $p='1.0')
 	$s = new Sitemap($type, $name, $url, $freq, $p);
 	return $s;
 }
-
-?>
-
-
-
-
-
-
-

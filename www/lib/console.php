@@ -691,6 +691,3 @@ class Console
 	}
 
 }
-
-
-?>

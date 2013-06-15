@@ -134,5 +134,3 @@ if (isset($_GET["id"]))
 	$page->content = $page->smarty->fetch('viewnzb.tpl');
 	$page->render();
 }
-
-?>

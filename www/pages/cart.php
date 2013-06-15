@@ -43,6 +43,3 @@ else
 	$page->content = $page->smarty->fetch('cart.tpl');
 	$page->render();
 }
-
-
-?>

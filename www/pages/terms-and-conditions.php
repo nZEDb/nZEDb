@@ -8,5 +8,3 @@ $page->meta_description = "Terms and Conditions for ".$page->site->title;
 $page->content = $page->smarty->fetch('terms.tpl');
 
 $page->render();
-
-?>

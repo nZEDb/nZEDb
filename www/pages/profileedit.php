@@ -108,6 +108,3 @@ $page->smarty->assign('catlist',$category->getForSelect(false));
 
 $page->content = $page->smarty->fetch('profileedit.tpl');
 $page->render();
-
-
-?>

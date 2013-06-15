@@ -690,4 +690,3 @@ class Users
 		return $db->queryInsert($sql);
 	}
 }
-?>

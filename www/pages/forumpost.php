@@ -29,6 +29,3 @@ $page->smarty->assign('results', $results);
 
 $page->content = $page->smarty->fetch('forumpost.tpl');
 $page->render();
-
-
-?>

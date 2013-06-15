@@ -9,6 +9,3 @@ $page->meta_description = "Manage Your Movies";
 
 $page->content = $page->smarty->fetch('mymovies.tpl');
 $page->render();
-
-
-?>

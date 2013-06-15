@@ -125,4 +125,3 @@ require_once(WWW_DIR."/lib/groups.php");
 			return $cleanerName;
 		}
 	}
-?>

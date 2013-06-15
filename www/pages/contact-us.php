@@ -33,5 +33,3 @@ $page->meta_description = "Contact us at ".$page->site->title." and submit your 
 $page->content = $page->smarty->fetch('contact.tpl');
 
 $page->render();
-
-?>

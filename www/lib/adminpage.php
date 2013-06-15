@@ -38,5 +38,3 @@ class AdminPage extends BasePage
 		parent::render();
 	}
 }
-
-?>

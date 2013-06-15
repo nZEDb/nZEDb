@@ -236,4 +236,3 @@ class BasePage
 		$this->smarty->display($this->page_template);
 	}
 }
-?>

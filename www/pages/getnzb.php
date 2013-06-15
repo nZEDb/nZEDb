@@ -111,5 +111,3 @@ if (isset($_GET["id"]))
 	
 	readgzfile($nzbpath);
 }
-
-?>

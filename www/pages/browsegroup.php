@@ -16,5 +16,3 @@ $page->meta_description = "Browse groups";
 	
 $page->content = $page->smarty->fetch('browsegroup.tpl');
 $page->render();
-
-?>

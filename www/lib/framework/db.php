@@ -163,4 +163,3 @@ class DB
 		return DB::$db->rollback();
 	}
 }
-?>

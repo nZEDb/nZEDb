@@ -99,5 +99,3 @@ $page->meta_description = "Browse for Nzbs";
 	
 $page->content = $page->smarty->fetch('movies.tpl');
 $page->render();
-
-?>

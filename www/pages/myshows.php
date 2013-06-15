@@ -186,6 +186,3 @@ switch($action) {
 		$page->render();
 	break;
 }
-
-
-?>

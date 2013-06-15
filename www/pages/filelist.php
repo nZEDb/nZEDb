@@ -48,5 +48,3 @@ if (isset($_GET["id"]))
 	$page->content = $page->smarty->fetch('viewfilelist.tpl');
 	$page->render();
 }
-
-?>
