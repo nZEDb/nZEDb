@@ -31,7 +31,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.8
+ * @version    1.9
  */
 class SfvInfo extends ArchiveReader
 {
@@ -54,6 +54,7 @@ class SfvInfo extends ArchiveReader
 			'file_name'  => $this->file,
 			'file_size'  => $this->fileSize,
 			'data_size'  => $this->dataSize,
+			'use_range'  => "{$this->start}-{$this->end}",
 			'file_count' => $this->fileCount,
 		);
 		if ($full) {
