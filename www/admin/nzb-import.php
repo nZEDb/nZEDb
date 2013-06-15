@@ -107,7 +107,7 @@ if (!empty($argc) || $page->isPostBack() )
 			$postdate = array();
 			$totalFiles = 0;
 			$totalsize = 0;
-			
+
 			foreach($xml->file as $file) 
 			{
 				//file info

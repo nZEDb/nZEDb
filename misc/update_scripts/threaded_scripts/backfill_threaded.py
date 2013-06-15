@@ -53,16 +53,30 @@ cur.execute("select value from tmux where setting = 'BACKFILL'");
 type = cur.fetchone();
 cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
 groups = cur.fetchone();
-
-if type[0] == "3" and sys.argv[1] != "all":
-	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate ASC limit %d" %(int(groups[0])))
-	datas = cur.fetchall()
-elif sys.argv[1] == "all":
-	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC")
-	datas = cur.fetchall()
+cur.execute("select value from tmux where setting = 'BACKFILL_ORDER'");
+order = cur.fetchone();
+if order == 1:
+	group = "ORDER BY first_record_postdate DESC"
+elif order == 2:
+	group = "ORDER BY first_record_postdate ASC"
+elif order == 3:
+	group = "ORDER BY name ASC"
 else:
-	cur.execute("SELECT name from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate DESC limit %d" %(int(groups[0])))
-	datas = cur.fetchall()
+	group = "ORDER BY name DESC"
+
+try:
+	sys.argv[1]
+except NameError:
+	sys.exit()
+
+if sys.argv[1] == "all":
+	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group))
+else:
+	cur.execute("%s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit ", int(groups[0])))
+datas = cur.fetchall()
+if not datas:
+	print "No Groups enabled for backfill"
+	sys.exit()
 
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID, result_q):

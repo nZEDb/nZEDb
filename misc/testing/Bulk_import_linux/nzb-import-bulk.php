@@ -105,9 +105,9 @@ else
 
 		$skipCheck = false;
 		$i=0;
-		$firstname = [];
-		$postername = [];
-		$postdate = [];
+		$firstname = arrary();
+		$postername = array();
+		$postdate = arrary();
 		$totalFiles = 0;
 		$totalsize = 0;
 

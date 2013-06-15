@@ -44,7 +44,18 @@ con = None
 # The MYSQL connection.
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
 cur = con.cursor()
-cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ORDER BY first_record_postdate ASC limit 1")
+cur.execute("select value from tmux where setting = 'BACKFILL_ORDER'");
+order = cur.fetchone();
+if order == 1:
+	group = "ORDER BY first_record_postdate DESC"
+elif order == 2:
+	group = "ORDER BY first_record_postdate ASC"
+elif order == 3:
+	group = "ORDER BY name ASC"
+else:
+	group = "ORDER BY name DESC"
+
+cur.execute("%s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit 1")) 
 datas = cur.fetchall()
 cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();

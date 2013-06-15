@@ -8,10 +8,17 @@
 
 <fieldset>
 	<legend>Tmux - How It Works</legend>
-	<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
-		Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
-		This allows for scripts that crash to be restarted without user intervention.<br /><br />
-		You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+		<table class="input">
+			<tr>
+				<td><label for="explain">Information</label>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>
+					<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
+						Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
+						This allows for scripts that crash to be restarted without user intervention.<br /><br />
+						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+				</td>
+			</tr>
+		</table>
 </fieldset>
 
 <fieldset>
@@ -50,7 +57,7 @@
 			</tr>
 		
 		<tr>
-			<td><label for="ecplan">Information</label>:</td>
+			<td><label for="explain">Information</label>:</td>
 			<td>
 				<div class="explanation">Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br />
 					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br /><br />
@@ -113,14 +120,17 @@
 			<tr>
 				<td><label for="BACKFILL">Backfill</label>:</td>
 				<td>
-					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}
+					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="BACKFILL_ORDER" name='BACKFILL_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->BACKFILL_ORDER}
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
-						Safe - Backfills 1 group until finished, using the number of threads allotted in admin.<br \>
-						Interval - Newest - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by backfill days (set in admin-view groups).<br />
-						Interval - Oldest - Backfills the number of groups as set in tmux (sorted by most backfilled in time), by backfill days (set in admin-view groups). This completes the smallest groups first.<br />
-						All - Backfills the number of groups (set in tmux and sorted by least backfilled in time), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
-						These settings are all per loop. Approximately every 60 minutes, every activated backfill group will be backfilled. This is to allow imcomplete collections to be completed and/or the 2 hour delay reset.</div>
+						Safe - Backfills 1 group by backfill days (set in admin-view groups)., using the number of threads set in admin.<br \>
+						Interval - Backfills the number of groups (set in tmux), by backfill days (set in admin-view groups).<br />
+						All - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
+						These settings are all per loop and does not use backfill date. Approximately every 80 minutes, every activated backfill group will be backfilled (5k headers). This is to allow incomplete collections to be completed and/or the 2 hour delay reset if the collection is still active.<br />
+						Newest - Sorts the group selection with the least backfill days backfilled, first.<br />
+						Oldest - Sorts the group selection with the most backfill days backfilled, first.<br />
+						Alphabetical - Sorts the group selection from a to z.<br />
+						Alphabetical Reverse - Sorts the group selection from z to a</div></div>
 				</td>
 			</tr>
 			<tr>
@@ -191,8 +201,13 @@
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
+			<tr>
+				<td><label for="explain">Information</label>:</td>
+				<td>
+					<div class="explanation">This will import all nzbs in the given path. If in your path you have nzbs in the root folder and subfolders(regardless of nzbs inside), threaded scripts will ignore all nzbs in the root path. Then each subfolder is threaded.</div>
+				</td>
+			</tr>
 		</table>
-		<div class="explanation">This will import all nzbs in the given path. If in your path you have nzbs in the root folder and subfolders(regardless of nzbs inside), threaded scripts will ignore all nzbs in the root path. Then each subfolder is threaded.</div>
 </fieldset>
 
 <fieldset>
@@ -305,8 +320,13 @@
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
+			<tr>
+				<td><label for="explain">Information</label>:</td>
+				<td>
+					<div class="explanation">Misc Sorter only works on the misc category(7000). It will throw an error if you have no releases in 7000 that need to be postprocessed. This works by collecting keywords from the nfo, if enough keywords are present, then an assumption is made as to which category it belongs.</div>
+				</td>
+			</tr>
 		</table>
-		<div class="explanation">Misc Sorter only works on the misc category(7000). It will throw an error if you have no releases in 7000 that need to be postprocessed. This works by collecting keywords from the nfo, if enough keywords are present, then an assumption is made as to which category it belongs.</div>
 </fieldset>
 
 <fieldset>
@@ -327,8 +347,13 @@
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
+			<tr>
+				<td><label for="explain">Information</label>:</td>
+				<td>
+					<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.</div>
+				</td>
+			</tr>
 		</table>
-		<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.</div>
 </fieldset>
 
 <fieldset>
@@ -457,8 +482,6 @@
 					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
-
-
 		</table>
 </fieldset>
 
@@ -496,12 +519,16 @@
 					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.<br />This does not run separately if Optimize Database = TRUE</div>
 				</td>
 			</tr>
+			<tr>
+				<td><label for="explain">Information</label>:</td>
+				<td>
+					<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because, for MyIsam, it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</br />
+						If you are using Percona, then you can try adding expand_fast_index_creation = 1 and innodb_merge_sort_block_size = 1G to your my.cnf before do the above procedures. This is based on <a href="http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation">Improved InnoDB fast index creation</a> and it may improve your InnoDB optimization.</div>
+				</td>
+			</tr>
 		</table>
-		<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because, for MyIsam, it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</br />
-			If you are using Percona, then you can try adding expand_fast_index_creation = 1 and innodb_merge_sort_block_size = 1G to your my.cnf before do the above procedures. This is based on <a href="http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation">Improved InnoDB fast index creation</a> and it may improve your InnoDB optimization.</div>
 </fieldset>
 
 <input type="submit" value="Save Tmux Settings" />
 
 </form>
-
