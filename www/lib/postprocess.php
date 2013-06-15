@@ -1383,4 +1383,3 @@ class PostProcess
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
 	}
 }
-?>

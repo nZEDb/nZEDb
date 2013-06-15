@@ -35,5 +35,3 @@ $page->meta_description = "View Sabnzbd Queue";
 
 $page->content = $page->smarty->fetch('viewqueue.tpl');
 $page->render();
-
-?>

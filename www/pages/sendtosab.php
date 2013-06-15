@@ -18,5 +18,3 @@ if (empty($sab->apikey))
 $guid = $_GET["id"];
 
 $sab->sendToSab($guid);
-
-?>

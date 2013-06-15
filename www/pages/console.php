@@ -96,5 +96,3 @@ $page->meta_description = "Browse for Games";
 	
 $page->content = $page->smarty->fetch('console.tpl');
 $page->render();
-
-?>

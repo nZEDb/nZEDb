@@ -86,5 +86,3 @@ else
 	$page->content = $page->smarty->fetch('viewanimelist.tpl');
 	$page->render();
 }
-
-?>

@@ -130,5 +130,3 @@ else
 	$page->content = $page->smarty->fetch('viewserieslist.tpl');
 	$page->render();
 }
-
-?>

@@ -51,6 +51,3 @@ $page->meta_description = "Manage Your Movies";
 
 $page->content = $page->smarty->fetch('mymoviesedit.tpl');
 $page->render();
-
-
-?>

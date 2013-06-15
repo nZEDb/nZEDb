@@ -393,4 +393,3 @@ require_once(WWW_DIR."/lib/site.php");
 			return $bookId;
 		}
 	}
-?>

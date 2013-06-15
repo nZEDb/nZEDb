@@ -89,5 +89,3 @@ $page->meta_description = "Forgotten Password";
 
 $page->content = $page->smarty->fetch('forgottenpassword.tpl');
 $page->render();
-
-?>

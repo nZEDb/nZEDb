@@ -27,5 +27,3 @@ $page->meta_description = "View PreDB info";
 	
 $page->content = $page->smarty->fetch('predb.tpl');
 $page->render();
-
-?>

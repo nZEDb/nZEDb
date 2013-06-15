@@ -343,4 +343,3 @@ class Groups
 		return "Group $id has been $status.";
 	}
 }
-?>

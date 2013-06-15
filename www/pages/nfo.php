@@ -39,5 +39,3 @@ if (isset($_GET["id"]))
 	else
 		$page->render();
 }
-
-?>

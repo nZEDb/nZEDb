@@ -113,5 +113,3 @@ $page->meta_description = "Register";
 
 $page->content = $page->smarty->fetch('register.tpl');
 $page->render();
-
-?>

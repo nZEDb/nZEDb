@@ -206,4 +206,3 @@ class ReleaseExtra
 		return $db->queryInsert(sprintf("insert into releaseextrafull (releaseID, mediainfo) values (%d, %s)", $id, $db->escapeString($xml)));	
 	}
 }
-?>

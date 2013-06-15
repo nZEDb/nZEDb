@@ -85,5 +85,3 @@ $page->meta_description = "Browse for Books";
 	
 $page->content = $page->smarty->fetch('books.tpl');
 $page->render();
-
-?>

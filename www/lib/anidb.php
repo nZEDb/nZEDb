@@ -329,5 +329,3 @@ class AniDB
 		return $AniDBAPIArray;
 	}
 }
-
-?>

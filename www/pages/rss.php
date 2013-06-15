@@ -137,4 +137,3 @@ else
 	echo trim($page->smarty->fetch('rss.tpl'));
 
 }
-?>

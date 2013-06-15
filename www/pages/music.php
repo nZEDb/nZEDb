@@ -95,5 +95,3 @@ $page->meta_description = "Browse for Albums";
 	
 $page->content = $page->smarty->fetch('music.tpl');
 $page->render();
-
-?>

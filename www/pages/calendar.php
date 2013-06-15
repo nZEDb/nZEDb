@@ -41,4 +41,3 @@ $page->smarty->assign('nxtdata',$nxtdaydata);
 $page->smarty->assign('cal',$cal);
 $page->content = $page->smarty->fetch('viewcalendar.tpl');
 $page->render();
-?>

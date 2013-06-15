@@ -479,5 +479,3 @@ function showApiError($errcode=900, $errtext="")
 	echo "<error code=\"$errcode\" description=\"$errtext\"/>\n";
 	die();
 }
-
-?>

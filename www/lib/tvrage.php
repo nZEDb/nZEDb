@@ -997,5 +997,3 @@ class TvRage
 	}
 	
 }
-
-?>

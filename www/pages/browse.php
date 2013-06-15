@@ -78,5 +78,3 @@ $page->meta_description = "Browse for Nzbs";
 	
 $page->content = $page->smarty->fetch('browse.tpl');
 $page->render();
-
-?>

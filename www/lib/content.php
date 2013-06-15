@@ -190,4 +190,3 @@ class Contents
 		return $db->query(sprintf("select * from content where showinmenu=1 and status=1 and contenttype = %d %s ", $id, $role));		
 	}		
 }
-?>

@@ -530,4 +530,3 @@ class Backfill
 		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
 	}
 }
-?>
