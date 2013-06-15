@@ -117,10 +117,6 @@ def main(args):
 
 	# Give the workers some work to do
 	work_count = 0
-	for gnames in datas:
-		work_count += 1
-		threadID.put(gnames[0])
-
 	threads = int(run_threads[0])
 	for i in range(0, threads):
 		threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - 1, datas[0][1] - i * geteach - geteach, i+1))

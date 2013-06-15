@@ -123,8 +123,8 @@
 					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="BACKFILL_ORDER" name='BACKFILL_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->BACKFILL_ORDER}
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
-						Safe - Backfills 1 group by backfill days (set in admin-view groups)., using the number of threads set in admin.<br \>
-						Interval - Backfills the number of groups (set in tmux), by backfill days (set in admin-view groups), by backfill quantity, set below, per loop.<br />
+						Safe - Backfills 1 group by backfill days (set in admin-view groups), using the number of threads set in admin.<br \>
+						Interval - Backfills the number of groups (set in tmux), by backfill days (set in admin-view groups), completely.<br />
 						All - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
 						These settings are all per loop and does not use backfill date. Approximately every 80 minutes, every activated backfill group will be backfilled (5k headers). This is to allow incomplete collections to be completed and/or the 2 hour delay reset if the collection is still active.<br />
 						Newest - Sorts the group selection with the least backfill days backfilled, first.<br />

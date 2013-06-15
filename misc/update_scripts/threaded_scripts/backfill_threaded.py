@@ -74,6 +74,7 @@ if not datas:
 	print "No Groups enabled for backfill"
 	sys.exit()
 
+
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID, result_q):
 		super(WorkerThread, self).__init__()
@@ -85,18 +86,12 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				if sys.argv[1] == "all":
+				if len(sys.argv) > 1 and sys.argv[1] == "all":
 					print '\n%s: Backfill All %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+dirname])
-				if type[0] == "3":
-					print '\n%s: Backfill Interval by Oldest %s started.' % (self.name, dirname)
-					subprocess.call(["php", pathname+"/../backfill.php", ""+dirname])
-				elif type[0] == "1":
-					print '\n%s: Backfill Interval by Newest %s started.' % (self.name, dirname)
+				else:
+					print '\n%s: Backfill %s started.' % (self.name, dirname)
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+dirname])
-				elif type[0] == "2":
-					print '\n%s: Backfill All %s started.' % (self.name, dirname)
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_other.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
 			except Queue.Empty:
 				continue
@@ -121,7 +116,7 @@ def main(args):
 	work_count = 0
 	for gnames in datas:
 		work_count += 1
-		threadID.put(gnames[0])
+		threadID.put("%s %s" %(gnames[0], type[0]))
 
 	print 'Assigned %s groups to workers' % work_count
 
