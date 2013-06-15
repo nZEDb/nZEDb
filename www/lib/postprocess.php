@@ -459,7 +459,7 @@ class PostProcess
 						if ($this->password)
 						{
 							$this->doecho("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
-							break;
+								break;
 						}
 
 						if (preg_match($this->supportfiles.")(?!.{20,})/i", $rarFile["title"]))
@@ -500,7 +500,6 @@ class PostProcess
 							$nntp->doConnect();
 							$bingroup = $groupName;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-//							echo "\n{$rarFile['title']} {$this->size} {$this->sum} {$this->segsize} {$this->adj}\n";
 
 							if ($fetchedBinary !== false)
 							{
@@ -538,15 +537,18 @@ class PostProcess
 										continue;
 
 									$tmpfiles = $rar->getArchiveFileList();
-									foreach($tmpfiles as $r)
+									if (isset($tmpfiles[0]["name"]))
 									{
-										$range = mt_rand(0,32767);
-										if (isset($r["range"]))
-											$range = $r["range"];
+										foreach($tmpfiles as $r)
+										{
+											$range = mt_rand(0,32767);
+											if (isset($r["range"]))
+												$range = $r["range"];
 
-										$r["range"] = $range;
-										if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-											$this->addfile($r, $rel["ID"], $rar);
+											$r["range"] = $range;
+											if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
+												$this->addfile($r, $rel["ID"], $rar);
+										}
 									}
 								}
 							}
@@ -877,7 +879,6 @@ class PostProcess
 						{
 							$ret = $this->addfile($f, $relid);
 							$files[] = $f;
-//							var_dump($ret);
 						}
 				}
 			}
@@ -1042,11 +1043,13 @@ class PostProcess
 								}
 							}
 						}
-						//var_dump($file);
+
+						if (!isset($file["next_offset"]))
+							$file["next_offset"] = 0;
 						$range = mt_rand(0,32767);
 						if (isset($file["range"]))
 							$range = $file["range"];
-						$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
+						$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"], 'next_offset'=>$file["next_offset"]);
 						$this->adj = $file["next_offset"] + $this->adj;
 					}
 				}
@@ -1061,7 +1064,7 @@ class PostProcess
 			}
 			else
 			{
-				$this->size = $files[0]["size"];
+				$this->size = $files[0]["size"] * 0.95;
 				if ($this->name != $files[0]["name"])
 				{
 					$this->name = $files[0]["name"];
@@ -1074,15 +1077,20 @@ class PostProcess
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
 				$output = runCmd($execstring, false, true);
-				foreach ($files as $file)
+				if (isset($files[0]["name"]))
 				{
-					if (isset($file["name"]))
+					foreach ($files as $file)
 					{
-						$range = mt_rand(0,32767);
-						if (isset($file["range"]))
-							$range = $file["range"];
+						if (isset($file["name"]))
+						{
+							if (!isset($file["next_offset"]))
+								$file["next_offset"] = 0;
+							$range = mt_rand(0,32767);
+							if (isset($file["range"]))
+								$range = $file["range"];
 
-						$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"]);
+							$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"], 'next_offset'=>$file["next_offset"]);
+						}
 					}
 				}
 			}
@@ -1107,6 +1115,8 @@ class PostProcess
 						break;
 					}
 
+					if (!isset($file["next_offset"]))
+							$file["next_offset"] = 0;
 					if (!isset($file["range"]))
 						$file["range"] = 0;
 
@@ -1127,7 +1137,6 @@ class PostProcess
 			// Not a compressed file, but segmented.
 				$this->ignorenumbered = true;
 		}
-//		var_dump($retval);
 
 		// Use found content to populate releasefiles, nfo, and create multimedia files.
 		foreach ($retval as $k => $v)
@@ -1207,7 +1216,7 @@ class PostProcess
 						$xmlObj = @simplexml_load_string($xmlarray);
 						$arrXml = objectsIntoArray($xmlObj);
 						if (isset($arrXml["File"]["track"]))
-							{
+						{
 							foreach ($arrXml["File"]["track"] as $track)
 							{
 								if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
