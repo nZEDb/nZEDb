@@ -10,4 +10,12 @@ $count = $tmux->get()->BACKFILL_QTY;
 $backfill = new Backfill();
 $backfill->backfillPostAllGroups($argv[1], $count);
 
+
+$backfill = new Backfill();
+$backfill->backfillPostAllGroups($argv[1], 5000);
+
+
+$backfill = new Backfill();
+$backfill->backfillAllGroups($argv[1]);
+
 ?>

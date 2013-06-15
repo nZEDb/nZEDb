@@ -9,6 +9,7 @@ class ReleaseImage
 		$this->imgSavePath = WWW_DIR.'covers/preview/';
 		$this->vidSavePath = WWW_DIR.'covers/video/';
 		$this->jpgSavePath = WWW_DIR.'covers/sample/';
+		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 	}
 
 	public function fetchImage($imgLoc)
@@ -75,6 +76,9 @@ class ReleaseImage
 	public function delete($guid)
 	{
 		@unlink($this->imgSavePath.$guid.'_thumb.jpg');
+		@unlink($this->vidSavePath.$guid.'.ogv');
+		@unlink($this->audSavePath.$guid.'.ogg');
+		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 	}
 
 }

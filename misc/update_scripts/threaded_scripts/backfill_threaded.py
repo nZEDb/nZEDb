@@ -64,12 +64,8 @@ elif order == 3:
 else:
 	group = "ORDER BY name DESC"
 
-try:
-	sys.argv[1]
-except NameError:
-	sys.exit()
-
-if sys.argv[1] == "all":
+if len(sys.argv) > 1 and sys.argv[1] == "all":
+	print sys.argv[1]
 	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group))
 else:
 	cur.execute("%s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit ", int(groups[0])))
