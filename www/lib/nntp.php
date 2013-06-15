@@ -362,4 +362,3 @@ class Nntp extends Net_NNTP_Client
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
 	}
 }
-?>

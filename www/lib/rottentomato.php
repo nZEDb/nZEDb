@@ -111,4 +111,3 @@ class RottenTomato
 		return $this->_apikey;
 	}
 }
-?>

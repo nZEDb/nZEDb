@@ -747,4 +747,3 @@ class Binaries
 		$db->query(sprintf("delete from collections where ID = %d", $id));
 	}	
 }
-?>

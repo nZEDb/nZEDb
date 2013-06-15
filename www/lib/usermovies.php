@@ -49,4 +49,3 @@ class UserMovies
 		$db->query($sql);		
 	}
 }
-?>

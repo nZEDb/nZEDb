@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2407";
+$version="0.1r2408";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -32,6 +32,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
+	( SELECT COUNT( ID ) FROM groups ) AS all_groups,
 	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
 	( SELECT COUNT( ID ) from collections ) AS collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
@@ -256,6 +257,7 @@ $last_history = "";
 $debug = 0;
 $active_groups = 0;
 $backfill_groups = 0;
+$all_groups = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -295,7 +297,7 @@ printf("\n\033[1;33m\n");
 printf($mask, "Groups", "Active", "Backfill");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
-printf($mask, "Activated", $active_groups, $backfill_groups);
+printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups."(".$all_groups.")");
 
 $monitor = 30;
 $i = 1;
@@ -365,6 +367,7 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
 	if ( @$proc_work_result[0]['active_groups'] != NULL ) { $active_groups = $proc_work_result[0]['active_groups']; }
 	if ( @$proc_work_result[0]['backfill_groups'] != NULL ) { $backfill_groups = $proc_work_result[0]['backfill_groups']; }
+	if ( @$proc_work_result[0]['all_groups'] != NULL ) { $all_groups = $proc_work_result[0]['all_groups']; }
 	if ( @$proc_work_result[0]['parts'] != NULL ) { $parts_rows = $proc_work_result[0]['parts']; }
 	if ( @$proc_work_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_work_result[0]['partsize']; }
 	if ( @$proc_work_result[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result[0]['collections_table']; }
@@ -530,7 +533,7 @@ while( $i > 0 )
 	printf($mask, "Groups", "Active", "Backfill");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, "Activated", $active_groups, $backfill_groups);
+	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups."(".$all_groups.")");
 
 	//get microtime at end of queries
 	if ( $runloop == "true" )

@@ -68,5 +68,3 @@ foreach($results as $result)
 	echo "English track found for ".$result['searchname']." - ".$cat." moving...\n";
 	updaterelease( $result['ID'], $cat);
 }
-
-?>

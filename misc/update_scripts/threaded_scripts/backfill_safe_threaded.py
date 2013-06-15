@@ -58,6 +58,12 @@ s = nntplib.connect(config['NNTP_SERVER'], config['NNTP_PORT'], config['NNTP_SSL
 resp, count, first, last, name = s.group(datas[0][0])
 print 'Group', name, 'has', count, 'articles, range', first, 'to', last
 print datas[0][1]
+
+while (datas[0][1] - long(first)) < 1000:
+	group = ("%s %d" %(datas[0][0], 1000))
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+	sys.exit()
+
 geteach = (datas[0][1] - long(first)) / int(run_threads[0])
 if geteach > 20000:
 	geteach = 20000
