@@ -1828,6 +1828,15 @@ class Releases
 		// Binaries/parts that somehow have no collection.
 		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
+		// Parts that somehow have no binaries.
+		$db->queryDirect("DELETE FROM parts WHERE `binaryID` NOT IN (SELECT b.id FROM binaries b) " . $where);
+
+		// Binaries that somehow have no collection.
+		$db->queryDirect("DELETE FROM `binaries` WHERE `collectionID` NOT IN (SELECT c.`ID` FROM `collections` c) " . $where);
+
+		// Collections that somehow have no binaries.
+		$db->queryDirect("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
+
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
