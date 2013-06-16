@@ -39,6 +39,7 @@ class PostProcess
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 		$this->tmpPath = $this->site->tmpunrarpath;
 		$this->db = new DB();
+		$this->consoleTools = new ConsoleTools();
 
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -243,7 +244,6 @@ class PostProcess
 	public function processAdditional($threads=1, $id = '')
 	{
 		$nntp = new Nntp();
-		$consoleTools = new ConsoleTools();
 		$ri = new ReleaseImage();
 		$site = new Sites();
 		if ($threads > 1)
@@ -332,9 +332,9 @@ class PostProcess
 				$passStatus = array(Releases::PASSWD_NONE);
 
 				if ($this->echooutput && $threads > 0)
-					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
-					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
@@ -515,7 +515,7 @@ class PostProcess
 							$nntp->doConnect();
 							$bingroup = $groupName;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-							echo " b";
+							$this->consoleTools->appendWrite(" b");
 
 							if ($fetchedBinary !== false)
 							{
@@ -631,7 +631,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-					echo " s";
+					$this->consoleTools->appendWrite(" s");
 					if ($sampleBinary !== false)
 					{
 						if (strlen($sampleBinary) > 100)
@@ -650,7 +650,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-					echo " m";
+					$this->consoleTools->appendWrite(" m");
 					$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
@@ -676,7 +676,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					echo " a";
+					$this->consoleTools->appendWrite(" a");
 					if ($audioBinary !== false)
 					{
 						if (strlen($audioBinary) > 100)
@@ -693,7 +693,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					echo " j";
+					$this->consoleTools->appendWrite(" j");
 					if ($jpgBinary !== false)
 					{
 						@file_put_contents($this->tmpPath."samplepicture.jpg", $jpgBinary);
@@ -749,7 +749,7 @@ class PostProcess
 						{
 							//$this->doecho("adding missing file ".$rel["guid"]);
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
-							echo "o";
+							$this->consoleTools->appendWrite("o");
 						}
 					}
 					unset($rf);
@@ -785,7 +785,7 @@ class PostProcess
 				echo "\n";
 		}
 		$nntp->doQuit();
-		unset($nntp, $consoleTools, $rar, $nzbcontents, $groups, $ri);
+		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}
 
 	function doecho($str)
@@ -812,7 +812,7 @@ class PostProcess
 
 			$rf = new ReleaseFiles();
 			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
-				echo "^";
+				$this->consoleTools->appendWrite("^");
 
 			if ($tmpdata !== false)
 			{
@@ -826,7 +826,7 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						echo "n";
+						$this->consoleTools->appendWrite("n");
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -874,7 +874,7 @@ class PostProcess
 		}
 
 		$files = $zip->getFileList();
-		echo "z";
+		$this->consoleTools->appendWrite("z");
 		$dataarray = array();
 		if ($files !== false)
 		{
@@ -893,7 +893,7 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						echo "n";
+						$this->consoleTools->appendWrite("n");
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -945,7 +945,7 @@ class PostProcess
 			return false;
 		}
 		$files = $rar->getArchiveFileList();
-		echo "r";
+		$this->consoleTools->appendWrite("r");
 		$retval = array();
 		if ($files !== false)
 		{
@@ -1021,7 +1021,7 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			echo "r";
+			$this->consoleTools->appendWrite("r");
 
 			if (count($files) == 0)
 				return false;
@@ -1214,7 +1214,7 @@ class PostProcess
 			}
 		}
 		if ($retval !== false)
-			echo "M";
+			$this->consoleTools->appendWrite("M");
 		return $retval;
 	}
 
@@ -1305,7 +1305,7 @@ class PostProcess
 			}
 		}
 		if ($retval !== false)
-			echo "A";
+			$this->consoleTools->appendWrite("A");
 		return $retval;
 	}
 
@@ -1361,7 +1361,7 @@ class PostProcess
 		}
 		// If an image was made, return true, else return false.
 		if ($retval !== false)
-			echo "S";
+			$this->consoleTools->appendWrite("S");
 		return $retval;
 	}
 
@@ -1419,14 +1419,14 @@ class PostProcess
 		}
 		// If an video was made, return true, else return false.
 		if ($retval !== false)
-			echo "V";
+			$this->consoleTools->appendWrite("V");
 		return $retval;
 	}
 
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
-		echo "P";
+		$this->consoleTools->appendWrite("P");
 	}
 }
 
