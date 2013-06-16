@@ -43,6 +43,7 @@ class PostProcess
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
+		$this->ignorebookregex = "/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i";
 
 		$sigs = array(array('00', '00', '01', 'BA'),
 					array('00', '00', '01', 'B3'),
@@ -296,12 +297,15 @@ class PostProcess
 		{
 			if ($this->echooutput)
 			{
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
 				if ($threads > 0)
 					echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 				else
 					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 			}
+
+			echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
+			echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -341,6 +345,7 @@ class PostProcess
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
 				$hasrar = 0;
+				$ignoredbooks = 0;
 				$this->password = $notmatched = false;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
@@ -417,6 +422,10 @@ class PostProcess
 								$jpgmsgid[] = $nzbcontents["segments"][1];
 						}
 					}
+					elseif (preg_match($this->ignorebookregex, $nzbcontents["title"], $type))
+					{
+						$ignoredbooks++;
+					}
 				}
 
 				// If this release has release files, delete them.
@@ -426,6 +435,13 @@ class PostProcess
 				// Process rar contents until 1G or 85% of file size is found (smaller of the two).
 				$this->password = $foundcontent = false;
 				$rarpart = array();
+
+				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
+				{
+					echo " skipping book flood";
+					$this->db->query($sql = sprintf("update releases set passwordstatus = 0, haspreview = 0, categoryID = 8050 where ID = %d", $rel["ID"]));
+					continue;
+				}
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
 				if ($hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
@@ -499,6 +515,7 @@ class PostProcess
 							$nntp->doConnect();
 							$bingroup = $groupName;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+							echo " b";
 
 							if ($fetchedBinary !== false)
 							{
@@ -614,6 +631,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
+					echo " s";
 					if ($sampleBinary !== false)
 					{
 						if (strlen($sampleBinary) > 100)
@@ -632,6 +650,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
+					echo " m";
 					$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
@@ -657,6 +676,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+					echo " a";
 					if ($audioBinary !== false)
 					{
 						if (strlen($audioBinary) > 100)
@@ -673,6 +693,7 @@ class PostProcess
 				{
 					$nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+					echo " j";
 					if ($jpgBinary !== false)
 					{
 						@file_put_contents($this->tmpPath."samplepicture.jpg", $jpgBinary);
@@ -728,6 +749,7 @@ class PostProcess
 						{
 							//$this->doecho("adding missing file ".$rel["guid"]);
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
+							echo "o";
 						}
 					}
 					unset($rf);
@@ -789,7 +811,8 @@ class PostProcess
 			}
 
 			$rf = new ReleaseFiles();
-			$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]);
+			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
+				echo "^";
 
 			if ($tmpdata !== false)
 			{
@@ -803,6 +826,7 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						echo "n";
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -850,6 +874,7 @@ class PostProcess
 		}
 
 		$files = $zip->getFileList();
+		echo "z";
 		$dataarray = array();
 		if ($files !== false)
 		{
@@ -868,6 +893,7 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						echo "n";
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -919,6 +945,7 @@ class PostProcess
 			return false;
 		}
 		$files = $rar->getArchiveFileList();
+		echo "r";
 		$retval = array();
 		if ($files !== false)
 		{
@@ -952,7 +979,6 @@ class PostProcess
 
 		if (count($retval) == 0)
 			return false;
-
 		return $retval;
 	}
 
@@ -976,14 +1002,10 @@ class PostProcess
 				return false;
 			}
 
-			if ($rar->isEncrypted)
-			{
-				$this->doecho("Archive is password encrypted.");
-				$this->password = true;
-				return false;
-			}
-
 			$tmp = $rar->getSummary(true, false);
+			if (preg_match('/par2/i', $tmp["main_info"]))
+				return false;
+
 			if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 			{
 				$this->doecho("Archive is password encrypted.");
@@ -991,7 +1013,15 @@ class PostProcess
 				return false;
 			}
 
+			if ($rar->isEncrypted)
+			{
+				$this->doecho("Archive is password encrypted.");
+				$this->password = true;
+				return false;
+			}
+
 			$files = $rar->getArchiveFileList();
+			echo "r";
 
 			if (count($files) == 0)
 				return false;
@@ -1152,7 +1182,6 @@ class PostProcess
 
 		if (count($retval) == 0)
 			$retval = false;
-
 		unset($fetchedBinary, $rar, $rf, $nfo);
 		return $retval;
 	}
@@ -1184,6 +1213,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($retval !== false)
+			echo "M";
 		return $retval;
 	}
 
@@ -1273,6 +1304,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($retval !== false)
+			echo "A";
 		return $retval;
 	}
 
@@ -1327,6 +1360,8 @@ class PostProcess
 			}
 		}
 		// If an image was made, return true, else return false.
+		if ($retval !== false)
+			echo "S";
 		return $retval;
 	}
 
@@ -1383,12 +1418,15 @@ class PostProcess
 			}
 		}
 		// If an video was made, return true, else return false.
+		if ($retval !== false)
+			echo "V";
 		return $retval;
 	}
 
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
+		echo "P";
 	}
 }
 
