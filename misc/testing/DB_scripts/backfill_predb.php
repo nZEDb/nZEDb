@@ -10,9 +10,9 @@ require_once(WWW_DIR."/lib/framework/db.php");
 
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
-	$db = new DB;
-	$predb = new Predb;
-	$consoletools = new ConsoleTools;
+	$db = new DB();
+	$predb = new Predb();
+	$consoletools = new ConsoleTools();
 	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
 	if ($predbv["v"] == 142)
 		exit("You are at the maximum backfill.\n");

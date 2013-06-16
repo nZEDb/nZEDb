@@ -8,7 +8,7 @@ require_once(WWW_DIR."lib/releases.php");
 require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/tmux.php");
 
-$tmux = new Tmux;
+$tmux = new Tmux();
 
 function getReleaseName($md5)
 {

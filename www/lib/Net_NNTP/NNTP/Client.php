@@ -1546,5 +1546,3 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
  * c-hanging-comment-ender-p: nil
  * End:
  */
-
-?>

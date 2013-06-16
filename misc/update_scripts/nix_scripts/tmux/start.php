@@ -8,12 +8,12 @@ require_once(WWW_DIR."lib/site.php");
 $db = new DB();
 $DIR = MISC_DIR;
 
-$tmux = new Tmux;
+$tmux = new Tmux();
 $tmux_session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
 
-$site = New Sites();
+$site = new Sites();
 $patch = $site->get()->sqlpatch;
 $hashcheck = $site->get()->hashcheck;
 
@@ -28,7 +28,7 @@ function writelog( $pane )
 {
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
-	$tmux = new Tmux;
+	$tmux = new Tmux();
 	$logs = $tmux->get()->WRITE_LOGS;
 	if ( $logs == "TRUE" )
 	{
@@ -47,7 +47,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '75' )
+if ( $patch < '76' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -87,7 +87,7 @@ if ( $db->getAffectedRows() > 0 )
 
 function start_apps($tmux_session)
 {
-	$tmux = new Tmux;
+	$tmux = new Tmux();
 	$htop = $tmux->get()->HTOP;
 	$vnstat = $tmux->get()->VNSTAT;
 	$vnstat_args = $tmux->get()->VNSTAT_ARGS;

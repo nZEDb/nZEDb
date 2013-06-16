@@ -21,7 +21,7 @@ else
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
-	$tmux = new Tmux;
+	$tmux = new Tmux();
 	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
 	$patch = $tmux->get()->PATCHDB;

@@ -351,7 +351,7 @@ class TvRage
 	
 	public function updateEpInfo($show, $relid)
 	{
-		$db = new Db;
+		$db = new DB();
 		
 		if ($this->echooutput)
 			echo "TV series: ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'').".\n";
@@ -364,7 +364,7 @@ class TvRage
 	
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
-		$db = new Db;
+		$db = new DB();
 		
 		// try and get the episode specific info from tvrage
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -413,7 +413,7 @@ class TvRage
 	
 	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
 	{
-		$db = new Db;
+		$db = new DB();
 		
 		// try and get the episode specific info from tvrage
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -460,7 +460,7 @@ class TvRage
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
-		$site = new Sites;
+		$site = new Sites();
 		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
@@ -997,5 +997,3 @@ class TvRage
 	}
 	
 }
-
-?>
