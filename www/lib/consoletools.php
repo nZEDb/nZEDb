@@ -13,10 +13,18 @@ class ConsoleTools
 				$this->lastMessageLength = 0;
 			
 			echo str_repeat(chr(8), $this->lastMessageLength);
+			echo str_repeat(" ", $this->lastMessageLength);
+			echo str_repeat(chr(8), $this->lastMessageLength);
 
 			$this->lastMessageLength = strlen($message);
 			echo $message;
+	}
 
+	function appendWrite($message)
+	{
+			echo $message;
+
+			$this->lastMessageLength = $this->lastMessageLength + strlen($message);
 	}
 
 	function percentString($cur, $total)
