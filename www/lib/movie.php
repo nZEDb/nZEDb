@@ -48,7 +48,7 @@ class Movie
 	}	
 	
 	public function getRange($start, $num)
-	{		
+	{
 		$db = new DB();
 		
 		if ($start === false)
@@ -201,7 +201,7 @@ class Movie
 	
 	public function getBrowseBy()
 	{
-		$db = new Db;
+		$db = new Db();
 		
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
@@ -492,7 +492,7 @@ class Movie
 
 	public function domovieupdate($buffer, $service, $id, $db, $processImdb = 1)
 	{
-		$nfo = new Nfo;
+		$nfo = new Nfo();
 		$imdbId = $nfo->parseImdb($buffer);
 		if ($imdbId !== false)
 		{
@@ -524,7 +524,7 @@ class Movie
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
-		$site = new Sites;
+		$site = new Sites();
 		if ($threads > 1)
 		{
 			usleep($this->sleeptime*1000*($threads - 1));
@@ -775,7 +775,7 @@ class Movie
 
   	public function parseMovieSearchName($releasename)
 	{
-		$cat = new Category;
+		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename))
 		{
 			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
@@ -876,4 +876,3 @@ class Movie
 		);
 	}
 }
-?>

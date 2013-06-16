@@ -6,8 +6,8 @@ require_once(WWW_DIR."lib/site.php");
 
 $dir = WWW_DIR;
 $misc = MISC_DIR;
-$site = new Sites;
-$db = new DB;
+$site = new Sites();
+$db = new DB();
 $level = $site->get()->nzbsplitlevel;
 
 if (!isset($argv[1]))

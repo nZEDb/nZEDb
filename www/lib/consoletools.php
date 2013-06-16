@@ -52,4 +52,3 @@ class ConsoleTools
 		return " ".sprintf("%02dh:%02dm:%02ds", $h, $m, $s);
 	}
 }
-?>

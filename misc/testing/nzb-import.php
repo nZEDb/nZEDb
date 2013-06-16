@@ -10,7 +10,7 @@ require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
-$page = new Page;
+$page = new Page();
 $n = "\n";
 
 if (!isset($argv[1]))
@@ -104,9 +104,9 @@ else
 
 		$skipCheck = false;
 		$i=0;
-		$firstname = [];
-		$postername = [];
-		$postdate = [];
+		$firstname = array();
+		$postername = array();
+		$postdate = array();
 		$totalFiles = 0;
 		$totalsize = 0;
 

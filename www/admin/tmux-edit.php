@@ -36,10 +36,10 @@ switch($action)
 $page->smarty->assign('yesno_names', array('yes', 'no'));
 $page->smarty->assign('truefalse_names', array('TRUE', 'FALSE'));
 
-$page->smarty->assign('backfill_ids', array(0,4,1,3,2));
-$page->smarty->assign('backfill_names', array('Disabled', 'Safe', 'Interval-Newest Complete', 'Interval-Oldest Complete', 'All'));
+$page->smarty->assign('backfill_ids', array(0,4,2,1));
+$page->smarty->assign('backfill_names', array('Disabled', 'Safe', 'All', 'Interval'));
+$page->smarty->assign('backfill_group_ids', array(1,2,3,4));
+$page->smarty->assign('backfill_group', array('Newest', 'Oldest', 'Alphabetical', 'Alphabetical - Reverse'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();
-
-

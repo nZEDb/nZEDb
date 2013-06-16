@@ -9,7 +9,7 @@ require_once(FS_ROOT."/../../../www/lib/category.php");
 
 $console = new Console(true);
 
-$db = new Db;
+$db = new Db();
 
 $res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC", Category::CAT_PARENT_GAME));
 if ($db->getNumRows($res) > 0) {

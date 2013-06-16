@@ -24,7 +24,7 @@ class Backfill
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
-		$groups = new Groups;
+		$groups = new Groups();
 		
 		if ($groupName != '') 
 		{
@@ -206,7 +206,7 @@ class Backfill
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
-		$groups = new Groups;
+		$groups = new Groups();
 		if ($groupName != '')
 		{
 			$grp = $groups->getByName($groupName);
@@ -477,15 +477,17 @@ class Backfill
 
 		$db = new DB();
 		$n = $this->n;
-		$groups = new Groups;
+		$groups = new Groups();
 		$this->startGroup = microtime(true);
-		$site = new Sites;
+		$site = new Sites();
 		$backthread = $site->get()->backfillthreads;
-		$binaries = new Binaries;
+		$binaries = new Binaries();
 
 		$groupArr = $groups->getByName($group);
 		$nntp = new Nntp();
 		$nntp->doConnect();
+		$nntpc = new Nntp();
+		$nntpc->doConnect();
 
 		// Connect to server
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -512,6 +514,7 @@ class Backfill
 			return;
 		}
 		$nntp->doQuit();
+		$nntpc->doQuit();
 	}
 
 	function getFinal($group, $first)
@@ -519,7 +522,7 @@ class Backfill
 		$db = new DB();
 		$nntp = new Nntp();
 		$nntp->doConnect();
-		$groups = new Groups;
+		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		$data = $nntp->selectGroup($groupArr['name']);
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
@@ -527,4 +530,3 @@ class Backfill
 		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
 	}
 }
-?>

@@ -19,10 +19,10 @@ CREATE TABLE `collections` (
 		KEY `groupID` (`groupID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_collection_filecheck ON collections (filecheck);
-CREATE INDEX ix_collection_dateadded ON collections (dateadded);
-CREATE INDEX ix_collection_collectionhash ON collections (collectionhash);
-CREATE INDEX ix_collection_releaseID ON collections (releaseID);
+CREATE INDEX ix_collection_filecheck ON collections (`filecheck`);
+CREATE INDEX ix_collection_dateadded ON collections (`dateadded`);
+CREATE INDEX ix_collection_collectionhash ON collections (`collectionhash`);
+CREATE INDEX ix_collection_releaseID ON collections (`releaseID`);
 
 DROP TABLE IF EXISTS `binaries`;
 CREATE TABLE `binaries` (
@@ -37,9 +37,9 @@ CREATE TABLE `binaries` (
 		PRIMARY KEY  (`ID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
-CREATE INDEX ix_binary_partcheck ON binaries (partcheck);
-CREATE INDEX ix_binary_collection ON binaries (collectionID);
+CREATE INDEX ix_binary_binaryhash ON binaries (`binaryhash`);
+CREATE INDEX ix_binary_partcheck ON binaries (`partcheck`);
+CREATE INDEX ix_binary_collection ON binaries (`collectionID`);
 
 DROP TABLE IF EXISTS `releases`;
 CREATE TABLE `releases` 
@@ -90,8 +90,8 @@ CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
-CREATE INDEX ix_releases_relnamestatus on releases('relnamestatus');
-CREATE INDEX ix_releases_passwordstatus on releases('passwordstatus');
+CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
+CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -175,7 +175,6 @@ PRIMARY KEY  (`ID`)
 CREATE INDEX ix_releasecomment_releaseID ON releasecomment (`releaseID`);
 CREATE INDEX ix_releasecomment_userID ON releasecomment (`userID`);
 
-
 DROP TABLE IF EXISTS `predb`;
 CREATE TABLE `predb` 
 (
@@ -199,7 +198,6 @@ CREATE INDEX ix_predb_adddate ON predb(`adddate`);
 CREATE INDEX ix_predb_source ON predb(`source`);
 CREATE INDEX ix_predb_md5 ON predb(`md5`);
 CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
-
 
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` 
@@ -648,7 +646,7 @@ CREATE TABLE `parts` (
   KEY `binaryID` (`binaryID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_parts_number ON parts (number);
+CREATE INDEX ix_parts_number ON parts (`number`);
 
 DROP TABLE IF EXISTS `partrepair`;
 CREATE TABLE `partrepair` (
@@ -741,7 +739,7 @@ INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
-CREATE INDEX ix_category_status ON category('status');
+CREATE INDEX ix_category_status ON category(`status`);
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -862,7 +860,7 @@ CREATE TABLE `usercart` (
   `createddate` DATETIME NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (userID, releaseID);
+CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (`userID`, `releaseID`);
 
 DROP TABLE IF EXISTS `userexcat`;
 CREATE TABLE `userexcat` (
@@ -872,7 +870,7 @@ CREATE TABLE `userexcat` (
   `createddate` DATETIME NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (userID, categoryID);
+CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (`userID`, `categoryID`);
 
 DROP TABLE IF EXISTS `userinvite`;
 CREATE TABLE `userinvite` (
@@ -925,7 +923,7 @@ INSERT INTO `site`
 	VALUES
 	('code', 'nZEDb'),
 	('title', 'nZEDb'),
-	('strapline', 'A great usenet indexer'),
+	('strapline', 'A great usenet `indexer'),
 	('metatitle', 'An indexer'),
 	('metadescription', 'A usenet indexing website'),
 	('metakeywords', 'usenet,nzbs,cms,community'),
@@ -1020,7 +1018,7 @@ INSERT INTO `site`
 	('predbversion', 1),
 	('deletepossiblerelease', 0),
 	('miscotherretentionhours',0),
-	('sqlpatch', '75');
+	('sqlpatch', '76');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1330,7 +1328,8 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('PATCHDB_TIMER', '21600'),
 	('PROGRESSIVE', 'FALSE'),
 	('DEHASH','FALSE'),
-	('DEHASH_TIMER','30');
+	('DEHASH_TIMER','30')
+	('BACKFILL_ORDER', '2');
 
 
 DROP TABLE IF EXISTS `nzbs`;

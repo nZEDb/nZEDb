@@ -1,9 +1,9 @@
 <?php
 
 require_once(dirname(__FILE__)."/config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."lib/framework/db.php");
 
-$db = new DB;
+$db = new DB();
 echo "Optimizing MYSQL tables, this can take a while...\n";
 $tablecnt = $db->optimise();
 if ($tablecnt > 0)
