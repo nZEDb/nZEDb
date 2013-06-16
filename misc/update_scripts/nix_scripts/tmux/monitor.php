@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2415";
+$version="0.1r2416";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -856,6 +856,12 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 						$run_releases $log && date +\"%D %T\" && echo \"\nbackfill has been disabled/terminated by Backfill\" && sleep $seq_timer' 2>&1 1> /dev/null");
 			}
+	        elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+            {
+                shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
+						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
+						echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\" && sleep $seq_timer' 2>&1 1> /dev/null");
+            }
 			elseif (( $binaries != "TRUE" ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
