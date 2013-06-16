@@ -54,7 +54,7 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.5
+ * @version    1.6
  */
 class ArchiveInfo extends ArchiveReader
 {
@@ -76,7 +76,7 @@ class ArchiveInfo extends ArchiveReader
 	const MAIN_SOURCE  = 'main';
 
 	/**
-	 * List of the supported archive reader classes.
+	 * The default list of the supported archive reader classes.
 	 * @var array
 	 */
 	protected $readers = array(
@@ -92,6 +92,26 @@ class ArchiveInfo extends ArchiveReader
 	 * @var integer
 	 */
 	public $type = self::TYPE_NONE;
+
+	/**
+	 * Sets the list of supported archive reader classes for the current instance,
+	 * overriding the defaults. The keys should be valid archive types:
+	 *
+	 *    $archive->setReaders(array(ArchiveInfo::TYPE_RAR => 'RarInfo'));
+	 *
+	 * If $recursive is set to true, this list will also be used for all embedded
+	 * archives as well. This can be a bit unpredictable, so use with caution, but
+	 * it's a convenient way to swap in custom readers or change their order.
+	 *
+	 * @param   array    $readers    list of reader classes keyed by archive type
+	 * @param   boolean  $recursive  apply list to all embedded archives?
+	 * @return  void
+	 */
+	public function setReaders(array $readers, $recursive=false)
+	{
+		$this->readers = $readers;
+		$this->inheritReaders = $recursive;
+	}
 
 	/**
 	 * Convenience method that outputs a summary list of the archive information,
@@ -254,6 +274,9 @@ class ArchiveInfo extends ArchiveReader
 
 				// Create the new archive object
 				$archive = new self;
+				if ($this->inheritReaders) {
+					$archive->setReaders($this->readers, true);
+				}
 
 				// We shouldn't process any files that are unreadable
 				if (!empty($file['compressed']) || !empty($file['pass'])) {
@@ -462,6 +485,12 @@ class ArchiveInfo extends ArchiveReader
 	 * @var array
 	 */
 	protected $archives = array();
+
+	/**
+	 * Should any embedded archives inherit the readers list from this instance?
+	 * @var boolean
+	 */
+	protected $inheritReaders = false;
 
 	/**
 	 * Parses the source file/data by delegation to one of the configured readers,
