@@ -296,7 +296,7 @@ class PostProcess
 		{
 			if ($this->echooutput)
 			{
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
+				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)";
 				if ($threads > 0)
 					echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 				else
@@ -326,13 +326,12 @@ class PostProcess
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
-				echo "\n".$rel['guid']."\n";
-/*
+
 				if ($this->echooutput && $threads > 0)
 					$consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
 					$consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-*/
+
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
 				$nzb = new NZB(true);
@@ -1392,4 +1391,4 @@ class PostProcess
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
 	}
 }
-?>
+

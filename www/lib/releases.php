@@ -2159,4 +2159,3 @@ class Releases
 	}
 
 }
-?>

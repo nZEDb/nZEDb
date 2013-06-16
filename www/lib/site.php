@@ -111,4 +111,3 @@ GNU General Public License for more details.
 ".$n;
 	}
 }
-?>

@@ -2201,5 +2201,3 @@ class Net_NNTP_Protocol_Client extends PEAR
  * c-hanging-comment-ender-p: nil
  * End:
  */
-
-?>
