@@ -55,14 +55,16 @@ cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
 groups = cur.fetchone();
 cur.execute("select value from tmux where setting = 'BACKFILL_ORDER'");
 order = cur.fetchone();
-if order == 1:
-	group = "ORDER BY first_record_postdate DESC"
-elif order == 2:
-	group = "ORDER BY first_record_postdate ASC"
-elif order == 3:
-	group = "ORDER BY name ASC"
+intorder = int(order[0])
+
+if intorder == 1:
+    group = "ORDER BY first_record_postdate DESC"
+elif intorder == 2:
+    group = "ORDER BY first_record_postdate ASC"
+elif intorder == 3:
+    group = "ORDER BY name ASC"
 else:
-	group = "ORDER BY name DESC"
+    group = "ORDER BY name DESC"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	print sys.argv[1]
