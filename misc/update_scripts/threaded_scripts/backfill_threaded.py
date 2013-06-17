@@ -58,13 +58,13 @@ order = cur.fetchone();
 intorder = int(order[0])
 
 if intorder == 1:
-    group = "ORDER BY first_record_postdate DESC"
+	group = "ORDER BY first_record_postdate DESC"
 elif intorder == 2:
-    group = "ORDER BY first_record_postdate ASC"
+	group = "ORDER BY first_record_postdate ASC"
 elif intorder == 3:
-    group = "ORDER BY name ASC"
+	group = "ORDER BY name ASC"
 else:
-    group = "ORDER BY name DESC"
+	group = "ORDER BY name DESC"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	print sys.argv[1]
