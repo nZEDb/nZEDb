@@ -44,7 +44,7 @@ require_once dirname(__FILE__).'/rarinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.0
+ * @version    2.1
  */
 class SrrInfo extends RarInfo
 {
@@ -264,6 +264,10 @@ class SrrInfo extends RarInfo
 					$block += self::unpack('vapp_name_size', $this->read(2), false);
 					$block['app_name'] = $this->read($block['app_name_size']);
 					$this->client = $block['app_name'];
+				}
+				if ($block['head_flags'] > 1 || $this->offset != $block['next_offset']) {
+					$this->error = 'Could not find Marker block, not a valid SRR file';
+					return false;
 				}
 
 			// Block type: STORED FILE
