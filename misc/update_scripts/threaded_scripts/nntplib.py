@@ -1026,7 +1026,7 @@ class NNTP(_NNTPBase):
             self.sock.close()
 
 
-if _have_ssl:
+if _have_ssl and ssl:
     class NNTP_SSL(_NNTPBase):
 
         def __init__(self, host, port=NNTP_SSL_PORT,
@@ -1053,7 +1053,7 @@ if _have_ssl:
     __all__.append("NNTP_SSL")
 
 def connect(host, port, ssl, user, password):
-	if ssl:
+	if ssl == "true":
 		return NNTP_SSL(host, port, user, password)
 	else:
 		return NNTP(host, port, user, password)
