@@ -1018,7 +1018,8 @@ INSERT INTO `site`
 	('predbversion', 1),
 	('deletepossiblerelease', 0),
 	('miscotherretentionhours',0),
-	('sqlpatch','76');
+	('grabnzbs', '0'),
+	('sqlpatch','77');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

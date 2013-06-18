@@ -88,7 +88,7 @@ class NZB
 		$page = new Page();
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
 		$fp = gzopen($path, 'w6');
-		if ($fp)
+		if ($fp && file_exists($nzb))
 		{
 			gzwrite ($fp, file_get_contents($nzb));
 			gzclose($fp);

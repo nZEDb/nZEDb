@@ -649,6 +649,14 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="grabnzbs">Grab NZBs</label>:</td>
+	<td>
+		{html_radios id="grabnzbs" name='grabnzbs' values=$yesno_ids output=$yesno_names selected=$fsite->grabnzbs separator='<br />'}
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill.</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 

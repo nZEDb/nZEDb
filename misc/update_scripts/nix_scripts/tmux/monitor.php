@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2422";
+$version="0.1r2433";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -31,7 +31,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( ID ) FROM groups WHERE backfill = 1 ) AS backfill_groups,
+	( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups,
 	( SELECT COUNT( ID ) FROM groups ) AS all_groups,
 	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
 	( SELECT COUNT( ID ) from collections ) AS collections_table,

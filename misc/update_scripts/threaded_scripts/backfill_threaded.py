@@ -63,8 +63,12 @@ elif intorder == 2:
 	group = "ORDER BY first_record_postdate ASC"
 elif intorder == 3:
 	group = "ORDER BY name ASC"
-else:
+elif intorder == 4:
 	group = "ORDER BY name DESC"
+elif intorder == 5:
+	group = "ORDER BY first_record DESC"
+else:
+	group = "ORDER BY first_record ASC"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	print sys.argv[1]
