@@ -335,7 +335,7 @@ class Binaries
 							}
 							if(file_exists($nzbdumppath))
 								@rmdir($nzbdumppath);
-							//echo ".";
+							echo ".";
 							
 							//var_dump($article);
 							//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";

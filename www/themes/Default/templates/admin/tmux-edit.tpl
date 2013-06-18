@@ -130,7 +130,9 @@
 						Newest - Sorts the group selection with the least backfill days backfilled, first.<br />
 						Oldest - Sorts the group selection with the most backfill days backfilled, first.<br />
 						Alphabetical - Sorts the group selection from a to z.<br />
-						Alphabetical Reverse - Sorts the group selection from z to a</div></div>
+						Alphabetical Reverse - Sorts the group selection from z to a.<br /a>
+						Most Posts - Sorts the group selection by the highest number of posts, first.<br /a>
+						Fewest Posts - Sorts the group selection by the lowest number of posts, first.</div>
 				</td>
 			</tr>
 			<tr>

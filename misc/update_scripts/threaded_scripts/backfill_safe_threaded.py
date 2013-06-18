@@ -54,8 +54,12 @@ elif intorder == 2:
 	group = "ORDER BY first_record_postdate ASC"
 elif intorder == 3:
 	group = "ORDER BY name ASC"
-else:
+elif intorder == 4:
 	group = "ORDER BY name DESC"
+elif intorder == 5:
+	group = "ORDER BY first_record DESC"
+else:
+	group = "ORDER BY first_record ASC"
 
 cur.execute("%s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit 1")) 
 datas = cur.fetchall()
