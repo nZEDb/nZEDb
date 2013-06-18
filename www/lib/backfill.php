@@ -497,8 +497,15 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Reconnected but could not select group (bad name?): {$group}".$n;
-				return;
+	            echo "Problem with the usenet connection, attemping to reconnect.".$n;
+    	        $nntp->doQuit();
+        	    $nntp->doConnect();
+            	$data = $nntp->selectGroup($groupArr['name']);
+	            if (PEAR::isError($data))
+    	        {
+        	        echo "Reconnected but could not select group (bad name?): {$group}".$n;
+            	    return;
+	            }
 			}
 		}
 
