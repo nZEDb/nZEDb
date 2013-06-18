@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2433";
+$version="0.1r2434";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -79,7 +79,10 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
 	( SELECT value from tmux where setting = 'DEHASH_TIMER' ) AS dehash_timer,
-	( SELECT value from site where setting = 'debuginfo' ) AS debug";
+	( SELECT value from site where setting = 'debuginfo' ) AS debug,
+	( SELECT value from site where setting = 'lookupbooks' ) AS processbooks,
+	( SELECT value from site where setting = 'lookupmusic' ) AS processmusic,
+	( SELECT value from site where setting = 'lookupgames' ) AS processgames";
 
 //get microtime
 function microtime_float()
@@ -382,6 +385,9 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
 
 	if ( @$proc_tmux_result[0]['defrag'] != NULL ) { $defrag = $proc_tmux_result[0]['defrag']; }
+	if ( @$proc_tmux_result[0]['processbooks'] != NULL ) { $processbooks = $proc_tmux_result[0]['processbooks']; }
+	if ( @$proc_tmux_result[0]['processmusic'] != NULL ) { $processmusic = $proc_tmux_result[0]['processmusic']; }
+	if ( @$proc_tmux_result[0]['processgames'] != NULL ) { $processgames = $proc_tmux_result[0]['processgames']; }
 	if ( @$proc_tmux_result[0]['tmux_session'] != NULL ) { $tmux_session = $proc_tmux_result[0]['tmux_session']; }
 	if ( @$proc_tmux_result[0]['monitor'] != NULL ) { $monitor = $proc_tmux_result[0]['monitor']; }
 	if ( @$proc_tmux_result[0]['backfill'] != NULL ) { $backfill = $proc_tmux_result[0]['backfill']; }
@@ -762,13 +768,18 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess All\"'");
 		}
 
-		if (( $post == "TRUE" ) && (( $music_releases_proc > 0 ) || ( $book_releases_proc > 0 ) || ( $console_releases_proc > 0 )))
+		if (( $post == "TRUE" ) && (( $music_releases_proc > 0 ) || ( $book_releases_proc > 0 ) || ( $console_releases_proc > 0 )) && (( $processbooks == 1 ) || ( $processmusic == 1 ) || ( $processgames == 1 )))
 		{
 			//run postprocess_releases amazon
 			$color = get_color();
 			$log = writelog($panes2[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		elseif (( $post == "TRUE" ) && ( $processbooks == 0 ) && ( $processmusic == 0 ) && ( $processgames == 0 ))
+		{
+			$color = get_color();
+			shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
 		}
 		elseif (( $post == "TRUE" ) && ( $music_releases_proc == 0 ) && ( $book_releases_proc== 0 ) && ( $console_releases_proc == 0 ))
 		{

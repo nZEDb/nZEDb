@@ -651,7 +651,7 @@ class PostProcess
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 					$this->consoleTools->appendWrite(" m");
-					$nntp->doQuit();
+					//$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
 						if (strlen($mediaBinary ) > 100)
