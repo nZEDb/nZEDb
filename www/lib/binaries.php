@@ -217,6 +217,7 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
+		$nntp->doConnect();
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
@@ -311,7 +312,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']))
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -325,18 +326,31 @@ class Binaries
 						$nzbdumppath = $tmpPath.$this->message[$subject]['CollectionHash']."/";
 						if ((int)$totalparts == 1 && (int)$nzbparts == 1 && !file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
 						{
+							$nntp->doConnect();
 							$article = $nntp->get_Article($groupArr['name'], substr($msg['Message-ID'],1,-1));
 							@mkdir($nzbdumppath, 0777, true);
 							if(file_put_contents($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb", $article))
 							{
-								@exec("php /var/www/nZEDb/misc/testing/nzb-import.php ".$nzbdumppath);
 								if(file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
-									@unlink($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb");
+								{
+									@exec("php /var/www/nZEDb/misc/testing/nzb-import.php ".$nzbdumppath, $output);
+									if ($output)
+										@unlink($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb");
+								}
 							}
-							if(file_exists($nzbdumppath))
-								@rmdir($nzbdumppath);
+							elseif(file_put_contents($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb", $article))
+							{
+								if(file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
+								{
+									@exec("php /var/www/nZEDb/misc/testing/nzb-import.php ".$nzbdumppath, $output);
+									if ($output)
+										@unlink($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb");
+								}
+							}
+
+							@rmdir($nzbdumppath);
 							echo ".";
-							
+
 							//var_dump($article);
 							//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
 							//var_dump($msg);
@@ -488,7 +502,7 @@ class Binaries
 			
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
 			}
 			unset($this->message);
 			unset($data);
