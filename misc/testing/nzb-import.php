@@ -87,7 +87,7 @@ else
 
 	//iterate over all nzb files in all folders and subfolders
 	if(!file_exists($path))
-		continue;
+		return;
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 	foreach($objects as $filestoprocess => $nzbFile){
 		if(!$nzbFile->getExtension() == "nzb")
