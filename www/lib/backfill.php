@@ -462,7 +462,7 @@ class Backfill
 		echo "Determined to be article $upperbound which is ".$this->daysOld($dateofnextone)." days old (".date("r", $dateofnextone).").".$n;
 		return $upperbound;
 	}
-	
+
 	private function daysOld($timestamp)
 	{
 		return round((time()-$timestamp)/86400, 1);
@@ -486,8 +486,6 @@ class Backfill
 		$groupArr = $groups->getByName($group);
 		$nntp = new Nntp();
 		$nntp->doConnect();
-		$nntpc = new Nntp();
-		$nntpc->doConnect();
 
 		// Connect to server
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -499,8 +497,15 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Reconnected but could not select group (bad name?): {$group}".$n;
-				return;
+	            echo "Problem with the usenet connection, attemping to reconnect.".$n;
+    	        $nntp->doQuit();
+        	    $nntp->doConnect();
+            	$data = $nntp->selectGroup($groupArr['name']);
+	            if (PEAR::isError($data))
+    	        {
+        	        echo "Reconnected but could not select group (bad name?): {$group}".$n;
+            	    return;
+	            }
 			}
 		}
 
@@ -514,7 +519,6 @@ class Backfill
 			return;
 		}
 		$nntp->doQuit();
-		$nntpc->doQuit();
 	}
 
 	function getFinal($group, $first)

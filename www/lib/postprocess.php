@@ -295,14 +295,14 @@ class PostProcess
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
-			if ($this->echooutput)
+			/*if ($this->echooutput)
 			{
 				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
 				if ($threads > 0)
 					echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
 				else
 					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-			}
+			}*/
 
 			echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
 			echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
@@ -331,11 +331,11 @@ class PostProcess
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 
-				if ($this->echooutput && $threads > 0)
+				/*if ($this->echooutput && $threads > 0)
 					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
 					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-
+*/
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
 				$nzb = new NZB(true);
@@ -651,7 +651,7 @@ class PostProcess
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 					$this->consoleTools->appendWrite(" m");
-					$nntp->doQuit();
+					//$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
 						if (strlen($mediaBinary ) > 100)
@@ -1429,4 +1429,3 @@ class PostProcess
 		$this->consoleTools->appendWrite("P");
 	}
 }
-

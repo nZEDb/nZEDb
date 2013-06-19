@@ -217,9 +217,13 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
+		$nntp->doConnect();
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
+		$s = new Sites;
+		$site = $s->get();
+		$tmpPath = $site->tmpunrarpath."/";
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
@@ -308,7 +312,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']))
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -318,9 +322,39 @@ class Binaries
 							$totalparts = $matchesparts['total'];
 						}
 						//echo $nzbparts." - ".$this->message[$subject]['CollectionHash']."\n";
-						$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
-						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
-						//var_dump($msg);
+						//$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
+						$nzbdumppath = $tmpPath.$this->message[$subject]['CollectionHash']."/";
+						if ((int)$totalparts == 1 && (int)$nzbparts == 1 && !file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
+						{
+							$nntp->doConnect();
+							$article = $nntp->get_Article($groupArr['name'], substr($msg['Message-ID'],1,-1));
+							@mkdir($nzbdumppath, 0777, true);
+							if(file_put_contents($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb", $article))
+							{
+								if(file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
+								{
+									@exec("php /var/www/nZEDb/misc/testing/nzb-import.php ".$nzbdumppath, $output);
+									if ($output)
+										@unlink($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb");
+								}
+							}
+							elseif(file_put_contents($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb", $article))
+							{
+								if(file_exists($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb"))
+								{
+									@exec("php /var/www/nZEDb/misc/testing/nzb-import.php ".$nzbdumppath, $output);
+									if ($output)
+										@unlink($nzbdumppath.$this->message[$subject]['CollectionHash'].".nzb");
+								}
+							}
+
+							@rmdir($nzbdumppath);
+							echo ".";
+
+							//var_dump($article);
+							//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
+							//var_dump($msg);
+						}
 					}
 
 					if((int)$matches[1] > 0)
@@ -468,7 +502,7 @@ class Binaries
 			
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
 			}
 			unset($this->message);
 			unset($data);

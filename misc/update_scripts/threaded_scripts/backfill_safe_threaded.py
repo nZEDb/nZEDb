@@ -46,14 +46,20 @@ con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], c
 cur = con.cursor()
 cur.execute("select value from tmux where setting = 'BACKFILL_ORDER'");
 order = cur.fetchone();
-if order == 1:
+intorder = int(order[0])
+
+if intorder == 1:
 	group = "ORDER BY first_record_postdate DESC"
-elif order == 2:
+elif intorder == 2:
 	group = "ORDER BY first_record_postdate ASC"
-elif order == 3:
+elif intorder == 3:
 	group = "ORDER BY name ASC"
-else:
+elif intorder == 4:
 	group = "ORDER BY name DESC"
+elif intorder == 5:
+	group = "ORDER BY first_record DESC"
+else:
+	group = "ORDER BY first_record ASC"
 
 cur.execute("%s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit 1")) 
 datas = cur.fetchall()
