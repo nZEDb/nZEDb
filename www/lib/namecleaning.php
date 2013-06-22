@@ -136,6 +136,9 @@ class nameCleaning
 			$cleanerName = $matches['name'];
 		elseif (preg_match('/[^\[]\D[\w\d\.]{10,}[^\]]| \D[\w\d\.]{10,}[^\]]/', $subject, $matches))
 			$cleanerName = $matches[0];
+		elseif (preg_match('/tt\d{7}/', $subject, $matches))
+			$cleanerName = $matches[0];
+
 		return $cleanerName;
 	}
 }

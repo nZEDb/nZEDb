@@ -59,7 +59,7 @@ class Nfo
 		$site = new Sites();
 		$nzbcontents = new NZBcontents($this->echooutput);
 		$nfocount = 0;
-			
+
 		if ($releaseToWork == '')
 		{
 			$i = -1;

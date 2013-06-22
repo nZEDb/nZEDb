@@ -76,12 +76,11 @@ class WorkerThread(threading.Thread):
 	def run(self):
 		while not self.stoprequest.isSet():
 			try:
-				dirname = self.threadID.get(True, 0.05)
+				dirname = self.threadID.get(True, 0.1)
 				if sys.argv[1] == "additional":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional_new.php", ""+dirname])
 				elif sys.argv[1] == "nfo":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_nfo_new.php", ""+dirname])
-
 			except Queue.Empty:
 				continue
 
@@ -91,7 +90,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
+	threadID = Queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
@@ -102,25 +101,23 @@ def main(args):
 
 	# Give the workers some work to do
 	work_count = 0
-	for release in datas:
-		work_count += 1
-		if sys.argv[1] == "additional":
+	if sys.argv[1] == "additional":
+		for release in datas:
+			work_count += 1
 			threadID.put("%s                       %s                       %s                       %s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
-		if sys.argv[1] == "nfo":
+	if sys.argv[1] == "nfo":
+		for release in datas:
+			work_count += 1
 			threadID.put("%s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3]))
 
-	if sys.argv[1] == "additional":
-		print 'Assigned %s PP-Additionals to workers' % work_count
-	elif sys.argv[1] == "nfo":
-		print 'Assigned %s PP-NFOs to workers, * = hidden NFO, + = NFO, - = no NFO, f = download failed' % work_count
-		
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		thread.join(timeout=60)
+		if Queue.Empty:
+			thread.join()
 
 if __name__ == '__main__':
 	import sys
