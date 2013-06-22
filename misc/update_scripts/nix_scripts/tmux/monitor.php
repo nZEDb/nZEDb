@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2437";
+$version="0.1r2438";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -721,7 +721,8 @@ while( $i > 0 )
 				$time2 = TIME();
 			$log = writelog($panes2[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
-					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log && \
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		elseif (( $post == "TRUE" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now == 0 ))
 		{
@@ -740,7 +741,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes2[1]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\" && \
-					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py non_amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_old_threaded.py non_amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		elseif (( $post == "TRUE" ) && ( $movie_releases_proc == 0 ) && ( $tvrage_releases_proc == 0 ))
 		{
@@ -759,7 +760,7 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes2[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\" && \
-					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_old_threaded.py amazon $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}
 		elseif (( $post == "TRUE" ) && ( $processbooks == 0 ) && ( $processmusic == 0 ) && ( $processgames == 0 ))
 		{
