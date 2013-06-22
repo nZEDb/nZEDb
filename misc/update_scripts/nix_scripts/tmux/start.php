@@ -56,7 +56,7 @@ if ( $patch < '78' )
 
 passthru("clear");
 
-#remove folders from tmpunrar
+//remove folders from tmpunrar
 $tmpunrar = $site->get()->tmpunrarpath;
 if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 {
