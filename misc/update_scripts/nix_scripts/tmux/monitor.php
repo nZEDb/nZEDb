@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2439";
+$version="0.1r2440";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -721,7 +721,6 @@ while( $i > 0 )
 				$time2 = TIME();
 			$log = writelog($panes2[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
-					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}

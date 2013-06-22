@@ -34,7 +34,6 @@ class PostProcess
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 		$this->tmpPath = $this->site->tmpunrarpath;
