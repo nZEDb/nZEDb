@@ -20,6 +20,11 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  * calls to the embedded archive objects or return a flat list of contents with the
  * source path info included as an extra field.
  *
+ * Note that since the class exposes the interfaces of different readers directly,
+ * any application using it should add extra checks for expected properties, methods
+ * and returned values, depending on the source type and reader interface. In other
+ * words, apply duck typing.
+ *
  * Example usage:
  *
  * <code>
@@ -32,17 +37,29 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  *     exit;
  *   }
  *
+ *   // Check the archive type
+ *   if ($archive->type != ArchiveInfo::TYPE_RAR) {
+ *     echo "Source is not a RAR archive\n";
+ *     // exit here or continue with duck typing
+ *   }
+ *
+ *   // Check encryption
+ *   if (!empty($archive->isEncrypted)) {
+ *     echo "Archive is password encrypted\n";
+ *     exit;
+ *   }
+ *
  *   // List the contents of all archives recursively
- *   foreach($archive->getArchiveFileList() as $file) {
+ *   foreach ($archive->getArchiveFileList() as $file) {
  *     if (isset($file['error'])) {
  *       echo "Error: {$file['error']} (in: {$file['source']})\n";
  *       continue; // skip recursion errors
  *     }
- *     if ($file['pass'] == true) {
+ *     if (!empty($file['pass'])) {
  *       echo "File is passworded: {$file['name']} (in: {$file['source']})\n";
  *       continue; // skip encrypted files
  *     }
- *     if ($file['compressed'] == false) {
+ *     if (empty($file['compressed'])) {
  *       echo "Extracting uncompressed file: {$file['name']} from: {$file['source']}\n";
  *       $archive->saveFileData($file['name'], "./dir/{$file['name']}", $file['source']);
  *       // or $data = $archive->getFileData($file['name'], $file['source']);

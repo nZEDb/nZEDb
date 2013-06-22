@@ -54,7 +54,7 @@ Class Predb
 		$db = new DB();
 		$newnames = 0;
 
-		$buffer = getUrl("http://nzb.isasecret.com/");
+		$buffer = getUrl("http://www.newshost.co.za");
 		if ($buffer !== false && strlen($buffer))
 		{
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches))

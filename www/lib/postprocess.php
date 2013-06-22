@@ -1,4 +1,5 @@
 <?php
+require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/anidb.php");
 require_once(WWW_DIR."lib/rarinfo/archiveinfo.php");
 require_once(WWW_DIR."lib/books.php");
@@ -651,7 +652,6 @@ class PostProcess
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 					$this->consoleTools->appendWrite(" m");
-					//$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
 						if (strlen($mediaBinary ) > 100)

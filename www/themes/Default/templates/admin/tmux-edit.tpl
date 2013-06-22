@@ -15,7 +15,8 @@
 					<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
 						Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
 						This allows for scripts that crash to be restarted without user intervention.<br /><br />
-						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.<br /><br />
+						<h3><b>NOTICE:</b></h3> If "Save Tmux Settings" is the last thing you did on this page or if it is the active element and if you have this page set to autorefresh or you refresh instead of following a link to this page, you will set the db with the settings currently on this page, not reload from db. This could cause tmux scripts to start while optimize or patch the database is running.'</div>
 				</td>
 			</tr>
 		</table>
@@ -59,14 +60,16 @@
 		<tr>
 			<td><label for="explain">Information</label>:</td>
 			<td>
-				<div class="explanation">Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br />
-					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br /><br />
+				<div class="explanation">
+					Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br /><br />
+					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br />
 					The 'In Process' column has 2 sets of numbers, the total for each category that needs to be postprocessed and inside the parenthesis is the difference from when the script started to what it is now.<br />
 					The 'In Database' column also has 2 sets of numbers, the total releases for each category and inside the parenthesis is the percentage that category is to the total number of releases.<br />
 					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br />
 					The 'In Database' Misc means the number of releases that have not been categorized in any other category.<br />
 					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br />
-					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started.</div>
+					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started. The 'In Database' is the total predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.
+				</div>
 			</td>
 		</tr>
 		</table>
@@ -90,6 +93,13 @@
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
+		<tr>
+			<td><label for="explain">Information</label>:</td>
+			<td>
+				<div class="explanation">I recommend using Sequential, if you are also grabbing nzbs.</div>
+			</td>
+		</tr>
+
 		</table>
 </fieldset>
 
@@ -269,7 +279,7 @@
 				<td><label for="FIX_NAMES">Fix Release Names</label>:</td>
 				<td>
 					{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES separator='<br />'}
-					<div class="hint">Choose to try to fix Releases Names true/false</div>
+					<div class="hint">Choose to try to fix Releases Names using NFOs true/false</div>
 				</td>
 			</tr>
 
