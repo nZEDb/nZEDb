@@ -57,7 +57,7 @@ switch($action)
 			$ret = $users->getByEmail($_POST['email']);
 			if (!$ret)
 			{
-				$page->smarty->assign('error', "The email address is not recognised.");
+				$page->smarty->assign('sent', "true");
 				break;
 			}
 			else
