@@ -1018,7 +1018,8 @@ INSERT INTO `site`
 	('predbversion', 1),
 	('deletepossiblerelease', 0),
 	('miscotherretentionhours',0),
-	('sqlpatch','76');
+	('grabnzbs', '0'),
+	('sqlpatch','78');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1334,7 +1335,6 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 
 DROP TABLE IF EXISTS `nzbs`;
 CREATE TABLE `nzbs` (
-  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `message_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `article-number` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
@@ -1344,7 +1344,7 @@ CREATE TABLE `nzbs` (
   `partnumber` int(10) unsigned NOT NULL DEFAULT '0',
   `totalparts` int(10) unsigned NOT NULL DEFAULT '0',
   `postdate` datetime DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`message_id`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 

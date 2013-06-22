@@ -53,7 +53,7 @@ class nameCleaning
 		else
 			return $cleansubject;
 	}
-	
+
 	//
 	//	Cleans a usenet subject before inserting, used for searchname. Also used for imports.
 	//
@@ -63,7 +63,7 @@ class nameCleaning
 		{
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
-			
+
 			/*if (preg_match('/alt\.binaries\.teevee/', $groupName))
 			{
 				//[140654]-[FULL]-[a.b.teevee]-[ Formula1.2013.Monaco.Grand.Prix.Practice.Three.720p.HDTV.x264-FAIRPLAY ]-[02/63] - "fairplay.formula1.2013.monaco.grand.prix.practice.three.720p.sample.par2" yEnc
@@ -72,7 +72,7 @@ class nameCleaning
 					$cleanerName = $match[1];
 				else
 					$cleanerName = $this->releaseCleanerHelper($subject);
-				
+
 				if (empty($cleanerName)) {return $subject;}
 				else {return $cleanerName;}
 			}
@@ -103,7 +103,7 @@ class nameCleaning
 		$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
 		//Remove the double name.
 		$cleanerName = implode(' ', array_intersect_key(explode(' ', $cleanerName), array_unique(array_map('strtolower', explode(' ', $cleanerName)))));
-		
+
 		if (empty($cleanerName)) {return $subject;}
 		else {return $cleanerName;}
 	}
@@ -119,9 +119,26 @@ class nameCleaning
 		$cleanerName = str_replace(array(".", "_", '-', "|", "<", ">", '"', "=", '[', "]", "(", ")", "{", "}", "*", ";", ":", ",", "'", "~", "/", "&", "+"), " ", $cleanerName);
 		//Replace multiple spaces with 1 space
 		$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
+		//Remove Release Name
+		$cleanerName = preg_replace('/^Release Name/i', ' ', $cleanerName);
 		//Remove invalid characters.
 		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/','', $cleanerName)));
-		
+
+		return $cleanerName;
+	}
+
+	public function fixerPre($subject)
+	{
+		$cleanerName = $subject;
+		if (preg_match('/-\[ (?P<name>.*) \] ?-/', $subject, $matches))
+			$cleanerName = $matches['name'];
+		elseif (preg_match('/\[\d*\]-\[.*\]-\[.*\]-\[ ?(?P<name>.*) ?\] ?-/', $subject, $matches))
+			$cleanerName = $matches['name'];
+		elseif (preg_match('/[^\[]\D[\w\d\.]{10,}[^\]]| \D[\w\d\.]{10,}[^\]]/', $subject, $matches))
+			$cleanerName = $matches[0];
+		elseif (preg_match('/tt\d{7}/', $subject, $matches))
+			$cleanerName = $matches[0];
+
 		return $cleanerName;
 	}
 }

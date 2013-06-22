@@ -217,9 +217,13 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
+		$nntp->doConnect();
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
+		$s = new Sites;
+		$site = $s->get();
+		$tmpPath = $site->tmpunrarpath."/";
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
@@ -308,7 +312,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']))
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -316,11 +320,8 @@ class Binaries
 						{
 							$nzbparts = $matchesparts['part'];
 							$totalparts = $matchesparts['total'];
+							$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
 						}
-						//echo $nzbparts." - ".$this->message[$subject]['CollectionHash']."\n";
-						$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
-						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
-						//var_dump($msg);
 					}
 
 					if((int)$matches[1] > 0)
@@ -468,7 +469,7 @@ class Binaries
 			
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
 			}
 			unset($this->message);
 			unset($data);

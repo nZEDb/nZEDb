@@ -15,7 +15,8 @@
 					<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
 						Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
 						This allows for scripts that crash to be restarted without user intervention.<br /><br />
-						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.</div>
+						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.<br /><br />
+						<h3><b>NOTICE:</b></h3> If "Save Tmux Settings" is the last thing you did on this page or if it is the active element and if you have this page set to autorefresh or you refresh instead of following a link to this page, you will set the db with the settings currently on this page, not reload from db. This could cause tmux scripts to start while optimize or patch the database is running.'</div>
 				</td>
 			</tr>
 		</table>
@@ -27,7 +28,7 @@
 			<tr>
 				<td><label for="RUNNING">Tmux Scripts Running</label>:</td>
 				<td>
-					{html_radios id="RUNNING" name='RUNNING' values=$truefalse_names output=$truefalse_names selected=$ftmux->RUNNING}
+					{html_radios id="RUNNING" name='RUNNING' values=$truefalse_names output=$truefalse_names selected=$ftmux->RUNNING separator='<br />'}
 					<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This will start/stop all panes without terminating the monitor pane.</div>
 				</td>
 			</tr>
@@ -59,14 +60,16 @@
 		<tr>
 			<td><label for="explain">Information</label>:</td>
 			<td>
-				<div class="explanation">Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br />
-					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br /><br />
+				<div class="explanation">
+					Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br /><br />
+					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br />
 					The 'In Process' column has 2 sets of numbers, the total for each category that needs to be postprocessed and inside the parenthesis is the difference from when the script started to what it is now.<br />
 					The 'In Database' column also has 2 sets of numbers, the total releases for each category and inside the parenthesis is the percentage that category is to the total number of releases.<br />
 					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br />
 					The 'In Database' Misc means the number of releases that have not been categorized in any other category.<br />
 					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br />
-					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started.</div>
+					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started. The 'In Database' is the total predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.
+				</div>
 			</td>
 		</tr>
 		</table>
@@ -78,7 +81,7 @@
 			<tr>
 				<td><label for="SEQUENTIAL">Run Sequential</label>:</td>
 				<td>
-					{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL}
+					{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL separator='<br />'}
 					<div class="hint">Choose to run update_binaries, backfill and update releases_sequentially. Changing requires restart. true/false</div>
 				</td>
 			</tr>
@@ -90,6 +93,13 @@
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
+		<tr>
+			<td><label for="explain">Information</label>:</td>
+			<td>
+				<div class="explanation">I recommend using Sequential, if you are also grabbing nzbs.</div>
+			</td>
+		</tr>
+
 		</table>
 </fieldset>
 
@@ -99,7 +109,7 @@
 			<tr>
 				<td><label for="BINARIES">Update Binaries</label>:</td>
 				<td>
-					{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES}
+					{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES separator='<br />'}
 					<div class="hint">Choose to run update_binaries true/false. Update binaries gets from your last_record to now. </div>
 				</td>
 			</tr>
@@ -130,7 +140,9 @@
 						Newest - Sorts the group selection with the least backfill days backfilled, first.<br />
 						Oldest - Sorts the group selection with the most backfill days backfilled, first.<br />
 						Alphabetical - Sorts the group selection from a to z.<br />
-						Alphabetical Reverse - Sorts the group selection from z to a</div></div>
+						Alphabetical Reverse - Sorts the group selection from z to a.<br /a>
+						Most Posts - Sorts the group selection by the highest number of posts, first.<br /a>
+						Fewest Posts - Sorts the group selection by the lowest number of posts, first.</div>
 				</td>
 			</tr>
 			<tr>
@@ -160,7 +172,7 @@
 			<tr>
 				<td style="width:160px;"><label for="PROGRESSIVE">Variable Sleep Timer</label>:</td>
 				<td>
-					{html_radios id="PROGRESSIVE" name='PROGRESSIVE' values=$truefalse_names output=$truefalse_names selected=$ftmux->PROGRESSIVE}
+					{html_radios id="PROGRESSIVE" name='PROGRESSIVE' values=$truefalse_names output=$truefalse_names selected=$ftmux->PROGRESSIVE separator='<br />'}
 					<div class="hint">This will vary the backfill sleep depending on how many collections you have.<br />ie 50k collections would make sleep timer 100 seconds and 20k releases would make sleep timer 40 seconds.</div>
 				</td>
 			</tr>
@@ -173,7 +185,7 @@
 			<tr>
 				<td><label for="IMPORT">Import NZBS</label>:</td>
 				<td>
-					{html_radios id="IMPORT" name='IMPORT' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT}
+					{html_radios id="IMPORT" name='IMPORT' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT separator='<br />'}
 					<div class="hint">Choose to run import nzb script true/false. This can point to a single folder with multiple subfolders on just the one folder. If you run this threaded, it will run 1 folder per thread.</div>
 				</td>
 			</tr>
@@ -189,7 +201,7 @@
 			<tr>
 				<td><label for="IMPORT_BULK">Use Bulk Importer</label>:</td>
 				<td>
-					{html_radios id="IMPORT_BULK" name='IMPORT_BULK' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT_BULK}
+					{html_radios id="IMPORT_BULK" name='IMPORT_BULK' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT_BULK separator='<br />'}
 					<div class="hint">Choose to run the bulk import nzb script true/false. This uses /dev/shm and can interfere with apparmor. This runs about 10% faster than stock importer. true/false</div>
 				</td>
 			</tr>
@@ -216,7 +228,7 @@
 			<tr>
 				<td><label for="RELEASES">Update Releases</label>:</td>
 				<td>
-					{html_radios id="RELEASES" name='RELEASES' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES}
+					{html_radios id="RELEASES" name='RELEASES' values=$truefalse_names output=$truefalse_names selected=$ftmux->RELEASES separator='<br />'}
 					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process. This runs "Categorizes releases in misc sections using the search name" on first loop and has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new releases.</div>
 				</td>
 			</tr>
@@ -237,7 +249,7 @@
 			<tr>
 				<td><label for="POST">Postprocess All</label>:</td>
 				<td>
-					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST}
+					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST separator='<br />'}
 					<div class="hint">Choose to postprocess movies, music, etc true/false</div>
 				</td>
 			</tr>
@@ -266,8 +278,8 @@
 			<tr>
 				<td><label for="FIX_NAMES">Fix Release Names</label>:</td>
 				<td>
-					{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES}
-					<div class="hint">Choose to try to fix Releases Names true/false</div>
+					{html_radios id="FIX_NAMES" name='FIX_NAMES' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_NAMES separator='<br />'}
+					<div class="hint">Choose to try to fix Releases Names using NFOs true/false</div>
 				</td>
 			</tr>
 
@@ -287,7 +299,7 @@
 			<tr>
 				<td><label for="FIX_CRAP">Remove Crap Releases</label>:</td>
 				<td>
-					{html_radios id="FIX_CRAP" name='FIX_CRAP' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_CRAP}
+					{html_radios id="FIX_CRAP" name='FIX_CRAP' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_CRAP separator='<br />'}
 					<div class="hint">Choose to run Remove Crap Releases true/false</div>
 				</td>
 			</tr>
@@ -308,7 +320,7 @@
 			<tr>
 				<td><label for="SORTER">Misc Sorter</label>:</td>
 				<td>
-					{html_radios id="SORTER" name='SORTER' values=$truefalse_names output=$truefalse_names selected=$ftmux->SORTER}
+					{html_radios id="SORTER" name='SORTER' values=$truefalse_names output=$truefalse_names selected=$ftmux->SORTER separator='<br />'}
 					<div class="hint">Choose to run Misc Sorter true/false</div>
 				</td>
 			</tr>
@@ -335,7 +347,7 @@
 			<tr>
 				<td><label for="DEHASH">Decrypt Hash Based Release Names</label>:</td>
 				<td>
-					{html_radios id="DEHASH" name='DEHASH' values=$truefalse_names output=$truefalse_names selected=$ftmux->DEHASH}
+					{html_radios id="DEHASH" name='DEHASH' values=$truefalse_names output=$truefalse_names selected=$ftmux->DEHASH separator='<br />'}
 					<div class="hint">Choose to run Decrypt Hashes true/false</div>
 				</td>
 			</tr>
@@ -362,7 +374,7 @@
 			<tr>
 				<td><label for="UPDATE_TV">Update TV and Theater Schedules</label>:</td>
 				<td>
-					{html_radios id="UPDATE_TV" name='UPDATE_TV' values=$truefalse_names output=$truefalse_names selected=$ftmux->UPDATE_TV}
+					{html_radios id="UPDATE_TV" name='UPDATE_TV' values=$truefalse_names output=$truefalse_names selected=$ftmux->UPDATE_TV separator='<br />'}
 					<div class="hint">Choose to run Update TV and Theater Schedules true/false</div>
 				</td>
 			</tr>
@@ -407,7 +419,7 @@
 			<tr>
 				<td style="width:160px;"><label for="WRITE_LOGS">Logging</label>:</td>
 				<td>
-					{html_radios id="WRITE_LOGS" name='WRITE_LOGS' values=$truefalse_names output=$truefalse_names selected=$ftmux->WRITE_LOGS}
+					{html_radios id="WRITE_LOGS" name='WRITE_LOGS' values=$truefalse_names output=$truefalse_names selected=$ftmux->WRITE_LOGS separator='<br />'}
 					<div class="hint">Set this to write each panes output to a per pane per day log file. This adds GMT date to the filename.</div>
 				</td>
 			</tr>
@@ -415,7 +427,7 @@
 			<tr>
 				<td style="width:160px;"><label for="POWERLINE">Powerline Status Bar</label>:</td>
 				<td>
-					{html_radios id="POWERLINE" name='POWERLINE' values=$truefalse_names output=$truefalse_names selected=$ftmux->POWERLINE}
+					{html_radios id="POWERLINE" name='POWERLINE' values=$truefalse_names output=$truefalse_names selected=$ftmux->POWERLINE separator='<br />'}
 					<div class="hint">Choose to use the Powerline tmux status bar. To make this pretty, you need to install a patched font. This can be found on <a href="https://github.com/jonnyboy/powerline-fonts">my fork</a> or <a href="https://github.com/Lokaltog/powerline-fonts">the original git</a><br \>You will need to copy the default theme located at powerline/powerline/themes/default.sh to powerline/powerline/themes/tmux.sh and edit that file for what is displayed, colors, etc.</div>
 				</td>
 			</tr>
@@ -428,7 +440,7 @@
 			<tr>
 				<td style="width:160px;"><label for="HTOP">htop</label>:</td>
 				<td>
-					{html_radios id="HTOP" name='HTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->HTOP}
+					{html_radios id="HTOP" name='HTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->HTOP separator='<br />'}
 					<div class="hint">htop - an interactive process viewer for Linux. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -436,7 +448,7 @@
 			<tr>
 				<td style="width:160px;"><label for="NMON">nmon</label>:</td>
 				<td>
-					{html_radios id="NMON" name='NMON' values=$truefalse_names output=$truefalse_names selected=$ftmux->NMON}
+					{html_radios id="NMON" name='NMON' values=$truefalse_names output=$truefalse_names selected=$ftmux->NMON separator='<br />'}
 					<div class="hint">nmon is short for Nigel's performance Monitor for Linux. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -444,7 +456,7 @@
 			<tr>
 				<td style="width:160px;"><label for="VNSTAT">vnstat</label>:</td>
 				<td>
-					{html_radios id="VNSTAT" name='VNSTAT' values=$truefalse_names output=$truefalse_names selected=$ftmux->VNSTAT}
+					{html_radios id="VNSTAT" name='VNSTAT' values=$truefalse_names output=$truefalse_names selected=$ftmux->VNSTAT separator='<br />'}
 					<input id="VNSTAT_ARGS" name="VNSTAT_ARGS" class="text" type="text" value="{$ftmux->VNSTAT_ARGS}" />
 					<div class="hint">vnStat is a console-based network traffic monitor for Linux and BSD that keeps a log of network traffic for the selected interface(s). Any additional arguments should be placed in the text box. The pane for this can not be created after tmux starts.</div>
 				</td>
@@ -453,7 +465,7 @@
 			<tr>
 				<td style="width:160px;"><label for="TCPTRACK">tcptrack</label>:</td>
 				<td>
-					{html_radios id="TCPTRACK" name='TCPTRACK' values=$truefalse_names output=$truefalse_names selected=$ftmux->TCPTRACK}
+					{html_radios id="TCPTRACK" name='TCPTRACK' values=$truefalse_names output=$truefalse_names selected=$ftmux->TCPTRACK separator='<br />'}
 					<input id="TCPTRACK_ARGS" name="TCPTRACK_ARGS" class="text" type="text" value="{$ftmux->TCPTRACK_ARGS}" />
 					<div class="hint">tcptrack displays the status of TCP connections that it sees on a given network interface. tcptrack monitors their state and displays information such as state, source/destination addresses and bandwidth usage in a sorted, updated list very much like the top(1) command. <br />Any additional arguments should be placed in the text box. <br />You may need to run "sudo setcap cap_net_raw+ep /usr/bin/tcptrack", to be able to run as user. The pane for this can not be created after tmux starts.</div>
 				</td>
@@ -462,7 +474,7 @@
 			<tr>
 				<td style="width:160px;"><label for="BWMNG">bwm-ng</label>:</td>
 				<td>
-					{html_radios id="BWMNG" name='BWMNG' values=$truefalse_names output=$truefalse_names selected=$ftmux->BWMNG}
+					{html_radios id="BWMNG" name='BWMNG' values=$truefalse_names output=$truefalse_names selected=$ftmux->BWMNG separator='<br />'}
 					<div class="hint">bwm-ng can be used to monitor the current bandwidth of all or some specific network interfaces or disks (or partitions). The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -470,7 +482,7 @@
 			<tr>
 				<td style="width:160px;"><label for="MYTOP">mytop</label>:</td>
 				<td>
-					{html_radios id="MYTOP" name='MYTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->MYTOP}
+					{html_radios id="MYTOP" name='MYTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->MYTOP separator='<br />'}
 					<div class="hint">mytop - display MySQL server performance info like `top'. <br />You will need to create ~/.mytop, an example can be found in 'perldoc mytop'. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -478,7 +490,7 @@
 			<tr>
 				<td style="width:160px;"><label for="CONSOLE">Console</label>:</td>
 				<td>
-					{html_radios id="CONSOLE" name='CONSOLE' values=$truefalse_names output=$truefalse_names selected=$ftmux->CONSOLE}
+					{html_radios id="CONSOLE" name='CONSOLE' values=$truefalse_names output=$truefalse_names selected=$ftmux->CONSOLE separator='<br />'}
 					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -491,7 +503,7 @@
 			<tr>
 				<td><label for="OPTIMIZE">Optimize Database</label>:</td>
 				<td>
-					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE}
+					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE separator='<br />'}
 					<div class="hint">Choose to optimize you database true/false<br />This is not affected by TMUX Running</div>
 				</td>
 			</tr>
@@ -507,7 +519,7 @@
 			<tr>
 				<td><label for="PATCHDB">Patch the Database</label>:</td>
 				<td>
-					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB}
+					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB separator='<br />'}
 					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails. If monitor.php is updated during a git pull, a manual restart will be required.<br />This is not affected by TMUX Running</div>
 				</td>
 			</tr>

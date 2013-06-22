@@ -83,7 +83,7 @@ class MiscSorter {
 
 		$thecategory = implode(", ", $thecategory);
 		//var_dump($thecategory);
-		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryID IN ( %s ) limit %d", $thecategory, $this->qty);
+		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND releases.categoryID IN ( %s ) ORDER BY RAND() limit %d", $thecategory, $this->qty);
 		$res = $this->db->query($query);
 
 		if (count($res) == 0)

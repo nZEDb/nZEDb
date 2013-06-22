@@ -77,12 +77,12 @@ class Nntp extends Net_NNTP_Client
 			}
 		}
 	}
-	
+
 	function doQuit() 
 	{
 		$this->quit();
 	}
-	
+
 	function getMessage($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -123,7 +123,6 @@ class Nntp extends Net_NNTP_Client
 		}
 
 		$body = $this->getArticle('<'.$partMsgId.'>', true);
-		//echo $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 		{
 			//echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
@@ -138,6 +137,21 @@ class Nntp extends Net_NNTP_Client
 		}
 
 		return $message;
+	}
+
+	function getArticles($groupname, $msgIds)
+	{
+		$body = '';
+
+		foreach ($msgIds as $m)
+		{
+			$message = $this->get_Article($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
 	}
 
 
