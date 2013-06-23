@@ -9,6 +9,7 @@ import string
 import re
 import nntplib
 
+start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 def readConfig():
@@ -73,6 +74,10 @@ cur.execute("%s %s %s %s %s" %("SELECT name, first_record from groups where firs
 datas = cur.fetchall()
 cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();
+cur.execute("select value from tmux where setting = 'BACKFILL_QTY'");
+backfill_qty = cur.fetchone();
+cur.execute("select value from site where setting = 'maxmssgs'");
+maxmssgs = cur.fetchone();
 
 if not datas:
 	print "No Groups enabled for backfill"
@@ -89,9 +94,11 @@ while (datas[0][1] - long(first)) < 1000:
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
 	sys.exit()
 
-geteach = (datas[0][1] - long(first)) / int(run_threads[0])
-if geteach > 20000:
-	geteach = 20000
+if (datas[0][1] - long(first)) > int(backfill_qty[0]) * int(run_threads[0]):
+	geteach = int(backfill_qty[0]) * int(run_threads[0]) / int(maxmssgs[0])
+else:
+	geteach = (datas[0][1] - long(first)) / int(maxmssgs[0])
+
 resp = s.quit()
 
 #sys.exit()
@@ -119,7 +126,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
+	threadID = Queue.Queue(100)
 	result_q = Queue.Queue()
 
 	# Create the "thread pool"
@@ -132,8 +139,9 @@ def main(args):
 	# Give the workers some work to do
 	work_count = 0
 	threads = int(run_threads[0])
-	for i in range(0, threads):
-		threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - 1, datas[0][1] - i * geteach - geteach, i+1))
+	for i in range(0, geteach):
+		threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * int(maxmssgs[0]) - 1, datas[0][1] - i * int(maxmssgs[0]) - int(maxmssgs[0]), i+1))
+		#threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - 1, datas[0][1] - i * geteach - geteach, i+1))
 		#threadID.put("%s %d %d %d" %(datas[0][0], datas[0][1] - i * geteach - geteach, datas[0][1] - i * geteach - 1, i+1))
 		work_count += 1
 
@@ -151,7 +159,8 @@ if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
 
-final = ("%s %d %s" %(datas[0][0], datas[0][1] - int(run_threads[0]) * geteach, geteach))
+final = ("%s %d %s" %(datas[0][0], datas[0][1] - (int(maxmssgs[0]) * geteach), geteach))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 group = ("%s %d" %(datas[0][0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+print "Backfill Safe running time: %s seconds for %d parts" %(time.time() - start_time, int(maxmssgs[0]) * geteach)

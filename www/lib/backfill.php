@@ -470,11 +470,6 @@ class Backfill
 
 	function getRange($group, $first, $last, $threads)
 	{
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-
 		$db = new DB();
 		$n = $this->n;
 		$groups = new Groups();
