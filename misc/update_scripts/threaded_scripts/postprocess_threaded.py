@@ -7,6 +7,7 @@ import MySQLdb as mdb
 import subprocess
 import string
 import re
+import shutil
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
@@ -51,6 +52,12 @@ cur.execute("select value from site where setting = 'maxnfoprocessed'")
 nfoperrun = cur.fetchone();
 cur.execute("select value from site where setting = 'maxsizetopostprocess'")
 maxsize = cur.fetchone();
+cur.execute("select value from site where setting = 'tmpunrarpath'")
+tmppath = cur.fetchone();
+for root, dirs, files in os.walk(tmppath[0], topdown=False):
+	for name in dirs:
+		shutil.rmtree(os.path.join(root, name))
+
 datas = []
 maxtries = -1
 if sys.argv[1] == "additional":
