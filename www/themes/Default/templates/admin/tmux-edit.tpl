@@ -130,7 +130,7 @@
 			<tr>
 				<td><label for="BACKFILL">Backfill</label>:</td>
 				<td>
-					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="BACKFILL_ORDER" name='BACKFILL_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->BACKFILL_ORDER}
+					{html_options class="siteeditstyle" id="BACKFILL" name='BACKFILL' values=$backfill_ids output=$backfill_names selected=$ftmux->BACKFILL}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="BACKFILL_ORDER" name='BACKFILL_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->BACKFILL_ORDER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="BACKFILL_DAYS" name='BACKFILL_DAYS' values=$backfill_days_ids output=$backfill_days selected=$ftmux->BACKFILL_DAYS}
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
 						Safe - Backfills 1 group by backfill days (set in admin-view groups), using the number of threads set in admin.<br \>
@@ -142,7 +142,8 @@
 						Alphabetical - Sorts the group selection from a to z.<br />
 						Alphabetical Reverse - Sorts the group selection from z to a.<br /a>
 						Most Posts - Sorts the group selection by the highest number of posts, first.<br /a>
-						Fewest Posts - Sorts the group selection by the lowest number of posts, first.</div>
+						Fewest Posts - Sorts the group selection by the lowest number of posts, first.<br />
+						Backfill days - Days pr group from admin->view group or the Safe Backfill Date from admin->edit site.</div>
 				</td>
 			</tr>
 			<tr>
