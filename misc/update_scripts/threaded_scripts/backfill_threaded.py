@@ -69,6 +69,7 @@ elif intorder == 5:
 	group = "ORDER BY first_record DESC"
 else:
 	group = "ORDER BY first_record ASC"
+
 cur.execute("select value from tmux where setting = 'BACKFILL_DAYS'");
 backfilltype = cur.fetchone();
 intbackfilltype = int(backfilltype[0])

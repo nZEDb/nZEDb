@@ -143,7 +143,7 @@
 						Alphabetical Reverse - Sorts the group selection from z to a.<br /a>
 						Most Posts - Sorts the group selection by the highest number of posts, first.<br /a>
 						Fewest Posts - Sorts the group selection by the lowest number of posts, first.<br />
-						Backfill days - Days pr group from admin->view group or the Safe Backfill Date from admin->edit site.</div>
+						Backfill days - Days per Group from admin->view group or the Safe Backfill Date from admin->edit site.</div>
 				</td>
 			</tr>
 			<tr>

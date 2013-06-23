@@ -1019,7 +1019,7 @@ INSERT INTO `site`
 	('deletepossiblerelease', 0),
 	('miscotherretentionhours',0),
 	('grabnzbs', '0'),
-	('sqlpatch','78');
+	('sqlpatch','79');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1330,7 +1330,8 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('PROGRESSIVE','FALSE'),
 	('DEHASH','FALSE'),
 	('DEHASH_TIMER','30'),
-	('BACKFILL_ORDER','2');
+	('BACKFILL_ORDER','2'),
+	('BACKFILL_DAYS', '1');
 
 
 DROP TABLE IF EXISTS `nzbs`;
