@@ -69,12 +69,19 @@ elif intorder == 5:
 	group = "ORDER BY first_record DESC"
 else:
 	group = "ORDER BY first_record ASC"
+cur.execute("select value from tmux where setting = 'BACKFILL_DAYS'");
+backfilltype = cur.fetchone();
+intbackfilltype = int(backfilltype[0])
+if intbackfilltype == 1:
+        backfilldays = "backfill_target"
+elif intbackfilltype == 2:
+        backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	print sys.argv[1]
-	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group))
+	cur.execute("%s %s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group))
 else:
-	cur.execute("%s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit ", int(groups[0])))
+	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", int(groups[0])))
 datas = cur.fetchall()
 if not datas:
 	print "No Groups enabled for backfill"

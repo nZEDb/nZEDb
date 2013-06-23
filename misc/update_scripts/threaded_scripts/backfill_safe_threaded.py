@@ -60,8 +60,15 @@ elif intorder == 5:
 	group = "ORDER BY first_record DESC"
 else:
 	group = "ORDER BY first_record ASC"
+cur.execute("select value from tmux where setting = 'BACKFILL_DAYS'");
+backfilltype = cur.fetchone();
+intbackfilltype = int(backfilltype[0])
+if intbackfilltype == 1:
+	backfilldays = "backfill_target"
+elif intbackfilltype == 2:
+	backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
-cur.execute("%s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ", group, " limit 1"))
+cur.execute("%s %s %s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval ", backfilldays, " day) < first_record_postdate ", group, " limit 1"))
 datas = cur.fetchall()
 cur.execute("select value from site where setting = 'backfillthreads'");
 run_threads = cur.fetchone();

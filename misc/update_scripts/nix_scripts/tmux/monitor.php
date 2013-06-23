@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2442";
+$version="0.1r2440";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -13,6 +13,7 @@ $db_name = DB_NAME;
 
 $tmux = new Tmux();
 $seq = $tmux->get()->SEQUENTIAL;
+$backfilldays = $tmux->get()->BACKFILL_DAYS;
 $powerline = $tmux->get()->POWERLINE;
 
 //totals per category in db, results by parentID
@@ -30,8 +31,17 @@ $proc_work = "SELECT
 	( SELECT COUNT( groupID ) FROM releases r WHERE r.nfostatus between -6 and -1 and nzbstatus = 1 ) AS nforemains,
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and nzbstatus = 1 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
 	( SELECT COUNT( groupID ) from releases r left join category c on c.ID = r.categoryID where nzbstatus = 1 and (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups,
+	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,";
+
+if ($backfilldays == 1) {
+	$proc_work .= "
+		( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups, ";
+} elseif ($backfilldays == 2) {
+	 $proc_work .= "
+		( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(select value from site where setting = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups,";
+}
+
+$proc_work .= "
 	( SELECT COUNT( ID ) FROM groups ) AS all_groups,
 	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
 	( SELECT COUNT( ID ) from collections ) AS collections_table,
