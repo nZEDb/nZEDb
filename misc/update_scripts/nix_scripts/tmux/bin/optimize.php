@@ -69,7 +69,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 			if (strtolower($tablename['Engine']) == "myisam")
 				$db->queryDirect("FLUSH TABLES");
 		}
-		if ($tablecnt = 1)
+		if ($tablecnt == 1)
 			echo $tablecnt." table Optimized\n";
 		else
 			echo $tablecnt." tables Optimized\n";

@@ -50,7 +50,7 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
+	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
 	{
 		$ret = 0;
 		$db = new DB();
@@ -58,26 +58,36 @@ class Nfo
 		$groups = new Groups();
 		$site = new Sites();
 		$nzbcontents = new NZBcontents($this->echooutput);
-		$threads--;
-
-		$i = -1;
 		$nfocount = 0;
-		while ((($nfocount) != $this->nzbs) && ($i >= -6))
+
+		if ($releaseToWork == '')
 		{
-			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
-			$nfocount = $db->getNumRows($res);
-			$i--;
+			$i = -1;
+			while ((($nfocount) != $this->nzbs) && ($i >= -6))
+			{
+				$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d", $i, $this->maxsize*1073741824, $this->nzbs));
+				$nfocount = $db->getNumRows($res);
+				$i--;
+			}
+		}
+		else
+		{
+			$res = 0;
+			$pieces = explode("                       ", $releaseToWork);
+			$res = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'groupID' => $pieces[2], 'name' => $pieces[3]));
+			$nfocount = 1;
 		}
 
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
-				if ($nfocount > 0)
-					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+				if ($releaseToWork == '')
+					echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
-			while ($arr = $db->fetchAssoc($res))
+			//while ($arr = $db->fetchAssoc($res))
+			foreach ($res as $arr)
 			{
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
@@ -128,9 +138,9 @@ class Nfo
 
 		if ($this->echooutput)
 		{
-			if ($nfocount > 0)
+			if ($nfocount > 0 && $releaseToWork == '')
 				echo "\n";
-			if ($ret > 0)
+			if ($ret > 0 && $releaseToWork == '')
 				echo $ret." NFO file(s) found/processed.\n";
 		}
 

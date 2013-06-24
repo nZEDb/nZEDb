@@ -40,6 +40,8 @@ $page->smarty->assign('backfill_ids', array(0,4,2,1));
 $page->smarty->assign('backfill_names', array('Disabled', 'Safe', 'All', 'Interval'));
 $page->smarty->assign('backfill_group_ids', array(1,2,3,4,5,6));
 $page->smarty->assign('backfill_group', array('Newest', 'Oldest', 'Alphabetical', 'Alphabetical - Reverse', 'Most Posts', 'Fewest Posts'));
+$page->smarty->assign('backfill_days', array('Days per Group', 'Safe Backfill day'));
+$page->smarty->assign('backfill_days_ids', array(1,2));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

@@ -139,6 +139,21 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	function getArticles($groupname, $msgIds)
+	{
+		$body = '';
+
+		foreach ($msgIds as $m)
+		{
+			$message = $this->get_Article($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
+	}
+
 
 	function getMessages($groupname, $msgIds)
 	{

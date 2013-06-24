@@ -25,6 +25,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$db->query("truncate table parts");
 	$db->query("truncate table partrepair");
 	$db->query("truncate table releasenfo");
+	$db->query("truncate table nzbs");
 
 	echo "Resetting groups.\n";
 	$db->query("UPDATE groups SET first_record=0, first_record_postdate=NULL, last_record=0, last_record_postdate=NULL");
