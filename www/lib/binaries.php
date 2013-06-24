@@ -320,7 +320,8 @@ class Binaries
 						{
 							$nzbparts = $matchesparts['part'];
 							$totalparts = $matchesparts['total'];
-							$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
+							$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`) VALUES (%s,0)", $db->escapeString($groupArr['name'])));
+							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
 						}
 					}
 

@@ -366,7 +366,7 @@
 	{/if}
 	
 	<form action="" method="post">
-		<label for="txtAddComment">Add Comment</label>:<br/>
+		<label for="txtAddComment">Add Comment:</label><br/>
 		<textarea id="txtAddComment" name="txtAddComment" rows="6" cols="60"></textarea>
 		<br/>
 		<input type="submit" value="submit"/>
