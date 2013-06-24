@@ -13,7 +13,7 @@
 	<form method="post" action="forgottenpassword?action=submit">
 
 		<table class="data">
-			<tr><th><label for="email">Email</label>: <em>*</em></th>
+			<tr><th><label for="email">Email:</label> <em>*</em></th>
 				<td>
 					<input id="email" autocomplete="off" name="email" value="{$email}" type="email"/>
 				</td>
