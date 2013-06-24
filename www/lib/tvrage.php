@@ -58,7 +58,7 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		
 		$db = new DB();
-		return $db->queryInsert(sprintf("insert into tvrage (rageID, releasetitle, description, genre, country, createddate, imgdata) values (%d, %s, %s, %s, %s, now(), %s)", 
+		return $db->queryInsert(sprintf("INSERT IGNORE INTO tvrage (rageID, releasetitle, description, genre, country, createddate, imgdata) values (%d, %s, %s, %s, %s, now(), %s)", 
 			$rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $db->escapeString($imgbytes)));		
 	}
 
@@ -199,7 +199,7 @@ class TvRage
 								$fullep = $db->escapeString($sShow->ep);
 								$link = $db->escapeString($sShow->link);
 								$airdate = $db->escapeString(date("Y-m-d H:i:s", $day_time));
-								$sql = sprintf("INSERT into tvrageepisodes (rageID,showtitle,fullep,airdate,link,eptitle) VALUES (%d,%s,%s,%s,%s,%s)
+								$sql = sprintf("INSERT IGNORE INTO tvrageepisodes (rageID,showtitle,fullep,airdate,link,eptitle) VALUES (%d,%s,%s,%s,%s,%s)
 										ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s",
 										$sShow->sid,$showname,$fullep,$airdate,$link,$title,$airdate,$link,$title,$showname);
 								$db->queryInsert($sql);
