@@ -18,7 +18,7 @@ class MiscSorter {
 		'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
 
 		$this->echooutput = $echooutput;
-		$this->qty = 10000;
+		$this->qty = 1000;
 		$this->DEBUGGING = false;
 
 		$this->db = new DB($this->echooutput);

@@ -48,7 +48,7 @@ class Backfill
 			// Compression.
 			$nntpc = new Nntp();
 			$nntpc->doConnect();
-			
+
 			foreach($res as $groupArr)
 			{
 				$left = sizeof($res)-$counter;
@@ -470,11 +470,6 @@ class Backfill
 
 	function getRange($group, $first, $last, $threads)
 	{
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-
 		$db = new DB();
 		$n = $this->n;
 		$groups = new Groups();
@@ -497,19 +492,19 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-	            echo "Problem with the usenet connection, attemping to reconnect.".$n;
-    	        $nntp->doQuit();
-        	    $nntp->doConnect();
-            	$data = $nntp->selectGroup($groupArr['name']);
-	            if (PEAR::isError($data))
-    	        {
-        	        echo "Reconnected but could not select group (bad name?): {$group}".$n;
-            	    return;
-	            }
+				echo "Problem with the usenet connection, attemping to reconnect.".$n;
+				$nntp->doQuit();
+				$nntp->doConnect();
+				$data = $nntp->selectGroup($groupArr['name']);
+				if (PEAR::isError($data))
+				{
+					echo "Reconnected but could not select group (bad name?): {$group}".$n;
+					return;
+				}
 			}
 		}
 
-		echo 'Processing '.$groupArr['name']." ==> ".$threads." ==>".number_format($first)." to ".number_format($last).$n;
+		echo 'Processing '.$groupArr['name']." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
 
 		$this->startLoop = microtime(true);
 		$lastId = $binaries->scan($nntp, $groupArr, $last, $first);

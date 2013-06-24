@@ -54,7 +54,7 @@ Class Predb
 		$db = new DB();
 		$newnames = 0;
 
-		$buffer = getUrl("http://nzb.isasecret.com/");
+		$buffer = getUrl("http://www.newshost.co.za");
 		if ($buffer !== false && strlen($buffer))
 		{
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches))
@@ -346,6 +346,7 @@ Class Predb
 			while ($row = mysqli_fetch_assoc($res))
 			{
 				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				echo ".";
 				$updated++;
 			}
 			return $updated;
@@ -360,7 +361,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus = 0"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus != 1"))
 		{
 			$nfo = new Nfo($this->echooutput);
 			while ($row = mysqli_fetch_assoc($res))
@@ -371,6 +372,7 @@ Class Predb
 					$nfo->addReleaseNfo($row["ID"]);
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
+					echo ".";
 					$nfos++;
 				}
 			}
