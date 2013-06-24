@@ -58,11 +58,16 @@ class Import
 			}
 		}
 		$nntp->doConnect();
-		if($article = $nntp->getArticles($nzb['group'], $arr))
-			$this->processGrabNZBs($article, $hash);
+		if(is_array($nzb))
+		{
+			if($article = $nntp->getArticles($nzb['group'], $arr))
+				$this->processGrabNZBs($article, $hash);
+			else
+				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+			$nntp->doQuit();
+		}
 		else
-			$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
-		$nntp->doQuit();
+			return;
 	}
 
 
@@ -193,7 +198,7 @@ class Import
 							chmod($path, 0777);
 							$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $relID));
 							$db->queryDirect(sprintf("DELETE collections, binaries, parts
-								FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+								FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 								WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();

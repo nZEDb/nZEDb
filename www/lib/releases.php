@@ -1416,9 +1416,12 @@ class Releases
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
+		// Set file check to 0 if we don't have all the parts.
+		$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck in (15, 16) ".$where);
+
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
-						in (0, 1, 10, 15, 16) ".$where);
+						in (0, 1, 10) ".$where);
 
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage1);
@@ -1519,7 +1522,9 @@ class Releases
 					$maxsizecounts = $maxsizecount+$maxsizecounts;
 				}
 
-				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
+				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN
+								( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5
+								WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
 
 				$minfilecount = $db->getAffectedRows();
 				if ($minfilecount < 0)
@@ -1747,7 +1752,8 @@ class Releases
 					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					$nzbcount++;
-					$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,mysqli_num_rows($resrel)));
+					if ($this->echooutput)
+						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,mysqli_num_rows($resrel)));
 				}
 			}
 		}
@@ -1819,9 +1825,9 @@ class Releases
 			echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
 		$stage7 = TIME();
 
-		// Old collections that were missed somehow.
+		// Completed releases and old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE (collections.filecheck = 5 OR (collections.dateadded < (now() - interval %d hour))) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
 
@@ -1944,7 +1950,7 @@ class Releases
 			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
 		else
 			if ($this->echooutput)
-				echo ". Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
+				echo ". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.".$n;
 
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage7).".".$n;

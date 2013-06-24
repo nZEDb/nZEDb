@@ -84,5 +84,3 @@ else
 {
 	exit("If you have set the settings in adin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n");
 }
-
-?>

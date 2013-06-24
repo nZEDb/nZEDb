@@ -8,6 +8,7 @@ import subprocess
 import string
 import re
 import nntplib
+import datetime
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -87,7 +88,7 @@ s = nntplib.connect(config['NNTP_SERVER'], config['NNTP_PORT'], config['NNTP_SSL
 
 resp, count, first, last, name = s.group(datas[0][0])
 print 'Group', name, 'has', count, 'articles, range', first, 'to', last
-print datas[0][1]
+print "Our oldest post is: ", datas[0][1]
 
 while (datas[0][1] - long(first)) < 1000:
 	group = ("%s %d" %(datas[0][0], 1000))
@@ -163,4 +164,4 @@ final = ("%s %d %s" %(datas[0][0], datas[0][1] - (int(maxmssgs[0]) * geteach), g
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 group = ("%s %d" %(datas[0][0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-print "Backfill Safe running time: %s seconds for %d parts" %(time.time() - start_time, int(maxmssgs[0]) * geteach)
+print "Backfill Safe running time: %s for parts %s" %(str(datetime.timedelta(seconds=time.time() - start_time)), "{:,}".format(int(maxmssgs[0]) * geteach))

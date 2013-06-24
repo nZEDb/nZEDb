@@ -22,7 +22,7 @@ Importing will add the release to your database, compress the NZB and store it i
 <table class="input">
 
 <tr>
-	<td width="100"><label for="folder">Folder</label>:</td>
+	<td width="100"><label for="folder">Folder:</label></td>
 	<td>
 		<input id="folder" class="long" name="folder" type="text" value="" />
 		<div class="hint">Windows file paths should be specified with forward slashes e.g. c:/temp/</div>
@@ -30,7 +30,7 @@ Importing will add the release to your database, compress the NZB and store it i
 </tr>
 
 <tr>
-	<td><label for="usefilename">Use Filename</label>:</td>
+	<td><label for="usefilename">Use Filename:</label></td>
 	<td>
 		<input type="checkbox" name="usefilename" />
 		<div class="hint">Use the NZB's filename as the release name. Else the name inside the NZB will be used.</div>
@@ -61,7 +61,7 @@ Importing will add the release to your database, compress the NZB and store it i
 <table class="input">
 
 <tr>
-	<td width="100"><label for="uploadedfiles[]">File</label>:</td>
+	<td width="100"><label for="uploadedfiles[]">File:</label></td>
 	<td>
 		<input name="uploadedfiles[]" type="file" class="multi accept-nzb"/>
 		<div class="hint">Select one or more .nzb files.</div>
@@ -69,7 +69,7 @@ Importing will add the release to your database, compress the NZB and store it i
 </tr>
 
 <tr>
-	<td><label for="usefilename">Use Filename</label>:</td>
+	<td><label for="usefilename">Use Filename:</label></td>
 	<td>
 		<input type="checkbox" name="usefilename" />
 		<div class="hint">Use the NZB's filename as the release name. Else the name inside the NZB will be used.</div>
