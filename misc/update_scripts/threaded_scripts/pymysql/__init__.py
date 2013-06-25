@@ -93,8 +93,7 @@ def Connect(*args, **kwargs):
     return Connection(*args, **kwargs)
     
 from pymysql import connections as _orig_conn
-Connect.__doc__ = _orig_conn.Connection.__init__.__doc__ + """\nSee connections.Connection.__init__() for
-    information about defaults."""
+Connect.__doc__ = _orig_conn.Connection.__init__.__doc__ + """\nSee connections.Connection.__init__() for information about defaults."""
 del _orig_conn
 
 def get_client_info():  # for MySQLdb compatibility

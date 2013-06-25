@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2485";
+$version="0.1r2486";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -859,7 +859,7 @@ while( $i > 0 )
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
 							$_python3 ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log && \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log && \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+							$_python3 ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log && date +\"%D %T\" && \
 							echo \"\nreleases has been disabled/terminated by Releases\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				}
@@ -876,7 +876,7 @@ while( $i > 0 )
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+							$_python3 ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log && \
 							$run_releases $log && date +\"%D %T\" && echo \"\nbinaries has been disabled/terminated by Binaries\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				}
@@ -907,7 +907,7 @@ while( $i > 0 )
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\" && \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
+							$_python3 ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log && date +\"%D %T\" && echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\" && sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back less than 4800
@@ -980,7 +980,7 @@ while( $i > 0 )
 				$color = get_color();
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\" && \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
+						$_python3 ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log && date +\"%D %T\" && sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 <= 4800 ))
 			{
