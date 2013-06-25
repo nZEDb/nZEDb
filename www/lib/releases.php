@@ -1416,8 +1416,8 @@ class Releases
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
-		// Set file check to 0 if we don't have all the parts.
-		$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck in (15, 16) ".$where);
+		// Set file check to 1 if we don't have all the parts.
+		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 12 hour) AND c.filecheck
@@ -1827,13 +1827,13 @@ class Releases
 
 		// Completed releases and old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.filecheck = 5 " . $where));
 		$reccount = $db->getAffectedRows();
 		
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
-			}
+	}
 	
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
@@ -1854,10 +1854,10 @@ class Releases
 
 		// old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
-		
+
 /*		// Binaries/parts that somehow have no collection.
 		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
@@ -2047,6 +2047,7 @@ class Releases
 		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
 
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
+
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		//Print amount of added releases and time it took.
