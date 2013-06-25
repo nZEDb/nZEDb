@@ -47,7 +47,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '77' )
+if ( $patch < '79' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -56,7 +56,7 @@ if ( $patch < '77' )
 
 passthru("clear");
 
-#remove folders from tmpunrar
+//remove folders from tmpunrar
 $tmpunrar = $site->get()->tmpunrarpath;
 if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 {

@@ -34,7 +34,6 @@ class PostProcess
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 		$this->tmpPath = $this->site->tmpunrarpath;
@@ -70,11 +69,11 @@ class PostProcess
 			$this->DEBUG_ECHO = true;
 	}
 
-	public function processAll($threads=1)
+	public function processAll($releaseToWork='', $threads=1)
 	{
 		$this->processPredb();
-		$this->processAdditional($threads);
-		$this->processNfos($threads);
+		$this->processAdditional($releaseToWork);
+		$this->processNfos($releaseToWork);
 		$this->processMovies($threads);
 		$this->processMusic($threads);
 		$this->processGames($threads);
@@ -97,7 +96,7 @@ class PostProcess
 	//
 	// Process nfo files.
 	//
-	public function processNfos($threads=1)
+	public function processNfos($threads='')
 	{
 		if ($this->site->lookupnfo == 1)
 		{
@@ -109,7 +108,7 @@ class PostProcess
 	//
 	// Lookup imdb if enabled.
 	//
-	public function processMovies($threads=1)
+	public function processMovies($threads='')
 	{
 		if ($this->site->lookupimdb == 1)
 		{
@@ -121,7 +120,7 @@ class PostProcess
 	//
 	// Lookup music if enabled.
 	//
-	public function processMusic($threads=1)
+	public function processMusic($threads='')
 	{
 		if ($this->site->lookupmusic == 1)
 		{
@@ -133,7 +132,7 @@ class PostProcess
 	//
 	// Lookup games if enabled.
 	//
-	public function processGames($threads=1)
+	public function processGames($threads='')
 	{
 		if ($this->site->lookupgames == 1)
 		{
@@ -145,7 +144,7 @@ class PostProcess
 	//
 	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processAnime($threads=1)
+	public function processAnime($threads='')
 	{
 		if ($this->site->lookupanidb == 1)
 		{
@@ -158,7 +157,7 @@ class PostProcess
 	//
 	// Process all TV related releases which will assign their series/episode/rage data.
 	//
-	public function processTv($threads=1)
+	public function processTv($threads='')
 	{
 		if ($this->site->lookuptvrage == 1)
 		{
@@ -170,7 +169,7 @@ class PostProcess
 	//
 	// Process books using amazon.com.
 	//
-	public function processBooks($threads=1)
+	public function processBooks($threads='')
 	{
 		if ($this->site->lookupbooks == 1)
 		{
@@ -241,16 +240,11 @@ class PostProcess
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info.
 	//
-	public function processAdditional($threads=1, $id = '')
+	public function processAdditional($releaseToWork = '', $id = '')
 	{
 		$nntp = new Nntp();
 		$ri = new ReleaseImage();
 		$site = new Sites();
-		if ($threads > 1)
-		{
-			usleep($this->sleeptime*1000*($threads - 1));
-		}
-		$threads--;
 		$update_files = false;
 
 		$maxattemptstocheckpassworded = 5;
@@ -278,40 +272,49 @@ class PostProcess
 		}
 		else
 		{
-			$i = -1;
-			$result = 0;
-			while ((count($result) != $this->addqty) && ($i >= $tries))
+			if ($releaseToWork == '')
 			{
-				$result = $this->db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
-					left join category c on c.ID = r.categoryID
-					where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
-					order by r.postdate desc limit %d,%d", $this->maxsize*1073741824, $i, floor(($this->addqty)*($threads * 1.5)), $this->addqty));
-				if ($this->echooutput && count($result) > 0)
-					echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
-				$i--;
+				$i = -1;
+				$result = 0;
+				while ((count($result) != $this->addqty) && ($i >= $tries))
+				{
+					$result = $this->db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
+						left join category c on c.ID = r.categoryID
+						where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
+						order by r.postdate desc limit %d", $this->maxsize*1073741824, $i, $this->addqty));
+					if ($this->echooutput && count($result) > 0)
+						echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
+					$i--;
+				}
+			}
+			else
+			{
+				$result = 0;
+				$pieces = explode("                       ", $releaseToWork);
+				$result = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupID' => $pieces[5], 'nfostatus' => $pieces[6]));
 			}
 		}
 
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
-			/*if ($this->echooutput)
-			{
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
-				if ($threads > 0)
-					echo ", starting at ".floor(($this->addqty) * ($threads * 1.5)).": ";
-				else
-					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-			}*/
+		//	if ($this->echooutput)
+		//	{
+		//		echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
+		//		if ($releaseToWork != '')
+		//			echo ", working 1 release: ";
+		//		else
+		//			$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
+		//	}
 
-			echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
-			echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
+		//	echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
+		//	echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
 
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
 				// Per release defaults.
-				$this->tmpPath = $tmpPath1.$rel["guid"].'/';
+				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!file_exists($this->tmpPath))
 				{
 					$old = umask(0764);
@@ -331,7 +334,7 @@ class PostProcess
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 
-				/*if ($this->echooutput && $threads > 0)
+/*				if ($this->echooutput && $threads > 0)
 					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
 					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
@@ -557,7 +560,7 @@ class PostProcess
 									{
 										foreach($tmpfiles as $r)
 										{
-											$range = mt_rand(0,32767);
+											$range = mt_rand(0,99999);
 											if (isset($r["range"]))
 												$range = $r["range"];
 
@@ -636,7 +639,7 @@ class PostProcess
 					{
 						if (strlen($sampleBinary) > 100)
 						{
-							@file_put_contents($this->tmpPath.'sample.avi', $sampleBinary);
+							@file_put_contents($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
@@ -651,7 +654,7 @@ class PostProcess
 					$nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 					$this->consoleTools->appendWrite(" m");
-					//$nntp->doQuit();
+					$nntp->doQuit();
 					if ($mediaBinary !== false)
 					{
 						if (strlen($mediaBinary ) > 100)
@@ -842,7 +845,7 @@ class PostProcess
 				else
 				{
 					if (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
-						@file_put_contents($this->tmpPath.$name[1].mt_rand(0,32767).$name[2], $tmpdata);
+						@file_put_contents($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
 				}
 			}
 			unset($tmpdata, $rf);
@@ -967,7 +970,7 @@ class PostProcess
 						continue;
 					if (preg_match("/([^\/\\\\]+)(\.[a-z][a-z0-9]{2,3})$/i", $file["name"], $name))
 					{
-						$rarfile = $this->tmpPath.$name[1].mt_rand(0,32000).$name[2];
+						$rarfile = $this->tmpPath.$name[1].mt_rand(0,99999).$name[2];
 						$fetchedBinary = $rar->getFileData($file["name"], $file["source"]);
 						file_put_contents($rarfile, $fetchedBinary);
 					}
@@ -1075,7 +1078,7 @@ class PostProcess
 
 						if (!isset($file["next_offset"]))
 							$file["next_offset"] = 0;
-						$range = mt_rand(0,32767);
+						$range = mt_rand(0,99999);
 						if (isset($file["range"]))
 							$range = $file["range"];
 						$retval[] = array('name'=>$file["name"], 'source'=>$file["source"], 'range'=>$range, 'size'=>$file["size"], 'date'=>$file["date"], 'pass'=>$file["pass"], 'next_offset'=>$file["next_offset"]);
@@ -1102,7 +1105,7 @@ class PostProcess
 				}
 
 				// File is compressed, use unrar to get the content
-				$rarfile = $this->tmpPath."rarfile".mt_rand(0,32767).".rar";
+				$rarfile = $this->tmpPath."rarfile".mt_rand(0,99999).".rar";
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
 				$output = runCmd($execstring, false, true);
@@ -1114,7 +1117,7 @@ class PostProcess
 						{
 							if (!isset($file["next_offset"]))
 								$file["next_offset"] = 0;
-							$range = mt_rand(0,32767);
+							$range = mt_rand(0,99999);
 							if (isset($file["range"]))
 								$range = $file["range"];
 
@@ -1329,7 +1332,7 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$ramdrive.'zzzz%03d.jpg"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg');
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
@@ -1429,3 +1432,4 @@ class PostProcess
 		$this->consoleTools->appendWrite("P");
 	}
 }
+

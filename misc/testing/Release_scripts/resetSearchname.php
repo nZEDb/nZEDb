@@ -86,6 +86,29 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 	else
 		exit("You have no releases in the DB.\n");	
 }
+elseif (isset($argv[1]) && $argv[1] == "reset")
+{
+    $db = new DB();
+    $res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
+
+    if (sizeof($res) > 0)
+    {
+        echo "Going to reset search names, this can take a while.\n";
+        $done = 0;
+        $timestart = TIME();
+        $consoletools = new consoleTools();
+        while ($row = mysqli_fetch_assoc($res))
+        {
+            $nc = new nameCleaning();
+            $newname = $nc-> releaseCleaner($row['name']);
+            $db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+            $done++;
+            $consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
+        }
+        $timenc = $consoletools->convertTime(TIME() - $timestart);
+        echo "\n".$done." releases renamed in ".$timenc.".\n";
+	}
+}
 else
-	exit("This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\nType php resetSearchname.php full to run this, recategorize and refix release names on all releases.\nType php resetSearchname.php limited to run this on releases that have not had their names fixed, then categorizing them.\n");
+	exit("This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\nType php resetSearchname.php full to run this, recategorize and refix release names on all releases.\nType php resetSearchname.php limited to run this on releases that have not had their names fixed, then categorizing them.\nTo simply reset searchnames only type resetSearchname.php reset\n\n");
 ?>

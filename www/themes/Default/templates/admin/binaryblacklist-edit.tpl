@@ -36,7 +36,7 @@
 </tr>
 
 <tr>
-	<td><label for="msgcol">Message Field</label>:</td>
+	<td><label for="msgcol">Message Field:</label></td>
 	<td>
 		{html_radios id="msgcol" name='msgcol' values=$msgcol_ids output=$msgcol_names selected=$regex.msgcol separator='<br />'}
 		<div class="hint">Which field in the message to apply the black/white list to.</div>		
@@ -44,7 +44,7 @@
 </tr>
 
 <tr>
-	<td><label for="status">Active</label>:</td>
+	<td><label for="status">Active:</label></td>
 	<td>
 		{html_radios id="status" name='status' values=$status_ids output=$status_names selected=$regex.status separator='<br />'}
 		<div class="hint">Only active regexes are applied during the release process.</div>		
@@ -52,7 +52,7 @@
 </tr>
 
 <tr>
-	<td><label for="optype">Type</label>:</td>
+	<td><label for="optype">Type:</label></td>
 	<td>
 		{html_radios id="optype" name='optype' values=$optype_ids output=$optype_names selected=$regex.optype separator='<br />'}
 		<div class="hint">Black will exclude all messages for a group which match this regex. White will include only those which match.</div>		

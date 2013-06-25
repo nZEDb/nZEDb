@@ -147,10 +147,10 @@
 													"ResponseGroup" => "Medium");
 								break;
 				
-				case "ISBN" :    $parameters = array("Operation"     => "ItemLookup",
-													"ItemId"        => $search,
+				case "ISBN" :	$parameters = array("Operation"	 => "ItemLookup",
+													"ItemId"		=> $search,
 													"SearchIndex"   => AmazonProductAPI::BOOKS,
-													"IdType"        => "ISBN",
+													"IdType"		=> "ISBN",
 													"ResponseGroup" => "Medium");
 								break;
 

@@ -34,7 +34,7 @@
 	</td>
 </tr>
 <tr>
-	<td><label for="active">Active</label>:</td>
+	<td><label for="active">Active:</label></td>
 	<td>
 		{html_radios id="active" name='active' values=$yesno_ids output=$yesno_names selected=1 separator='<br />'}
 		<div class="hint">Inactive groups will not have headers downloaded for them.</div>		
