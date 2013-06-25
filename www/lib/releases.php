@@ -26,6 +26,7 @@ class Releases
 	const PASSWD_NONE = 0;
 	const PASSWD_POTENTIAL = 1;
 	const PASSWD_RAR = 2;
+	const BAD_FILE = 3;
 
 	function Releases($echooutput=false)
 	{

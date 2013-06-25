@@ -459,6 +459,7 @@ class PostProcess
 
 					$foundcontent = false;
 					$notinfinite = 0;
+					$failed = 0;
 					$this->ignorenumbered = false;
 
 					// Loop through the files, attempt to find if passworded and files. Starting with what not to process.
@@ -538,7 +539,10 @@ class PostProcess
 									$foundcontent = true;
 							}
 							else
+							{
 								$notinfinite = $notinfinite + 0.2;
+								$failed++;
+							}
 						}
 					}
 
@@ -725,6 +729,12 @@ class PostProcess
 					$this->updateReleaseHasPreview($rel["guid"]);
 				else
 					$hpsql = ', haspreview = 0';
+
+				if ($failed > 0 && ($failed / count($nzbfiles) > 0.7 || $notinfinite > $this->passchkattempts || $notinfinite > $this->partsqty))
+				{
+					echo "not vialble\n";
+					$passStatus[] = 3;
+				}
 
 				$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
 				if (max($passStatus) > 0)
