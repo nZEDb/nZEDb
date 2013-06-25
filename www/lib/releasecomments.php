@@ -66,7 +66,7 @@ class ReleaseComments
 		if ($s->storeuserips != "1")
 			$host = "";		
 		
-		$comid = $db->queryInsert(sprintf("INSERT INTO releasecomment (`releaseID`, 	`text`, 	`userID`, 	`createddate`, 	`host`	)	
+		$comid = $db->queryInsert(sprintf("INSERT IGNORE INTO releasecomment (`releaseID`, 	`text`, 	`userID`, 	`createddate`, 	`host`	)	
 						VALUES (%d, 	%s, 	%d, 	now(), 	%s	)", $id, $db->escapeString($text), $userid, $db->escapeString($host) ));		
 		$this->updateReleaseCommentCount($id);					
 		return $comid;

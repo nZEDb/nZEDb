@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import pymysql as mdb
 import subprocess
 import string
 import re
@@ -41,13 +45,16 @@ config = readConfig()
 
 con = None
 # The MYSQL connection.
-con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
+con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']))
 cur = con.cursor()
-cur.execute("select value from site where setting = 'postthreads'");
-run_threads = cur.fetchone();
+cur.execute("select value from site where setting = 'postthreads'")
+run_threads = cur.fetchone()
 
 # The array.
-datas = list(xrange(1, int(run_threads[0]) + 1))
+try:
+	datas = list(range(1, int(run_threads[0]) + 1))
+except:
+	datas = list(xrange(1, int(run_threads[0]) + 1))
 
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID):
@@ -59,15 +66,16 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				if sys.argv[1] == "additional":
+				if len(sys.argv) > 1 and sys.argv[1] == "additional":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional.php", ""+dirname])
-				elif sys.argv[1] == "amazon":
+				elif len(sys.argv) > 1 and sys.argv[1] == "amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+dirname])
-				elif sys.argv[1] == "non_amazon":
+				elif len(sys.argv) > 1 and sys.argv[1] == "non_amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_non_amazon.php", ""+dirname])
-				elif sys.argv[1] == "all":
+				elif len(sys.argv) > 1 and sys.argv[1] == "all":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess.php", ""+dirname])
-			except Queue.Empty:
+
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -76,7 +84,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
+	threadID = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
@@ -91,7 +99,7 @@ def main(args):
 		work_count += 1
 		threadID.put(str(gnames))
 
-	print 'Assigned %s Postprocesses to workers' % work_count
+	print("Assigned %s Postprocesses to workers" %(work_count))
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.

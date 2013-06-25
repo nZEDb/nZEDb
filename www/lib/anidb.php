@@ -42,7 +42,7 @@ class AniDB
 		$db->query("DELETE FROM animetitles WHERE anidbID IS NOT NULL");
 
 		for($i = 0; $i < count($animetitles[1]); $i++) {
-			$db->queryInsert(sprintf("INSERT INTO animetitles (anidbID, title, unixtime) VALUES (%d, %s, %d)",
+			$db->queryInsert(sprintf("INSERT IGNORE INTO animetitles (anidbID, title, unixtime) VALUES (%d, %s, %d)",
 			$animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i], ENT_QUOTES, 'UTF-8')), time()));
 		}
 
@@ -58,7 +58,7 @@ class AniDB
 	{
 		$db = new DB();
 
-		$db->queryInsert(sprintf("INSERT INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)",
+		$db->queryInsert(sprintf("INSERT IGNORE INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)",
 		$AniDBAPIArray['anidbID'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']),
 		$db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']),
 		$db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']),

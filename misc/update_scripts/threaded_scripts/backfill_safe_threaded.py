@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import pymysql as mdb
 import subprocess
 import string
 import re
@@ -81,24 +85,25 @@ cur.execute("select value from site where setting = 'maxmssgs'");
 maxmssgs = cur.fetchone();
 
 if not datas:
-	print "No Groups enabled for backfill"
+	print("No Groups enabled for backfill")
 	sys.exit()
 
 s = nntplib.connect(config['NNTP_SERVER'], config['NNTP_PORT'], config['NNTP_SSLENABLED'], config['NNTP_USERNAME'], config['NNTP_PASSWORD'])
 
 resp, count, first, last, name = s.group(datas[0][0])
-print 'Group', name, 'has', count, 'articles, range', first, 'to', last
-print "Our oldest post is: ", datas[0][1]
 
-while (datas[0][1] - long(first)) < 1000:
+print("Group %s has %d articles, range %d to %d" %(name, count, first, last))
+print("Our oldest post is: %s" %(datas[0][1]))
+
+while (datas[0][1] - first) < 1000:
 	group = ("%s %d" %(datas[0][0], 1000))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
 	sys.exit()
 
-if (datas[0][1] - long(first)) > int(backfill_qty[0]) * int(run_threads[0]):
-	geteach = int(backfill_qty[0]) * int(run_threads[0]) / int(maxmssgs[0])
+if (datas[0][1] - first) > int(backfill_qty[0]) * int(run_threads[0]):
+	geteach = int(int(backfill_qty[0]) * int(run_threads[0]) / int(maxmssgs[0]))
 else:
-	geteach = (datas[0][1] - long(first)) / int(maxmssgs[0])
+	geteach = ((datas[0][1] - first) / int(maxmssgs[0]))
 
 resp = s.quit()
 
@@ -115,10 +120,10 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				#print '\n%s: Backfill All %s started.' % (self.name, dirname)
+				#print("\n%s: Backfill All %s started." %(self.name, dirname))
 				subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -127,8 +132,8 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue(100)
-	result_q = Queue.Queue()
+	threadID = queue.Queue(100)
+	result_q = queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
@@ -154,7 +159,7 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		thread.join()
+		thread.join(timeout=60)
 
 if __name__ == '__main__':
 	import sys
@@ -164,4 +169,4 @@ final = ("%s %d %s" %(datas[0][0], datas[0][1] - (int(maxmssgs[0]) * geteach), g
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 group = ("%s %d" %(datas[0][0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-print "Backfill Safe running time: %s for parts %s" %(str(datetime.timedelta(seconds=time.time() - start_time)), "{:,}".format(int(maxmssgs[0]) * geteach))
+print("Backfill Safe running time: %s for parts %s" %(str(datetime.timedelta(seconds=time.time() - start_time)), "{:,}".format(int(maxmssgs[0]) * geteach)))
