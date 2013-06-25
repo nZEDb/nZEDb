@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import pymysql as mdb
 import subprocess
 import string
 import re
@@ -77,7 +81,7 @@ elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
 else:
-	print "\nWrong argument provided\n  python -OO postprocess_threaded.py additional\n  python -OO postprocess_threaded.py nfo"
+	print("\nWrong argument provided\n  python3 postprocess_threaded.py additional\n  python3 postprocess_threaded.py nfo")
 	sys.exit();
 
 class WorkerThread(threading.Thread):
@@ -94,7 +98,7 @@ class WorkerThread(threading.Thread):
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional_new.php", ""+dirname])
 				elif sys.argv[1] == "nfo":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_nfo_new.php", ""+dirname])
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -103,7 +107,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue(100)
+	threadID = queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
@@ -129,7 +133,7 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		if Queue.Empty:
+		if queue.Empty:
 			thread.join()
 
 if __name__ == '__main__':
@@ -137,4 +141,4 @@ if __name__ == '__main__':
 	main(sys.argv[1:])
 
 
-print '\nCompleted work on %s items' % len(datas)
+print("\nCompleted work on %s items" %(len(datas)))

@@ -91,8 +91,9 @@ if not datas:
 s = nntplib.connect(config['NNTP_SERVER'], config['NNTP_PORT'], config['NNTP_SSLENABLED'], config['NNTP_USERNAME'], config['NNTP_PASSWORD'])
 
 resp, count, first, last, name = s.group(datas[0][0])
-print('Group', name, 'has', count, 'articles, range', first, 'to', last)
-print("Our oldest post is: ", datas[0][1])
+
+print("Group %s has %d articles, range %d to %d" %(name, count, first, last))
+print("Our oldest post is: %s" %(datas[0][1]))
 
 while (datas[0][1] - first) < 1000:
 	group = ("%s %d" %(datas[0][0], 1000))

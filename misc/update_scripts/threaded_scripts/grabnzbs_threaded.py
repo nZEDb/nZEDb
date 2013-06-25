@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import pymysql as mdb
 import subprocess
 import string
 import re
@@ -52,7 +56,7 @@ cur.execute("select value from site where setting = 'binarythreads'");
 run_threads = cur.fetchone();
 
 if not datas:
-	print "No NZBs to grab"
+	print("No NZBs to grab")
 	sys.exit()
 
 class WorkerThread(threading.Thread):
@@ -68,7 +72,7 @@ class WorkerThread(threading.Thread):
 				dirname = self.threadID.get(True, 0.05)
 				subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/grabnzbs.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -77,8 +81,8 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
-	result_q = Queue.Queue()
+	threadID = queue.Queue()
+	result_q = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
@@ -87,7 +91,7 @@ def main(args):
 	for thread in pool:
 		thread.start()
 
-	print 'Grabbing NZBs Started'
+	print("Grabbing NZBs Started")
 
 	# Give the workers some work to do
 	work_count = 0
@@ -107,4 +111,4 @@ def main(args):
 if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
-print "\n"
+print("\n")
