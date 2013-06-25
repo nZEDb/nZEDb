@@ -51,23 +51,29 @@ ppperrun = cur.fetchone();
 cur.execute("select value from site where setting = 'maxnfoprocessed'")
 nfoperrun = cur.fetchone();
 cur.execute("select value from site where setting = 'maxsizetopostprocess'")
-maxsize = cur.fetchone();
+maxsizeck = cur.fetchone();
 cur.execute("select value from site where setting = 'tmpunrarpath'")
 tmppath = cur.fetchone();
 for root, dirs, files in os.walk(tmppath[0], topdown=False):
 	for name in dirs:
 		shutil.rmtree(os.path.join(root, name))
 
+
+maxtries = -1
+if maxsizeck[0] == 0:
+	maxsize = ''
+else:
+	maxsize = "r.size < %d and "%(int(maxsizeck[0])*1073741824)
 datas = []
 maxtries = -1
-if len(sys.argv[1]) > 1 and sys.argv[1] == "additional":
+if len(sys.argv) > 1 and sys.argv[1] == "additional":
 	while len(datas) <= int(run_threads[0])*int(ppperrun[0]) and maxtries >= -6:
-		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(int(maxsize[0])*1073741824, maxtries, int(run_threads[0])*int(ppperrun[0])))
+		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(ppperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
-elif len(sys.argv[1]) > 1 and sys.argv[1] == "nfo":
+elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	while len(datas) <= int(run_threads[0])*int(nfoperrun[0]) and maxtries >= -6:
-		cur.execute("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d" %(maxtries, int(maxsize[0])*1073741824, int(run_threads[0])*int(nfoperrun[0])))
+		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(nfoperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
 else:

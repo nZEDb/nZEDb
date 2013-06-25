@@ -112,12 +112,12 @@ class WorkerThread(threading.Thread):
 
 	def join(self, timeout=None):
 		self.stoprequest.set()
-		super(WorkerThread, self).join(timeout)
+		super(WorkerThread, self).join()
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
-	result_q = Queue.Queue()
+	threadID = Queue.Queue(100)
+	result_q = Queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]

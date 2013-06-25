@@ -1416,11 +1416,11 @@ class Releases
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
-		// Set file check to 0 if we don't have all the parts.
-		$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck in (15, 16) ".$where);
+		// Set file check to 1 if we don't have all the parts.
+		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 12 hour) AND c.filecheck
 						in (0, 1, 10) ".$where);
 
 		if ($this->echooutput)
@@ -1560,7 +1560,7 @@ class Releases
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$relguid = sha1(uniqid());
-				if($db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) 
+				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) 
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", 
 											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
@@ -1808,7 +1808,7 @@ class Releases
 			echo $consoletools->convertTime(TIME() - $stage6).".";
 	}
 
-	public function processReleasesStage7($groupID, $echooutput=false)
+	public function processReleasesStage7a($groupID, $echooutput=false)
 	{
 		$db = new DB();
 		$page = new Page();
@@ -1822,16 +1822,43 @@ class Releases
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 7 -> Delete old releases, finished collections and passworded releases.\033[0m".$n;
+			echo $n."\033[1;33mStage 7a -> Delete finished collections.\033[0m".$n;
 		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
-						  WHERE (collections.filecheck = 5 OR (collections.dateadded < (now() - interval %d hour))) " . $where, $page->site->partretentionhours));
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+						  WHERE collections.filecheck = 5 " . $where));
+		$reccount = $db->getAffectedRows();
+		
+		if ($this->echooutput)
+				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
+	}
+	
+	public function processReleasesStage7b($groupID, $echooutput=false)
+	{
+		$db = new DB();
+		$page = new Page();
+		$category = new Category();
+		$genres = new Genres();
+		$consoletools = new ConsoleTools();
+		$n = "\n";
+		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
+
+		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
+
+		// Delete old releases and finished collections.
+		if ($this->echooutput)
+			echo $n."\033[1;33mStage 7b -> Delete old releases and passworded releases.\033[0m".$n;
+		$stage7 = TIME();
+
+		// old collections that were missed somehow.
+		$db->queryDirect(sprintf("DELETE collections, binaries, parts
+						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
 
-		// Binaries/parts that somehow have no collection.
+/*		// Binaries/parts that somehow have no collection.
 		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
 		// Parts that somehow have no binaries.
@@ -1842,7 +1869,7 @@ class Releases
 
 		// Collections that somehow have no binaries.
 		$db->queryDirect("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
-
+*/
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
@@ -1956,6 +1983,24 @@ class Releases
 			echo $consoletools->convertTime(TIME() - $stage7).".".$n;
 	}
 
+	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
+	{
+		$tot_retcount = 0;
+		$tot_nzbcount = 0;
+		do
+		{
+			$retcount = $this->processReleasesStage4($groupID);
+			$tot_retcount = $tot_retcount + $retcount;
+			$this->processReleasesStage4dot5($groupID, $echooutput=false);
+			$nzbcount = $this->processReleasesStage5($groupID);
+			$tot_nzbcount = $tot_nzbcount + $nzbcount;
+			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
+			$this->processReleasesStage7a($groupID, $echooutput=false);
+		} while ($nzbcount > 0 || $retcount > 0);
+
+		return $tot_retcount;
+	}
+
 	public function processReleases($categorize, $postproc, $groupName, $echooutput=false)
 	{
 		$this->echooutput = $echooutput;
@@ -1991,15 +2036,19 @@ class Releases
 
 		$this->processReleasesStage3($groupID, $echooutput=false);
 
-		$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
+		//$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
 
-		$this->processReleasesStage4dot5($groupID, $echooutput=false);
+		//$this->processReleasesStage4dot5($groupID, $echooutput=false);
 
-		$this->processReleasesStage5_loop($groupID, $echooutput=false);
+		//$this->processReleasesStage5_loop($groupID, $echooutput=false);
 
-		$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
+		//$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 
-		$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
+		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
+
+		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
+
+		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		//Print amount of added releases and time it took.
 		$timeUpdate = $consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2));
@@ -2045,7 +2094,7 @@ class Releases
 						}
 						$cIDS[] = $row['ID'];
 						$bunchedcnt++;
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
 					}
 					else
@@ -2100,7 +2149,7 @@ class Releases
 					if(!$cres)
 					{
 						$cIDS[] = $row['ID'];
-						$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
 						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}

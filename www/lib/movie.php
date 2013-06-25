@@ -357,7 +357,7 @@ class Movie
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
 		$query = sprintf("
-			INSERT INTO movieinfo 
+			INSERT IGNORE INTO movieinfo 
 				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate)
 			VALUES 
 				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
@@ -838,7 +838,7 @@ class Movie
 	public function updateInsUpcoming($source, $type, $info)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT into upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
+		$sql = sprintf("INSERT IGNORE INTO upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
 				ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
 		$db->query($sql);
 	}
