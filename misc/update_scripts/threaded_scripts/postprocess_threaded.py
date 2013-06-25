@@ -7,7 +7,7 @@ try:
     import queue
 except ImportError:
     import Queue as queue
-import pymysql as mdb
+import cymysql as mdb
 import subprocess
 import string
 import re
