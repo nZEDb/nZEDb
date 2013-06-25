@@ -132,8 +132,8 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = queue.Queue(100)
-	result_q = queue.Queue(100)
+	threadID = queue.Queue()
+	result_q = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
