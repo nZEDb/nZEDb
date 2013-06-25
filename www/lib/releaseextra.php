@@ -154,7 +154,7 @@ class ReleaseExtra
 						$videoaspect, $videoframerate, 	$videolibrary)
 	{
 		$db = new DB();
-		$sql = sprintf("insert into releasevideo
+		$sql = sprintf("INSERT IGNORE INTO releasevideo
 						(releaseID,		containerformat, overallbitrate,		videoduration,
 						videoformat,		videocodec, videowidth,		videoheight,
 						videoaspect,		videoframerate, 	videolibrary)
@@ -169,7 +169,7 @@ class ReleaseExtra
 							$audiobitrate, $audiochannels,$audiosamplerate, $audiolibrary, $audiolanguage,$audiotitle)
 	{
 		$db = new DB();
-		$sql = sprintf("insert into releaseaudio
+		$sql = sprintf("INSERT IGNORE INTO releaseaudio
 						(releaseID,	audioID,audioformat,audiomode, audiobitratemode, audiobitrate, 
 						audiochannels,audiosamplerate,audiolibrary,audiolanguage,audiotitle)
 						values
@@ -181,7 +181,7 @@ class ReleaseExtra
 	public function addSubs($releaseID, $subsID, $subslanguage)
 	{
 		$db = new DB();
-		$sql = sprintf("insert into releasesubs
+		$sql = sprintf("INSERT IGNORE INTO releasesubs
 						(releaseID,	subsID, subslanguage)
 						values ( %d, %d, %s)", 
 							$releaseID,$subsID,$db->escapeString($subslanguage));
@@ -203,6 +203,6 @@ class ReleaseExtra
 	public function addFull($id, $xml)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("insert into releaseextrafull (releaseID, mediainfo) values (%d, %s)", $id, $db->escapeString($xml)));	
+		return $db->queryInsert(sprintf("INSERT IGNORE INTO releaseextrafull (releaseID, mediainfo) values (%d, %s)", $id, $db->escapeString($xml)));	
 	}
 }

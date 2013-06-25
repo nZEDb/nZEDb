@@ -87,13 +87,13 @@ def main(args):
 	for thread in pool:
 		thread.start()
 
+	print 'Grabbing NZBs Started'
+
 	# Give the workers some work to do
 	work_count = 0
 	for gnames in datas:
 		work_count += 1
 		threadID.put(gnames[0])
-
-	print 'Grabbing NZBs Started'
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
