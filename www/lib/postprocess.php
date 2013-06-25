@@ -350,6 +350,7 @@ class PostProcess
 				$hasrar = 0;
 				$flood = false;
 				$ignoredbooks = 0;
+				$failed = 0;
 				$this->password = $notmatched = false;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
