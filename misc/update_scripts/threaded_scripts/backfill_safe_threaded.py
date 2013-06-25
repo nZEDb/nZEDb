@@ -127,7 +127,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue(100)
+	threadID = Queue.Queue()
 	result_q = Queue.Queue()
 
 	# Create the "thread pool"
@@ -154,7 +154,7 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		thread.join()
+		thread.join(timeout=60)
 
 if __name__ == '__main__':
 	import sys

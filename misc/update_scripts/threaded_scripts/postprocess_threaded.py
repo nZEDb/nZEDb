@@ -60,18 +60,18 @@ for root, dirs, files in os.walk(tmppath[0], topdown=False):
 
 datas = []
 maxtries = -1
-if sys.argv[1] == "additional":
+if len(sys.argv[1]) > 1 and sys.argv[1] == "additional":
 	while len(datas) <= int(run_threads[0])*int(ppperrun[0]) and maxtries >= -6:
 		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(int(maxsize[0])*1073741824, maxtries, int(run_threads[0])*int(ppperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
-elif sys.argv[1] == "nfo":
+elif len(sys.argv[1]) > 1 and sys.argv[1] == "nfo":
 	while len(datas) <= int(run_threads[0])*int(nfoperrun[0]) and maxtries >= -6:
 		cur.execute("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d" %(maxtries, int(maxsize[0])*1073741824, int(run_threads[0])*int(nfoperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
 else:
-	print "Wrong argument provided\n"
+	print "\nWrong argument provided\n  python -OO postprocess_threaded.py additional\n  python -OO postprocess_threaded.py nfo"
 	sys.exit();
 
 class WorkerThread(threading.Thread):
