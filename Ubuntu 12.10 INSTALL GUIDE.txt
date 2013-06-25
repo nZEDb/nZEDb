@@ -16,7 +16,14 @@ From a command line:
 
 	For the threaded scripts you will require the Python MySQLdb module:
 
-	sudo apt-get install python-mysqldb
+	Python 2.* or 3.*
+		apt-get install python-setuptools
+		python -m easy_install
+		easy_install cymysql
+		-or-
+		apt-get install python3-setuptools
+		python3 -m pip
+		pip-3.2 install cymysql
 
 1. Update/upgrade :
 
@@ -69,13 +76,13 @@ From a command line:
 	Paste the following:
 
 <VirtualHost *:80>
-    ServerAdmin webmaster@localhost
-    ServerName localhost
+	ServerAdmin webmaster@localhost
+	ServerName localhost
 
-    # These paths should be fine
-    DocumentRoot /var/www/nZEDb/www
-    ErrorLog /var/log/apache2/error.log
-    LogLevel warn
+	# These paths should be fine
+	DocumentRoot /var/www/nZEDb/www
+	ErrorLog /var/log/apache2/error.log
+	LogLevel warn
 </VirtualHost>
 
 	Enable the site/etc:
