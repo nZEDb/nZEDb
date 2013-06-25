@@ -24,6 +24,7 @@ class Import
 	{
 		$db = new DB;
 		$nntp = new Nntp;
+		$nzb = array();
 
 		if ($hash == '')
 		{
@@ -57,8 +58,9 @@ class Import
 				$arr[] = $nzb['message_id'];
 			}
 		}
+		//var_dump($nzb);
 		$nntp->doConnect();
-		if(is_array($nzb))
+		if(array_key_exists('group', $nzb))
 		{
 			if($article = $nntp->getArticles($nzb['group'], $arr))
 				$this->processGrabNZBs($article, $hash);
@@ -185,7 +187,7 @@ class Import
 				$relguid = sha1(uniqid());
 				$nzb = new NZB();
 
-				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
@@ -198,7 +200,7 @@ class Import
 							chmod($path, 0777);
 							$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $relID));
 							$db->queryDirect(sprintf("DELETE collections, binaries, parts
-								FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
+								FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 								WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();

@@ -21,7 +21,7 @@ class Nfo
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID) VALUE (%d)", $relid));		
+		return $db->queryInsert(sprintf("INSERT IGNORE INTO releasenfo (releaseID) VALUE (%d)", $relid));		
 	}
 	
 	public function deleteReleaseNfo($relid)

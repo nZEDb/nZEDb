@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import pymysql as mdb
 import subprocess
 import string
 import re
@@ -51,27 +55,33 @@ ppperrun = cur.fetchone();
 cur.execute("select value from site where setting = 'maxnfoprocessed'")
 nfoperrun = cur.fetchone();
 cur.execute("select value from site where setting = 'maxsizetopostprocess'")
-maxsize = cur.fetchone();
+maxsizeck = cur.fetchone();
 cur.execute("select value from site where setting = 'tmpunrarpath'")
 tmppath = cur.fetchone();
 for root, dirs, files in os.walk(tmppath[0], topdown=False):
 	for name in dirs:
 		shutil.rmtree(os.path.join(root, name))
 
+
+maxtries = -1
+if int(maxsizeck[0]) == 0:
+	maxsize = ''
+else:
+	maxsize = "r.size < %d and "%(int(maxsizeck[0])*1073741824)
 datas = []
 maxtries = -1
-if sys.argv[1] == "additional":
+if len(sys.argv) > 1 and sys.argv[1] == "additional":
 	while len(datas) <= int(run_threads[0])*int(ppperrun[0]) and maxtries >= -6:
-		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(int(maxsize[0])*1073741824, maxtries, int(run_threads[0])*int(ppperrun[0])))
+		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(ppperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
-elif sys.argv[1] == "nfo":
+elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	while len(datas) <= int(run_threads[0])*int(nfoperrun[0]) and maxtries >= -6:
-		cur.execute("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d" %(maxtries, int(maxsize[0])*1073741824, int(run_threads[0])*int(nfoperrun[0])))
+		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(nfoperrun[0])))
 		datas = cur.fetchall();
 		maxtries = maxtries - 1
 else:
-	print "Wrong argument provided\n"
+	print("\nWrong argument provided\n  python3 postprocess_threaded.py additional\n  python3 postprocess_threaded.py nfo")
 	sys.exit();
 
 class WorkerThread(threading.Thread):
@@ -88,7 +98,7 @@ class WorkerThread(threading.Thread):
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional_new.php", ""+dirname])
 				elif sys.argv[1] == "nfo":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_nfo_new.php", ""+dirname])
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -97,7 +107,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue(100)
+	threadID = queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
@@ -123,7 +133,7 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		if Queue.Empty:
+		if queue.Empty:
 			thread.join()
 
 if __name__ == '__main__':
@@ -131,4 +141,4 @@ if __name__ == '__main__':
 	main(sys.argv[1:])
 
 
-print '\nCompleted work on %s items' % len(datas)
+print("\nCompleted work on %s items" %(len(datas)))

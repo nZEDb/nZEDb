@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2468";
+$version="0.1r2496";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -577,8 +577,13 @@ while( $i > 0 )
 
 	$_php = $show_time." nice -n$niceness $PHP";
 	$_phpn = "nice -n$niceness $PHP";
-	$_python = $show_time." nice -n$niceness python -OO";
-	$_pythonn = "nice -n$niceness python -OO";
+	if (command_exist("python3"))
+		$PYTHON = "python3";
+	else
+		$PYTHON = "python -OO";
+
+	$_python = $show_time." nice -n$niceness $PYTHON";
+	$_pythonn = "nice -n$niceness $PYTHON";
 	$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
 
 	if (( $postprocess_kill < $total_work_now ) && ( $postprocess_kill != 0 ))
