@@ -1618,7 +1618,7 @@ class Releases
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
 
 		foreach ($catresrel as $catrowrel) {
-			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d and nzbstatus = 0", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1637,7 +1637,7 @@ class Releases
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 							FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND groupID = ".$groupID['ID']))
+							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1649,7 +1649,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1663,7 +1663,7 @@ class Releases
 							(SELECT g.ID, guid, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 							FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND groupID = ".$groupID['ID']))
+							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1679,7 +1679,7 @@ class Releases
 						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 						FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND groupID = ".$groupID))
+						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1691,7 +1691,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1705,7 +1705,7 @@ class Releases
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 						FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND groupID = ".$groupID))
+						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
 			{
 				foreach ($resrel as $rowrel)
 				{

@@ -219,13 +219,15 @@ class Binaries
 		$n = $this->n;
 		$nntp->doConnect();
 		$this->startHeaders = microtime(true);
+		if( !ini_get('safe_mode') )
+			set_time_limit(300);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
 		$s = new Sites;
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 
-		if (PEAR::isError($msgs) && $msgs->code == 400)
+		if (PEAR::isError($msgs) && ($msgs->code == 400 || $msgs->code == 503))
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doConnect();
