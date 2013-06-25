@@ -18,7 +18,10 @@ except ImportError:
 import struct
 import sys
 import os
-import configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 try:
     import io as StringIO
