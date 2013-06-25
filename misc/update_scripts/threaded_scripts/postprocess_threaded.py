@@ -60,7 +60,7 @@ for root, dirs, files in os.walk(tmppath[0], topdown=False):
 
 
 maxtries = -1
-if maxsizeck[0] == 0:
+if int(maxsizeck[0]) == 0:
 	maxsize = ''
 else:
 	maxsize = "r.size < %d and "%(int(maxsizeck[0])*1073741824)
