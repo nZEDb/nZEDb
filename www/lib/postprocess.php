@@ -348,6 +348,7 @@ class PostProcess
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
 				$hasrar = 0;
+				$flood = false;
 				$ignoredbooks = 0;
 				$this->password = $notmatched = false;
 
@@ -443,11 +444,11 @@ class PostProcess
 				{
 					echo " skipping book flood";
 					$this->db->query($sql = sprintf("update releases set passwordstatus = 0, haspreview = 0, categoryID = 8050 where ID = %d", $rel["ID"]));
-					continue;
+					$flood = true;
 				}
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
-				if ($hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
+				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
 				{
 
 					$this->sum = 0;
@@ -639,7 +640,7 @@ class PostProcess
 					{
 						if (strlen($sampleBinary) > 100)
 						{
-							@file_put_contents($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
+							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
@@ -660,7 +661,7 @@ class PostProcess
 						if (strlen($mediaBinary ) > 100)
 						{
 							$mediafile = $this->tmpPath.'media.avi';
-							@file_put_contents($mediafile, $mediaBinary);
+							$this->addmediafile($mediafile, $mediaBinary);
 							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
 							if ($processSample && $blnTookSample === false)
@@ -684,7 +685,7 @@ class PostProcess
 					{
 						if (strlen($audioBinary) > 100)
 						{
-							@file_put_contents($this->tmpPath.'audio.'.$audiotype, $audioBinary);
+							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
 							$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel["guid"], $rel["ID"]);
 						}
 						unset($audioBinary);
@@ -699,7 +700,7 @@ class PostProcess
 					$this->consoleTools->appendWrite(" j");
 					if ($jpgBinary !== false)
 					{
-						@file_put_contents($this->tmpPath."samplepicture.jpg", $jpgBinary);
+						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($this->tmpPath))
 						{
 							if (filesize($this->tmpPath."samplepicture.jpg") > 15 && exif_imagetype($this->tmpPath."samplepicture.jpg") !== false && $blnTookJPG === false)
@@ -750,7 +751,6 @@ class PostProcess
 
 						if ($row === false)
 						{
-							//$this->doecho("adding missing file ".$rel["guid"]);
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
 							$this->consoleTools->appendWrite("o");
 						}
@@ -797,6 +797,20 @@ class PostProcess
 			echo $str."\n";
 	}
 
+	function addmediafile ($file, $data)
+	{
+		@file_put_contents($file, $data);
+		@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
+		if (is_array($xmlarray))
+		{
+			$xmlarray = implode("\n",$xmlarray);
+			$xmlObj = @simplexml_load_string($xmlarray);
+			$arrXml = objectsIntoArray($xmlObj);
+			if (!isset($arrXml["File"]["track"][0]))
+				unlink($file);
+		}
+	}
+
 	function addfile($v, $relid, $rar = false)
 	{
 		// Only process if not a support file, or file segment.
@@ -835,17 +849,17 @@ class PostProcess
 				// Extract a video file from the compressed file.
 				elseif (preg_match('/'.$this->videofileregex.'$/i', $v["name"]))
 				{
-					@file_put_contents($this->tmpPath.'sample_'.mt_rand(0,99999).".avi", $tmpdata);
+					$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).".avi", $tmpdata);
 				}
 				// Extract an audio file from the compressed file.
 				elseif (preg_match('/'.$this->audiofileregex.'$/i', $v["name"], $ext))
 				{
-					@file_put_contents($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
+					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
 				}
 				else
 				{
 					if (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
-						@file_put_contents($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
+						$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
 				}
 			}
 			unset($tmpdata, $rf);
@@ -972,7 +986,7 @@ class PostProcess
 					{
 						$rarfile = $this->tmpPath.$name[1].mt_rand(0,99999).$name[2];
 						$fetchedBinary = $rar->getFileData($file["name"], $file["source"]);
-						file_put_contents($rarfile, $fetchedBinary);
+						$this->addmediafile($rarfile, $fetchedBinary);
 					}
 					if (!preg_match("/\.(r\d+|part\d+)$/i", $file["name"]))
 						$retval[] = $file;
@@ -998,7 +1012,6 @@ class PostProcess
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \"\)\]\-])/i", $name))
 		{
 			$rar->setData($fetchedBinary, true);
-//			echo "starting rar\n";
 			if ($rar->error)
 			{
 //				$this->doecho("Error: {$rar->error}");
@@ -1064,13 +1077,9 @@ class PostProcess
 							{
 								foreach($data as $d)
 								{
-//								echo "zip\n";
-//								var_dump($d["zip"]);
 									if (preg_match('/\.(part\d+|r\d+|rar)(\.rar)?$/i', $d["zip"]["name"]))
 									{
 										$tmpfiles = $this->getRar($d["data"]);
-//										echo "zip > rar\n";
-//										var_dump($tmpfiles);
 									}
 								}
 							}
@@ -1129,7 +1138,6 @@ class PostProcess
 		}
 		else
 		{
-//			echo "starting zip\n";
 			// Not a rar file, try it as a ZIP file.
 			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid);
 			if ($files !== false)
