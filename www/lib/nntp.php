@@ -10,8 +10,8 @@ class Nntp extends Net_NNTP_Client
 
 	function doConnect() 
 	{
-		//if ($this->_isConnected())
-		//	return true;
+		if ($this->_isConnected())
+			return true;
 		$enc = false;
 
 		$s = new Sites();
