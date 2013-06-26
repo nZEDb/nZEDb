@@ -1803,7 +1803,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo "Post-processing disabled.".$n;
+				echo "Post-processing is done in post window.".$n;
 		}
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage6).".";
