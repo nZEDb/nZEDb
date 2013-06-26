@@ -16,14 +16,16 @@ From a command line:
 
 	For the threaded scripts you will require the Python MySQLdb module:
 
-	Python 2.* or 3.*
+	Python 2.* or 3.* - If Python 3 is installed, the module also must be installed
 		apt-get install python-setuptools
 		python -m easy_install
 		easy_install cymysql
 		-or-
 		apt-get install python3-setuptools
-		python3 -m pip
+		python3 -m easy_install pip
 		pip-3.2 install cymysql
+		-or-
+		pip-3.3 install cymysql
 
 1. Update/upgrade :
 
