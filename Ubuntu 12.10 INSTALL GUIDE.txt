@@ -114,7 +114,8 @@ From a command line:
 	(if the folder doesn't exist, make it)
 	cd /var/www/
 	sudo chmod 777 .
-
+	
+	sudo apt-get install git
 	git clone https://github.com/nZEDb/nZEDb.git
 
 	sudo chmod 777 nZEDb
