@@ -766,6 +766,14 @@
 </tr>
 
 <tr>
+	<td><label for="alternate_nntp">Alternate NNTP Ptovider:</label></td>
+	<td>
+		{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$fsite->alternate_nntp separator='<br />'}
+		<div class="hint">Use an alternate NNTP provider for postprocessing only.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="postdelay">Postprocessing Threads Delay:</label></td>
 	<td>
 		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />

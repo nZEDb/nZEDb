@@ -244,7 +244,6 @@ class PostProcess
 	{
 		$nntp = new Nntp();
 		$ri = new ReleaseImage();
-		$site = new Sites();
 		$update_files = false;
 
 		$maxattemptstocheckpassworded = 5;
@@ -256,6 +255,9 @@ class PostProcess
 		$processJPGSample = ($this->site->processjpg == "0") ? false : true;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		$this->tmpPath = $this->site->tmpunrarpath;
+
+		$nntp = new Nntp();
+        $connect = ($this->site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
 
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
@@ -513,12 +515,12 @@ class PostProcess
 						// Starting to look for content.
 						$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
 						$this->sum = $this->sum + $this->adj * $this->segsize;
-						$nntp->doConnect();
+
 						if ($this->sum > $this->size || $this->adj == 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, 2);
 
-							$nntp->doConnect();
+							$connect;
 							$bingroup = $groupName;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 							$this->consoleTools->appendWrite(" b");
@@ -638,7 +640,7 @@ class PostProcess
 				// Download and process sample image.
 				if(!empty($samplemsgid) && $processSample && $blnTookSample === false)
 				{
-					$nntp->doConnect();
+					$connect;
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 					$this->consoleTools->appendWrite(" s");
 					if ($sampleBinary !== false)
@@ -657,7 +659,7 @@ class PostProcess
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
 				if (!empty($mediamsgid) && $processMediainfo && $blnTookMediainfo === false)
 				{
-					$nntp->doConnect();
+					$connect;
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 					$this->consoleTools->appendWrite(" m");
 					$nntp->doQuit();
@@ -683,7 +685,7 @@ class PostProcess
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if(!empty($audiomsgid) && $processAudioinfo && $blnTookAudioinfo === false)
 				{
-					$nntp->doConnect();
+					$connect;
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 					$this->consoleTools->appendWrite(" a");
 					if ($audioBinary !== false)
@@ -700,7 +702,7 @@ class PostProcess
 				// Download JPG file.
 				if(!empty($jpgmsgid) && $processJPGSample && $blnTookJPG === false)
 				{
-					$nntp->doConnect();
+					$connect;
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 					$this->consoleTools->appendWrite(" j");
 					if ($jpgBinary !== false)
