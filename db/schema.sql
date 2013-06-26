@@ -1019,7 +1019,8 @@ INSERT INTO `site`
 	('deletepossiblerelease', 0),
 	('miscotherretentionhours',0),
 	('grabnzbs', '0'),
-	('sqlpatch','79');
+	('alternate_nntp', '0');
+	('sqlpatch','81');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
