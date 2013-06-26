@@ -1859,7 +1859,7 @@ class Releases
 						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
 
-/*		// Binaries/parts that somehow have no collection.
+		// Binaries/parts that somehow have no collection.
 		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
 		// Parts that somehow have no binaries.
@@ -1870,7 +1870,7 @@ class Releases
 
 		// Collections that somehow have no binaries.
 		$db->queryDirect("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
-*/
+
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
