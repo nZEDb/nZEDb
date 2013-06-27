@@ -524,7 +524,6 @@ class Movie
 		$googleban = false;
 		$googlelimit = 0;
 		$site = new Sites();
-		//echo $releaseToWork."\n";
 
 		if ($releaseToWork == '')
 		{
