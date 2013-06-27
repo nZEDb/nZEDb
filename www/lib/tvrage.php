@@ -455,25 +455,30 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
-	public function processTvReleases($threads=1, $lookupTvRage=true)
+	public function processTvReleases($releaseToWork = '', $lookupTvRage=true)
 	{
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
 		$site = new Sites();
-		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
-		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
-		
-		if ($this->echooutput)
+		if ($releaseToWork == '')
 		{
-			$tvremain = $db->getNumRows($result);
-			if ($tvremain > 0)
-				echo "Processing TV for ".$tvremain." release(s).\n";
+			$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_TV, $this->rageqty));
+			$tvcount = $db->getNumRows($res);
 		}
-			
-		while ($arr = $db->fetchAssoc($result)) 
+		else
+		{
+			$pieces = explode("                       ", $releaseToWork);
+			$res = array(array('searchname' => $pieces[0], 'ID' => $pieces[1]));
+			$tvcount = 1;
+		}
+
+		if ($this->echooutput && $tvcount > 1)
+			echo "Processing TV for ".$tvcount." release(s).\n";
+
+		foreach ($res as $arr)
 		{
 			$show = $this->parseNameEpSeason($arr['searchname']);			
 			if (is_array($show) && $show['name'] != '')

@@ -758,10 +758,34 @@
 <legend>Advanced - Threaded Settings</legend>
 <table class="input">
 <tr>
-	<td><label for="postthreads">Postprocessing Threads:</label></td>
+	<td><label for="postthreads">Postprocessing Additional Threads:</label></td>
 	<td>
 		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
-		<div class="hint">The number of threads for postprocessing. If using tmux scripts, this will use three times this number, since there are 3 panes for postprocessing.</div>
+		<div class="hint">The number of threads for additional postprocessing. This includes deep rar inspection, preview and sample creation and nfo processing.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="alternate_nntp">Alternate NNTP Ptovider:</label></td>
+	<td>
+		{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$fsite->alternate_nntp separator='<br />'}
+		<div class="hint">Use an alternate NNTP provider for additional postprocessing only.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="postthreadsamazon">Postprocessing Amazon Threads:</label></td>
+	<td>
+		<input class="tiny" id="postthreadsamazon" name="postthreadsamazon" type="text" value="{$fsite->postthreadsamazon}" />
+		<div class="hint">The number of threads for amazon postprocessing. This includes books, music and games lookups.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="postthreadsnon">Postprocessing Non-Amazon Threads:</label></td>
+	<td>
+		<input class="tiny" id="postthreadsnon" name="postthreadsnon" type="text" value="{$fsite->postthreadsnon}" />
+		<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and tv lookups.</div>
 	</td>
 </tr>
 

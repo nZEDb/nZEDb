@@ -809,7 +809,7 @@ echo "asin ".$set[1]."\n";
 		else
 		{
 			$pb = new Predb(true);
-			echo $pb->parseTitles(0, 0, 0, 0, '')."\n";
+			echo $pb->parseTitles(0,0,0,0, '')."\n";
 			echo $pb->matchNfo()."\n";
 			echo $pb->matchPredb()."\n";
 			unset($pb);

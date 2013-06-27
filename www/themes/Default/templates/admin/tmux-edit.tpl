@@ -248,15 +248,15 @@
 	<legend>Postprocessing</legend>
 		<table class="input">
 			<tr>
-				<td><label for="POST">Postprocess All:</label></td>
+				<td><label for="POST">Postprocess Additional:</label></td>
 				<td>
 					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST separator='<br />'}
-					<div class="hint">Choose to postprocess movies, music, etc true/false</div>
+					<div class="hint">Choose to do deep rar inspection, preview and sample creation and nfo processing. true/false</div>
 				</td>
 			</tr>
 
 			<tr>
-				<td style="width:160px;"><label for="POST_TIMER">Postprocess Sleep Timer:</label></td>
+				<td style="width:160px;"><label for="POST_TIMER">Postprocess Additional Sleep Timer:</label></td>
 				<td>
 					<input id="POST_TIMER" name="POST_TIMER" class="tiny" type="text" value="{$ftmux->POST_TIMER}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
@@ -268,6 +268,38 @@
 				<td>
 					<input id="POST_KILL_TIMER" name="POST_KILL_TIMER" class="tiny" type="text" value="{$ftmux->POST_KILL_TIMER}" />
 					<div class="hint">The time postprocess is allowed to run with no updates to the screen. Activity is detected when the history for the pane changes. The clock is restarted everytime activity is detected.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td><label for="POST_AMAZON">Postprocess Amazon:</label></td>
+				<td>
+					{html_radios id="POST_AMAZON" name='POST_AMAZON' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST_AMAZON separator='<br />'}
+					<div class="hint">Choose to do books, music and games lookups true/false</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="POST_TIMER_AMAZON">Postprocess Amazon Sleep Timer:</label></td>
+				<td>
+					<input id="POST_TIMER_AMAZON" name="POST_TIMER_AMAZON" class="tiny" type="text" value="{$ftmux->POST_TIMER_AMAZON}" />
+					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td><label for="POST_NON">Postprocess Non-Amazon:</label></td>
+				<td>
+					{html_radios id="POST_NON" name='POST_NON' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST_NON separator='<br />'}
+					<div class="hint">Choose to do movies, anime and tv lookups. true/false</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="POST_TIMER">Postprocess Non-Amazon Sleep Timer:</label></td>
+				<td>
+					<input id="POST_TIMER_NON" name="POST_TIMER_NON" class="tiny" type="text" value="{$ftmux->POST_TIMER_NON}" />
+					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 				</td>
 			</tr>
 		</table>
