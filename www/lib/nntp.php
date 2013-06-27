@@ -12,7 +12,6 @@ class Nntp extends Net_NNTP_Client
 	{
 		if ($this->_isConnected())
 		{
-			//sleep(10);
 			echo "Connected";
 			return true;
 		}
@@ -333,8 +332,9 @@ class Nntp extends Net_NNTP_Client
 			// Get byte count and update total bytes.
 			$bytesreceived = strlen($buffer);
 			// If we got no bytes at all try one more time to pull data.
-			if ($bytesreceived == 0)
+			while ($bytesreceived == 0)
 			{
+				flush($buffer);
 				$buffer = fgets($this->_socket);
 			}
 			// Get any socket error codes.

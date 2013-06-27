@@ -122,9 +122,9 @@ def main(args):
 
 	if sys.argv[1] == "additional":
 		print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
-		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo")
+		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo - %s." %(time.strftime("%H:%M:%S")))
 	elif sys.argv[1] == "nfo":
-		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed.")
+		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed  - %s." %(time.strftime("%H:%M:%S")))
 
 	# Start all threads
 	for thread in pool:
