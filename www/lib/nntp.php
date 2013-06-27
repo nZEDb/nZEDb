@@ -8,21 +8,25 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
-	function doConnect() 
+	function doConnect()
 	{
 		if ($this->_isConnected())
+		{
+			//sleep(10);
+			echo "Connected";
 			return true;
+		}
 		$enc = false;
-
 		$s = new Sites();
 		$site = $s->get();
 		$compressionstatus = $site->compressedheaders;
 		unset($s);
 		unset($site);
 
-		$retries = 5;
+		$retries = 10;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
@@ -62,9 +66,10 @@ class Nntp extends Net_NNTP_Client
 		unset($s);
 		unset($site);
 
-		$retries = 5;
+		$retries = 10;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED_A") && NNTP_SSLENABLED_A == true)
 				$enc = 'ssl';
