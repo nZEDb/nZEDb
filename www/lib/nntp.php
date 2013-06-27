@@ -8,12 +8,13 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
-	function doConnect() 
+	function doConnect()
 	{
 		if ($this->_isConnected())
+		{
 			return true;
+		}
 		$enc = false;
-
 		$s = new Sites();
 		$site = $s->get();
 		$compressionstatus = $site->compressedheaders;
@@ -23,6 +24,7 @@ class Nntp extends Net_NNTP_Client
 		$retries = 5;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
@@ -62,9 +64,10 @@ class Nntp extends Net_NNTP_Client
 		unset($s);
 		unset($site);
 
-		$retries = 5;
+		$retries = 10;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED_A") && NNTP_SSLENABLED_A == true)
 				$enc = 'ssl';
@@ -328,9 +331,15 @@ class Nntp extends Net_NNTP_Client
 			// Get byte count and update total bytes.
 			$bytesreceived = strlen($buffer);
 			// If we got no bytes at all try one more time to pull data.
-			if ($bytesreceived == 0)
+			$retries = 5;
+        	while($retries >= 1)
 			{
-				$buffer = fgets($this->_socket);
+				$retries--;
+				if ($bytesreceived == 0)
+				{
+					flush($buffer);
+					$buffer = fgets($this->_socket);
+				}
 			}
 			// Get any socket error codes.
 			 $errorcode = socket_last_error();

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2523";
+$version="0.1r2531";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -85,6 +85,7 @@ $proc_tmux = "SELECT
 	( SELECT value from site where setting = 'lookupbooks' ) AS processbooks,
 	( SELECT value from site where setting = 'lookupmusic' ) AS processmusic,
 	( SELECT value from site where setting = 'lookupgames' ) AS processgames,
+	( SELECT value from site where setting = 'tmpunrarpath' ) AS tmpunrar,
 	( SELECT value from tmux where setting = 'POST_AMAZON' ) AS post_amazon,
 	( SELECT value from tmux where setting = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
 	( SELECT value from tmux where setting = 'POST_NON' ) AS post_non,
@@ -386,13 +387,13 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result[0]['binaries_table']; }
 	if ( @$proc_work_result[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result[0]['parts_table']; }
 
-
 	if ( @$proc_work_result[0]['predb'] != NULL ) { $predb = $proc_work_result[0]['predb']; }
 	if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result[0]['predb_matched']; }
 
 	if ( @$proc_tmux_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
 	if ( @$proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
 	if ( @$proc_tmux_result[0]['backfilldays'] != NULL ) { $backfilldays = $proc_tmux_result[0]['backfilldays']; }
+	if ( @$proc_tmux_result[0]['tmpunrar'] != NULL ) { $tmpunrar = $proc_tmux_result[0]['tmpunrar']; }
 
 	if ( @$proc_tmux_result[0]['defrag'] != NULL ) { $defrag = $proc_tmux_result[0]['defrag']; }
 	if ( @$proc_tmux_result[0]['processbooks'] != NULL ) { $processbooks = $proc_tmux_result[0]['processbooks']; }
@@ -657,14 +658,18 @@ while( $i > 0 )
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all no $log && \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log && \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true all no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_names == "TRUE" )
 		{
 			$color = get_color();
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\" && \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all no $log && \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log && \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true all no $log && date +\"%D %T\" && sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
@@ -746,6 +751,7 @@ while( $i > 0 )
 				$time2 = TIME();
 			$log = writelog($panes2[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\" && \
+					rm -rf $tmpunrar/* && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log && \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log && date +\"%D %T\" && sleep $post_timer' 2>&1 1> /dev/null");
 		}

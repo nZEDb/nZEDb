@@ -77,7 +77,7 @@ class Import
 	{
 		if(!$article)
 			return;
-		//echo "Downloaded article\n";
+		//echo "Downloaded article for $hash\n";
 		$db = new DB();
 		$binaries = new Binaries();
 		$page = new Page();

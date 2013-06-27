@@ -67,10 +67,6 @@ cur.execute("select value from site where setting = 'maxsizetopostprocess'")
 maxsizeck = cur.fetchone();
 cur.execute("select value from site where setting = 'tmpunrarpath'")
 tmppath = cur.fetchone();
-for root, dirs, files in os.walk(tmppath[0], topdown=False):
-	for name in dirs:
-		shutil.rmtree(os.path.join(root, name))
-
 
 maxtries = -1
 if int(maxsizeck[0]) == 0:
@@ -123,6 +119,12 @@ def main(args):
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
+
+	if sys.argv[1] == "additional":
+		print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
+		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo - %s." %(time.strftime("%H:%M:%S")))
+	elif sys.argv[1] == "nfo":
+		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed  - %s." %(time.strftime("%H:%M:%S")))
 
 	# Start all threads
 	for thread in pool:
