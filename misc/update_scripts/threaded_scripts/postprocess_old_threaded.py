@@ -47,7 +47,11 @@ con = None
 # The MYSQL connection.
 con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']))
 cur = con.cursor()
-cur.execute("select value from site where setting = 'postthreads'")
+
+if len(sys.argv) > 1 and sys.argv[1] == "amazon":
+	cur.execute("select value from site where setting = 'postthreadsamazon'")
+if len(sys.argv) > 1 and sys.argv[1] == "non_amazon":
+	cur.execute("select value from site where setting = 'postthreadsnon'")
 run_threads = cur.fetchone()
 
 # The array.
@@ -66,14 +70,10 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				if len(sys.argv) > 1 and sys.argv[1] == "additional":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional.php", ""+dirname])
-				elif len(sys.argv) > 1 and sys.argv[1] == "amazon":
+				if len(sys.argv) > 1 and sys.argv[1] == "amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+dirname])
 				elif len(sys.argv) > 1 and sys.argv[1] == "non_amazon":
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_non_amazon.php", ""+dirname])
-				elif len(sys.argv) > 1 and sys.argv[1] == "all":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess.php", ""+dirname])
 
 			except queue.Empty:
 				continue
@@ -112,4 +112,3 @@ def main(args):
 if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
-
