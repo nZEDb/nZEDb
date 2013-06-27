@@ -74,11 +74,11 @@ class PostProcess
 		$this->processPredb();
 		$this->processAdditional($releaseToWork);
 		$this->processNfos($releaseToWork);
-		$this->processMovies($threads);
+		$this->processMovies($releaseToWork);
 		$this->processMusic($threads);
 		$this->processGames($threads);
 		$this->processAnime($threads);
-		$this->processTv($threads);
+		$this->processTv($releaseToWork);
 		$this->processBooks($threads);
 	}
 
