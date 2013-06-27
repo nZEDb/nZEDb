@@ -1,4 +1,5 @@
-07272013 -> jonnyboy ->	changed tmpunrar folder creation to chmod 0777 from 0764, just in case
+07272013 -> jonnyboy ->	changed fixreleasenames to use inner join insteaqd of left join
+						changed tmpunrar folder creation to chmod 0777 from 0764, just in case
 						moved delete stale tmpunrar from threaded script to monitor
 
 * Note *
