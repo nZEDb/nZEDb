@@ -12,7 +12,6 @@ class Nntp extends Net_NNTP_Client
 	{
 		if ($this->_isConnected())
 		{
-			echo "Connected";
 			return true;
 		}
 		$enc = false;
@@ -22,7 +21,7 @@ class Nntp extends Net_NNTP_Client
 		unset($s);
 		unset($site);
 
-		$retries = 10;
+		$retries = 5;
 		while($retries >= 1)
 		{
 			usleep(10000);
@@ -332,10 +331,15 @@ class Nntp extends Net_NNTP_Client
 			// Get byte count and update total bytes.
 			$bytesreceived = strlen($buffer);
 			// If we got no bytes at all try one more time to pull data.
-			while ($bytesreceived == 0)
+			$retries = 5;
+        	while($retries >= 1)
 			{
-				flush($buffer);
-				$buffer = fgets($this->_socket);
+				$retries--;
+				if ($bytesreceived == 0)
+				{
+					flush($buffer);
+					$buffer = fgets($this->_socket);
+				}
 			}
 			// Get any socket error codes.
 			 $errorcode = socket_last_error();
