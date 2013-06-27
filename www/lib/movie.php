@@ -30,7 +30,6 @@ class Movie
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 	
 	public function getMovieInfo($imdbId)
@@ -517,7 +516,7 @@ class Movie
 		return $imdbId;
 	}
 
-	public function processMovieReleases($threads=1)
+	public function processMovieReleases($releaseToWork = '')
 	{
 		$ret = 0;
 		$db = new DB();
@@ -525,20 +524,26 @@ class Movie
 		$googleban = false;
 		$googlelimit = 0;
 		$site = new Sites();
-		if ($threads > 1)
+		//echo $releaseToWork."\n";
+
+		if ($releaseToWork == '')
 		{
-			usleep($this->sleeptime*1000*($threads - 1));
+			$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+			$moviecount = $db->getNumRows($res);
 		}
-		$threads--;
-
-		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
-
-		if ($db->getNumRows($res) > 0)
+		else
 		{
-			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." movie release(s) beginning at ".floor(($this->movieqty) * ($threads * 1.5))."\n";
+			$pieces = explode("                       ", $releaseToWork);
+			$res = array(array('name' => $pieces[0], 'ID' => $pieces[1]));
+			$moviecount = 1;
+		}
 
-			while ($arr = $db->fetchAssoc($res)) 
+		if ($moviecount > 0)
+		{
+			if ($this->echooutput && $moviecount > 1)
+				echo "Processing ".$moviecount." movie release(s)."."\n";
+
+			foreach ($res as $arr)
 			{
 				$moviename = $this->parseMovieSearchName($arr['name']);
 				if ($moviename !== false)
