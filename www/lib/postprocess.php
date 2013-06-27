@@ -319,9 +319,9 @@ class PostProcess
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!file_exists($this->tmpPath))
 				{
-					$old = umask(0764);
-					mkdir("$this->tmpPath", 0764, true);
-					chmod("$this->tmpPath", 0764);
+					$old = umask(0777);
+					mkdir("$this->tmpPath", 0777, true);
+					chmod("$this->tmpPath", 0777);
 					umask($old);
 
 					if (!is_dir("$this->tmpPath"))

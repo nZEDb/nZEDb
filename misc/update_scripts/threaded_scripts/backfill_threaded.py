@@ -83,7 +83,7 @@ elif intbackfilltype == 2:
         backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
-	cur.execute("%s %s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group))
+	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
 	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", int(groups[0])))
 datas = cur.fetchall()
