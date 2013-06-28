@@ -810,9 +810,9 @@ echo "asin ".$set[1]."\n";
 		{
 			$pb = new Predb(true);
 			//$pb->parseTitles(2, 1, 2, 1, '')."\n";
-			$pb->parseTitles(0, 0, 0, 0, '')."\n";
-			$pb->matchNfo()."\n";
-			$pb->matchPredb()."\n";
+			$pb->parseTitles(0, 0, 0, 0, '');
+			$pb->matchNfo();
+			$pb->matchPredb();
 			unset($pb);
 		}
 

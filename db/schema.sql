@@ -52,6 +52,7 @@ CREATE TABLE `releases`
 `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
 `postdate` DATETIME DEFAULT NULL,
 `adddate` DATETIME DEFAULT NULL,
+`updatetime` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 `guid` VARCHAR(50) NOT NULL,
 `fromname` VARCHAR(255) NULL,
 `completion` FLOAT NOT NULL DEFAULT '0',
@@ -1022,6 +1023,8 @@ INSERT INTO `site`
 	('alternate_nntp', '0'),
 	('postthreadsamazon', '1'),
 	('postthreadsnon', '1'),
+	('currentppticket', '0'),
+	('nextppticket', '0'),
 	('sqlpatch','82');
 
 

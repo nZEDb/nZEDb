@@ -25,8 +25,8 @@ class Releases
 	//
 	const PASSWD_NONE = 0;
 	const PASSWD_POTENTIAL = 1;
-	const PASSWD_RAR = 2;
-	const BAD_FILE = 3;
+	const BAD_FILE = 2;
+	const PASSWD_RAR = 10;
 
 	function Releases($echooutput=false)
 	{
@@ -1886,7 +1886,7 @@ class Releases
 		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = 2");
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_RAR);
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1897,7 +1897,7 @@ class Releases
 		// Possibly passworded releases.
 		if($page->site->deletepossiblerelease == 1)
 		{
-			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = 1");
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_POTENTIAL);
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);

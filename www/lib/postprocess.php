@@ -89,8 +89,8 @@ class PostProcess
 	{
 		$predb = new Predb($this->echooutput);
 		$titles = $predb->combinePre();
-		if ($this->echooutput && $titles > 0)
-			echo "Fetched ".$titles." new title(s) from predb sources.\n";
+		if ($titles > 0)
+			$this->doecho("Fetched ".$titles." new title(s) from predb sources.");
 	}
 
 	//
@@ -240,7 +240,7 @@ class PostProcess
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info.
 	//
-	public function processAdditional($releaseToWork = '', $id = '')
+	public function processAdditional($releaseToWork = '', $id = '', $gui = false)
 	{
 		$ri = new ReleaseImage();
 		$update_files = false;
@@ -263,6 +263,40 @@ class PostProcess
 
 		$tmpPath1 = $this->tmpPath;
 
+		if ($gui)
+		{
+			$ok = false;
+			while (!$ok) {
+				usleep(mt_rand(10,300));
+				$this->db->setAutoCommit(false);
+				$ticket = $this->db->queryOneRow("SELECT value  FROM `site` WHERE `setting` LIKE 'nextppticket'");
+				$ticket = $ticket["value"];
+				$this->db->queryDirect(sprintf("UPDATE `nZEDb`.`site` SET `value` = %d WHERE `setting` LIKE 'nextppticket' AND `value` = %d", $ticket + 1, $ticket));
+				if ($this->db->getAffectedRows() == 1)
+				{
+					$ok = true;
+					$this->db->Commit();
+				}
+				else
+					$this->db->Rollback();
+			}
+			$this->db->setAutoCommit(true);
+
+			$sleep = 1;
+
+			$delay = 100;
+
+			do
+			{
+				sleep($sleep);
+				$serving = $this->db->queryOneRow("SELECT *  FROM `site` WHERE `setting` LIKE 'currentppticket1'");
+				$time = strtotime($serving["updateddate"]);
+				$serving = $serving["value"];
+				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
+
+			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
+		}
+
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
 		//
@@ -283,8 +317,8 @@ class PostProcess
 						left join category c on c.ID = r.categoryID
 						where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
 						order by r.postdate desc limit %d", $this->maxsize*1073741824, $i, $this->addqty));
-					if ($this->echooutput && count($result) > 0)
-						echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
+					if (count($result) > 0)
+						$this->doecho("Passwordstatus = ".$i.": Available to process = ".count($result));
 					$i--;
 				}
 			}
@@ -308,10 +342,10 @@ class PostProcess
 		//			$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 		//	}
 
-			if ($this->echooutput && $rescount > 1)
+			if ($rescount > 1)
 			{
-				echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
-				echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
+				$this->doecho("\nFetch for: b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
+				$this->doecho("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo");
 			}
 
 			// Loop through the releases.
@@ -319,7 +353,7 @@ class PostProcess
 			{
 				// Per release defaults.
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
-				if (!file_exists($this->tmpPath))
+				if (!is_dir($this->tmpPath))
 				{
 					$old = umask(0777);
 					mkdir("$this->tmpPath", 0777, true);
@@ -552,43 +586,48 @@ class PostProcess
 							{
 								$notinfinite = $notinfinite + 0.2;
 								$failed++;
+								if ($this->echooutput)
+									echo " f";
 							}
 						}
 					}
 
-					$files = scandir($this->tmpPath);
-					$rar = new ArchiveInfo();
-					if (count($files) > 0)
+					if (is_dir($this->tmpPath))
 					{
-						foreach($files as $file)
+						$files = scandir($this->tmpPath);
+						$rar = new ArchiveInfo();
+						if (count($files) > 0)
 						{
-							if (is_file($this->tmpPath.$file))
+							foreach($files as $file)
 							{
-								if (preg_match('/\.rar$/i', $file))
+								if (is_file($this->tmpPath.$file))
 								{
-									$rar->open($this->tmpPath.$file, true);
-									if ($rar->error)
-										continue;
-
-									$tmpfiles = $rar->getArchiveFileList();
-									if (isset($tmpfiles[0]["name"]))
+									if (preg_match('/\.rar$/i', $file))
 									{
-										foreach($tmpfiles as $r)
-										{
-											$range = mt_rand(0,99999);
-											if (isset($r["range"]))
-												$range = $r["range"];
+										$rar->open($this->tmpPath.$file, true);
+										if ($rar->error)
+											continue;
 
-											$r["range"] = $range;
-											if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-												$this->addfile($r, $rel["ID"], $rar);
+										$tmpfiles = $rar->getArchiveFileList();
+										if (isset($tmpfiles[0]["name"]))
+										{
+											foreach($tmpfiles as $r)
+											{
+												$range = mt_rand(0,99999);
+												if (isset($r["range"]))
+													$range = $r["range"];
+
+												$r["range"] = $range;
+												if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
+													$this->addfile($r, $rel["ID"], $rar);
+											}
 										}
 									}
 								}
 							}
 						}
+						unset($rar);
 					}
-					unset($rar);
 				}
 				elseif ($hasrar == 1)
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
@@ -747,7 +786,7 @@ class PostProcess
 				{
 					if ($this->echooutput)
 						echo "not viable";
-					$passStatus[] = 3;
+					$passStatus[] = Releases::BAD_FILE;
 				}
 
 				$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
@@ -812,6 +851,9 @@ class PostProcess
 			if ($this->echooutput)
 				echo "\n";
 		}
+		if ($gui)
+			$this->db->queryDirect(sprintf("UPDATE `nZEDb`.`site` SET `value` = %d WHERE `setting` LIKE 'currentppticket1'", $ticket + 1));
+
 		$nntp->doQuit();
 		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}
@@ -824,15 +866,17 @@ class PostProcess
 
 	function addmediafile ($file, $data)
 	{
-		@file_put_contents($file, $data);
-		@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
-		if (is_array($xmlarray))
+		if (@file_put_contents($file, $data) !== false)
 		{
-			$xmlarray = implode("\n",$xmlarray);
-			$xmlObj = @simplexml_load_string($xmlarray);
-			$arrXml = objectsIntoArray($xmlObj);
-			if (!isset($arrXml["File"]["track"][0]))
-				unlink($file);
+			@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
+			if (is_array($xmlarray))
+			{
+				$xmlarray = implode("\n",$xmlarray);
+				$xmlObj = @simplexml_load_string($xmlarray);
+				$arrXml = objectsIntoArray($xmlObj);
+				if (!isset($arrXml["File"]["track"][0]))
+					unlink($file);
+			}
 		}
 	}
 
