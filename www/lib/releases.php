@@ -1417,11 +1417,11 @@ class Releases
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
-		// Set file check to 0 if we don't have all the parts.
-		$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck in (15, 16) ".$where);
+		// Set file check to 1 if we don't have all the parts.
+		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 12 hour) AND c.filecheck
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
 						in (0, 1, 10) ".$where);
 
 		if ($this->echooutput)
@@ -1619,7 +1619,7 @@ class Releases
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
 
 		foreach ($catresrel as $catrowrel) {
-			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d and nzbstatus = 0", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1638,7 +1638,7 @@ class Releases
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 							FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND groupID = ".$groupID['ID']))
+							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1650,7 +1650,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1664,7 +1664,7 @@ class Releases
 							(SELECT g.ID, guid, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 							FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND groupID = ".$groupID['ID']))
+							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1680,7 +1680,7 @@ class Releases
 						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 						FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND groupID = ".$groupID))
+						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1692,7 +1692,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d ", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1706,7 +1706,7 @@ class Releases
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 						FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND groupID = ".$groupID))
+						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1803,7 +1803,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo "Post-processing disabled.".$n;
+				echo "Post-processing is done in post window.".$n;
 		}
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage6).".";
@@ -1858,8 +1858,8 @@ class Releases
 						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
-		
-/*		// Binaries/parts that somehow have no collection.
+
+		// Binaries/parts that somehow have no collection.
 		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
 		// Parts that somehow have no binaries.
@@ -1870,7 +1870,7 @@ class Releases
 
 		// Collections that somehow have no binaries.
 		$db->queryDirect("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
-*/
+
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)

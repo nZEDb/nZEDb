@@ -1,4 +1,5 @@
-07282013 -> jonnyboy -> added output back to postprocess
+07282013 -> jonnyboy -> added back changes to releases.php
+						added output back to postprocess
 						reverted some changes looking for nntp hang bug
 07272013 -> jonnyboy ->	may have fixed some connection issues
 						added legend to output in postprocess
