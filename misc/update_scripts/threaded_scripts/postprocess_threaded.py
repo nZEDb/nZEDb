@@ -7,6 +7,7 @@ import MySQLdb as mdb
 import subprocess
 import string
 import re
+import shutil
 
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
@@ -41,13 +42,43 @@ config = readConfig()
 
 con = None
 # The MYSQL connection.
-con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
+con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']))
 cur = con.cursor()
-cur.execute("select value from site where setting = 'postthreads'");
+cur.execute("select value from site where setting = 'postthreads'")
 run_threads = cur.fetchone();
+cur.execute("select value from site where setting = 'maxaddprocessed'")
+ppperrun = cur.fetchone();
+cur.execute("select value from site where setting = 'maxnfoprocessed'")
+nfoperrun = cur.fetchone();
+cur.execute("select value from site where setting = 'maxsizetopostprocess'")
+maxsizeck = cur.fetchone();
+cur.execute("select value from site where setting = 'tmpunrarpath'")
+tmppath = cur.fetchone();
+for root, dirs, files in os.walk(tmppath[0], topdown=False):
+	for name in dirs:
+		shutil.rmtree(os.path.join(root, name))
 
-# The array.
-datas = list(xrange(1, int(run_threads[0]) + 1))
+
+maxtries = -1
+if int(maxsizeck[0]) == 0:
+	maxsize = ''
+else:
+	maxsize = "r.size < %d and "%(int(maxsizeck[0])*1073741824)
+datas = []
+maxtries = -1
+if len(sys.argv) > 1 and sys.argv[1] == "additional":
+	while len(datas) <= int(run_threads[0])*int(ppperrun[0]) and maxtries >= -6:
+		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(ppperrun[0])))
+		datas = cur.fetchall();
+		maxtries = maxtries - 1
+elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
+	while len(datas) <= int(run_threads[0])*int(nfoperrun[0]) and maxtries >= -6:
+		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, int(run_threads[0])*int(nfoperrun[0])))
+		datas = cur.fetchall();
+		maxtries = maxtries - 1
+else:
+	print "Wrong argument provided\n"
+	sys.exit();
 
 class WorkerThread(threading.Thread):
 	def __init__(self, threadID):
@@ -58,15 +89,11 @@ class WorkerThread(threading.Thread):
 	def run(self):
 		while not self.stoprequest.isSet():
 			try:
-				dirname = self.threadID.get(True, 0.05)
+				dirname = self.threadID.get(True, 0.1)
 				if sys.argv[1] == "additional":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional.php", ""+dirname])
-				elif sys.argv[1] == "amazon":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+dirname])
-				elif sys.argv[1] == "non_amazon":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_non_amazon.php", ""+dirname])
-				elif sys.argv[1] == "all":
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess.php", ""+dirname])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_additional_new.php", ""+dirname])
+				elif sys.argv[1] == "nfo":
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_nfo_new.php", ""+dirname])
 			except Queue.Empty:
 				continue
 
@@ -76,7 +103,7 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
+	threadID = Queue.Queue(100)
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID) for i in range(int(run_threads[0]))]
@@ -87,11 +114,14 @@ def main(args):
 
 	# Give the workers some work to do
 	work_count = 0
-	for gnames in datas:
-		work_count += 1
-		threadID.put(str(gnames))
-
-	print 'Assigned %s Postprocesses to workers' % work_count
+	if sys.argv[1] == "additional":
+		for release in datas:
+			work_count += 1
+			threadID.put("%s                       %s                       %s                       %s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+	if sys.argv[1] == "nfo":
+		for release in datas:
+			work_count += 1
+			threadID.put("%s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3]))
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
@@ -99,9 +129,12 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		thread.join(timeout=60)
+		if Queue.Empty:
+			thread.join()
 
 if __name__ == '__main__':
 	import sys
 	main(sys.argv[1:])
 
+
+print '\nCompleted work on %s items' % len(datas)

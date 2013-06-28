@@ -3,7 +3,7 @@
 class DB
 {
 	private static $initialized = false;
-	private static $db = null;
+	private static $mysqli = null;
 
 	function DB()
 	{
@@ -12,19 +12,19 @@ class DB
 			// initialize db connection
 			if (defined("DB_PORT"))
 			{
-				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
+				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
 			}
 			else
 			{
-				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 			}
 
-			if (DB::$db->connect_errno) {
-				printf("Failed to connect to MySQL: (" . DB::$db->connect_errno . ") " . DB::$db->connect_error);
+			if (DB::$mysqli->connect_errno) {
+				printf("Failed to connect to MySQL: (" . DB::$mysqli->connect_errno . ") " . DB::$mysqli->connect_error);
 				exit();
 			}
 
-			DB::$db->set_charset('utf8');
+			DB::$mysqli->set_charset('utf8');
 			DB::$initialized = true;
 		}
 	}
@@ -36,7 +36,7 @@ class DB
 			return "NULL";
 		} else {
 		$str = preg_replace("/[\x80-\xff]/", " ", $str);
-		return "'".DB::$db->real_escape_string($str)."'";
+		return "'".DB::$mysqli->real_escape_string($str)."'";
 	}
 	}
 
@@ -53,18 +53,18 @@ class DB
 		if ($query=="")
 			return false;
 
-		$result = DB::$db->query($query);
-		return ($returnlastid) ? DB::$db->insert_id : $result;
+		$result = DB::$mysqli->query($query);
+		return ($returnlastid) ? DB::$mysqli->insert_id : $result;
 	}
 
 	public function getInsertID()
 	{
-		return DB::$db->insert_id;
+		return DB::$mysqli->insert_id;
 	}
 
 	public function getAffectedRows()
 	{
-		return DB::$db->affected_rows;
+		return DB::$mysqli->affected_rows;
 	}
 
 	public function queryOneRow($query)
@@ -82,7 +82,7 @@ class DB
 		if ($query=="")
 			return false;
 
-		$result = DB::$db->query($query);
+		$result = DB::$mysqli->query($query);
 
 		if ($result === false || $result === true)
 			return array();
@@ -103,7 +103,7 @@ class DB
 
 	public function queryDirect($query)
 	{
-		return ($query=="") ? false : DB::$db->query($query);
+		return ($query=="") ? false : DB::$mysqli->query($query);
 	}
 
 	public function fetchAssoc($result)
@@ -140,27 +140,26 @@ class DB
 
 	public function Prepare($query)
 	{
-		return DB::$db->prepare($query);
+		return DB::$mysqli->prepare($query);
 	}
 
 	public function Error()
 	{
-		return DB::$db->error;
+		return DB::$mysqli->error;
 	}
 
 	public function setAutoCommit($enabled)
 	{
-		return DB::$db->autocommit($enabled);
+		return DB::$mysqli->autocommit($enabled);
 	}
 
 	public function Commit()
 	{
-		return DB::$db->commit();
+		return DB::$mysqli->commit();
 	}
 
 	public function Rollback()
 	{
-		return DB::$db->rollback();
+		return DB::$mysqli->rollback();
 	}
 }
-?>

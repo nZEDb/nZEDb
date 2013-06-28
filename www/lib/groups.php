@@ -297,7 +297,7 @@ class Groups
 		else
 		{
 			$db = new DB();
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			$nntp->doConnect();
 			$groups = $nntp->getGroups();
 			$nntp->doQuit();
@@ -343,4 +343,3 @@ class Groups
 		return "Group $id has been $status.";
 	}
 }
-?>

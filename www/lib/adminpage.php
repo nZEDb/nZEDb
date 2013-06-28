@@ -11,9 +11,9 @@ class AdminPage extends BasePage
 		parent::BasePage();
 
 		$this->smarty->setTemplateDir(array(
-		    'user_admin' => WWW_DIR.'themes/'.$this->site->style.'/templates/admin',
-		    'admin' => WWW_DIR.'themes/Default/templates/admin',
-		    'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+			'user_admin' => WWW_DIR.'themes/'.$this->site->style.'/templates/admin',
+			'admin' => WWW_DIR.'themes/Default/templates/admin',
+			'frontend' => WWW_DIR.'themes/Default/templates/frontend',
 		));
 		
 		$users = new Users();
@@ -38,5 +38,3 @@ class AdminPage extends BasePage
 		parent::render();
 	}
 }
-
-?>

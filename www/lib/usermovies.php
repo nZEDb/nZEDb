@@ -9,7 +9,7 @@ class UserMovies
 		
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "null";
 		
-		$sql = sprintf("insert into usermovies (userID, imdbID, categoryID, createddate) values (%d, %d, %s, now())", $uid, $imdbid, $catid);
+		$sql = sprintf("INSERT IGNORE INTO usermovies (userID, imdbID, categoryID, createddate) values (%d, %d, %s, now())", $uid, $imdbid, $catid);
 		return $db->queryInsert($sql);		
 	}	
 
@@ -49,4 +49,3 @@ class UserMovies
 		$db->query($sql);		
 	}
 }
-?>

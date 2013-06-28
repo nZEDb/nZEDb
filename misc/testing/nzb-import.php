@@ -10,7 +10,7 @@ require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
-$page = new Page;
+$page = new Page();
 $n = "\n";
 
 if (!isset($argv[1]))
@@ -86,6 +86,8 @@ else
 	$time = TIME();
 
 	//iterate over all nzb files in all folders and subfolders
+	if(!file_exists($path))
+		return;
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 	foreach($objects as $filestoprocess => $nzbFile){
 		if(!$nzbFile->getExtension() == "nzb")
@@ -104,9 +106,9 @@ else
 
 		$skipCheck = false;
 		$i=0;
-		$firstname = [];
-		$postername = [];
-		$postdate = [];
+		$firstname = array();
+		$postername = array();
+		$postdate = array();
 		$totalFiles = 0;
 		$totalsize = 0;
 

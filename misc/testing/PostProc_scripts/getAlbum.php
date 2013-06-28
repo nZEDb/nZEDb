@@ -8,7 +8,7 @@ require_once(FS_ROOT."/../../../www/lib/music.php");
 
 $music = new Music(true);
 
-$db = new Db;
+$db = new Db();
 
 $albums = results();
 shuffle($albums);

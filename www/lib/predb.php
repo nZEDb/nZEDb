@@ -22,7 +22,7 @@ Class Predb
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
 		if (strtotime($newestrel["adddate"]) < time()-600)
@@ -51,7 +51,7 @@ Class Predb
 
 	public function retrieveWomble()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://nzb.isasecret.com/");
@@ -98,7 +98,7 @@ Class Predb
 								else
 									$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 								
-								$db->query(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->escapeString("womble"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->escapeString("womble"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}	
 						}
@@ -111,7 +111,7 @@ Class Predb
 
 	public function retrieveOmgwtfnzbs()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
@@ -144,7 +144,7 @@ Class Predb
 							{
 								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
 
-								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}
 						}
@@ -157,7 +157,7 @@ Class Predb
 
 	public function retrieveZenet()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://pre.zenet.org/live.php");
@@ -188,7 +188,7 @@ Class Predb
 								else
 									$category = "NULL";
 
-								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}
 						}
@@ -201,7 +201,7 @@ Class Predb
 
 	public function retrievePrelist()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.prelist.ws/");
@@ -225,7 +225,7 @@ Class Predb
 								else
 									$size = $db->escapeString(round($matches2["size"]));
 								
-								$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}
 						}
@@ -238,7 +238,7 @@ Class Predb
 							{
 								$category = $db->escapeString($matches2["category"].", ".$matches2["category1"]);
 								
-								$db->query(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}
 						}
@@ -251,7 +251,7 @@ Class Predb
 	
 	public function retrieveOrlydb()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.orlydb.com/");
@@ -277,7 +277,7 @@ Class Predb
 									else
 										$size = $db->escapeString($matches2["size"]);
 								
-									$db->query(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("orlydb"), $db->escapeString(md5($matches2["title"]))));
+									$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("orlydb"), $db->escapeString(md5($matches2["title"]))));
 									$newnames++;
 								}
 							}
@@ -291,7 +291,7 @@ Class Predb
 
 	public function retrieveSrr()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://www.srrdb.com/feed/srrs');
 		if ($releases !== false)
@@ -303,7 +303,7 @@ Class Predb
 					continue;
 				else
 				{
-					$db->query(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, FROM_UNIXTIME(".strtotime($release->pubDate)."), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("srrdb"), $db->escapeString(md5($release->title))));
+					$db->query(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5) VALUES (%s, FROM_UNIXTIME(".strtotime($release->pubDate)."), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("srrdb"), $db->escapeString(md5($release->title))));
 					$newnames++;
 				}
 			}
@@ -313,7 +313,7 @@ Class Predb
 
 	public function retrievePredbme()
 	{
-		$db = new DB;
+		$db = new DB();
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://predb.me/?rss');
 		if ($releases !== false)
@@ -325,7 +325,7 @@ Class Predb
 					continue;
 				else
 				{
-					$db->query(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString(md5($release->title))));
+					$db->query(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString(md5($release->title))));
 					$newnames++;
 				}
 			}
@@ -523,4 +523,4 @@ Class Predb
 		return $count["cnt"];
 	}
 }
-?>
+
