@@ -316,7 +316,7 @@
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Passworded{elseif $release.passwordstatus == 3}Probably not viable{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}
