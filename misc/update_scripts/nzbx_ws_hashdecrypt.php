@@ -47,7 +47,7 @@ function updaterelease($foundName, $id, $groupname)
 	$cleanRelName = $foundName;
 	$catid		= $cat->determineCategory($groupname, $foundName);
 
-	$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
+	$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
 
 }
 $results = getReleasez();

@@ -24,7 +24,7 @@ class Backfill
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
-		$groups = new Groups();
+		$groups = new Groups;
 		
 		if ($groupName != '') 
 		{
@@ -48,7 +48,7 @@ class Backfill
 			// Compression.
 			$nntpc = new Nntp();
 			$nntpc->doConnect();
-
+			
 			foreach($res as $groupArr)
 			{
 				$left = sizeof($res)-$counter;
@@ -206,7 +206,7 @@ class Backfill
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
-		$groups = new Groups();
+		$groups = new Groups;
 		if ($groupName != '')
 		{
 			$grp = $groups->getByName($groupName);
@@ -462,7 +462,7 @@ class Backfill
 		echo "Determined to be article $upperbound which is ".$this->daysOld($dateofnextone)." days old (".date("r", $dateofnextone).").".$n;
 		return $upperbound;
 	}
-
+	
 	private function daysOld($timestamp)
 	{
 		return round((time()-$timestamp)/86400, 1);
@@ -470,13 +470,18 @@ class Backfill
 
 	function getRange($group, $first, $last, $threads)
 	{
+		if ($threads > 1)
+		{
+			usleep($this->sleeptime*1000*($threads - 1));
+		}
+
 		$db = new DB();
 		$n = $this->n;
-		$groups = new Groups();
+		$groups = new Groups;
 		$this->startGroup = microtime(true);
-		$site = new Sites();
+		$site = new Sites;
 		$backthread = $site->get()->backfillthreads;
-		$binaries = new Binaries();
+		$binaries = new Binaries;
 
 		$groupArr = $groups->getByName($group);
 		$nntp = new Nntp();
@@ -492,19 +497,12 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Problem with the usenet connection, attemping to reconnect.".$n;
-				$nntp->doQuit();
-				$nntp->doConnect();
-				$data = $nntp->selectGroup($groupArr['name']);
-				if (PEAR::isError($data))
-				{
-					echo "Reconnected but could not select group (bad name?): {$group}".$n;
-					return;
-				}
+				echo "Reconnected but could not select group (bad name?): {$group}".$n;
+				return;
 			}
 		}
 
-		echo 'Processing '.$groupArr['name']." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
+		echo 'Processing '.$groupArr['name']." ==> ".$threads." ==>".number_format($first)." to ".number_format($last).$n;
 
 		$this->startLoop = microtime(true);
 		$lastId = $binaries->scan($nntp, $groupArr, $last, $first);
@@ -521,7 +519,7 @@ class Backfill
 		$db = new DB();
 		$nntp = new Nntp();
 		$nntp->doConnect();
-		$groups = new Groups();
+		$groups = new Groups;
 		$groupArr = $groups->getByName($group);
 		$data = $nntp->selectGroup($groupArr['name']);
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
@@ -529,3 +527,4 @@ class Backfill
 		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
 	}
 }
+?>

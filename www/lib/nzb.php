@@ -85,10 +85,10 @@ class NZB
 	//
 	function copyNZBforImport($relguid, $nzb, $echooutput=false)
 	{
-		$page = new Page();
+		$page = new Page;
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
 		$fp = gzopen($path, 'w6');
-		if ($fp && file_exists($nzb))
+		if ($fp)
 		{
 			gzwrite ($fp, file_get_contents($nzb));
 			gzclose($fp);
@@ -215,3 +215,4 @@ class NZB
 	}
 
 }
+?>

@@ -45,7 +45,7 @@ class Binaries
 			$relss->resetCollections();
 		}
 		$n = $this->n;
-		$groups = new Groups();
+		$groups = new Groups;
 		$res = $groups->getActive();
 		$s = new Sites();
 		$counter = 1;
@@ -217,17 +217,11 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
-		$nntp->doConnect();
 		$this->startHeaders = microtime(true);
-		if( !ini_get('safe_mode') )
-			set_time_limit(300);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
-		$s = new Sites;
-		$site = $s->get();
-		$tmpPath = $site->tmpunrarpath."/";
 
-		if (PEAR::isError($msgs) && ($msgs->code == 400 || $msgs->code == 503))
+		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doConnect();
@@ -314,7 +308,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
+					if(preg_match('/.nzb\"/', $msg['Subject']))
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -322,9 +316,11 @@ class Binaries
 						{
 							$nzbparts = $matchesparts['part'];
 							$totalparts = $matchesparts['total'];
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`) VALUES (%s,0)", $db->escapeString($groupArr['name'])));
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
 						}
+						//echo $nzbparts." - ".$this->message[$subject]['CollectionHash']."\n";
+						$db->queryDirect(sprintf("INSERT IGNORE INTO nzbs (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s))", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
+						//echo substr($msg['Message-ID'],1,-1).", ".$groupArr['name'].", ".$msg['Number'].", ".$subject.", ".$this->message[$subject]['CollectionHash'].", ".(int)$msg['Bytes'].", ".$this->message[$subject]['Date']."\n";
+						//var_dump($msg);
 					}
 
 					if((int)$matches[1] > 0)
@@ -347,7 +343,7 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary at ".date('H:i:s').$n;
+				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary.".$n;
 
 			if (sizeof($rangenotreceived) > 0) {
 				switch($type)
@@ -404,14 +400,14 @@ class Binaries
 							if(!$cres)
 							{
 								$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
-								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$csql = sprintf("INSERT INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
 							{
 								$collectionID = $cres["ID"];
 								//Update the collection table with the last seen date for the collection.
-								$cusql = sprintf("UPDATE collections set dateadded = now() WHERE ID = %s", $collectionID);
+								$cusql = sprintf("UPDATE collections set dateadded = now() where ID = %s", $collectionID);
 								$db ->queryDirect($cusql);
 							}
 
@@ -430,7 +426,7 @@ class Binaries
 							$bres = $db->queryOneRow(sprintf("SELECT ID FROM binaries WHERE binaryhash = %s", $db->escapeString($binaryHash)));
 							if(!$bres)
 							{
-								$bsql = sprintf("INSERT IGNORE INTO binaries (binaryhash, name, collectionID, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+								$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionID, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 								$binaryID = $db->queryInsert($bsql);
 							}
 							else
@@ -472,7 +468,7 @@ class Binaries
 			
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n.$n;
 			}
 			unset($this->message);
 			unset($data);
@@ -494,7 +490,7 @@ class Binaries
 		$n = $this->n;
 		
 		// Get all parts in partrepair table.
-		$db = new DB();
+		$db = new DB;
 		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 		
@@ -566,8 +562,8 @@ class Binaries
 	
 	private function addMissingParts($numbers, $groupID) 
 	{
-		$db = new DB();
-		$insertStr = "INSERT IGNORE INTO partrepair (numberID, groupID) VALUES ";
+		$db = new DB;
+		$insertStr = "INSERT INTO partrepair (numberID, groupID) VALUES ";
 		foreach($numbers as $number)
 		{
 			$insertStr .= sprintf("(%d, %d), ", $number, $groupID);
@@ -659,7 +655,7 @@ class Binaries
 					SELECT b.*, 
 					g.name AS group_name,
 					r.guid,
-					(SELECT COUNT(ID) FROM parts p WHERE p.binaryID = b.ID) as 'binnum'
+					(SELECT COUNT(ID) FROM parts p where p.binaryID = b.ID) as 'binnum'
 					FROM binaries b
 					INNER JOIN groups g ON g.ID = b.groupID
 					LEFT OUTER JOIN releases r ON r.ID = b.releaseID
@@ -672,13 +668,13 @@ class Binaries
 	public function getForReleaseId($id)
 	{			
 		$db = new DB();
-		return $db->query(sprintf("select binaries.* from binaries WHERE releaseID = %d order by relpart", $id));		
+		return $db->query(sprintf("select binaries.* from binaries where releaseID = %d order by relpart", $id));		
 	}
 
 	public function getById($id)
 	{			
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select binaries.*, collections.groupID, groups.name as groupname from binaries, collections left outer join groups on collections.groupID = groups.ID WHERE binaries.ID = %d ", $id));
+		return $db->queryOneRow(sprintf("select binaries.*, collections.groupID, groups.name as groupname from binaries, collections left outer join groups on collections.groupID = groups.ID where binaries.ID = %d ", $id));
 	}
 
 	public function getBlacklist($activeonly=true)
@@ -687,7 +683,7 @@ class Binaries
 		
 		$where = "";
 		if ($activeonly)
-			$where = " WHERE binaryblacklist.status = 1 ";
+			$where = " where binaryblacklist.status = 1 ";
 			
 		return $db->query("SELECT binaryblacklist.ID, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, 
 												groups.ID AS groupID, binaryblacklist.msgcol FROM binaryblacklist 
@@ -699,13 +695,13 @@ class Binaries
 	public function getBlacklistByID($id)
 	{			
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from binaryblacklist WHERE ID = %d ", $id));		
+		return $db->queryOneRow(sprintf("select * from binaryblacklist where ID = %d ", $id));		
 	}
 
 	public function deleteBlacklist($id)
 	{			
 		$db = new DB();
-		return $db->query(sprintf("DELETE FROM binaryblacklist WHERE ID = %d", $id));		
+		return $db->query(sprintf("delete from binaryblacklist where ID = %d", $id));		
 	}		
 	
 	public function updateBlacklist($regex)
@@ -721,7 +717,7 @@ class Binaries
 			$groupname = sprintf("%s", $db->escapeString($groupname));
 		}
 			
-		$db->query(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d WHERE ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));	
+		$db->query(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d where ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));	
 	}
 	
 	public function addBlacklist($regex)
@@ -737,17 +733,18 @@ class Binaries
 			$groupname = sprintf("%s", $db->escapeString($groupname));
 		}
 			
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ", 
+		return $db->queryInsert(sprintf("insert into binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ", 
 			$groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"]));	
 	}	
 	
 	public function delete($id)
 	{			
 		$db = new DB();
-		$bins = $db->query(sprintf("select ID from binaries WHERE collectionID = %d", $id));
+		$bins = $db->query(sprintf("select ID from binaries where collectionID = %d", $id));
 		foreach ($bins as $bin)
-			$db->query(sprintf("DELETE FROM parts WHERE binaryID = %d", $bin["ID"]));
-		$db->query(sprintf("DELETE FROM binaries WHERE collectionID = %d", $id));
-		$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $id));
+			$db->query(sprintf("delete from parts where binaryID = %d", $bin["ID"]));
+		$db->query(sprintf("delete from binaries where collectionID = %d", $id));
+		$db->query(sprintf("delete from collections where ID = %d", $id));
 	}	
 }
+?>

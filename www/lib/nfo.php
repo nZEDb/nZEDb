@@ -21,7 +21,7 @@ class Nfo
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO releasenfo (releaseID) VALUE (%d)", $relid));		
+		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseID) VALUE (%d)", $relid));		
 	}
 	
 	public function deleteReleaseNfo($relid)
@@ -50,49 +50,38 @@ class Nfo
 		return false;
 	}
 	
-	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
+	public function processNfoFiles($threads=1, $processImdb=1, $processTvrage=1)
 	{
 		$ret = 0;
 		$db = new DB();
-		$s = new Sites();
-		$site = $s->get();
 		$nntp = new Nntp();
-		$connect = ($site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
+		$site = new Sites;
 		$nzbcontents = new NZBcontents($this->echooutput);
-		$nfocount = 0;
+		$threads--;
 
-		if ($releaseToWork == '')
+		$i = -1;
+		$nfocount = 0;
+		while ((($nfocount) != $this->nzbs) && ($i >= -6))
 		{
-			$i = -1;
-			while ((($nfocount) != $this->nzbs) && ($i >= -6))
-			{
-				$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d", $i, $this->maxsize*1073741824, $this->nzbs));
-				$nfocount = $db->getNumRows($res);
-				$i--;
-			}
-		}
-		else
-		{
-			$res = 0;
-			$pieces = explode("                       ", $releaseToWork);
-			$res = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'groupID' => $pieces[2], 'name' => $pieces[3]));
-			$nfocount = 1;
+			$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d,%d", $i, $this->maxsize*1073741824, floor(($this->nzbs) * ($threads * 1.5)), $this->nzbs));
+			$nfocount = $db->getNumRows($res);
+			$i--;
 		}
 
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput)
-				if ($releaseToWork == '')
-					echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+				if ($nfocount > 0)
+					echo "Processing ".$nfocount." NFO(s), starting at ".floor(($this->nzbs) * $threads * 1.5)." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
+			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
-			foreach ($res as $arr)
+			while ($arr = $db->fetchAssoc($res))
 			{
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
-				$connect;
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
 				if ($fetchedBinary !== false)
 				{
@@ -126,8 +115,8 @@ class Nfo
 						}
 					}
 				}
-				$nntp->doQuit();
 			}
+			$nntp->doQuit();
 		}
 
 		//remove nfo that we cant fetch after 5 attempts
@@ -139,12 +128,13 @@ class Nfo
 
 		if ($this->echooutput)
 		{
-			if ($nfocount > 0 && $releaseToWork == '')
+			if ($nfocount > 0)
 				echo "\n";
-			if ($ret > 0 && $releaseToWork == '')
+			if ($ret > 0)
 				echo $ret." NFO file(s) found/processed.\n";
 		}
 
 		return $ret;
 	}
 }
+?>

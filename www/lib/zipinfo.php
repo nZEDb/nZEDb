@@ -51,7 +51,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.7
+ * @version    1.6
  */
 class ZipInfo extends ArchiveReader
 {
@@ -420,15 +420,12 @@ class ZipInfo extends ArchiveReader
 			return false;
 		}
 
-		// Try to find the first Local File or Central File record
-		if (($pos = strpos($buff, pack('V', self::RECORD_LOCAL_FILE))) !== false
-		 || ($pos = strpos($buff, pack('V', self::RECORD_CENTRAL_FILE))) !== false
-		) {
+		// Try to find the first Local File record
+		if (($pos = strpos($buff, self::RECORD_LOCAL_FILE)) !== false)
 			return $this->markerPosition = $pos;
-		}
 
 		// Otherwise this could be an empty ZIP file
-		return $this->markerPosition = strpos($buff, pack('V', self::RECORD_ENDCENTRAL));
+		return $this->markerPosition = strpos($buff, self::RECORD_ENDCENTRAL);
 	}
 
 	/**

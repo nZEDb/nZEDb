@@ -21,7 +21,7 @@ else
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
-	$tmux = new Tmux();
+	$tmux = new Tmux;
 	$running = $tmux->get()->RUNNING;
 	$delay = $tmux->get()->MONITOR_DELAY;
 	$patch = $tmux->get()->PATCHDB;
@@ -69,7 +69,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 			if (strtolower($tablename['Engine']) == "myisam")
 				$db->queryDirect("FLUSH TABLES");
 		}
-		if ($tablecnt == 1)
+		if ($tablecnt = 1)
 			echo $tablecnt." table Optimized\n";
 		else
 			echo $tablecnt." tables Optimized\n";
@@ -84,3 +84,5 @@ else
 {
 	exit("If you have set the settings in adin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n");
 }
+
+?>

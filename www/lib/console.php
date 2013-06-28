@@ -201,7 +201,7 @@ class Console
 	
 	public function getBrowseBy()
 	{
-		$db = new DB();
+		$db = new Db;
 		
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
@@ -444,13 +444,13 @@ class Console
 		if (in_array(strtolower($genreName), $genreassoc)) {
 			$genreKey = array_search(strtolower($genreName), $genreassoc);
 		} else {
-			$genreKey = $db->queryInsert(sprintf("INSERT IGNORE INTO genres (`title`, `type`) VALUES (%s, %d)", $db->escapeString($genreName), Genres::CONSOLE_TYPE));
+			$genreKey = $db->queryInsert(sprintf("INSERT INTO genres (`title`, `type`) VALUES (%s, %d)", $db->escapeString($genreName), Genres::CONSOLE_TYPE));
 		}
 		$con['consolegenre'] = $genreName;
 		$con['consolegenreID'] = $genreKey;
 		
 		$query = sprintf("
-		INSERT IGNORE INTO consoleinfo  (`title`, `asin`, `url`, `salesrank`, `platform`, `publisher`, `genreID`, `esrb`, `releasedate`, `review`, `cover`, `createddate`, `updateddate`)
+		INSERT INTO consoleinfo  (`title`, `asin`, `url`, `salesrank`, `platform`, `publisher`, `genreID`, `esrb`, `releasedate`, `review`, `cover`, `createddate`, `updateddate`)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())
 			ON DUPLICATE KEY UPDATE  `title` = %s,  `asin` = %s,  `url` = %s,  `salesrank` = %s,  `platform` = %s,  `publisher` = %s,  `genreID` = %s,  `esrb` = %s,  `releasedate` = %s,  `review` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", 
 		$db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), 
@@ -691,3 +691,6 @@ class Console
 	}
 
 }
+
+
+?>

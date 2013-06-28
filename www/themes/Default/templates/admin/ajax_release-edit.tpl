@@ -35,49 +35,49 @@
 <table class="input">
 
 <tr>
-	<td><label for="category">Category:</label></td>
+	<td><label for="category">Category</label>:</td>
 	<td>
 		{html_options id="category" name=category options=$catlist selected=$release.categoryID}
 	</td>
 </tr>
 
 <tr>
-	<td><label for="grabs">Grabs:</label></td>
+	<td><label for="grabs">Grabs</label>:</td>
 	<td>
 		<input id="grabs" class="short" name="grabs" type="text" value="{$release.grabs}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="rageID">Tv Rage Id:</label></td>
+	<td><label for="rageID">Tv Rage Id</label>:</td>
 	<td>
 		<input id="rageID" class="short" name="rageID" type="text" value="{$release.rageID}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="anidbID">AniDB Id:</label></td>
+	<td><label for="anidbID">AniDB Id</label>:</td>
 	<td>
 		<input id="anidbID" class="short" name="anidbID" type="text" value="{$release.anidbID}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="season">Season:</label></td>
+	<td><label for="season">Season</label>:</td>
 	<td>
 		<input id="season" class="short" name="season" type="text" value="{$release.season}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="episode">Episode:</label></td>
+	<td><label for="episode">Episode</label>:</td>
 	<td>
 		<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="episode">IMDB Id:</label></td>
+	<td><label for="episode">IMDB Id</label>:</td>
 	<td>
 		<input id="imdbID" class="short" name="imdbID" type="text" value="{$release.imdbID}" />
 	</td>

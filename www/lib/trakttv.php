@@ -79,3 +79,4 @@ Class Trakttv
 		}
 	}
 }
+?>

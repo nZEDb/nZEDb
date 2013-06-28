@@ -20,7 +20,7 @@
 			<span class="invitefailed" id="divInviteError"></span>
 			<div style="display:none;" id="divInvite">
 				<form id="frmSendInvite" method="GET">
-					<label for="txtInvite">Email:</label>
+					<label for="txtInvite">Email</label>:
 					<input type="text" id="txtInvite" />
 					<input type="submit" value="Send"/>
 				</form>

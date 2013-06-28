@@ -1081,3 +1081,4 @@ class CategoryGerman
 		return false;
 	}
 }
+?>

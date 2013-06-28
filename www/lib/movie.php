@@ -30,6 +30,7 @@ class Movie
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
 		$this->binglimit = 0;
 		$this->yahoolimit = 0;
+		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 	}
 	
 	public function getMovieInfo($imdbId)
@@ -47,7 +48,7 @@ class Movie
 	}	
 	
 	public function getRange($start, $num)
-	{
+	{		
 		$db = new DB();
 		
 		if ($start === false)
@@ -200,7 +201,7 @@ class Movie
 	
 	public function getBrowseBy()
 	{
-		$db = new Db();
+		$db = new Db;
 		
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
@@ -356,7 +357,7 @@ class Movie
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
 		$query = sprintf("
-			INSERT IGNORE INTO movieinfo 
+			INSERT INTO movieinfo 
 				(imdbID, tmdbID, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate)
 			VALUES 
 				(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
@@ -491,7 +492,7 @@ class Movie
 
 	public function domovieupdate($buffer, $service, $id, $db, $processImdb = 1)
 	{
-		$nfo = new Nfo();
+		$nfo = new Nfo;
 		$imdbId = $nfo->parseImdb($buffer);
 		if ($imdbId !== false)
 		{
@@ -516,33 +517,28 @@ class Movie
 		return $imdbId;
 	}
 
-	public function processMovieReleases($releaseToWork = '')
+	public function processMovieReleases($threads=1)
 	{
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
 		$googleban = false;
 		$googlelimit = 0;
-		$site = new Sites();
-
-		if ($releaseToWork == '')
+		$site = new Sites;
+		if ($threads > 1)
 		{
-			$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
-			$moviecount = $db->getNumRows($res);
+			usleep($this->sleeptime*1000*($threads - 1));
 		}
-		else
-		{
-			$pieces = explode("                       ", $releaseToWork);
-			$res = array(array('name' => $pieces[0], 'ID' => $pieces[1]));
-			$moviecount = 1;
-		}
+		$threads--;
 
-		if ($moviecount > 0)
-		{
-			if ($this->echooutput && $moviecount > 1)
-				echo "Processing ".$moviecount." movie release(s)."."\n";
+		$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_MOVIE, floor(($this->movieqty) * ($threads * 1.5)), $this->movieqty));
 
-			foreach ($res as $arr)
+		if ($db->getNumRows($res) > 0)
+		{
+			if ($this->echooutput)
+				echo "Processing ".$db->getNumRows($res)." movie release(s) beginning at ".floor(($this->movieqty) * ($threads * 1.5))."\n";
+
+			while ($arr = $db->fetchAssoc($res)) 
 			{
 				$moviename = $this->parseMovieSearchName($arr['name']);
 				if ($moviename !== false)
@@ -779,7 +775,7 @@ class Movie
 
   	public function parseMovieSearchName($releasename)
 	{
-		$cat = new Category();
+		$cat = new Category;
 		if (!$cat->isMovieForeign($releasename))
 		{
 			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
@@ -842,7 +838,7 @@ class Movie
 	public function updateInsUpcoming($source, $type, $info)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT IGNORE INTO upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
+		$sql = sprintf("INSERT into upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
 				ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
 		$db->query($sql);
 	}
@@ -880,3 +876,4 @@ class Movie
 		);
 	}
 }
+?>

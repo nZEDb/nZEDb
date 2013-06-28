@@ -56,3 +56,4 @@ class UserSeries
 		$db->query($sql);		
 	}
 }
+?>

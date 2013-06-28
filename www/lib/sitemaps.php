@@ -16,3 +16,4 @@ class Sitemap
 		$this->changefreq = $c;
 	}
 }
+?>

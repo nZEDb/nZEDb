@@ -329,3 +329,4 @@ Class NZBcontents
 		$db->queryDirect(sprintf("update releases set completion = %d where ID = %d", $completion, $relID));
 	}
 }
+?>

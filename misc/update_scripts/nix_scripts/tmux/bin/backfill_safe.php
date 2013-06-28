@@ -21,3 +21,4 @@ if (isset($argv[1]))
 		$backfill->backfillPostAllGroups($pieces[0], $pieces[1], "groupname");
 	}
 }
+?>

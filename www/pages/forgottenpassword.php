@@ -6,7 +6,7 @@ if ($users->isLoggedIn())
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
+switch($action) 
 {
 	case "reset":
 		if (!isset($_REQUEST['guid']))
@@ -14,12 +14,12 @@ switch($action)
 			$page->smarty->assign('error', "No reset code provided.");
 			break;
 		}
-
+		
 		$ret = $users->getByPassResetGuid($_REQUEST['guid']);
 		if (!$ret)
 		{
 			$page->smarty->assign('error', "Bad reset code provided.");
-			break;
+			break;		
 		}
 		else
 		{
@@ -34,17 +34,17 @@ switch($action)
 			$subject = $page->site->title." Password Reset";
 			$contents = "Your password has been reset to ".$newpass;
 			sendEmail($to, $subject, $contents, $page->site->email);
-
+			
 			$page->smarty->assign('confirmed', "true");
-
-			break;
+			
+			break;			
 		}
-
+		
 		break;
 	case 'submit':
-
+		
 		$page->smarty->assign('email', $_POST['email']);
-
+		
 		if ($_POST['email'] =="")
 		{
 			$page->smarty->assign('error', "Missing Email");
@@ -57,7 +57,7 @@ switch($action)
 			$ret = $users->getByEmail($_POST['email']);
 			if (!$ret)
 			{
-				$page->smarty->assign('sent', "true");
+				$page->smarty->assign('error', "The email address is not recognised.");
 				break;
 			}
 			else
@@ -67,7 +67,7 @@ switch($action)
 				//
 				$guid = md5(uniqid());
 				$users->updatePassResetGuid($ret["ID"], $guid);
-
+				
 				//
 				// Send the email
 				//

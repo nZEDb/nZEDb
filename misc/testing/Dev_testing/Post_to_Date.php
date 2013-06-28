@@ -2,7 +2,7 @@
 
 require("../../../www/config.php");
 require_once(WWW_DIR."/lib/backfill.php");
-$nntp = new Nntp();
+$nntp = new nntp;
 $nntp->doConnect();
 $backfill = new Backfill();
 $data = $nntp->selectGroup("alt.binaries.nintendo.ds");

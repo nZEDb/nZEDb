@@ -75,7 +75,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
+	$db = new DB;
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -89,7 +89,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
+	$db = new DB;
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -102,52 +102,16 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		}
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
-{
-	$sql = "SHOW tables";
-	$db = new DB();
-	$tables = $db->query($sql);
-	foreach($tables as $row)
-	{
-		$tbl = $row['Tables_in_'.DB_NAME];
-		$filename = $argv[3]."/".$tbl.".sql";
-		printf("Dumping $tbl\n");
-		if (file_exists($filename))
-			newname($filename);
-		$db->query(sprintf("SELECT * INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
-	}
-}
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && file_exists($argv[3])))
-{
-	$sql = "SHOW tables";
-	$db = new DB();
-	$tables = $db->query($sql);
-	foreach($tables as $row)
-	{
-		$tbl = $row['Tables_in_'.DB_NAME];
-		$filename = $argv[3]."/".$tbl.".sql";
-		if (file_exists($filename))
-		{
-			printf("Restoring $tbl\n");
-			$db->query(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
-		}
-	}
-}
 else
 {
 	passthru("clear");
-	echo "\033[1;33mThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
-	."**Single File\n"
-	."To dump the database run: php mysqldump_tables.php db dump /path/to/save/to\n"
-	."To restore the database run: php mysqldump_tables.php db restore /path/where/saved\n\n"
-	."**Individual Table Files\n"
-	."To dump all tables run: php mysqldump_tables.php all dump /path/to/save/to\n"
-	."To restore all tables run: php mysqldump_tables.php all restore /path/where/saved\n\n"
-	."**Three Tables (collections, binaries, parts)\n"
-	."To dump collections, binaries, parts tables run: php mysqldump_tables.php test dump /path/to/save/to\n"
-	."To restore collections, binaries, parts tables run: php mysqldump_tables.php test restore /path/where/saved\n\n"
-	."**Individal Files - OUTFILE/INFILE - No schema\n"
-	."To dump all tables, using OUTFILE run: php mysqldump_tables.php all outfile /path/to/save/to\n"
-	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m";
+	echo "\033[1;33mThis script can dump/restore all tables or just collections/binaries/parts.\n";
+	echo "To dump the database run: php mysqldump_tables.php db dump /path/to/save/to\n";
+	echo "To restore the database run: php mysqldump_tables.php db restore /path/where/saved\n";
+	echo "To dump all tables run: php mysqldump_tables.php all dump /path/to/save/to\n";
+	echo "To restore all tables run: php mysqldump_tables.php all restore /path/where/saved\n";
+	echo "To dump collections, binaries, parts tables run: php mysqldump_tables.php test dump /path/to/save/to\n";
+	echo "To restore collections, binaries, parts tables run: php mysqldump_tables.php test restore /path/where/saved\n\n\033[0m";
+	exit(1);
 }
 ?>

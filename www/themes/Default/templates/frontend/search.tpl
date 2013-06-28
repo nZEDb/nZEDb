@@ -25,38 +25,38 @@
 		<center>
 		<table class="data">
 			<tr>
-				<th><label for="searchadvr">Release Name:</label></th>
+				<th><label for="searchadvr">Release Name</label>:</th>
 				<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
-				<th><label for="searchadvsubject">Usenet Name:</label></th>
+				<th><label for="searchadvsubject">Usenet Name</label>:</th>
 				<td><input class="searchadv" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
-				<th><label for="searchadvposter">Poster:</label></th>
+				<th><label for="searchadvposter">Poster</label>:</th>
 				<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
 			</tr>
 			<tr>
-				<th><label for="searchadvdaysnew">Min/Max days:</label></th>
+				<th><label for="searchadvdaysnew">Min/Max days</label>:</th>
 				<td><input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/> <input class="searchdaysinput" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/> </td>
 			</tr>
 			<tr>
-				<th><label for="searchadvgroups">Group:</label></th>
+				<th><label for="searchadvgroups">Group</label>:</th>
 				<td>{html_options class="searchadvbtns" id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}</td>
 			</tr>
 			<tr>
-				<th><label for="searchadvcat">Category:</label></th>
+				<th><label for="searchadvcat">Category</label>:</th>
 				<td>{html_options class="searchadvbtns" id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}</td>
 			</tr>
 			<tr>
-				<th><label for="searchadvsizefrom">Min/Max Size:</label></th>
+				<th><label for="searchadvsizefrom">Min/Max Size</label>:</th>
 				<td>
 					{html_options id="searchadvsizefrom" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom}
 					{html_options id="searchadvsizeto" name="searchadvsizeto" options=$sizelist selected=$selectedsizeto}
 				</td>
 			</tr>
 			<tr>
-				<th><label for="searchadvhasnfo">NFO/Comments:</label></th>
+				<th><label for="searchadvhasnfo">NFO/Comments</label>:</th>
 				<td><input type="hidden" name="searchadvhasnfo" value="0" /> <input type="checkbox" name="searchadvhasnfo" value="1" />
 				<input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input id="search_adv_button" type="submit" value="search" /></div> </td>
 			</tr>
@@ -183,3 +183,4 @@
 </form>
 
 {/if}
+

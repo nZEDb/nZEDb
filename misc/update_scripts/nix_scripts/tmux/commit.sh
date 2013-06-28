@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-nano Changelog
 cd /var/www/nZEDb
 commit=`git log | grep "^commit" | wc -l`
 commit=`expr $commit + 1`

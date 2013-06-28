@@ -20,11 +20,6 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  * calls to the embedded archive objects or return a flat list of contents with the
  * source path info included as an extra field.
  *
- * Note that since the class exposes the interfaces of different readers directly,
- * any application using it should add extra checks for expected properties, methods
- * and returned values, depending on the source type and reader interface. In other
- * words, apply duck typing.
- *
  * Example usage:
  *
  * <code>
@@ -37,29 +32,17 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  *     exit;
  *   }
  *
- *   // Check the archive type
- *   if ($archive->type != ArchiveInfo::TYPE_RAR) {
- *     echo "Source is not a RAR archive\n";
- *     // exit here or continue with duck typing
- *   }
- *
- *   // Check encryption
- *   if (!empty($archive->isEncrypted)) {
- *     echo "Archive is password encrypted\n";
- *     exit;
- *   }
- *
  *   // List the contents of all archives recursively
- *   foreach ($archive->getArchiveFileList() as $file) {
+ *   foreach($archive->getArchiveFileList() as $file) {
  *     if (isset($file['error'])) {
  *       echo "Error: {$file['error']} (in: {$file['source']})\n";
  *       continue; // skip recursion errors
  *     }
- *     if (!empty($file['pass'])) {
+ *     if ($file['pass'] == true) {
  *       echo "File is passworded: {$file['name']} (in: {$file['source']})\n";
  *       continue; // skip encrypted files
  *     }
- *     if (empty($file['compressed'])) {
+ *     if ($file['compressed'] == false) {
  *       echo "Extracting uncompressed file: {$file['name']} from: {$file['source']}\n";
  *       $archive->saveFileData($file['name'], "./dir/{$file['name']}", $file['source']);
  *       // or $data = $archive->getFileData($file['name'], $file['source']);
@@ -71,7 +54,7 @@ require_once dirname(__FILE__).'/sfvinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.6
+ * @version    1.3
  */
 class ArchiveInfo extends ArchiveReader
 {
@@ -93,7 +76,7 @@ class ArchiveInfo extends ArchiveReader
 	const MAIN_SOURCE  = 'main';
 
 	/**
-	 * The default list of the supported archive reader classes.
+	 * List of the supported archive reader classes.
 	 * @var array
 	 */
 	protected $readers = array(
@@ -109,26 +92,6 @@ class ArchiveInfo extends ArchiveReader
 	 * @var integer
 	 */
 	public $type = self::TYPE_NONE;
-
-	/**
-	 * Sets the list of supported archive reader classes for the current instance,
-	 * overriding the defaults. The keys should be valid archive types:
-	 *
-	 *    $archive->setReaders(array(ArchiveInfo::TYPE_RAR => 'RarInfo'));
-	 *
-	 * If $recursive is set to true, this list will also be used for all embedded
-	 * archives as well. This can be a bit unpredictable, so use with caution, but
-	 * it's a convenient way to swap in custom readers or change their order.
-	 *
-	 * @param   array    $readers    list of reader classes keyed by archive type
-	 * @param   boolean  $recursive  apply list to all embedded archives?
-	 * @return  void
-	 */
-	public function setReaders(array $readers, $recursive=false)
-	{
-		$this->readers = $readers;
-		$this->inheritReaders = $recursive;
-	}
 
 	/**
 	 * Convenience method that outputs a summary list of the archive information,
@@ -291,9 +254,6 @@ class ArchiveInfo extends ArchiveReader
 
 				// Create the new archive object
 				$archive = new self;
-				if ($this->inheritReaders) {
-					$archive->setReaders($this->readers, true);
-				}
 
 				// We shouldn't process any files that are unreadable
 				if (!empty($file['compressed']) || !empty($file['pass'])) {
@@ -329,23 +289,11 @@ class ArchiveInfo extends ArchiveReader
 	 * recursing through all embedded archives as well, with a 'source' field
 	 * added to each item that includes the archive source path.
 	 *
-	 * If $all is set to true, the file lists of all the supported archive types
-	 * will be merged in the flat list, not just those that allow recursion. This
-	 * should be used with caution, as the output varies between readers and the
-	 * only guaranteed results are:
-	 *
-	 *     array('name'  => '...', 'source' => '...') or:
-	 *     array('error' => '...', 'source' => '...')
-	 *
-	 * It's really just handy for inspecting all known file names in the laziest
-	 * way possible, and not much more than that.
-	 *
 	 * @param   boolean  $recurse   list all archive contents recursively?
-	 * @param   string   $all       include all supported archive file lists?
-	 * @param   string   $source    [ignore, for internal use only]
+	 * @param   string   $source    the archive source of the file item
 	 * @return  array|boolean  the flat archive file list, or false on error
 	 */
-	public function getArchiveFileList($recurse=true, $all=false, $source=null)
+	public function getArchiveFileList($recurse=true, $source=null)
 	{
 		if (!$this->reader) {return false;}
 		$ret = array();
@@ -353,17 +301,16 @@ class ArchiveInfo extends ArchiveReader
 		// Start with the main parent
 		if ($source == null) {
 			$source = self::MAIN_SOURCE;
-			if ($ret = $this->reader->getFileList()) {
-				$ret = $this->flattenFileList($ret, $source, $all);
-			}
+			$ret = $this->reader->getFileList();
+			foreach ($ret as &$file) {$file['source'] = $source;}
 		}
 
 		// Merge each archive file list
 		if ($recurse && $this->containsArchive()) {
 			foreach ($this->getArchiveList() as $name => $archive) {
 
-				// Only include the file lists of types that allow recursion?
-				if (empty($archive->error) && !$all && !$archive->allowsRecursion())
+				// Only recurse through valid archive types
+				if (empty($archive->error) && !$archive->allowsRecursion())
 					continue;
 				$branch = $source.' > '.$name;
 
@@ -375,9 +322,10 @@ class ArchiveInfo extends ArchiveReader
 				}
 
 				// Otherwise merge recursively
-				$ret = array_merge($ret, $this->flattenFileList($files, $branch, $all));
+				foreach ($files as &$file) {$file['source'] = $branch;}
+				$ret = array_merge($ret, $files);
 				if ($archive->containsArchive()) {
-					$ret = array_merge($ret, $archive->getArchiveFileList(true, $all, $branch));
+					$ret = array_merge($ret, $archive->getArchiveFileList(true, $branch));
 				}
 			}
 		}
@@ -504,12 +452,6 @@ class ArchiveInfo extends ArchiveReader
 	protected $archives = array();
 
 	/**
-	 * Should any embedded archives inherit the readers list from this instance?
-	 * @var boolean
-	 */
-	protected $inheritReaders = false;
-
-	/**
 	 * Parses the source file/data by delegation to one of the configured readers,
 	 * or returns false if the source is not a supported type.
 	 *
@@ -603,37 +545,6 @@ class ArchiveInfo extends ArchiveReader
 	}
 
 	/**
-	 * Helper method that flattens a file list that may have children, removes keys
-	 * and re-indexes, then adds a source path field to each item.
-	 *
-	 * @param   array    $files   the file list to flatten
-	 * @param   string   $source  the current source path info
-	 * @param   boolean  $all     should any child lists be included?
-	 * @return  array  the flat file list
-	 */
-	protected function flattenFileList(array $files, $source, $all=false)
-	{
-		$files = array_values($files);
-		$children = array();
-		foreach ($files as &$file) {
-			$file['source'] = $source;
-			if ($source != self::MAIN_SOURCE) {
-				unset($file['next_offset']);
-			}
-			if ($all && !empty($file['files'])) foreach ($file['files'] as $child) {
-				$child['source'] = $source.' > '.$file['name'];
-				unset($child['next_offset']);
-				$children[] = $child;
-			}
-		}
-		if (!empty($children)) {
-			$files = array_merge($files, $children);
-		}
-
-		return $files;
-	}
-
-	/**
 	 * Resets the instance variables before parsing new data.
 	 *
 	 * @return  void
@@ -647,3 +558,4 @@ class ArchiveInfo extends ArchiveReader
 	}
 
 } // End ArchiveInfo class
+

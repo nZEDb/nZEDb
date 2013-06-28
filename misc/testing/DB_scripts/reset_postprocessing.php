@@ -158,7 +158,7 @@ else
 	echo "To reset misc, run php reset_postrpocessing.php misc true\n";
 	echo "To reset tv, run php reset_postrpocessing.php tv true\n";
 	echo "To reset books, run php reset_postrpocessing.php books true\n";
-	echo "To reset nfos, run php reset_postrpocessing.php nfos true\n";
+	echo "To reset nfos, run php reset_postrpocessing.php nfosook true\n";
 	echo "To reset everything, run php reset_postrpocessing.php all true\n";
 	echo "To reset only those without covers or previews use second argument false\033[m\n";
 }

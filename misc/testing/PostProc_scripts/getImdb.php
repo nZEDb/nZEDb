@@ -8,7 +8,7 @@ require_once(FS_ROOT."/../../../www/lib/movie.php");
 
 $movie = new Movie(true);
 
-$db = new Db();
+$db = new Db;
 
 $movies = $db->query("SELECT imdbID from movieinfo");
 

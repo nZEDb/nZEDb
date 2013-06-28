@@ -2,16 +2,6 @@
 
 require("config.php");
 require_once(WWW_DIR."lib/postprocess.php");
-require_once(WWW_DIR."lib/site.php");
-
-//remove folders from tmpunrar
-$site = new Sites();
-$tmpunrar = $site->get()->tmpunrarpath;
-if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
-{
-	echo "Removing dead folders from ".$tmpunrar."\n";
-	exec("rm -r ".$tmpunrar."/*");
-}
 
 if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == "all" && $argv[1] !== "allinf" && $argv[1] !== "tmux" && $argv[1] !== "book" && $argv[1] !== "nfo" && $argv[1] !== "movies" && $argv[1] !== "music" && $argv[1] !== "games" && $argv[1] !== "anime" && $argv[1] !== "tv" && $argv[1] !== "additional" && isset($argv[2]) && ($argv[2] == "true" || $argv[2] == "false"))
 {

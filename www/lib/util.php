@@ -312,3 +312,5 @@ function release_fileicon ($x, $t)
 			return $y;
 	}
 }
+
+?>

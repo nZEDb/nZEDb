@@ -89,3 +89,4 @@ class Genres
 		return $db->queryDirect("SELECT ID from genres where disabled = 1");
 	}
 }
+?>

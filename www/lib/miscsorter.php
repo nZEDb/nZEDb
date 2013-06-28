@@ -5,8 +5,6 @@ require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/nfo.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
 require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/predb.php");
-
 
 
 class MiscSorter {
@@ -20,7 +18,7 @@ class MiscSorter {
 		'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
 
 		$this->echooutput = $echooutput;
-		$this->qty = 1000;
+		$this->qty = 10000;
 		$this->DEBUGGING = false;
 
 		$this->db = new DB($this->echooutput);
@@ -84,7 +82,8 @@ class MiscSorter {
 			$thecategory[] = $c['ID'];
 
 		$thecategory = implode(", ", $thecategory);
-		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryID IN ( %s ) ORDER BY RAND() limit %d", $thecategory, $this->qty);
+		//var_dump($thecategory);
+		$query = sprintf("SELECT ID FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryID IN ( %s ) limit %d", $thecategory, $this->qty);
 		$res = $this->db->query($query);
 
 		if (count($res) == 0)
@@ -255,7 +254,7 @@ class MiscSorter {
 		else
 			$pos = false;
 
-		$pattern = '/(?:[\s\_\.\:\xb0-\x{3000}]{2,}|^)([a-z0-9].+v(?:er(?:sion)?)?[\.\s]*?\d+\.\d(?:\.\d+)?.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/Uui';
+		$pattern = '/[\s\_\.\:\xb0-\x{3000}]{2,}([a-z0-9].+v(?:er(?:sion)?)?[\.\s]*?\d+\.\d(?:\.\d+)?.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/Uui';
 		$set1 = preg_split($pattern,  $nfo, 0, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 		if (isset($set1[1]))
 		{
@@ -649,7 +648,6 @@ echo $case."\n";
 			case 'crack':
 			case 'linux':
 			case 'install':
-			case 'application':
 				$ok = $this-> doOS($nfo, $row['ID'], Category::CAT_PC_0DAY, $row["relnamestatus"]);
 				break;
 
@@ -734,22 +732,6 @@ echo $case."\n";
 				$ok = $this->dodbupdate($row['ID'], Category::CAT_BOOKS_COMICS, $row["relnamestatus"], '');
 				break;
 
-			case 'avi':
-			case 'dvd':
-			case 'h264':
-			case 'mkv':
-			case 'movie':
-			case 'x264':
-			case 'xvid':
-				break;
-
-			case 'tvrage':
-				break;
-
-			case 'hdtv':
-			case 'tvseries':
-				break;
-
 			case "asin":
 			case "isbn":
 			case "amazon.":
@@ -806,15 +788,6 @@ echo "asin ".$set[1]."\n";
 		$this->idarr = $this->getIDs ($category);
 		if ($id != 0)
 			$this->idarr = $id;
-		else
-		{
-			$pb = new Predb(true);
-			//$pb->parseTitles(2, 1, 2, 1, '')."\n";
-			$pb->parseTitles(0, 0, 0, 0, '')."\n";
-			$pb->matchNfo()."\n";
-			$pb->matchPredb()."\n";
-			unset($pb);
-		}
 
 		$query = "SELECT uncompress(releasenfo.nfo) AS nfo, releases.ID, releases.guid, releases.`fromname`, releases.`name`,
 	releases.searchname, groups.`name` AS gname, releases.groupID, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
@@ -835,7 +808,7 @@ echo "asin ".$set[1]."\n";
 					$pattern = '/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|(isbn)|(UPC\b)|(comic book)|(comix)|(tv series)|(\bos\b)|(documentaries)|(documentary)|(doku)|(macintosh)|(dmg)|(mac[ _\.\-]??os[ _\.\-]??x??)|(\bos\b\s??x??)|(\bosx\b)';
 					$pattern = $pattern . '|(\bios\b)|(iphone)|(ipad)|(ipod)|(pdtv)|(hdtv)|(video streams)|(movie)|(audiobook)|(audible)|(recorded books)|(spoken book)|(speech)|(read by)\:?|(narrator)\:?|(narrated by)';
 					$pattern = $pattern . '|(dvd)|(ntsc)|(m4v)|(mov\b)|(avi\b)|(xvid)|(divx)|(mkv)|(amazon\.)[a-z]{2,3}.*\/dp\/|(anidb.net).*aid=|(\blame\b)|(\btrack)|(trax)|(t r a c k)|(music)|(44.1kHz)|video (game)|type:(game)|(game) Type|(game)[ \.]+|(platform)|(console)|\b(win(?:dows|all|xp)\b)|(\bwin\b)';
-					$pattern = $pattern . '|(m3u)|(flac\b)|(?<!writing )(application)(?! util)|(plugin)|(\bcrack\b)|(install\b)|(setup)|(magazin)|(x264)|(h264)|(itunes\.apple\.com\/)|(sport)|(deportes)|(nhl)|(nfl)|(\bnba)|(ncaa)|(album)|(\bepub\b)|(mobi)|format\W+?[^\r]*(pdf)/iU';
+					$pattern = $pattern . '|(m3u)|(flac\b)|(application)|(plugin)|(\bcrack\b)|(install\b)|(setup)|(magazin)|(x264)|(h264)|(itunes\.apple\.com\/)|(sport)|(deportes)|(nhl)|(nfl)|(\bnba)|(ncaa)|(album)|(\bepub\b)|(mobi)|format\W+?[^\r]*(pdf)/iU';
 
 					$matches = preg_split($pattern, $nfo, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 
@@ -920,4 +893,4 @@ echo "$query\n";
 
 	}
 }
-
+?>

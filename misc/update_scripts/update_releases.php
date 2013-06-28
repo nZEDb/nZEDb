@@ -1,16 +1,16 @@
 <?php
 
 require(dirname(__FILE__)."/config.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/consoletools.php");
+require_once(WWW_DIR."/lib/releases.php");
+require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/framework/db.php");
+require_once(WWW_DIR."/lib/consoletools.php");
 
 $groupName = isset($argv[3]) ? $argv[3] : "";
 if (isset($argv[1]) && isset($argv[2]))
 {
-	$releases = new Releases();
+	$releases = new Releases;
 	if ($argv[1] == 1 && $argv[2] == "true")
 	{
 		$releases->processReleases(1, 1, $groupName, true);

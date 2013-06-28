@@ -505,3 +505,5 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_BASE64_ENCODING_ERROR', 504);
  * c-hanging-comment-ender-p: nil
  * End:
  */
+
+?>

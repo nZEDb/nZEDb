@@ -8,7 +8,7 @@
 <table class="input">
 
 <tr>
-	<td><label for="rageID">Rage Id:</label></td>
+	<td><label for="rageID">Rage Id</label>:</td>
 	<td>
 		<input type="hidden" name="id" value="{$rage.ID}" />
 		<input id="rageID" class="short" name="rageID" type="text" value="{$rage.rageID}" />
@@ -17,7 +17,7 @@
 </tr>
 
 <tr>
-	<td><label for="releasetitle">Show Name:</label></td>
+	<td><label for="releasetitle">Show Name</label>:</td>
 	<td>
 		<input id="releasetitle" class="long" name="releasetitle" type="text" value="{$rage.releasetitle|escape:'htmlall'}" />
 		<div class="hint">The title of the TV show.</div>
@@ -25,14 +25,14 @@
 </tr>
 
 <tr>
-	<td><label for="description">Description:</label></td>
+	<td><label for="description">Description</label>:</td>
 	<td>
 		<textarea id="description" name="description">{$rage.description|escape:'htmlall'}</textarea>
 	</td>
 </tr>
 
 <tr>
-	<td><label for="genre">Show Genres:</label></td>
+	<td><label for="genre">Show Genres</label>:</td>
 	<td>
 		<input id="genre" class="long" name="genre" type="text" value="{$rage.genre|escape:'htmlall'}" />
 		<div class="hint">The genres for the TV show. Separated by pipes ( | )</div>
@@ -40,7 +40,7 @@
 </tr>
 
 <tr>
-	<td><label for="country">Show Country:</label></td>
+	<td><label for="country">Show Country</label>:</td>
 	<td>
 		<input id="country" name="country" type="text" value="{$rage.country|escape:'htmlall'}" maxlength="2" />
 		<div class="hint">The country for the TV show.</div>
@@ -48,7 +48,7 @@
 </tr>
 
 <tr>
-	<td><label for="imagedata">Series Image:</label></td>
+	<td><label for="imagedata">Series Image</label>:</td>
 	<td>
 		{if $rage.imgdata != ""}
 			<img style="max-width:200px; display:block;" src="{$smarty.const.WWW_TOP}/../getimage?type=tvrage&id={$rage.ID}">

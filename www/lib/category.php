@@ -1539,3 +1539,4 @@ class Category
 		return false;
 	}
 }
+?>

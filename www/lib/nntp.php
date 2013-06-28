@@ -8,13 +8,12 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
-	function doConnect()
+	function doConnect() 
 	{
 		if ($this->_isConnected())
-		{
 			return true;
-		}
 		$enc = false;
+
 		$s = new Sites();
 		$site = $s->get();
 		$compressionstatus = $site->compressedheaders;
@@ -24,7 +23,6 @@ class Nntp extends Net_NNTP_Client
 		$retries = 5;
 		while($retries >= 1)
 		{
-			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
@@ -42,49 +40,6 @@ class Nntp extends Net_NNTP_Client
 				{
 					if ($retries < 1)
 						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
-				}
-			}
-			if($compressionstatus == "1")
-			{
-				$this->enableCompression();
-			}
-			return $ret && $ret2;
-		}
-	}
-
-	function doConnect_A() 
-	{
-		if ($this->_isConnected())
-			return true;
-		$enc = false;
-
-		$s = new Sites();
-		$site = $s->get();
-		$compressionstatus = $site->compressedheaders;
-		unset($s);
-		unset($site);
-
-		$retries = 10;
-		while($retries >= 1)
-		{
-			usleep(10000);
-			$retries--;
-			if (defined("NNTP_SSLENABLED_A") && NNTP_SSLENABLED_A == true)
-				$enc = 'ssl';
-
-			$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A);
-			if(PEAR::isError($ret))
-			{
-				if ($retries < 1)
-					echo "Cannot connect to server ".NNTP_SERVER_A.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
-			}
-			if(!defined(NNTP_USERNAME_A) && NNTP_USERNAME_A !="" )
-			{
-				$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
-				if(PEAR::isError($ret2)) 
-				{
-					if ($retries < 1)
-						echo "Cannot authenticate to server ".NNTP_SERVER_A.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME_A." (".$ret2->getMessage().")";
 				}
 			}
 			if($compressionstatus == "1")
@@ -122,12 +77,12 @@ class Nntp extends Net_NNTP_Client
 			}
 		}
 	}
-
+	
 	function doQuit() 
 	{
 		$this->quit();
 	}
-
+	
 	function getMessage($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -168,6 +123,7 @@ class Nntp extends Net_NNTP_Client
 		}
 
 		$body = $this->getArticle('<'.$partMsgId.'>', true);
+		//echo $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 		{
 			//echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
@@ -182,21 +138,6 @@ class Nntp extends Net_NNTP_Client
 		}
 
 		return $message;
-	}
-
-	function getArticles($groupname, $msgIds)
-	{
-		$body = '';
-
-		foreach ($msgIds as $m)
-		{
-			$message = $this->get_Article($groupname, $m);
-			if ($message !== false)
-				$body = $body . $message;
-			else
-				return false;
-		}
-		return $body;
 	}
 
 
@@ -331,15 +272,9 @@ class Nntp extends Net_NNTP_Client
 			// Get byte count and update total bytes.
 			$bytesreceived = strlen($buffer);
 			// If we got no bytes at all try one more time to pull data.
-			$retries = 5;
-        	while($retries >= 1)
+			if ($bytesreceived == 0)
 			{
-				$retries--;
-				if ($bytesreceived == 0)
-				{
-					flush($buffer);
-					$buffer = fgets($this->_socket);
-				}
+				$buffer = fgets($this->_socket);
 			}
 			// Get any socket error codes.
 			 $errorcode = socket_last_error();
@@ -427,3 +362,4 @@ class Nntp extends Net_NNTP_Client
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
 	}
 }
+?>

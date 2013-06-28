@@ -1048,13 +1048,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    // Loop through all articles
             foreach ($overview as $key => $article) {
 
-	   	        // Copy $format
+    	        // Copy $format
     	        $f = $format;
 
     	        // Field counter
     	        $i = 0;
-
-				// Loop through forld names in format
+		
+		// Loop through forld names in format
     	        foreach ($f as $tag => $full) {
 
     	    	    //
@@ -1546,3 +1546,5 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
  * c-hanging-comment-ender-p: nil
  * End:
  */
+
+?>

@@ -43,26 +43,12 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 			$db->query($sql);
 		}
 }
-else if (isset($argv[1]) && $argv[1] == "tokudb")
-{
-    $tables = $db->query($sql);
-    foreach($tables as $row)
-        {
-			$tbl = $row['Tables_in_'.DB_NAME];
-			printf("Converting $tbl\n");
-			if ($tbl != "parts" || $tbl != "binaries" || $tbl != "collections")
-				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
-			else
-				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
-			$db->query($sql);
-			$db->queryDirect("OPTIMIZE TABLE $tbl");
-        }
-}
 else
 {
 	exit("\nERROR: Wrong argument.\n\n"
 		."php convert_mysql_tables.php myisam	...: Converts all the tables to Myisam Dynamic.\n"
 		."php convert_mysql_tables.php dinnodb	...: Converts all the tables to InnoDB Dynamic.\n"
-		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php tokudb  ...: Converts all the tables to Tokutek DB.\n\n");
+		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n\n");
 }
+
+?>

@@ -22,7 +22,7 @@ Class Predb
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
 		if (strtotime($newestrel["adddate"]) < time()-600)
@@ -51,10 +51,10 @@ Class Predb
 
 	public function retrieveWomble()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 
-		$buffer = getUrl("http://www.newshost.co.za");
+		$buffer = getUrl("http://nzb.isasecret.com/");
 		if ($buffer !== false && strlen($buffer))
 		{
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches))
@@ -111,7 +111,7 @@ Class Predb
 
 	public function retrieveOmgwtfnzbs()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 
 		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
@@ -157,7 +157,7 @@ Class Predb
 
 	public function retrieveZenet()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 
 		$buffer = getUrl("http://pre.zenet.org/live.php");
@@ -201,7 +201,7 @@ Class Predb
 
 	public function retrievePrelist()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.prelist.ws/");
@@ -251,7 +251,7 @@ Class Predb
 	
 	public function retrieveOrlydb()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 
 		$buffer = getUrl("http://www.orlydb.com/");
@@ -291,7 +291,7 @@ Class Predb
 
 	public function retrieveSrr()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://www.srrdb.com/feed/srrs');
 		if ($releases !== false)
@@ -313,7 +313,7 @@ Class Predb
 
 	public function retrievePredbme()
 	{
-		$db = new DB();
+		$db = new DB;
 		$newnames = 0;
 		$releases = @simplexml_load_file('http://predb.me/?rss');
 		if ($releases !== false)
@@ -346,7 +346,6 @@ Class Predb
 			while ($row = mysqli_fetch_assoc($res))
 			{
 				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
-				echo ".";
 				$updated++;
 			}
 			return $updated;
@@ -361,7 +360,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus != 1"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo from releases r inner join predb p on r.ID = p.releaseID where p.nfo is not null and r.nfostatus = 0"))
 		{
 			$nfo = new Nfo($this->echooutput);
 			while ($row = mysqli_fetch_assoc($res))
@@ -372,7 +371,6 @@ Class Predb
 					$nfo->addReleaseNfo($row["ID"]);
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
-					echo ".";
 					$nfos++;
 				}
 			}
@@ -525,4 +523,4 @@ Class Predb
 		return $count["cnt"];
 	}
 }
-
+?>

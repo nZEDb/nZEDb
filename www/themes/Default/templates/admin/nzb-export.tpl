@@ -17,7 +17,7 @@ If you are exporting a large number of nzb files, run this script from the comma
 <table class="input">
 
 <tr>
-	<td><label for="folder">Folder:</label></td>
+	<td><label for="folder">Folder</label>:</td>
 	<td>
 		<input id="folder" class="long" name="folder" type="text" value="{$folder}" />
 		<div class="hint">Windows file paths should be specified with forward slashes e.g. c:/temp/</div>
@@ -25,7 +25,7 @@ If you are exporting a large number of nzb files, run this script from the comma
 </tr>
 
 <tr>
-	<td><label for="postfrom">Posted Between:</label></td>
+	<td><label for="postfrom">Posted Between</label>:</td>
 	<td>
 		<input id="postfrom" class="date" name="postfrom" type="text" value="{$fromdate}" />
 		<label for="postto"> and </label>
@@ -35,7 +35,7 @@ If you are exporting a large number of nzb files, run this script from the comma
 </tr>
 
 <tr>
-	<td><label for="group">Group:</label></td>
+	<td><label for="group">Group</label>:</td>
 	<td>
 		{html_options id="group" name='group' options=$grouplist selected=$group}
 		<div class="hint">Posted to this newsgroup</div>

@@ -12,7 +12,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	require_once(WWW_DIR."lib/site.php");
 	require_once(WWW_DIR."lib/consoletools.php");
 
-	$db = new Db();
+	$db = new Db;
 	$s = new Sites();
 	$consoletools = new ConsoleTools();
 	$site = $s->get();
@@ -25,15 +25,14 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$db->query("truncate table parts");
 	$db->query("truncate table partrepair");
 	$db->query("truncate table releasenfo");
-	$db->query("truncate table nzbs");
 
 	echo "Resetting groups.\n";
 	$db->query("UPDATE groups SET first_record=0, first_record_postdate=NULL, last_record=0, last_record_postdate=NULL");
 	echo "Set releaseID's in predb to null.\n";
-	$db->query("UPDATE predb SET releaseID=NULL where releaseID is not NULL");
+	$db->query("UPDATE predb SET releaseID=NULL");
 
 	$relids = $db->query(sprintf("SELECT ID, guid FROM releases"));
-	echo "Deleting ".sizeof($relids)." releases, NZB's, previews and samples.\n";
+	echo "Deleting ".sizeof($relids)." releases and NZB's.\n";
 	$releases = new Releases();
 
 	foreach ($relids as $relid)

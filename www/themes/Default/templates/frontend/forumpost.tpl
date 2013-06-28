@@ -40,7 +40,7 @@
 <h3>Add Reply</h3>
 <a id="reply"></a>
 <form action="" method="post">
-	<label for="addReply">Message:</label><br/>
+	<label for="addReply">Message</label>:<br/>
 	<textarea maxlength="5000" id="addReply" name="addReply" rows="6" cols="60"></textarea>
 	<br/>
 	<input class="forumreplysubmit" type="submit" value="submit"/>
@@ -48,3 +48,4 @@
 </div>
 
 {/if}
+

@@ -15,7 +15,7 @@
 </tr>
 
 <tr>
-	<td><label for="description">Description:</label></td>
+	<td><label for="description">Description</label>:</td>
 	<td>
 		<textarea id="description" name="description">{$group.description}</textarea>
 	</td>
@@ -38,7 +38,7 @@
 </td>
 
 <tr>
-	<td><label for="minsizetoformrelease">Minimum File Size to Make a Release:</label></td>
+	<td><label for="minsizetoformrelease">Minimum File Size to Make a Release</label>:</td>
 	<td>
 		<input class="small" id="minsizetoformrelease" name="minsizetoformrelease" type="text" value="{$group.minsizetoformrelease}" />
 		<div class="hint">The minimum total size in bytes to make a release. If left blank, will use the site wide setting.</div>
@@ -46,7 +46,7 @@
 </tr>
 
 <tr>
-	<td><label for="active">Active:</label></td>
+	<td><label for="active">Active</label>:</td>
 	<td>
 		{html_radios id="active" name='active' values=$yesno_ids output=$yesno_names selected=$group.active separator='<br />'}
 		<div class="hint">Inactive groups will not have headers downloaded for them.</div>		
@@ -54,7 +54,7 @@
 </tr>
 
 <tr>
-	<td><label for="backfill">Backfill:</label></td>
+	<td><label for="backfill">Backfill</label>:</td>
 	<td>
 		{html_radios id="backfill" name='backfill' values=$yesno_ids output=$yesno_names selected=$group.backfill separator='<br />'}
 		<div class="hint">If set to false, backfill.php will ignore this group. This works even if the above setting is no.</div>		

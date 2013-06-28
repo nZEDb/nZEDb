@@ -1066,3 +1066,4 @@ class CategoryFrench
 		return false;
 	}
 }
+?>

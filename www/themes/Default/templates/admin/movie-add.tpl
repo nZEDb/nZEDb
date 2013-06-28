@@ -12,7 +12,7 @@
 </tr>
 
 <tr>
-	<td><label for="title">IMDB ID:</label></td>
+	<td><label for="title">IMDB ID</label>:</td>
 	<td>
 		<input id="id" class="long" name="id" type="text" value="" />
 	</td>

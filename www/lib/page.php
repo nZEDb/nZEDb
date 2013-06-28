@@ -52,3 +52,5 @@ class Page extends BasePage
 		parent::render();
 	}
 }
+
+?>

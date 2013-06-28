@@ -89,7 +89,7 @@ $page->smarty->assign('sabpriority_names', array( 'Force', 'High', 'Normal', 'Lo
 $page->smarty->assign('newgroupscan_names', array('Days','Posts'));
 $page->smarty->assign('registerstatus_ids', array(Sites::REGISTER_STATUS_API_ONLY, Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_INVITE, Sites::REGISTER_STATUS_CLOSED));
 $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite', 'Closed'));
-$page->smarty->assign('passworded_ids', array(0,1,3));
+$page->smarty->assign('passworded_ids', array(0,1,2));
 $page->smarty->assign('passworded_names', array( 'Dont show passworded or potentially passworded', 'Dont show passworded', 'Show everything'));
 
 

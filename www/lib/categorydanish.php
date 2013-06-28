@@ -1063,3 +1063,4 @@ class CategoryDanish
 		return false;
 	}
 }
+?>

@@ -102,12 +102,12 @@ if (!empty($argc) || $page->isPostBack() )
 
 			$skipCheck = false;
 			$i=0;
-			$firstname = array();
-			$postername = array();
-			$postdate = array();
+			$firstname = [];
+			$postername = [];
+			$postdate = [];
 			$totalFiles = 0;
 			$totalsize = 0;
-
+			
 			foreach($xml->file as $file) 
 			{
 				//file info

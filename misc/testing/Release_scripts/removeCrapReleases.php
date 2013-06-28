@@ -71,7 +71,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteGibberish($and)
 	{
 		$type = "Gibberish";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -81,7 +81,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteHashed($and)
 	{
 		$type = "Hashed";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -91,7 +91,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteShort($and)
 	{
 		$type = "Short";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -101,7 +101,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteExecutable($and)
 	{
 		$type = "Executable";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.categoryID not in (4010, 4020, 4050, 7010)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -111,7 +111,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteInstallBin($and)
 	{
 		$type = "install.bin";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%install.bin%"'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -121,7 +121,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deletePasswordURL($and)
 	{
 		$type = "PasswordURL";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%password.url%"'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -131,7 +131,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deletePassworded($and)
 	{
 		$type = "Passworded";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP 'Passworded|Password Protect' and nzbstatus = 1".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -141,7 +141,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteSize($and)
 	{
 		$type = "Size";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query('select ID, guid, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -151,7 +151,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteSample($and)
 	{
 		$type = "Sample";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query('select ID, guid, searchname from releases where totalPart > 1 and name like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -161,7 +161,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteScr($and)
 	{
 		$type = ".scr";
-		$db = new DB();
+		$db = new Db;
 		$sql = $db->query("select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where (rf.name REGEXP '\.scr$' or r.name REGEXP '\.scr($| |\")')".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
@@ -171,7 +171,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteBlacklist($and)
 	{
 		$type = "Blacklist";
-		$db = new DB();
+		$db = new Db;
 		$regexes = $db->query('select regex from binaryblacklist where status = 1');
 		$delcount = 0;
 		if(sizeof($regexes > 0))

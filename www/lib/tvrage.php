@@ -58,7 +58,7 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO tvrage (rageID, releasetitle, description, genre, country, createddate, imgdata) values (%d, %s, %s, %s, %s, now(), %s)", 
+		return $db->queryInsert(sprintf("insert into tvrage (rageID, releasetitle, description, genre, country, createddate, imgdata) values (%d, %s, %s, %s, %s, now(), %s)", 
 			$rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $db->escapeString($imgbytes)));		
 	}
 
@@ -199,7 +199,7 @@ class TvRage
 								$fullep = $db->escapeString($sShow->ep);
 								$link = $db->escapeString($sShow->link);
 								$airdate = $db->escapeString(date("Y-m-d H:i:s", $day_time));
-								$sql = sprintf("INSERT IGNORE INTO tvrageepisodes (rageID,showtitle,fullep,airdate,link,eptitle) VALUES (%d,%s,%s,%s,%s,%s)
+								$sql = sprintf("INSERT into tvrageepisodes (rageID,showtitle,fullep,airdate,link,eptitle) VALUES (%d,%s,%s,%s,%s,%s)
 										ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s",
 										$sShow->sid,$showname,$fullep,$airdate,$link,$title,$airdate,$link,$title,$showname);
 								$db->queryInsert($sql);
@@ -351,7 +351,7 @@ class TvRage
 	
 	public function updateEpInfo($show, $relid)
 	{
-		$db = new DB();
+		$db = new Db;
 		
 		if ($this->echooutput)
 			echo "TV series: ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'').".\n";
@@ -364,7 +364,7 @@ class TvRage
 	
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
-		$db = new DB();
+		$db = new Db;
 		
 		// try and get the episode specific info from tvrage
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -413,7 +413,7 @@ class TvRage
 	
 	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
 	{
-		$db = new DB();
+		$db = new Db;
 		
 		// try and get the episode specific info from tvrage
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -455,30 +455,25 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 	
-	public function processTvReleases($releaseToWork = '', $lookupTvRage=true)
+	public function processTvReleases($threads=1, $lookupTvRage=true)
 	{
 		$ret = 0;
 		$db = new DB();
 		$trakt = new Trakttv();
-		$site = new Sites();
+		$site = new Sites;
+		$threads--;
 
 		// get all releases without a rageid which are in a tv category.
-		if ($releaseToWork == '')
+		$result = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d,%d", Category::CAT_PARENT_TV, floor(($this->rageqty) * ($threads * 1.5)), $this->rageqty));
+		
+		if ($this->echooutput)
 		{
-			$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_TV, $this->rageqty));
-			$tvcount = $db->getNumRows($res);
+			$tvremain = $db->getNumRows($result);
+			if ($tvremain > 0)
+				echo "Processing TV for ".$tvremain." release(s).\n";
 		}
-		else
-		{
-			$pieces = explode("                       ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'ID' => $pieces[1]));
-			$tvcount = 1;
-		}
-
-		if ($this->echooutput && $tvcount > 1)
-			echo "Processing TV for ".$tvcount." release(s).\n";
-
-		foreach ($res as $arr)
+			
+		while ($arr = $db->fetchAssoc($result)) 
 		{
 			$show = $this->parseNameEpSeason($arr['searchname']);			
 			if (is_array($show) && $show['name'] != '')
@@ -1002,3 +997,5 @@ class TvRage
 	}
 	
 }
+
+?>

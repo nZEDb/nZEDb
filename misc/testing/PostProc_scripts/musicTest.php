@@ -6,7 +6,7 @@ require_once(FS_ROOT."/../../../www/lib/music.php");
 require_once(FS_ROOT."/../../../www/lib/category.php");
 
 $music = new Music(true);
-$db = new Db();
+$db = new Db;
 
 $limit = 10;
 $testSpecificRel = 'Joy - Touch By Touch 2011-CDM-2010-RQS'; //make this string empty to check last $limit releases

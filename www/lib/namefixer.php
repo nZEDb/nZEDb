@@ -31,27 +31,27 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "NFO, ";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." order by postdate desc");
+			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
 		$rowcount = $db->getAffectedRows();
@@ -60,13 +60,12 @@ class Namefixer
 		{
 			while ($relrow = $db->fetchArray($relres))
 			{
-				echo "Reading NFO => ".$relrow['searchname']."\n";
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
 				if ($this->checked % 500 == 0)
 					echo $this->checked." NFOs processed.\n\n";
 			}
-			if($echo == 1)
+			if($echo ==1)
 				echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";
 			else
 				echo $this->fixed." releases could have their names changed. ".$this->checked." NFO's were checked.\n";
@@ -82,27 +81,27 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel inner join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by releaseID asc");
 		}
 		//other cats
 		if ($time == 2 && $cats == 1)
 		{
-			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
+			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by releaseID asc");
 		}
 		//all cats
 		if ($time == 2 && $cats == 2)
 		{
-			$relres = $db->queryDirect($query." order by postdate desc");
+			$relres = $db->queryDirect($query." order by releaseID asc");
 		}
 		
 		$rowcount = $db->getAffectedRows();
@@ -155,7 +154,7 @@ class Namefixer
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
-							"Group:	".$groupname.$n.
+							"Group:    ".$groupname.$n.
 							"Method:   ".$type.$method.$n.$n;
 				
 					if ($namestatus == 1)
@@ -175,7 +174,7 @@ class Namefixer
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
-							"Group:	".$groupname.$n.
+							"Group:    ".$groupname.$n.
 							"Method:   ".$type.$method.$n.$n;
 				}
 			}
@@ -575,3 +574,4 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus);
 	}
 }
+?>

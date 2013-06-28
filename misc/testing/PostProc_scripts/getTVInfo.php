@@ -4,9 +4,9 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/releases.php");
 
-$releases = new Releases();
+$releases = new Releases;
 
-$db = new Db();
+$db = new Db;
 
 $shows = $db->query("select name from releases where categoryID IN (select ID from category where parentID = 5000) limit 0, 50");
 			
