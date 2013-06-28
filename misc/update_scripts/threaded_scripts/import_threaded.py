@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import cymysql as mdb
 import subprocess
 import string
 import re
@@ -51,7 +55,7 @@ nzbs = cur.fetchone();
 cur.execute("select value from tmux where setting = 'IMPORT_BULK'");
 bulk = cur.fetchone();
 
-print "Sorting Folders in "+nzbs[0]+", be patient."
+print("Sorting Folders in "+nzbs[0]+", be patient.")
 #datas = sorted(os.walk(nzbs[0]))
 #datas = os.listdir(nzbs[0])
 #datas = [d for d in os.listdir(nzbs[0]) if os.path.isdir(d)]
@@ -60,7 +64,7 @@ if len(datas) == 0:
 	datas = nzbs
 
 #for sub in datas[0]:
-#	print sub
+#	print(sub)
 
 #sys.exit()
 
@@ -76,14 +80,14 @@ class WorkerThread(threading.Thread):
 			try:
 				dirname = self.dir_q.get(True, 0.05)
 				if bulk[0] == 'FALSE':
-					print '\n%s: Import from %s started.' % (self.name, dirname)
+					print("\n%s: Import from %s started." %(self.name, dirname))
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+dirname])
 					self.result_q.put((self.name, dirname))
 				else:
-					print '\n%s: Import-Bulk from %s started.' % (self.name, dirname)
+					print("n%s: Import-Bulk from %s started." %(self.name, dirname))
 					subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+dirname])
 					self.result_q.put((self.name, dirname))
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -92,8 +96,8 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	dir_q = Queue.Queue()
-	result_q = Queue.Queue()
+	dir_q = queue.Queue()
+	result_q = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(int(run_threads[0]))]
@@ -108,15 +112,15 @@ def main(args):
 		work_count += 1
 		dir_q.put(os.path.join(nzbs[0],gnames))
 
-	print 'Assigned %s folders to workers' % work_count
+	print("Assigned %s folders to workers" %(work_count))
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
 		if bulk[0] == 'FALSE':
-			print '\n%s: Import from %s finished.' % (result[0], result[1])
+			print("\n%s: Import from %s finished." %(result[0], result[1]))
 		else:
-			print '\n%s: Import-Bulk from %s finished.' % (result[0], result[1])
+			print("\n%s: Import-Bulk from %s finished." %(result[0], result[1]))
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it

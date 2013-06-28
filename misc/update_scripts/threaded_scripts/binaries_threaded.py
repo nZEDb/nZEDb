@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import cymysql as mdb
 import subprocess
 import string
 import re
@@ -60,10 +64,10 @@ class WorkerThread(threading.Thread):
 		while not self.stoprequest.isSet():
 			try:
 				dirname = self.threadID.get(True, 0.05)
-				print '\n%s: Update on %s started.' % (self.name, dirname)
+				print("\n%s: Update on %s started." %(self.name, dirname))
 				subprocess.call(["php", pathname+"/../update_binaries.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
@@ -72,8 +76,8 @@ class WorkerThread(threading.Thread):
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
-	result_q = Queue.Queue()
+	threadID = queue.Queue()
+	result_q = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
@@ -88,12 +92,12 @@ def main(args):
 		work_count += 1
 		threadID.put(gnames[0])
 
-	print 'Assigned %s groups to workers' % work_count
+	print("Assigned %s groups to workers" %(work_count))
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
-		print '\n%s: Update on %s finished.' % (result[0], result[1])
+		print("\n%s: Update on %s finished." %(result[0], result[1]))
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it

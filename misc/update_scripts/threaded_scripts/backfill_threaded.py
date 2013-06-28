@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, time
-import threading, Queue
-import MySQLdb as mdb
+import threading
+try:
+    import queue
+except ImportError:
+    import Queue as queue
+import cymysql as mdb
 import subprocess
 import string
 import re
@@ -79,13 +83,12 @@ elif intbackfilltype == 2:
         backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
 if len(sys.argv) > 1 and sys.argv[1] == "all":
-	print sys.argv[1]
-	cur.execute("%s %s %s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group))
+	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
 	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", int(groups[0])))
 datas = cur.fetchall()
 if not datas:
-	print "No Groups enabled for backfill"
+	print("No Groups enabled for backfill")
 	sys.exit()
 
 
@@ -101,23 +104,23 @@ class WorkerThread(threading.Thread):
 			try:
 				dirname = self.threadID.get(True, 0.05)
 				if len(sys.argv) > 1 and sys.argv[1] == "all":
-					print '\n%s: Backfill All %s started.' % (self.name, dirname)
+					print("\n%s: Backfill All %s started." %(self.name, dirname))
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+dirname])
 				else:
-					print '\n%s: Backfill %s started.' % (self.name, dirname)
+					print("\n%s: Backfill %s started." %(self.name, dirname))
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+dirname])
 				self.result_q.put((self.name, dirname))
-			except Queue.Empty:
+			except queue.Empty:
 				continue
 
 	def join(self, timeout=None):
 		self.stoprequest.set()
-		super(WorkerThread, self).join(timeout)
+		super(WorkerThread, self).join()
 
 def main(args):
 	# Create a single input and a single output queue for all threads.
-	threadID = Queue.Queue()
-	result_q = Queue.Queue()
+	threadID = queue.Queue()
+	result_q = queue.Queue()
 
 	# Create the "thread pool"
 	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
@@ -132,12 +135,12 @@ def main(args):
 		work_count += 1
 		threadID.put("%s %s" %(gnames[0], type[0]))
 
-	print 'Assigned %s groups to workers' % work_count
+	print("Assigned %s groups to workers" %(work_count))
 
 	while work_count > 0:
 		# Blocking 'get' from a Queue.
 		result = result_q.get()
-		print '\n%s: Backfill on %s finished.' % (result[0], result[1])
+		print("\n%s: Backfill on %s finished." %(result[0], result[1]))
 		work_count -= 1
 
 	# Ask threads to die and wait for them to do it

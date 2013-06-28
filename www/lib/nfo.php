@@ -54,9 +54,11 @@ class Nfo
 	{
 		$ret = 0;
 		$db = new DB();
+		$s = new Sites();
+		$site = $s->get();
 		$nntp = new Nntp();
+		$connect = ($site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
-		$site = new Sites();
 		$nzbcontents = new NZBcontents($this->echooutput);
 		$nfocount = 0;
 
@@ -84,14 +86,13 @@ class Nfo
 				if ($releaseToWork == '')
 					echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
-			$nntp->doConnect();
 			$movie = new Movie($this->echooutput);
-			//while ($arr = $db->fetchAssoc($res))
 			foreach ($res as $arr)
 			{
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
+				$connect;
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
 				if ($fetchedBinary !== false)
 				{
@@ -125,8 +126,8 @@ class Nfo
 						}
 					}
 				}
+				$nntp->doQuit();
 			}
-			$nntp->doQuit();
 		}
 
 		//remove nfo that we cant fetch after 5 attempts

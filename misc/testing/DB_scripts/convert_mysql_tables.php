@@ -48,10 +48,14 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
     $tables = $db->query($sql);
     foreach($tables as $row)
         {
-        $tbl = $row['Tables_in_'.DB_NAME];
-        printf("Converting $tbl\n");
-            $sql = "ALTER TABLE $tbl ENGINE=TokuDB";
-            $db->query($sql);
+			$tbl = $row['Tables_in_'.DB_NAME];
+			printf("Converting $tbl\n");
+			if ($tbl != "parts" || $tbl != "binaries" || $tbl != "collections")
+				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
+			else
+				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
+			$db->query($sql);
+			$db->queryDirect("OPTIMIZE TABLE $tbl");
         }
 }
 else
