@@ -145,7 +145,7 @@ def main(args):
 
 	# Ask threads to die and wait for them to do it
 	for thread in pool:
-		thread.join()
+		thread.join(timeout=60)
 
 if __name__ == '__main__':
 	import sys
