@@ -42,16 +42,17 @@ CREATE INDEX ix_binary_partcheck ON binaries (`partcheck`);
 CREATE INDEX ix_binary_collection ON binaries (`collectionID`);
 
 DROP TABLE IF EXISTS `releases`;
-CREATE TABLE `releases` 
+CREATE TABLE `releases`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255) NOT NULL DEFAULT '',
-`searchname` VARCHAR(255) NOT NULL DEFAULT '',	
-`totalpart` INT DEFAULT 0,	
+`searchname` VARCHAR(255) NOT NULL DEFAULT '',
+`totalpart` INT DEFAULT 0,
 `groupID` INT UNSIGNED NOT NULL DEFAULT '0',
 `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
 `postdate` DATETIME DEFAULT NULL,
 `adddate` DATETIME DEFAULT NULL,
+`updatetime` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 `guid` VARCHAR(50) NOT NULL,
 `fromname` VARCHAR(255) NULL,
 `completion` FLOAT NOT NULL DEFAULT '0',
@@ -161,7 +162,7 @@ CREATE TABLE `releaseextrafull` (
 
 
 DROP TABLE IF EXISTS `releasecomment`;
-CREATE TABLE `releasecomment` 
+CREATE TABLE `releasecomment`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `releaseID` INT(11) UNSIGNED NOT NULL,
@@ -176,7 +177,7 @@ CREATE INDEX ix_releasecomment_releaseID ON releasecomment (`releaseID`);
 CREATE INDEX ix_releasecomment_userID ON releasecomment (`userID`);
 
 DROP TABLE IF EXISTS `predb`;
-CREATE TABLE `predb` 
+CREATE TABLE `predb`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `title` VARCHAR(255) NOT NULL DEFAULT '',
@@ -200,7 +201,7 @@ CREATE INDEX ix_predb_md5 ON predb(`md5`);
 CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
 
 DROP TABLE IF EXISTS `menu`;
-CREATE TABLE `menu` 
+CREATE TABLE `menu`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `href` VARCHAR(2000) NOT NULL DEFAULT '',
@@ -215,88 +216,88 @@ PRIMARY KEY  (`ID`)
 
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('search','Advanced Search', 
+VALUES ('search','Advanced Search',
 	'Search for releases.', 1, 10);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('browsegroup','Groups List', 
+VALUES ('browsegroup','Groups List',
 	'Browse by Group.', 1, 25);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('movies','Movies', 
+VALUES ('movies','Movies',
 	'Browse Movies.', 1, 40);
-	
-INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('upcoming','Theatres', 
-	'Movies currently in theatres.', 1, 45);	
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('series','TV Series', 
+VALUES ('upcoming','Theatres',
+	'Movies currently in theatres.', 1, 45);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('series','TV Series',
 	'Browse TV Series.', 1, 50);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('predb','PreDB', 
+VALUES ('predb','PreDB',
 	'Browse PreDB.', 1, 51);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('calendar','TV Calendar', 
+VALUES ('calendar','TV Calendar',
 	'View what\'s on TV.', 1, 53);
 
 	INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`)
 VALUES ('anime','Anime','Browse Anime', 1, 55);
-	
+
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('music','Music', 
+VALUES ('music','Music',
 	'Browse Music.', 1, 60);
-	
+
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('console','Console', 
+VALUES ('console','Console',
 	'Browse Games.', 1, 65);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('books','Books', 
+VALUES ('books','Books',
 	'Browse Books.', 1, 67);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('admin','Admin', 
+VALUES ('admin','Admin',
 	'Admin', 2, 70);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('cart','My Cart', 
+VALUES ('cart','My Cart',
 	'Your Nzb cart.', 1, 75);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('myshows','My Shows', 
+VALUES ('myshows','My Shows',
 	'Your TV shows.', 1, 77);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('mymovies','My Movies', 
+VALUES ('mymovies','My Movies',
 	'Your Movie Wishlist.', 1, 78);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('apihelp','API', 
+VALUES ('apihelp','API',
 	'Information on the API.', 1, 79);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('rss','RSS', 
+VALUES ('rss','RSS',
 	'RSS Feeds.', 1, 80);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`, `menueval` )
-VALUES ('queue','Sab Queue', 
+VALUES ('queue','Sab Queue',
 	'View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('forum','Forum', 
+VALUES ('forum','Forum',
 	'Browse Forum.', 1, 85);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('login','Login', 
+VALUES ('login','Login',
 	'Login.', 0, 100);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('register','Register', 
+VALUES ('register','Register',
 	'Register.', 0, 110);
-	
+
 
 
 DROP TABLE IF EXISTS `releasenfo`;
@@ -333,7 +334,7 @@ INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `
 
 
 DROP TABLE IF EXISTS `tvrage`;
-CREATE TABLE `tvrage` 
+CREATE TABLE `tvrage`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `rageID` INT NOT NULL,
@@ -378,7 +379,7 @@ VALUES (1,0,1,'Welcome to nZEDb!','Feel free to leave a message.',  0, 0, 0,  NO
 
 
 DROP TABLE IF EXISTS `movieinfo`;
-CREATE TABLE `movieinfo` 
+CREATE TABLE `movieinfo`
 (
  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `imdbID` mediumint(7) unsigned zerofill NOT NULL,
@@ -403,7 +404,7 @@ CREATE TABLE `movieinfo`
 
 
 DROP TABLE IF EXISTS `animetitles`;
-CREATE TABLE `animetitles` 
+CREATE TABLE `animetitles`
 (
   `anidbID` INT(7) UNSIGNED NOT NULL,
   `title` VARCHAR(255) NOT NULL,
@@ -413,7 +414,7 @@ CREATE TABLE `animetitles`
 
 
 DROP TABLE IF EXISTS `anidb`;
-CREATE TABLE `anidb` 
+CREATE TABLE `anidb`
 (
   `ID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `anidbID` INT(7) UNSIGNED NOT NULL,
@@ -761,7 +762,7 @@ CREATE TABLE `users` (
   `musicview` int not null default 1,
   `consoleview` int not null default 1,
   `bookview` int not null default 1,
-  `saburl` VARCHAR(255) NULL DEFAULT NULL,  
+  `saburl` VARCHAR(255) NULL DEFAULT NULL,
   `sabapikey` VARCHAR(255) NULL DEFAULT NULL,
   `sabapikeytype` TINYINT(1) NULL DEFAULT NULL,
   `sabpriority` TINYINT(1) NULL DEFAULT NULL,
@@ -900,7 +901,7 @@ CREATE TABLE content
 INSERT INTO content (title, body, contenttype, STATUS, metadescription, metakeywords, showinmenu)
 VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with sickbeard, couchpotato, etc...</p>', 3, 1, '','', 0);
 
-INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords) 
+INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
 VALUES ('example content','/great/seo/content/page/','<p>this is an example content page</p>', 2, 1, 1, '','');
 
 INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
@@ -1022,6 +1023,8 @@ INSERT INTO `site`
 	('alternate_nntp', '0'),
 	('postthreadsamazon', '1'),
 	('postthreadsnon', '1'),
+	('currentppticket', '0'),
+	('nextppticket', '0'),
 	('sqlpatch','82');
 
 
@@ -1066,7 +1069,7 @@ CREATE TABLE `bookinfo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `musicinfo`;
-CREATE TABLE `musicinfo` 
+CREATE TABLE `musicinfo`
 (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -1100,7 +1103,7 @@ CREATE TABLE `upcoming` (
 
 
 DROP TABLE IF EXISTS `genres`;
-CREATE TABLE `genres` 
+CREATE TABLE `genres`
 (
   `ID` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -1109,7 +1112,7 @@ CREATE TABLE `genres`
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-INSERT INTO `genres` 
+INSERT INTO `genres`
 (
   `title`, `type`
 ) VALUES
@@ -1265,17 +1268,17 @@ INSERT INTO `genres`
 
 DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
-  
+
 	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  
+
 	`setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-  
+
 	`value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
-  
+
 	`updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
 PRIMARY KEY (`ID`),
-  
+
 UNIQUE KEY `setting` (`setting`)
 
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1356,8 +1359,8 @@ CREATE TABLE `nzbs` (
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1,6318,'The Young and the Restless',NULL,now(),NULL,70328),
 (2,3557,'Flash Gordon (1954)',NULL,now(),NULL,70331),
 (3,77,'Jesse Hawkes',NULL,now(),NULL,70332),
@@ -1856,8 +1859,8 @@ VALUES
 (496,6227,'The Super Powers Team: Galactic Guardians',NULL,now(),NULL,70914),
 (497,18289,'The Last Precinct',NULL,now(),NULL,70915),
 (498,3177,'Crossroads (1992)',NULL,now(),NULL,70916);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (499,4721,'One On One',NULL,now(),NULL,70919),
 (500,618,'Animal Crackers',NULL,now(),NULL,70920),
 (501,9300,'The Estate Agents',NULL,now(),NULL,70921),
@@ -2356,8 +2359,8 @@ VALUES
 (994,5474,'Taxi',NULL,now(),NULL,71527),
 (995,2779,'Bewitched',NULL,now(),NULL,71528),
 (996,3423,'Edge of Darkness',NULL,now(),NULL,71529);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (997,1091,'The Dick Clark Show',NULL,now(),NULL,71530),
 (998,15499,'Hollywood Beat',NULL,now(),NULL,71533),
 (999,817,'Love Thy Neighbour',NULL,now(),NULL,71534),
@@ -2856,8 +2859,8 @@ VALUES
 (1492,3200,'Da Ali G Show',NULL,now(),NULL,72165),
 (1493,8332,'Today with Des and Mel',NULL,now(),NULL,72166),
 (1494,18436,'Andra Avenyn',NULL,now(),NULL,80703);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1495,3024,'Century City',NULL,now(),NULL,72168),
 (1496,23145,'The Mayor of Casterbridge',NULL,now(),NULL,72169),
 (1497,5755,'The Equalizer',NULL,now(),NULL,72170),
@@ -3356,8 +3359,8 @@ VALUES
 (1990,1191,'The Savage Dragon',NULL,now(),NULL,72839),
 (1991,5648,'The Brendan Leonard Show',NULL,now(),NULL,72840),
 (1992,153,'Scorch',NULL,now(),NULL,72841);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1993,3706,'Gokudo',NULL,now(),NULL,72843),
 (1994,1196,'Zenki',NULL,now(),NULL,72844),
 (1995,1197,'Cyber Team in Akihabara',NULL,now(),NULL,72845),
@@ -3856,8 +3859,8 @@ VALUES
 (2488,17864,'Stranger from Space',NULL,now(),NULL,73516),
 (2489,1416,'Fireman Sam',NULL,now(),NULL,73517),
 (2490,23,'Empire (1962)',NULL,now(),NULL,73519);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (2491,9400,'Headbangers Ball',NULL,now(),NULL,73520),
 (2492,3364,'Dr. Shrinker',NULL,now(),NULL,73521),
 (2493,6017,'The New Adventures of Gilligan',NULL,now(),NULL,73523),
@@ -4356,8 +4359,8 @@ VALUES
 (2986,15943,'Hey Jeannie!',NULL,now(),NULL,74225),
 (2987,13393,'Thorndyke',NULL,now(),NULL,74226),
 (2988,8761,'If It Moves, File It',NULL,now(),NULL,74229);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (2989,2623,'Anna Lee',NULL,now(),NULL,74230),
 (2990,8363,'If You See God, Tell Him',NULL,now(),NULL,74231),
 (2991,10680,'The Neighbors',NULL,now(),NULL,74232),
@@ -4856,8 +4859,8 @@ VALUES
 (3484,3191,'Curse of Dracula',NULL,now(),NULL,74970),
 (3485,7285,'Zillion',NULL,now(),NULL,74973),
 (3486,6356,'Tilt',NULL,now(),NULL,74974);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (3487,7386,'Waste Not',NULL,now(),NULL,74979),
 (3488,3965,'Inside Dish with Rachael Ray',NULL,now(),NULL,74980),
 (3489,2226,'Miracle\'s Boys',NULL,now(),NULL,74982),
@@ -5356,8 +5359,8 @@ VALUES
 (3982,6354,'Thunderstone',NULL,now(),NULL,75746),
 (3983,299,'The Wayne Manifesto',NULL,now(),NULL,75747),
 (3984,9553,'The Culture Show',NULL,now(),NULL,75748);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (3985,2385,'Miss Popularity',NULL,now(),NULL,75754),
 (3986,7775,'Bumper Stumpers',NULL,now(),NULL,75755),
 (3987,7037,'Courting Alex',NULL,now(),NULL,75757),
@@ -5856,8 +5859,8 @@ VALUES
 (4480,5289,'Spencer\'s Pilots',NULL,now(),NULL,76473),
 (4481,12678,'Rafferty',NULL,now(),NULL,76474),
 (4482,17999,'The Public Defender',NULL,now(),NULL,76475);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (4483,4539,'Mr. Lucky',NULL,now(),NULL,76476),
 (4484,15617,'Going My Way',NULL,now(),NULL,76477),
 (4485,391,'The Lux Video Theatre',NULL,now(),NULL,76478),
@@ -6356,8 +6359,8 @@ VALUES
 (4978,2653,'Arthur of the Britons',NULL,now(),NULL,77053),
 (4979,1667,'Sabrina (1970)',NULL,now(),NULL,77056),
 (4980,6179,'The Secret Lives of Waldo Kitty',NULL,now(),NULL,77057);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (4981,4358,'Mama\'s Family',NULL,now(),NULL,77059),
 (4982,14591,'Classic Concentration',NULL,now(),NULL,77060),
 (4983,7448,'Win, Lose or Draw',NULL,now(),NULL,77061),
@@ -6856,8 +6859,8 @@ VALUES
 (5476,3795,'Harry and the Hendersons',NULL,now(),NULL,77624),
 (5477,6388,'Totally Spies',NULL,now(),NULL,77625),
 (5478,5989,'The Mommies',NULL,now(),NULL,77626);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (5479,19594,'Motown Revue',NULL,now(),NULL,77627),
 (5480,5202,'Simon',NULL,now(),NULL,77628),
 (5481,11035,'The Baileys of Balboa',NULL,now(),NULL,77629),
@@ -7356,8 +7359,8 @@ VALUES
 (5974,5245,'Someone Like Me',NULL,now(),NULL,78253),
 (5975,6088,'The Phoenix',NULL,now(),NULL,78254),
 (5976,4982,'Rescue 911',NULL,now(),NULL,78256);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (5977,5504,'That\'s So Raven',NULL,now(),NULL,78258),
 (5978,5760,'The Faculty',NULL,now(),NULL,78263),
 (5979,9948,'Vic Reeves Big Night Out',NULL,now(),NULL,78264),
@@ -7856,8 +7859,8 @@ VALUES
 (6472,4127,'Killer Instinct',NULL,now(),NULL,78865),
 (6473,630,'The Croc Files',NULL,now(),NULL,78867),
 (6474,3642,'Game Over',NULL,now(),NULL,78871);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (6475,1340,'Seven Wonders of the Industrial World',NULL,now(),NULL,78873),
 (6476,9591,'Connections',NULL,now(),NULL,78875),
 (6477,3740,'Greg the Bunny',NULL,now(),NULL,78877),
@@ -8356,8 +8359,8 @@ VALUES
 (6970,16623,'Stromberg',NULL,now(),NULL,79656),
 (6971,3245,'Darkwing Duck',NULL,now(),NULL,75475),
 (6972,15465,'Ruddy Hell! It\'s Harry And Paul',NULL,now(),NULL,80101);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (6973,3737,'Green Green Grass',NULL,now(),NULL,80102),
 (6974,7191,'The Wombles',NULL,now(),NULL,80104),
 (6975,11210,'Top Design',NULL,now(),NULL,80107),
@@ -8856,8 +8859,8 @@ VALUES
 (7468,12778,'Little Miss Jocelyn',NULL,now(),NULL,81127),
 (7469,17772,'Fairy Tales',NULL,now(),NULL,81132),
 (7470,22259,'The Blue and the Gray',NULL,now(),NULL,81133);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (7471,2287,'School Rumble',NULL,now(),NULL,79194),
 (7472,15265,'100 Greatest Discoveries',NULL,now(),NULL,81134),
 (7473,5092,'Samurai 7',NULL,now(),NULL,79127),
@@ -9356,8 +9359,8 @@ VALUES
 (7966,11063,'Stand Up!!',NULL,now(),NULL,82326),
 (7967,14091,'Water Boys',NULL,now(),NULL,82330),
 (7968,14092,'Wonderful Life',NULL,now(),NULL,82331);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (7969,14099,'Yamato Nadeshiko',NULL,now(),NULL,82334),
 (7970,8038,'The Alan Clark Diaries',NULL,now(),NULL,82335),
 (7971,16296,'Shiawase ni Naritai!',NULL,now(),NULL,82324),
@@ -9856,8 +9859,8 @@ VALUES
 (8464,2680,'Avatar: The Last Airbender',NULL,now(),NULL,74852),
 (8465,5962,'The Magnificent Seven',NULL,now(),NULL,75093),
 (8466,17971,'Apparitions',NULL,now(),NULL,83734);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (8467,8015,'Mouse',NULL,now(),NULL,83635),
 (8468,15671,'The Winds of War',NULL,now(),NULL,83637),
 (8469,21144,'The American Future: A History, by Simon Schama',NULL,now(),NULL,83640),
@@ -10356,8 +10359,8 @@ VALUES
 (8962,17190,'Dumped',NULL,now(),NULL,91141),
 (8963,12662,'True Blood',NULL,now(),NULL,82283),
 (8964,11092,'Saturday Kitchen',NULL,now(),NULL,85284);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (8965,3591,'Fraggle Rock',NULL,now(),NULL,76085),
 (8966,21063,'The Tonight Show with Conan O\'Brien',NULL,now(),NULL,85285),
 (8967,15138,'Primeval',NULL,now(),NULL,79809),
@@ -10856,8 +10859,8 @@ VALUES
 (9460,3267,'Deadwood',NULL,now(),NULL,72023),
 (9461,18813,'90210',NULL,now(),NULL,82716),
 (9462,15361,'Once Upon a Time... The Americas',NULL,now(),NULL,81661);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (9463,12641,'Mark Williams\' Big Bangs',NULL,now(),NULL,98291),
 (9464,22936,' Empire of Cricket',NULL,now(),NULL,98301),
 (9465,12984,'Trawlermen',NULL,now(),NULL,102551),
@@ -11356,8 +11359,8 @@ VALUES
 (9958,23894,'Merlin Secrets And Magic',NULL,now(),NULL,114661),
 (9959,23034,'The League',NULL,now(),NULL,114701),
 (9960,23815,'Trinity (UK)',NULL,now(),NULL,114711);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (9961,21975,'Yellowstone',NULL,now(),NULL,85527),
 (9962,18331,'Satisfaction',NULL,now(),NULL,81053),
 (9963,5328,'Starman',NULL,now(),NULL,73794),
