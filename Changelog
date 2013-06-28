@@ -1,0 +1,15 @@
+07282013 -> jonnyboy -> added timeout to all python scripts
+						added back changes to releases.php
+						added output back to postprocess
+						reverted some changes looking for nntp hang bug
+07272013 -> jonnyboy ->	may have fixed some connection issues
+						added legend to output in postprocess
+						removed second rm -rf, bad placement
+						changed fixreleasenames to use inner join insteaqd of left join
+						changed tmpunrar folder creation to chmod 0777 from 0764, just in case
+						moved delete stale tmpunrar from threaded script to monitor
+
+* Note *
+No future pull requests will be accepted without this file being updated to reflect what you cahnged and when.
+No pull requests will be accepted to any branch except the dev branch.
+Each update goes to the top of the file

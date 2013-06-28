@@ -31,7 +31,7 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "NFO, ";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel left join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -82,7 +82,7 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel left join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel inner join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)

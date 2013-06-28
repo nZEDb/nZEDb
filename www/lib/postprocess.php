@@ -242,7 +242,6 @@ class PostProcess
 	//
 	public function processAdditional($releaseToWork = '', $id = '')
 	{
-		$nntp = new Nntp();
 		$ri = new ReleaseImage();
 		$update_files = false;
 
@@ -257,7 +256,7 @@ class PostProcess
 		$this->tmpPath = $this->site->tmpunrarpath;
 
 		$nntp = new Nntp();
-        $connect = ($this->site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
+		$connect = ($this->site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
 
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
@@ -309,8 +308,11 @@ class PostProcess
 		//			$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 		//	}
 
-		//	echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
-		//	echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
+			if ($this->echooutput && $rescount > 1)
+			{
+				echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
+				echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
+			}
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -319,9 +321,9 @@ class PostProcess
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!file_exists($this->tmpPath))
 				{
-					$old = umask(0764);
-					mkdir("$this->tmpPath", 0764, true);
-					chmod("$this->tmpPath", 0764);
+					$old = umask(0777);
+					mkdir("$this->tmpPath", 0777, true);
+					chmod("$this->tmpPath", 0777);
 					umask($old);
 
 					if (!is_dir("$this->tmpPath"))
@@ -331,6 +333,8 @@ class PostProcess
 					}
 				}
 
+				if ($this->echooutput)
+					echo "\n".$rel['guid']."->";
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
@@ -490,7 +494,7 @@ class PostProcess
 
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
-//							$this->doecho("Not matched and skipping ".$rarFile["title"]);
+							$this->doecho("Not matched and skipping ".$rarFile["title"]);
 							continue;
 						}
 
@@ -515,15 +519,15 @@ class PostProcess
 						// Starting to look for content.
 						$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
 						$this->sum = $this->sum + $this->adj * $this->segsize;
-
 						if ($this->sum > $this->size || $this->adj == 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, 2);
 
-							$connect;
 							$bingroup = $groupName;
+							$connect;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-							$this->consoleTools->appendWrite(" b");
+							if ($this->echooutput)
+								echo " b";
 
 							if ($fetchedBinary !== false)
 							{
@@ -534,7 +538,7 @@ class PostProcess
 
 								if ($relFiles === false)
 								{
-//									$this->doecho("\nError processing files {$rel['ID']}");
+									$this->doecho("\nError processing files {$rel['ID']}");
 									continue;
 								}
 								else
@@ -642,7 +646,8 @@ class PostProcess
 				{
 					$connect;
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-					$this->consoleTools->appendWrite(" s");
+					if ($this->echooutput)
+						echo " s";
 					if ($sampleBinary !== false)
 					{
 						if (strlen($sampleBinary) > 100)
@@ -661,8 +666,8 @@ class PostProcess
 				{
 					$connect;
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-					$this->consoleTools->appendWrite(" m");
-					$nntp->doQuit();
+					if ($this->echooutput)
+						echo " m";
 					if ($mediaBinary !== false)
 					{
 						if (strlen($mediaBinary ) > 100)
@@ -687,7 +692,8 @@ class PostProcess
 				{
 					$connect;
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					$this->consoleTools->appendWrite(" a");
+					if ($this->echooutput)
+						echo " a";
 					if ($audioBinary !== false)
 					{
 						if (strlen($audioBinary) > 100)
@@ -704,7 +710,8 @@ class PostProcess
 				{
 					$connect;
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					$this->consoleTools->appendWrite(" j");
+					if ($this->echooutput)
+						echo " j";
 					if ($jpgBinary !== false)
 					{
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
@@ -735,7 +742,8 @@ class PostProcess
 
 				if ($failed > 0 && ($failed / count($nzbfiles) > 0.7 || $notinfinite > $this->passchkattempts || $notinfinite > $this->partsqty))
 				{
-					echo "not vialble\n";
+					if ($this->echooutput)
+						echo "not viable";
 					$passStatus[] = 3;
 				}
 
@@ -765,7 +773,8 @@ class PostProcess
 						if ($row === false)
 						{
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
-							$this->consoleTools->appendWrite("o");
+							if ($this->echooutput)
+								echo "o";
 						}
 					}
 					unset($rf);
@@ -842,7 +851,10 @@ class PostProcess
 
 			$rf = new ReleaseFiles();
 			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
-				$this->consoleTools->appendWrite("^");
+			{
+				if ($this->echooutput)
+					echo "^";
+			}
 
 			if ($tmpdata !== false)
 			{
@@ -856,7 +868,8 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						$this->consoleTools->appendWrite("n");
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -892,7 +905,7 @@ class PostProcess
 
 		if ($zip->error)
 		{
-//		  $this->doecho("Error: {$zip->error}");
+		  $this->doecho("Error: {$zip->error}");
 		  return false;
 		}
 
@@ -904,7 +917,8 @@ class PostProcess
 		}
 
 		$files = $zip->getFileList();
-		$this->consoleTools->appendWrite("z");
+		if ($this->echooutput)
+			echo "z";
 		$dataarray = array();
 		if ($files !== false)
 		{
@@ -918,12 +932,13 @@ class PostProcess
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
 					{
-//						$this->doecho("adding zip nfo");
+						$this->doecho("adding zip nfo");
 						$nfo = new Nfo($this->echooutput);
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						$this->consoleTools->appendWrite("n");
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -957,7 +972,7 @@ class PostProcess
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
-//			$this->doecho("Error: {$rar->error}");
+			$this->doecho("Error: {$rar->error}");
 			return false;
 		}
 
@@ -975,7 +990,8 @@ class PostProcess
 			return false;
 		}
 		$files = $rar->getArchiveFileList();
-		$this->consoleTools->appendWrite("r");
+		if ($this->echooutput)
+			echo "r";
 		$retval = array();
 		if ($files !== false)
 		{
@@ -985,7 +1001,7 @@ class PostProcess
 				{
 					if (isset($file["error"]))
 					{
-//						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
 						continue;
 					}
 					if ($file["pass"] == true)
@@ -1027,7 +1043,7 @@ class PostProcess
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error)
 			{
-//				$this->doecho("Error: {$rar->error}");
+				$this->doecho("Error: {$rar->error}");
 				return false;
 			}
 
@@ -1050,7 +1066,8 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			$this->consoleTools->appendWrite("r");
+			if ($this->echooutput)
+				echo "r";
 
 			if (count($files) == 0)
 				return false;
@@ -1069,7 +1086,7 @@ class PostProcess
 					{
 						if (isset($file["error"]))
 						{
-//							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
 							continue;
 						}
 						if ($file["pass"] == true)
@@ -1127,6 +1144,7 @@ class PostProcess
 				}
 
 				// File is compressed, use unrar to get the content
+				$this->doecho($this->tmpPath);
 				$rarfile = $this->tmpPath."rarfile".mt_rand(0,99999).".rar";
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
@@ -1237,8 +1255,8 @@ class PostProcess
 				}
 			}
 		}
-		if ($retval !== false)
-			$this->consoleTools->appendWrite("M");
+		if ($retval !== false && $this->echooutput)
+				echo "M";
 		return $retval;
 	}
 
@@ -1328,8 +1346,8 @@ class PostProcess
 				}
 			}
 		}
-		if ($retval !== false)
-			$this->consoleTools->appendWrite("A");
+		if ($retval !== false && $this->echooutput)
+			echo "A";
 		return $retval;
 	}
 
@@ -1384,8 +1402,8 @@ class PostProcess
 			}
 		}
 		// If an image was made, return true, else return false.
-		if ($retval !== false)
-			$this->consoleTools->appendWrite("S");
+		if ($retval !== false && $this->echooutput)
+			echo "S";
 		return $retval;
 	}
 
@@ -1442,15 +1460,16 @@ class PostProcess
 			}
 		}
 		// If an video was made, return true, else return false.
-		if ($retval !== false)
-			$this->consoleTools->appendWrite("V");
+		if ($retval !== false && $this->echooutput)
+			echo "V";
 		return $retval;
 	}
 
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
-		$this->consoleTools->appendWrite("P");
+		if ($this->echooutput)
+			echo "P";
 	}
 }
 
