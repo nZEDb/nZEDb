@@ -121,9 +121,11 @@
 			<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
 
 				{if $result.passwordstatus == 1}
-					<img title="Passworded Rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded Rar Archive" />
+					<img title="Probably Passworded" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="Probably Passworded" />
 				{elseif $result.passwordstatus == 2}
-					<img title="Contains .cab/ace/rar Archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Contains .cab/ace/rar Archive" />
+					<img title="Broken post" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/broken.png" alt="Broken post" />
+				{elseif $result.passwordstatus == 10}
+					<img title="Passworded archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded archive" />
 				{/if}
 
 				<div class="resextra">
