@@ -1,4 +1,5 @@
-06292013 -> jonnyboy ->	replaced && with ; because python scripts exit  and sleeps were not working
+06292013 -> jonnyboy ->	added blank line to robot.txt
+						replaced && with ; because python scripts exit  and sleeps were not working
 						changed echo output in postprocess doecho and/or debug
 						changed patch numbers
 						added cats to predb
