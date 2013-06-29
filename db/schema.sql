@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','84');
+	('sqlpatch','85');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1334,7 +1334,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('PATCHDB','FALSE'),
 	('PATCHDB_TIMER','21600'),
 	('PROGRESSIVE','FALSE'),
-	('DEHASH','FALSE'),
+	('DEHASH', '0'),
 	('DEHASH_TIMER','30'),
 	('BACKFILL_ORDER','2'),
 	('BACKFILL_DAYS', '1'),
