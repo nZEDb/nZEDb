@@ -89,8 +89,8 @@ class PostProcess
 	{
 		$predb = new Predb($this->echooutput);
 		$titles = $predb->combinePre();
-		if ($this->echooutput && $titles > 0)
-			echo "Fetched ".$titles." new title(s) from predb sources.\n";
+		if ($titles > 0)
+			$this->doecho("Fetched ".$titles." new title(s) from predb sources.");
 	}
 
 	//
@@ -240,7 +240,7 @@ class PostProcess
 	//
 	// Check for passworded releases, RAR contents and Sample/Media info.
 	//
-	public function processAdditional($releaseToWork = '', $id = '')
+	public function processAdditional($releaseToWork = '', $id = '', $gui = false)
 	{
 		$ri = new ReleaseImage();
 		$update_files = false;
@@ -263,6 +263,40 @@ class PostProcess
 
 		$tmpPath1 = $this->tmpPath;
 
+		if ($gui)
+		{
+			$ok = false;
+			while (!$ok) {
+				usleep(mt_rand(10,300));
+				$this->db->setAutoCommit(false);
+				$ticket = $this->db->queryOneRow("SELECT value  FROM `site` WHERE `setting` LIKE 'nextppticket'");
+				$ticket = $ticket["value"];
+				$this->db->queryDirect(sprintf("UPDATE `nZEDb`.`site` SET `value` = %d WHERE `setting` LIKE 'nextppticket' AND `value` = %d", $ticket + 1, $ticket));
+				if ($this->db->getAffectedRows() == 1)
+				{
+					$ok = true;
+					$this->db->Commit();
+				}
+				else
+					$this->db->Rollback();
+			}
+			$this->db->setAutoCommit(true);
+
+			$sleep = 1;
+
+			$delay = 100;
+
+			do
+			{
+				sleep($sleep);
+				$serving = $this->db->queryOneRow("SELECT *  FROM `site` WHERE `setting` LIKE 'currentppticket1'");
+				$time = strtotime($serving["updateddate"]);
+				$serving = $serving["value"];
+				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
+
+			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
+		}
+
 		//
 		// Get out all releases which have not been checked more than max attempts for password.
 		//
@@ -283,8 +317,8 @@ class PostProcess
 						left join category c on c.ID = r.categoryID
 						where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
 						order by r.postdate desc limit %d", $this->maxsize*1073741824, $i, $this->addqty));
-					if ($this->echooutput && count($result) > 0)
-						echo "Passwordstatus = ".$i.": Available to process = ".count($result)."\n";
+					if (count($result) > 0)
+						$this->doecho("Passwordstatus = ".$i.": Available to process = ".count($result));
 					$i--;
 				}
 			}
@@ -308,10 +342,10 @@ class PostProcess
 		//			$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
 		//	}
 
-			if ($this->echooutput && $rescount > 1)
+			if ($rescount > 1)
 			{
-				echo "\nFetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg\n";
-				echo "^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo\n";
+				$this->doecho("\nFetch for: b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
+				$this->doecho("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo");
 			}
 
 			// Loop through the releases.
@@ -319,7 +353,7 @@ class PostProcess
 			{
 				// Per release defaults.
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
-				if (!file_exists($this->tmpPath))
+				if (!is_dir($this->tmpPath))
 				{
 					$old = umask(0777);
 					mkdir("$this->tmpPath", 0777, true);
@@ -485,7 +519,7 @@ class PostProcess
 
 						if ($this->password)
 						{
-							$this->doecho("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
+							$this->debug("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
 								break;
 						}
 
@@ -494,7 +528,7 @@ class PostProcess
 
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
-							$this->doecho("Not matched and skipping ".$rarFile["title"]);
+							$this->debug("Not matched and skipping ".$rarFile["title"]);
 							continue;
 						}
 
@@ -538,21 +572,27 @@ class PostProcess
 
 								if ($relFiles === false)
 								{
-									$this->doecho("\nError processing files {$rel['ID']}");
+									$this->debug("\nError processing files {$rel['ID']}");
 									continue;
 								}
 								else
+								{
 									// Flag to indicate only that the archive has content.
 									$foundcontent = true;
+							}
 							}
 							else
 							{
 								$notinfinite = $notinfinite + 0.2;
 								$failed++;
+								if ($this->echooutput)
+									echo " f";
 							}
 						}
 					}
 
+					if (is_dir($this->tmpPath))
+					{
 					$files = scandir($this->tmpPath);
 					$rar = new ArchiveInfo();
 					if (count($files) > 0)
@@ -586,6 +626,7 @@ class PostProcess
 						}
 					}
 					unset($rar);
+				}
 				}
 				elseif ($hasrar == 1)
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
@@ -744,7 +785,7 @@ class PostProcess
 				{
 					if ($this->echooutput)
 						echo "not viable";
-					$passStatus[] = 3;
+					$passStatus[] = Releases::BAD_FILE;
 				}
 
 				$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
@@ -809,19 +850,29 @@ class PostProcess
 			if ($this->echooutput)
 				echo "\n";
 		}
+		if ($gui)
+			$this->db->queryDirect(sprintf("UPDATE `nZEDb`.`site` SET `value` = %d WHERE `setting` LIKE 'currentppticket1'", $ticket + 1));
+
 		$nntp->doQuit();
 		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}
 
 	function doecho($str)
 	{
-		if ($this->echooutput && $this->DEBUG_ECHO)
+		if ($this->echooutput)
 			echo $str."\n";
 	}
 
+    function debug($str)
+    {
+        if ($this->echooutput && $this->DEBUG_ECHO)
+            echo $str."\n";
+    }
+
 	function addmediafile ($file, $data)
 	{
-		@file_put_contents($file, $data);
+		if (@file_put_contents($file, $data) !== false)
+		{
 		@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
 		if (is_array($xmlarray))
 		{
@@ -831,6 +882,7 @@ class PostProcess
 			if (!isset($arrXml["File"]["track"][0]))
 				unlink($file);
 		}
+	}
 	}
 
 	function addfile($v, $relid, $rar = false)
@@ -905,13 +957,13 @@ class PostProcess
 
 		if ($zip->error)
 		{
-		  $this->doecho("Error: {$zip->error}");
+		  $this->debug("Error: {$zip->error}");
 		  return false;
 		}
 
 		if ($zip->isEncrypted)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
@@ -932,7 +984,7 @@ class PostProcess
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
 					{
-						$this->doecho("adding zip nfo");
+						$this->debug("adding zip nfo");
 						$nfo = new Nfo($this->echooutput);
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
@@ -972,20 +1024,20 @@ class PostProcess
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
-			$this->doecho("Error: {$rar->error}");
+			$this->debug("Error: {$rar->error}");
 			return false;
 		}
 
 		if ($rar->isEncrypted)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
 		$tmp = $rar->getSummary(true, false);
 		if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
@@ -1001,7 +1053,7 @@ class PostProcess
 				{
 					if (isset($file["error"]))
 					{
-						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+						$this->debug("Error: {$file['error']} (in: {$file['source']})");
 						continue;
 					}
 					if ($file["pass"] == true)
@@ -1043,7 +1095,7 @@ class PostProcess
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error)
 			{
-				$this->doecho("Error: {$rar->error}");
+				$this->debug("Error: {$rar->error}");
 				return false;
 			}
 
@@ -1053,14 +1105,14 @@ class PostProcess
 
 			if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 			{
-				$this->doecho("Archive is password encrypted.");
+				$this->debug("Archive is password encrypted.");
 				$this->password = true;
 				return false;
 			}
 
 			if ($rar->isEncrypted)
 			{
-				$this->doecho("Archive is password encrypted.");
+				$this->debug("Archive is password encrypted.");
 				$this->password = true;
 				return false;
 			}
@@ -1086,7 +1138,7 @@ class PostProcess
 					{
 						if (isset($file["error"]))
 						{
-							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+							$this->debug("Error: {$file['error']} (in: {$file['source']})");
 							continue;
 						}
 						if ($file["pass"] == true)
@@ -1144,7 +1196,7 @@ class PostProcess
 				}
 
 				// File is compressed, use unrar to get the content
-				$this->doecho($this->tmpPath);
+				$this->debug($this->tmpPath);
 				$rarfile = $this->tmpPath."rarfile".mt_rand(0,99999).".rar";
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';

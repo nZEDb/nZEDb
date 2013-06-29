@@ -1,3 +1,13 @@
+06292013 -> jonnyboy ->	added blank line to robot.txt
+						replaced && with ; because python scripts exit  and sleeps were not working
+						changed echo output in postprocess doecho and/or debug
+						changed patch numbers
+						added cats to predb
+						removed hard coded db name from patch
+06282013 -> ugo		 ->	added code to check by the user for broken releases
+						added robot.txt files to deny all indexers by default
+						some minor changes to other parts
+06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
 06282013 -> devmem   -> Fixed removeCrapReleases to also process when argv[1] is false
 06282013 -> devmem   -> Added extra column 'relstatus' to table 'releases' to enable bitwise ops on releases
 						Edited lib/framework/db.php to start adding constants for relstatus
@@ -18,6 +28,6 @@
 						moved delete stale tmpunrar from threaded script to monitor
 
 * Note *
-No future pull requests will be accepted without this file being updated to reflect what you cahnged and when.
+No future pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
