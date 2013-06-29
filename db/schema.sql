@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','85');
+	('sqlpatch','86');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1341,7 +1341,10 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('POST_AMAZON', 'FALSE'),
 	('POST_NON', 'FALSE'), 
 	('POST_TIMER_AMAZON', '30'),
-	('POST_TIMER_NON', '30');
+	('POST_TIMER_NON', '30'),
+	('COLORS_START', '1'),
+	('COLORS_END', '250'),
+	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60');
 
 
 DROP TABLE IF EXISTS `nzbs`;
