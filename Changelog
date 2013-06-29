@@ -1,8 +1,32 @@
-07282013 -> jonnyboy -> added timeout to all python scripts
+06292013 -> jonnyboy ->	added output to start of threaded scripts
+						separated decrypt hashes and predb
+						fixed grabnzbs not setting haspreview = -1
+						fixed backfill safe loop over completed groups
+						changed progessive sleep time to use min sleep timer if timer would be less than that
+						renamed patch
+						added blank line to robot.txt
+						replaced && with ; because python scripts exit  and sleeps were not working
+						changed echo output in postprocess doecho and/or debug
+						changed patch numbers
+						added cats to predb
+						removed hard coded db name from patch
+06282013 -> ugo		 ->	added code to check by the user for broken releases
+						added robot.txt files to deny all indexers by default
+						some minor changes to other parts
+06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
+06282013 -> devmem   -> Fixed removeCrapReleases to also process when argv[1] is false
+06282013 -> devmem   -> Added extra column 'relstatus' to table 'releases' to enable bitwise ops on releases
+						Edited lib/framework/db.php to start adding constants for relstatus
+						Updated namefixer to only process releases not processed before
+						Corrected jonnyboys dates (he was 1 month ahead - it's still June)
+06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
+						oops, removed sys.exit from safe backfill
+						added back changes to site-edit
+						rewrote all python scripts
 						added back changes to releases.php
 						added output back to postprocess
 						reverted some changes looking for nntp hang bug
-07272013 -> jonnyboy ->	may have fixed some connection issues
+06272013 -> jonnyboy ->	may have fixed some connection issues
 						added legend to output in postprocess
 						removed second rm -rf, bad placement
 						changed fixreleasenames to use inner join insteaqd of left join
@@ -10,6 +34,6 @@
 						moved delete stale tmpunrar from threaded script to monitor
 
 * Note *
-No future pull requests will be accepted without this file being updated to reflect what you cahnged and when.
+No future pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file

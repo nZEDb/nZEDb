@@ -301,6 +301,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
+	stream_set_timeout($this->_socket, $this->_timeout);
     	$response = @fgets($this->_socket, 4096);
         if ($response === false) {
             return $this->throwError('Failed to read from socket...!');
@@ -346,6 +347,7 @@ class Net_NNTP_Protocol_Client extends PEAR
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 1024 characters from the server.
+            stream_set_timeout($this->_socket, $this->_timeout);
             $recieved = @fgets($this->_socket, 1024);
 
             if ($recieved === false) {

@@ -9,7 +9,7 @@
  * @param array  $options
  *
  * @return float
- * 
+ *
  * https://github.com/kvz/kvzlib/blob/master/php/functions/mysqlBulk.inc.php
  */
 function mysqlBulk(&$data, $table, $method = 'transaction', $options = array()) {

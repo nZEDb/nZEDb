@@ -182,7 +182,7 @@ class AniDB
 		$cleanFilename['title'] = (isset($cleanFilename['title'])) ? trim($cleanFilename['title']) : trim($searchname);
 		$cleanFilename['title'] = preg_replace('/([^a-z0-9\s])/i', '[${1}]?', $cleanFilename['title']);
 		$cleanFilename['title'] = preg_replace('/( (The |Movie|O[AV][AV]|TV|\[\(\]\d{4}\[\)\]|Ep(isode)?|Vol(ume)?|Part|Phase|Chapter|Mission|(Director[`\']?s )?(Un)?C(ut|hoice)|Rem(aster|[iu]xx?)(ed)?|'.$noforeign.'))/i', '(${1})?', $cleanFilename['title']);
-		
+
 		$cleanFilename['epno'] = (isset($cleanFilename['epno'])) ? preg_replace('/^(NC|E(?!D)p?0*)|(?=^|-)0+|v(er)?(\d+)?$/i', '', $cleanFilename['epno']) : 1;
 		if(preg_match('/S\d+ ?[ED]\d+/i', $searchname)) {
 			//TODO: thetvdb lookup for absolute #?
@@ -193,7 +193,7 @@ class AniDB
 			preg_match('/([^\d]+)(\d+)/i', $cleanFilename['epno'], $epno);
 			$cleanFilename['epno'] = $epno[1].(int) $epno[2];
 		}
-		
+
 		return $cleanFilename;
 	}
 

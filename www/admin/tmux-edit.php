@@ -42,6 +42,8 @@ $page->smarty->assign('backfill_group_ids', array(1,2,3,4,5,6));
 $page->smarty->assign('backfill_group', array('Newest', 'Oldest', 'Alphabetical', 'Alphabetical - Reverse', 'Most Posts', 'Fewest Posts'));
 $page->smarty->assign('backfill_days', array('Days per Group', 'Safe Backfill day'));
 $page->smarty->assign('backfill_days_ids', array(1,2));
+$page->smarty->assign('dehash_ids', array(0,1,2,3));
+$page->smarty->assign('dehash_names', array('Disabled', 'Decrypt Hashes', 'Predb', 'All'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

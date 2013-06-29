@@ -1,7 +1,7 @@
 <?php
 require_once(WWW_DIR."/lib/site.php");
 
-/* 
+/*
 *	Lookup information from trakt.tv using their API.
 */
 Class Trakttv
@@ -12,7 +12,7 @@ Class Trakttv
 		$site = $s->get();
 		$this->APIKEY = $site->trakttvkey;
 	}
-	
+
 	//
 	// Fetches summary from trakt.tv for the TV show using the title/season/episode.
 	//
@@ -24,7 +24,7 @@ Class Trakttv
 		$ep = str_replace(array('E', 'e'), '', $ep);
 		$TVurl = 'http://api.trakt.tv/show/episode/summary.json/'.$this->APIKEY.'/'.$showtitle.'/'.$season.'/'.$ep;
 		$TVjson = @file_get_contents($TVurl, 0, null, null);
-		
+
 		if($TVjson === false)
 		{
 			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
@@ -33,12 +33,12 @@ Class Trakttv
 		else
 		{
 			$TVarray = json_decode($TVjson, true);
-			
+
 			return $TVarray;
 		}
-			
+
 	}
-	
+
 	//
 	// Fetches summary from trakt.tv for the movie.
 	// Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
@@ -51,7 +51,7 @@ Class Trakttv
 		$movie = str_replace(array('(', ')'), '', $movie);
 		$Movieurl = 'http://api.trakt.tv/movie/summary.json/'.$this->APIKEY.'/'.$movie;
 		$Moviejson = @file_get_contents($Movieurl, 0, null, null);
-		
+
 		if($Moviejson === false)
 		{
 			// We failed getting the URL. Maybe the API key is not set, or the release is not on the site?
@@ -60,7 +60,7 @@ Class Trakttv
 		else
 		{
 			$Moviearray = json_decode($Moviejson, true);
-			
+
 			if ($type == "imdbid")
 			{
 				if (isset($Moviearray["imdb_id"]))

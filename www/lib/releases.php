@@ -25,8 +25,8 @@ class Releases
 	//
 	const PASSWD_NONE = 0;
 	const PASSWD_POTENTIAL = 1;
-	const PASSWD_RAR = 2;
-	const BAD_FILE = 3;
+	const BAD_FILE = 2;
+	const PASSWD_RAR = 10;
 
 	function Releases($echooutput=false)
 	{
@@ -1561,8 +1561,8 @@ class Releases
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$relguid = sha1(uniqid());
-				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) 
-											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", 
+				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
+											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
 											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
@@ -1831,11 +1831,11 @@ class Releases
 						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.filecheck = 5 " . $where));
 		$reccount = $db->getAffectedRows();
-		
+
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
 			}
-	
+
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
 		$db = new DB();
@@ -1886,7 +1886,7 @@ class Releases
 		// Passworded releases.
 		if($page->site->deletepasswordedrelease == 1)
 		{
-			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = 2");
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_RAR);
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1897,7 +1897,7 @@ class Releases
 		// Possibly passworded releases.
 		if($page->site->deletepossiblerelease == 1)
 		{
-			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = 1");
+			$result = $db->query("SELECT ID, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_POTENTIAL);
 			foreach ($result as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -2122,7 +2122,7 @@ class Releases
 				if ($this->echooutput)
 					echo "Extracted ".$bunchedcnt." bunched collections.\n";
 			}
-		}		
+		}
 	}
 
 	// This resets collections, useful when the namecleaning class's collectioncleaner function changes.
