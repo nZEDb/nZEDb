@@ -49,10 +49,14 @@ else if (isset($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 else if (!isset($argv[2]) || $argv[2] !== "full" || !is_numeric($argv[2]))
 	exit("ERROR: Wrong second argument.\n");
 
+$delete = 0;
 if (isset($argv[1]) && $argv[1] == "true")
+        $delete = 1;
+
 {
 	function deleteReleases($sql, $type)
 	{
+	        global $delete;
 		$releases = new Releases();
 		$s = new Sites();
 		$site = $s->get();
@@ -60,8 +64,15 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = 0;
 		foreach ($sql as $rel)
 		{
-			echo "Deleting, ".$type.": ".$rel['searchname']."\n";
-			$releases->fastDelete($rel['ID'], $rel['guid'], $site);
+		  if ($delete == 1)
+		        {
+        			echo "Deleting: ".$type.": ".$rel['searchname']."\n";
+			        $releases->fastDelete($rel['ID'], $rel['guid'], $site);
+			}
+			else
+			{
+			        echo "Would be deleting: ".$type.": ".$rel['searchname']."\n";
+			}
 			$delcount++;
 		}
 		return $delcount;

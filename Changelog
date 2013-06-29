@@ -1,3 +1,4 @@
+06282013 -> devmem   -> Fixed removeCrapReleases to also process when argv[1] is false
 06282013 -> devmem   -> Added extra column 'relstatus' to table 'releases' to enable bitwise ops on releases
 						Edited lib/framework/db.php to start adding constants for relstatus
 						Updated namefixer to only process releases not processed before
