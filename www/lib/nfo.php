@@ -65,10 +65,10 @@ class Nfo
 		if ($releaseToWork == '')
 		{
 			$i = -1;
-			while ((($nfocount) != $this->nzbs) && ($i >= -6))
+			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->queryDirect(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d", $i, $this->maxsize*1073741824, $this->nzbs));
-				$nfocount = $db->getNumRows($res);
+				$res = $db->query(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d", $i, $this->maxsize*1073741824, $this->nzbs));
+				$nfocount = count($res);
 				$i--;
 			}
 		}

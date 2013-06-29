@@ -1,3 +1,6 @@
+07282013 -> ugo -> added code to check by the user for broken releases
+						added robot.txt files to deny all indexers by default
+						some minor changes to other parts
 07282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
 						oops, removed sys.exit from safe backfill
 						added back changes to site-edit
