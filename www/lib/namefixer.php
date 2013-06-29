@@ -31,7 +31,8 @@ class Namefixer
 	{
 		$db = new DB();
 		$type = "NFO, ";
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
+		// Only select releases we haven't checked here before
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
 		
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -62,6 +63,9 @@ class Namefixer
 			{
 				echo "Reading NFO => ".$relrow['searchname']."\n";
 				$this->checkName($relrow, $echo, $type, $namestatus);
+				// 
+				// If we are here, we have checked a release against it's .nfo so set it as checked in the db
+				$db->queryDirect(sprintf("UPDATE releases set relstatus = relstatus | %d where ID = %d", DB::NFO_PROCESSED_NAMEFIXER, $relrow["releaseID"]));
 				$this->checked++;
 				if ($this->checked % 500 == 0)
 					echo $this->checked." NFOs processed.\n\n";
