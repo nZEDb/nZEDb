@@ -351,6 +351,17 @@ Class Predb
 			}
 			return $updated;
 		}
+		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.name where p.releaseID is null"))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				echo ".";
+				$updated++;
+			}
+			return $updated;
+		}
+
 	}
 
 	// Look if the release is missing an nfo.
@@ -439,7 +450,7 @@ Class Predb
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb md5.\n";
 		}
-		if ($res = $db->queryDirect("select r.ID, r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010".$tq))
+		if ($res = $db->queryDirect("select r.ID, r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010 and passwordstatus >= 0 ORDER BY rf.releaseID, rf.size DESC ".$tq))
 		{
 			while($row = mysqli_fetch_assoc($res))
 			{
