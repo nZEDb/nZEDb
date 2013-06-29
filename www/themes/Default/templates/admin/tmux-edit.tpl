@@ -380,7 +380,7 @@
 			<tr>
 				<td><label for="DEHASH">Decrypt Hash Based Release Names:</label></td>
 				<td>
-					{html_radios id="DEHASH" name='DEHASH' values=$truefalse_names output=$truefalse_names selected=$ftmux->DEHASH separator='<br />'}
+					{html_options class="siteeditstyle" id="DEHASH" name='DEHASH' values=$dehash_ids output=$dehash_names selected=$ftmux->DEHASH}
 					<div class="hint">Choose to run Decrypt Hashes true/false</div>
 				</td>
 			</tr>
@@ -395,7 +395,8 @@
 			<tr>
 				<td><label for="explain">Information:</label></td>
 				<td>
-					<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.</div>
+					<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.<br />
+					Included in the same pane is Update Predb. This scrapes several predb sites and then tries to match against releases.</div>
 				</td>
 			</tr>
 		</table>
