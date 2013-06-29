@@ -151,10 +151,10 @@ class Import
 
 				//groups
 				$groupArr = array();
-				foreach($file->groups->group as $group) 
+				foreach($file->groups->group as $group)
 				{
 					$group = (string)$group;
-					if (array_key_exists($group, $siteGroups)) 
+					if (array_key_exists($group, $siteGroups))
 					{
 						$groupID = $siteGroups[$group];
 					}
@@ -169,7 +169,7 @@ class Import
 				{
 					if (count($file->segments->segment) > 0)
 					{
-						foreach($file->segments->segment as $segment) 
+						foreach($file->segments->segment as $segment)
 						{
 							$size = $segment->attributes()->bytes;
 							$totalsize = $totalsize+$size;

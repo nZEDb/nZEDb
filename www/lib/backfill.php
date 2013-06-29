@@ -4,9 +4,9 @@ require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/binaries.php");
 
-class Backfill 
+class Backfill
 {
-	function Backfill() 
+	function Backfill()
 	{
 		$this->n = "\n";
 		$s = new Sites();
@@ -25,16 +25,16 @@ class Backfill
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$n = $this->n;
 		$groups = new Groups();
-		
-		if ($groupName != '') 
+
+		if ($groupName != '')
 		{
 			$grp = $groups->getByName($groupName);
 			if ($grp)
 			{
 				$res = array($grp);
 			}
-		} 
-		else 
+		}
+		else
 		{
 			$res = $groups->getActiveBackfill();
 		}
@@ -71,7 +71,7 @@ class Backfill
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		
+
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if (PEAR::isError($datac))
@@ -86,7 +86,7 @@ class Backfill
 				return;
 			}
 		}
-		
+
 		// No comp - for interval.
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
@@ -101,7 +101,7 @@ class Backfill
 				return;
 			}
 		}
-		
+
 		// Get targetpost based on days target.
 		$targetpost = $this->daytopost($nntp,$groupArr['name'],$groupArr['backfill_target'],TRUE);
 		if ($targetpost < 0)
@@ -117,7 +117,7 @@ class Backfill
 				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
-		
+
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+50000)
 		{
@@ -132,7 +132,7 @@ class Backfill
 			echo "Nothing to do, we already have the target post".$n.$n;
 			return "";
 		}
-		
+
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -175,7 +175,7 @@ class Backfill
 		echo "Group processed in ".$timeGroup." seconds.".$n;
 		// Increment the backfil target date.
 	}
-	
+
 	//
 	// Safe backfill using posts.
 	//
@@ -185,9 +185,9 @@ class Backfill
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 		$db = new DB();
 		$n = $this->n;
-		
+
 		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($this->safebdate)));
-		
+
 		if (!$groupname)
 		{
 			exit("No groups to backfill, they are all at the target date ".$this->safebdate.".".$n);
@@ -197,7 +197,7 @@ class Backfill
 			$this->backfillPostAllGroups($groupname["name"], $articles);
 		}
 	}
-	
+
 	//
 	// Update all active groups categories and descriptions using article numbers instead of date.
 	//
@@ -244,7 +244,7 @@ class Backfill
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
 		}
 	}
-	
+
 	function backfillPostGroup($groupArr, $articles = '', $left)
 	{
 		$db = new DB();
@@ -268,19 +268,19 @@ class Backfill
 				return;
 			}
 		}
-		
+
 		// Get targetpost based on days target.
 		$targetpost =  round($groupArr['first_record']-$articles);
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
-		
+
 		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
 				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
 				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
-		
+
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
 			echo "You need to run update_binaries on the group. Otherwise the group is dead, you must disable it.".$n;
@@ -343,7 +343,7 @@ class Backfill
 		echo "Group processed in ".$timeGroup." seconds.".$n;
 		// Increment the backfil target date.
 	}
-	
+
 	//
 	// Returns a single timestamp from a local article number.
 	//
@@ -363,8 +363,8 @@ class Backfill
 			if(!isset($msgs[0]['Date']) || $msgs[0]['Date']=="" || is_null($msgs[0]['Date']))
 			{
 				$success=false;
-			} 
-			else 
+			}
+			else
 			{
 				$date = $msgs[0]['Date'];
 				$success=true;
@@ -372,18 +372,18 @@ class Backfill
 			if($debug && $attempts > 0) echo "Retried ".$attempts." time(s).".$n;
 			$attempts++;
 		}while($attempts <= 3 && $success == false);
-		
+
 		if (!$success)
 		{
 			return "";
 		}
-		
+
 		if($debug) echo "DEBUG: postdate for post: .".$post." came back ".$date." (";
 		$date = strtotime($date);
 		if($debug) echo $date." seconds unixtime or ".$this->daysOld($date)." days)".$n;
 		return $date;
 	}
-	
+
 	function daytopost($nntp, $group, $days, $debug=true)
 	{
 		$n = $this->n;
@@ -393,7 +393,7 @@ class Backfill
 		{
 			echo "INFO: Finding article for ".$group." ".$days." days back.".$n;
 		}
-		
+
 		$data = $nntp->selectGroup($group);
 		if(PEAR::isError($data))
 		{
@@ -431,20 +431,20 @@ class Backfill
 		{
 			echo "DEBUG: Searching for postdate.".$n."Goaldate: ".$goaldate." (".date("r", $goaldate).") ".$n." Firstdate: ".$firstDate." (".((is_int($firstDate))?date("r", $firstDate):'n/a').") ".$n.". Lastdate: ".$lastDate." (".date("r", $lastDate).").".$n;
 		}
-		
+
 		$interval = floor(($upperbound - $lowerbound) * 0.5);
 		$dateofnextone = "";
 		$templowered = "";
-		
+
 		if ($debug)
 		{
 			echo "Start: ".$data['first'].$n."End: ".$data['last'].$n."Interval: ".$interval.$n;
 		}
-		
+
 		$dateofnextone = $lastDate;
 		// Match on days not timestamp to speed things up.
 		while($this->daysOld($dateofnextone) < $days)
-		{		
+		{
 			while(($tmpDate = $this->postdate($nntp,($upperbound-$interval),$pddebug))>$goaldate)
 			{
 				$upperbound = $upperbound - $interval;

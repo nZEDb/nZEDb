@@ -11,7 +11,7 @@ class ConsoleTools
 	{
 			if ($reset)
 				$this->lastMessageLength = 0;
-			
+
 			echo str_repeat(chr(8), $this->lastMessageLength);
 			echo str_repeat(" ", $this->lastMessageLength);
 			echo str_repeat(chr(8), $this->lastMessageLength);
@@ -48,7 +48,7 @@ class ConsoleTools
 		if ($seconds > 3600)
 			return round($seconds/3600)." hour(s)";
 	}
-	
+
 	//
 	// Convert seconds to a timer, 00h:00m:00s
 	//
