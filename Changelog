@@ -1,4 +1,4 @@
-07282013 -> jonnyboy -> added timeout to all python scripts
+07282013 -> jonnyboy -> rewrote all python scripts
 						added back changes to releases.php
 						added output back to postprocess
 						reverted some changes looking for nntp hang bug
