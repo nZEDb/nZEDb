@@ -153,6 +153,7 @@ div.hint, div.hint a { font-size:0.9em; font-style:italic; color:#999;}
 div.explanation { padding: 5px 5px 5px 5px;  border:1px #CCC solid; margin-bottom:20px; }
 div.hint { margin-bottom:10px;}
 input.long {width:400px; }
+input.longer {width:600px; }
 input.short { width:40px; }
 input.tiny { width: 31px; }
 input.date { width:70px; }
