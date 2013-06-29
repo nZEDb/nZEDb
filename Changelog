@@ -1,11 +1,15 @@
-07282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
+06282013 -> devmem   -> Added extra column 'relstatus' to table 'releases' to enable bitwise ops on releases
+						Edited lib/framework/db.php to start adding constants for relstatus
+						Updated namefixer to only process releases not processed before
+						Corrected jonnyboys dates (he was 1 month ahead - it's still June)
+06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
 						oops, removed sys.exit from safe backfill
 						added back changes to site-edit
 						rewrote all python scripts
 						added back changes to releases.php
 						added output back to postprocess
 						reverted some changes looking for nntp hang bug
-07272013 -> jonnyboy ->	may have fixed some connection issues
+06272013 -> jonnyboy ->	may have fixed some connection issues
 						added legend to output in postprocess
 						removed second rm -rf, bad placement
 						changed fixreleasenames to use inner join insteaqd of left join
