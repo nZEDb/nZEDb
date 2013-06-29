@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2584";
+$version="0.1r2586";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -22,7 +22,7 @@ $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER
 $proc_work = "SELECT
 	( SELECT COUNT( groupID ) from releases where rageID = -1 and categoryID BETWEEN 5000 AND 5999 and nzbstatus = 1 ) AS tv,
 	( SELECT COUNT( groupID ) from releases where imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 and nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and categoryID in (3010, 3040, 3050) and nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( groupID ) from releases where musicinfoID IS NULL and relnamestatus != 0 and categoryID in (3010, 3040, 3050) and nzbstatus = 1 ) AS audio,
 	( SELECT COUNT( groupID ) from releases where consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 and nzbstatus = 1 ) AS console,
 	( SELECT COUNT( groupID ) from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 ) AS book,
 	( SELECT COUNT( groupID ) from releases where nzbstatus = 1 ) AS releases,
