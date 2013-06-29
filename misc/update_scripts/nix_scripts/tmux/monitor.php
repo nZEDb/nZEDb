@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2574";
+$version="0.1r2575";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -989,9 +989,8 @@ while( $i > 0 )
 			}
 
 			//run backfill
-			if ( $progressive == "TRUE" )
-				if ( floor($collections_table / 500) > $back_timer )
-					$backsleep = floor($collections_table / 500);
+			if ( $progressive == "TRUE" && floor($collections_table / 500) > $back_timer)
+				$backsleep = floor($collections_table / 500);
 			else
 				$backsleep = $back_timer;
 
