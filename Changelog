@@ -1,4 +1,4 @@
-06292013 -> jonnyboy ->	removed hard coded db name from clean_nzb
+06292013 -> jonnyboy ->	removed hard coded db name from clean_nzb, added safety argv
 						made tmux colors array user defineable
 						changed query for music to process
 						added output to start of threaded scripts
