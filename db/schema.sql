@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','82');
+	('sqlpatch','84');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
