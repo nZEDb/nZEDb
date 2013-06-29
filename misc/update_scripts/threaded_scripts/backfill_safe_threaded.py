@@ -58,31 +58,34 @@ if intbackfilltype == 1:
 elif intbackfilltype == 2:
 	backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
-#query to grab backfill groups
-cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
-datas = cur.fetchall()
-if not datas:
-	print("No Groups enabled for backfill")
-	sys.exit()
+#if the group has less than 10000 to grab, just grab them, and loop another group
+count = 0
+first = 0
+while (count - first) < 10000:
+	#query to grab backfill groups
+	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
+	datas = cur.fetchall()
+	if not datas:
+		print("No Groups enabled for backfill")
+		sys.exit()
 
-#close connection to mysql
-cur.close()
-con.close()
+	#close connection to mysql
+	cur.close()
+	con.close()
 
-#get first, last from nntp sever
-s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-resp, count, first, last, name = s.group(datas[0][0])
-resp = s.quit()
+	#get first, last from nntp sever
+	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
+	resp, count, first, last, name = s.group(datas[0][0])
+	resp = s.quit()
 
-print("Group %s has %s articles, in the range %s to %s" %(name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
-print("Our oldest post is: %s" %("{:,}".format(datas[0][1])))
-print("Available Posts: %s" %("{:,}".format(datas[0][1] - first)))
+	print("Group %s has %s articles, in the range %s to %s" %(name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
+	print("Our oldest post is: %s" %("{:,}".format(datas[0][1])))
+	print("Available Posts: %s" %("{:,}".format(datas[0][1] - first)))
+	count = datas[0][1]
 
-#if the group has less than 10000 to grab, just grab them
-if (datas[0][1] - first) < 10000:
-	group = ("%s %d" %(datas[0][0], datas[0][1] - first))
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-	sys.exit()
+	if (datas[0][1] - first) < 10000:
+		group = ("%s %d" %(datas[0][0], datas[0][1] - first))
+		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
 
 #calculate the number of items for queue
 if (datas[0][1] - first) > backfill_qty * run_threads:
@@ -138,6 +141,11 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+final = ("%s %d %s" %(datas[0][0], int(datas[0][1] - (maxmssgs * geteach)), geteach))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+group = ("%s %d" %(datas[0][0], 1000))
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
 
 print("\nBackfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
