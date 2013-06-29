@@ -1650,7 +1650,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1692,7 +1692,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1828,13 +1828,13 @@ class Releases
 
 		// Completed releases and old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.filecheck = 5 " . $where));
 		$reccount = $db->getAffectedRows();
 		
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
-	}
+			}
 	
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
@@ -1855,7 +1855,7 @@ class Releases
 
 		// old collections that were missed somehow.
 		$db->queryDirect(sprintf("DELETE collections, binaries, parts
-						  FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
+						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
 		$reccount = $db->getAffectedRows();
 
@@ -2048,7 +2048,6 @@ class Releases
 		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
 
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
-
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		//Print amount of added releases and time it took.

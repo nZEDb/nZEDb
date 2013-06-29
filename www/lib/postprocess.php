@@ -494,7 +494,7 @@ class PostProcess
 
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
-//							$this->doecho("Not matched and skipping ".$rarFile["title"]);
+							$this->doecho("Not matched and skipping ".$rarFile["title"]);
 							continue;
 						}
 
@@ -519,7 +519,6 @@ class PostProcess
 						// Starting to look for content.
 						$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
 						$this->sum = $this->sum + $this->adj * $this->segsize;
-
 						if ($this->sum > $this->size || $this->adj == 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, 2);
@@ -543,10 +542,8 @@ class PostProcess
 									continue;
 								}
 								else
-								{
 									// Flag to indicate only that the archive has content.
 									$foundcontent = true;
-								}
 							}
 							else
 							{
@@ -908,7 +905,7 @@ class PostProcess
 
 		if ($zip->error)
 		{
-//		  $this->doecho("Error: {$zip->error}");
+		  $this->doecho("Error: {$zip->error}");
 		  return false;
 		}
 
@@ -935,7 +932,7 @@ class PostProcess
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
 					{
-//						$this->doecho("adding zip nfo");
+						$this->doecho("adding zip nfo");
 						$nfo = new Nfo($this->echooutput);
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
@@ -975,7 +972,7 @@ class PostProcess
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
-//			$this->doecho("Error: {$rar->error}");
+			$this->doecho("Error: {$rar->error}");
 			return false;
 		}
 
@@ -1004,7 +1001,7 @@ class PostProcess
 				{
 					if (isset($file["error"]))
 					{
-//						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
 						continue;
 					}
 					if ($file["pass"] == true)
@@ -1046,7 +1043,7 @@ class PostProcess
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error)
 			{
-//				$this->doecho("Error: {$rar->error}");
+				$this->doecho("Error: {$rar->error}");
 				return false;
 			}
 
@@ -1089,7 +1086,7 @@ class PostProcess
 					{
 						if (isset($file["error"]))
 						{
-//							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
 							continue;
 						}
 						if ($file["pass"] == true)
