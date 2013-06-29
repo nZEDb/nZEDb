@@ -1,4 +1,5 @@
-06292013 -> jonnyboy ->	added simple script to run all threaded scripts sequentially
+06292013 -> jonnyboy ->	modified file to delete releases based on poster, searchname, name or guid
+						added simple script to run all threaded scripts sequentially
 						removed hard coded db name from clean_nzb, added safety argv
 						made tmux colors array user defineable
 						changed query for music to process
