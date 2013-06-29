@@ -1,4 +1,5 @@
-07292013 -> jonnyboy ->	removed hard coded db name from patch
+07292013 -> jonnyboy ->	added cats to predb
+						removed hard coded db name from patch
 07282013 -> ugo ->		added code to check by the user for broken releases
 						added robot.txt files to deny all indexers by default
 						some minor changes to other parts
