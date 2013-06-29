@@ -1,6 +1,6 @@
 <?php
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
+require_once(FS_ROOT."/../../../www/config.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/nzb.php");
 
@@ -36,7 +36,7 @@ while ($row =  $db->fetchAssoc($res))
 	if (!file_exists($nzbpath))
 	{
 		echo "deleting ".$row['guid']."\n";
-		$db->query(sprintf("DELETE FROM `nZEDb`.`releases` WHERE `releases`.`ID` = %s", $row['ID']));
+		$db->query(sprintf("DELETE FROM `releases` WHERE `releases`.`ID` = %s", $row['ID']));
 	}
 
 }
