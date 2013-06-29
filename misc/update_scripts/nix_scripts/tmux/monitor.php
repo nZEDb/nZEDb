@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2531";
+$version="0.1r2538";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -587,7 +587,7 @@ while( $i > 0 )
 	$_php = $show_time." nice -n$niceness $PHP";
 	$_phpn = "nice -n$niceness $PHP";
 	if (command_exist("python3"))
-		$PYTHON = "python3";
+		$PYTHON = "python3 -OO";
 	else
 		$PYTHON = "python -OO";
 

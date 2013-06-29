@@ -4,63 +4,38 @@
 import sys, os, time
 import threading
 try:
-    import queue
+	import queue
 except ImportError:
-    import Queue as queue
-import cymysql as mdb
+	import Queue as queue
+try:
+	import cymysql as mdb
+except ImportError:
+	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import re
+import info
+import signal
+import datetime
 
+start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+conf = info.readConfig()
 
-def readConfig():
-		Configfile = pathname+"/../../../www/config.php"
-		file = open( Configfile, "r")
-
-		# Match a config line
-		m = re.compile('^define\(\'([A-Z_]+)\', \'?(.*?)\'?\);$', re.I)
-
-		# The config object
-		config = {}
-		config['DB_PORT']=3306
-		for line in file.readlines():
-				match = m.search( line )
-				if match:
-						value = match.group(2)
-
-						# filter boolean
-						if "true" is value:
-								value = True
-						elif "false" is value:
-								value = False
-
-						# Add to the config
-						#config[ match.group(1).lower() ] = value	   # Lower case example
-						config[ match.group(1) ] = value
-		return config
-
-# Test
-config = readConfig()
-
+#create the connection to mysql
 con = None
-# The MYSQL connection.
-con = mdb.connect(config['DB_HOST'], config['DB_USER'], config['DB_PASSWORD'], config['DB_NAME'], int(config['DB_PORT']));
-
-# The group names.
+con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
 cur = con.cursor()
-cur.execute("select value from site where setting = 'backfillthreads'");
-run_threads = cur.fetchone();
-cur.execute("select value from tmux where setting = 'SEQUENTIAL'");
-seq = cur.fetchone();
-cur.execute("select value from tmux where setting = 'BACKFILL'");
-type = cur.fetchone();
-cur.execute("select value from tmux where setting = 'BACKFILL_GROUPS'");
-groups = cur.fetchone();
-cur.execute("select value from tmux where setting = 'BACKFILL_ORDER'");
-order = cur.fetchone();
-intorder = int(order[0])
 
+#get values from db
+cur.execute("select (select value from site where setting = 'backfillthreads') as a, (select value from tmux where setting = 'BACKFILL') as c, (select value from tmux where setting = 'BACKFILL_GROUPS') as d, (select value from tmux where setting = 'BACKFILL_ORDER') as e, (select value from tmux where setting = 'BACKFILL_DAYS') as f")
+dbgrab = cur.fetchall()
+run_threads = int(dbgrab[0][0])
+type = int(dbgrab[0][1])
+groups = int(dbgrab[0][2])
+intorder = int(dbgrab[0][3])
+intbackfilltype = int(dbgrab[0][4])
+
+#get the correct oder by for the query
 if intorder == 1:
 	group = "ORDER BY first_record_postdate DESC"
 elif intorder == 2:
@@ -74,79 +49,77 @@ elif intorder == 5:
 else:
 	group = "ORDER BY first_record ASC"
 
-cur.execute("select value from tmux where setting = 'BACKFILL_DAYS'");
-backfilltype = cur.fetchone();
-intbackfilltype = int(backfilltype[0])
+#backfill days or safe backfill date
 if intbackfilltype == 1:
-        backfilldays = "backfill_target"
+	backfilldays = "backfill_target"
 elif intbackfilltype == 2:
-        backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
+	backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
+#query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
-	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", int(groups[0])))
+	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
 datas = cur.fetchall()
 if not datas:
 	print("No Groups enabled for backfill")
 	sys.exit()
 
+#close connection to mysql
+cur.close()
+con.close()
 
-class WorkerThread(threading.Thread):
-	def __init__(self, threadID, result_q):
-		super(WorkerThread, self).__init__()
-		self.threadID = threadID
-		self.result_q = result_q
-		self.stoprequest = threading.Event()
+my_queue = queue.Queue()
+time_of_last_run = time.time()
+
+class queue_runner(threading.Thread):
+	def __init__(self, my_queue):
+		threading.Thread.__init__(self)
+		self.my_queue = my_queue
 
 	def run(self):
-		while not self.stoprequest.isSet():
-			try:
-				dirname = self.threadID.get(True, 0.05)
-				if len(sys.argv) > 1 and sys.argv[1] == "all":
-					print("\n%s: Backfill All %s started." %(self.name, dirname))
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+dirname])
-				else:
-					print("\n%s: Backfill %s started." %(self.name, dirname))
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+dirname])
-				self.result_q.put((self.name, dirname))
-			except queue.Empty:
-				continue
+		global time_of_last_run
 
-	def join(self, timeout=None):
-		self.stoprequest.set()
-		super(WorkerThread, self).join()
+		while True:
+			try:
+				my_id = self.my_queue.get(True, 1)
+			except:
+				if time.time() - time_of_last_run > 3:
+					return
+			else:
+				if my_id:
+					time_of_last_run = time.time()
+					if len(sys.argv) > 1 and sys.argv[1] == "all":
+						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+my_id])
+					else:
+						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+my_id])
+					time.sleep(.5)
+					self.my_queue.task_done()
 
 def main(args):
-	# Create a single input and a single output queue for all threads.
-	threadID = queue.Queue()
-	result_q = queue.Queue()
+	global time_of_last_run
+	time_of_last_run = time.time()
 
-	# Create the "thread pool"
-	pool = [WorkerThread(threadID=threadID, result_q=result_q) for i in range(int(run_threads[0]))]
+	def signal_handler(signal, frame):
+		sys.exit(0)
 
-	# Start all threads
-	for thread in pool:
-		thread.start()
+	signal.signal(signal.SIGINT, signal_handler)
 
-	# Give the workers some work to do
-	work_count = 0
+	if True:
+		#spawn a pool of place worker threads
+		for i in range(run_threads):
+			p = queue_runner(my_queue)
+			p.setDaemon(True)
+			p.start()
+
+	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		work_count += 1
-		threadID.put("%s %s" %(gnames[0], type[0]))
+		my_queue.put("%s %s" %(gnames[0], type))
 
-	print("Assigned %s groups to workers" %(work_count))
-
-	while work_count > 0:
-		# Blocking 'get' from a Queue.
-		result = result_q.get()
-		print("\n%s: Backfill on %s finished." %(result[0], result[1]))
-		work_count -= 1
-
-	# Ask threads to die and wait for them to do it
-	for thread in pool:
-		thread.join()
+	my_queue.join()
 
 if __name__ == '__main__':
-	import sys
 	main(sys.argv[1:])
+
+print("\nBackfill Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
