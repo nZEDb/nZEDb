@@ -38,8 +38,6 @@ intorder = int(dbgrab[0][4])
 intbackfilltype = int(dbgrab[0][5])
 maxmssgs = int(dbgrab[0][6])
 
-print(run_threads)
-sys.exit()
 #get the correct oder by for the query
 if intorder == 1:
 	group = "ORDER BY first_record_postdate DESC"
