@@ -85,6 +85,8 @@ def main():
 			p.setDaemon(True)
 			p.start()
 
+	print("\nNZB Import Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
 		my_queue.put(os.path.join(nzbs,gnames))

@@ -519,7 +519,7 @@ class PostProcess
 
 						if ($this->password)
 						{
-							$this->doecho("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
+							$this->debug("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
 								break;
 						}
 
@@ -528,7 +528,7 @@ class PostProcess
 
 						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
-//							$this->doecho("Not matched and skipping ".$rarFile["title"]);
+							$this->debug("Not matched and skipping ".$rarFile["title"]);
 							continue;
 						}
 
@@ -572,7 +572,7 @@ class PostProcess
 
 								if ($relFiles === false)
 								{
-									$this->doecho("\nError processing files {$rel['ID']}");
+									$this->debug("\nError processing files {$rel['ID']}");
 									continue;
 								}
 								else
@@ -859,9 +859,15 @@ class PostProcess
 
 	function doecho($str)
 	{
-		if ($this->echooutput && $this->DEBUG_ECHO)
+		if ($this->echooutput)
 			echo $str."\n";
 	}
+
+    function debug($str)
+    {
+        if ($this->echooutput && $this->DEBUG_ECHO)
+            echo $str."\n";
+    }
 
 	function addmediafile ($file, $data)
 	{
@@ -951,13 +957,13 @@ class PostProcess
 
 		if ($zip->error)
 		{
-		  $this->doecho("Error: {$zip->error}");
+		  $this->debug("Error: {$zip->error}");
 		  return false;
 		}
 
 		if ($zip->isEncrypted)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
@@ -978,7 +984,7 @@ class PostProcess
 					$nzbcontents = new NZBcontents(true);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
 					{
-						$this->doecho("adding zip nfo");
+						$this->debug("adding zip nfo");
 						$nfo = new Nfo($this->echooutput);
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
@@ -1018,20 +1024,20 @@ class PostProcess
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
-			$this->doecho("Error: {$rar->error}");
+			$this->debug("Error: {$rar->error}");
 			return false;
 		}
 
 		if ($rar->isEncrypted)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
 		$tmp = $rar->getSummary(true, false);
 		if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 		{
-			$this->doecho("Archive is password encrypted.");
+			$this->debug("Archive is password encrypted.");
 			$this->password = true;
 			return false;
 		}
@@ -1047,7 +1053,7 @@ class PostProcess
 				{
 					if (isset($file["error"]))
 					{
-						$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+						$this->debug("Error: {$file['error']} (in: {$file['source']})");
 						continue;
 					}
 					if ($file["pass"] == true)
@@ -1089,7 +1095,7 @@ class PostProcess
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error)
 			{
-				$this->doecho("Error: {$rar->error}");
+				$this->debug("Error: {$rar->error}");
 				return false;
 			}
 
@@ -1099,14 +1105,14 @@ class PostProcess
 
 			if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 			{
-				$this->doecho("Archive is password encrypted.");
+				$this->debug("Archive is password encrypted.");
 				$this->password = true;
 				return false;
 			}
 
 			if ($rar->isEncrypted)
 			{
-				$this->doecho("Archive is password encrypted.");
+				$this->debug("Archive is password encrypted.");
 				$this->password = true;
 				return false;
 			}
@@ -1132,7 +1138,7 @@ class PostProcess
 					{
 						if (isset($file["error"]))
 						{
-							$this->doecho("Error: {$file['error']} (in: {$file['source']})");
+							$this->debug("Error: {$file['error']} (in: {$file['source']})");
 							continue;
 						}
 						if ($file["pass"] == true)
@@ -1190,7 +1196,7 @@ class PostProcess
 				}
 
 				// File is compressed, use unrar to get the content
-				$this->doecho($this->tmpPath);
+				$this->debug($this->tmpPath);
 				$rarfile = $this->tmpPath."rarfile".mt_rand(0,99999).".rar";
 				file_put_contents($rarfile, $fetchedBinary);
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';

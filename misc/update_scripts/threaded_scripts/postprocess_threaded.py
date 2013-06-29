@@ -123,6 +123,8 @@ def main():
 			p.setDaemon(True)
 			p.start()
 
+	print("\nPostProcess Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:

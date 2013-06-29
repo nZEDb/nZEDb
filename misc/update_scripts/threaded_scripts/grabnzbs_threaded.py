@@ -81,6 +81,8 @@ def main():
 			p.setDaemon(True)
 			p.start()
 
+	print("\n\nGrabNZBs Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
 		my_queue.put(gnames[0])
@@ -90,5 +92,5 @@ def main():
 if __name__ == '__main__':
 	main()
 
-print("\nGrabNZBs Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\n\nGrabNZBs Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
