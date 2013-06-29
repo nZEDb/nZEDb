@@ -90,5 +90,5 @@ def main():
 if __name__ == '__main__':
 	main()
 
-print("\nGrabNZBs Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\n\nGrabNZBs Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
