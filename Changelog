@@ -1,4 +1,5 @@
-06292013 -> jonnyboy ->	renamed patch
+06292013 -> jonnyboy ->	changed progessive sleep time to use min sleep timer if timer would be less than that
+						renamed patch
 						added blank line to robot.txt
 						replaced && with ; because python scripts exit  and sleeps were not working
 						changed echo output in postprocess doecho and/or debug

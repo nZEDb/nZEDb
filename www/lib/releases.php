@@ -1421,7 +1421,7 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 12 hour) AND c.filecheck
 						in (0, 1, 10) ".$where);
 
 		if ($this->echooutput)
@@ -1561,8 +1561,8 @@ class Releases
 				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$relguid = sha1(uniqid());
-				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) 
-											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", 
+				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
+											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
 											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
@@ -1831,11 +1831,11 @@ class Releases
 						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.filecheck = 5 " . $where));
 		$reccount = $db->getAffectedRows();
-		
+
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
 			}
-	
+
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
 		$db = new DB();
@@ -2122,7 +2122,7 @@ class Releases
 				if ($this->echooutput)
 					echo "Extracted ".$bunchedcnt." bunched collections.\n";
 			}
-		}		
+		}
 	}
 
 	// This resets collections, useful when the namecleaning class's collectioncleaner function changes.

@@ -13,7 +13,7 @@ class Binaries
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
-	function Binaries() 
+	function Binaries()
 	{
 		$this->n = "\n";
 
@@ -58,7 +58,7 @@ class Binaries
 			$nntp = new Nntp();
 			$nntp->doConnect();
 
-			foreach($res as $groupArr) 
+			foreach($res as $groupArr)
 			{
 				$this->message = array();
 				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
@@ -356,7 +356,7 @@ class Binaries
 					case 'partrepair':
 					case 'update':
 					default:
-						if ($this->DoPartRepair) 
+						if ($this->DoPartRepair)
 							$this->addMissingParts($rangenotreceived, $groupArr['ID']);
 					break;
 				}
@@ -438,17 +438,17 @@ class Binaries
 
 							$lastBinaryID = $binaryID;
 						}
-						
+
 						foreach($data['Parts'] AS $partdata)
 						{
 							$pBinaryID = $binaryID;
-							$pMessageID = $partdata['Message-ID']; 
+							$pMessageID = $partdata['Message-ID'];
 							$pNumber = $partdata['number'];
 							$pPartNumber = round($partdata['part']);
 							$pSize = $partdata['size'];
-							
+
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
-							
+
 							if (!$insPartsStmt->execute())
 							{
 								$msgsnotinserted[] = $partdata['number'];
@@ -459,15 +459,15 @@ class Binaries
 				if (sizeof($msgsnotinserted) > 0)
 				{
 					echo 'WARNING: '.sizeof($msgsnotinserted).' parts failed to insert'.$n;
-					if ($this->DoPartRepair) 
+					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
 				}
 				$db->Commit();
 				$db->setAutoCommit(true);
-			}	
+			}
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
-			
+
 			if ($type != 'partrepair')
 			{
 				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
@@ -486,20 +486,20 @@ class Binaries
 			}
 		}
 	}
-	
+
 	private function partRepair($nntp, $groupArr)
 	{
 		$n = $this->n;
-		
+
 		// Get all parts in partrepair table.
 		$db = new DB();
 		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
-		
+
 		if (sizeof($missingParts) > 0)
 		{
 			echo 'Attempting to repair '.sizeof($missingParts).' parts...'.$n;
-			
+
 			// Loop through each part to group into ranges.
 			$ranges = array();
 			$lastnum = $lastpart = 0;
@@ -513,56 +513,56 @@ class Binaries
 				}
 				$lastnum = $part['numberID'];
 			}
-			
+
 			$num_attempted = 0;
 			$consoleTools = new ConsoleTools();
-			
+
 			// Download missing parts in ranges.
 			foreach($ranges as $partfrom=>$partto)
 			{
 				$this->startLoop = microtime(true);
-				
+
 				$num_attempted += $partto - $partfrom + 1;
 				$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
-				
+
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair');
-				
+
 				// Check if the articles were added.
 				$articles = implode(',', range($partfrom, $partto));
 				$sql = sprintf("SELECT pr.ID, pr.numberID, p.number from partrepair pr LEFT JOIN parts p ON p.number = pr.numberID WHERE pr.groupID=%d AND pr.numberID IN (%s) ORDER BY pr.numberID ASC", $groupArr['ID'], $articles);
-				
+
 				$result = $db->queryDirect($sql);
-				while ($r = $db->fetchAssoc($result)) 
+				while ($r = $db->fetchAssoc($result))
 				{
 					if (isset($r['number']) && $r['number'] == $r['numberID'])
 					{
 						$partsRepaired++;
-						
+
 						// Article was added, delete from partrepair.
 						$db->query(sprintf("DELETE FROM partrepair WHERE ID=%d", $r['ID']));
-					} 
-					else 
+					}
+					else
 					{
 						$partsFailed++;
-						
+
 						// Article was not added, increment attempts.
 						$db->query(sprintf("UPDATE partrepair SET attempts=attempts+1 WHERE ID=%d", $r['ID']));
 					}
 				}
 			}
-			
+
 			echo $n;
-			
+
 			echo $partsRepaired.' parts repaired.'.$n;
 		}
-		
+
 		// Remove articles that we cant fetch after 5 attempts.
 		$db->query(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupID = %d", $groupArr['ID']));
-			
+
 	}
-	
-	private function addMissingParts($numbers, $groupID) 
+
+	private function addMissingParts($numbers, $groupID)
 	{
 		$db = new DB();
 		$insertStr = "INSERT IGNORE INTO partrepair (numberID, groupID) VALUES ";
@@ -574,8 +574,8 @@ class Binaries
 		$insertStr .= " ON DUPLICATE KEY UPDATE attempts=attempts+1";
 		return $db->queryInsert($insertStr, false);
 	}
-	
-	public function retrieveBlackList() 
+
+	public function retrieveBlackList()
 	{
 		if ($this->blackListLoaded) { return $this->blackList; }
 		$blackList = $this->getBlacklist(true);
@@ -583,22 +583,22 @@ class Binaries
 		$this->blackListLoaded = true;
 		return $blackList;
 	}
-	
-	public function isBlackListed($msg, $groupName) 
+
+	public function isBlackListed($msg, $groupName)
 	{
 		$blackList = $this->retrieveBlackList();
 		$field = array();
 		if (isset($msg["Subject"]))
 			$field[Binaries::BLACKLIST_FIELD_SUBJECT] = $msg["Subject"];
-			
+
 		if (isset($msg["From"]))
 			$field[Binaries::BLACKLIST_FIELD_FROM] = $msg["From"];
-	
+
 		if (isset($msg["Message-ID"]))
 			$field[Binaries::BLACKLIST_FIELD_MESSAGEID] = $msg["Message-ID"];
 
-		$omitBinary = false;		
-		
+		$omitBinary = false;
+
 		foreach ($blackList as $blist)
 		{
 			if (preg_match('/^'.$blist['groupname'].'$/i', $groupName))
@@ -610,7 +610,7 @@ class Binaries
 						$omitBinary = true;
 					}
 				}
-				else if ($blist['optype'] == 2) 
+				else if ($blist['optype'] == 2)
 				{
 					if (!preg_match('/'.$blist['regex'].'/i', $field[$blist['msgcol']])) {
 						$omitBinary = true;
@@ -621,9 +621,9 @@ class Binaries
 
 		return $omitBinary;
 	}
-	
+
 	public function search($search, $limit=1000, $excludedcats=array())
-	{			
+	{
 		$db = new DB();
 
 		//
@@ -648,84 +648,68 @@ class Binaries
 				$intwordcount++;
 			}
 		}
-		
+
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and b.categoryID not in (".implode(",", $excludedcats).") ";
-		
+
 		$res = $db->query(sprintf("
-					SELECT b.*, 
+					SELECT b.*,
 					g.name AS group_name,
 					r.guid,
 					(SELECT COUNT(ID) FROM parts p WHERE p.binaryID = b.ID) as 'binnum'
 					FROM binaries b
 					INNER JOIN groups g ON g.ID = b.groupID
 					LEFT OUTER JOIN releases r ON r.ID = b.releaseID
-					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ", 
+					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ",
 					$searchsql, $exccatlist, $limit));
-		
+
 		return $res;
-	}	
+	}
 
 	public function getForReleaseId($id)
-	{			
+	{
 		$db = new DB();
-		return $db->query(sprintf("select binaries.* from binaries WHERE releaseID = %d order by relpart", $id));		
+		return $db->query(sprintf("select binaries.* from binaries WHERE releaseID = %d order by relpart", $id));
 	}
 
 	public function getById($id)
-	{			
+	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf("select binaries.*, collections.groupID, groups.name as groupname from binaries, collections left outer join groups on collections.groupID = groups.ID WHERE binaries.ID = %d ", $id));
 	}
 
 	public function getBlacklist($activeonly=true)
-	{			
+	{
 		$db = new DB();
-		
+
 		$where = "";
 		if ($activeonly)
 			$where = " WHERE binaryblacklist.status = 1 ";
-			
-		return $db->query("SELECT binaryblacklist.ID, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, 
-												groups.ID AS groupID, binaryblacklist.msgcol FROM binaryblacklist 
-												left outer JOIN groups ON groups.name = binaryblacklist.groupname 
+
+		return $db->query("SELECT binaryblacklist.ID, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex,
+												groups.ID AS groupID, binaryblacklist.msgcol FROM binaryblacklist
+												left outer JOIN groups ON groups.name = binaryblacklist.groupname
 												".$where."
-												ORDER BY coalesce(groupname,'zzz')");		
+												ORDER BY coalesce(groupname,'zzz')");
 	}
 
 	public function getBlacklistByID($id)
-	{			
+	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from binaryblacklist WHERE ID = %d ", $id));		
+		return $db->queryOneRow(sprintf("select * from binaryblacklist WHERE ID = %d ", $id));
 	}
 
 	public function deleteBlacklist($id)
-	{			
+	{
 		$db = new DB();
-		return $db->query(sprintf("DELETE FROM binaryblacklist WHERE ID = %d", $id));		
-	}		
-	
-	public function updateBlacklist($regex)
-	{			
-		$db = new DB();
-		
-		$groupname = $regex["groupname"];
-		if ($groupname == "")
-			$groupname = "null";
-		else
-		{
-			$groupname = preg_replace("/a\.b\./i", "alt.binaries.", $groupname);
-			$groupname = sprintf("%s", $db->escapeString($groupname));
-		}
-			
-		$db->query(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d WHERE ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));	
+		return $db->query(sprintf("DELETE FROM binaryblacklist WHERE ID = %d", $id));
 	}
-	
-	public function addBlacklist($regex)
-	{			
+
+	public function updateBlacklist($regex)
+	{
 		$db = new DB();
-		
+
 		$groupname = $regex["groupname"];
 		if ($groupname == "")
 			$groupname = "null";
@@ -734,18 +718,34 @@ class Binaries
 			$groupname = preg_replace("/a\.b\./i", "alt.binaries.", $groupname);
 			$groupname = sprintf("%s", $db->escapeString($groupname));
 		}
-			
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ", 
-			$groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"]));	
-	}	
-	
+
+		$db->query(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d WHERE ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));
+	}
+
+	public function addBlacklist($regex)
+	{
+		$db = new DB();
+
+		$groupname = $regex["groupname"];
+		if ($groupname == "")
+			$groupname = "null";
+		else
+		{
+			$groupname = preg_replace("/a\.b\./i", "alt.binaries.", $groupname);
+			$groupname = sprintf("%s", $db->escapeString($groupname));
+		}
+
+		return $db->queryInsert(sprintf("INSERT IGNORE INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ",
+			$groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"]));
+	}
+
 	public function delete($id)
-	{			
+	{
 		$db = new DB();
 		$bins = $db->query(sprintf("select ID from binaries WHERE collectionID = %d", $id));
 		foreach ($bins as $bin)
 			$db->query(sprintf("DELETE FROM parts WHERE binaryID = %d", $bin["ID"]));
 		$db->query(sprintf("DELETE FROM binaries WHERE collectionID = %d", $id));
 		$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $id));
-	}	
+	}
 }
