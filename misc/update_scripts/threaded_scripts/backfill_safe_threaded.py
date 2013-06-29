@@ -22,15 +22,16 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
 
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
-cur = con.cursor()
-
 count = 0
 first = 0
 #if the group has less than 10000 to grab, just grab them, and loop another group
 while (count - first) < 10000:
+
+	#create the connection to mysql
+	con = None
+	con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	cur = con.cursor()
+
 	#get values from db
 	cur.execute("select (select value from site where setting = 'backfillthreads') as a, (select value from tmux where setting = 'BACKFILL_QTY') as b, (select value from tmux where setting = 'BACKFILL') as c, (select value from tmux where setting = 'BACKFILL_GROUPS') as d, (select value from tmux where setting = 'BACKFILL_ORDER') as e, (select value from tmux where setting = 'BACKFILL_DAYS') as f, (select value from site where setting = 'maxmssgs') as g")
 	dbgrab = cur.fetchall()
@@ -82,7 +83,8 @@ while (count - first) < 10000:
 	if (datas[1] - first) < 10000:
 		group = ("%s 10000" %(datas[0]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-
+		cur.close()
+		con.close()
 
 #close connection to mysql
 cur.close()
