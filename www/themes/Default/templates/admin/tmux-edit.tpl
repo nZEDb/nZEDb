@@ -536,7 +536,8 @@
 					<input id="COLORS_END" name="COLORS_END" class="short" type="text" value="{$ftmux->COLORS_END}" /><br />
 					<input id="COLORS_EXC" name="COLORS_EXC" class="longer" type="text" value="{$ftmux->COLORS_EXC}" />
 					<div class="hint">The color displayed is tmux scripts is randomized from this list.<br />
-					The first box is the start number, the second box is the end number and the last box are the exceptions. An array is created from these numbers.</div>
+					The first box is the start number, the second box is the end number and the last box are the exceptions. An array is created from these numbers.<br />
+					If you connect using putty, then under Window/Translation set Remote character set to UTF-8 and check "Copy and paste line drawing characters". To use 256 colors, you must set Connection/Data Terminal-type string to "xterm-256color" and in Window/Colours check the top three boxes, otherwise only 16 colors are displayed. If you are using FreeBSD, you will need to add export TERM=xterm-256color to your .bashrc file to show 256 colors.</div>
 				</td>
 			</tr>
 		</table>
