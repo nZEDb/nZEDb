@@ -1,4 +1,5 @@
-06292013 -> jonnyboy ->	separated decrypt hashes and predb
+06292013 -> jonnyboy ->	added output to start of threaded scripts
+						separated decrypt hashes and predb
 						fixed grabnzbs not setting haspreview = -1
 						fixed backfill safe loop over completed groups
 						changed progessive sleep time to use min sleep timer if timer would be less than that
