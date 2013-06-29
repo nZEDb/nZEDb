@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2581";
+$version="0.1r2582";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -692,7 +692,21 @@ while( $i > 0 )
 		}
 
 		//dehash releases
-		if ( $dehash == "TRUE" )
+		if ( $dehash == 1 )
+		{
+			$color = get_color();
+			$log = writelog($panes1[3]);
+			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
+					$_php ${DIR}update_scripts/nzbx_ws_hashdecrypt.php $log; date +\"%D %T\"; sleep $dehash_timer' 2>&1 1> /dev/null");
+		}
+		elseif ( $dehash == 2 )
+		{
+			$color = get_color();
+			$log = writelog($panes1[3]);
+			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
+					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; sleep $dehash_timer' 2>&1 1> /dev/null");
+		}
+		elseif ( $dehash == 3 )
 		{
 			$color = get_color();
 			$log = writelog($panes1[3]);
