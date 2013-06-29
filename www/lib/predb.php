@@ -525,4 +525,3 @@ Class Predb
 		return $count["cnt"];
 	}
 }
-
