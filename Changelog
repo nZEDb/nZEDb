@@ -1,4 +1,5 @@
-07282013 -> jonnyboy -> oops, removed sys.exit from safe backfill
+07282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
+						oops, removed sys.exit from safe backfill
 						added back changes to site-edit
 						rewrote all python scripts
 						added back changes to releases.php
