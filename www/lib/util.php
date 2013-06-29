@@ -15,17 +15,17 @@ function sendEmail($to, $subject, $contents, $from)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
 function isWindows()
 {
-	if(strpos(PHP_OS,"WIN") === false) 
+	if(strpos(PHP_OS,"WIN") === false)
 	{
 		return false;
 	}
-	else 
+	else
 	{
 		return true;
 	}
@@ -34,12 +34,12 @@ function isWindows()
 function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 {
 	$arrData = array();
-	
+
 	// if input is object, convert into array
 	if (is_object($arrObjData)) {
 		$arrObjData = get_object_vars($arrObjData);
 	}
-	
+
 	if (is_array($arrObjData)) {
 		foreach ($arrObjData as $index => $value) {
 			if (is_object($value) || is_array($value)) {
@@ -54,36 +54,36 @@ function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 	return $arrData;
 }
 
-function safeFilename($filename) 
+function safeFilename($filename)
 {
 	$temp = $filename;
- 
+
 	$result = '';
 	for ($i=0; $i<strlen($temp); $i++) {
 		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
 			$result = $result . $temp[$i];
 		}
 	}
- 
+
 	return $result;
 }
 
 function runCmd($command, $debug=false) {
 	$nl = PHP_EOL;
-	
+
 	if (isWindows() && strpos(phpversion(),"5.2") !== false)
 		$command = "\"".$command."\"";
-	
+
 	if ($debug)
 		echo '-Running Command: '.$nl.'   '.$command.$nl;
-	
+
 	$output = array();
 	$status = 1;
 	@exec($command, $output, $status);
-	
+
 	if ($debug)
 		echo '-Command Output: '.$nl.'   '.implode($nl.'  ', $output).$nl;
-	
+
 	return $output;
 }
 
@@ -113,11 +113,11 @@ function getUrl($url, $method='get', $postdata='', $language="")
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	
+
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
 	curl_close($ch);
-	
+
 	if ($err != 0)
 		return false;
 	else
@@ -127,7 +127,7 @@ function getUrl($url, $method='get', $postdata='', $language="")
 
 function cp437toUTF($str) {
 	$out = '';
-	for ($i = 0; $i<strlen($str);$i++){	
+	for ($i = 0; $i<strlen($str);$i++){
 		$ch = ord($str{$i});
 		//echo $ch.' ';
 		switch($ch){
@@ -262,7 +262,7 @@ function cp437toUTF($str) {
 			default : $out .= chr($ch);
 		}
 	}
-	return $out;	
+	return $out;
 }
 
 // Function inpsired by c0r3@newznabforums for flags on the browse page.

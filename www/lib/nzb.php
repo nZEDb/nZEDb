@@ -116,10 +116,10 @@ class NZB
 		}
 
 		$subpath = "";
-		
+
 		for ($i = 0; $i < $levelsToSplit; $i++)
 			$subpath = $subpath . substr($releaseGuid, $i, 1) . "/";
-			
+
 		$nzbpath = $sitenzbpath . $subpath;
 
 		if ($createIfDoesntExist && !file_exists($nzbpath))
@@ -153,16 +153,16 @@ class NZB
 		$nzb = str_replace("\x0F", "", $nzb);
 	   	$num_pars = 0;
 		$xml = @simplexml_load_string($nzb);
-		if (!$xml || strtolower($xml->getName()) != 'nzb') 
+		if (!$xml || strtolower($xml->getName()) != 'nzb')
 		  return false;
 
 		$i=0;
-		foreach($xml->file as $file) 
+		foreach($xml->file as $file)
 		{
 			//subject
 			//var_dump($file);
 			$title = $file->attributes()->subject;
-			if (preg_match('/\.par2/i', $title)) 
+			if (preg_match('/\.par2/i', $title))
 				$num_pars++;
 
 			$result[$i]['title'] = "$title";
