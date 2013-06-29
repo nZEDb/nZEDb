@@ -42,7 +42,7 @@
 	<li>Groups: {$release.group_name}</li>
 	<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 	<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>
-	<li>Password: {if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Passworded Rar Archive{elseif $release.passwordstatus == 2}Contains Cab/Ace/RAR Archive{else}Unknown{/if}</li>
+	<li>Password: {if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}</li>
 	
 	{if $release.parentCategoryID == 2000}
 		{if $release.imdbID != ""}
