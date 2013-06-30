@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This scripts converts tables to myisam , innodb dynamic or innodb compressed. Run like this : php convert_mysql_tables.php dinnodb
+ * This script converts tables to myisam , innodb dynamic or innodb compressed, or tokudb. Run like this : php convert_mysql_tables.php dinnodb
  */
 
 require_once(dirname(__FILE__)."/../../../www/config.php");
@@ -64,5 +64,5 @@ else
 		."php convert_mysql_tables.php myisam	...: Converts all the tables to Myisam Dynamic.\n"
 		."php convert_mysql_tables.php dinnodb	...: Converts all the tables to InnoDB Dynamic.\n"
 		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php tokudb  ...: Converts all the tables to Tokutek DB.\n\n");
+		."php convert_mysql_tables.php tokudb	...: Converts all the tables to Tokutek DB.\n\n");
 }
