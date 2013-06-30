@@ -17,76 +17,23 @@ $relcount = 0;
 //
 //	This script removes all releases and nzb files based on poster, searchname, name or guid
 //
-
-if (isset($argv[1]) && isset($argv[1]) == "true" && isset($argv[2]) && isset($argv[2]) == "poster")
+if (sizeof($argv) == 4)
 {
-	$query = "SELECT ID, guid FROM releases where fromname ='".$argv[1]."'";
-	echo "$query\n";
-	$relids = $db->query($query);
-	echo "Deleting ".sizeof($relids)." releases and NZB's for ".$argv[1]."\n";
-	$releases = new Releases();
-
-	foreach ($relids as $relid)
+	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "poster"))
 	{
-		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
-		$relcount++;
-		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+		$relids = $db->query(sprintf("SELECT ID, guid FROM releases where %s = %s", $argv[1], $db->escapeString($argv[3])));
+		printf("SELECT ID, fuck, guid FROM releases where %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
-
-	if ($relcount > 0)
-		echo "\n";
-	echo "Deleted ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);
-	echo ".\n";
-}
-elseif (isset($argv[1]) && isset($argv[1]) == "true" && isset($argv[2]) && isset($argv[2]) == "searchname")
-{
-	$query = "SELECT ID, guid FROM releases where searchname ='".$argv[1]."'";
-	echo "$query\n";
-	$relids = $db->query($query);
-	echo "Deleting ".sizeof($relids)." releases and NZB's for ".$argv[1]."\n";
-	$releases = new Releases();
-
-	foreach ($relids as $relid)
+	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "poster"))
 	{
-		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
-		$relcount++;
-		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+		$relids = $db->query("SELECT ID, guid FROM releases where ".$argv[1]." like '%".$argv[3]."%'");
+		print("SELECT ID, guid FROM releases where ".$argv[1]." like '%".$argv[3]."%'");
 	}
-
-	if ($relcount > 0)
-		echo "\n";
-	echo "Deleted ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);
-	echo ".\n";
-}
-elseif (isset($argv[1]) && isset($argv[1]) == "true" && isset($argv[2]) && isset($argv[2]) == "name")
-{
-	$query = "SELECT ID, guid FROM releases where name ='".$argv[1]."'";
-	echo "$query\n";
-	$relids = $db->query($query);
-	echo "Deleting ".sizeof($relids)." releases and NZB's for ".$argv[1]."\n";
-	$releases = new Releases();
-
-	foreach ($relids as $relid)
+	else
 	{
-		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
-		$relcount++;
-		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+		exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ poster, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ poster, searchname, name, guid ] like [ name/guid ]\n");
 	}
-
-	if ($relcount > 0)
-		echo "\n";
-	echo "Deleted ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);
-	echo ".\n";
-}
-elseif (isset($argv[1]) && isset($argv[1]) == "true" && isset($argv[2]) && isset($argv[2]) == "guid")
-{
-	$query = "SELECT ID, guid FROM releases where guid ='".$argv[1]."'";
-	echo "$query\n";
-	$relids = $db->query($query);
-	echo "Deleting ".sizeof($relids)." releases and NZB's for ".$argv[1]."\n";
+	echo "\nDeleting ".sizeof($relids)." releases and NZB's for ".$argv[3]."\n";
 	$releases = new Releases();
 
 	foreach ($relids as $relid)
@@ -104,6 +51,5 @@ elseif (isset($argv[1]) && isset($argv[1]) == "true" && isset($argv[2]) && isset
 }
 else
 {
-	exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php true [ poster, searchname, name, guid ]\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ poster, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ poster, searchname, name, guid ] like [ name/guid ]\n");
 }
-?>
