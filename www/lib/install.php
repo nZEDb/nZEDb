@@ -1,8 +1,9 @@
 <?php
 class Install {
 	public $DB_TYPE;
-	public $DB_HOST = "localhost";
+	public $DB_HOST = "127.0.0.1";
 	public $DB_PORT = "3306";
+	public $DB_SOCKET;
 	public $DB_USER;
 	public $DB_PASSWORD;
 	public $DB_NAME = "nzedb";
@@ -12,6 +13,12 @@ class Install {
 	public $NNTP_SERVER;
 	public $NNTP_PORT = 119;
 	public $NNTP_SSLENABLED = false;
+
+	public $NNTP_USERNAME_A;
+	public $NNTP_PASSWORD_A;
+	public $NNTP_SERVER_A;
+	public $NNTP_PORT_A = 119;
+	public $NNTP_SSLENABLED_A = false;
 
 	public $WWW_DIR;
 	public $SMARTY_DIR;
@@ -106,6 +113,7 @@ class Install {
 		$tmpCfg = file_get_contents($this->INSTALL_DIR.'/config.php.tpl');
 		$tmpCfg = str_replace('%%DB_HOST%%', $this->DB_HOST, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PORT%%', $this->DB_PORT, $tmpCfg);
+		$tmpCfg = str_replace('%%DB_SOCKET%%', $this->DB_SOCKET, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_USER%%', $this->DB_USER, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PASSWORD%%', $this->DB_PASSWORD, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_NAME%%', $this->DB_NAME, $tmpCfg);
@@ -115,6 +123,12 @@ class Install {
 		$tmpCfg = str_replace('%%NNTP_SERVER%%', $this->NNTP_SERVER, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PORT%%', $this->NNTP_PORT, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED%%', ($this->NNTP_SSLENABLED?"true":"false"), $tmpCfg);
+
+		$tmpCfg = str_replace('%%NNTP_USERNAME_A%%', $this->NNTP_USERNAME_A, $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_PASSWORD_A%%', $this->NNTP_PASSWORD_A, $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SERVER_A%%', $this->NNTP_SERVER_A, $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_PORT_A%%', $this->NNTP_PORT_A, $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A?"true":"false"), $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
 		return @file_put_contents($this->WWW_DIR.'/config.php', $tmpCfg);
