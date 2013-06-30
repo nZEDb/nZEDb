@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#if you truncate, repair, alter, the tables may revert to real location, you will need to monitor
 #edit this to allow script to run, be sure of the paths
 #the ramdisk needs to be twice the size of the parts table max size, it needs room to copy itself during optimise
 #i take no responsibility if this fails and you lose you db
@@ -10,7 +11,7 @@ exit
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
 	echo "This script must be run as root"
-    exit 1
+	exit 1
 fi
 
 export USER="your username"
@@ -25,7 +26,7 @@ GROUPID=`id -g mysql`
 ARG_1=$1
 if [ $# == 0 ]; then
 	echo "To move mysql tables to ramdisk, type: ./mysql_to_ramdisk.sh create"
-    echo "To move mysql tables back from ramdisk, type: ./mysql_to_ramdisk.sh delete"
+	echo "To move mysql tables back from ramdisk, type: ./mysql_to_ramdisk.sh delete"
 	exit
 elif [ $ARG_1 == "create" ]; then
 	/etc/init.d/mysql stop
@@ -164,7 +165,7 @@ elif [ $ARG_1 == "delete" ]; then
 	fi
 
 
-	if [ -h "$MYSQL_PATH/partrepair.frm" ] && [ -f $PATH_RAMDISK/partrepair.MYD ]; then
+	if [ -h "$MYSQL_PATH/partrepair.frm" ] && [ -f $PATH_RAMDISK/partrepair.frm ]; then
 		rm $MYSQL_PATH/partrepair.frm
 		mv $PATH_RAMDISK/partrepair.frm $MYSQL_PATH/
 	fi
@@ -172,7 +173,7 @@ elif [ $ARG_1 == "delete" ]; then
 		rm $MYSQL_PATH/partrepair.MYD
 		mv $PATH_RAMDISK/partrepair.MYD $MYSQL_PATH/
 	fi
-	if [ -h "$MYSQL_PATH/partrepair.MYI" ] && [ -f $PATH_RAMDISK/partrepair.MYD ]; then
+	if [ -h "$MYSQL_PATH/partrepair.MYI" ] && [ -f $PATH_RAMDISK/partrepair.MYI ]; then
 		rm $MYSQL_PATH/partrepair.MYI
 		mv $PATH_RAMDISK/partrepair.MYI $MYSQL_PATH/
 	fi
@@ -226,13 +227,6 @@ elif [ $ARG_1 == "delete" ]; then
 
 	/etc/init.d/mysql start
 	exit
-
-
-
-
-
-
-
 else
 	echo "To move mysql tables to ramdisk, type: ./mysql_to_ramdisk.sh create"
 	exit

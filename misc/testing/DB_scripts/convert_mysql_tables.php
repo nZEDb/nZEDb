@@ -64,5 +64,5 @@ else
 		."php convert_mysql_tables.php myisam	...: Converts all the tables to Myisam Dynamic.\n"
 		."php convert_mysql_tables.php dinnodb	...: Converts all the tables to InnoDB Dynamic.\n"
 		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php tokudb  ...: Converts all the tables to Tokutek DB.\n\n");
+		."php convert_mysql_tables.php tokudb	...: Converts all the tables to Tokutek DB.\n\n");
 }
