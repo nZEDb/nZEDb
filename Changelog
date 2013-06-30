@@ -1,4 +1,5 @@
-06292013 -> jonnyboy ->	modified file to delete releases based on poster, searchname, name or guid, using = or like
+06292013 -> jonnyboy ->	added script to create a ramdisk and move mysql tables to it
+						modified file to delete releases based on poster, searchname, name or guid, using = or like
 						added simple script to run all threaded scripts sequentially
 						removed hard coded db name from clean_nzb, added safety argv
 						made tmux colors array user defineable
