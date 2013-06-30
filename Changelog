@@ -1,4 +1,5 @@
-06302013 -> jonnyboy -> added dateadded column to nzbs table, added code to delete incomplete nzbs older than 4 hours
+06302013 -> jonnyboy -> added script to show sleeptime using Consoletools
+						added dateadded column to nzbs table, added code to delete incomplete nzbs older than 4 hours
 						added nzbs to monitor, total(distinct), pending
 						started adding code to install scripts for socket and alternate nntp
 06292013 -> ugo		 -> added language flags to movie page
