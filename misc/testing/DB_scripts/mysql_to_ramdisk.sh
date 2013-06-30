@@ -7,6 +7,12 @@
 echo "Please edit this script, very carefully!"
 exit
 
+# Make sure only root can run our script
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root"
+    exit 1
+fi
+
 export USER="your username"
 export PATH_RAMDISK="/var/ramdisk"
 export MYSQL_PATH="/var/lib/mysql/nzedb"
