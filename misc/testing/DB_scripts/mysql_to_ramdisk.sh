@@ -93,7 +93,7 @@ elif [ $ARG_1 == "create" ]; then
 	if [ ! -h "$MYSQL_PATH/partrepair.ibd" ] && [ -f $MYSQL_PATH/partrepair.ibd ]; then
 		cp $MYSQL_PATH/partrepair.ibd $SQL_BACKUP/
 		mv $MYSQL_PATH/partrepair.ibd $PATH_RAMDISK/
-		ln -s $PATH_RAMDISK/partrepair.idb $MYSQL_PATH/
+		ln -s $PATH_RAMDISK/partrepair.ibd $MYSQL_PATH/
 	fi
 
 
