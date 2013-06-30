@@ -1,4 +1,10 @@
-06292013 -> jonnyboy ->	added output to start of threaded scripts
+06292013 -> jonnyboy ->	added script to create a ramdisk and move mysql tables to it
+						modified file to delete releases based on poster, searchname, name or guid, using = or like
+						added simple script to run all threaded scripts sequentially
+						removed hard coded db name from clean_nzb, added safety argv
+						made tmux colors array user defineable
+						changed query for music to process
+						added output to start of threaded scripts
 						separated decrypt hashes and predb
 						fixed grabnzbs not setting haspreview = -1
 						fixed backfill safe loop over completed groups
