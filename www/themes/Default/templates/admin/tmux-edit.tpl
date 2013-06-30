@@ -68,7 +68,8 @@
 					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br />
 					The 'In Database' Misc means the number of releases that have not been categorized in any other category.<br />
 					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br />
-					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started. The 'In Database' is the total predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.
+					The 'In Process' predb is the matched predb->releases and inside the parenthesis is number changed since the script started. The 'In Database' is the total predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br />
+					The 'In Process' NZBs are total nzbs, inside the parenthesis is distinct nzbs and 'In Database' are nzbs that have all parts available and will be processed on next run.
 				</div>
 			</td>
 		</tr>

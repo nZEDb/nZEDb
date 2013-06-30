@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2596";
+$version="0.1r2614";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -41,13 +41,17 @@ $proc_work = "SELECT
 	( SELECT COUNT( ID ) from collections ) AS collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
-	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb";
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
+    ( SELECT COUNT( distinct( collectionhash )) FROM nzbs ) AS distinctnzbs,
+	( SELECT COUNT( collectionhash ) FROM nzbs ) AS totalnzbs,
+	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
 $proc_tmux = "SELECT
 	( SELECT UNIX_TIMESTAMP(dateadded) from collections order by dateadded ASC limit 1 ) AS oldestcollection,
 	( SELECT UNIX_TIMESTAMP(adddate) from predb order by adddate DESC limit 1 ) AS newestpre,
 	( SELECT name from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
 	( SELECT UNIX_TIMESTAMP(adddate) from releases where nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
+	( SELECT UNIX_TIMESTAMP(dateadded) from nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
 	( SELECT value from tmux where setting = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT value from tmux where setting = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT value from tmux where setting = 'NICENESS' ) AS niceness,
@@ -186,6 +190,7 @@ $newestname = "Unknown";
 $newestadd = TIME();
 $newestpre = TIME();
 $oldestcollection = TIME();
+$oldestnzb = TIME();
 
 $releases_now_formatted = 0;
 $releases_since_start = 0;
@@ -268,6 +273,9 @@ $backfill_groups_days = 0;
 $backfill_groups_date = 0;
 $backfilldays = 0;
 $all_groups = 0;
+$totalnzbs = 0;
+$distinctnzbs = 0;
+$pendingnzbs = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
@@ -280,6 +288,7 @@ printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 
 $mask = "%-15.15s %22.22s %22.22s\n";
 printf("\033[1;33m\n");
@@ -292,6 +301,7 @@ printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "====================", "====================");
 printf("\033[38;5;214m");
+printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
@@ -390,6 +400,9 @@ while( $i > 0 )
 
 	if ( @$proc_work_result[0]['predb'] != NULL ) { $predb = $proc_work_result[0]['predb']; }
 	if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result[0]['predb_matched']; }
+	if ( @$proc_work_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_work_result[0]['distinctnzbs']; }
+	if ( @$proc_work_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_work_result[0]['totalnzbs']; }
+	if ( @$proc_work_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_work_result[0]['pendingnzbs']; }
 
 	if ( @$proc_tmux_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
 	if ( @$proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
@@ -406,6 +419,7 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['niceness'] != NULL ) { $niceness = $proc_tmux_result[0]['niceness']; }
 	if ( @$proc_tmux_result[0]['progressive'] != NULL ) { $progressive = $proc_tmux_result[0]['progressive']; }
 	if ( @$proc_tmux_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $proc_tmux_result[0]['oldestcollection']; }
+	if ( @$proc_tmux_result[0]['oldestnzb'] != NULL ) { $oldestnzb = $proc_tmux_result[0]['oldestnzb']; }
 
 	if ( @$proc_tmux_result[0]['binaries_run'] != NULL ) { $binaries = $proc_tmux_result[0]['binaries_run']; }
 	if ( @$proc_tmux_result[0]['import'] != NULL ) { $import = $proc_tmux_result[0]['import']; }
@@ -511,6 +525,7 @@ while( $i > 0 )
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 	if ( $post == "TRUE" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
@@ -522,6 +537,7 @@ while( $i > 0 )
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), "~".number_format($binaries_table), "~".number_format($parts_table));
+
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
@@ -540,6 +556,7 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "====================", "====================", "====================");
 	printf("\033[38;5;214m");
+	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")","~".number_format($predb)."(".$pre_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");

@@ -1268,19 +1268,12 @@ INSERT INTO `genres`
 
 DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
-
-	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-
-	`setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-
-	`value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
-
-	`updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-PRIMARY KEY (`ID`),
-
-UNIQUE KEY `setting` (`setting`)
-
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `setting` (`setting`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
@@ -1358,6 +1351,7 @@ CREATE TABLE `nzbs` (
   `partnumber` int(10) unsigned NOT NULL DEFAULT '0',
   `totalparts` int(10) unsigned NOT NULL DEFAULT '0',
   `postdate` datetime DEFAULT NULL,
+  `dateadded` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
