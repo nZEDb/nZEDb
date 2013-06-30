@@ -876,12 +876,21 @@ echo "asin ".$set[1]."\n";
 			}
 	}
 
-	function musicnzb($id = '')
+	function musicnzb($category = Category::CAT_PARENT_MISC, $id = 0)
 	{
-		if (!empty($id))
+		if ($id != 0)
 			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID WHERE releases.ID = ($id)"; // AND NOT (`imdbID` > 1 OR `rageID` > 1 OR `musicinfoID` is not null OR `consoleinfoID` is not null OR `bookinfoID` is not null )";
 		else
-			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID where categoryID = ".Category::CAT_MISC."  and nfostatus >= 0 AND passwordstatus >= 0 AND not (`imdbID` is not null OR `rageID` > 0 OR `consoleinfoID` is not null OR `bookinfoID` is not null)";
+		{
+			if ($this->cat->isParent($category))
+			{
+				$thecategory = array();
+				foreach ($this->cat->getChildren($category) as $c)
+					$thecategory[] = $c['ID'];
+				$category = implode(", ", $thecategory);
+			}
+			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID where categoryID in (".$category.")  and nfostatus >= 0 AND passwordstatus >= 0 AND not (`imdbID` is not null OR `rageID` > 0 OR `consoleinfoID` is not null OR `bookinfoID` is not null)";
+		}
 
 		$res = $this->db->queryDirect($query);
 echo "$query\n";

@@ -269,6 +269,8 @@ function cp437toUTF($str) {
 function release_flag ($x, $t)
 {
 	$y = "";
+	if(preg_match('/(chinese|Mandarin|\bch\b|\bcn\b)/i', $x))
+		$y = "cn";
 	if(preg_match('/German(bed)?/i', $x))
 		$y = "de";
 	if(preg_match('/Danish/i', $x))
@@ -283,6 +285,46 @@ function release_flag ($x, $t)
 		$y = "nl";
 	if(preg_match('/Swe(dish|sub)/i', $x))
 		$y = "se";
+	if(preg_match('/norwegian/i', $x))
+		$y = "no";
+	if(preg_match('/(japanese|jp)/i', $x))
+		$y = "jp";
+	if(preg_match('/(korean|kr\b)/i', $x))
+		$y = "kr";
+	if(preg_match('/(english|\ben\b)/i', $x))
+		$y = "en";
+	if(preg_match('/(russian)/i', $x))
+		$y = "ru";
+	if(preg_match('/(Arabic)/i', $x))
+		$y = "pk";
+	if(preg_match('/(hebrew|yiddish)/i', $x))
+		$y = "il";
+	if(preg_match('/(czech)/i', $x))
+		$y = "cz";
+	if(preg_match('/(turkish)/i', $x))
+		$y = "tr";
+	if(preg_match('/(greek)/i', $x))
+		$y = "gr";
+	if(preg_match('/(hindi)/i', $x))
+		$y = "in";
+	if(preg_match('/(polish)/i', $x))
+		$y = "pl";
+	if(preg_match('/(thai)/i', $x))
+		$y = "th";
+	if(preg_match('/(portugese)/i', $x))
+		$y = "pt";
+	if(preg_match('/(romanian)/i', $x))
+		$y = "ro";
+	if(preg_match('/(tagalog|filipino)/i', $x))
+		$y = "ph";
+	if(preg_match('/(finnish)/i', $x))
+		$y = "fi";
+	if(preg_match('/(vietnamese)/i', $x))
+		$y = "vn";
+	if(preg_match('/(hungarian)/i', $x))
+		$y = "hu";
+	if(preg_match('/(Cantonese)/i', $x))
+		$y = "tw";
 	if ($y !== "" && $t == "browse")
 		return '<img src="./themes/Default/images/flags/'.$y.'.png" />';
 	else if ($t == "search")

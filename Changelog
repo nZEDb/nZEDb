@@ -1,3 +1,5 @@
+06292013 -> ugo -> added language flags to movie page
+						udateded test_misc_sorter.php
 06292013 -> jonnyboy ->	added script to create a ramdisk and move mysql tables to it
 						modified file to delete releases based on poster, searchname, name or guid, using = or like
 						added simple script to run all threaded scripts sequentially
