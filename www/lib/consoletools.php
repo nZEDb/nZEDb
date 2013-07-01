@@ -59,4 +59,15 @@ class ConsoleTools
 		$h = floor($seconds/3600);
 		return " ".sprintf("%02dh:%02dm:%02ds", $h, $m, $s);
 	}
+
+	public function showSleep($seconds)
+	{
+		for ( $i = $seconds; $i >= 0; $i-- )
+		{
+			$this->overWrite("Sleeping for ".$i." seconds");
+			sleep(1);
+		}
+		echo "\n";
+	}
+
 }
