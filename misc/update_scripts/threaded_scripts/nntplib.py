@@ -43,7 +43,7 @@ are strings, not numbers, since they are rarely used for calculations.
 # - NNTP.newgroups() and NNTP.list() return a list of GroupInfo named tuples
 # - NNTP.descriptions() returns a dict mapping group names to descriptions
 # - NNTP.xover() returns a list of dicts mapping field names (header or metadata)
-#   to field values; each dict representing a message overview.
+#   to field values each dict representing a message overview.
 # - NNTP.article(), NNTP.head() and NNTP.body() return a (response, ArticleInfo)
 #   tuple.
 # - the "internal" methods have been marked private (they now start with
@@ -254,7 +254,7 @@ def _unparse_datetime(dt, legacy=False):
 	  date has the YYYYMMDD format and time the HHMMSS format
 	* if legacy is True:
 	  date has the YYMMDD format and time the HHMMSS format.
-	RFC 3977 compliant servers should understand both formats; therefore,
+	RFC 3977 compliant servers should understand both formats therefore,
 	legacy is only needed when talking to old servers.
 	"""
 	if not isinstance(dt, datetime.datetime):
@@ -330,7 +330,7 @@ class _NNTPBase:
 		# 'MODE READER' is sometimes necessary to enable 'reader' mode.
 		# However, the order in which 'MODE READER' and 'AUTHINFO' need to
 		# arrive differs between some NNTP servers. If _setreadermode() fails
-		# with an authorization failed error, it will set this to True;
+		# with an authorization failed error, it will set this to True
 		# the login() routine will interpret that as a request to try again
 		# after performing its normal function.
 		self.readermode_afterauth = False
@@ -352,7 +352,7 @@ class _NNTPBase:
 	def getwelcome(self):
 		"""Get the welcome message from the server
 		(this is read and squirreled away by __init__()).
-		If the response code is 200, posting is allowed;
+		If the response code is 200, posting is allowed
 		if it 201, posting is not allowed."""
 
 		if self.debugging: print('*welcome*', repr(self.welcome))
@@ -790,7 +790,7 @@ class _NNTPBase:
 		- message_spec:
 			- either a message id, indicating the article to fetch
 			  information about
-			- or a (start, end) tuple, indicating a range of article numbers;
+			- or a (start, end) tuple, indicating a range of article numbers
 			  if end is None, information up to the newest message will be
 			  retrieved
 			- or None, indicating the current article number must be used
