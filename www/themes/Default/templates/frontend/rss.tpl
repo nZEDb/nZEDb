@@ -9,7 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{if $site->style != "" && $site->style != "/"}{$serverroot}templates/{$site->style}/images/logo.png{else}{$serverroot}templates/Default/images/logo.png{/if}</url>
+	<url>{if $site->style != "" && $site->style != "/" && $site->style != "Default" && file_exists('{$smarty.const.WWW_TOP}/themes/{$site->style}/images/logo.png')}{$smarty.const.WWW_TOP}/themes/{$site->style}/images/logo.png{else}{$smarty.const.WWW_TOP}/themes/Default/images/logo.png{/if}</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
