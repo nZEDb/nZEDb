@@ -157,14 +157,6 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     var $_logger = null;
 
-	/**
-	*
-	*
-	* @var     int
-	* @access  private
-	*/
-	var $_timeout = 15;
-
     // }}}
     // {{{ constructor
 
@@ -301,7 +293,6 @@ class Net_NNTP_Protocol_Client extends PEAR
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
-	stream_set_timeout($this->_socket, $this->_timeout);
     	$response = @fgets($this->_socket, 4096);
         if ($response === false) {
             return $this->throwError('Failed to read from socket...!');
@@ -347,7 +338,6 @@ class Net_NNTP_Protocol_Client extends PEAR
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 1024 characters from the server.
-            stream_set_timeout($this->_socket, $this->_timeout);
             $recieved = @fgets($this->_socket, 1024);
 
             if ($recieved === false) {
@@ -530,7 +520,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	return $this->throwError('Command not permitted / Access restriction / Permission denied', $code, $text);
     	    	break;
     	    default:
-    	    	return $this->throwError("\nYour Usenet provider returned an unexpected response: '$text'", $code, $text);
+    	    	return $this->throwError("Unexpected response: '$text'", $code, $text);
     	}
     }
 
@@ -588,9 +578,8 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	//
     	if (is_null($timeout)) {
-			$timeout = $this->_timeout;
+    	    $timeout = 15;
     	}
-		$this->_timeout = $timeout;
 
     	// Open Connection
     	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
@@ -602,7 +591,6 @@ class Net_NNTP_Protocol_Client extends PEAR
     	}
 
     	$this->_socket = $R;
-		stream_set_timeout($this->_socket, $this->_timeout);
 
     	//
     	if ($this->_logger) {
@@ -2203,3 +2191,5 @@ class Net_NNTP_Protocol_Client extends PEAR
  * c-hanging-comment-ender-p: nil
  * End:
  */
+
+?>
