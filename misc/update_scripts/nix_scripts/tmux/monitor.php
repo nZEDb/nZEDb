@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2615";
+$version="0.1r2616";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -703,7 +703,7 @@ while( $i > 0 )
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\"; \
-					$_php ${DIR}testing/Dev_testing/test_misc_sorter.php $log; date +\"%D %T\"; $_sleep $sort_timer' 2>&1 1> /dev/null");
+					$_php ${DIR}testing/Dev_testing/test_misc_sorter.php $log; date +\"%D %T\"; $_sleep $sorter_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
