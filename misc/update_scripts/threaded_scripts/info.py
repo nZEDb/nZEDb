@@ -31,4 +31,3 @@ def readConfig():
 
 # Test
 config = readConfig()
-
