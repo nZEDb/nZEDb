@@ -1,3 +1,5 @@
+07022013 -> devmem   -> Added some prints to fixReleaseNames to show progress
+						Changed ordering of categorisation by group. It was too aggressive
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
 						added script to show sleeptime using Consoletools
