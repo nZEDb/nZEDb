@@ -341,6 +341,24 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb titles with release search names.\n";
 
+		//do womble first
+		if($res = $db->queryDirect("SELECT p.ID, p.category, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null and p.source = 'womble'"))
+		{
+			while ($row = mysqli_fetch_assoc($res))
+			{
+				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				$catName=str_replace("TV-", '', $row["category"]);
+				$catName=str_replace("TV: ", '', $catName);
+				if($catID = $db->queryOneRow(sprintf("select ID from category where title = %s", $db->escapeString($catName))))
+				{
+					//print($row["category"]." - ".$catID["ID"]."\n");
+					$db->query(sprintf("UPDATE releases set categoryID = %d where ID = %d", $db->escapeString($catID["ID"]), $db->escapeString($row["ID"])));
+				}
+				echo ".";
+				$updated++;
+			}
+			return $updated;
+		}
 		if($res = $db->queryDirect("SELECT p.ID, p.category, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
