@@ -29,7 +29,17 @@ class Namefixer
 	//
 	public function fixNamesWithNfo($time, $echo, $cats, $namestatus)
 	{
-		$db = new DB();
+
+  	        if ($time == 1)
+		{
+		        echo "Fixing search names in the past 6 hours using .nfo files.\n";
+		}
+		else
+		{
+		        echo "Fixing search names since the beginning using .nfo files.\n";
+		}
+
+	        $db = new DB();
 		$type = "NFO, ";
 		// Only select releases we haven't checked here before
 		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
@@ -84,6 +94,15 @@ class Namefixer
 	//
 	public function fixNamesWithFiles($time, $echo, $cats, $namestatus)
 	{
+  	        if ($time == 1)
+		{
+		        echo "Fixing search names in the past 6 hours using the filename.\n";
+		}
+		else
+		{
+		        echo "Fixing search names since the beginning using the filename.\n";
+		}
+
 		$db = new DB();
 		$type = "Filenames, ";
 		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel inner join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";

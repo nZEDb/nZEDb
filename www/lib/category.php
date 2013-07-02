@@ -267,7 +267,6 @@ class Category
 		//
 		
 		if($this->isHashed($releasename)){ return $this->tmpCat; }
-		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if($this->isPC($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
@@ -275,6 +274,9 @@ class Category
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isBook($releasename)){ return $this->tmpCat; }
+		// 
+		// Only try by group if all else fails
+		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 	}
 	
 	//
