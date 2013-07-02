@@ -78,6 +78,7 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntpc->doQuit();
+			usleep(500000);
 			$nntpc->doConnect();
 			$datac = $nntpc->selectGroup($groupArr['name']);
 			if (PEAR::isError($datac))
@@ -93,6 +94,7 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
+			usleep(500000);
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -260,6 +262,7 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
+			usleep(500000);
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -488,12 +491,14 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
+			usleep(500000);
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
 				echo "Problem with the usenet connection, attemping to reconnect.".$n;
 				$nntp->doQuit();
+				usleep(500000);
 				$nntp->doConnect();
 				$data = $nntp->selectGroup($groupArr['name']);
 				if (PEAR::isError($data))

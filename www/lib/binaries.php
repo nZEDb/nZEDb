@@ -96,6 +96,7 @@ class Binaries
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
+			usleep(500000);
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -217,17 +218,25 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
-		$nntp->doConnect();
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			$nntp->doConnect();
+		}
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
 		$s = new Sites;
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
+		if (PEAR::isError($msgs))
+			echo $n.$n."NNTP Resturned ".$msgs->code.$n.$n;
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
+			$nntp->doQuit();
+			usleep(500000);
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
@@ -351,9 +360,9 @@ class Binaries
 			if (sizeof($rangenotreceived) > 0) {
 				switch($type)
 				{
-					case 'backfill':
+					//case 'backfill':
 						//don't add missing articles
-					break;
+					//break;
 					case 'partrepair':
 					case 'update':
 					default:
@@ -499,7 +508,7 @@ class Binaries
 
 		if (sizeof($missingParts) > 0)
 		{
-			echo 'Attempting to repair '.sizeof($missingParts).' parts...'.$n;
+			echo $n."Attempting to repair ".sizeof($missingParts)." parts...".$n;
 
 			// Loop through each part to group into ranges.
 			$ranges = array();
@@ -524,6 +533,7 @@ class Binaries
 				$this->startLoop = microtime(true);
 
 				$num_attempted += $partto - $partfrom + 1;
+				echo $n;
 				$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
 
 				// Get article from newsgroup.
