@@ -18,6 +18,7 @@ if  ($page->isPostBack()) {
 	$cfg->doCheck = true;
 	$cfg->DB_HOST = trim($_POST['host']);
     $cfg->DB_PORT = trim($_POST['sql_port']);
+	$cfg->DB_SOCKET = trim($_POST['sql_socket']);
 	$cfg->DB_USER = trim($_POST['user']);
 	$cfg->DB_PASSWORD = trim($_POST['pass']);
 	$cfg->DB_NAME = trim($_POST['db']);

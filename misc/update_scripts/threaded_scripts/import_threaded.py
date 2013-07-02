@@ -27,7 +27,7 @@ con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PA
 cur = con.cursor()
 
 #get valuse from db
-cur.execute("select (select value from site where setting = 'nzbthreads') as a, (select value from tmux where setting = 'NZBS') as b, (select value from tmux where setting = 'IMPORT_BULK') as c");
+cur.execute("select (select value from site where setting = 'nzbthreads') as a, (select value from tmux where setting = 'NZBS') as b, (select value from tmux where setting = 'IMPORT_BULK') as c")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
@@ -84,6 +84,8 @@ def main():
 			p = queue_runner(my_queue)
 			p.setDaemon(True)
 			p.start()
+
+	print("\nNZB Import Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:

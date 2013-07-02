@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','84');
+	('sqlpatch','87');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1268,19 +1268,12 @@ INSERT INTO `genres`
 
 DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
-
-	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-
-	`setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-
-	`value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
-
-	`updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-PRIMARY KEY (`ID`),
-
-UNIQUE KEY `setting` (`setting`)
-
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `setting` (`setting`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
@@ -1334,14 +1327,17 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('PATCHDB','FALSE'),
 	('PATCHDB_TIMER','21600'),
 	('PROGRESSIVE','FALSE'),
-	('DEHASH','FALSE'),
+	('DEHASH', '0'),
 	('DEHASH_TIMER','30'),
 	('BACKFILL_ORDER','2'),
 	('BACKFILL_DAYS', '1'),
 	('POST_AMAZON', 'FALSE'),
 	('POST_NON', 'FALSE'), 
 	('POST_TIMER_AMAZON', '30'),
-	('POST_TIMER_NON', '30');
+	('POST_TIMER_NON', '30'),
+	('COLORS_START', '1'),
+	('COLORS_END', '250'),
+	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60');
 
 
 DROP TABLE IF EXISTS `nzbs`;
@@ -1355,6 +1351,7 @@ CREATE TABLE `nzbs` (
   `partnumber` int(10) unsigned NOT NULL DEFAULT '0',
   `totalparts` int(10) unsigned NOT NULL DEFAULT '0',
   `postdate` datetime DEFAULT NULL,
+  `dateadded` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
@@ -9936,7 +9933,7 @@ VALUES
 (8539,13318,'The Path to 9/11',NULL,now(),NULL,83821),
 (8540,2069,'The Koala Brothers',NULL,now(),NULL,74327),
 (8541,19586,'Iron Man: Armored Adventures ',NULL,now(),NULL,83826),
-(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
+(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
 (8543,14810,'Wall Street Warriors',NULL,now(),NULL,83830),
 (8544,2747,'Beck: Mongolian Chop Squad',NULL,now(),NULL,75838),
 (8545,19890,'Extreme Fishing With Robson Green',NULL,now(),NULL,83834),

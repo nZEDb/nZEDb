@@ -16,14 +16,14 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 
 class Namefixer
 {
-	
+
 	function Namefixer()
 	{
 		$this->relid = 0;
 		$this->fixed = 0;
 		$this->checked = 0;
 	}
-	
+
 	//
 	//	Attempts to fix release names using the NFO.
 	//
@@ -43,7 +43,7 @@ class Namefixer
 		$type = "NFO, ";
 		// Only select releases we haven't checked here before
 		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
-		
+
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
@@ -64,16 +64,16 @@ class Namefixer
 		{
 			$relres = $db->queryDirect($query." order by postdate desc");
 		}
-		
+
 		$rowcount = $db->getAffectedRows();
-		
+
 		if ($rowcount > 0)
 		{
 			while ($relrow = $db->fetchArray($relres))
 			{
 				echo "Reading NFO => ".$relrow['searchname']."\n";
 				$this->checkName($relrow, $echo, $type, $namestatus);
-				// 
+				//
 				// If we are here, we have checked a release against it's .nfo so set it as checked in the db
 				$db->queryDirect(sprintf("UPDATE releases set relstatus = relstatus | %d where ID = %d", DB::NFO_PROCESSED_NAMEFIXER, $relrow["releaseID"]));
 				$this->checked++;
@@ -88,7 +88,7 @@ class Namefixer
 		else
 			echo "Nothing to fix.\n";
 	}
-	
+
 	//
 	//	Attempts to fix release names using the File name.
 	//
@@ -106,7 +106,7 @@ class Namefixer
 		$db = new DB();
 		$type = "Filenames, ";
 		$query = "SELECT relfiles.name as textstring, rel.categoryID, rel.searchname, rel.groupID, relfiles.releaseID as fileID, rel.ID as releaseID from releases rel inner join releasefiles relfiles on (relfiles.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
-		
+
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
 		{
@@ -127,9 +127,9 @@ class Namefixer
 		{
 			$relres = $db->queryDirect($query." order by postdate desc");
 		}
-		
+
 		$rowcount = $db->getAffectedRows();
-		
+
 		if ($rowcount > 0)
 		{
 			while ($relrow = $db->fetchArray($relres))
@@ -147,7 +147,7 @@ class Namefixer
 		else
 			echo "Nothing to fix.\n";
 	}
-	
+
 	//
 	//	Update the release with the new information.
 	//
@@ -156,21 +156,21 @@ class Namefixer
 		$n = "\n";
 		$namecleaning = new nameCleaning();
 		$newname = $namecleaning->fixerCleaner($name);
-		
+
 		if ($this->relid !== $release["releaseID"])
 		{
 			if ($newname !== $release["searchname"])
 			{
 				$this->relid = $release["releaseID"];
-				
+
 				$category = new Category();
 				$determinedcat = $category->determineCategory($newname, $release["groupID"]);
 				$oldcatname = $category->getNameByID($release["categoryID"]);
 				$newcatname = $category->getNameByID($determinedcat);
-				
+
 				$groups = new Groups();
 				$groupname = $groups->getByNameByID($release["groupID"]);
-				
+
 				$this->fixed ++;
 				if ($echo == 1)
 				{
@@ -180,7 +180,7 @@ class Namefixer
 							"Old cat:  ".$oldcatname.$n.
 							"Group:	".$groupname.$n.
 							"Method:   ".$type.$method.$n.$n;
-				
+
 					if ($namestatus == 1)
 					{
 						$db = new DB();
@@ -204,7 +204,7 @@ class Namefixer
 			}
 		}
 	}
-	
+
 	//
 	//	Check the array using regex for a clean name.
 	//
@@ -229,7 +229,7 @@ class Namefixer
 			$this->nfoCheckG($release, $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Look for a TV name.
 	//
@@ -268,7 +268,7 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="tvCheck: Sports", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Look for a movie name.
 	//
@@ -327,7 +327,7 @@ class Namefixer
 			$this->updateRelease($release, $result["0"], $methdod="movieCheck: Title.language.year.acodec.src", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Look for a game name.
 	//
@@ -348,7 +348,7 @@ class Namefixer
 			$this->updateRelease($release, $newresult, $methdod="gameCheck: PC Games -ALiAS", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Look for a app name.
 	//
@@ -359,13 +359,13 @@ class Namefixer
 		if (preg_match('/\w[\w.\-\',;& ]+(\d){1,8}(\.|_|\-| )(winall-freeware)[\w.\-\',;& ]+\w/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["0"], $methdod="appCheck: Apps 2", $echo, $type, $namestatus);
 	}
-	
+
 	/*
-	 * 
+	 *
 	 * Just for NFOS.
-	 * 
+	 *
 	 */
-	
+
 	//
 	//	TV.
 	//
@@ -374,7 +374,7 @@ class Namefixer
 		if(preg_match('/(?:(\:\s{1,}))(.+?S\d{1,3}[.-_ ]?(E|D)\d{1,3}.+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic TV", $echo, $type, $namestatus);
 	}
-	
+
 	//
 	//	Movies.
 	//
@@ -387,7 +387,7 @@ class Namefixer
 		if(preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](NTSC|MULTi).+?(MULTi|DVDR)[\.\-_ ].+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])
 			$this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 3", $echo, $type, $namestatus);
 	}
-	
+
 	//
 	//	Music.
 	//
@@ -399,7 +399,7 @@ class Namefixer
 			$this->updateRelease($release, $newname, $methdod="nfoCheck: Music FM RADIO", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Title (year)
 	//
@@ -416,7 +416,7 @@ class Namefixer
 				if($result[2] == 'FR') 		{$result[2] = 'FRENCH';}
 				if($result[2] == 'ES') 		{$result[2] = 'SPANISH';}
 				$releasename = $releasename.".".$result[2];
-			}					
+			}
 			if(preg_match('/(frame size|res|resolution|video|video res).*?(272|336|480|494|528|608|640|\(640|688|704|720x480|816|820|1080|1 080|1280 @|1280|1920|1 920|1920x1080)/i', $release["textstring"], $result))
 			{
 				if($result[2] == '272')		{$result[2] = '272p';}
@@ -430,13 +430,13 @@ class Namefixer
 				if($result[2] == '704')		{$result[2] = '480p';}
 				if($result[2] == '720x480') {$result[2] = '480p';}
 				if($result[2] == '816')		{$result[2] = '1080p';}
-				if($result[2] == '820')		{$result[2] = '1080p';}	
+				if($result[2] == '820')		{$result[2] = '1080p';}
 				if($result[2] == '1080')	{$result[2] = '1080p';}
 				if($result[2] == '1280x720'){$result[2] = '720p';}
 				if($result[2] == '1280 @')	{$result[2] = '720p';}
 				if($result[2] == '1280')	{$result[2] = '720p';}
-				if($result[2] == '1920')	{$result[2] = '1080p';}	
-				if($result[2] == '1 920')	{$result[2] = '1080p';}	
+				if($result[2] == '1920')	{$result[2] = '1080p';}
+				if($result[2] == '1 920')	{$result[2] = '1080p';}
 				if($result[2] == '1 080')	{$result[2] = '1080p';}
 				if($result[2] == '1920x1080'){$result[2] = '1080p';}
 				$releasename = $releasename.".".$result[2];
@@ -449,13 +449,13 @@ class Namefixer
 				if($result[2] == '704')		{$result[2] = '480p';}
 				if($result[2] == '1280 @')	{$result[2] = '720p';}
 				if($result[2] == '1280')	{$result[2] = '720p';}
-				if($result[2] == '1920')	{$result[2] = '1080p';}	
-				if($result[2] == '1 920')	{$result[2] = '1080p';}		
+				if($result[2] == '1920')	{$result[2] = '1080p';}
+				if($result[2] == '1 920')	{$result[2] = '1080p';}
 				if($result[2] == '720')		{$result[2] = '480p';}
 				$releasename = $releasename.".".$result[2];
 			}
 			if(preg_match('/source.*?\b(BD(-?(25|50|RIP))?|Blu(-)?Ray( )?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|(H|P|S)D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |(S)?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)\b/i', $release["textstring"], $result))
-			{	
+			{
 				if($result[1] == 'BD')		{$result[1] = 'Bluray.x264';}
 				if($result[1] == 'CAMRIP')	{$result[1] = 'CAM';}
 				if($result[1] == 'DBrip')	{$result[1] = 'BDRIP';}
@@ -494,7 +494,7 @@ class Namefixer
 			$this->updateRelease($release, $releasename, $methdod="nfoCheck: Title (Year)", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	//
 	//	Games.
 	//
@@ -514,7 +514,7 @@ class Namefixer
 			}
 		}
 	}
-	
+
 	//
 	//	Misc.
 	//
@@ -541,13 +541,13 @@ class Namefixer
 			$this->updateRelease($release, $result, $methdod="nfoCheck: IGUANA", $echo, $type, $namestatus);
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 * Just for filenames.
-	 * 
+	 *
 	 */
-	 
+
 	public function fileCheck($release, $echo, $type, $namestatus)
 	{
 		if (preg_match('/^(.+?(x264|XviD)\-TVP)\\\\/i', $release["textstring"], $result) && $this->relid !== $release["releaseID"])

@@ -151,10 +151,10 @@ class Import
 
 				//groups
 				$groupArr = array();
-				foreach($file->groups->group as $group) 
+				foreach($file->groups->group as $group)
 				{
 					$group = (string)$group;
-					if (array_key_exists($group, $siteGroups)) 
+					if (array_key_exists($group, $siteGroups))
 					{
 						$groupID = $siteGroups[$group];
 					}
@@ -169,7 +169,7 @@ class Import
 				{
 					if (count($file->segments->segment) > 0)
 					{
-						foreach($file->segments->segment as $segment) 
+						foreach($file->segments->segment as $segment)
 						{
 							$size = $segment->attributes()->bytes;
 							$totalsize = $totalsize+$size;
@@ -187,7 +187,7 @@ class Import
 				$relguid = sha1(uniqid());
 				$nzb = new NZB();
 
-				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');

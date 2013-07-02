@@ -84,6 +84,8 @@ def main(args):
 			p.setDaemon(True)
 			p.start()
 
+	print("\nPostProcess Old Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
 		my_queue.put(str(gnames))

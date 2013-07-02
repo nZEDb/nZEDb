@@ -22,7 +22,7 @@ class nameCleaning
 		//Random stuff.
 		$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 		$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
-		
+
 		if ($type == "split")
 		{
 			$one = $two = "";

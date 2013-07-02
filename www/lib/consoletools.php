@@ -11,7 +11,7 @@ class ConsoleTools
 	{
 			if ($reset)
 				$this->lastMessageLength = 0;
-			
+
 			echo str_repeat(chr(8), $this->lastMessageLength);
 			echo str_repeat(" ", $this->lastMessageLength);
 			echo str_repeat(chr(8), $this->lastMessageLength);
@@ -48,7 +48,7 @@ class ConsoleTools
 		if ($seconds > 3600)
 			return round($seconds/3600)." hour(s)";
 	}
-	
+
 	//
 	// Convert seconds to a timer, 00h:00m:00s
 	//
@@ -59,4 +59,15 @@ class ConsoleTools
 		$h = floor($seconds/3600);
 		return " ".sprintf("%02dh:%02dm:%02ds", $h, $m, $s);
 	}
+
+	public function showSleep($seconds)
+	{
+		for ( $i = $seconds; $i >= 0; $i-- )
+		{
+			$this->overWrite("Sleeping for ".$i." seconds");
+			usleep(1000000);
+		}
+		echo "\n";
+	}
+
 }

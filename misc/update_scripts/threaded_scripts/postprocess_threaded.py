@@ -29,10 +29,10 @@ cur = con.cursor()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
 	cur.execute("select (select value from site where setting = 'postthreads') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g")
-	dbgrab = cur.fetchall();
+	dbgrab = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur.execute("select(select value from site where setting = 'postthreadsnon') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g")
-	dbgrab = cur.fetchall();
+	dbgrab = cur.fetchall()
 else:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
 
@@ -55,19 +55,19 @@ maxtries = -1
 if sys.argv[1] == "additional":
 	while len(datas) <= run_threads * ppperrun and maxtries >= -5:
 		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * ppperrun))
-		datas = cur.fetchall();
+		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
 	while len(datas) <= run_threads * nfoperrun and maxtries >= -5:
 		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * nfoperrun))
-		datas = cur.fetchall();
+		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie":
 		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" %(run_threads * movieperrun))
-		datas = cur.fetchall();
+		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
 		cur.execute("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" %(run_threads * tvrageperrun))
-		datas = cur.fetchall();
+		datas = cur.fetchall()
 
 #close connection to mysql
 cur.close()
@@ -123,6 +123,8 @@ def main():
 			p.setDaemon(True)
 			p.start()
 
+	print("\nPostProcess Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:

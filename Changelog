@@ -1,4 +1,23 @@
-06292013 -> jonnyboy ->	renamed patch
+07012013 -> jonnyboy -> added variable timeout to nntp.php
+06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
+						added script to show sleeptime using Consoletools
+						added dateadded column to nzbs table, added code to delete incomplete nzbs older than 4 hours
+						added nzbs to monitor, total(distinct), pending
+						started adding code to install scripts for socket and alternate nntp
+06292013 -> ugo		 -> added language flags to movie page
+						updateded test_misc_sorter.php
+06292013 -> jonnyboy ->	added script to create a ramdisk and move mysql tables to it
+						modified file to delete releases based on poster, searchname, name or guid, using = or like
+						added simple script to run all threaded scripts sequentially
+						removed hard coded db name from clean_nzb, added safety argv
+						made tmux colors array user defineable
+						changed query for music to process
+						added output to start of threaded scripts
+						separated decrypt hashes and predb
+						fixed grabnzbs not setting haspreview = -1
+						fixed backfill safe loop over completed groups
+						changed progessive sleep time to use min sleep timer if timer would be less than that
+						renamed patch
 						added blank line to robot.txt
 						replaced && with ; because python scripts exit  and sleeps were not working
 						changed echo output in postprocess doecho and/or debug
