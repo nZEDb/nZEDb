@@ -25,7 +25,7 @@ do
 #	$PYTHON -OO ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OO ${THREADED_PATH}/backfill_safe_threaded.py
 #	$PYTHON -OO ${THREADED_PATH}/grabnzbs_threaded.py
-#	$PHP ${NZEDB_PATH}/update_releases.$PHP 1 false
+#	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all no
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all true
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no

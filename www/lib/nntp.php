@@ -8,6 +8,11 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
+	function Nntp()
+	{
+		$this->timeout = 15;
+	}
+
 	function doConnect()
 	{
 		if ($this->_isConnected())
@@ -27,7 +32,7 @@ class Nntp extends Net_NNTP_Client
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
 
-			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
@@ -70,7 +75,7 @@ class Nntp extends Net_NNTP_Client
 			if (defined("NNTP_SSLENABLED_A") && NNTP_SSLENABLED_A == true)
 				$enc = 'ssl';
 
-			$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A);
+			$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, $this->timeout);
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
@@ -104,7 +109,7 @@ class Nntp extends Net_NNTP_Client
 		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
 
-		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 		if(PEAR::isError($ret))
 		{
 			echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
