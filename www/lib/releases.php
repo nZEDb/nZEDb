@@ -1973,7 +1973,7 @@ class Releases
 
 		}
 
-		$db->queryDirect("DELETE nzbs WHERE dateadded < (now() - interval 4 hour)");
+		$db->queryDirect(sprintf("DELETE nzbs WHERE dateadded < (now() - interval %d hour)", $page->site->partretentionhours));
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
