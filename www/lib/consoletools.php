@@ -65,7 +65,7 @@ class ConsoleTools
 		for ( $i = $seconds; $i >= 0; $i-- )
 		{
 			$this->overWrite("Sleeping for ".$i." seconds");
-			sleep(1);
+			usleep(1000000);
 		}
 		echo "\n";
 	}

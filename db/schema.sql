@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','86');
+	('sqlpatch','87');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -9933,7 +9933,7 @@ VALUES
 (8539,13318,'The Path to 9/11',NULL,now(),NULL,83821),
 (8540,2069,'The Koala Brothers',NULL,now(),NULL,74327),
 (8541,19586,'Iron Man: Armored Adventures ',NULL,now(),NULL,83826),
-(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
+(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
 (8543,14810,'Wall Street Warriors',NULL,now(),NULL,83830),
 (8544,2747,'Beck: Mongolian Chop Squad',NULL,now(),NULL,75838),
 (8545,19890,'Extreme Fishing With Robson Green',NULL,now(),NULL,83834),
