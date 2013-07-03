@@ -55,18 +55,14 @@ class Binaries
 			$alltime = microtime(true);
 			echo $n.'Updating: '.sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No').$n;
 
-			$nntp = new Nntp();
-			$nntp->doConnect();
-
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
 				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
-				$this->updateGroup($nntp, $groupArr);
+				$this->updateGroup($groupArr);
 				$counter++;
 			}
 
-			$nntp->doQuit();
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
 		}
 		else
@@ -75,7 +71,7 @@ class Binaries
 		}
 	}
 
-	function updateGroup($nntp, $groupArr)
+	function updateGroup($groupArr)
 	{
 		$db = new DB();
 		$backfill = new Backfill();

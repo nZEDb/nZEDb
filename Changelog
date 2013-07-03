@@ -1,4 +1,5 @@
-07022013 -> jonnyboy -> added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
+07022013 -> jonnyboy -> removed nntp connect where not needed
+						added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
 						added script to show sleeptime using Consoletools
