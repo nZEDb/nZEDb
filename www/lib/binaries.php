@@ -92,7 +92,6 @@ class Binaries
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
-			usleep(500000);
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -232,7 +231,6 @@ class Binaries
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
-			usleep(500000);
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
