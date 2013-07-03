@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
 require_once(WWW_DIR."/lib/page.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Import
 {
@@ -22,9 +23,15 @@ class Import
 
 	public function GrabNZBs($hash='')
 	{
-		$db = new DB;
-		$nntp = new Nntp;
+		$db = new DB();
+		$nntp = new Nntp();
 		$nzb = array();
+		$s = new Sites();
+		$grapbnzbs = $s->get()->grabnzbs;
+		if ($grapbnzbs == 1)
+			$_connect = $nntp->doConnect();
+		else
+			$_connect = $nntp->doConnect_A();
 
 		if ($hash == '')
 		{
@@ -59,7 +66,7 @@ class Import
 			}
 		}
 		//var_dump($nzb);
-		$nntp->doConnect();
+		$_connect;
 		if($nzb && array_key_exists('group', $nzb))
 		{
 			$article = $nntp->getArticles($nzb['group'], $arr);
@@ -67,7 +74,7 @@ class Import
 			{
 				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
 				$nntp->doQuit();
-				$nntp->doConnect();
+				$_connect;
 				$nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
 			}

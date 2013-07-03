@@ -1,4 +1,5 @@
-07032013 -> jonnyboy -> updated python nnpt lib
+07032013 -> jonnyboy -> added option to use alternate nntp provider for grabnzbs
+						updated python nnpt lib
 						added new connection, if error
 						removed if connected when definately not connected
 07022013 -> jonnyboy -> added small delay around python connection
