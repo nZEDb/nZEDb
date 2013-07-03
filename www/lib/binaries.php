@@ -316,7 +316,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs != 0)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
