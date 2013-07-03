@@ -90,7 +90,7 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-            echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
+			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);

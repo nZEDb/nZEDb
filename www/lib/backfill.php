@@ -486,7 +486,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-            echo "Error {$data->code}: {$data->message}".$n.$n;
+			echo "Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
 			usleep(3000000);
 			$nntp->doConnect();
@@ -520,19 +520,19 @@ class Backfill
 		$groupArr = $groups->getByName($group);
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
-        {
-            echo "Error {$data->code}: {$data->message}".$n.$n;
-            $nntp->doQuit();
-            usleep(3000000);
-            $nntp->doConnect();
-            $data = $nntp->selectGroup($groupArr['name']);
-            if (PEAR::isError($data))
-            {
-                echo "Error {$data->code}: {$data->message}".$n;
-                echo "Reconnected but could not select group (bad name?): {$group}".$n;
-                return;
-            }
-        }
+		{
+			echo "Error {$data->code}: {$data->message}".$n.$n;
+			$nntp->doQuit();
+			usleep(3000000);
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Error {$data->code}: {$data->message}".$n;
+				echo "Reconnected but could not select group (bad name?): {$group}".$n;
+				return;
+			}
+		}
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 		$nntp->doQuit();
 		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
