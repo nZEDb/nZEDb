@@ -59,7 +59,7 @@ class Import
 			}
 		}
 		//var_dump($nzb);
-		$nntp->doConnect();
+		$nntp->doConnect_A();
 		if($nzb && array_key_exists('group', $nzb))
 		{
 			if($article = $nntp->getArticles($nzb['group'], $arr))

@@ -90,12 +90,13 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+            echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -224,8 +225,8 @@ class Binaries
 		$s = new Sites;
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
-		if (PEAR::isError($msgs))
-			echo $n.$n."NNTP Resturned ".$msgs->code.$n.$n;
+		if(PEAR::isError($msgs))
+			echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
@@ -354,9 +355,9 @@ class Binaries
 			if (sizeof($rangenotreceived) > 0) {
 				switch($type)
 				{
-					//case 'backfill':
+					case 'backfill':
 						//don't add missing articles
-					//break;
+					break;
 					case 'partrepair':
 					case 'update':
 					default:
