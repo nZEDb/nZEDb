@@ -62,7 +62,16 @@ class Import
 		$nntp->doConnect();
 		if($nzb && array_key_exists('group', $nzb))
 		{
-			if($article = $nntp->getArticles($nzb['group'], $arr))
+			$article = $nntp->getArticles($nzb['group'], $arr);
+			if (PEAR::isError($article))
+			{
+				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
+				$nntp->doQuit();
+				$nntp->doConnect();
+				$nntp->selectGroup($groupArr['name']);
+				$article = $nntp->getArticles($nzb['group'], $arr);
+			}
+			if($article)
 				$this->processGrabNZBs($article, $hash);
 			else
 				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));

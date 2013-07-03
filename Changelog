@@ -1,3 +1,4 @@
+07032013 -> jonnyboy -> removed if connected when definately not connected
 07022013 -> jonnyboy -> added small delay around python connection
 						removed nntp connect where not needed, removed delay between doQuit and doConnect
 						added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
