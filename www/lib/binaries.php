@@ -77,7 +77,6 @@ class Binaries
 		$backfill = new Backfill();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-
 		$nntp = new Nntp();
 		$nntp->doConnect();
 
@@ -89,6 +88,8 @@ class Binaries
 		{
 			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -229,6 +230,8 @@ class Binaries
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
