@@ -15,7 +15,6 @@ import subprocess
 import string
 import info
 import signal
-import nntplib
 import datetime
 
 start_time = time.time()

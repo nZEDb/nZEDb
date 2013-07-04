@@ -1,4 +1,5 @@
-07042014 -> jonnyboy -> removed optimize and patchdb from tmux scripts
+07042013 -> jonnyboy -> removed nntp lib from pp python script
+						removed optimize and patchdb from tmux scripts
 						cymysql has been updated to use sockets, python scripts also, you will need to:
 						run pip install --upgrade cymysql
 						run pip-3.2 install --upgrade cymysql
