@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2654";
+$version="0.1r2657";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -77,13 +77,9 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'TV_TIMER' ) AS tv_timer,
 	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
-	( SELECT value from tmux where setting = 'OPTIMIZE' ) AS optimize_tables,
-	( SELECT value from tmux where setting = 'OPTIMIZE_TIMER' ) AS optimize_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
 	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
 	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
-	( SELECT value from tmux where setting = 'PATCHDB' ) AS patchdb,
-	( SELECT value from tmux where setting = 'PATCHDB_TIMER' ) AS patchdb_timer,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
 	( SELECT value from tmux where setting = 'DEHASH' ) AS dehash,
 	( SELECT value from tmux where setting = 'DEHASH_TIMER' ) AS dehash_timer,
@@ -431,8 +427,6 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['post'] != NULL ) { $post = $proc_tmux_result[0]['post']; }
 	if ( @$proc_tmux_result[0]['releases_run'] != NULL ) { $releases_run = $proc_tmux_result[0]['releases_run']; }
 	if ( @$proc_tmux_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
-	if ( @$proc_tmux_result[0]['optimize_tables'] != NULL ) { $optimize_tables = $proc_tmux_result[0]['optimize_tables']; }
-	if ( @$proc_tmux_result[0]['patchdb'] != NULL ) { $patchdb = $proc_tmux_result[0]['patchdb']; }
 	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
 	if ( @$proc_tmux_result[0]['dehash'] != NULL ) { $dehash = $proc_tmux_result[0]['dehash']; }
 
@@ -453,8 +447,6 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['post_timer'] != NULL ) { $post_timer = $proc_tmux_result[0]['post_timer']; }
 	if ( @$proc_tmux_result[0]['post_kill_timer'] != NULL ) { $post_kill_timer = $proc_tmux_result[0]['post_kill_timer']; }
 	if ( @$proc_tmux_result[0]['tv_timer'] != NULL ) { $tv_timer = $proc_tmux_result[0]['tv_timer']; }
-	if ( @$proc_tmux_result[0]['optimize_timer'] != NULL ) { $optimize_timer = $proc_tmux_result[0]['optimize_timer']; }
-	if ( @$proc_tmux_result[0]['patchdb_timer'] != NULL ) { $patchdb_timer = $proc_tmux_result[0]['patchdb_timer']; }
 	if ( @$proc_tmux_result[0]['dehash_timer'] != NULL ) { $dehash_timer = $proc_tmux_result[0]['dehash_timer']; }
 
 	if ( @$proc_work_result[0]['binaries'] != NULL ) { $binaries_rows = $proc_work_result[0]['binaries']; }
@@ -624,52 +616,6 @@ while( $i > 0 )
 
 	$_sleep = "$_phpn ${DIR}testing/Release_scripts/showsleep.php";
 
-	//patch db
-	if (( $optimize_tables == "FALSE" ) && ( $patchdb == "TRUE" ) && ( TIME() - $time5 >= $patchdb_timer ))
-	{
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		$log = writelog($panes3[0]);
-		shell_exec("tmux respawnp -t${tmux_session}:3.0 'echo \"\033[38;5;${color}m\"; \
-				$_php ${DIR}testing/DB_scripts/autopatcher.php true $log; date +\"%D %T\"; $_sleep 10' 2>&1 1> /dev/null");
-		$time5 = TIME();
-	}
-	elseif (( $optimize_tables == "FALSE" ) && ( $patchdb == "TRUE" ))
-	{
-		$run_time = relativeTime( $patchdb_timer + $time5 );
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:3.0 'echo \"\033[38;5;${color}m\n${panes3[0]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
-	}
-	elseif (( $optimize_tables == "TRUE" ) && ( $patchdb == "TRUE" ))
-	{
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:3.0 'echo \"\033[38;5;${color}m\n${panes3[0]} will run with Optimize Database\"'");
-	}
-	else
-	{
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:3.0 'echo \"\033[38;5;${color}m\n${panes3[0]} has been disabled by Patch the Database\"'");
-	}
-
-	//optimize
-	if (( $optimize_tables == "TRUE" ) && ( TIME() - $time4 >= $optimize_timer ))
-	{
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		$log = writelog($panes3[1]);
-		shell_exec("tmux respawnp -t${tmux_session}:3.1 'echo \"\033[38;5;${color}m\"; \
-				$_php ${DIR}update_scripts/nix_scripts/tmux/bin/optimize.php true $log; date +\"%D %T\"; $_sleep 10' 2>&1 1> /dev/null");
-		$time4 = TIME();
-	}
-	elseif ( $optimize_tables == "TRUE" )
-	{
-		$run_time = relativeTime( $optimize_timer + $time4 );
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:3.1 'echo \"\033[38;5;${color}m\n${panes3[1]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
-	}
-	else
-	{
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:3.1 'echo \"\033[38;5;${color}m\n${panes3[1]} has been disabled by Optimize Database\"'");
-	}
 	if ( $running == "TRUE" )
 	{
 		//fix names
