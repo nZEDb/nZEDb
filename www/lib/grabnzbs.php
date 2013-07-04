@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/page.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/namecleaning.php");
 require_once(WWW_DIR."/lib/page.php");
+require_once(WWW_DIR."/lib/site.php");
 
 class Import
 {
@@ -22,9 +23,15 @@ class Import
 
 	public function GrabNZBs($hash='')
 	{
-		$db = new DB;
-		$nntp = new Nntp;
+		$db = new DB();
+		$nntp = new Nntp();
 		$nzb = array();
+		$s = new Sites();
+		$grapbnzbs = $s->get()->grabnzbs;
+		if ($grapbnzbs == 1)
+			$_connect = $nntp->doConnect();
+		else
+			$_connect = $nntp->doConnect_A();
 
 		if ($hash == '')
 		{
@@ -59,10 +66,19 @@ class Import
 			}
 		}
 		//var_dump($nzb);
-		$nntp->doConnect();
+		$_connect;
 		if($nzb && array_key_exists('group', $nzb))
 		{
-			if($article = $nntp->getArticles($nzb['group'], $arr))
+			$article = $nntp->getArticles($nzb['group'], $arr);
+			if (PEAR::isError($article))
+			{
+				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
+				$nntp->doQuit();
+				$_connect;
+				$nntp->selectGroup($groupArr['name']);
+				$article = $nntp->getArticles($nzb['group'], $arr);
+			}
+			if($article)
 				$this->processGrabNZBs($article, $hash);
 			else
 				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));

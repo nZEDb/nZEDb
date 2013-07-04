@@ -23,10 +23,15 @@ conf = info.readConfig()
 
 #create the connection to mysql
 con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
+con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
 cur = con.cursor()
 
 #get array of collectionhash
+cur.execute("select value from site where setting = 'grabnzbs'")
+grab = cur.fetchone()
+if int(grab[0]) == 0:
+	sys.exit("GrabNZBs is disabled")
+
 cur.execute("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts")
 datas = cur.fetchall()
 if len(datas) == 0:
