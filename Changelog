@@ -1,4 +1,6 @@
-07042014 -> jonnyboy -> removed optimize and patchdb from tmux scripts
+07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
+						Altered ordering of if() in namefixer to improve efficiency
+07042013 -> jonnyboy -> removed optimize and patchdb from tmux scripts
 						cymysql has been updated to use sockets, python scripts also, you will need to:
 						run pip-3.2 install cymysql
 07032013 -> jonnyboy -> fixed imported nzbs not pp
@@ -12,8 +14,8 @@
 						added new connection, if error
 						removed if connected when definately not connected
 07022013 -> jonnyboy -> added small delay around python connection
-						removed nntp connect where not needed, removed delay between doQuit and doConnect
-						added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
+            removed nntp connect where not needed, removed delay between doQuit and doConnect
+            added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
 						added script to show sleeptime using Consoletools
