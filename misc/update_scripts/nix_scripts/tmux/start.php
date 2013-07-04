@@ -188,7 +188,6 @@ if ( $seq == "TRUE" )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }
@@ -202,7 +201,6 @@ else
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }

@@ -1,3 +1,5 @@
+07042014 -> jonnyboy -> cymysql has been updated to use sockets, python scripts also, you will need to:
+						run pip-3.2 install cymysql
 07032013 -> jonnyboy -> fixed imported nzbs not pp
 						fixed usefilename to use filename instead of clean name
 						fixed bug in omport threadd when path has no subfolders
