@@ -1025,7 +1025,7 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','87');
+	('sqlpatch','88');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1282,7 +1282,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('NICENESS','19'),
 	('BINARIES','FALSE'),
 	('BACKFILL','0'),
-	('IMPORT','FALSE'),
+	('IMPORT','o'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
 	('SEQUENTIAL','FALSE'),
