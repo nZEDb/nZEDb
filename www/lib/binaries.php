@@ -55,18 +55,14 @@ class Binaries
 			$alltime = microtime(true);
 			echo $n.'Updating: '.sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No').$n;
 
-			$nntp = new Nntp();
-			$nntp->doConnect();
-
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
 				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
-				$this->updateGroup($nntp, $groupArr);
+				$this->updateGroup($groupArr);
 				$counter++;
 			}
 
-			$nntp->doQuit();
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
 		}
 		else
@@ -75,18 +71,14 @@ class Binaries
 		}
 	}
 
-	function updateGroup($nntp, $groupArr)
+	function updateGroup($groupArr)
 	{
 		$db = new DB();
 		$backfill = new Backfill();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			$nntp->doConnect();
-		}
+		$nntp = new Nntp();
+		$nntp->doConnect();
 
 		echo 'Processing '.$groupArr['name'].$n;
 
@@ -94,12 +86,15 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -217,17 +212,26 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
-		$nntp->doConnect();
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			$nntp->doConnect();
+		}
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
 		$s = new Sites;
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
+		if(PEAR::isError($msgs))
+			echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
@@ -312,7 +316,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs != 0)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -499,7 +503,7 @@ class Binaries
 
 		if (sizeof($missingParts) > 0)
 		{
-			echo 'Attempting to repair '.sizeof($missingParts).' parts...'.$n;
+			echo $n."Attempting to repair ".sizeof($missingParts)." parts...".$n;
 
 			// Loop through each part to group into ranges.
 			$ranges = array();
@@ -524,6 +528,7 @@ class Binaries
 				$this->startLoop = microtime(true);
 
 				$num_attempted += $partto - $partfrom + 1;
+				echo $n;
 				$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
 
 				// Get article from newsgroup.
