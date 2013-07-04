@@ -1,13 +1,13 @@
 <?php
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/binaries.php");
-require_once(FS_ROOT."/../../www/lib/page.php");
-require_once(FS_ROOT."/../../www/lib/category.php");
+require_once(FS_ROOT."/../../../www/config.php");
+require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../../www/lib/binaries.php");
+require_once(FS_ROOT."/../../../www/lib/page.php");
+require_once(FS_ROOT."/../../../www/lib/category.php");
 require_once(FS_ROOT."/../../../www/lib/mysqlBulk.inc.php");
-require_once(FS_ROOT."/../../www/lib/namecleaning.php");
+require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
@@ -155,6 +155,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -175,7 +176,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -247,7 +248,7 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
- 								unlink($value);
+ 								@unlink($value);
 							}
 							unset($filenames);
 							categorize();
