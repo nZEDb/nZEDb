@@ -71,8 +71,11 @@ while (count - first) < 10000:
 		sys.exit()
 
 	#get first, last from nntp sever
+	time.sleep(0.01)
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
+	time.sleep(0.01)
 	resp, count, first, last, name = s.group(datas[0])
+	time.sleep(0.01)
 	resp = s.quit()
 
 	print("Group %s has %s articles, in the range %s to %s" %(name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
