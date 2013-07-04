@@ -39,8 +39,6 @@ bulk = dbgrab[0][2]
 
 print("Sorting Folders in %s, be patient." %(nzbs))
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
-if len(datas) == 0:
-	datas = nzbs
 
 #close connection to mysql
 cur.close()
@@ -92,13 +90,18 @@ def main():
 	print("\nNZB Import Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
-	if int(use_true[0]) == 1:
-		for gnames in datas:
-			my_queue.put(os.path.join(nzbs,gnames))
-	else:
-		for gnames in datas:
-			my_queue.put('%s %s' %(os.path.join(nzbs,gnames), "true"))
-
+	if len(datas) != 0:
+		if int(use_true[0]) == 1:
+			for gnames in datas:
+				my_queue.put(os.path.join(nzbs,gnames))
+		else:
+			for gnames in datas:
+				my_queue.put('%s %s' %(os.path.join(nzbs,gnames), "true"))
+	if len(datas) == 0:
+		if int(use_true[0]) == 1:
+			my_queue.put(nzbs)
+		else:
+			my_queue.put("%s %s" %(nzbs, "true"))
 
 	my_queue.join()
 
