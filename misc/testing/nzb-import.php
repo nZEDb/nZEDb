@@ -136,7 +136,6 @@ else
 			$postdate[] = $date;
 			$subject = $firstname['0'];
 			$namecleaning = new nameCleaning();
-			$cleanerName = $namecleaning->releaseCleaner($subject);
 
 			// make a fake message object to use to check the blacklist
 			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
@@ -145,6 +144,7 @@ else
 			if ($usenzbname && $skipCheck !== true)
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
+				$cleanerName = $usename;
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -164,6 +164,7 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
+				$cleanerName = $namecleaning->releaseCleaner($subject);
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);

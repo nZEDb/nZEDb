@@ -1,4 +1,5 @@
-07032013 -> jonnyboy -> fixed bug in omport threadd when path has no subfolders
+07032013 -> jonnyboy -> fixed usefilename to use filename instead of clean name
+						fixed bug in omport threadd when path has no subfolders
 						fixed bug in import true
 						added patch to update for new setting
 						added option to use filenames with nzb-import - tmux
