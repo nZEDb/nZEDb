@@ -1,25 +1,26 @@
 <?php
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/binaries.php");
-require_once(FS_ROOT."/../../../www/lib/page.php");
-require_once(FS_ROOT."/../../../www/lib/category.php");
+require_once(FS_ROOT."/../../www/config.php");
+require_once(FS_ROOT."/../../www/lib/framework/db.php");
+require_once(FS_ROOT."/../../www/lib/binaries.php");
+require_once(FS_ROOT."/../../www/lib/page.php");
+require_once(FS_ROOT."/../../www/lib/category.php");
 require_once(FS_ROOT."/../../../www/lib/mysqlBulk.inc.php");
-require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
+require_once(FS_ROOT."/../../www/lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
 $page = new Page();
 $n = "\n";
 
-if (!isset($argv[1]))
-	exit("ERROR: You must supply a path as the first argument.".$n);
+$pieces = explode(" ", $argv[1]);
 
+if (!isset($pieces[0]))
+    exit("ERROR: You must supply a path as the first argument.".$n);
 $filestoprocess = Array();
-$path = $argv[1];
-$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
+$path = $pieces[0];
+$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
 
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";

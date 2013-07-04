@@ -1,4 +1,5 @@
-07032013 -> jonnyboy -> added option to use alternate nntp provider for grabnzbs
+07032013 -> jonnyboy -> added option to use filenames with nzb-import - tmux
+						added option to use alternate nntp provider for grabnzbs
 						updated python nnpt lib
 						added new connection, if error
 						removed if connected when definately not connected

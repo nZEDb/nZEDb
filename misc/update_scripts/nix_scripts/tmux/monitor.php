@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2645";
+$version="0.1r2647";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -868,7 +868,7 @@ while( $i > 0 )
 		if ( $seq == "TRUE" )
 		{
 			//run import-nzb-bulk
-			if (( $import == "TRUE" ) && ( $kill_pp == "FALSE" ))
+			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[1]);
@@ -1062,7 +1062,7 @@ while( $i > 0 )
 			}
 
 			//run import-nzb-bulk
-			if (( $import == "TRUE" ) && ( $kill_pp == "FALSE" ))
+			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[1]);
