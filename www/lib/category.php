@@ -267,16 +267,17 @@ class Category
 		//
 
 		if($this->isHashed($releasename)){ return $this->tmpCat; }
-		if($this->isPC($releasename)){ return $this->tmpCat; }
+
+		// 
+		// Note that in byGroup() some overrides occur...
+		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
 		if($this->isXXX($releasename)){ return $this->tmpCat; }
-		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
-		if($this->isBook($releasename)){ return $this->tmpCat; }
-		// 
-		// Only try by group if all else fails
-		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
+		if($this->isBook($releasename)){ return $this->tmpCat; }	
+		if($this->isPC($releasename)){ return $this->tmpCat; }
+		if($this->isConsole($releasename)){ return $this->tmpCat; }
 	}
 
 	//
@@ -483,6 +484,8 @@ class Category
 
 				if (preg_match('/alt\.binaries\.moovee/', $groupRes["name"]))
 				{
+					// Check the movie isn't an HD release before blindly assigning SD
+					if($this->isMovieHD($releasename)){ return $this->tmpCat; }
 					$this->tmpCat = Category::CAT_MOVIE_SD;
 					return true;
 				}

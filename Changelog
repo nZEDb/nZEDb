@@ -1,3 +1,5 @@
+07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
+						Altered ordering of if() in namefixer to improve efficiency
 07022013 -> devmem   -> Added some prints to fixReleaseNames to show progress
 						Changed ordering of categorisation by group. It was too aggressive
 07012013 -> jonnyboy -> added variable timeout to nntp.php
