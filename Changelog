@@ -1,9 +1,10 @@
 07042013 -> jonnyboy -> removed nntp lib from pp python script
 						removed optimize and patchdb from tmux scripts
 						cymysql has been updated to use sockets, python scripts also, you will need to:
-						run pip install --upgrade cymysql
-						run pip-3.2 install --upgrade cymysql
-						run pip-3.3 install --upgrade cymysql
+						run sudo pip install --upgrade cymysql -or-
+						run sudo easy_install --upgrade cymysql
+						run sudo pip-3.2 install --upgrade cymysql
+						run sudo pip-3.3 install --upgrade cymysql
 						add define('DB_SOCKET', '/var/run/mysqld/mysqld.sock'); to you www/config.php
 						be sure the path is correct
 07032013 -> jonnyboy -> fixed imported nzbs not pp
