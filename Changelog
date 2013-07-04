@@ -1,4 +1,5 @@
-07032013 -> jonnyboy -> added patch to update for new setting
+07032013 -> jonnyboy -> fixed bug in import true
+						added patch to update for new setting
 						added option to use filenames with nzb-import - tmux
 						added option to use alternate nntp provider for grabnzbs
 						updated python nnpt lib
