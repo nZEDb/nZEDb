@@ -16,19 +16,29 @@ $n = "\n";
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
 
+if (!isset($argv[2]))
+{
+	$pieces = explode(" ", $argv[1]);
+	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
+	$path = $pieces[0];
+}
+else
+{
+	$path = $argv[1];
+	$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
+}
+
 $filestoprocess = Array();
-$path = $argv[1];
-$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
-	
+
 $color_skipped = 190;
 $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
 
-function categorize() 
+function categorize()
 {
 	$db = new DB();
 	$cat = new Category();
@@ -126,15 +136,15 @@ else
 			$postdate[] = $date;
 			$subject = $firstname['0'];
 			$namecleaning = new nameCleaning();
-			$cleanerName = $namecleaning->releaseCleaner($subject);
 
 			// make a fake message object to use to check the blacklist
 			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
 			// if the release is in our DB already then don't bother importing it
-			if ($usenzbname and $skipCheck !== true)
+			if ($usenzbname && $skipCheck !== true)
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
+				$cleanerName = $usename;
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -146,6 +156,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -154,6 +165,7 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
+				$cleanerName = $namecleaning->releaseCleaner($subject);
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
 					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -165,7 +177,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -173,10 +185,10 @@ else
 			}
 			//groups
 			$groupArr = array();
-			foreach($file->groups->group as $group) 
+			foreach($file->groups->group as $group)
 			{
 				$group = (string)$group;
-				if (array_key_exists($group, $siteGroups)) 
+				if (array_key_exists($group, $siteGroups))
 				{
 					$groupID = $siteGroups[$group];
 				}
@@ -189,13 +201,13 @@ else
 			}
 			if ($groupID != -1 && !$isBlackListed)
 			{
-				if ($usenzbname) 
+				if ($usenzbname)
 				{
 						$usename = str_replace('.nzb', '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0)
 				{
-					foreach($file->segments->segment as $segment) 
+					foreach($file->segments->segment as $segment)
 					{
 						$size = $segment->attributes()->bytes;
 						$totalsize = $totalsize+$size;
@@ -221,8 +233,7 @@ else
 		{
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
-		
-			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
 				{

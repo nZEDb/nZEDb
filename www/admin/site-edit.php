@@ -92,7 +92,8 @@ $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite'
 $page->smarty->assign('passworded_ids', array(0,1,3));
 $page->smarty->assign('passworded_names', array( 'Dont show passworded or potentially passworded', 'Dont show passworded', 'Show everything'));
 
-
+$page->smarty->assign('grabnzbs_ids', array(0,1,2));
+$page->smarty->assign('grabnzbs_names', array( 'Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));
 
 $themelist = array();
 $themes = scandir(WWW_DIR."/themes");

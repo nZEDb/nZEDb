@@ -8,6 +8,7 @@ if (isset($argv[1]))
 	if (isset($pieces[3]))
 	{
 		$backfill = new Backfill();
+		//usleep(3500000);
 		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3]);
 	}
 	elseif (isset($pieces[2]))

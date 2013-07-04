@@ -187,7 +187,7 @@
 			<tr>
 				<td><label for="IMPORT">Import NZBS:</label></td>
 				<td>
-					{html_radios id="IMPORT" name='IMPORT' values=$truefalse_names output=$truefalse_names selected=$ftmux->IMPORT separator='<br />'}
+					{html_options class="siteeditstyle" id="IMPORT" name='IMPORT' values=$import_ids output=$import_names selected=$ftmux->IMPORT}
 					<div class="hint">Choose to run import nzb script true/false. This can point to a single folder with multiple subfolders on just the one folder. If you run this threaded, it will run 1 folder per thread.</div>
 				</td>
 			</tr>
