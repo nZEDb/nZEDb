@@ -1,7 +1,18 @@
 07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
 						Altered ordering of if() in namefixer to improve efficiency
-07022013 -> devmem   -> Added some prints to fixReleaseNames to show progress
-						Changed ordering of categorisation by group. It was too aggressive
+07032013 -> jonnyboy -> fixed imported nzbs not pp
+						fixed usefilename to use filename instead of clean name
+						fixed bug in omport threadd when path has no subfolders
+						fixed bug in import true
+						added patch to update for new setting
+						added option to use filenames with nzb-import - tmux
+						added option to use alternate nntp provider for grabnzbs
+						updated python nnpt lib
+						added new connection, if error
+						removed if connected when definately not connected
+07022013 -> jonnyboy -> added small delay around python connection
+            removed nntp connect where not needed, removed delay between doQuit and doConnect
+            added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
 						added script to show sleeptime using Consoletools
