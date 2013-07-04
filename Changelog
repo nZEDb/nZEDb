@@ -1,3 +1,4 @@
+07042013 -> kevin    -> Update the FAQ.
 07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
                         Altered ordering of if() in namefixer to improve efficiency
 07042013 -> jonnyboy -> removed nntp lib from pp python script
