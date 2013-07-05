@@ -94,10 +94,12 @@ cur.close()
 con.close()
 
 #calculate the number of items for queue
-if (datas[1] - first) > backfill_qty * run_threads:
-	geteach = int((backfill_qty * run_threads) / maxmssgs)
+if ((datas[1] - first) > (backfill_qty * run_threads)):
+	geteach = run_threads
 else:
 	geteach = int((datas[1] - first) / maxmssgs)
+print("We will be using %s threads and grabbing %d headers" %(geteach, backfill_qty * run_threads))
+time.sleep(1)
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -152,6 +154,6 @@ final = ("%s %d %s" %(datas[0], int(datas[1] - (maxmssgs * geteach)), geteach))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 group = ("%s %d" %(datas[0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-
-print("\nBackfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nWe used %s threads and grabbed %d headers" %(geteach, backfill_qty * run_threads + 1000))
+print("Backfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
