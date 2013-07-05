@@ -131,20 +131,22 @@ class Nfo
 		}
 
 		//remove nfo that we cant fetch after 5 attempts
-		$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
-		while ($relrow = $db->fetchAssoc($relres))
+		if ($releaseToWork == '')
 		{
-			$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
-		}
+			$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
+			while ($relrow = $db->fetchAssoc($relres))
+			{
+				$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
+			}
 
-		if ($this->echooutput)
-		{
-			if ($nfocount > 0 && $releaseToWork == '')
-				echo "\n";
-			if ($ret > 0 && $releaseToWork == '')
-				echo $ret." NFO file(s) found/processed.\n";
+			if ($this->echooutput)
+			{
+				if ($nfocount > 0 && $releaseToWork == '')
+					echo "\n";
+				if ($ret > 0 && $releaseToWork == '')
+					echo $ret." NFO file(s) found/processed.\n";
+			}
+			return $ret;
 		}
-
-		return $ret;
 	}
 }
