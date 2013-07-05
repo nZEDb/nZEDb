@@ -56,6 +56,12 @@ A: https://github.com/nZEDb/pre-info
 Q: Can I have some information on collections/binaries/parts?
 A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
 
+Q: I'm having issues with the PREDB backfill script.
+A: https://github.com/nZEDb/pre-info
+
+Q: Can I have some information on collections/binaries/parts?
+A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
+
 Please do not open issues on github if the question is already asked. Take a few minutes to look at the titles of other issues.
 Do not expect us to implement requested features in a short amount of time.
 Some requested features we will not implement, you are free to clone the git.
