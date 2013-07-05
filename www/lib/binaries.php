@@ -503,7 +503,7 @@ class Binaries
 
 		if (sizeof($missingParts) > 0)
 		{
-			echo $n."Attempting to repair ".sizeof($missingParts)." parts...".$n;
+			echo "Attempting to repair ".sizeof($missingParts)." parts...".$n;
 
 			// Loop through each part to group into ranges.
 			$ranges = array();

@@ -893,7 +893,7 @@ echo "asin ".$set[1]."\n";
 		}
 
 		$res = $this->db->queryDirect($query);
-echo "$query\n";
+//echo "$query\n";
 		echo "doing nzb music files match\n";
 		while ($row =  $this->db->fetchAssoc($res))
 		{

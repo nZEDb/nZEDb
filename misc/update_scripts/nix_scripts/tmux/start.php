@@ -47,7 +47,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '88' )
+if ( $patch < '90' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -188,7 +188,6 @@ if ( $seq == "TRUE" )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }
@@ -202,7 +201,6 @@ else
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_optimize($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }

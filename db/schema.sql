@@ -80,6 +80,7 @@ CREATE TABLE `releases`
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
+`relstatus` TINYINT(4) NOT NULL DEFAULT 0,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -93,6 +94,7 @@ CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
 CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
 CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
+CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -1025,7 +1027,10 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','88');
+	('segmentstodownload', '2'),
+	('ffmpeg_duration', '5'),
+	('ffmpeg_image_time', '5'),
+	('sqlpatch','90');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
