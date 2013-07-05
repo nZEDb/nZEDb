@@ -1,7 +1,14 @@
+07052013 -> Miatrix  -> Added 2 options to control the video sample to the site edit screen.
+						One is segments to download.  If you find your samples arn't long enough you can increase this though it will mean that you
+						download more from your usenet provider.
+						The other option is the max length (in seconds) for the preview.
+						Added 1 option to control the sample image.  When in seconds to try to grab the image.
+						Fixed an issue where the same files were listed multiple times in the releasefiles table. This
+						was due to the code processing the 1st and last rar file of the archive.
 07052013 -> jonnyboy -> updated schema for missing patches
 07042013 -> kevin    -> Update the FAQ.
 07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
-                        Altered ordering of if() in namefixer to improve efficiency
+						Altered ordering of if() in namefixer to improve efficiency
 07042013 -> jonnyboy -> removed nntp lib from pp python script
 						cymysql has been updated to use sockets, python scripts also, you will need to:
 						run sudo pip install --upgrade cymysql -or-
@@ -21,8 +28,8 @@
 						added new connection, if error
 						removed if connected when definately not connected
 07022013 -> jonnyboy -> added small delay around python connection
-            removed nntp connect where not needed, removed delay between doQuit and doConnect
-            added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
+						removed nntp connect where not needed, removed delay between doQuit and doConnect
+						added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
 						added script to show sleeptime using Consoletools

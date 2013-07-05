@@ -1027,7 +1027,10 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','89');
+	('segmentstodownload', '2'),
+	('ffmpeg_duration', '5'),
+	('ffmpeg_image_time', '5'),
+	('sqlpatch','90');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
