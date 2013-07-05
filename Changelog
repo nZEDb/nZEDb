@@ -1,4 +1,4 @@
-07052013 -> jonnyboy -> really fixed it
+07052013 -> jonnyboy -> really fixed it, updated tmux-edit with an example of the formula used
 						fixed issue with safe backfill threaded, not using the correct number of threads
 						fixed issue with postprocess threaded nfo
 07052013 -> Miatrix  -> Added 2 options to control the video sample to the site edit screen.
