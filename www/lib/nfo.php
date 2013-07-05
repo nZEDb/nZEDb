@@ -93,8 +93,7 @@ class Nfo
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
 				$connect;
-				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
-				if ($fetchedBinary !== false)
+				if ($fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp))
 				{
 					//insert nfo into database
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
