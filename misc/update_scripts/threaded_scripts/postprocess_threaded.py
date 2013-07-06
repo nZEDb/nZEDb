@@ -43,7 +43,9 @@ tvrageperrun = int(dbgrab[0][4])
 maxsizeck = int(dbgrab[0][5])
 tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
-
+if posttorun == 0:
+	sys.exit()
+	
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''

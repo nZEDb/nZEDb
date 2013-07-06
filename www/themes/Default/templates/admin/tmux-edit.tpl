@@ -545,50 +545,6 @@
 		</table>
 </fieldset>
 
-<fieldset>
-	<legend>Optimize and Patch</legend>
-		<table class="input">
-			<tr>
-				<td><label for="OPTIMIZE">Optimize Database:</label></td>
-				<td>
-					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE separator='<br />'}
-					<div class="hint">Choose to optimize you database true/false<br />This is not affected by TMUX Running</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Start Timer:</label></td>
-				<td>
-					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="tiny" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
-					<div class="hint">This is a start timer. The default is 24 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td><label for="PATCHDB">Patch the Database:</label></td>
-				<td>
-					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB separator='<br />'}
-					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails. If monitor.php is updated during a git pull, a manual restart will be required.<br />This is not affected by TMUX Running</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="width:160px;"><label for="PATCHDB_TIMER">Patch Database Start Timer:</label></td>
-				<td>
-					<input id="PATCHDB_TIMER" name="PATCHDB_TIMER" class="tiny" type="text" value="{$ftmux->PATCHDB_TIMER}" />
-					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.<br />This does not run separately if Optimize Database = TRUE</div>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="explain">Information:</label></td>
-				<td>
-					<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because, for MyIsam, it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</br />
-						If you are using Percona, then you can try adding expand_fast_index_creation = 1 and innodb_merge_sort_block_size = 1G to your my.cnf before do the above procedures. This is based on <a href="http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation">Improved InnoDB fast index creation</a> and it may improve your InnoDB optimization.</div>
-				</td>
-			</tr>
-		</table>
-</fieldset>
-
 <input type="submit" value="Save Tmux Settings" />
 
 </form>
