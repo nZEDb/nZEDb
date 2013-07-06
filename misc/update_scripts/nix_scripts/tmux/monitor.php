@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2661";
+$version="0.1r2697";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -126,7 +126,7 @@ function writelog( $pane )
 
 function get_color($colors_start, $colors_end, $colors_exc)
 {
-	$exceptions = array( $colors_exc );
+	$exceptions = explode( ",", $colors_exc );
 	sort($exceptions);
 	$number = mt_rand($colors_start, $colors_end - count($exceptions));
 	foreach ($exceptions as $exception)
@@ -518,7 +518,7 @@ while( $i > 0 )
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
-	if ( $post == "TRUE" )
+	if ( $post == "1" || $post == "3" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
 	}
@@ -579,11 +579,9 @@ while( $i > 0 )
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 	$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-	$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
-	$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
 
 	if (command_exist("php5"))
 		$PHP = "php5";
@@ -707,7 +705,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 		}
 
-		if (( $post == "TRUE" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
+		if (( $post != "0" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
 		{
 			//run postprocess_releases additional
 			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -735,7 +733,7 @@ while( $i > 0 )
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; \
 					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 		}
-		elseif (( $post == "TRUE" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now == 0 ))
+		elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now == 0 ))
 		{
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
@@ -836,6 +834,7 @@ while( $i > 0 )
 				if (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
@@ -846,6 +845,7 @@ while( $i > 0 )
 				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
@@ -856,6 +856,7 @@ while( $i > 0 )
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
@@ -866,6 +867,7 @@ while( $i > 0 )
 				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
@@ -891,6 +893,7 @@ while( $i > 0 )
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -899,6 +902,7 @@ while( $i > 0 )
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
@@ -954,6 +958,7 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+						$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
 			}

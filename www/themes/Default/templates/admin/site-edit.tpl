@@ -1,4 +1,4 @@
- 
+
 <h1>{$page->title}</h1>
 
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
@@ -458,6 +458,22 @@
 </tr>
 
 <tr>
+	<td><label for="segmentstodownload">Number of Segments to download for video samples:</label></td>
+	<td>
+		<input class="tiny" id="segmentstodownload" name="segmentstodownload" type="text" value="{$fsite->segmentstodownload}" />
+		<div class="hint">The maximum number of segments to download to generate the sample video file. (Default 2)</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="ffmpeg_duration">Video sample file duration for ffmpeg:</label></td>
+	<td>
+		<input class="tiny" id="ffmpeg_duration" name="ffmpeg_duration" type="text" value="{$fsite->ffmpeg_duration}" />
+		<div class="hint">The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="processaudiosample">Process Audio Samples:</label></td>
 	<td>
 		{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$fsite->processaudiosample separator='<br />'}
@@ -533,7 +549,7 @@
 	<td><label for="newgroupscanmethod">Where to start new groups:</label></td>
 	<td>
 		{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$fsite->newgroupscanmethod separator='<br />'}
-		<input class="tiny" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or 
+		<input class="tiny" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or
 		<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$fsite->newgroupmsgstoscan}" /> Posts<br />
 		<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
 	</td>
@@ -628,8 +644,10 @@
 <tr>
 	<td><label for="partrepair">Part Repair:</label></td>
 	<td>
-		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
-		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
+		{html_options class="partrepair" id="partrepair" name='partrepair' values=$partrepair_ids output=$partrepair_names selected=$fsite->partrepair}
+		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.<br />
+		If you use Part Repair Threaded, then is uses the number of threads assigned to 'Update Binaries' times 'Maximum repair per run' to get the work load. This puts all parts into a queue and assigns 1 part to each thread.<br />
+		The overall speed of this could be improved by creating a range in the python script and feeding that back to binaries.php.</div>
 	</td>
 </tr>
 
@@ -850,4 +868,3 @@
 <input type="submit" value="Save Site Settings" />
 
 </form>
-

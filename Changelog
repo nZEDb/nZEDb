@@ -1,12 +1,37 @@
+07062013 -> jonnyboy -> removed remove stale folders from threaded pp additional, wrong place
+07052013 -> jonnyboy -> fixed bug in tmux-edit and monitor
+						fixed bug in postprocess
+						a little cleanup, removed optimize/patch from tmux-edit
+						added formatting to numbers in safe backfill
+						tmux - split pp addtional and pp nfo
+						added partrepair threaded
+						added remove stale folders from threaded pp additional
+07052013 -> jonnyboy -> really fixed it, updated tmux-edit with an example of the formula used
+						fixed issue with safe backfill threaded, not using the correct number of threads
+						fixed issue with postprocess threaded nfo
+07052013 -> Miatrix  -> Added 2 options to control the video sample to the site edit screen.
+						One is segments to download.  If you find your samples arn't long enough you can increase this though it will mean that you
+						download more from your usenet provider.
+						The other option is the max length (in seconds) for the preview.
+						Added 1 option to control the sample image.  When in seconds to try to grab the image.
+						Fixed an issue where the same files were listed multiple times in the releasefiles table. This
+						was due to the code processing the 1st and last rar file of the archive.
+07052013 -> jonnyboy -> updated schema for missing patches
+07042013 -> kevin    -> Update the FAQ.
+07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
+						Altered ordering of if() in namefixer to improve efficiency
 07042013 -> jonnyboy -> removed nntp lib from pp python script
 						removed optimize and patchdb from tmux scripts
 						cymysql has been updated to use sockets, python scripts also, you will need to:
+						please run everything, not just the next line
 						run sudo pip install --upgrade cymysql -or-
 						run sudo easy_install --upgrade cymysql
 						run sudo pip-3.2 install --upgrade cymysql
 						run sudo pip-3.3 install --upgrade cymysql
-						add define('DB_SOCKET', '/var/run/mysqld/mysqld.sock'); to you www/config.php
-						be sure the path is correct
+						to use sockets, add (be sure the path is correct)
+						define('DB_SOCKET', '/var/run/mysqld/mysqld.sock'); to you www/config.php
+						or, not use sockets, add
+						define('DB_SOCKET', ''); to you www/config.php
 07032013 -> jonnyboy -> fixed imported nzbs not pp
 						fixed usefilename to use filename instead of clean name
 						fixed bug in omport threadd when path has no subfolders

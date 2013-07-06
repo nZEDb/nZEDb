@@ -117,7 +117,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		$db->query(sprintf("SELECT * INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && file_exists($argv[3])))
+elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
 {
 	$sql = "SHOW tables";
 	$db = new DB();

@@ -17,6 +17,7 @@ import info
 import signal
 import nntplib
 import datetime
+import math
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -94,10 +95,12 @@ cur.close()
 con.close()
 
 #calculate the number of items for queue
-if (datas[1] - first) > backfill_qty * run_threads:
-	geteach = int((backfill_qty * run_threads) / maxmssgs)
+if ((datas[1] - first) > (backfill_qty * run_threads)):
+	geteach = math.ceil((backfill_qty * run_threads) / maxmssgs)
 else:
 	geteach = int((datas[1] - first) / maxmssgs)
+print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+time.sleep(1)
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -152,6 +155,10 @@ final = ("%s %d %s" %(datas[0], int(datas[1] - (maxmssgs * geteach)), geteach))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 group = ("%s %d" %(datas[0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+if run_threads <= geteach:
+	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+else:
+	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 
-print("\nBackfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+print("Backfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
