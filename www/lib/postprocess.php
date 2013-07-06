@@ -608,40 +608,40 @@ class PostProcess
 
 					if (is_dir($this->tmpPath))
 					{
-					$files = scandir($this->tmpPath);
-					$rar = new ArchiveInfo();
-					if (count($files) > 0)
-					{
-						foreach($files as $file)
+						$files = scandir($this->tmpPath);
+						$rar = new ArchiveInfo();
+						if (count($files) > 0)
 						{
-							if (is_file($this->tmpPath.$file))
+							foreach($files as $file)
 							{
-								if (preg_match('/\.rar$/i', $file))
+								if (is_file($this->tmpPath.$file))
 								{
-									$rar->open($this->tmpPath.$file, true);
-									if ($rar->error)
-										continue;
-
-									$tmpfiles = $rar->getArchiveFileList();
-									if (isset($tmpfiles[0]["name"]))
+									if (preg_match('/\.rar$/i', $file))
 									{
-										foreach($tmpfiles as $r)
-										{
-											$range = mt_rand(0,99999);
-											if (isset($r["range"]))
-												$range = $r["range"];
+										$rar->open($this->tmpPath.$file, true);
+										if ($rar->error)
+											continue;
 
-											$r["range"] = $range;
-											if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-												$this->addfile($r, $rel["ID"], $rar);
+										$tmpfiles = $rar->getArchiveFileList();
+										if (isset($tmpfiles[0]["name"]))
+										{
+											foreach($tmpfiles as $r)
+											{
+												$range = mt_rand(0,99999);
+												if (isset($r["range"]))
+													$range = $r["range"];
+
+												$r["range"] = $range;
+												if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
+													$this->addfile($r, $rel["ID"], $rar);
+											}
 										}
 									}
 								}
 							}
 						}
+						unset($rar);
 					}
-					unset($rar);
-				}
 				}
 				elseif ($hasrar == 1)
 				{

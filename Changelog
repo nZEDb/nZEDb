@@ -1,3 +1,4 @@
+07062013 -> jonnyboy -> removed remove stale folders from threaded pp additional, wrong place
 07052013 -> jonnyboy -> fixed bug in tmux-edit and monitor
 						fixed bug in postprocess
 						a little cleanup, removed optimize/patch from tmux-edit
