@@ -1030,7 +1030,7 @@ INSERT INTO `site`
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('sqlpatch','90');
+	('sqlpatch','91');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1292,7 +1292,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('RUNNING','FALSE'),
 	('SEQUENTIAL','FALSE'),
 	('NFOS','FALSE'),
-	('POST','FALSE'),
+	('POST','0'),
 	('RELEASES','FALSE'),
 	('RELEASES_THREADED','FALSE'),
 	('FIX_NAMES','FALSE'),

@@ -46,6 +46,8 @@ $page->smarty->assign('dehash_ids', array(0,1,2,3));
 $page->smarty->assign('dehash_names', array('Disabled', 'Decrypt Hashes', 'Predb', 'All'));
 $page->smarty->assign('import_ids', array(0,1,2));
 $page->smarty->assign('import_names', array('Disabled', 'Import - Do Not Use Filenames', 'Import - Use Filenames'));
+$page->smarty->assign('post_ids', array(0,1,2,3));
+$page->smarty->assign('post_names', array('Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

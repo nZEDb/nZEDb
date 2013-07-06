@@ -252,8 +252,8 @@
 			<tr>
 				<td><label for="POST">Postprocess Additional:</label></td>
 				<td>
-					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST separator='<br />'}
-					<div class="hint">Choose to do deep rar inspection, preview and sample creation and nfo processing. true/false</div>
+					{html_options class="siteeditstyle" id="POST" name='POST' values=$post_ids output=$post_names selected=$ftmux->POSTIMPORT}
+					<div class="hint">Choose to do deep rar inspection, preview and sample creation and/or nfo processing. true/false</div>
 				</td>
 			</tr>
 
