@@ -99,7 +99,7 @@ if ((datas[1] - first) > (backfill_qty * run_threads)):
 	geteach = math.ceil((backfill_qty * run_threads) / maxmssgs)
 else:
 	geteach = int((datas[1] - first) / maxmssgs)
-print("We will be using a max of %s threads, a queue of %s and grabbing %d headers" %(run_threads, geteach, geteach * maxmssgs))
+print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
 time.sleep(1)
 
 my_queue = queue.Queue()
@@ -156,9 +156,9 @@ subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", "
 group = ("%s %d" %(datas[0], 1000))
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
 if run_threads <= geteach:
-	print("\nWe used %s threads, a queue of %s and grabbed %d headers" %(run_threads, geteach, geteach * maxmssgs + 1000))
+	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 else:
-	print("\nWe used %s threads, a queue of %s and grabbed %d headers" %(geteach, geteach, geteach * maxmssgs + 1000))
+	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 
 print("Backfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

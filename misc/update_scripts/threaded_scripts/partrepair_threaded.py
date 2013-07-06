@@ -41,7 +41,6 @@ maxtries = 0
 while (len(datas) < run_threads * maxpartrepair) and maxtries < 5:
 	cur.execute("select groupID, numberID from partrepair where attempts between %d and 0 limit %d" %(maxtries, run_threads * maxpartrepair))
 	datas = cur.fetchall()
-	print(maxtries)
 	maxtries = maxtries + 1
 
 #close connection to mysql

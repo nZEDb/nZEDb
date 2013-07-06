@@ -1,4 +1,5 @@
-07052013 -> jonnyboy -> tmux - split pp addtional and pp nfo
+07052013 -> jonnyboy -> added formatting to numbers in safe backfill
+						tmux - split pp addtional and pp nfo
 						added partrepair threaded
 						added remove stale folders from threaded pp additional
 07052013 -> jonnyboy -> really fixed it, updated tmux-edit with an example of the formula used
