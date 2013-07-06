@@ -252,7 +252,7 @@
 			<tr>
 				<td><label for="POST">Postprocess Additional:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="POST" name='POST' values=$post_ids output=$post_names selected=$ftmux->POSTIMPORT}
+					{html_options class="siteeditstyle" id="POST" name='POST' values=$post_ids output=$post_names selected=$ftmux->POST}
 					<div class="hint">Choose to do deep rar inspection, preview and sample creation and/or nfo processing. true/false</div>
 				</td>
 			</tr>
