@@ -39,6 +39,9 @@ class PostProcess
 		$this->tmpPath = $this->site->tmpunrarpath;
 		$this->db = new DB();
 		$this->consoleTools = new ConsoleTools();
+		$this->segmentstodownload = (!empty($this->site->segmentstodownload)) ? $this->site->segmentstodownload : 2;
+		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? $this->site->ffmpeg_duration : 5;
+		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
 
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -430,8 +433,12 @@ class PostProcess
 						{
 							$samplegroup = $groupName;
 							$samplemsgid[] = $nzbcontents["segments"][0];
-							if (count($nzbcontents["segments"]) > 1)
-								$samplemsgid[] = $nzbcontents["segments"][1];
+
+							for($i=1; $i < $this->segmentstodownload; $i++)
+							{
+								if (count($nzbcontents["segments"]) > $i)
+									$samplemsgid[] = $nzbcontents["segments"][$i];
+							}
 						}
 					}
 
@@ -526,7 +533,13 @@ class PostProcess
 						if (preg_match($this->supportfiles.")(?!.{20,})/i", $rarFile["title"]))
 							continue;
 
-						if (!preg_match("/\.\b(part\d+|rar|r\d{1,3}|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
+						if (!preg_match("/\.\b(part\d+|rar|r00|r01|zipr\d{2,3}|zip|zipx)($|[ \"\)\]\-])/i", $rarFile["title"]))
+						{
+							$this->debug("Not matched and skipping ".$rarFile["title"]);
+							continue;
+						}
+
+						if (preg_match("/\.\b(part\d+.rar)($|[ \"\)\]\-])/i", $rarFile["title"]) && !preg_match("/\.\b(part00.rar|part01.rar)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
 							$this->debug("Not matched and skipping ".$rarFile["title"]);
 							continue;
@@ -555,7 +568,7 @@ class PostProcess
 						$this->sum = $this->sum + $this->adj * $this->segsize;
 						if ($this->sum > $this->size || $this->adj == 0)
 						{
-							$mid = array_slice((array)$rarFile["segments"], 0, 2);
+							$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
 
 							$bingroup = $groupName;
 							$connect;
@@ -568,7 +581,9 @@ class PostProcess
 								$notinfinite++;
 								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel["ID"], $rel["nfostatus"], $rarFile["title"]);
 								if ($this->password)
+								{
 									$passStatus[] = Releases::PASSWD_RAR;
+								}
 
 								if ($relFiles === false)
 								{
@@ -579,7 +594,7 @@ class PostProcess
 								{
 									// Flag to indicate only that the archive has content.
 									$foundcontent = true;
-							}
+								}
 							}
 							else
 							{
@@ -593,46 +608,50 @@ class PostProcess
 
 					if (is_dir($this->tmpPath))
 					{
-					$files = scandir($this->tmpPath);
-					$rar = new ArchiveInfo();
-					if (count($files) > 0)
-					{
-						foreach($files as $file)
+						$files = scandir($this->tmpPath);
+						$rar = new ArchiveInfo();
+						if (count($files) > 0)
 						{
-							if (is_file($this->tmpPath.$file))
+							foreach($files as $file)
 							{
-								if (preg_match('/\.rar$/i', $file))
+								if (is_file($this->tmpPath.$file))
 								{
-									$rar->open($this->tmpPath.$file, true);
-									if ($rar->error)
-										continue;
-
-									$tmpfiles = $rar->getArchiveFileList();
-									if (isset($tmpfiles[0]["name"]))
+									if (preg_match('/\.rar$/i', $file))
 									{
-										foreach($tmpfiles as $r)
-										{
-											$range = mt_rand(0,99999);
-											if (isset($r["range"]))
-												$range = $r["range"];
+										$rar->open($this->tmpPath.$file, true);
+										if ($rar->error)
+											continue;
 
-											$r["range"] = $range;
-											if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-												$this->addfile($r, $rel["ID"], $rar);
+										$tmpfiles = $rar->getArchiveFileList();
+										if (isset($tmpfiles[0]["name"]))
+										{
+											foreach($tmpfiles as $r)
+											{
+												$range = mt_rand(0,99999);
+												if (isset($r["range"]))
+													$range = $r["range"];
+
+												$r["range"] = $range;
+												if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
+													$this->addfile($r, $rel["ID"], $rar);
+											}
 										}
 									}
 								}
 							}
 						}
+						unset($rar);
 					}
-					unset($rar);
-				}
 				}
 				elseif ($hasrar == 1)
+				{
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
+				}
 
 				if(!$foundcontent && $hasrar == 1)
+				{
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
+				}
 
 				// Try to get image/mediainfo/audioinfo, using extracted files before downloading more data
 				if (($blnTookSample === false || $blnTookAudioinfo === false || $blnTookMediainfo === false) && is_dir($this->tmpPath))
@@ -863,11 +882,11 @@ class PostProcess
 			echo $str."\n";
 	}
 
-    function debug($str)
-    {
-        if ($this->echooutput && $this->DEBUG_ECHO)
-            echo $str."\n";
-    }
+	function debug($str)
+	{
+		if ($this->echooutput && $this->DEBUG_ECHO)
+		   echo $str."\n";
+	}
 
 	function addmediafile ($file, $data)
 	{
@@ -1423,7 +1442,9 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg');
+					$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
+					$output = runCmd($cmd);
+
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
@@ -1478,7 +1499,8 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -vframes 500 -acodec libvorbis -loglevel quiet -y "'.$ramdrive."zzzz".$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t ' . $this->ffmpeg_duration . ' -acodec libvorbis -loglevel quiet -y "'.$ramdrive."zzzz".$releaseguid.'.ogv"');
+
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);
@@ -1524,4 +1546,3 @@ class PostProcess
 			echo "P";
 	}
 }
-

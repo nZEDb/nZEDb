@@ -48,7 +48,13 @@ A: You should follow the recommendations found on these 2 webpages.
    http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation
    Percona Server as of versions 5.1.56 and 5.5.11 allows utilizing fast index creation for all of the above cases, which can potentially speed them up greatly.
    Be sure to add to you InnoDB section: 	expand_fast_index_creation = 1
-									        innodb_merge_sort_block_size = 1
+									        innodb_merge_sort_block_size = 1G
+
+Q: I'm having issues with the PREDB backfill script.
+A: https://github.com/nZEDb/pre-info
+
+Q: Can I have some information on collections/binaries/parts?
+A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
 
 Q: I'm having issues with the PREDB backfill script.
 A: https://github.com/nZEDb/pre-info

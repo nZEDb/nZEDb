@@ -5,8 +5,9 @@ class DB
         //
         // the element relstatus of table releases is used to hold the status of the release
         // The variable is a bitwise AND of status 
-        // List of processed constants - used in releases table
+        // List of processed constants - used in releases table. Constants need to be powers of 2: 1, 2, 4, 8, 16 etc...
         const NFO_PROCESSED_NAMEFIXER     = 1;  // We have processed the release against its .nfo file in the namefixer
+        const PREDB_PROCESSED_NAMEFIXER   = 2;  // We have processed the release against a predb name
 
 	private static $initialized = false;
 	private static $mysqli = null;

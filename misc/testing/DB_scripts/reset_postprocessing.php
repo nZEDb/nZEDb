@@ -38,7 +38,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->query("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." bookinfoID's reset.\n";
-		$db->query("update releases set nfostatus = -1 where nfostatus <= 0");
+		$db->query("update releases set nfostatus = -1 where nfostatus != 1");
 		$affected = $db->getAffectedRows();
 		echo $affected." nfos reset.\n";
 		$db->query("update releases set passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 where haspreview = 0");
@@ -144,7 +144,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 	}
 	else
 	{
-		$where = " where nfostatus <= 0";
+		$where = " where nfostatus != 1";
 	}
 	$db->query("update releases set nfostatus = -1".$where);
 	$affected = $db->getAffectedRows();

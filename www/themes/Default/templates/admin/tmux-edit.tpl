@@ -135,6 +135,7 @@
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
 						Safe - Backfills 1 group by backfill days (set in admin-view groups), using the number of threads set in admin. This downloads Backfill Quantity times the Backfill Threads, each loop.<br \>
+						example: you have Backfill Threads = 10, Backfill Quantity = 20k, Max Messages = 5k: you will run 10 threads, queue of 40 and download 200k headers.<br />
 						Interval - Backfills the number of groups (set in tmux), by backfill days (set in admin-view groups), completely.<br />
 						All - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to backfill days (set in admin-view groups)<br />
 						These settings are all per loop and does not use backfill date. Approximately every 80 minutes, every activated backfill group will be backfilled (5k headers). This is to allow incomplete collections to be completed and/or the 2 hour delay reset if the collection is still active. This extra step is not necessary and is not used when using Sequential.<br />
@@ -251,8 +252,8 @@
 			<tr>
 				<td><label for="POST">Postprocess Additional:</label></td>
 				<td>
-					{html_radios id="POST" name='POST' values=$truefalse_names output=$truefalse_names selected=$ftmux->POST separator='<br />'}
-					<div class="hint">Choose to do deep rar inspection, preview and sample creation and nfo processing. true/false</div>
+					{html_options class="siteeditstyle" id="POST" name='POST' values=$post_ids output=$post_names selected=$ftmux->POST}
+					<div class="hint">Choose to do deep rar inspection, preview and sample creation and/or nfo processing. true/false</div>
 				</td>
 			</tr>
 
@@ -539,50 +540,6 @@
 					<div class="hint">The color displayed is tmux scripts is randomized from this list.<br />
 					The first box is the start number, the second box is the end number and the last box are the exceptions. An array is created from these numbers.<br />
 					If you connect using putty, then under Window/Translation set Remote character set to UTF-8 and check "Copy and paste line drawing characters". To use 256 colors, you must set Connection/Data Terminal-type string to "xterm-256color" and in Window/Colours check the top three boxes, otherwise only 16 colors are displayed. If you are using FreeBSD, you will need to add export TERM=xterm-256color to your .bashrc file to show 256 colors.</div>
-				</td>
-			</tr>
-		</table>
-</fieldset>
-
-<fieldset>
-	<legend>Optimize and Patch</legend>
-		<table class="input">
-			<tr>
-				<td><label for="OPTIMIZE">Optimize Database:</label></td>
-				<td>
-					{html_radios id="OPTIMIZE" name='OPTIMIZE' values=$truefalse_names output=$truefalse_names selected=$ftmux->OPTIMIZE separator='<br />'}
-					<div class="hint">Choose to optimize you database true/false<br />This is not affected by TMUX Running</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="width:160px;"><label for="OPTIMIZE_TIMER">Optimize Start Timer:</label></td>
-				<td>
-					<input id="OPTIMIZE_TIMER" name="OPTIMIZE_TIMER" class="tiny" type="text" value="{$ftmux->OPTIMIZE_TIMER}" />
-					<div class="hint">This is a start timer. The default is 24 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td><label for="PATCHDB">Patch the Database:</label></td>
-				<td>
-					{html_radios id="PATCHDB" name='PATCHDB' values=$truefalse_names output=$truefalse_names selected=$ftmux->PATCHDB separator='<br />'}
-					<div class="hint">Choose to update git and patch the database true/false<br />This will fail if running 'git pull' manually also fails. If monitor.php is updated during a git pull, a manual restart will be required.<br />This is not affected by TMUX Running</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="width:160px;"><label for="PATCHDB_TIMER">Patch Database Start Timer:</label></td>
-				<td>
-					<input id="PATCHDB_TIMER" name="PATCHDB_TIMER" class="tiny" type="text" value="{$ftmux->PATCHDB_TIMER}" />
-					<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.<br />This does not run separately if Optimize Database = TRUE</div>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="explain">Information:</label></td>
-				<td>
-					<div class="explanation">This will REPAIR/OPTIMIZE/FLUSH all MyIsam tables and OPTIMIZE all InnoDB tables. It is not recommended to tun this more than once per day, simply because, for MyIsam, it locks tables while it runs and for InnoDB, it just takes a while. If you do not have innodb_file_per_table = 1 set in my.cnf, this will make you db slower and cause your ibdata1 to grow. If your ibdata file is larger than 1GB and you have innodb_file_per_table set, you should read <a href="http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261">Howto: Clean a mysql InnoDB storage engine?</a> and consider following those procedures to reduce the size of ibdata.</br />
-						If you are using Percona, then you can try adding expand_fast_index_creation = 1 and innodb_merge_sort_block_size = 1G to your my.cnf before do the above procedures. This is based on <a href="http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation">Improved InnoDB fast index creation</a> and it may improve your InnoDB optimization.</div>
 				</td>
 			</tr>
 		</table>

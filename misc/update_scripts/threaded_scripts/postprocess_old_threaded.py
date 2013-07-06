@@ -76,7 +76,7 @@ def main(args):
 		sys.exit(0)
 
 	signal.signal(signal.SIGINT, signal_handler)
-	
+
 	if True:
 		#spawn a pool of place worker threads
 		for i in range(int(run_threads[0])):
