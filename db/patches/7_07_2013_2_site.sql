@@ -3,4 +3,4 @@ insert into site (setting, value) values ('lookup_reqids', '1');
 ALTER TABLE `releases` ADD COLUMN `reqidstatus` TINYINT(1) NOT NULL DEFAULT '0'  AFTER `relstatus` ;
 ALTER TABLE `releases` ADD INDEX `ix_releases_reqidstatus` USING HASH (`reqidstatus` ASC) ;
 
-UPDATE `site` set `value` = '92' where `setting` = 'sqlpatch';
+UPDATE `site` set `value` = '93' where `setting` = 'sqlpatch';
