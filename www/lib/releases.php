@@ -1788,7 +1788,7 @@ class Releases
 		$consoletools = new consoleTools();
 
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
-		
+
 		if ($page->site->lookup_reqids == 1)
 		{
 			$stage8 = TIME();
@@ -1796,16 +1796,15 @@ class Releases
 				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m".$n;
 
 			// Mark records that don't have regex titles
-			$db->query( "UPDATE releases SET reqidstatus = -1 " .
-						"WHERE reqidstatus = 0 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
-						
+			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
+
 			// look for records that potentially have regex titles
 			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
 										"WHERE relnamestatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
-										
+
 			$iFoundcnt = 0;
-			
+
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
 				// Try to get reqid
@@ -1826,26 +1825,26 @@ class Releases
 						}
 					}
 				}
-				
+
 				if ($bFound)
 				{
 					$db->query("UPDATE releases SET reqidstatus = 1, searchname = " . $db->escapeString($newTitle) . " WHERE ID = " . $rowrel['ID']);
-			
+
 					if ($this->echooutput)
 						echo "Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
-				}					
+				}
 				else
 				{
 					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
 				}
-			}			
+			}
 
 			$timing = $consoletools->convertTime(TIME() - $stage8);
 			if ($this->echooutput)
-				echo $iFoundcnt . " Releases updated in " . $timing . ".";			
+				echo $iFoundcnt . " Releases updated in " . $timing . ".";
 		}
 	}
-	
+
 	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false)
 	{
 		$db = new DB();
@@ -2281,24 +2280,24 @@ class Releases
 							GROUP BY concat(cp.title, ' > ', category.title)
 							ORDER BY COUNT(*) DESC");
 	}
-	
+
 	public function getReleaseNameFromRequestID($site, $requestID, $groupName)
 	{
 		if ($site->request_url == "")
 			return "";
-		
+
 		// Build Request URL
 		$req_url = str_ireplace("[GROUP_NM]", urlencode($groupName), $site->request_url);
 		$req_url = str_ireplace("[REQUEST_ID]", urlencode($requestID), $req_url);
-		
+
 		$xml = simplexml_load_file($req_url);
-		
+
 		if (($xml == false) || (count($xml) == 0))
 			return "";
-			
+
 		$request = $xml->request[0];
 
 		return (!isset($request) || !isset($request["name"])) ? "" : $request['name'];
-	}		
+	}
 
 }
