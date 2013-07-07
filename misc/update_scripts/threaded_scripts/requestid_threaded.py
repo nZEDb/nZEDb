@@ -28,9 +28,7 @@ con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PA
 con.autocommit(True)
 cur = con.cursor()
 
-print("Setting invalid releases to -1, be patient")
 cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 and relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-print("Looking for valid releases")
 cur.execute("SELECT r.ID, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1")
 datas = cur.fetchall()
 
@@ -82,7 +80,6 @@ def main():
 			p.setDaemon(True)
 			p.start()
 
-	print("\nRequestID Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
@@ -92,6 +89,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-print("\nRequestID Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
