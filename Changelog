@@ -1,4 +1,5 @@
-07072013 -> jonnyboy -> integrated threaded requestID into releases.php, no need to run separate python script
+07072013 -> jonnyboy -> updated monitor pane for requestID
+						integrated threaded requestID into releases.php, no need to run separate python script
 						fixed testing/nzb-import.php not deleting the nzbs
 						fixed skipping releases when importing by filename
 						added more rss feeds for predb.me
