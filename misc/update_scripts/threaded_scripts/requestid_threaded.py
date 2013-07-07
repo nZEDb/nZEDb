@@ -17,6 +17,7 @@ import info
 import signal
 import datetime
 
+threads = 20
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -76,7 +77,7 @@ def main():
 
 	if True:
 		#spawn a pool of place worker threads
-		for i in range(30):
+		for i in range(threads):
 			p = queue_runner(my_queue)
 			p.setDaemon(True)
 			p.start()
