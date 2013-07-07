@@ -24,7 +24,6 @@ if (count($requestIDtmp) >= 1)
 		if ($newTitle != false && $newTitle != "")
 		{
 			$bFound = true;
-			$iFoundcnt++;
 		}
 	}
 }
