@@ -1,3 +1,6 @@
+07062013 -> jonnyboy -> Added threaded requestID for initial pull
+07062013 -> Miatrix  -> Added Request ID Lookup.  This looks up requests from the URL we provide to fix naming where possible.  
+						This is very usefull for pron, but helps sometimes on tv/movies/console releases.
 07062013 -> jonnyboy -> removed remove stale folders from threaded pp additional, wrong place
 07052013 -> jonnyboy -> fixed bug in tmux-edit and monitor
 						fixed bug in postprocess

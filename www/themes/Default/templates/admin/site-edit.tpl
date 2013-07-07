@@ -538,6 +538,22 @@
 </tr>
 
 <tr>
+	<td><label for="lookup_reqids">Lookup Request IDs:</label></td>
+	<td>
+		{html_radios id="lookup_reqids" name='lookup_reqids' values=$yesno_ids output=$yesno_names selected=$fsite->lookup_reqids separator='<br />'}
+		<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="style">Request ID Link:</label></td>
+	<td>
+		<input id="request_url" class="long" name="request_url" type="text" value="{$fsite->request_url}" />
+		<div class="hint">Optional URL to lookup Request IDs.  [REQUEST_ID] gets replaced with the request ID from the post.  [GROUP_NM] Gets replaced with the group name.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="compressedheaders">Use Compressed Headers:</label></td>
 	<td>
 		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}

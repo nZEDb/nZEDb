@@ -81,6 +81,7 @@ CREATE TABLE `releases`
 `audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
 `relstatus` TINYINT(4) NOT NULL DEFAULT 0,
+`reqidstatus` TINYINT(1) NOT NULL DEFAULT '0',
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -95,6 +96,7 @@ CREATE INDEX ix_release_name ON releases(`name`);
 CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
 CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
 CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
+CREATE INDEX ix_releases_reqidstatus ON `releases`(`reqidstatus` ASC) USING HASH ;
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -1030,7 +1032,9 @@ INSERT INTO `site`
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('sqlpatch','91');
+	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('lookup_reqids', '1'),
+	('sqlpatch','92');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
