@@ -38,6 +38,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(select value from site where setting = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 	( SELECT COUNT( ID ) FROM groups ) AS all_groups,
 	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
+	( SELECT COUNT( ID ) from releases where reqidstatus = 0 AND relnamestatus = 1 ) AS requestID_inprogress,
 	( SELECT COUNT( ID ) from releases where reqidstatus = 1 ) AS requestID_matched,
 	( SELECT COUNT( ID ) from collections ) AS collections_table,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
@@ -248,8 +249,9 @@ $work_remaining_start = 0;
 $nfo_remaining_start = 0;
 $predb_matched = 0;
 $predb = 0;
-$requestID_matched = 0;
+$requestID_inprogress = 0;
 $requestID_diff = 0;
+$requestID_matched = 0;
 
 $misc_releases_now = 0;
 $work_remaining_now = 0;
@@ -303,7 +305,7 @@ printf($mask, "====================", "=========================", "============
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
-printf($mask, "requestID",$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$request_percent."%)");
+printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -366,7 +368,7 @@ while( $i > 0 )
 		if ( @$proc_work_result[0]['work'] != NULL ) { $work_remaining_start = $proc_work_result[0]['work']; }
 		if ( @$proc_work_result[0]['work'] != NULL ) { $work_start = $proc_work_result[0]['work']; }
 		if ( @$proc_work_result[0]['releases'] != NULL ) { $releases_start = $proc_work_result[0]['releases']; }
-		if ( @$proc_work_result[0]['requestID_matched'] != NULL ) { $requestID_matched_start = $proc_work_result[0]['requestID_matched']; }
+		if ( @$proc_work_result[0]['requestID_inprogress'] != NULL ) { $requestID_inprogress_start = $proc_work_result[0]['requestID_inprogress']; }
 	}
 
 	//get values from $qry
@@ -405,6 +407,7 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_work_result[0]['distinctnzbs']; }
 	if ( @$proc_work_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_work_result[0]['totalnzbs']; }
 	if ( @$proc_work_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_work_result[0]['pendingnzbs']; }
+	if ( @$proc_work_result[0]['requestID_inprogress'] != NULL ) { $requestID_inprogress = $proc_work_result[0]['requestID_inprogress']; }
 	if ( @$proc_work_result[0]['requestID_matched'] != NULL ) { $requestID_matched = $proc_work_result[0]['requestID_matched']; }
 
 	if ( @$proc_tmux_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
@@ -476,7 +479,7 @@ while( $i > 0 )
 
 	$nfo_diff = number_format( $nfo_remaining_now - $nfo_remaining_start );
 	$pre_diff = number_format( $predb_matched - $predb_matched_start );
-	$requestID_diff = number_format( $requestID_matched - $requestID_matched_start );
+	$requestID_diff = number_format( $requestID_inprogress - $requestID_inprogress_start );
 
 	$console_diff = number_format( $console_releases_proc - $console_releases_proc_start );
 	$movie_diff = number_format( $movie_releases_proc - $movie_releases_proc_start );
@@ -560,7 +563,7 @@ while( $i > 0 )
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
-	printf($mask, "requestID",$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$request_percent."%)");
+	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
