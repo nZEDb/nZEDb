@@ -540,7 +540,7 @@
 <tr>
 	<td><label for="lookup_reqids">Lookup Request IDs:</label></td>
 	<td>
-		{html_radios id="lookup_reqids" name='lookup_reqids' values=$yesno_ids output=$yesno_names selected=$fsite->lookup_reqids separator='<br />'}
+		{html_options id="lookup_reqids" name='lookup_reqids' values=$lookup_reqids_ids output=$lookup_reqids_names selected=$fsite->lookup_reqids}
 		<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below.</div>
 	</td>
 </tr>

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2710";
+$version="0.1r2711";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -211,6 +211,7 @@ $movie_percent = 0;
 $console_percent = 0;
 $nfo_percent = 0;
 $pre_percent = 0;
+$request_percent = 0;
 
 $work_start = 0;
 $releases_start = 0;
@@ -276,8 +277,8 @@ $totalnzbs = 0;
 $distinctnzbs = 0;
 $pendingnzbs = 0;
 
-$mask1 = "\033[1;33m%-16s \033[38;5;214m%-44.44s \n";
-$mask2 = "\033[1;33m%-16s \033[38;5;214m%-34.34s \n";
+$mask1 = "\033[1;33m%-16s \033[38;5;214m%-49.49s \n";
+$mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
 
 //create display
 passthru('clear');
@@ -289,19 +290,20 @@ printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 
-$mask = "%-15.15s %22.22s %22.22s\n";
+$mask = "%-15.15s %27.27s %22.22s\n";
 printf("\033[1;33m\n");
 printf($mask, "Collections", "Binaries", "Parts");
-printf($mask, "====================", "====================", "====================");
+printf($mask, "====================", "=========================", "====================");
 printf("\033[38;5;214m");
 printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
-printf($mask, "====================", "====================", "====================");
+printf($mask, "====================", "=========================", "====================");
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-printf($mask, "predb/requestID",number_format($predb_matched)."(".$pre_diff.")/".$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$pre_percent."%)");
+printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
+printf($mask, "requestID",$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -314,7 +316,7 @@ printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number
 
 printf("\n\033[1;33m\n");
 printf($mask, "Groups", "Active", "Backfill");
-printf($mask, "====================", "====================", "====================");
+printf($mask, "====================", "=========================", "====================");
 printf("\033[38;5;214m");
 if ( $backfilldays == "1" )
 	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
@@ -491,7 +493,8 @@ while( $i > 0 )
 
 	if ( $releases_now != 0 ) {
 		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
-		$pre_percent = sprintf( "%02s", floor((( $predb_matched + requestID_matches ) / $releases_now) * 100 ));
+		$pre_percent = sprintf( "%02s", floor(( $predb_matched / $releases_now) * 100 ));
+		$request_percent = sprintf( "%02s", floor(( $requestID_matches / $releases_now) * 100 ));
 		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
 		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
 		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
@@ -502,6 +505,7 @@ while( $i > 0 )
 	} else {
 		$nfo_percent = 0;
 		$pre_percent = 0;
+		$request_percent = 0;
 		$console_percent = 0;
 		$movie_percent = 0;
 		$music_percent = 0;
@@ -530,17 +534,16 @@ while( $i > 0 )
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
 	}
 
-	$mask = "%-15.15s %22.22s %22.22s\n";
 	printf("\033[1;33m\n");
 	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "====================", "====================", "====================");
+	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), "~".number_format($binaries_table), "~".number_format($parts_table));
 
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
-		printf($mask, "====================", "====================", "====================");
+		printf($mask, "====================", "=========================", "====================");
 		printf("\033[38;5;214m");
 		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
 		$disk_free = decodeSize( disk_free_space($monitor_path) );
@@ -553,10 +556,11 @@ while( $i > 0 )
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
-	printf($mask, "====================", "====================", "====================");
+	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb/requestID",number_format($predb_matched)."(".$pre_diff.")/".$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$pre_percent."%)");
+	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
+	printf($mask, "requestID",$requestID_matched."(".$requestID_diff.")",number_format($predb)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -569,7 +573,7 @@ while( $i > 0 )
 
 	printf("\n\033[1;33m\n");
 	printf($mask, "Groups", "Active", "Backfill");
-	printf($mask, "====================", "====================", "====================");
+	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	if ( $backfilldays == "1" )
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");

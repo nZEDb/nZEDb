@@ -37,6 +37,7 @@ class Releases
 		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
 		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
+		$this->requestids = $this->site->lookup_reqids;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
@@ -2053,6 +2054,12 @@ class Releases
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
 	{
+		$DIR = MISC_DIR;
+		if ($this->command_exist("python3"))
+			$PYTHON = "python3 -OO";
+		else
+			$PYTHON = "python -OO";
+
 		$tot_retcount = 0;
 		$tot_nzbcount = 0;
 		do
@@ -2061,7 +2068,22 @@ class Releases
 			$tot_retcount = $tot_retcount + $retcount;
 			$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
-			$this->processReleasesStage5b($groupID, $echooutput);
+			if ($this->requestids == "1")
+			{
+				$this->processReleasesStage5b($groupID, $echooutput);
+			}
+			elseif ($this->requestids == "2")
+			{
+				$consoletools = new ConsoleTools();
+				$stage8 = TIME();
+				if ($this->echooutput)
+					echo "\n\033[1;33mStage 5b -> Request ID Threaded lookup.\033[0m\n";
+				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
+				$timing = $consoletools->convertTime(TIME() - $stage8);
+				if ($this->echooutput)
+					echo "\nReleases updated in " . $timing . ".";
+
+			}
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
@@ -2100,21 +2122,13 @@ class Releases
 		}
 
 		$this->processReleasesStage1($groupID, $echooutput=false);
-
 		$this->processReleasesStage2($groupID, $echooutput=false);
-
 		$this->processReleasesStage3($groupID, $echooutput=false);
-
 		//$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
-
 		//$this->processReleasesStage4dot5($groupID, $echooutput=false);
-
 		//$this->processReleasesStage5_loop($groupID, $echooutput=false);
-
 		//$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
-
 		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
-
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
@@ -2298,6 +2312,12 @@ class Releases
 		$request = $xml->request[0];
 
 		return (!isset($request) || !isset($request["name"])) ? "" : $request['name'];
+	}
+
+	public function command_exist($cmd)
+	{
+		$returnVal = shell_exec("which $cmd 2>/dev/null");
+		return (empty($returnVal) ? false : true);
 	}
 
 }
