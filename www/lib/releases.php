@@ -1749,9 +1749,10 @@ class Releases
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat))
+				$nzb_guid = $nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat);
+				if($nzb_guid != false)
 				{
-					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
+					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE ID = %d", $db->escapestring(md5($nzb_guid)), $rowrel['ID']));
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					$nzbcount++;
 					if ($this->echooutput)
