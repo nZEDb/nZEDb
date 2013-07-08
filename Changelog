@@ -1,3 +1,4 @@
+07072013 -> jonnyboy -> tmux - removed unneeded/unused timers
 07072013 -> Miatrix  -> Added populate_nzb_guid.php in the misc/testing/DB_scripts folder to update existing releases with the guid
 07072013 -> Miatrix  -> updated the creation of releases to populate the nzg_guid column with a md5 hash based on the 1st post.  This will allow possible spotnab integration at a later date.
 07072013 -> jonnyboy -> updated monitor pane for requestID

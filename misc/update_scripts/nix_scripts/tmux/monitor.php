@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2711";
+$version="0.1r2729";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -329,18 +329,12 @@ $monitor = 30;
 $i = 1;
 while( $i > 0 )
 {
-
-	//get microtime at start of loop
-	$time_loop_start = microtime_float();
-
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" )) || ( $i == 1 )) {
-		//get microtime to at start of queries
-		$query_timer_start=microtime_float();
 		$result = @$db->query($qry);
 		$initquery = array();
 		foreach ($result as $cat=>$sub)
@@ -497,7 +491,7 @@ while( $i > 0 )
 	if ( $releases_now != 0 ) {
 		$nfo_percent = sprintf( "%02s", floor(( $nfo_now / $releases_now) * 100 ));
 		$pre_percent = sprintf( "%02s", floor(( $predb_matched / $releases_now) * 100 ));
-		$request_percent = sprintf( "%02s", floor(( $requestID_matches / $releases_now) * 100 ));
+		$request_percent = sprintf( "%02s", floor(( $requestID_matched / $releases_now) * 100 ));
 		$console_percent = sprintf( "%02s", floor(( $console_releases_now / $releases_now) * 100 ));
 		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
 		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
@@ -516,11 +510,6 @@ while( $i > 0 )
 		$tvrage_percent = 0;
 		$book_percent = 0;
 		$misc_percent = 0;
-	}
-
-	//get microtime at end of queries
-	if ( $runloop == "true" ) {
-		$query_timer = microtime_float()-$query_timer_start;
 	}
 
 	//update display
@@ -582,12 +571,6 @@ while( $i > 0 )
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
 	else
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
-
-	//get microtime at end of queries
-	if ( $runloop == "true" )
-	{
-		$query_timer = microtime_float()-$query_timer_start;
-	}
 
 	//get list of panes by name
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
