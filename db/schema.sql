@@ -82,6 +82,7 @@ CREATE TABLE `releases`
 `dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
 `relstatus` TINYINT(4) NOT NULL DEFAULT 0,
 `reqidstatus` TINYINT(1) NOT NULL DEFAULT '0',
+`nzb_guid` VARCHAR(50) NULL,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -1034,7 +1035,7 @@ INSERT INTO `site`
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
-	('sqlpatch','93');
+	('sqlpatch','94');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
