@@ -139,7 +139,7 @@ def main():
 		#spawn a pool of place worker threads
 		for i in range(run_threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
 	#now load some arbitrary jobs into the queue
@@ -148,17 +148,18 @@ def main():
 
 	my_queue.join()
 
+	final = ("%s %d %s" %(datas[0], int(datas[1] - (maxmssgs * geteach)), geteach))
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+	group = ("%s %d" %(datas[0], 1000))
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+	if run_threads <= geteach:
+		print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+	else:
+		print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+
+	print("Backfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+
+
 if __name__ == '__main__':
 	main()
-
-final = ("%s %d %s" %(datas[0], int(datas[1] - (maxmssgs * geteach)), geteach))
-subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
-group = ("%s %d" %(datas[0], 1000))
-subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-if run_threads <= geteach:
-	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
-else:
-	print("\nWe used %s threads, a queue of %s and grabbed %s headers" %(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
-
-print("Backfill Safe Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

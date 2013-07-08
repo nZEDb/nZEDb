@@ -1,4 +1,6 @@
-07072013 -> jonnyboy -> updated monitor predb to match the other totals, fixed typo in populate_nzb_guid.php
+07072013 -> jonnyboy -> updated all python scripts, put closing stuffin in main(), removed thread deamon's was causing shutdown issues with 2.*
+						added gid to grabzbs and import threaded scripts, still need to add to non threaded
+						updated monitor predb to match the other totals, fixed typo in populate_nzb_guid.php
 						tmux - removed unneeded/unused timers
 07072013 -> Miatrix  -> Added populate_nzb_guid.php in the misc/testing/DB_scripts folder to update existing releases with the guid
 07072013 -> Miatrix  -> updated the creation of releases to populate the nzg_guid column with a md5 hash based on the 1st post.  This will allow possible spotnab integration at a later date.

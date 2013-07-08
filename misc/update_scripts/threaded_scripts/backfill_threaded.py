@@ -109,7 +109,7 @@ def main(args):
 		#spawn a pool of place worker threads
 		for i in range(run_threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
 	print("\nBackfill Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
@@ -120,8 +120,8 @@ def main(args):
 
 	my_queue.join()
 
+	print("\nBackfill Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+
 if __name__ == '__main__':
 	main(sys.argv[1:])
-
-print("\nBackfill Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
