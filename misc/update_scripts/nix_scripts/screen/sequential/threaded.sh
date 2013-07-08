@@ -21,6 +21,7 @@ fi
 
 while :
 do
+#	$PYTHON -OO ${THREADED_PATH}/partrepair_threaded.py
 #	$PYTHON -OO ${THREADED_PATH}/binaries_threaded.py
 #	$PYTHON -OO ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OO ${THREADED_PATH}/backfill_safe_threaded.py

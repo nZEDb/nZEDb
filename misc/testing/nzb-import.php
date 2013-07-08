@@ -145,15 +145,16 @@ else
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
 				$cleanerName = $usename;
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
-					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($subject), $db->escapeString($date), $db->escapeString($date));
+				$res1 = $db->queryOneRow($dupeCheckSql);
 
 				// only check one binary per nzb, they should all be in the same release anyway
 				$skipCheck = true;
 
 				// if the release is in the DB already then just skip this whole procedure
-				if ($res !== false)
+				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
 					@unlink($nzbFile);
@@ -166,7 +167,7 @@ else
 			{
 				$usename = $db->escapeString($name);
 				$cleanerName = $namecleaning->releaseCleaner($subject);
-				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
+				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
 					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 

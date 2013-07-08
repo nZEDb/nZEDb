@@ -95,6 +95,12 @@ $page->smarty->assign('passworded_names', array( 'Dont show passworded or potent
 $page->smarty->assign('grabnzbs_ids', array(0,1,2));
 $page->smarty->assign('grabnzbs_names', array( 'Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));
 
+$page->smarty->assign('partrepair_ids', array(0,1,2));
+$page->smarty->assign('partrepair_names', array( 'Disabled', 'Part Repair', 'Part Repair Threaded'));
+
+$page->smarty->assign('lookup_reqids_ids', array(0,1,2));
+$page->smarty->assign('lookup_reqids_names', array( 'Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
+
 $themelist = array();
 $themes = scandir(WWW_DIR."/themes");
 foreach ($themes as $theme)

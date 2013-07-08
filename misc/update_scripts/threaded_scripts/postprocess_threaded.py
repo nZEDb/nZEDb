@@ -27,10 +27,10 @@ con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PA
 cur = con.cursor()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
-	cur.execute("select (select value from site where setting = 'postthreads') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g")
+	cur.execute("select (select value from site where setting = 'postthreads') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h")
 	dbgrab = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
-	cur.execute("select(select value from site where setting = 'postthreadsnon') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g")
+	cur.execute("select(select value from site where setting = 'postthreadsnon') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h")
 	dbgrab = cur.fetchall()
 else:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
@@ -42,7 +42,10 @@ movieperrun = int(dbgrab[0][3])
 tvrageperrun = int(dbgrab[0][4])
 maxsizeck = int(dbgrab[0][5])
 tmppath = dbgrab[0][6]
-
+posttorun = int(dbgrab[0][7])
+if posttorun == 0:
+	sys.exit()
+	
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
@@ -51,12 +54,12 @@ else:
 datas = []
 maxtries = -1
 
-if sys.argv[1] == "additional":
+if sys.argv[1] == "additional" and (posttorun == 1 or posttorun == 3):
 	while len(datas) < run_threads * ppperrun and maxtries >= -5:
 		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
-elif sys.argv[1] == "nfo":
+elif sys.argv[1] == "nfo" and (posttorun == 2 or posttorun == 3):
 	while len(datas) < run_threads * nfoperrun and maxtries >= -5:
 		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
@@ -123,7 +126,7 @@ def main():
 			p.start()
 
 	print("\nPostProcess Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-	
+
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:
@@ -142,6 +145,22 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+#create the connection to mysql
+con = None
+con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+cur = con.cursor()
+
+cur.execute("Select ID from releases where nfostatus <= -6")
+final = cur.fetchall()
+
+for item in final:
+	cur.execute("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d" %(item))
+	final = cur.fetchall()
+
+#close connection to mysql
+cur.close()
+con.close()
 
 print("\nPostProcess Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
 print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

@@ -608,40 +608,40 @@ class PostProcess
 
 					if (is_dir($this->tmpPath))
 					{
-					$files = scandir($this->tmpPath);
-					$rar = new ArchiveInfo();
-					if (count($files) > 0)
-					{
-						foreach($files as $file)
+						$files = scandir($this->tmpPath);
+						$rar = new ArchiveInfo();
+						if (count($files) > 0)
 						{
-							if (is_file($this->tmpPath.$file))
+							foreach($files as $file)
 							{
-								if (preg_match('/\.rar$/i', $file))
+								if (is_file($this->tmpPath.$file))
 								{
-									$rar->open($this->tmpPath.$file, true);
-									if ($rar->error)
-										continue;
-
-									$tmpfiles = $rar->getArchiveFileList();
-									if (isset($tmpfiles[0]["name"]))
+									if (preg_match('/\.rar$/i', $file))
 									{
-										foreach($tmpfiles as $r)
-										{
-											$range = mt_rand(0,99999);
-											if (isset($r["range"]))
-												$range = $r["range"];
+										$rar->open($this->tmpPath.$file, true);
+										if ($rar->error)
+											continue;
 
-											$r["range"] = $range;
-											if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-												$this->addfile($r, $rel["ID"], $rar);
+										$tmpfiles = $rar->getArchiveFileList();
+										if (isset($tmpfiles[0]["name"]))
+										{
+											foreach($tmpfiles as $r)
+											{
+												$range = mt_rand(0,99999);
+												if (isset($r["range"]))
+													$range = $r["range"];
+
+												$r["range"] = $range;
+												if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
+													$this->addfile($r, $rel["ID"], $rar);
+											}
 										}
 									}
 								}
 							}
 						}
+						unset($rar);
 					}
-					unset($rar);
-				}
 				}
 				elseif ($hasrar == 1)
 				{
@@ -1442,9 +1442,16 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
-					$output = runCmd($cmd);
-
+					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
+					//$output = runCmd($cmd);
+					
+					$sample_duration = exec($ffmpeginfo." -i ".$samplefile." 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
+					if ($sample_duration > 100 || $sample_duration==0 || $sample_duration=="")
+						$sample_duration=2;
+					$output_file=$ramdrive."zzzz".mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).".jpg";
+					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 250 -y ".$output_file);
+					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 1 -ss ".$sample_duration." -y ".$output_file);
+					
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);

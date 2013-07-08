@@ -37,6 +37,7 @@ class Releases
 		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
 		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
+		$this->requestids = $this->site->lookup_reqids;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
@@ -1421,7 +1422,7 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 24 hour) AND c.filecheck
+		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
 						in (0, 1, 10) ".$where);
 
 		if ($this->echooutput)
@@ -1748,9 +1749,10 @@ class Releases
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				if($nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat))
+				$nzb_guid = $nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat);
+				if($nzb_guid != false)
 				{
-					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $rowrel['ID']));
+					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE ID = %d", $db->escapestring(md5($nzb_guid)), $rowrel['ID']));
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					$nzbcount++;
 					if ($this->echooutput)
@@ -1778,6 +1780,71 @@ class Releases
 		} while ($nzbcount > 0);
 
 		return $tot_nzbcount;
+	}
+
+	public function processReleasesStage5b($groupID, $echooutput=false)
+	{
+		$db = new DB();
+		$page = new Page();
+		$n = "\n";
+		$consoletools = new consoleTools();
+
+		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
+
+		if ($page->site->lookup_reqids == 1)
+		{
+			$stage8 = TIME();
+			if ($this->echooutput)
+				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m".$n;
+
+			// Mark records that don't have regex titles
+			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
+
+			// look for records that potentially have regex titles
+			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
+										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
+										"WHERE relnamestatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
+
+			$iFoundcnt = 0;
+
+			while ($rowrel = $db->fetchAssoc($resrel))
+			{
+				// Try to get reqid
+				$requestIDtmp = explode("]", substr($rowrel['name'], 1));
+				$bFound = false;
+				$newTitle = "";
+
+				if (count($requestIDtmp) >= 1)
+				{
+					$requestID = (int) $requestIDtmp[0];
+					if ($requestID != 0)
+					{
+						$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupName']);
+						if ($newTitle != false && $newTitle != "")
+						{
+							$bFound = true;
+							$iFoundcnt++;
+						}
+					}
+				}
+
+				if ($bFound)
+				{
+					$db->query("UPDATE releases SET reqidstatus = 1, searchname = " . $db->escapeString($newTitle) . " WHERE ID = " . $rowrel['ID']);
+
+					if ($this->echooutput)
+						echo "Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
+				}
+				else
+				{
+					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
+				}
+			}
+
+			$timing = $consoletools->convertTime(TIME() - $stage8);
+			if ($this->echooutput)
+				echo $iFoundcnt . " Releases updated in " . $timing . ".";
+		}
 	}
 
 	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false)
@@ -1988,6 +2055,12 @@ class Releases
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
 	{
+		$DIR = MISC_DIR;
+		if ($this->command_exist("python3"))
+			$PYTHON = "python3 -OO";
+		else
+			$PYTHON = "python -OO";
+
 		$tot_retcount = 0;
 		$tot_nzbcount = 0;
 		do
@@ -1996,6 +2069,22 @@ class Releases
 			$tot_retcount = $tot_retcount + $retcount;
 			$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
+			if ($this->requestids == "1")
+			{
+				$this->processReleasesStage5b($groupID, $echooutput);
+			}
+			elseif ($this->requestids == "2")
+			{
+				$consoletools = new ConsoleTools();
+				$stage8 = TIME();
+				if ($this->echooutput)
+					echo "\n\033[1;33mStage 5b -> Request ID Threaded lookup.\033[0m\n";
+				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
+				$timing = $consoletools->convertTime(TIME() - $stage8);
+				if ($this->echooutput)
+					echo "\nReleases updated in " . $timing . ".";
+
+			}
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
@@ -2034,21 +2123,13 @@ class Releases
 		}
 
 		$this->processReleasesStage1($groupID, $echooutput=false);
-
 		$this->processReleasesStage2($groupID, $echooutput=false);
-
 		$this->processReleasesStage3($groupID, $echooutput=false);
-
 		//$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
-
 		//$this->processReleasesStage4dot5($groupID, $echooutput=false);
-
 		//$this->processReleasesStage5_loop($groupID, $echooutput=false);
-
 		//$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
-
 		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
-
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
@@ -2213,6 +2294,31 @@ class Releases
 							WHERE releases.adddate > NOW() - INTERVAL 1 WEEK
 							GROUP BY concat(cp.title, ' > ', category.title)
 							ORDER BY COUNT(*) DESC");
+	}
+
+	public function getReleaseNameFromRequestID($site, $requestID, $groupName)
+	{
+		if ($site->request_url == "")
+			return "";
+
+		// Build Request URL
+		$req_url = str_ireplace("[GROUP_NM]", urlencode($groupName), $site->request_url);
+		$req_url = str_ireplace("[REQUEST_ID]", urlencode($requestID), $req_url);
+
+		$xml = simplexml_load_file($req_url);
+
+		if (($xml == false) || (count($xml) == 0))
+			return "";
+
+		$request = $xml->request[0];
+
+		return (!isset($request) || !isset($request["name"])) ? "" : $request['name'];
+	}
+
+	public function command_exist($cmd)
+	{
+		$returnVal = shell_exec("which $cmd 2>/dev/null");
+		return (empty($returnVal) ? false : true);
 	}
 
 }
