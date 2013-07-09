@@ -1,12 +1,12 @@
 <?php
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../www/config.php");
-require_once(FS_ROOT."/../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../www/lib/binaries.php");
-require_once(FS_ROOT."/../../www/lib/page.php");
-require_once(FS_ROOT."/../../www/lib/category.php");
-require_once(FS_ROOT."/../../www/lib/namecleaning.php");
+require_once(dirname(__FILE__)."/../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/namecleaning.php");
+
 
 $db = new DB();
 $binaries = new Binaries();
