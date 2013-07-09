@@ -103,8 +103,7 @@ class Import
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$version = $site->version;
-		
-		
+
 		$groups = $db->query("SELECT ID, name FROM groups");
 		foreach ($groups as $group)
 			$siteGroups[$group["name"]] = $group["ID"];
