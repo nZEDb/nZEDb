@@ -66,9 +66,8 @@ if(isset($argv[1]) && $argv[1] == "true")
 			if (strtolower($tablename['Engine']) == "myisam")
 				$db->queryDirect("REPAIR TABLE `".$name."`");
 			$db->queryDirect("OPTIMIZE TABLE `".$name."`");
-			if (strtolower($tablename['Engine']) == "myisam")
-				$db->queryDirect("FLUSH TABLES");
 		}
+		$db->queryDirect("FLUSH TABLES");
 		if ($tablecnt == 1)
 			echo $tablecnt." table Optimized\n";
 		else

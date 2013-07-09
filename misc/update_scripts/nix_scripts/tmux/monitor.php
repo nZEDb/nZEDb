@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2745";
+$version="0.1r2748";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -304,7 +304,7 @@ printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "=========================", "====================");
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-printf($mask, "predb",number_format($predb)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
+printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
@@ -554,7 +554,7 @@ while( $i > 0 )
 	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb","~".number_format($predb)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
+	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
