@@ -77,7 +77,7 @@ def main():
 		#spawn a pool of place worker threads
 		for i in range(threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
 

@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/site.php");
+
 
 class Import
 {
@@ -103,6 +103,8 @@ class Import
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$version = $site->version;
+		
+		
 		$groups = $db->query("SELECT ID, name FROM groups");
 		foreach ($groups as $group)
 			$siteGroups[$group["name"]] = $group["ID"];
