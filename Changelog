@@ -1,4 +1,5 @@
-07092013 -> jonnyboy -> added query to grabnzbs that appear incomplete but are older than 2 hours
+07092013 -> jonnyboy -> added limit clause when running populate gids from tmux
+						added query to grabnzbs that appear incomplete but are older than 2 hours
 						fixed bug in grabznbs creating gid at same time as update_releases
 						changed poster to fromname delete_releases.php
 						added nzbstatus check for gid creation
