@@ -14,11 +14,11 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 //
 
 if (isset($argv[1]))
-	create_guids();
+	create_guids($argv[1]);
 else
 	usage();
 
-function create_guids()
+function create_guids($live)
 {
 	$db = new Db;
 	$s = new Sites();
@@ -27,7 +27,10 @@ function create_guids()
 	$timestart = TIME();
 	$relcount = 0;
 
-	$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc"));
+	if ($live == "true")
+		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc"));
+	elseif ($live == "limited")
+		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc limit 1000"));
 
 	echo "\nUpdating ".sizeof($relrecs)." release guids\n";
 	$releases = new Releases();
