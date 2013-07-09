@@ -27,7 +27,7 @@ function create_guids()
 	$timestart = TIME();
 	$relcount = 0;
 
-	$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null order by ID desc"));
+	$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc"));
 
 	echo "\nUpdating ".sizeof($relrecs)." release guids\n";
 	$releases = new Releases();

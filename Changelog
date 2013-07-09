@@ -1,4 +1,6 @@
-07092013 -> jonnyboy -> changed poster to fromname delete_releases.php
+07092013 -> jonnyboy -> added query to grabnzbs that appear incomplete but are older than 2 hours
+						fixed bug in grabznbs creating gid at same time as update_releases
+						changed poster to fromname delete_releases.php
 						added nzbstatus check for gid creation
 						added db connect string to start of loop in monitor.php, should help the with disabled by running issues
 						updated start.php to latest patch
