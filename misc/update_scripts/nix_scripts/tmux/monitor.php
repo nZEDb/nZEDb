@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2739";
+$version="0.1r2745";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -329,6 +329,9 @@ $monitor = 30;
 $i = 1;
 while( $i > 0 )
 {
+	//update db connection
+	$db = new DB();
+
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
 
