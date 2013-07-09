@@ -1798,12 +1798,12 @@ class Releases
 				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m".$n;
 
 			// Mark records that don't have regex titles
-			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
+			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
 
 			// look for records that potentially have regex titles
 			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
-										"WHERE relnamestatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
+										"WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
 
 			$iFoundcnt = 0;
 
