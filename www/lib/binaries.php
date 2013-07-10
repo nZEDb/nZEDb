@@ -174,7 +174,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 
-				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".str_replace('alt.binaries','a.b',$data["group"])." - ".number_format($grouplast - $last)." in queue".$n;
+				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue".$n;
 				flush();
 
 				//get headers from newsgroup
@@ -196,7 +196,7 @@ class Binaries
 			$last_record_postdate = $backfill->postdate($nntp,$last,false);
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo str_replace('alt.binaries','a.b',$data["group"])." processed in $timeGroup seconds $n $n";
+			echo $data["group"]." processed in $timeGroup seconds $n $n";
 		}
 		else
 		{

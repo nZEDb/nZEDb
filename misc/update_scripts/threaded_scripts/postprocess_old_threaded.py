@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -84,7 +84,7 @@ def main(args):
 			p.setDaemon(False)
 			p.start()
 
-	print("\nPostProcess Old Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPostProcess Old Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
@@ -92,8 +92,8 @@ def main(args):
 
 	my_queue.join()
 
-	print("\nPostProcess Old Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nPostProcess Old Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

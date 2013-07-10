@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -37,7 +37,7 @@ run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
 bulk = dbgrab[0][2]
 
-print("Sorting Folders in %s, be patient." %(nzbs))
+print("Sorting Folders in %s, be patient." % (nzbs))
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
 
 #close connection to mysql
@@ -87,7 +87,7 @@ def main():
 			p.setDaemon(False)
 			p.start()
 
-	print("\nNZB Import Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nNZB Import Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	if len(datas) != 0:
@@ -96,19 +96,19 @@ def main():
 				my_queue.put(os.path.join(nzbs,gnames))
 		else:
 			for gnames in datas:
-				my_queue.put('%s %s' %(os.path.join(nzbs,gnames), "true"))
+				my_queue.put('%s %s' % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if int(use_true[0]) == 1:
 			my_queue.put(nzbs)
 		else:
-			my_queue.put("%s %s" %(nzbs, "true"))
+			my_queue.put("%s %s" % (nzbs, "true"))
 
 	my_queue.join()
 
 	final = "true"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\nNZB Import Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nNZB Import Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
 
 
 if __name__ == '__main__':
