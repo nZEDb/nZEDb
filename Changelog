@@ -1,3 +1,5 @@
+07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
+						moved python lib files
 07092013 -> jonnyboy -> added limit clause when running populate gids from tmux
 						added query to grabnzbs that appear incomplete but are older than 2 hours
 						fixed bug in grabznbs creating gid at same time as update_releases
