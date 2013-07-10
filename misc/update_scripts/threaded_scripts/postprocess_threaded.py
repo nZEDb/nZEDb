@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -56,19 +56,19 @@ maxtries = -1
 
 if sys.argv[1] == "additional" and (posttorun == 1 or posttorun == 3):
 	while len(datas) < run_threads * ppperrun and maxtries >= -5:
-		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * ppperrun))
+		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo" and (posttorun == 2 or posttorun == 3):
 	while len(datas) < run_threads * nfoperrun and maxtries >= -5:
-		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" %(maxsize, maxtries, run_threads * nfoperrun))
+		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie":
-		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" %(run_threads * movieperrun))
+		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" % (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		cur.execute("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" %(run_threads * tvrageperrun))
+		cur.execute("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" % (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 
 #close connection to mysql
@@ -114,9 +114,9 @@ def main():
 
 	if sys.argv[1] == "additional":
 		print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
-		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo - %s." %(time.strftime("%H:%M:%S")))
+		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo - %s." % (time.strftime("%H:%M:%S")))
 	elif sys.argv[1] == "nfo":
-		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed  - %s." %(time.strftime("%H:%M:%S")))
+		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed  - %s." % (time.strftime("%H:%M:%S")))
 
 	if True:
 		#spawn a pool of place worker threads
@@ -125,21 +125,21 @@ def main():
 			p.setDaemon(False)
 			p.start()
 
-	print("\nPostProcess Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s                       %s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+			my_queue.put("%s                       %s                       %s                       %s                       %s                       %s                       %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s                       %s" %(release[0], release[1], release[2], release[3]))
+			my_queue.put("%s                       %s                       %s                       %s" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s" %(release[0], release[1], release[2]))
+			my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
 	elif sys.argv[1] == "tv":
 		for release in datas:
-			my_queue.put("%s                       %s" %(release[0], release[1]))
+			my_queue.put("%s                       %s" % (release[0], release[1]))
 
 	my_queue.join()
 
@@ -152,15 +152,15 @@ def main():
 	final = cur.fetchall()
 
 	for item in final:
-		cur.execute("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d" %(item))
+		cur.execute("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d" % (item))
 		final = cur.fetchall()
 
 	#close connection to mysql
 	cur.close()
 	con.close()
 
-	print("\nPostProcess Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nPostProcess Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()
