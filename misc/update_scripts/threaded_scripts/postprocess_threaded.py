@@ -122,7 +122,7 @@ def main():
 		#spawn a pool of place worker threads
 		for i in range(run_threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
 	print("\nPostProcess Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
@@ -143,24 +143,24 @@ def main():
 
 	my_queue.join()
 
-if __name__ == '__main__':
-	main()
+	#create the connection to mysql
+	con = None
+	con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	cur = con.cursor()
 
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
-
-cur.execute("Select ID from releases where nfostatus <= -6")
-final = cur.fetchall()
-
-for item in final:
-	cur.execute("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d" %(item))
+	cur.execute("Select ID from releases where nfostatus <= -6")
 	final = cur.fetchall()
 
-#close connection to mysql
-cur.close()
-con.close()
+	for item in final:
+		cur.execute("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d" %(item))
+		final = cur.fetchall()
 
-print("\nPostProcess Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+	#close connection to mysql
+	cur.close()
+	con.close()
+
+	print("\nPostProcess Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+
+if __name__ == '__main__':
+	main()

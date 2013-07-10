@@ -84,7 +84,7 @@ def main():
 		#spawn a pool of place worker threads
 		for i in range(run_threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
 	print("\nNZB Import Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
@@ -105,8 +105,11 @@ def main():
 
 	my_queue.join()
 
+	final = "true"
+	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
+	print("\nNZB Import Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+
+
 if __name__ == '__main__':
 	main()
-
-print("\nNZB Import Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

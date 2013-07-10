@@ -19,19 +19,19 @@ $relcount = 0;
 //
 if (sizeof($argv) == 4)
 {
-	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "poster"))
+	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
 		$relids = $db->query(sprintf("SELECT ID, guid FROM releases where %s = %s", $argv[1], $db->escapeString($argv[3])));
-		printf("SELECT ID, fuck, guid FROM releases where %s = %s", $argv[1], $db->escapeString($argv[3]));
+		printf("SELECT ID, guid FROM releases where %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
-	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "poster"))
+	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
 		$relids = $db->query("SELECT ID, guid FROM releases where ".$argv[1]." like '%".$argv[3]."%'");
 		print("SELECT ID, guid FROM releases where ".$argv[1]." like '%".$argv[3]."%'");
 	}
 	else
 	{
-		exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ poster, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ poster, searchname, name, guid ] like [ name/guid ]\n");
+		exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, guid ] like [ name/guid ]\n");
 	}
 	echo "\nDeleting ".sizeof($relids)." releases and NZB's for ".$argv[3]."\n";
 	$releases = new Releases();
@@ -51,5 +51,5 @@ if (sizeof($argv) == 4)
 }
 else
 {
-	exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ poster, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ poster, searchname, name, guid ] like [ name/guid ]\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromanme, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, guid ] like [ name/guid ]\n");
 }

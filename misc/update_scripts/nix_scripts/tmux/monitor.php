@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2729";
+$version="0.1r2749";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -304,7 +304,7 @@ printf($mask, "Category", "In Process", "In Database");
 printf($mask, "====================", "=========================", "====================");
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
+printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
@@ -329,6 +329,9 @@ $monitor = 30;
 $i = 1;
 while( $i > 0 )
 {
+	//update db connection
+	$db = new DB();
+
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
 
@@ -352,7 +355,7 @@ while( $i > 0 )
 	if ( $i == 1 )
 	{
 		if ( @$proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_work_result[0]['nforemains']; }
-		if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_matched_start = $proc_work_result[0]['predb_matched']; }
+		if ( @$proc_work_result[0]['predb_matched'] != NULL ) { $predb_start = $proc_work_result[0]['predb_matched']; }
 		if ( @$proc_work_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_work_result[0]['console']; }
 		if ( @$proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc_start = $proc_work_result[0]['movies']; }
 		if ( @$proc_work_result[0]['audio'] != NULL ) { $music_releases_proc_start = $proc_work_result[0]['audio']; }
@@ -472,7 +475,7 @@ while( $i > 0 )
 	if ( $i == 1 ) { $total_work_start = $total_work_now; }
 
 	$nfo_diff = number_format( $nfo_remaining_now - $nfo_remaining_start );
-	$pre_diff = number_format( $predb_matched - $predb_matched_start );
+	$pre_diff = number_format( $predb_matched - $predb_start );
 	$requestID_diff = number_format( $requestID_inprogress - $requestID_inprogress_start );
 
 	$console_diff = number_format( $console_releases_proc - $console_releases_proc_start );
@@ -551,7 +554,7 @@ while( $i > 0 )
 	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb",number_format($predb_matched)."(".$pre_diff.")",number_format($predb)."(".$pre_percent."%)");
+	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
@@ -940,6 +943,13 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 					$time6 = TIME();
 				}
+			}
+			elseif ((( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" )) && ( $releases_run == "TRUE" ))
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
+					$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
 			{

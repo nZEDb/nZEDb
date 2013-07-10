@@ -1,11 +1,11 @@
 <?php
 
 require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/binaries.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
+require_once(WWW_DIR."lib/adminpage.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/namecleaning.php");
 
 $db = new DB();
 $binaries = new Binaries();
