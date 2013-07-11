@@ -9,9 +9,40 @@ require_once(WWW_DIR."/lib/predb.php");
 class nameCleaning
 {
 	//
-	//	Cleans usenet subject before inserting, used for collectionhash.
+	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
 	//
-	public function collectionsCleaner($subject, $type="normal")
+	public function collectionsCleaner($subject, $type="normal", $groupID="")
+	{
+		if ($groupID !== "")
+		{
+			$groups = new Groups();
+			$groupName = $groups->getByNameByID($groupID);
+			
+			/*if (preg_match('/alt\.binaries\.hdtv\.german/', $groupName))
+			{
+				if (preg_match('//', $subject))
+					$cleansubject = $matches[1];
+				else if (preg_match('//', $subject))
+					$cleansubject = $matches[1];
+				else
+					$cleansubject = $this->collectionsCleanerHelper($subject, $type);
+				
+				if (empty($cleansubject))
+					return $subject;
+				else
+					return $cleansubject;
+			}
+			else*/
+				return $this->collectionsCleanerHelper($subject, $type);
+		}
+		else
+			return $this->collectionsCleanerHelper($subject, $type);
+	}
+
+	//
+	//	Cleans usenet subject before inserting, used for collectionhash. Fallback from collectionsCleaner.
+	//
+	public function collectionsCleanerHelper($subject, $type)
 	{
 		//Parts/files
 		$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
@@ -71,7 +102,10 @@ class nameCleaning
 			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 			{
 				$cleanerName = $match[1];
-				return $cleanerName;
+				if (empty($cleanerName))
+					return $this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
 			}
 			elseif (preg_match('/alt\.binaries\.erotica$/', $groupName))
 			{
@@ -86,7 +120,7 @@ class nameCleaning
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
 				if (empty($cleanerName))
-					$this->releaseCleanerHelper($subject);
+					return $subject;
 				else
 					return $cleanerName;
 			}
@@ -104,7 +138,7 @@ class nameCleaning
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
 				if (empty($cleanerName))
-					$this->releaseCleanerHelper($subject);
+					return $subject;
 				else
 					return $cleanerName;
 			}
@@ -118,7 +152,7 @@ class nameCleaning
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
 				if (empty($cleanerName))
-					$this->releaseCleanerHelper($subject);
+					return $subject;
 				else
 					return $cleanerName;
 			}
@@ -132,7 +166,22 @@ class nameCleaning
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
 				if (empty($cleanerName))
-					$this->releaseCleanerHelper($subject);
+					return $this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
+			}
+			elseif (preg_match('/alt\.binaries\.multimedia\.anime(\.highspeed)?/', $groupName))
+			{
+				$cleanerName = "";
+				//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+				//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
+				if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+					$cleanerName = $match[2];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					return $subject;
 				else
 					return $cleanerName;
 			}
