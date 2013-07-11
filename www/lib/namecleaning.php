@@ -73,7 +73,7 @@ class nameCleaning
 				$cleanerName = $match[1];
 				return $cleanerName;
 			}
-			elseif (preg_match('/alt\.binaries\.erotica/', $groupName))
+			elseif (preg_match('/alt\.binaries\.erotica$/', $groupName))
 			{
 				$cleanerName = "";
 				//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [01/28] - "TayTO-heyzo_hd_0317_full.par2" - 2,17 GB yEnc
@@ -91,7 +91,7 @@ class nameCleaning
 					return $cleanerName;
 			}
 			/* Match line 97's regex against the predb MD5 ? */
-			elseif (preg_match('/alt\.binaries\.mom/', $groupName))
+			elseif (preg_match('/alt\.binaries\.mom$/', $groupName))
 			{
 				$cleanerName = "";
 				//[usenet4ever.info] und [SecretUsenet.com] - 96e323468c5a8a7b948c06ec84511839-u4e - "96e323468c5a8a7b948c06ec84511839-u4e.par2" yEnc
@@ -108,7 +108,7 @@ class nameCleaning
 				else
 					return $cleanerName;
 			}
-			elseif (preg_match('/alt\.binaries\.moovee/', $groupName))
+			elseif (preg_match('/alt\.binaries\.moovee$/', $groupName))
 			{
 				$cleanerName = "";
 				//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
@@ -122,7 +122,7 @@ class nameCleaning
 				else
 					return $cleanerName;
 			}
-			elseif (preg_match('/alt\.binaries\.mp3\.complete_cd/', $groupName))
+			elseif (preg_match('/alt\.binaries\.mp3\.complete_cd$/', $groupName))
 			{
 				$cleanerName = "";
 				//[052713]-[#eos@EFNet]-[All_Shall_Perish-Montreal_QUE_0628-2007-EOS]-[09/14] "06-all_shall_perish-deconstruction-eos.mp3" yEnc
