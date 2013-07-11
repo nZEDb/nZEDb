@@ -131,6 +131,7 @@ class Import
 			{
 				//file info
 				$groupID = -1;
+				//$subject = utf8_encode(trim($partless));
 				$name = (string)$file->attributes()->subject;
 				$firstname[] = $name;
 				$fromname = (string)$file->attributes()->poster;
@@ -139,7 +140,7 @@ class Import
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$subject = $firstname['0'];
+				$subject = utf8_encode(trim($firstname['0']));
 				$namecleaning = new nameCleaning();
 				$cleanerName = $namecleaning->releaseCleaner($subject);
 				

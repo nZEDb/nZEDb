@@ -1,4 +1,5 @@
-07112013 -> jonnyboy -> fixed bug in postprocess.php
+07112013 -> jonnyboy -> added 'trim' to releases name in nzb-import and grabNZBs
+						fixed bug in postprocess.php
 						beginning the move of pre/requestID matching to release creation, instead of separate process later
 07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
 						moved python lib files
