@@ -1573,12 +1573,12 @@ class Releases
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
 					$relid = $db->getInsertID();
-					$predb->matchPre($cleanerName, $relid);
+					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
 					if ($this->echooutput)
-						echo "Added release ".$cleanerName.$n;
+						echo "Added release ".$cleanRelName.$n;
 				}
 				else
 				{

@@ -342,7 +342,8 @@ Class Predb
 	public function matchPre($cleanerName, $releaseID)
 	{
 		$db = new DB();
-		$db->query(sprintf("update releaseID = %d from predb where name = %s and releaseID = null", $releaseID, $db->escapeString($cleanerName)));
+		if($db->query(sprintf("update releaseID = %d from predb where name = %s and releaseID = null", $releaseID, $db->escapeString($cleanerName))))
+			$db->query(sprintf("update releases set relnamestatus = 6 ID = %d", $releaseID));
 	}
 
 	// When a searchname is the same as the title, tie it to the predb.

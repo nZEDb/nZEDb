@@ -2,7 +2,7 @@
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/page.php");
 require_once(WWW_DIR."lib/category.php");
-//require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/site.php");
 
 
