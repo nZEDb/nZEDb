@@ -48,7 +48,8 @@ cur.close()
 con.close()
 
 if not datas:
-	print("No Work to Process")
+	print("Part Repair has no Work to Process")
+	time.sleep(2)
 	sys.exit()
 
 my_queue = queue.Queue()

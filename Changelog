@@ -1,3 +1,4 @@
+07112013 -> jonnyboy -> fixed bug in postback, when reconnecting to nntp, need to set group name first
 07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.
 						changed the group regexes in releaseCleaner to make sure they don't match on other groups.
 07112013 -> jonnyboy -> added 'trim' to releases name in nzb-import and grabNZBs
