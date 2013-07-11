@@ -136,6 +136,21 @@ class nameCleaning
 				else
 					return $cleanerName;
 			}
+			elseif (preg_match('/alt\.binaries\.multimedia\.anime(\.highspeed)?/', $groupName))
+			{
+				$cleanerName = "";
+				//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+				//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
+				if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+					$cleanerName = $match[2];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					$this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
+			}
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
