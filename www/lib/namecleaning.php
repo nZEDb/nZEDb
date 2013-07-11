@@ -67,20 +67,21 @@ class nameCleaning
 			$groupName = $groups->getByNameByID($groupID);
 			$predb = new Predb();
 			
-			if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
+			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
+			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 			{
-				$cleanerName = $match[2];
+				$cleanerName = $match[1];
 				return $cleanerName;
 			}
-			elseif (preg_match('/alt\.binaries\.mp3.complete_cd/', $groupName))
+			elseif (preg_match('/alt\.binaries\.erotica/', $groupName))
 			{
 				$cleanerName = "";
-				//[135946]-[#altbin@EFNet]-[Full]-[ Missy_Elliott-Im_Really_Hot_BW_Keep_It_Movin-(Full_VLS)-2003-CHR ]-[10/14] - "08-keep_it_movin_ft_elephant_man_(acappella)-chr.mp3" yEnc (1/8)
-				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
-					$cleanerName = $match[2];
-				//[052713]-[#eos@EFNet]-[All_Shall_Perish-Montreal_QUE_0628-2007-EOS]-[09/14] "06-all_shall_perish-deconstruction-eos.mp3" yEnc (1/26)
-				else if (preg_match('/^\[(\d+)\]-\[.+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" yEnc/', $subject, $match))
-					$cleanerName = $match[2];
+				//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [01/28] - "TayTO-heyzo_hd_0317_full.par2" - 2,17 GB yEnc
+				if (preg_match('/^<TOWN><www\.town\.ag > <download all our files with>>> www\.ssl-news\.info <<< > \[\d+\/\d+\] - "(.+?)(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") - /', $subject, $match))
+					$cleanerName = $match[1];
+				//NihilCumsteR [1/8] - "Conysgirls.cumpilation.xxx.NihilCumsteR.par2" yEnc
+				else if (preg_match('/^NihilCumsteR.+?"(.+?)NihilCumsteR\./', $subject, $match))
+					$cleanerName = $match[1];
 				else
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
@@ -89,12 +90,44 @@ class nameCleaning
 				else
 					return $cleanerName;
 			}
-			elseif (preg_match('/alt\.binaries\.teevee/', $groupName))
+			/* Match line 97's regex against the predb MD5 ? */
+			elseif (preg_match('/alt\.binaries\.mom/', $groupName))
 			{
-				//[140654]-[FULL]-[a.b.teevee]-[ Formula1.2013.Monaco.Grand.Prix.Practice.Three.720p.HDTV.x264-FAIRPLAY ]-[02/63] - "fairplay.formula1.2013.monaco.grand.prix.practice.three.720p.sample.par2" yEnc
 				$cleanerName = "";
-				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
-					$cleanerName = $match[2];
+				//[usenet4ever.info] und [SecretUsenet.com] - 96e323468c5a8a7b948c06ec84511839-u4e - "96e323468c5a8a7b948c06ec84511839-u4e.par2" yEnc
+				if (preg_match('/^\[usenet4ever\.info\] und \[SecretUsenet\.com\] - (.+?)-u4e - ".+?" yEnc$/', $subject, $match))
+					$cleanerName = $match[1];
+				//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
+				else if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "(.+?)(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+					$cleanerName = $match[1];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					$this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
+			}
+			elseif (preg_match('/alt\.binaries\.moovee/', $groupName))
+			{
+				$cleanerName = "";
+				//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+				if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+					$cleanerName = $match[1];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					$this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
+			}
+			elseif (preg_match('/alt\.binaries\.mp3\.complete_cd/', $groupName))
+			{
+				$cleanerName = "";
+				//[052713]-[#eos@EFNet]-[All_Shall_Perish-Montreal_QUE_0628-2007-EOS]-[09/14] "06-all_shall_perish-deconstruction-eos.mp3" yEnc
+				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
+					$cleanerName = $match[1];
 				else
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
