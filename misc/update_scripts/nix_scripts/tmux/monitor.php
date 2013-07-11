@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2750";
+$version="0.1r2751";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -36,16 +36,16 @@ $proc_work = "SELECT
 	( SELECT COUNT( ID ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
 	( SELECT COUNT( ID ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(select value from site where setting = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
-	( SELECT COUNT( ID ) FROM groups ) AS all_groups,
-	( SELECT COUNT( ID ) from predb where releaseID is not NULL ) AS predb_matched,
+	( SELECT COUNT( ID ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
+	( SELECT COUNT( ID ) from predb where releaseID IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT( ID ) from releases where reqidstatus = 0 AND relnamestatus = 1 ) AS requestID_inprogress,
 	( SELECT COUNT( ID ) from releases where reqidstatus = 1 ) AS requestID_matched,
-	( SELECT COUNT( ID ) from collections ) AS collections_table,
-	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'binaries' AND TABLE_SCHEMA = '$db_name' ) AS binaries_table,
+	( SELECT COUNT( ID ) from collections WHERE collectionhash IS NOT NULL ) AS collections_table,
+	( SELECT COUNT( ID ) from binaries WHERE collectionID IS NOT NULL ) AS binaries_table,
+	( SELECT COUNT( ID ) from predb WHERE ID IS NOT NULL ) AS predb,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
-	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
-    ( SELECT COUNT( distinct( collectionhash )) FROM nzbs ) AS distinctnzbs,
-	( SELECT COUNT( collectionhash ) FROM nzbs ) AS totalnzbs,
+    ( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
+	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
 $proc_tmux = "SELECT
@@ -533,7 +533,7 @@ while( $i > 0 )
 	printf($mask, "Collections", "Binaries", "Parts");
 	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table), "~".number_format($binaries_table), "~".number_format($parts_table));
+	printf($mask, number_format($collections_table), number_format($binaries_table), "~".number_format($parts_table));
 
 	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
 		printf("\033[1;33m\n");
@@ -554,7 +554,7 @@ while( $i > 0 )
 	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
+	printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");

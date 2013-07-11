@@ -2,7 +2,7 @@
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/page.php");
 require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/namecleaning.php");
+//require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/site.php");
 
 
@@ -141,7 +141,8 @@ class Import
 				$postdate[] = $date;
 				$subject = $firstname['0'];
 				$namecleaning = new nameCleaning();
-				$cleanerName = $namecleaning->fixerPre($subject);
+				$cleanerName = $namecleaning->releaseCleaner($subject);
+				
 
 				// make a fake message object to use to check the blacklist
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
@@ -150,7 +151,7 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
 						$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 

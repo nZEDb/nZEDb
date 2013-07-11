@@ -1,5 +1,7 @@
 <?php
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/predb.php");
+
 
 //
 //	Cleans names for collections/releases/imports/namefixer.
@@ -63,26 +65,51 @@ class nameCleaning
 		{
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
-
-			/*if (preg_match('/alt\.binaries\.teevee/', $groupName))
+			$predb = new Predb();
+			
+			if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
 			{
-				//[140654]-[FULL]-[a.b.teevee]-[ Formula1.2013.Monaco.Grand.Prix.Practice.Three.720p.HDTV.x264-FAIRPLAY ]-[02/63] - "fairplay.formula1.2013.monaco.grand.prix.practice.three.720p.sample.par2" yEnc
+				$cleanerName = $match[2];
+				return $cleanerName;
+			}
+			elseif (preg_match('/alt\.binaries\.mp3.complete_cd/', $groupName))
+			{
 				$cleanerName = "";
-				if (preg_match('/^.+? (.+?) \]-/', $subject, $match))
-					$cleanerName = $match[1];
+				//[135946]-[#altbin@EFNet]-[Full]-[ Missy_Elliott-Im_Really_Hot_BW_Keep_It_Movin-(Full_VLS)-2003-CHR ]-[10/14] - "08-keep_it_movin_ft_elephant_man_(acappella)-chr.mp3" yEnc (1/8)
+				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
+					$cleanerName = $match[2];
+				//[052713]-[#eos@EFNet]-[All_Shall_Perish-Montreal_QUE_0628-2007-EOS]-[09/14] "06-all_shall_perish-deconstruction-eos.mp3" yEnc (1/26)
+				else if (preg_match('/^\[(\d+)\]-\[.+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" yEnc/', $subject, $match))
+					$cleanerName = $match[2];
 				else
 					$cleanerName = $this->releaseCleanerHelper($subject);
 
-				if (empty($cleanerName)) {return $subject;}
-				else {return $cleanerName;}
+				if (empty($cleanerName))
+					$this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
 			}
-			else*/
+			elseif (preg_match('/alt\.binaries\.teevee/', $groupName))
+			{
+				//[140654]-[FULL]-[a.b.teevee]-[ Formula1.2013.Monaco.Grand.Prix.Practice.Three.720p.HDTV.x264-FAIRPLAY ]-[02/63] - "fairplay.formula1.2013.monaco.grand.prix.practice.three.720p.sample.par2" yEnc
+				$cleanerName = "";
+				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc/', $subject, $match))
+					$cleanerName = $match[2];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					$this->releaseCleanerHelper($subject);
+				else
+					return $cleanerName;
+			}
+			else
 				return $this->releaseCleanerHelper($subject);
 		}
 		else
 			return $this->releaseCleanerHelper($subject);
 	}
-
+	
 	public function releaseCleanerHelper($subject)
 	{
 		//File and part count.
