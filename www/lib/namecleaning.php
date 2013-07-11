@@ -18,7 +18,7 @@ class nameCleaning
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
 			
-			/*if (preg_match('/alt\.binaries\.hdtv\.german/', $group))
+			/*if (preg_match('/alt\.binaries\.hdtv\.german/', $groupName))
 			{
 				if (preg_match('//', $subject))
 					$cleansubject = $matches[1];
