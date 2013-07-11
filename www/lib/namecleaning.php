@@ -11,7 +11,7 @@ class nameCleaning
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
 	//
-	public function collectionsCleaner($subject, $type="normal", $group="")
+	public function collectionsCleaner($subject, $type="normal", $groupID="")
 	{
 		if ($groupID !== "")
 		{
