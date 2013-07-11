@@ -362,24 +362,24 @@ class Backfill
 		$attempts=0;
 		do
 		{
-			$msgs = $nntp->getOverview($post."-".$post,true,false);
+			$data = $nntp->selectGroup($group);
+			$msgs = $nntp->getOverview($post."-".$post,true,true);
 			if(PEAR::isError($msgs))
 			{
-				//echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
+				echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
 				$nntp->doQuit();
 				unset($nntp);
 				$nntp = new Nntp;
 				$nntp->doConnect();
-				if ($group !='')
-					$data = $nntp->selectGroup($group);
+				$data = $nntp->selectGroup($group);
 				$msgs = $nntp->getOverview($post."-".$post,true,false);
 				if(PEAR::isError($msgs))
 				{
 					echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
-					return false;
+					//return false;
             	}
 	        }
-
+				
 			if(!isset($msgs[0]['Date']) || $msgs[0]['Date']=="" || is_null($msgs[0]['Date']))
 			{
 				$success=false;
@@ -391,11 +391,12 @@ class Backfill
 			}
 			if($debug && $attempts > 0) echo "Retried ".$attempts." time(s).".$n;
 			$attempts++;
-		}while($attempts <= 3 && $success == false);
+		}while($attempts <= 5 && $success == false);
 
 		if (!$success)
 		{
-			return "";
+			$date = TIME();
+			return $date;
 		}
 
 		if($debug) echo "DEBUG: postdate for post: .".$post." came back ".$date." (";
