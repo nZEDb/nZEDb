@@ -166,7 +166,7 @@ def decode_header(header_str):
             parts.append(v.decode(enc or 'ascii'))
         else:
             parts.append(v)
-    return ' '.join(parts)
+    return ''.join(parts)
 
 def _parse_overview_fmt(lines):
     """Parse a list of string representing the response to LIST OVERVIEW.FMT
@@ -324,27 +324,46 @@ class _NNTPBase:
         self.debugging = 0
         self.welcome = self._getresp()
 
+        # Inquire about capabilities (RFC 3977).
+        self._caps = None
+        self.getcapabilities()
+
         # 'MODE READER' is sometimes necessary to enable 'reader' mode.
         # However, the order in which 'MODE READER' and 'AUTHINFO' need to
         # arrive differs between some NNTP servers. If _setreadermode() fails
         # with an authorization failed error, it will set this to True;
         # the login() routine will interpret that as a request to try again
         # after performing its normal function.
+        # Enable only if we're not already in READER mode anyway.
         self.readermode_afterauth = False
-        if readermode:
+        if readermode and 'READER' not in self._caps:
             self._setreadermode()
+            if not self.readermode_afterauth:
+                # Capabilities might have changed after MODE READER
+                self._caps = None
+                self.getcapabilities()
 
         # RFC 4642 2.2.2: Both the client and the server MUST know if there is
         # a TLS session active.  A client MUST NOT attempt to start a TLS
         # session if a TLS session is already active.
         self.tls_on = False
 
-        # Inquire about capabilities (RFC 3977).
-        self._caps = None
-        self.getcapabilities()
-
         # Log in and encryption setup order is left to subclasses.
         self.authenticated = False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        is_connected = lambda: hasattr(self, "file")
+        if is_connected():
+            try:
+                self.quit()
+            except (OSError, EOFError):
+                pass
+            finally:
+                if is_connected():
+                    self._close()
 
     def getwelcome(self):
         """Get the welcome message from the server
@@ -814,7 +833,7 @@ class _NNTPBase:
         - list: list of (name,title) strings"""
         warnings.warn("The XGTITLE extension is not actively used, "
                       "use descriptions() instead",
-                      PendingDeprecationWarning, 2)
+                      DeprecationWarning, 2)
         line_pat = re.compile('^([^ \t]+)[ \t]+(.*)$')
         resp, raw_lines = self._longcmdstring('XGTITLE ' + group, file)
         lines = []
@@ -832,7 +851,7 @@ class _NNTPBase:
         path: directory path to article
         """
         warnings.warn("The XPATH extension is not actively used",
-                      PendingDeprecationWarning, 2)
+                      DeprecationWarning, 2)
 
         resp = self._shortcmd('XPATH {0}'.format(id))
         if not resp.startswith('223'):
@@ -928,7 +947,7 @@ class _NNTPBase:
                 if auth:
                     user = auth[0]
                     password = auth[2]
-        except IOError:
+        except OSError:
             pass
         # Perform NNTP authentication if needed.
         if not user:
@@ -945,8 +964,12 @@ class _NNTPBase:
         self._caps = None
         self.getcapabilities()
         # Attempt to send mode reader if it was requested after login.
-        if self.readermode_afterauth:
+        # Only do so if we're not in reader mode already.
+        if self.readermode_afterauth and 'READER' not in self._caps:
             self._setreadermode()
+            # Capabilities might have changed after MODE READER
+            self._caps = None
+            self.getcapabilities()
 
     def _setreadermode(self):
         try:

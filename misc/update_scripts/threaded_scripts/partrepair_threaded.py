@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -39,7 +39,7 @@ datas = []
 maxtries = 0
 
 while (len(datas) < run_threads * maxpartrepair) and maxtries < 5:
-	cur.execute("select groupID, numberID from partrepair where attempts between %d and 0 limit %d" %(maxtries, run_threads * maxpartrepair))
+	cur.execute("select groupID, numberID from partrepair where attempts between %d and 0 limit %d" % (maxtries, run_threads * maxpartrepair))
 	datas = cur.fetchall()
 	maxtries = maxtries + 1
 
@@ -48,7 +48,8 @@ cur.close()
 con.close()
 
 if not datas:
-	print("No Work to Process")
+	print("Part Repair has no Work to Process")
+	time.sleep(2)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -91,16 +92,16 @@ def main():
 			p.setDaemon(False)
 			p.start()
 
-	print("\nPartrepair Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPartrepair Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		my_queue.put("%s %s" %(release[0], release[1]))
+		my_queue.put("%s %s" % (release[0], release[1]))
 
 	my_queue.join()
 
-	print("\nPartrepair Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nPartrepair Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()

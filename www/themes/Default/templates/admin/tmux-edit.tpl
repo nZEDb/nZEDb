@@ -335,8 +335,8 @@
 			<tr>
 				<td><label for="FIX_CRAP">Remove Crap Releases:</label></td>
 				<td>
-					{html_radios id="FIX_CRAP" name='FIX_CRAP' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_CRAP separator='<br />'}
-					<div class="hint">Choose to run Remove Crap Releases true/false</div>
+					{html_options class="siteeditstyle" id="FIX_CRAP" name='FIX_CRAP' values=$fix_crap_ids output=$fix_crap_names selected=$ftmux->FIX_CRAP}
+					<div class="hint">Choose to run Remove Crap Releases. You can all or one.</div>
 				</td>
 			</tr>
 

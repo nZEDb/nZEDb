@@ -1035,7 +1035,7 @@ INSERT INTO `site`
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
-	('sqlpatch','94');
+	('sqlpatch','95');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1313,7 +1313,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('COLLECTIONS_KILL','0'),
 	('POSTPROCESS_KILL','0'),
 	('CRAP_TIMER','30'),
-	('FIX_CRAP','FALSE'),
+	('FIX_CRAP','0'),
 	('TV_TIMER','43200'),
 	('UPDATE_TV','FALSE'),
 	('HTOP','FALSE'),
