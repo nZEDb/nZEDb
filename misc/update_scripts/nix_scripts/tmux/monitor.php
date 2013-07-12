@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2778";
+$version="0.1r2779";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -42,7 +42,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( ID ) from releases where reqidstatus = 1 ) AS requestID_matched,
 	( SELECT COUNT( ID ) from collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( ID ) from binaries WHERE collectionID IS NOT NULL ) AS binaries_table,
-	( SELECT COUNT( ID ) from predb WHERE ID IS NOT NULL ) AS predb,
+	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
 	( SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
     ( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
@@ -554,7 +554,7 @@ while( $i > 0 )
 	printf($mask, "====================", "=========================", "====================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
+	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
@@ -685,19 +685,27 @@ while( $i > 0 )
 		}
 
 		//remove crap releases
-		if (( $fix_crap == "TRUE" ) && ( $i == 1 ))
+		if (( $fix_crap != "Disabled" ) && ( $i == 1 ))
 		{
+			if ( $fix_crap == "All" )
+				$remove = '';
+			else
+				$remove = $fix_crap;
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\"; \
-					$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+					$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $remove $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 		}
-		elseif ( $fix_crap == "TRUE" )
+		elseif ( $fix_crap != "Disabled" )
 		{
+			if ( $fix_crap == "All" )
+				$remove = '';
+			else
+				$remove = $fix_crap;
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[1]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\"; \
-					$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+					$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $remove $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{

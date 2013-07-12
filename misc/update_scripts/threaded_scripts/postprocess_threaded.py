@@ -27,10 +27,10 @@ con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PA
 cur = con.cursor()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
-	cur.execute("select (select value from site where setting = 'postthreads') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h")
+	cur.execute("select (select value from site where setting = 'postthreads') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h, (select value from tmux where setting = 'POST_NON') as i")
 	dbgrab = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
-	cur.execute("select(select value from site where setting = 'postthreadsnon') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h")
+	cur.execute("select(select value from site where setting = 'postthreadsnon') as a, (select value from site where setting = 'maxaddprocessed') as b, (select value from site where setting = 'maxnfoprocessed') as c, (select value from site where setting = 'maximdbprocessed') as d, (select value from site where setting = 'maxrageprocessed') as e, (select value from site where setting = 'maxsizetopostprocess') as f, (select value from site where setting = 'tmpunrarpath') as g, (select value from tmux where setting = 'POST') as h, (select value from tmux where setting = 'POST_NON') as i")
 	dbgrab = cur.fetchall()
 else:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
@@ -43,9 +43,11 @@ tvrageperrun = int(dbgrab[0][4])
 maxsizeck = int(dbgrab[0][5])
 tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
-if posttorun == 0:
+postnon = dbgrab[0][8]
+
+if posttorun == 0 and postnon == "FALSE":
 	sys.exit()
-	
+
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
@@ -65,6 +67,7 @@ elif sys.argv[1] == "nfo" and (posttorun == 2 or posttorun == 3):
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie":
+		print("%s %s" % (run_threads, movieperrun))
 		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" % (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":

@@ -1,3 +1,5 @@
+07112013 -> jonnyboy -> tmux -added option to use removecrapreleases all or just 1 setting
+						fixed bug in postprocess_threaded.py
 07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
 						updated nntplib.py, fixed a bug when swith nntp provider and groups not available
 						fixed bug in tmux-seq when not running any backfill
