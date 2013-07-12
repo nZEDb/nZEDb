@@ -131,7 +131,7 @@ class Binaries
 				else
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
-			$first_record_postdate = $backfill->postdate($nntp, $first, false);
+			$first_record_postdate = $backfill->postdate($nntp, $first, false, $groupArr['name']);
 			$db->query(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = FROM_UNIXTIME(".$first_record_postdate.") WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 		}
 		else
@@ -141,7 +141,7 @@ class Binaries
 
 		// Generate postdates for first and last records, for those that upgraded
 		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
-			 $db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false)."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false).") WHERE ID = %d", $groupArr['ID']));
+			 $db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'])."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']).") WHERE ID = %d", $groupArr['ID']));
 
 		////////NEED TO FIND BUG IN THIS
 		// Deactivate empty groups
@@ -193,7 +193,7 @@ class Binaries
 					$first = $last + 1;
 			}
 
-			$last_record_postdate = $backfill->postdate($nntp,$last,false);
+			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $data["group"]." processed in $timeGroup seconds $n $n";
@@ -284,6 +284,10 @@ class Binaries
 			{
 				if (!isset($msg['Number']))
 					continue;
+				if (isset($msg['Bytes']))
+					$bytes = $msg['Bytes'];
+				else
+					$bytes = $msg[':bytes'];
 
 				$msgsreceived[] = $msg['Number'];
 
@@ -344,14 +348,14 @@ class Binaries
 							$nzbparts = $matchesparts['part'];
 							$totalparts = $matchesparts['total'];
 							$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$msg['Bytes'], (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
+							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
 							$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
 
 					if((int)$matches[1] > 0)
 					{
-						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $msg['Bytes']);
+						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $bytes);
 					}
 				}
 			}
@@ -425,7 +429,8 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
+								//$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
+								$cleanerName = $subject;
 								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}

@@ -17,6 +17,8 @@ require_once(WWW_DIR."lib/releasecomments.php");
 require_once(WWW_DIR."lib/postprocess.php");
 require_once(WWW_DIR."lib/groups.php");
 require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/predb.php");
+
 
 class Releases
 {
@@ -1550,6 +1552,8 @@ class Releases
 		$n = "\n";
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
+		$namecleaning = new nameCleaning();
+		$predb = new  Predb();
 
 		if ($this->echooutput)
 			echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
@@ -1559,15 +1563,17 @@ class Releases
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
+				//$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
+				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
 				$relguid = sha1(uniqid());
 				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
-											$db->escapeString($cleanRelName), $db->escapeString($cleanSearchName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
+											$db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
 					$relid = $db->getInsertID();
+					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
@@ -1577,7 +1583,7 @@ class Releases
 				else
 				{
 					if ($this->echooutput)
-						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanRelName . ": " . $db->Error() . $n;
+						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanerName . ": " . $db->Error() . $n;
 				}
 			}
 		}
@@ -1788,14 +1794,15 @@ class Releases
 		$page = new Page();
 		$n = "\n";
 		$consoletools = new consoleTools();
-
+		$iFoundcnt = 0;
+		
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
 		if ($page->site->lookup_reqids == 1)
 		{
 			$stage8 = TIME();
 			if ($this->echooutput)
-				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m".$n;
+				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
 			// Mark records that don't have regex titles
 			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
@@ -1804,8 +1811,6 @@ class Releases
 			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
 										"WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
-
-			$iFoundcnt = 0;
 
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
@@ -1833,7 +1838,7 @@ class Releases
 					$db->query("UPDATE releases SET reqidstatus = 1, searchname = " . $db->escapeString($newTitle) . " WHERE ID = " . $rowrel['ID']);
 
 					if ($this->echooutput)
-						echo "Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
+						echo $n."Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
 				}
 				else
 				{

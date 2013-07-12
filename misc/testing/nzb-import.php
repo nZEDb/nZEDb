@@ -134,7 +134,7 @@ else
 			$totalFiles++;
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
-			$subject = $firstname['0'];
+			$subject = utf8_encode(trim($firstname['0']));
 			$namecleaning = new nameCleaning();
 
 			// make a fake message object to use to check the blacklist

@@ -1,3 +1,13 @@
+07112013 -> jonnyboy -> fixed bug in tmux-seq when not running any backfill
+						fixed bug in postback, when reconnecting to nntp, need to set group name first
+07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.
+						changed the group regexes in releaseCleaner to make sure they don't match on other groups.
+						make sure exe doesn't get into tv.
+						Added alt.binaries.multimedia.anime to releaseCleaner.
+						Changed collectionsCleaner so in the future it can do groups.
+07112013 -> jonnyboy -> added 'trim' to releases name in nzb-import and grabNZBs
+						fixed bug in postprocess.php
+						beginning the move of pre/requestID matching to release creation, instead of separate process later
 07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
 						moved python lib files
 07092013 -> jonnyboy -> added limit clause when running populate gids from tmux
