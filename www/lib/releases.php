@@ -2032,8 +2032,7 @@ class Releases
 
 		// misc other
 		if ($page->site->miscotherretentionhours > 0) {
-			$sql = sprintf("select ID, guid from releases where categoryID = %s AND adddate <= CURRENT_DATE - INTERVAL %d HOUR",
-			CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
+			$sql = sprintf("select ID, guid from releases where categoryID = %d AND adddate <= NOW() - INTERVAL %d HOUR", CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
 
 			if ($resrel = $db->query($sql)) {
 				foreach ($resrel as $rowrel)

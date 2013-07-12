@@ -25,6 +25,7 @@ class Binaries
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
 		$this->DoPartRepair = ($site->partrepair == "0" || $site->partrepair == "2") ? false : true;
+		$this->DoPartRepairMsg = ($site->partrepair == "2") ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->debug = ($site->debuginfo == "0") ? false : true;
@@ -84,6 +85,14 @@ class Binaries
 
 		// Connect to server
 		$data = $nntp->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($data))
 		{
 			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
@@ -106,7 +115,7 @@ class Binaries
 			echo "Part Repair Enabled... Repairing..." . $n;
 			$this->partRepair($nntp, $groupArr);
 		}
-		else
+		elseif ($this->DoPartRepairMsg)
 			echo "Part Repair Disabled... Skipping..." . $n;
 
 		//Get first and last part numbers from newsgroup
@@ -224,6 +233,13 @@ class Binaries
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 
+		//if server return 411, skip
+		if (PEAR::isError($msgs) && $msgs->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
@@ -269,7 +285,7 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				echo "Error {$msgs->code}: {$msgs->message}$n";
-				echo "Skipping group$n";
+				echo "Skipping group: ${groupArr['name']}$n";
 				return false;
 			}
 		}
@@ -510,7 +526,7 @@ class Binaries
 			if ($type != 'partrepair')
 			{
 				echo "Error: Can't get parts from server (msgs not array)".$n;
-				echo "Skipping group".$n;
+				echo "Skipping group: ${groupArr['name']}".$n;
 				return false;
 			}
 		}

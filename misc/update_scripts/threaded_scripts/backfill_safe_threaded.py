@@ -75,24 +75,29 @@ while (count - first) < 10000:
 		print("No Groups enabled for backfill")
 		sys.exit()
 
+	print(datas[0])
 	#get first, last from nntp sever
 	time.sleep(0.01)
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
 	time.sleep(0.01)
-	resp, count, first, last, name = s.group(datas[0])
-	time.sleep(0.01)
+	try:
+		resp, count, first, last, name = s.group(datas[0])
+		time.sleep(0.1)
+	except nntplib.NNTPError():
+		sys.exit()
 	resp = s.quit()
 
-	print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
-	print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
-	print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
-	count = datas[1]
+	if name:
+		print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
+		print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
+		print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
+		count = datas[1]
 
-	if (datas[1] - first) < 10000:
-		group = ("%s 10000" % (datas[0]))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-		cur.close()
-		con.close()
+		if (datas[1] - first) < 10000:
+			group = ("%s 10000" % (datas[0]))
+			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+			cur.close()
+			con.close()
 
 #close connection to mysql
 cur.close()
