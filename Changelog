@@ -1,4 +1,5 @@
-07112013 -> jonnyboy -> updated nntplib.py, fixed a bug when swith nntp provider and groups not available
+07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
+						updated nntplib.py, fixed a bug when swith nntp provider and groups not available
 						fixed bug in tmux-seq when not running any backfill
 						fixed bug in postback, when reconnecting to nntp, need to set group name first
 07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.

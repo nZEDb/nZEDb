@@ -2067,6 +2067,7 @@ class Releases
 
 		$tot_retcount = 0;
 		$tot_nzbcount = 0;
+		$loops = 0;
 		do
 		{
 			$retcount = $this->processReleasesStage4($groupID);
@@ -2092,7 +2093,9 @@ class Releases
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
-		} while ($nzbcount > 0 || $retcount > 0);
+			$loops++;
+		//this loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
+		} while ($nzbcount > 0 || $retcount > 0 || $loops < 3);
 
 		return $tot_retcount;
 	}
