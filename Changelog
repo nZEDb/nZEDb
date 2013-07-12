@@ -1,7 +1,8 @@
+07122013 -> jonnyboy -> fixed a bug when switch nntp provider and groups not available or invalid first_post
 07112013 -> jonnyboy -> tmux -added option to use removecrapreleases all or just 1 setting
 						fixed bug in postprocess_threaded.py
 07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
-						updated nntplib.py, fixed a bug when swith nntp provider and groups not available
+						updated nntplib.py, fixed a bug when switch nntp provider and groups not available
 						fixed bug in tmux-seq when not running any backfill
 						fixed bug in postback, when reconnecting to nntp, need to set group name first
 07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.

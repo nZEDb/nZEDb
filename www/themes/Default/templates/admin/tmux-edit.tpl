@@ -37,7 +37,8 @@
 				<td style="width:160px;"><label for="MONITOR_DELAY">Monitor Loop Timer:</label></td>
 				<td>
 					<input id="MONITOR_DELAY" name="MONITOR_DELAY" class="tiny" type="text" value="{$ftmux->MONITOR_DELAY}" />
-					<div class="hint">The time between query refreshes of monitor information, in seconds. The lower the number, the more often it queries the database for numbers.</div>
+					<div class="hint">The time between query refreshes of monitor information, in seconds. This has no effect on any other pane, except in regards to the kill switches. The other panes are checked every 10 seconds. The lower the number, the more often it queries the database for numbers.<br />
+					<b>As the database gets larger in size, the longer this set of queries takes to process.</b> I recommend that you set the sleep timer to at least 5 minutes, if any number in postprocess or total releases exceeds 1 million.</div>
 				</td>
 			</tr>
 
