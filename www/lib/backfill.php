@@ -74,52 +74,16 @@ class Backfill
 
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
-
-		//if server return 411, skip group
-		if (PEAR::isError($datac) && $datac->code == 411)
-		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
-		}
-
 		if (PEAR::isError($datac))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
-			$nntpc->doQuit();
-			unset($nntpc);
-			$nntpc = new Nntp;
-			$nntpc->doConnect();
-			$datac = $nntpc->selectGroup($groupArr['name']);
-			if (PEAR::isError($datac))
-			{
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
-				return;
-			}
+			return $is_Error($datac, $groupArr['name']);
 		}
 
 		// No comp - for interval.
 		$data = $nntp->selectGroup($groupArr['name']);
-
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
-		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
-		}
-
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnectNC();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
-				return;
-			}
+			return $is_Error($data, $groupArr['name']);
 		}
 
 		// Get targetpost based on days target.
@@ -277,26 +241,9 @@ class Backfill
 		echo 'Processing '.$groupArr['name'].$n;
 		$data = $nntp->selectGroup($groupArr['name']);
 
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
-		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
-		}
-
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
-				return;
-			}
+			return $is_Error($data, $group);
 		}
 
 		// Get targetpost based on days target.
@@ -380,23 +327,24 @@ class Backfill
 	//
 	// Returns a single timestamp from a local article number.
 	//
-	function postdate($nntp,$post,$debug=true,$group='')
+	function postdate($nntp,$post,$debug=true,$group)
 	{
 		$n = $this->n;
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp;
+			$nntp->doConnect();
+		}
+				
 		$attempts=0;
 		do
 		{
 			$data = $nntp->selectGroup($group);
-
-			//if server return 411, skip group
-			if (PEAR::isError($data) && $data->code == 411)
-		{
-			echo "Skipping group: $group".$n;
-			return;
-		}
-
+			if (PEAR::isError($data))
+			{
+				return $is_Error($data, $group);
+			}
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
-
 			if(PEAR::isError($msgs))
 			{
 				echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
@@ -423,8 +371,9 @@ class Backfill
 				$success=true;
 			}
 			if($debug && $attempts > 0) echo "Retried ".$attempts." time(s).".$n;
+			usleep(100000);
 			$attempts++;
-		}while($attempts <= 5 && $success == false);
+		}while($attempts <= 10 && $success == false);
 
 		if (!$success)
 		{
@@ -450,19 +399,11 @@ class Backfill
 		}
 
 		$data = $nntp->selectGroup($group);
-
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
+		if (PEAR::isError($data))
 		{
-			echo "Skipping group: $group".$n;
-			return;
+			return $is_Error($data, $group);
 		}
 
-		if(PEAR::isError($data))
-		{
-			echo "Error {$data->code}: {$data->message}".$n."Returning from daytopost.".$n;
-			return "";
-		}
 		// Goal timestamp.
 		$goaldate = date('U')-(86400*$days);
 		$totalnumberofarticles = $data['last'] - $data['first'];
@@ -540,82 +481,45 @@ class Backfill
 		$site = new Sites();
 		$backthread = $site->get()->backfillthreads;
 		$binaries = new Binaries();
-
 		$groupArr = $groups->getByName($group);
-		$nntp = new Nntp();
-		$nntp->doConnect();
-
-		// Connect to server
-		$data = $nntp->selectGroup($groupArr['name']);
-
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
-		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
-		}
-
-		if (PEAR::isError($data))
-		{
-			echo "Error {$data->code}: {$data->message}".$n.$n;
-			$nntp->doQuit();
-            unset($nntp);
-            $nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}".$n;
-				echo "Reconnected but could not select group (bad name?): {$group}".$n;
-				return;
-			}
-		}
 
 		echo 'Processing '.$groupArr['name']." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
-
 		$this->startLoop = microtime(true);
-		$lastId = $binaries->scan($nntp, $groupArr, $last, $first);
+		//let scan handle the connection
+		$lastId = $binaries->scan(null, $groupArr, $last, $first);
 		if ($lastId === false)
 		{
 			//scan failed - skip group
 			return;
 		}
-		$nntp->doQuit();
 	}
 
 	function getFinal($group, $first)
 	{
 		$db = new DB();
-		$nntp = new Nntp();
-		$nntp->doConnect();
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
-		$data = $nntp->selectGroup($groupArr['name']);
+		//let postdate handle the connection
+		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate(null,$first,false,$group)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+		echo "Backfill Safe Threaded on ".$group." completed.\n\n";
+	}
 
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
-		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
-		}
-
+	function is_Error($data, $group, $msg='')
+	{
 		if (PEAR::isError($data))
 		{
-			echo "Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
 			unset($nntp);
+			usleep(100000);
 			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
 				echo "Error {$data->code}: {$data->message}".$n;
-				echo "Reconnected but could not select group (bad name?): {$group}".$n;
 				return;
 			}
+			return $data;
 		}
-		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false,$group)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
-		$nntp->doQuit();
-		echo "Backfill Safe Threaded on ".$data["group"]." completed.\n\n";
 	}
 }
