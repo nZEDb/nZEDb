@@ -10,7 +10,7 @@
 <category>{$site->meta_keywords}</category>
 <image>
 	<url>{$serverroot}{if $site->style != "" && $site->style != "/" && $site->style != 
-"Default"}{$smarty.const.WWW_TOP}/themes/{$site->style}/images/logo.png{else}{$smarty.const.WWW_TOP}/themes/Default/images/logo.png{/if}</url>
+"Default"}/themes/{$site->style}/images/logo.png{else}/themes/Default/images/logo.png{/if}</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
