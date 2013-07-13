@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="{$serverroot}rss-info/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:nZEDb="{$serverroot}rss-info/">
 <channel>
 <atom:link href="{$serverroot}{$smarty.server.REQUEST_URI|escape:"htmlall"|substr:1}" rel="self" type="application/rss+xml" />
 <title>{$site->title|escape}</title>
@@ -110,27 +110,27 @@
 
 
 	{foreach from=$release.category_ids|parray:"," item=cat}
-<newznab:attr name="category" value="{$cat}" />
-	{/foreach}<newznab:attr name="size" value="{$release.size}" />
-	<newznab:attr name="files" value="{$release.totalpart}" />
-	<newznab:attr name="poster" value="{$release.fromname|escape:html}" />
-{if $release.season != ""}	<newznab:attr name="season" value="{$release.season}" />
+<nZEDb:attr name="category" value="{$cat}" />
+	{/foreach}<nZEDb:attr name="size" value="{$release.size}" />
+	<nZEDb:attr name="files" value="{$release.totalpart}" />
+	<nZEDb:attr name="poster" value="{$release.fromname|escape:html}" />
+{if $release.season != ""}	<nZEDb:attr name="season" value="{$release.season}" />
 {/if}
-{if $release.episode != ""}	<newznab:attr name="episode" value="{$release.episode}" />
+{if $release.episode != ""}	<nZEDb:attr name="episode" value="{$release.episode}" />
 {/if}
-{if $release.rageID != "-1" && $release.rageID != "-2"}	<newznab:attr name="rageid" value="{$release.rageID}" />
+{if $release.rageID != "-1" && $release.rageID != "-2"}	<nZEDb:attr name="rageid" value="{$release.rageID}" />
 {/if}
-{if $release.tvtitle != ""}	<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
+{if $release.tvtitle != ""}	<nZEDb:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
 {/if}
-{if $release.tvairdate != ""}	<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
+{if $release.tvairdate != ""}	<nZEDb:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
 {/if}
-{if $release.imdbID != ""}	<newznab:attr name="imdb" value="{$release.imdbID}" />
+{if $release.imdbID != ""}	<nZEDb:attr name="imdb" value="{$release.imdbID}" />
 {/if}
-	<newznab:attr name="grabs" value="{$release.grabs}" />
-	<newznab:attr name="comments" value="{$release.comments}" />
-	<newznab:attr name="password" value="{$release.passwordstatus}" />
-	<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />	
-	<newznab:attr name="group" value="{$release.group_name|escape:html}" />
+	<nZEDb:attr name="grabs" value="{$release.grabs}" />
+	<nZEDb:attr name="comments" value="{$release.comments}" />
+	<nZEDb:attr name="password" value="{$release.passwordstatus}" />
+	<nZEDb:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />	
+	<nZEDb:attr name="group" value="{$release.group_name|escape:html}" />
 		
 </item>
 {/foreach}
