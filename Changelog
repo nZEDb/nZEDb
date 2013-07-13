@@ -1,3 +1,4 @@
+07132013 -> Junkman690 -> readd RSS namespace to make the rss feeds work again. Make it point to nZEDb install for info
 07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
 						moved python lib files
 07092013 -> jonnyboy -> added limit clause when running populate gids from tmux
