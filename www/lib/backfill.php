@@ -74,6 +74,14 @@ class Backfill
 
 		// Compression.
 		$datac = $nntpc->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($datac) && $datac->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($datac))
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
@@ -91,6 +99,14 @@ class Backfill
 
 		// No comp - for interval.
 		$data = $nntp->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($data))
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
@@ -260,6 +276,14 @@ class Backfill
 
 		echo 'Processing '.$groupArr['name'].$n;
 		$data = $nntp->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($data))
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
@@ -363,7 +387,16 @@ class Backfill
 		do
 		{
 			$data = $nntp->selectGroup($group);
+
+			//if server return 411, skip group
+			if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: $group".$n;
+			return;
+		}
+
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
+
 			if(PEAR::isError($msgs))
 			{
 				echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
@@ -376,7 +409,7 @@ class Backfill
 				if(PEAR::isError($msgs))
 				{
 					echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
-					//return false;
+					return false;
             	}
 	        }
 				
@@ -395,6 +428,7 @@ class Backfill
 
 		if (!$success)
 		{
+			echo "Error: $group failed to get Date from NNTP server. Using ".date('Y-m-d h:m:s')." instead".$n;
 			$date = TIME();
 			return $date;
 		}
@@ -416,6 +450,14 @@ class Backfill
 		}
 
 		$data = $nntp->selectGroup($group);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: $group".$n;
+			return;
+		}
+
 		if(PEAR::isError($data))
 		{
 			echo "Error {$data->code}: {$data->message}".$n."Returning from daytopost.".$n;
@@ -505,6 +547,14 @@ class Backfill
 
 		// Connect to server
 		$data = $nntp->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($data))
 		{
 			echo "Error {$data->code}: {$data->message}".$n.$n;
@@ -541,6 +591,14 @@ class Backfill
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		$data = $nntp->selectGroup($groupArr['name']);
+
+		//if server return 411, skip group
+		if (PEAR::isError($data) && $data->code == 411)
+		{
+			echo "Skipping group: {$groupArr['name']}".$n;
+			return;
+		}
+
 		if (PEAR::isError($data))
 		{
 			echo "Error {$data->code}: {$data->message}".$n.$n;

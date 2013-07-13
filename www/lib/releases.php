@@ -2032,8 +2032,7 @@ class Releases
 
 		// misc other
 		if ($page->site->miscotherretentionhours > 0) {
-			$sql = sprintf("select ID, guid from releases where categoryID = %s AND adddate <= CURRENT_DATE - INTERVAL %d HOUR",
-			CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
+			$sql = sprintf("select ID, guid from releases where categoryID = %d AND adddate <= NOW() - INTERVAL %d HOUR", CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
 
 			if ($resrel = $db->query($sql)) {
 				foreach ($resrel as $rowrel)
@@ -2068,6 +2067,7 @@ class Releases
 
 		$tot_retcount = 0;
 		$tot_nzbcount = 0;
+		$loops = 0;
 		do
 		{
 			$retcount = $this->processReleasesStage4($groupID);
@@ -2093,7 +2093,9 @@ class Releases
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
-		} while ($nzbcount > 0 || $retcount > 0);
+			$loops++;
+		//this loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
+		} while ($nzbcount > 0 || $retcount > 0 || $loops < 3);
 
 		return $tot_retcount;
 	}

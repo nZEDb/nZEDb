@@ -37,7 +37,8 @@
 				<td style="width:160px;"><label for="MONITOR_DELAY">Monitor Loop Timer:</label></td>
 				<td>
 					<input id="MONITOR_DELAY" name="MONITOR_DELAY" class="tiny" type="text" value="{$ftmux->MONITOR_DELAY}" />
-					<div class="hint">The time between query refreshes of monitor information, in seconds. The lower the number, the more often it queries the database for numbers.</div>
+					<div class="hint">The time between query refreshes of monitor information, in seconds. This has no effect on any other pane, except in regards to the kill switches. The other panes are checked every 10 seconds. The lower the number, the more often it queries the database for numbers.<br />
+					<b>As the database gets larger in size, the longer this set of queries takes to process.</b> I recommend that you set the sleep timer to at least 5 minutes, if any number in postprocess or total releases exceeds 1 million.</div>
 				</td>
 			</tr>
 
@@ -335,8 +336,8 @@
 			<tr>
 				<td><label for="FIX_CRAP">Remove Crap Releases:</label></td>
 				<td>
-					{html_radios id="FIX_CRAP" name='FIX_CRAP' values=$truefalse_names output=$truefalse_names selected=$ftmux->FIX_CRAP separator='<br />'}
-					<div class="hint">Choose to run Remove Crap Releases true/false</div>
+					{html_options class="siteeditstyle" id="FIX_CRAP" name='FIX_CRAP' values=$fix_crap_ids output=$fix_crap_names selected=$ftmux->FIX_CRAP}
+					<div class="hint">Choose to run Remove Crap Releases. You can all or one.</div>
 				</td>
 			</tr>
 

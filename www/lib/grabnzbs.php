@@ -8,7 +8,6 @@ require_once(WWW_DIR."lib/site.php");
 
 class Import
 {
-
 	function categorize()
 	{
 		$db = new DB();
@@ -27,7 +26,8 @@ class Import
 		$nntp = new Nntp();
 		$nzb = array();
 		$s = new Sites();
-		$grapbnzbs = $s->get()->grabnzbs;
+		$site = $s->get();
+		$grapbnzbs = $site->grabnzbs;
 		if ($grapbnzbs == 1)
 			$_connect = $nntp->doConnect();
 		else
@@ -103,6 +103,7 @@ class Import
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$version = $site->version;
+		$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 
 		$groups = $db->query("SELECT ID, name FROM groups");
 		foreach ($groups as $group)
@@ -152,8 +153,8 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
-						$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
+						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
 					// only check one binary per nzb, they should all be in the same release anyway

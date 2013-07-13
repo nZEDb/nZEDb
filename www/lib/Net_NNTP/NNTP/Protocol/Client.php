@@ -836,7 +836,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	                     'count' => $response_arr[0]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
-    	    	return $this->throwError('No such news group', $response, $this->_currentStatusResponse());
+    	    	return $this->throwError('No such news group on server', $response, $this->_currentStatusResponse());
     	    	break;
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);

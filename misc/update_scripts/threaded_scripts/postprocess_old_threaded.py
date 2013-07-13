@@ -17,6 +17,8 @@ import lib.info as info
 import signal
 import datetime
 
+print("\nPostProcess Old Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -72,6 +74,9 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
+	print("We will be using a max of %s threads, a queue of %s items" % (run_threads[0], "{:,}".format(len(datas))))
+	time.sleep(2)
+
 	def signal_handler(signal, frame):
 		sys.exit(0)
 
@@ -83,8 +88,6 @@ def main(args):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()
-
-	print("\nPostProcess Old Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:

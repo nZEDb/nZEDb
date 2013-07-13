@@ -9,7 +9,7 @@ require_once(WWW_DIR."lib/category.php");
 
 function getReleaseName($md5)
 {
-	return file_get_contents("http://nzbx.ws/decrypt/x0/?hash=" . $md5);
+	return @file_get_contents("http://nzbx.ws/decrypt/x0/?hash=" . $md5);
 }
 
 function isPreDBActive()
@@ -45,7 +45,7 @@ function updaterelease($foundName, $id, $groupname)
 	$cat = new Category();
 
 	$cleanRelName = $foundName;
-	$catid		= $cat->determineCategory($groupname, $foundName);
+	$catid = $cat->determineCategory($groupname, $foundName);
 
 	$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $db->escapeString($cleanRelName), $db->escapeString($cleanRelName), $catid, $id));
 

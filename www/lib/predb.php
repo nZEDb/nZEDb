@@ -319,7 +319,6 @@ Class Predb
 		foreach ($arr as &$value)
 		{
 			$releases = @simplexml_load_file($value);
-			echo $value."\n";
 			if ($releases !== false)
 			{
 				foreach ($releases->channel->item as $release)

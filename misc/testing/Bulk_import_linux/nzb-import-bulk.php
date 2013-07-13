@@ -7,12 +7,16 @@ require_once(WWW_DIR."lib/page.php");
 require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/mysqlBulk.inc.php");
 require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/site.php");
 
 
 $db = new DB();
 $binaries = new Binaries();
 $page = new Page();
 $n = "\n";
+$s = new Sites();
+$site = $s->get();
+$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
@@ -144,9 +148,9 @@ else
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
 				$cleanerName = $usename;
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($subject), $db->escapeString($date), $db->escapeString($date));
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res1 = $db->queryOneRow($dupeCheckSql);
 				// only check one binary per nzb, they should all be in the same release anyway
 				$skipCheck = true;
@@ -155,7 +159,7 @@ else
 				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					@unlink($nzbFile);
+					//@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -165,8 +169,8 @@ else
 			{
 				$usename = $db->escapeString($name);
 				$cleanerName = $namecleaning->releaseCleaner($subject);
-				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
-					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
+				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
+					$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
 				// only check one binary per nzb, they should all be in the same release anyway
@@ -176,7 +180,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					@unlink($nzbFile);
+					//@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -248,7 +252,7 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
- 								@unlink($value);
+ 								//@unlink($value);
 							}
 							unset($filenames);
 							categorize();
