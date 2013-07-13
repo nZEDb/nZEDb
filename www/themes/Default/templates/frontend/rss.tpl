@@ -34,15 +34,23 @@
 	{/if}	
 	{if $release.co_cover == 1}
 		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoID}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+	{/if}
+	{if $release.bo_cover == 1}
+		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoID}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}	
 	<ul>
-	<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a> (Size: {$release.size|fsize_format:"MB"}) </li>
+	<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>
 	<li>Name: {$release.searchname}</li>
-	<li>Attributes: Category - {$release.category_name}</li>
-	<li>Groups: {$release.group_name}</li>
+	<li>Size: {$release.size|fsize_format:"MB"} </li>
+	<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categoryID}">{$release.category_name}</a></li>
+	<li>Groups: <a href="{$serverroot}browse?g={$release.group_name}">{$release.group_name}</a></li>
 	<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 	<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>
 	<li>Password: {if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}</li>
+	
+	{if $release.nfoID != ""}
+		<li>Nfo: <a href="{$serverroot}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}">{$release.searchname}.nfo</a></li>
+	{/if}
 	
 	{if $release.parentCategoryID == 2000}
 		{if $release.imdbID != ""}
@@ -110,8 +118,9 @@
 
 
 	{foreach from=$release.category_ids|parray:"," item=cat}
-<nZEDb:attr name="category" value="{$cat}" />
-	{/foreach}<nZEDb:attr name="size" value="{$release.size}" />
+	<nZEDb:attr name="category" value="{$cat}" />
+	{/foreach}
+	<nZEDb:attr name="size" value="{$release.size}" />
 	<nZEDb:attr name="files" value="{$release.totalpart}" />
 	<nZEDb:attr name="poster" value="{$release.fromname|escape:html}" />
 {if $release.season != ""}	<nZEDb:attr name="season" value="{$release.season}" />
