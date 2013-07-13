@@ -504,7 +504,7 @@ class Backfill
 		echo "Backfill Safe Threaded on ".$group." completed.\n\n";
 	}
 
-	function is_Error($data, $group, $msg='')
+	function is_Error($data, $group)
 	{
 		if (PEAR::isError($data))
 		{
@@ -513,11 +513,20 @@ class Backfill
 			usleep(100000);
 			$nntp = new Nntp;
 			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
+			$data = $nntp->selectGroup($group);
 			if (PEAR::isError($data))
 			{
-				echo "Error {$data->code}: {$data->message}".$n;
-				return;
+				$nntp->doQuit();
+				unset($nntp);
+				usleep(100000);
+				$nntp = new Nntp;
+				$nntp->doConnect();
+				$data = $nntp->selectGroup($group);
+				if (PEAR::isError($data))
+				{
+					echo "Error {$data->code}: {$data->message}".$n;
+					return;
+				}
 			}
 			return $data;
 		}
