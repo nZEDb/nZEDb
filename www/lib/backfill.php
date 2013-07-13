@@ -76,14 +76,14 @@ class Backfill
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if (PEAR::isError($datac))
 		{
-			return $is_Error($datac, $groupArr['name']);
+			return $this->is_Error($datac, $groupArr['name']);
 		}
 
 		// No comp - for interval.
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			return $is_Error($data, $groupArr['name']);
+			return $this->is_Error($data, $groupArr['name']);
 		}
 
 		// Get targetpost based on days target.
@@ -243,7 +243,7 @@ class Backfill
 
 		if (PEAR::isError($data))
 		{
-			return $is_Error($data, $group);
+			return $this->is_Error($data, $group);
 		}
 
 		// Get targetpost based on days target.
@@ -342,7 +342,7 @@ class Backfill
 			$data = $nntp->selectGroup($group);
 			if (PEAR::isError($data))
 			{
-				return $is_Error($data, $group);
+				return $this->is_Error($data, $group);
 			}
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
 			if(PEAR::isError($msgs))
@@ -401,7 +401,7 @@ class Backfill
 		$data = $nntp->selectGroup($group);
 		if (PEAR::isError($data))
 		{
-			return $is_Error($data, $group);
+			return $this->is_Error($data, $group);
 		}
 
 		// Goal timestamp.
@@ -508,7 +508,6 @@ class Backfill
 	{
 		if (PEAR::isError($data))
 		{
-			$nntp->doQuit();
 			unset($nntp);
 			usleep(100000);
 			$nntp = new Nntp;
