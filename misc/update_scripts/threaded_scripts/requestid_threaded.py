@@ -68,6 +68,9 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
+	print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
+	time.sleep(2)
+
 	def signal_handler(signal, frame):
 		sys.exit(0)
 

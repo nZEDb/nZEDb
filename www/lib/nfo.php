@@ -75,7 +75,7 @@ class Nfo
 		else
 		{
 			$res = 0;
-			$pieces = explode("                       ", $releaseToWork);
+			$pieces = explode("           =+=            ", $releaseToWork);
 			$res = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'groupID' => $pieces[2], 'name' => $pieces[3]));
 			$nfocount = 1;
 		}
@@ -92,8 +92,25 @@ class Nfo
 				$guid = $arr['guid'];
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
+
 				$connect;
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
+				if (PEAR::isError($fetchedBinary))
+				{
+					$groupName = $groups->getByNameByID($groupID);
+					$nntp->doQuit();
+					unset($nntp);
+					$nntp = new Nntp;
+					$connect;
+					$data = $nntp->selectGroup($groupName);
+					$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+					if (PEAR::isError($fetchedBinary))
+					{
+						echo $n.$n."Error {$fetchedBinary->code}: {$fetchedBinary->message}".$n.$n;
+						return;
+					}
+				}
+
 				if ($fetchedBinary !== false)
 				{
 					//insert nfo into database

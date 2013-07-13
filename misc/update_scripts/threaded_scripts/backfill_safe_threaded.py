@@ -19,6 +19,8 @@ import lib.info as info
 import datetime
 import math
 
+print("\nBackfill Safe Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -114,8 +116,6 @@ if ((datas[1] - first) > (backfill_qty * run_threads)):
 	geteach = math.ceil((backfill_qty * run_threads) / maxmssgs)
 else:
 	geteach = int((datas[1] - first) / maxmssgs)
-print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
-time.sleep(1)
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -144,6 +144,9 @@ class queue_runner(threading.Thread):
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
+
+	print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+	time.sleep(2)
 
 	def signal_handler(signal, frame):
 		sys.exit(0)

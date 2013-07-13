@@ -25,9 +25,10 @@ class Nntp extends Net_NNTP_Client
 		unset($s);
 		unset($site);
 
-		$retries = 5;
+		$retries = 10;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';

@@ -159,7 +159,7 @@ else
 				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					@unlink($nzbFile);
+					//@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -180,7 +180,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					@unlink($nzbFile);
+					//@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -252,7 +252,7 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
- 								@unlink($value);
+ 								//@unlink($value);
 							}
 							unset($filenames);
 							categorize();
