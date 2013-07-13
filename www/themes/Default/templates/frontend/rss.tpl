@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="{$serverroot}rss-info/">
 <channel>
 <atom:link href="{$serverroot}{$smarty.server.REQUEST_URI|escape:"htmlall"|substr:1}" rel="self" type="application/rss+xml" />
 <title>{$site->title|escape}</title>
@@ -9,8 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{$serverroot}{if $site->style != "" && $site->style != "/" && $site->style != 
-"Default"}/themes/{$site->style}/images/logo.png{else}/themes/Default/images/logo.png{/if}</url>
+	<url>{$serverroot}themes/{if $site->style != "" && $site->style != "/" && $site->style != "Default"}{$site->style}/images/logo.png{else}Default/images/logo.png{/if}</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
