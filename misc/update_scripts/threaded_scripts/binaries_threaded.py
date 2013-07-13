@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -23,7 +23,7 @@ conf = info.readConfig()
 
 #create the connection to mysql
 con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
+con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
 cur = con.cursor()
 
 #get active groups
@@ -54,7 +54,7 @@ class queue_runner(threading.Thread):
 
 		while True:
 			try:
-				my_id = self.my_queue.get(True, 1)
+				my_id = self.my_queue.get(True, .5)
 			except:
 				if time.time() - time_of_last_run > 3:
 					return
@@ -73,15 +73,15 @@ def main():
 		sys.exit(0)
 
 	signal.signal(signal.SIGINT, signal_handler)
-	
+
 	if True:
-		#spawn a pool of place worker threads
+		#spawn a pool of worker threads
 		for i in range(int(run_threads[0])):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			#p.setDaemon(False)
 			p.start()
 
-	print("\nUpdate Binaries Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nUpdate Binaries Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
@@ -89,8 +89,8 @@ def main():
 
 	my_queue.join()
 
+	print("\nUpdate Binaries Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	
 if __name__ == '__main__':
 	main()
-
-print("\nUpdate Binaries Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

@@ -78,6 +78,8 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntpc->doQuit();
+			unset($nntpc);
+			$nntpc = new Nntp;
 			$nntpc->doConnect();
 			$datac = $nntpc->selectGroup($groupArr['name']);
 			if (PEAR::isError($datac))
@@ -93,7 +95,9 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
-			$nntp->doConnect();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnectNC();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
@@ -112,16 +116,10 @@ class Backfill
 			return;
 		}
 
-		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
-				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
-				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
-				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
-
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+50000)
 		{
-			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
+			echo "We have hit the maximum we can backfill for this ".$groupArr['name'].", disabling it.".$n.$n;
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return "";
@@ -132,6 +130,12 @@ class Backfill
 			echo "Nothing to do, we already have the target post".$n.$n;
 			return "";
 		}
+
+		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
+				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
+				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE))/86400)).
+				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
 
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
@@ -149,7 +153,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".(number_format($last-$first+1))." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).".$n;
+			echo "Getting ".(number_format($last-$first+1))." articles from ".$data["group"].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
@@ -260,6 +264,8 @@ class Backfill
 		{
 			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
@@ -274,6 +280,28 @@ class Backfill
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
 
+		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
+		{
+			echo "You need to run update_binaries on the ".$data['group'].". Otherwise the group is dead, you must disable it.".$n;
+			return "";
+		}
+		
+		// Check if we are grabbing further than the server has.
+		if($groupArr['first_record'] <= $data['first']+50000)
+		{
+			echo "We have hit the maximum we can backfill for ".$data['group'].", disabling it.".$n.$n;
+			$groups = new Groups();
+			$groups->disableForPost($groupArr['name']);
+			return "";
+		}
+
+		// If our estimate comes back with stuff we already have, finish.
+		if($targetpost >= $groupArr['first_record'])
+		{
+			echo "Nothing to do, we already have the target post".$n.$n;
+			return "";
+		}
+
 		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
 				((int) (($this->postdate($nntp,$data['last'],FALSE) - $this->postdate($nntp,$data['first'],FALSE))/86400)).
 				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
@@ -281,25 +309,6 @@ class Backfill
 				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE))/86400)).$n.
 				" days old).".$n;
 
-		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
-		{
-			echo "You need to run update_binaries on the group. Otherwise the group is dead, you must disable it.".$n;
-			return "";
-		}
-		// Check if we are grabbing further than the server has.
-		if($groupArr['first_record'] <= $data['first']+50000)
-		{
-			echo "We have hit the maximum we can backfill for this group, disabling it.".$n.$n;
-			$groups = new Groups();
-			$groups->disableForPost($groupArr['name']);
-			return "";
-		}
-		// If our estimate comes back with stuff we already have, finish.
-		if($targetpost >= $groupArr['first_record'])
-		{
-			echo "Nothing to do, we already have the target post".$n.$n;
-			return "";
-		}
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -316,7 +325,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".($last-$first+1)." articles from ".str_replace('alt.binaries','a.b',$data["group"]).", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
+			echo "Getting ".($last-$first+1)." articles from ".$data["group"].", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
@@ -340,7 +349,7 @@ class Backfill
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-		echo "Group processed in ".$timeGroup." seconds.".$n;
+		echo $data["group"]." processed in ".$timeGroup." seconds.".$n;
 		// Increment the backfil target date.
 	}
 
@@ -357,8 +366,17 @@ class Backfill
 			if(PEAR::isError($msgs))
 			{
 				echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
-				return "";
-			}
+				$nntp->doQuit();
+				unset($nntp);
+				$nntp = new Nntp;
+				$nntp->doConnect();
+				$msgs = $nntp->getOverview($post."-".$post,true,false);
+				if(PEAR::isError($msgs))
+				{
+					echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
+					return false;
+            	}
+	        }
 
 			if(!isset($msgs[0]['Date']) || $msgs[0]['Date']=="" || is_null($msgs[0]['Date']))
 			{
@@ -486,21 +504,17 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			echo "Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
+            unset($nntp);
+            $nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Problem with the usenet connection, attemping to reconnect.".$n;
-				$nntp->doQuit();
-				$nntp->doConnect();
-				$data = $nntp->selectGroup($groupArr['name']);
-				if (PEAR::isError($data))
-				{
-					echo "Reconnected but could not select group (bad name?): {$group}".$n;
-					return;
-				}
+				echo "Error {$data->code}: {$data->message}".$n;
+				echo "Reconnected but could not select group (bad name?): {$group}".$n;
+				return;
 			}
 		}
 
@@ -524,8 +538,23 @@ class Backfill
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data))
+		{
+			echo "Error {$data->code}: {$data->message}".$n.$n;
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data))
+			{
+				echo "Error {$data->code}: {$data->message}".$n;
+				echo "Reconnected but could not select group (bad name?): {$group}".$n;
+				return;
+			}
+		}
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false)."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 		$nntp->doQuit();
-		echo "Backfill Safe Threaded on ".str_replace('alt.binaries','a.b',$data["group"])." completed.\n\n";
+		echo "Backfill Safe Threaded on ".$data["group"]." completed.\n\n";
 	}
 }

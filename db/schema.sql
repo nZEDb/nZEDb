@@ -80,6 +80,9 @@ CREATE TABLE `releases`
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
+`relstatus` TINYINT(4) NOT NULL DEFAULT 0,
+`reqidstatus` TINYINT(1) NOT NULL DEFAULT '0',
+`nzb_guid` VARCHAR(50) NULL,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -93,6 +96,8 @@ CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
 CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
 CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
+CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
+CREATE INDEX ix_releases_reqidstatus ON `releases`(`reqidstatus` ASC) USING HASH ;
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -1025,7 +1030,12 @@ INSERT INTO `site`
 	('postthreadsnon', '1'),
 	('currentppticket', '0'),
 	('nextppticket', '0'),
-	('sqlpatch','87');
+	('segmentstodownload', '2'),
+	('ffmpeg_duration', '5'),
+	('ffmpeg_image_time', '5'),
+	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('lookup_reqids', '1'),
+	('sqlpatch','94');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1282,12 +1292,12 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('NICENESS','19'),
 	('BINARIES','FALSE'),
 	('BACKFILL','0'),
-	('IMPORT','FALSE'),
+	('IMPORT','0'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
 	('SEQUENTIAL','FALSE'),
 	('NFOS','FALSE'),
-	('POST','FALSE'),
+	('POST','0'),
 	('RELEASES','FALSE'),
 	('RELEASES_THREADED','FALSE'),
 	('FIX_NAMES','FALSE'),

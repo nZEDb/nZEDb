@@ -13,7 +13,7 @@ except ImportError:
 	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import info
+import lib.info as info
 import signal
 import datetime
 
@@ -23,7 +23,7 @@ conf = info.readConfig()
 
 #create the connection to mysql
 con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']))
+con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
 cur = con.cursor()
 
 #get values from db
@@ -57,9 +57,9 @@ elif intbackfilltype == 2:
 
 #query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
-	cur.execute("%s %s" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
+	cur.execute("%s %s" % ("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
-	cur.execute("%s %s %s %s %s %d" %("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
+	cur.execute("%s %s %s %s %s %d" % ("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
 datas = cur.fetchall()
 if not datas:
 	print("No Groups enabled for backfill")
@@ -109,19 +109,19 @@ def main(args):
 		#spawn a pool of place worker threads
 		for i in range(run_threads):
 			p = queue_runner(my_queue)
-			p.setDaemon(True)
+			p.setDaemon(False)
 			p.start()
 
-	print("\nBackfill Threaded Started at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nBackfill Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		my_queue.put("%s %s" %(gnames[0], type))
+		my_queue.put("%s %s" % (gnames[0], type))
 
 	my_queue.join()
 
+	print("\nBackfill Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+
 if __name__ == '__main__':
 	main(sys.argv[1:])
-
-print("\nBackfill Threaded Completed at %s" %(datetime.datetime.now().strftime("%H:%M:%S")))
-print("Running time: %s" %(str(datetime.timedelta(seconds=time.time() - start_time))))

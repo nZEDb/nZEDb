@@ -1,13 +1,13 @@
 <?php
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/binaries.php");
-require_once(FS_ROOT."/../../../www/lib/page.php");
-require_once(FS_ROOT."/../../../www/lib/category.php");
-require_once(FS_ROOT."/../../../www/lib/mysqlBulk.inc.php");
-require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
+require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(WWW_DIR."lib/framework/db.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/mysqlBulk.inc.php");
+require_once(WWW_DIR."lib/namecleaning.php");
+
 
 $db = new DB();
 $binaries = new Binaries();
@@ -17,9 +17,19 @@ $n = "\n";
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
 
+if (!isset($argv[2]))
+{
+	$pieces = explode(" ", $argv[1]);
+	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
+	$path = $pieces[0];
+}
+else
+{
+	$path = $argv[1];
+	$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
+}
+
 $filestoprocess = Array();
-$path = $argv[1];
-$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 
 if (substr($path, strlen($path) - 1) != '/')
 	$path = $path."/";
@@ -29,7 +39,7 @@ $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
 
-function categorize() 
+function categorize()
 {
 	$db = new DB();
 	$cat = new Category();
@@ -125,26 +135,27 @@ else
 			$postdate[] = $date;
 			$subject = $firstname['0'];
 			$namecleaning = new nameCleaning();
-			$cleanerName = $namecleaning->releaseCleaner($subject);
 
 			// make a fake message object to use to check the blacklist
 			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
 			// if the release is in our DB already then don't bother importing it
-			if ($usenzbname and $skipCheck !== true)
+			if ($usenzbname && $skipCheck !== true)
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
-					$db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
+				$cleanerName = $usename;
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
-
+				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($subject), $db->escapeString($date), $db->escapeString($date));
+				$res1 = $db->queryOneRow($dupeCheckSql);
 				// only check one binary per nzb, they should all be in the same release anyway
 				$skipCheck = true;
 
 				// if the release is in the DB already then just skip this whole procedure
-				if ($res !== false)
+				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -153,7 +164,8 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
-				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
+				$cleanerName = $namecleaning->releaseCleaner($subject);
+				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
 					$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
@@ -164,7 +176,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -172,10 +184,10 @@ else
 			}
 			//groups
 			$groupArr = array();
-			foreach($file->groups->group as $group) 
+			foreach($file->groups->group as $group)
 			{
 				$group = (string)$group;
-				if (array_key_exists($group, $siteGroups)) 
+				if (array_key_exists($group, $siteGroups))
 				{
 					$groupID = $siteGroups[$group];
 				}
@@ -188,13 +200,13 @@ else
 			}
 			if ($groupID != -1 && !$isBlackListed)
 			{
-				if ($usenzbname) 
+				if ($usenzbname)
 				{
 						$usename = str_replace('.nzb', '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0)
 				{
-					foreach($file->segments->segment as $segment) 
+					foreach($file->segments->segment as $segment)
 					{
 						$size = $segment->attributes()->bytes;
 						$totalsize = $totalsize+$size;
@@ -221,7 +233,7 @@ else
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
 
-			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
+			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
 			if($nzb->copyNZBforImport($relguid, $nzbFile))
 			{
 				if ( $nzbCount % 100 == 0)
@@ -231,12 +243,12 @@ else
 						if (false === (mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
 						{
 							trigger_error('mysqlBulk failed!', E_USER_ERROR);
-						} 
+						}
 						else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
- 								unlink($value);
+ 								@unlink($value);
 							}
 							unset($filenames);
 							categorize();
@@ -247,7 +259,7 @@ else
 							echo $n."\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m".$n;
 						}
 					}
-					else 
+					else
 					{
 						echo $n."Prepared #".$nzbCount." for import in ".relativeTime($time)."\t";
 					}

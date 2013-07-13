@@ -40,11 +40,12 @@ class NZB
 			if ($name != "")
 				gzwrite($fp, " <meta type=\"name\">".htmlspecialchars($name, ENT_QUOTES, 'utf-8')."</meta>\n");
 			gzwrite($fp, "</head>\n\n");
+			$nzb_guid = "";
 
 			$result = $db->queryDirect(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
 			while ($binrow = $db->fetchAssoc($result))
 			{
-				$result2 = $db->queryDirect(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d", $binrow["ID"]));
+				$result2 = $db->queryDirect(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d order by name", $binrow["ID"]));
 				while ($binrow2 = $db->fetchAssoc($result2))
 				{
 					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$binrow["unixdate"]."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalParts"].")\">\n");
@@ -56,6 +57,9 @@ class NZB
 					$resparts = $db->queryDirect(sprintf("SELECT DISTINCT(messageID), size, partnumber FROM parts WHERE binaryID = %d ORDER BY partnumber", $binrow2["ID"]));
 					while ($partsrow = $db->fetchAssoc($resparts))
 					{
+						if ($nzb_guid == "")
+							$nzb_guid = $partsrow["messageID"];
+							
 						gzwrite($fp, "  <segment bytes=\"".$partsrow["size"]."\" number=\"".$partsrow["partnumber"]."\">".htmlspecialchars($partsrow["messageID"], ENT_QUOTES, 'utf-8')."</segment>\n");
 					}
 					gzwrite($fp, " </segments>\n</file>\n");
@@ -66,7 +70,7 @@ class NZB
 			if (file_exists($path))
 			{
 				chmod($path, 0777); // change the chmod to fix issues some users have with file permissions
-				return true;
+				return $nzb_guid;
 			}
 			else
 			{

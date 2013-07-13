@@ -20,7 +20,7 @@ class MiscSorter {
 		'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
 
 		$this->echooutput = $echooutput;
-		$this->qty = 1000;
+		$this->qty = 100;
 		$this->DEBUGGING = false;
 
 		$this->db = new DB($this->echooutput);
@@ -160,7 +160,7 @@ class MiscSorter {
 				$r[$i++] = $m;
 			} else if (isset($r[$x]))
 			{
-				$r[$x + rand(0,100)/100] = $m;
+				$r[$x + mt_rand(0,100)/100] = $m;
 			} else {
 				$r[$x] = $m;
 			}
@@ -816,8 +816,8 @@ echo "asin ".$set[1]."\n";
 		}
 
 		$query = "SELECT uncompress(releasenfo.nfo) AS nfo, releases.ID, releases.guid, releases.`fromname`, releases.`name`,
-	releases.searchname, groups.`name` AS gname, releases.groupID, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
-	releases.ID INNER JOIN groups ON releases.groupID = groups.ID WHERE releases.ID in ($this->idarr) order by RAND()";
+					releases.searchname, groups.`name` AS gname, releases.groupID, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
+					releases.ID INNER JOIN groups ON releases.groupID = groups.ID WHERE releases.ID in ($this->idarr) order by RAND()";
 
 		$res = $this->db->queryDirect($query);
 		if (strlen($this->idarr) > 0)
@@ -893,7 +893,7 @@ echo "asin ".$set[1]."\n";
 		}
 
 		$res = $this->db->queryDirect($query);
-echo "$query\n";
+//echo "$query\n";
 		echo "doing nzb music files match\n";
 		while ($row =  $this->db->fetchAssoc($res))
 		{

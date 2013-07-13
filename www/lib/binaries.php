@@ -24,7 +24,7 @@ class Binaries
 		$this->NewGroupScanByDays = ($site->newgroupscanmethod == "1") ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
-		$this->DoPartRepair = ($site->partrepair == "0") ? false : true;
+		$this->DoPartRepair = ($site->partrepair == "0" || $site->partrepair == "2") ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->debug = ($site->debuginfo == "0") ? false : true;
@@ -55,18 +55,14 @@ class Binaries
 			$alltime = microtime(true);
 			echo $n.'Updating: '.sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No').$n;
 
-			$nntp = new Nntp();
-			$nntp->doConnect();
-
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
 				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
-				$this->updateGroup($nntp, $groupArr);
+				$this->updateGroup($groupArr);
 				$counter++;
 			}
 
-			$nntp->doQuit();
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
 		}
 		else
@@ -75,18 +71,14 @@ class Binaries
 		}
 	}
 
-	function updateGroup($nntp, $groupArr)
+	function updateGroup($groupArr)
 	{
 		$db = new DB();
 		$backfill = new Backfill();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			$nntp->doConnect();
-		}
+		$nntp = new Nntp();
+		$nntp->doConnect();
 
 		echo 'Processing '.$groupArr['name'].$n;
 
@@ -94,12 +86,15 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
+			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -179,7 +174,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 
-				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".str_replace('alt.binaries','a.b',$data["group"])." - ".number_format($grouplast - $last)." in queue".$n;
+				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue".$n;
 				flush();
 
 				//get headers from newsgroup
@@ -201,7 +196,7 @@ class Binaries
 			$last_record_postdate = $backfill->postdate($nntp,$last,false);
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));	//Set group's last postdate
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo str_replace('alt.binaries','a.b',$data["group"])." processed in $timeGroup seconds $n $n";
+			echo $data["group"]." processed in $timeGroup seconds $n $n";
 		}
 		else
 		{
@@ -217,7 +212,11 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 		$n = $this->n;
-		$nntp->doConnect();
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			$nntp->doConnect();
+		}
 		$this->startHeaders = microtime(true);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
@@ -228,10 +227,34 @@ class Binaries
 		if (PEAR::isError($msgs) && $msgs->code == 400)
 		{
 			echo "NNTP connection timed out. Reconnecting...$n";
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
 			$nntp->doConnect();
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
 		}
+
+		if (PEAR::isError($msgs) && $msgs->code == 412)
+		{
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$nntp->selectGroup($groupArr['name']);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
+		}
+		if (PEAR::isError($msgs) && $msgs->code == 1000)
+		{
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$nntp->selectGroup($groupArr['name']);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
+		}
+		//if(PEAR::isError($msgs))
+			//echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
 
 		$rangerequested = range($first, $last);
 		$msgsreceived = array();
@@ -312,7 +335,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs == 1)
+					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs != 0)
 					{
 						$nzbparts = 0;
 						$totalparts = 1;
@@ -353,7 +376,7 @@ class Binaries
 				{
 					case 'backfill':
 						//don't add missing articles
-					break;
+						break;
 					case 'partrepair':
 					case 'update':
 					default:
@@ -488,18 +511,26 @@ class Binaries
 		}
 	}
 
-	private function partRepair($nntp, $groupArr)
+	public function partRepair($nntp, $groupArr, $groupID='', $partID='')
 	{
 		$n = $this->n;
+		$groups = new Groups();
 
 		// Get all parts in partrepair table.
 		$db = new DB();
-		$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
+		if ($partID=='')
+			$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupID = %d AND attempts < 5 ORDER BY numberID ASC LIMIT %d", $groupArr['ID'], $this->partrepairlimit));
+		else
+		{
+			$groupArr = $groups->getByID($groupID);
+			$missingParts = array(array('numberID' => $partID, 'groupID' => $groupArr['ID']));
+		}
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0)
 		{
-			echo 'Attempting to repair '.sizeof($missingParts).' parts...'.$n;
+			if ($partID=='')
+				echo "Attempting to repair ".sizeof($missingParts)." parts...".$n;
 
 			// Loop through each part to group into ranges.
 			$ranges = array();
@@ -524,7 +555,13 @@ class Binaries
 				$this->startLoop = microtime(true);
 
 				$num_attempted += $partto - $partfrom + 1;
-				$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
+				if ($partID=='')
+				{
+					echo $n;
+					$consoleTools->overWrite("Attempting repair: ".$consoleTools->percentString($num_attempted,sizeof($missingParts)).": ".$partfrom." to ".$partto);
+				}
+				else
+					echo "Attempting repair: ".$partfrom.$n;
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair');
@@ -553,8 +590,8 @@ class Binaries
 				}
 			}
 
-			echo $n;
-
+			if ($partID=='')
+				echo $n;
 			echo $partsRepaired.' parts repaired.'.$n;
 		}
 
