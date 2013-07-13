@@ -1,4 +1,5 @@
-07132013 -> jonnyboy -> typos
+07132013 -> jonnyboy -> fixed type errors
+						typos
 						cleanup backfill.php
 07132013 -> Junkman690 -> readd RSS namespace to make the rss feeds work again. Make it point to nZEDb install for info
 07122013 -> jonnyboy -> added NNTP error checking in postprocess and nfo

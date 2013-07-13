@@ -112,9 +112,9 @@ class Backfill
 		}
 
 		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
-				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE.$groupArr['name']))/86400)).
+				(($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE.$groupArr['name']))/86400).
 				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
+				((int)((int) (date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
 
 		// Calculate total number of parts.
@@ -133,7 +133,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".(number_format($last-$first+1))." articles from ".$data["group"].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).".$n;
+			echo $n."Getting ".(number_format($last-$first+1))." articles from ".$data["group"].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
@@ -243,7 +243,7 @@ class Backfill
 
 		if (PEAR::isError($data))
 		{
-			return $this->is_Error($data, $group);
+			return $this->is_Error($data, $groupArr['name']);
 		}
 
 		// Get targetpost based on days target.
@@ -274,10 +274,11 @@ class Backfill
 		}
 
 		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
-				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
+				(($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400).
 				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
-				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).$n.
+				((int) ((int) (date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
+				" days old). Our backfill target is article ".number_format($targetpost).
+				" which is (".((int) ((int) (date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).
 				" days old).".$n;
 
 		// Calculate total number of parts.
@@ -296,11 +297,11 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".($last-$first+1)." articles from ".$data["group"].", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
+			echo $n."Getting ".($last-$first+1)." articles from ".$data["group"].", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).".$n;
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
-			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false,$groupArr['name'])."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(%d), first_record = %s, last_updated = now() WHERE ID = %d", $this->postdate($nntp,$first,false,$groupArr['name']), $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -314,10 +315,9 @@ class Backfill
 				}
 			}
 		}
-		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
 		$nntp->doQuit();
 		// Set group's first postdate.
-		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
+		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(%d), last_updated = now() WHERE ID = %d", $this->postdate($nntp,$first,false,$groupArr['name']), $groupArr['ID']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo $data["group"]." processed in ".$timeGroup." seconds.".$n;
@@ -377,13 +377,15 @@ class Backfill
 
 		if (!$success)
 		{
-			echo "Error: $group failed to get Date from NNTP server. Using ".date('Y-m-d h:m:s')." instead".$n;
-			$date = TIME();
+			echo $n."Error: $group failed to get Date from NNTP server.".$n;
+			//use now - 365 days
+			$date = TIME() - 31536000;
 			return $date;
 		}
 
 		if($debug) echo "DEBUG: postdate for post: .".$post." came back ".$date." (";
 		$date = strtotime($date);
+			
 		if($debug) echo $date." seconds unixtime or ".$this->daysOld($date)." days)".$n;
 		return $date;
 	}
@@ -506,6 +508,7 @@ class Backfill
 
 	function is_Error($data, $group)
 	{
+		$n = $this->n;
 		if (PEAR::isError($data))
 		{
 			unset($nntp);
@@ -524,7 +527,7 @@ class Backfill
 				if (PEAR::isError($data))
 				{
 					echo "Error {$data->code}: {$data->message}".$n;
-					return;
+					return false;
 				}
 			}
 			return $data;
