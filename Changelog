@@ -1,4 +1,5 @@
-07142013 -> jonnyboy -> changed default user view to list view
+07142013 -> jonnyboy -> reverted last
+						changed default user view to list view
 						updated rarinfo libs
 						added additional monitor paths in tmux - request
 						added limit to requestID per run
