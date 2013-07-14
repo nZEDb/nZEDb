@@ -1,3 +1,6 @@
+07142013 -> jonnyboy -> added limit to requestID per run
+						added powerline segment for NNTP connections - ThePeePs
+						added lines to monitor to show NNTP connections - Mike1
 07132013 -> jonnyboy -> gave GrabNZBs its own thread count
 						fixed type errors
 						typos

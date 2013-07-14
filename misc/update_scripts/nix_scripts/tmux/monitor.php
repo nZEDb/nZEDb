@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2799";
+$version="0.1r2800";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -294,9 +294,10 @@ $mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
+printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
+if ($alternate_nntp_provider == "1")
+	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
 printf($mask1, "Newest Release:", "$newestname");
-printf($mask1, "USP Connections:", $usp1activeconnections." (".$usp1totalconnections.")");
-printf($mask1, "USP Alternate:", $usp2activeconnections." (".$usp2totalconnections.")");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
@@ -526,20 +527,27 @@ while( $i > 0 )
 	}
 
 	//get usenet connections
-	$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT." | grep -c ESTAB"));
-	$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT.""));
-
-	$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT_A." | grep -c ESTAB"));
-	$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT_A.""));
+	if ($alternate_nntp_provider == "1")
+	{
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER.":".NNTP_PORT." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER.":".NNTP_PORT.""));
+		$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER_A.":".NNTP_PORT_A." | grep -c ESTAB"));
+		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER_A.":".NNTP_PORT_A.""));
+	} else {
+	
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT.""));
+	}
 
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
-	printf($mask1, "Newest Release:", "$newestname");
-	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used)");
+	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
 	if ($alternate_nntp_provider == "1")
-	    printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used)");
+		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
+
+	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
@@ -733,7 +741,42 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 		}
 
-		if (( $post != "0" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
+		if (( $post == "1" ) && ( $work_remaining_now > 0))
+		{
+			//run postprocess_releases additional
+			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
+			if ( $last_history != $history )
+			{
+				$last_history = $history;
+				$time2 = TIME();
+			}
+			else
+			{
+				if ( TIME() - $time2 >= $post_kill_timer )
+				{
+					shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
+					$wipe = `tmux clearhist -t${tmux_session}:2.0`;
+					$color = get_color($colors_start, $colors_end, $colors_exc);
+					$time2 = TIME();
+				}
+			}
+			$dead1 = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l` );
+			if ( $dead1 == 1 )
+				$time2 = TIME();
+			$log = writelog($panes2[0]);
+			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+					rm -rf $tmpunrar/*; \
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		elseif (( $post == "2" ) && ( $nfo_remaining_now > 0))
+		{
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			$log = writelog($panes2[0]);
+			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+					rm -rf $tmpunrar/*; \
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
 		{
 			//run postprocess_releases additional
 			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );

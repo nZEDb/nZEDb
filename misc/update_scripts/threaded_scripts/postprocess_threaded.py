@@ -52,9 +52,6 @@ tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 
-if posttorun == 0 and postnon == "FALSE":
-	sys.exit()
-
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
