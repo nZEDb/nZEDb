@@ -112,9 +112,9 @@ class Backfill
 		}
 
 		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
-				(($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE.$groupArr['name']))/86400).
+				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE.$groupArr['name']))/86400)).
 				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
-				((int)((int) (date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
 
 		// Calculate total number of parts.
@@ -274,11 +274,10 @@ class Backfill
 		}
 
 		echo "Group ".$data["group"]."'s oldest article is ".number_format($data['first']).", newest is ".number_format($data['last']).". The groups retention is: ".
-				(($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400).
+				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
 				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
-				((int) ((int) (date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
-				" days old). Our backfill target is article ".number_format($targetpost).
-				" which is (".((int) ((int) (date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
+				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).$n.
 				" days old).".$n;
 
 		// Calculate total number of parts.
@@ -301,7 +300,7 @@ class Backfill
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
-			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(%d), first_record = %s, last_updated = now() WHERE ID = %d", $this->postdate($nntp,$first,false,$groupArr['name']), $db->escapeString($first), $groupArr['ID']));
+			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false,$groupArr['name'])."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -315,9 +314,10 @@ class Backfill
 				}
 			}
 		}
+		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
 		$nntp->doQuit();
 		// Set group's first postdate.
-		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(%d), last_updated = now() WHERE ID = %d", $this->postdate($nntp,$first,false,$groupArr['name']), $groupArr['ID']));
+		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo $data["group"]." processed in ".$timeGroup." seconds.".$n;

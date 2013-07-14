@@ -7,7 +7,6 @@ require_once(WWW_DIR."lib/tmux.php");
 if (isset($argv[1]))
 {
 	$pieces = explode(" ", $argv[1]);
-	echo $pieces[0]."\n";
 	if (isset($pieces[1]) && $pieces[1] == 1)
 	{
 		$backfill = new Backfill();
