@@ -31,10 +31,10 @@ switch($action)
 				$user = array();
 				$user["role"] = $defaultrole;
 				$user["invites"] = $defaultinvites;
-				$user["movieview"] = "1";
-				$user["musicview"] = "1";
-				$user["consoleview"] = "1";
-				$user["bookview"] = "1";
+				$user["movieview"] = "0";
+				$user["musicview"] = "0";
+				$user["consoleview"] = "0";
+				$user["bookview"] = "0";
 				$page->smarty->assign('user', $user);	
 
 			break;

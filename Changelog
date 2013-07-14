@@ -1,4 +1,5 @@
-07142013 -> jonnyboy -> updated rarinfo libs
+07142013 -> jonnyboy -> changed default user view to list view
+						updated rarinfo libs
 						added additional monitor paths in tmux - request
 						added limit to requestID per run
 						added powerline segment for NNTP connections - ThePeePs
