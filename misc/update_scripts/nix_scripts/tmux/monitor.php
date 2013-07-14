@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2800";
+$version="0.1r2801";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -83,6 +83,8 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from tmux where setting = 'MONITOR_PATH_A' ) AS monitor_path_a,
+	( SELECT value from tmux where setting = 'MONITOR_PATH_B' ) AS monitor_path_b,
 	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
 	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
@@ -445,8 +447,15 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['post'] != NULL ) { $post = $proc_tmux_result[0]['post']; }
 	if ( @$proc_tmux_result[0]['releases_run'] != NULL ) { $releases_run = $proc_tmux_result[0]['releases_run']; }
 	if ( @$proc_tmux_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
-	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
 	if ( @$proc_tmux_result[0]['dehash'] != NULL ) { $dehash = $proc_tmux_result[0]['dehash']; }
+
+	//reset monitor paths before query
+	$monitor_path = "";
+	$monitor_path_a = "";
+	$monitor_path_b = "";
+	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
+	if ( @$proc_tmux_result[0]['monitor_path_a'] != NULL ) { $monitor_path_a = $proc_tmux_result[0]['monitor_path_a']; }
+	if ( @$proc_tmux_result[0]['monitor_path_b'] != NULL ) { $monitor_path_b = $proc_tmux_result[0]['monitor_path_b']; }
 
 	if ( @$proc_tmux_result[0]['debug'] != NULL ) { $debug = $proc_tmux_result[0]['debug']; }
 	if ( @$proc_tmux_result[0]['post_amazon'] != NULL ) { $post_amazon = $proc_tmux_result[0]['post_amazon']; }
@@ -563,18 +572,42 @@ while( $i > 0 )
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), "~".number_format($parts_table));
 
-	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
+	if ((( isset( $monitor_path )) && ( file_exists( $monitor_path ))) || (( isset( $monitor_path_a )) && ( file_exists( $monitor_path_a ))) || (( isset( $monitor_path_b )) && ( file_exists( $monitor_path_b ))))
+	{
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
 		printf($mask, "====================", "=========================", "====================");
 		printf("\033[38;5;214m");
-		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
-		$disk_free = decodeSize( disk_free_space($monitor_path) );
-		if ( basename($monitor_path) == "" )
-			$show = "/";
-		else
-			$show = basename($monitor_path);
-		printf($mask, $show, $disk_use, $disk_free);
+		if ( isset( $monitor_path ) && $monitor_path != "" && file_exists( $monitor_path ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
+			$disk_free = decodeSize( disk_free_space($monitor_path) );
+			if ( basename($monitor_path) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
+		if ( isset( $monitor_path_a ) && $monitor_path_a != "" && file_exists( $monitor_path_a ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a) );
+			$disk_free = decodeSize( disk_free_space($monitor_path_a) );
+			if ( basename($monitor_path_a) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path_a);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
+		if ( isset( $monitor_path_b ) && $monitor_path_b != "" && file_exists( $monitor_path_b ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b) );
+			$disk_free = decodeSize( disk_free_space($monitor_path_b) );
+			if ( basename($monitor_path_b) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path_b);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
 	}
 
 	printf("\033[1;33m\n");

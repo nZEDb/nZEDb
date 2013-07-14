@@ -22,7 +22,7 @@ run_segment() {
 		altcount=$(ss -n | awk '{printf"%s %s\n",$1,$5}' | egrep "$grepausp" | grep -c ${uspsetting[3]})
 
 	# Print results to powerline.
-		echo "MainUSP: $maincount, AltUSP: $altcount"
+		echo "MainUSP: $altcount, AltUSP: $maincount"
 	else
 		echo "MainUSP: $maincount"
 	fi

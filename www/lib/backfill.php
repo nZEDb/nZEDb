@@ -73,10 +73,19 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		// Compression.
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp;
+			$nntp->doConnectNC();
+		}
+		if (!isset($nntpc))
+		{
+			$nntp = new Nntp;
+			$nntp->doConnect();
+		}
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if (PEAR::isError($datac))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntpc->doQuit();
 			unset($nntpc);
 			$nntpc = new Nntp;
@@ -84,6 +93,7 @@ class Backfill
 			$datac = $nntpc->selectGroup($groupArr['name']);
 			if (PEAR::isError($datac))
 			{
+				echo "Error {$datac->code}: {$datac->message}.".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -93,7 +103,6 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -101,6 +110,7 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo "Error {$data->code}: {$data->message}.".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -263,7 +273,6 @@ class Backfill
 
 		if (PEAR::isError($data))
 		{
-			echo "Problem with the usenet connection, attemping to reconnect.".$n;
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -271,6 +280,7 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo "Error {$data->code}: {$data->message}.".$n;
 				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
 				return;
 			}
@@ -370,14 +380,22 @@ class Backfill
 		do
 		{
 			$data = $nntp->selectGroup($group);
-			if (PEAR::isError($data))
+			if(PEAR::isError($data))
 			{
-				return $this->is_Error($data, $group);
+				$nntp->doQuit();
+				unset($nntp);
+				$nntp = new Nntp;
+				$nntp->doConnect();
+				$data = $nntp->selectGroup($group);
+				if(PEAR::isError($data))
+				{
+					echo "Error {$data->code}: {$data->message}.".$n;
+					return;
+				}
 			}
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
 			if(PEAR::isError($msgs))
 			{
-				echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
 				$nntp->doQuit();
 				unset($nntp);
 				$nntp = new Nntp;
@@ -387,7 +405,7 @@ class Backfill
 				if(PEAR::isError($msgs))
 				{
 					echo "Error {$msgs->code}: {$msgs->message}.".$n."Returning from postdate.".$n;
-					return false;
+					return;
 				}
 			}
 
@@ -403,7 +421,7 @@ class Backfill
 			if($debug && $attempts > 0) echo "Retried ".$attempts." time(s).".$n;
 			usleep(100000);
 			$attempts++;
-		}while($attempts <= 10 && $success == false);
+		}while($attempts <= 5 && $success == false);
 
 		if (!$success)
 		{
@@ -430,11 +448,25 @@ class Backfill
 			echo "INFO: Finding article for ".$group." ".$days." days back.".$n;
 		}
 
-		$data = $nntp->selectGroup($group);
-		if (PEAR::isError($data))
+		if (!isset($nntp))
 		{
-			echo "Error {$data->code}: {$data->message}".$n."Returning from daytopost.".$n;
-			return "";
+			$nntp = new Nntp;
+			$nntp->doConnect();
+		}
+
+		$data = $nntp->selectGroup($group);
+		if(PEAR::isError($data))
+		{
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($group);
+			if(PEAR::isError($data))
+			{
+				echo "Error {$data->code}: {$data->message}".$n."Returning from daytopost.".$n;
+				return;
+			}
 		}
 
 		// Goal timestamp.
