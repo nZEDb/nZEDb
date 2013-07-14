@@ -851,7 +851,15 @@
 	<td><label for="nzbthreads">Import-nzb Threads:</label></td>
 	<td>
 		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-		<div class="hint">The number of threads for import-nzb-bulk. This will thread each subfolder.</div>
+		<div class="hint">The number of threads for import-nzb(bulk). This will thread each subfolder.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nzbthreads">Grab NZB Threads:</label></td>
+	<td>
+		<input class="tiny" id="grabnzbthreads" name="grabnzbthreads" type="text" value="{$fsite->grabnzbthreads}" />
+		<div class="hint">The number of threads for Grab NZBs.</div>
 	</td>
 </tr>
 

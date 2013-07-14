@@ -1035,7 +1035,8 @@ INSERT INTO `site`
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
-	('sqlpatch','95');
+	('grabnzbthreads', '1'),
+	('sqlpatch','96');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

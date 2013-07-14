@@ -40,7 +40,7 @@ if len(datas) == 0:
 	sys.exit("No NZBs to Grab")
 
 #get threads for update_binaries
-cur.execute("select value from site where setting = 'binarythreads'")
+cur.execute("select value from site where setting = 'grabnzbthreads'")
 run_threads = cur.fetchone()
 
 #close connection to mysql

@@ -76,7 +76,13 @@ class Import
 				$nntp->doQuit();
 				$_connect;
 				$nntp->selectGroup($groupArr['name']);
+				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
+				if (PEAR::isError($article))
+				{
+					echo $n.$n."Error {$data->code}: {$data->message}".$n;
+					return;
+				}
 			}
 			if($article)
 				$this->processGrabNZBs($article, $hash);

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2798";
+$version="0.1r2799";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -17,6 +17,9 @@ $powerline = $tmux->get()->POWERLINE;
 $colors_start = $tmux->get()->COLORS_START;
 $colors_end = $tmux->get()->COLORS_END;
 $colors_exc = $tmux->get()->COLORS_EXC;
+
+$s = new Sites();
+$alternate_nntp_provider = $s->get()->alternate_nntp;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -278,6 +281,11 @@ $all_groups = 0;
 $totalnzbs = 0;
 $distinctnzbs = 0;
 $pendingnzbs = 0;
+$usp1activeconnections = 0;
+$usp1totalconnections = 0;
+$usp2activeconnections = 0;
+$usp2totalconnections = 0;
+
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-49.49s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
@@ -287,6 +295,8 @@ passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 printf($mask1, "Newest Release:", "$newestname");
+printf($mask1, "USP Connections:", $usp1activeconnections." (".$usp1totalconnections.")");
+printf($mask1, "USP Alternate:", $usp2activeconnections." (".$usp2totalconnections.")");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
@@ -515,11 +525,21 @@ while( $i > 0 )
 		$misc_percent = 0;
 	}
 
+	//get usenet connections
+	$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT." | grep -c ESTAB"));
+	$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT.""));
+
+	$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT_A." | grep -c ESTAB"));
+	$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT_A.""));
+
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
 	printf($mask1, "Newest Release:", "$newestname");
+	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used)");
+	if ($alternate_nntp_provider == "1")
+	    printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used)");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
