@@ -52,9 +52,6 @@ tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 
-if posttorun == 0 and postnon == "FALSE":
-	sys.exit()
-
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
@@ -64,12 +61,12 @@ datas = []
 maxtries = -1
 
 if sys.argv[1] == "additional" and (posttorun == 1 or posttorun == 3):
-	while len(datas) < run_threads * ppperrun and maxtries >= -5:
+	while len(datas) < run_threads * ppperrun and maxtries >= -6:
 		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo" and (posttorun == 2 or posttorun == 3):
-	while len(datas) < run_threads * nfoperrun and maxtries >= -5:
+	while len(datas) < run_threads * nfoperrun and maxtries >= -6:
 		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1

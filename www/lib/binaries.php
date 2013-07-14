@@ -183,7 +183,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 
-				echo "Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue".$n;
+				echo $n."Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue".$n;
 				flush();
 
 				//get headers from newsgroup

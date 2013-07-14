@@ -56,7 +56,7 @@ if (count($results) > 0)
 	$db = new DB();
 	foreach ($results as $result) {
 		if (strlen(isPreDBActive()) < 10 && !strstr(isPreDBActive(), '_') == TRUE) {
-			die("PreDB Maintenance");
+			die("PreDB Maintenance\n");
 		}
 		$processed = FALSE;
 		$x = substr($result['name'],0,32);

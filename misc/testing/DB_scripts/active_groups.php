@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 
 $db = new DB();
 $count = 0;
+$groups = 0;
 passthru("clear");
 printf("\033[1;33mThis script will show all Active Groups.\nAn optional first argument of true/false is used to sort the display by first_record_postdate in descending order.\nAn optional second argument will limit the return to that number of groups.\nTo sort the active groups by first_record_postdate and display only 20 groups run:\n  php active_groups.php true 20\n\033[0m\n\n");
 if (isset($argv[2]) && is_numeric($argv[2]) )
@@ -17,10 +18,11 @@ if ($rels = $db->query("select name, backfill_target, first_record_postdate, las
 	foreach ($rels as $rel)
 	{
 		$count += $rel['headers downloaded'];
+		$groups++;
 	}
 }
 
-printf($mask, "Group Name => ".number_format($count)." downloaded", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded");
+printf($mask, "Group Name => ".$groups."(".number_format($count)." downloaded)", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded");
 printf($mask, "==================================================", "======================", "======================", "======================", "======================");
 
 

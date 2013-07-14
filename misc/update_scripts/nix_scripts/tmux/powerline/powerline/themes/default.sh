@@ -34,6 +34,7 @@ if [ -z $TMUX_POWERLINE_LEFT_STATUS_SEGMENTS ]; then
 		#"vcs_staged 64 255" \
 		#"vcs_modified 9 255" \
 		#"vcs_others 245 0" \
+		"uspsetting 229 0" \
 	)
 fi
 

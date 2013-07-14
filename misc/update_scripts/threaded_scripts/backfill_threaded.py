@@ -61,7 +61,7 @@ elif intbackfilltype == 2:
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	cur.execute("%s %s" % ("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
-	cur.execute("%s %s %s %s %s %d" % ("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
+	cur.execute("%s %s %s %s %s %d" % ("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
 datas = cur.fetchall()
 if not datas:
 	print("No Groups enabled for backfill")
