@@ -324,11 +324,8 @@ class Binaries
 
 				$msgsreceived[] = $msg['Number'];
 
-				// For part count.
-				$pattern = '/\((\d+)\/(\d+)\)$/i';
-
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match($pattern, $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/i', $msg['Subject'], $matches))
 				{
 					$msgsignored[] = $msg['Number'];
 					continue;
@@ -342,7 +339,7 @@ class Binaries
 				}
 
 				// Attempt to get file count.
-				$partless = preg_replace($pattern, '', $msg['Subject']);
+				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $msg['Subject']);
 				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)/i', $partless, $filecnt))
 				{
 					$filecnt[2] = "0";
@@ -352,7 +349,7 @@ class Binaries
 				{
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim($partless));
-					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject'], "normal", $groupArr['ID']);
+					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
