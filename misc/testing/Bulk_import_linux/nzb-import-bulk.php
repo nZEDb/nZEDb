@@ -159,7 +159,7 @@ else
 				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					//@unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -180,7 +180,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					//@unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -236,7 +236,8 @@ else
 		{
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
-
+			$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $subject);
+			$subject = utf8_encode(trim($partless));
 			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
 			if($nzb->copyNZBforImport($relguid, $nzbFile))
 			{

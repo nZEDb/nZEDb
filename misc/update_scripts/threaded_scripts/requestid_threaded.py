@@ -32,13 +32,13 @@ cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbs
 cur.execute("SELECT r.ID, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
 datas = cur.fetchall()
 
-#close connection to mysql
-cur.close()
-con.close()
-
 if not datas:
 	print("No Work to Process")
 	sys.exit()
+
+#close connection to mysql
+cur.close()
+con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -68,21 +68,20 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
-	time.sleep(2)
-
 	def signal_handler(signal, frame):
 		sys.exit(0)
 
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
+		print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
+		time.sleep(2)
+
 		#spawn a pool of place worker threads
 		for i in range(threads):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()
-
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:

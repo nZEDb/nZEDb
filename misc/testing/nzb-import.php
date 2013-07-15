@@ -15,6 +15,7 @@ $n = "\n";
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+$namecleaning = new nameCleaning();
 
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
@@ -139,7 +140,7 @@ else
 			$postdate[] = $date;
 			$subject = utf8_encode(trim($firstname['0']));
 			$namecleaning = new nameCleaning();
-			
+
 			// make a fake message object to use to check the blacklist
 			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
@@ -237,6 +238,8 @@ else
 		{
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
+			$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $subject);
+			$subject = utf8_encode(trim($partless));
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 			{
 				if($nzb->copyNZBforImport($relguid, $nzbFile))
