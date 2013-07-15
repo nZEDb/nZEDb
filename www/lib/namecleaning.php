@@ -89,6 +89,7 @@ class nameCleaning
 
 	//
 	//	Cleans a usenet subject before inserting, used for searchname. Also used for imports.
+	//	Some of these also have MD5 Hashes, I will comment where they do.
 	//
 	public function releaseCleaner($subject, $groupID="")
 	{
@@ -214,11 +215,26 @@ class nameCleaning
 				else
 					return $cleanerName;
 			}
+			elseif (preg_match('/alt\.binaries\.inner-sanctum$/', $groupName))
+			{
+				$cleanerName = "";
+				//ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
+/* $match[1] = MD5 */
+				if (preg_match('/^([a-fA-F0-9]+) \[\d+\/\d+\] - ".+?(\.(par2|vol.+?)"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+					$cleanerName = $match[2];
+				else
+					$cleanerName = $this->releaseCleanerHelper($subject);
+
+				if (empty($cleanerName))
+					return $subject;
+				else
+					return $cleanerName;
+			}
 			elseif (preg_match('/alt\.binaries\.mom$/', $groupName))
 			{
 				$cleanerName = "";
 				//[usenet4ever.info] und [SecretUsenet.com] - 96e323468c5a8a7b948c06ec84511839-u4e - "96e323468c5a8a7b948c06ec84511839-u4e.par2" yEnc
-				/* Match this regex against the predb MD5 ? */
+/* $match[1] = MD5 */
 				if (preg_match('/^\[usenet4ever\.info\] und \[SecretUsenet\.com\] - (.+?)-u4e - ".+?" yEnc$/', $subject, $match))
 					$cleanerName = $match[1];
 				//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
