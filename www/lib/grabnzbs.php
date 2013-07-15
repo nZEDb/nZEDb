@@ -8,7 +8,6 @@ require_once(WWW_DIR."lib/site.php");
 
 class Import
 {
-
 	function categorize()
 	{
 		$db = new DB();
@@ -27,7 +26,8 @@ class Import
 		$nntp = new Nntp();
 		$nzb = array();
 		$s = new Sites();
-		$grapbnzbs = $s->get()->grabnzbs;
+		$site = $s->get();
+		$grapbnzbs = $site->grabnzbs;
 		if ($grapbnzbs == 1)
 			$_connect = $nntp->doConnect();
 		else
@@ -76,7 +76,13 @@ class Import
 				$nntp->doQuit();
 				$_connect;
 				$nntp->selectGroup($groupArr['name']);
+				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
+				if (PEAR::isError($article))
+				{
+					echo $n.$n."Error {$data->code}: {$data->message}".$n;
+					return;
+				}
 			}
 			if($article)
 				$this->processGrabNZBs($article, $hash);
@@ -103,6 +109,7 @@ class Import
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$version = $site->version;
+		$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 
 		$groups = $db->query("SELECT ID, name FROM groups");
 		foreach ($groups as $group)
@@ -131,6 +138,7 @@ class Import
 			{
 				//file info
 				$groupID = -1;
+				//$subject = utf8_encode(trim($partless));
 				$name = (string)$file->attributes()->subject;
 				$firstname[] = $name;
 				$fromname = (string)$file->attributes()->poster;
@@ -139,9 +147,10 @@ class Import
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$subject = $firstname['0'];
+				$subject = utf8_encode(trim($firstname['0']));
 				$namecleaning = new nameCleaning();
-				$cleanerName = $namecleaning->fixerPre($subject);
+				$cleanerName = $namecleaning->releaseCleaner($subject);
+				
 
 				// make a fake message object to use to check the blacklist
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
@@ -150,8 +159,8 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 10 hour <= %s AND postdate + interval 10 hour > %s",
-						$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
+						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
 					// only check one binary per nzb, they should all be in the same release anyway

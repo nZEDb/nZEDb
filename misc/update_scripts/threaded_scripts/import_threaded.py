@@ -17,6 +17,8 @@ import lib.info as info
 import signal
 import datetime
 
+print("\nNZB Import Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -29,8 +31,6 @@ cur = con.cursor()
 #get valuse from db
 cur.execute("select value from tmux where setting = 'IMPORT'")
 use_true = cur.fetchone()
-if int(use_true[0]) == 0:
-	sys.exit("NZB-Import has been disabled.")
 cur.execute("select (select value from site where setting = 'nzbthreads') as a, (select value from tmux where setting = 'NZBS') as b, (select value from tmux where setting = 'IMPORT_BULK') as c")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
@@ -71,9 +71,14 @@ class queue_runner(threading.Thread):
 					time.sleep(.5)
 					self.my_queue.task_done()
 
-def main():
+def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
+
+	if int(use_true[0]) == 2 or sys.argv[1] == "true":
+		print("We will be using filename as searchname")
+	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas))))
+	time.sleep(2)
 
 	def signal_handler(signal, frame):
 		sys.exit(0)
@@ -87,20 +92,18 @@ def main():
 			p.setDaemon(False)
 			p.start()
 
-	print("\nNZB Import Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-
 	#now load some arbitrary jobs into the queue
 	if len(datas) != 0:
 		if int(use_true[0]) == 1:
 			for gnames in datas:
 				my_queue.put(os.path.join(nzbs,gnames))
-		else:
+		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
 			for gnames in datas:
 				my_queue.put('%s %s' % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if int(use_true[0]) == 1:
 			my_queue.put(nzbs)
-		else:
+		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
 			my_queue.put("%s %s" % (nzbs, "true"))
 
 	my_queue.join()
@@ -112,4 +115,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1:])

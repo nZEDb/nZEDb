@@ -1,3 +1,32 @@
+07142013 -> jonnyboy -> reverted last
+						changed default user view to list view
+						updated rarinfo libs
+						added additional monitor paths in tmux - request
+						added limit to requestID per run
+						added powerline segment for NNTP connections - ThePeePs
+						added lines to monitor to show NNTP connections - Mike1
+07132013 -> jonnyboy -> gave GrabNZBs its own thread count
+						fixed type errors
+						typos
+						cleanup backfill.php
+07132013 -> Junkman690 -> readd RSS namespace to make the rss feeds work again. Make it point to nZEDb install for info
+07122013 -> jonnyboy -> added NNTP error checking in postprocess and nfo
+						nzb-import and grabNZBs now use site edit Crosspost time
+						fixed a bug when switch nntp provider and groups not available or invalid first_post
+07112013 -> jonnyboy -> tmux -added option to use removecrapreleases all or just 1 setting
+						fixed bug in postprocess_threaded.py
+07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
+						updated nntplib.py, fixed a bug when switch nntp provider and groups not available
+						fixed bug in tmux-seq when not running any backfill
+						fixed bug in postback, when reconnecting to nntp, need to set group name first
+07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.
+						changed the group regexes in releaseCleaner to make sure they don't match on other groups.
+						make sure exe doesn't get into tv.
+						Added alt.binaries.multimedia.anime to releaseCleaner.
+						Changed collectionsCleaner so in the future it can do groups.
+07112013 -> jonnyboy -> added 'trim' to releases name in nzb-import and grabNZBs
+						fixed bug in postprocess.php
+						beginning the move of pre/requestID matching to release creation, instead of separate process later
 07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
 						moved python lib files
 07092013 -> jonnyboy -> added limit clause when running populate gids from tmux

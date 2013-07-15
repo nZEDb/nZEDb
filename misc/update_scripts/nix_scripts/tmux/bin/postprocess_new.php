@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/tmux.php");
 $tmux = new Tmux;
 $torun = $tmux->get()->POST;
 
-$pieces = explode("                       ", $argv[1]);
+$pieces = explode("           =+=            ", $argv[1]);
 $postprocess = new PostProcess(true);
 if (isset($pieces[6]) && ($torun == "1" || $torun == "3"))
 {

@@ -6,10 +6,14 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/binaries.php");
 require_once(WWW_DIR."lib/page.php");
 require_once(WWW_DIR."lib/namecleaning.php");
+require_once(WWW_DIR."lib/site.php");
 
 $db = new DB();
 $binaries = new Binaries();
 $namecleaning = new nameCleaning();
+$s = new Sites();
+$site = $s->get();
+$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 
 $page = new Page;
 
@@ -120,7 +124,7 @@ if (!empty($argc) || $page->isPostBack() )
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)$file->attributes()->date);
 				$postdate[] = $date;
-				$subject = $firstname['0'];
+				$subject = utf8_encode(trim($firstname['0']));
 
 				// make a fake message object to use to check the blacklist
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
@@ -130,9 +134,9 @@ if (!empty($argc) || $page->isPostBack() )
 				{
 					$usename = str_replace('.nzb', '', ($viabrowser ? $browserpostednames[$nzbFile] : basename($nzbFile)));
 					$cleanerName = $usename;
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($usename), $db->escapeString($date), $db->escapeString($date));
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s", $db->escapeString($subject), $db->escapeString($date), $db->escapeString($date));
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res1 = $db->queryOneRow($dupeCheckSql);
 
 					// only check one binary per nzb, they should all be in the same release anyway
@@ -161,8 +165,8 @@ if (!empty($argc) || $page->isPostBack() )
 				{
 					$usename = $db->escapeString($name);
 					$cleanerName = $namecleaning->releaseCleaner($subject);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval 1000 hour <= %s AND postdate + interval 1000 hour > %s",
-						$db->escapeString($firstname['0']), $db->escapeString($date), $db->escapeString($date));
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
+						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
 					// only check one binary per nzb, they should all be in the same release anyway

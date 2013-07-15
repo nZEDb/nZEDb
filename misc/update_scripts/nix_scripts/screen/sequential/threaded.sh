@@ -16,7 +16,7 @@ command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { ex
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-    rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
 
 while :
@@ -35,7 +35,8 @@ do
 #	$PHP ${DEV_PATH}/test_misc_sorter.php
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py additional
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py non_amazon
+#   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
+#   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py amazon
 	sleep $NZEDB_SLEEP_TIME
 done

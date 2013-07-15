@@ -12,6 +12,7 @@ require_once(WWW_DIR."/lib/namecleaning.php");
  * 3 : Fixed with post proc (from mp3 tags or music.php) or predb.
  * 4 : Fixed with misc_sorter.
  * 5 : Fixed with decrypt hashes.
+ * 6 : Matched properly in namecleaning.php's releaseCleaner function.
  */
 
 class Namefixer

@@ -99,31 +99,31 @@ class PostProcess
 	//
 	// Process nfo files.
 	//
-	public function processNfos($threads='')
+	public function processNfos($releaseToWork='')
 	{
 		if ($this->site->lookupnfo == 1)
 		{
 			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($threads, $this->site->lookupimdb, $this->site->lookuptvrage);
+			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage);
 		}
 	}
 
 	//
 	// Lookup imdb if enabled.
 	//
-	public function processMovies($threads='')
+	public function processMovies($releaseToWork='')
 	{
 		if ($this->site->lookupimdb == 1)
 		{
 			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases($threads);
+			$movie->processMovieReleases($releaseToWork);
 		}
 	}
 
 	//
 	// Lookup music if enabled.
 	//
-	public function processMusic($threads='')
+	public function processMusic($threads=1)
 	{
 		if ($this->site->lookupmusic == 1)
 		{
@@ -135,7 +135,7 @@ class PostProcess
 	//
 	// Lookup games if enabled.
 	//
-	public function processGames($threads='')
+	public function processGames($threads=1)
 	{
 		if ($this->site->lookupgames == 1)
 		{
@@ -147,7 +147,7 @@ class PostProcess
 	//
 	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processAnime($threads='')
+	public function processAnime($threads=1)
 	{
 		if ($this->site->lookupanidb == 1)
 		{
@@ -160,19 +160,19 @@ class PostProcess
 	//
 	// Process all TV related releases which will assign their series/episode/rage data.
 	//
-	public function processTv($threads='')
+	public function processTv($releaseToWork='')
 	{
 		if ($this->site->lookuptvrage == 1)
 		{
 			$tvrage = new TVRage($this->echooutput);
-			$tvrage->processTvReleases($threads, $this->site->lookuptvrage==1);
+			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage==1);
 		}
 	}
 
 	//
 	// Process books using amazon.com.
 	//
-	public function processBooks($threads='')
+	public function processBooks($threads=1)
 	{
 		if ($this->site->lookupbooks == 1)
 		{
@@ -328,7 +328,7 @@ class PostProcess
 			else
 			{
 				$result = 0;
-				$pieces = explode("                       ", $releaseToWork);
+				$pieces = explode("           =+=            ", $releaseToWork);
 				$result = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupID' => $pieces[5], 'nfostatus' => $pieces[6]));
 			}
 		}
@@ -573,6 +573,21 @@ class PostProcess
 							$bingroup = $groupName;
 							$connect;
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+							if (PEAR::isError($fetchedBinary))
+							{
+								$nntp->doQuit();
+								unset($nntp);
+								$nntp = new Nntp;
+								$connect;
+								$data = $nntp->selectGroup($groupName);
+								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+								if (PEAR::isError($fetchedBinary))
+								{
+									echo $n.$n."Error {$fetchedBinary->code}: {$fetchedBinary->message}".$n.$n;
+								return;
+								}
+							}
+
 							if ($this->echooutput)
 								echo " b";
 
@@ -706,6 +721,20 @@ class PostProcess
 				{
 					$connect;
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
+					if (PEAR::isError($sampleBinary))
+					{
+						$nntp->doQuit();
+						unset($nntp);
+						$nntp = new Nntp;
+						$connect;
+						$data = $nntp->selectGroup($groupName);
+						$sampleBinary = $nntp->getMessages($bingroup, $mid);
+						if (PEAR::isError($sampleBinary))
+						{
+							echo $n.$n."Error {$sampleBinary->code}: {$sampleBinary->message}".$n.$n;
+							return;
+						}
+					}
 					if ($this->echooutput)
 						echo " s";
 					if ($sampleBinary !== false)
@@ -726,6 +755,20 @@ class PostProcess
 				{
 					$connect;
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
+					if (PEAR::isError($mediaBinary))
+					{
+						$nntp->doQuit();
+						unset($nntp);
+						$nntp = new Nntp;
+						$connect;
+						$data = $nntp->selectGroup($groupName);
+						$mediaBinary = $nntp->getMessages($bingroup, $mid);
+						if (PEAR::isError($mediaBinary))
+						{
+							echo $n.$n."Error {$mediaBinary->code}: {$mediaBinary->message}".$n.$n;
+							return;
+						}
+					}
 					if ($this->echooutput)
 						echo " m";
 					if ($mediaBinary !== false)
@@ -752,6 +795,20 @@ class PostProcess
 				{
 					$connect;
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+					if (PEAR::isError($audioBinary))
+					{
+						$nntp->doQuit();
+						unset($nntp);
+						$nntp = new Nntp;
+						$connect;
+						$data = $nntp->selectGroup($groupName);
+						$audioBinary = $nntp->getMessages($bingroup, $mid);
+						if (PEAR::isError($audioBinary))
+						{
+							echo $n.$n."Error {$audioBinary->code}: {$audioBinary->message}".$n.$n;
+							return;
+						}
+					}
 					if ($this->echooutput)
 						echo " a";
 					if ($audioBinary !== false)
@@ -770,6 +827,20 @@ class PostProcess
 				{
 					$connect;
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+					if (PEAR::isError($jpgBinary))
+					{
+						$nntp->doQuit();
+						unset($nntp);
+						$nntp = new Nntp;
+						$connect;
+						$data = $nntp->selectGroup($groupName);
+						$jpgBinary = $nntp->getMessages($bingroup, $mid);
+						if (PEAR::isError($jpgBinary))
+						{
+							echo $n.$n."Error {$jpgBinary->code}: {$jpgBinary->message}".$n.$n;
+							return;
+						}
+					}
 					if ($this->echooutput)
 						echo " j";
 					if ($jpgBinary !== false)
