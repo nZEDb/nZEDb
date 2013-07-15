@@ -1,4 +1,5 @@
 07152013 -> kevin    -> update namecleaning     Added some regex to name cleaning.
+						Make sure that yEnc is before part count in binaries.php (some High Compressed virus posts were getting through).
 07142013 -> jonnyboy -> reverted last
 						changed default user view to list view
 						updated rarinfo libs
