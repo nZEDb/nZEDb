@@ -13,17 +13,20 @@ class nameCleaning
 	//
 	public function collectionsCleaner($subject, $type="normal", $groupID="")
 	{
+		/* This section will do on a group to group basis, which will help with bunched collections. */
 		if ($groupID !== "")
 		{
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
 			
-			/*if (preg_match('/alt\.binaries\.hdtv\.german/', $groupName))
+			if (preg_match('/alt\.binaries\.dvd-r$/', $groupName))
 			{
-				if (preg_match('//', $subject))
-					$cleansubject = $matches[1];
-				else if (preg_match('//', $subject))
-					$cleansubject = $matches[1];
+				//katanxya "katanxya7221.par2" yEnc
+				if (preg_match('/^katanxya "katanxya\d+/', $subject, $match))
+					$cleansubject = $match[0];
+				//[01/52] - "H1F3E_20130715_005.par2" - 4.59 GB yEnc
+				else if (preg_match('/^\[\d+(\/\d+\] - "[a-zA-Z0-9\-_]+\.).+?(" - \d).+?( yEnc)$/', $subject, $match))
+					$cleansubject = $match[1].$match[2].$match[3];
 				else
 					$cleansubject = $this->collectionsCleanerHelper($subject, $type);
 				
@@ -32,7 +35,7 @@ class nameCleaning
 				else
 					return $cleansubject;
 			}
-			else*/
+			else
 				return $this->collectionsCleanerHelper($subject, $type);
 		}
 		else
@@ -44,6 +47,7 @@ class nameCleaning
 	//
 	public function collectionsCleanerHelper($subject, $type)
 	{
+		/* This section is more generic, it will work on most releases. */
 		//Parts/files
 		$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|\-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|\-\d{1,3}\-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
 		//Anything between the quotes. Too much variance within the quotes, so remove it completely.
