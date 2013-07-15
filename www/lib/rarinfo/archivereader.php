@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.5
+ * @version    2.7
  */
 abstract class ArchiveReader
 {
@@ -143,6 +143,60 @@ abstract class ArchiveReader
 		$suffix = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		for ($i = 0; $bytes > 1024 && isset($suffix[$i+1]); $i++) {$bytes /= 1024;}
 		return round($bytes, $round).' '.$suffix[$i];
+	}
+
+	/**
+	 * Creates a directory if it doesn't already exist.
+	 *
+	 * @param   string   $dir  the directory path
+	 * @return  boolean  false if the directory already exists
+	 */
+	public static function makeDirectory($dir)
+	{
+		if (file_exists($dir))
+			return false;
+
+		mkdir($dir, 0777, TRUE);
+		chmod($dir, 0777);
+
+		return true;
+	}
+
+	/**
+	 * Returns all the positions of a case-sensitive needle in a haystack string.
+	 * With an array of needles, the result will be a sorted list with the positions
+	 * as keys and a list of all matching needle keys as the values.
+	 *
+	 * @param   string         $haystack  the string to search
+	 * @param   string|array   $needle    the string or list of strings to find
+	 * @return  array|boolean  the needle positions, or false if none found
+	 */
+	public static function strposall($haystack, $needle, $offset=0)
+	{
+		$start   = $offset;
+		$hlen    = strlen($haystack);
+		$isArray = is_array($needle);
+		$results = array();
+
+		foreach ((array) $needle as $key => $value) {
+			if (($vlen = strlen($value)) == 0)
+				continue;
+			while ($offset < $hlen && ($pos = strpos($haystack, $value, $offset)) !== false) {
+				$offset = $pos + $vlen;
+				if ($isArray) {
+					$results[$pos][] = $key;
+				} else {
+					$results[$pos] = $pos;
+				}
+			}
+			$offset = $start;
+		}
+		if (!empty($results)) {
+			ksort($results);
+			return $isArray ? $results : array_values($results);
+		}
+
+		return false;
 	}
 
 	// ------ Instance variables and methods ---------------------------------------
@@ -295,6 +349,16 @@ abstract class ArchiveReader
 	}
 
 	/**
+	 * Class destructor.
+	 *
+	 * @return  void
+	 */
+	public function __destruct()
+	{
+		$this->deleteTempFiles();
+	}
+
+	/**
 	 * Convenience method that outputs a summary list of the archive information,
 	 * useful for pretty-printing.
 	 *
@@ -317,6 +381,13 @@ abstract class ArchiveReader
 	 * @return  mixed  Marker position, or false if none found
 	 */
 	abstract public function findMarker();
+
+	/**
+	 * Parses the archive data and stores the results locally.
+	 *
+	 * @return  boolean  false if parsing fails
+	 */
+	abstract protected function analyze();
 
 	/**
 	 * Path to the archive file (if any).
@@ -397,11 +468,10 @@ abstract class ArchiveReader
 	protected $markerPosition;
 
 	/**
-	 * Parses the archive data and stores the results locally.
-	 *
-	 * @return  boolean  false if parsing fails
+	 * The list of any temporary files created by the reader.
+	 * @var array
 	 */
-	abstract protected function analyze();
+	protected $tempFiles = array();
 
 	/**
 	 * Sets the absolute start and end positions in the file/data to be analyzed
@@ -605,6 +675,66 @@ abstract class ArchiveReader
 	}
 
 	/**
+	 * Saves the current stored data to a temporary file and returns its name.
+	 *
+	 * @return  string  path to the temporary file
+	 */
+	protected function createTempDataFile()
+	{
+		list($hash, $dest) = $this->getTempFileName();
+
+		if (file_exists($dest))
+			return $this->tempFiles[$hash] = $dest;
+
+		file_put_contents($dest, $this->data);
+		chmod($dest, 0777);
+
+		return $this->tempFiles[$hash] = $dest;
+	}
+
+	/**
+	 * Calculates a temporary file name based on hashes of the given data string
+	 * or the stored data.
+	 *
+	 * @param   string  $data  the source data to be hashed
+	 * @return  array   the hash and temporary file path values
+	 */
+	protected function getTempFileName($data=null)
+	{
+		$hash = $data ? md5($data) : md5(substr($this->data, 0, 16*1024));
+		$path = $this->getTempDirectory().DIRECTORY_SEPARATOR.$hash.'.tmp';
+
+		return array($hash, $path);
+	}
+
+	/**
+	 * Returns the absolute path to the directory for storing temporary files,
+	 * and creates any parent directories if they don't already exist.
+	 *
+	 * @return  string  the temporary directory path
+	 */
+	protected function getTempDirectory()
+	{
+		$dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'archivereader';
+		self::makeDirectory($dir);
+
+		return $dir;
+	}
+
+	/**
+	 * Deletes any temporary files created by the reader.
+	 *
+	 * @return  void
+	 */
+	protected function deleteTempFiles()
+	{
+		foreach ($this->tempFiles as $temp) {
+			@unlink($temp);
+		}
+		$this->tempFiles = array();
+	}
+
+	/**
 	 * Resets the instance variables before parsing new data.
 	 *
 	 * @return  void
@@ -613,6 +743,7 @@ abstract class ArchiveReader
 	{
 		$this->close();
 		$this->file = '';
+		$this->data = '';
 		$this->fileSize = 0;
 		$this->dataSize = 0;
 		$this->start = 0;
@@ -623,6 +754,7 @@ abstract class ArchiveReader
 		$this->isFragment = false;
 		$this->fileCount = 0;
 		$this->markerPosition = null;
+		$this->deleteTempFiles();
 	}
 
-} // End ArchiveInfo class
+} // End ArchiveReader class

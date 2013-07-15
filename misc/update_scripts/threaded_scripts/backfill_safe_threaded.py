@@ -19,6 +19,8 @@ import lib.info as info
 import datetime
 import math
 
+print("\nBackfill Safe Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -65,8 +67,12 @@ while (count - first) < 10000:
 		backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
 
 	#query to grab backfill groups
-	cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
-	datas = cur.fetchone()
+	if len(sys.argv) == 1:
+		cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
+		datas = cur.fetchone()
+	else:
+		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (sys.argv[1], backfilldays, group))
+		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")
 		sys.exit()
@@ -75,20 +81,31 @@ while (count - first) < 10000:
 	time.sleep(0.01)
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
 	time.sleep(0.01)
-	resp, count, first, last, name = s.group(datas[0])
-	time.sleep(0.01)
+	try:
+		resp, count, first, last, name = s.group(datas[0])
+		time.sleep(0.1)
+	except nntplib.NNTPError:
+		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
+		con.autocommit(True)
+		print("%s not found, disabling." %(datas[0]))
 	resp = s.quit()
 
-	print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
-	print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
-	print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
-	count = datas[1]
+	if (datas[1] - first) < 0:
+		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
+		con.autocommit(True)
+		print("%s has invalid first_post, disabling." %(datas[0]))
 
-	if (datas[1] - first) < 10000:
-		group = ("%s 10000" % (datas[0]))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
-		cur.close()
-		con.close()
+	if name:
+		print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
+		print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
+		print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
+		count = datas[1]
+
+		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:
+			group = ("%s 10000" % (datas[0]))
+			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+			cur.close()
+			con.close()
 
 #close connection to mysql
 cur.close()
@@ -99,8 +116,6 @@ if ((datas[1] - first) > (backfill_qty * run_threads)):
 	geteach = math.ceil((backfill_qty * run_threads) / maxmssgs)
 else:
 	geteach = int((datas[1] - first) / maxmssgs)
-print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
-time.sleep(1)
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -126,9 +141,12 @@ class queue_runner(threading.Thread):
 					time.sleep(.5)
 					self.my_queue.task_done()
 
-def main():
+def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
+
+	print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+	time.sleep(2)
 
 	def signal_handler(signal, frame):
 		sys.exit(0)
@@ -162,4 +180,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1:])

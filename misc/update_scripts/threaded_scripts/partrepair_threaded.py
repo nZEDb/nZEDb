@@ -17,6 +17,8 @@ import lib.info as info
 import signal
 import datetime
 
+print("\nPartrepair Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -48,7 +50,8 @@ cur.close()
 con.close()
 
 if not datas:
-	print("No Work to Process")
+	print("Part Repair has no Work to Process")
+	time.sleep(2)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -79,6 +82,9 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
+	print("We will be using a max of %s threads, a queue of %s groups" % (run_threads, "{:,}".format(len(datas))))
+	time.sleep(2)
+
 	def signal_handler(signal, frame):
 		sys.exit(0)
 
@@ -90,8 +96,6 @@ def main():
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()
-
-	print("\nPartrepair Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:

@@ -47,7 +47,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '94' )
+if ( $patch < '97' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -142,8 +142,8 @@ function window_utilities($tmux_session)
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
 	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;misc_sorter\033\"'");
 	exec("tmux splitw -t $tmux_session:1 -h -p 33 'printf \"\033]2;updateTVandTheaters\033\"'");
-	exec("tmux selectp -t 0 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
-	exec("tmux selectp -t 2 && tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
+	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
+	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
 function window_post($tmux_session)
@@ -171,7 +171,7 @@ function attach($DIR, $tmux_session)
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
 	exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
-	exec("tmux select-window -t $tmux_session:0 && tmux attach-session -d -t $tmux_session");
+	exec("tmux select-window -t $tmux_session:0; tmux attach-session -d -t $tmux_session");
 }
 
 //create tmux session
@@ -182,9 +182,9 @@ else
 
 if ( $seq == "TRUE" )
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
@@ -193,10 +193,10 @@ if ( $seq == "TRUE" )
 }
 else
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux && tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0 && tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
-	exec("tmux selectp -t $tmux_session:0.2 && tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
 	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
 
 	window_utilities($tmux_session);

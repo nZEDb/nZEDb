@@ -198,10 +198,10 @@ class MiscSorter {
 		if ($relname == 1 || $relname == 4)
 		{
 			$query = $query.", relnamestatus = 4";
-		if ($name != '')
-		{
+			if ($name != '')
+			{
 				$query = $query.", `searchname` = ".$this->db->escapeString($name);
-		}
+			}
 		}
 		switch ($type) {
 			case 'imdb':
