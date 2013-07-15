@@ -352,7 +352,7 @@ class Binaries
 				{
 					array_map('trim', $matches);
 					$subject = utf8_encode(trim($partless));
-					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
+					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject'], "normal", $groupArr['ID']);
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
