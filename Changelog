@@ -1,7 +1,22 @@
+07142013 -> jonnyboy -> reverted last
+						changed default user view to list view
+						updated rarinfo libs
+						added additional monitor paths in tmux - request
+						added limit to requestID per run
+						added powerline segment for NNTP connections - ThePeePs
+						added lines to monitor to show NNTP connections - Mike1
+07132013 -> jonnyboy -> gave GrabNZBs its own thread count
+						fixed type errors
+						typos
+						cleanup backfill.php
+07132013 -> Junkman690 -> readd RSS namespace to make the rss feeds work again. Make it point to nZEDb install for info
+07122013 -> jonnyboy -> added NNTP error checking in postprocess and nfo
+						nzb-import and grabNZBs now use site edit Crosspost time
+						fixed a bug when switch nntp provider and groups not available or invalid first_post
 07112013 -> jonnyboy -> tmux -added option to use removecrapreleases all or just 1 setting
 						fixed bug in postprocess_threaded.py
 07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
-						updated nntplib.py, fixed a bug when swith nntp provider and groups not available
+						updated nntplib.py, fixed a bug when switch nntp provider and groups not available
 						fixed bug in tmux-seq when not running any backfill
 						fixed bug in postback, when reconnecting to nntp, need to set group name first
 07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.

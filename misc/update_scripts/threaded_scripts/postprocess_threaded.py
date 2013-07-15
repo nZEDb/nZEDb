@@ -17,6 +17,13 @@ import lib.info as info
 import signal
 import datetime
 
+print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+if sys.argv[1] == "additional":
+	print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
+	print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo.")
+elif sys.argv[1] == "nfo":
+	print("* = hidden NFO, + = NFO, - = no NFO, f = download failed.")
+
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
@@ -45,9 +52,6 @@ tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 
-if posttorun == 0 and postnon == "FALSE":
-	sys.exit()
-
 maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
@@ -57,17 +61,16 @@ datas = []
 maxtries = -1
 
 if sys.argv[1] == "additional" and (posttorun == 1 or posttorun == 3):
-	while len(datas) < run_threads * ppperrun and maxtries >= -5:
+	while len(datas) < run_threads * ppperrun and maxtries >= -6:
 		cur.execute("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where %s r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo" and (posttorun == 2 or posttorun == 3):
-	while len(datas) < run_threads * nfoperrun and maxtries >= -5:
+	while len(datas) < run_threads * nfoperrun and maxtries >= -6:
 		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie":
-		print("%s %s" % (run_threads, movieperrun))
 		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" % (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
@@ -110,16 +113,13 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
+	print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+	time.sleep(2)
+
 	def signal_handler(signal, frame):
 		sys.exit(0)
 
 	signal.signal(signal.SIGINT, signal_handler)
-
-	if sys.argv[1] == "additional":
-		print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
-		print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo - %s." % (time.strftime("%H:%M:%S")))
-	elif sys.argv[1] == "nfo":
-		print("* = hidden NFO, + = NFO, - = no NFO, f = download failed  - %s." % (time.strftime("%H:%M:%S")))
 
 	if True:
 		#spawn a pool of place worker threads
@@ -128,21 +128,19 @@ def main():
 			p.setDaemon(False)
 			p.start()
 
-	print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s                       %s                       %s                       %s                       %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s                       %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
-			my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
+			my_queue.put("%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2]))
 	elif sys.argv[1] == "tv":
 		for release in datas:
-			my_queue.put("%s                       %s" % (release[0], release[1]))
+			my_queue.put("%s           =+=            %s" % (release[0], release[1]))
 
 	my_queue.join()
 

@@ -29,7 +29,7 @@ con.autocommit(True)
 cur = con.cursor()
 
 cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-cur.execute("SELECT r.ID, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1")
+cur.execute("SELECT r.ID, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
 datas = cur.fetchall()
 
 #close connection to mysql
@@ -68,6 +68,9 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
+	print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
+	time.sleep(2)
+
 	def signal_handler(signal, frame):
 		sys.exit(0)
 
@@ -87,5 +90,6 @@ def main():
 
 	my_queue.join()
 
+	print("\n")
 if __name__ == '__main__':
 	main()

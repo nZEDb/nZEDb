@@ -470,7 +470,7 @@ class TvRage
 		}
 		else
 		{
-			$pieces = explode("                       ", $releaseToWork);
+			$pieces = explode("           =+=            ", $releaseToWork);
 			$res = array(array('searchname' => $pieces[0], 'ID' => $pieces[1]));
 			$tvcount = 1;
 		}

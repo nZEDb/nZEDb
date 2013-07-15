@@ -1035,7 +1035,8 @@ INSERT INTO `site`
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
-	('sqlpatch','95');
+	('grabnzbthreads', '1'),
+	('sqlpatch','97');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1347,8 +1348,9 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('POST_TIMER_NON', '30'),
 	('COLORS_START', '1'),
 	('COLORS_END', '250'),
-	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60');
-
+	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
+	('MONITOR_PATH_A', NULL),
+	('MONITOR_PATH_B', NULL);
 
 DROP TABLE IF EXISTS `nzbs`;
 CREATE TABLE `nzbs` (

@@ -37,7 +37,8 @@
 				<td style="width:160px;"><label for="MONITOR_DELAY">Monitor Loop Timer:</label></td>
 				<td>
 					<input id="MONITOR_DELAY" name="MONITOR_DELAY" class="tiny" type="text" value="{$ftmux->MONITOR_DELAY}" />
-					<div class="hint">The time between query refreshes of monitor information, in seconds. The lower the number, the more often it queries the database for numbers.</div>
+					<div class="hint">The time between query refreshes of monitor information, in seconds. This has no effect on any other pane, except in regards to the kill switches. The other panes are checked every 10 seconds. The lower the number, the more often it queries the database for numbers.<br />
+					<b>As the database gets larger in size, the longer this set of queries takes to process.</b> I recommend that you set the sleep timer to at least 5 minutes, if any number in postprocess or total releases exceeds 1 million.</div>
 				</td>
 			</tr>
 
@@ -52,8 +53,11 @@
 			<tr>
 				<td><label for="MONITOR_PATH">Monitor a Ramdisk:</label></td>
 				<td>
-					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" />
-					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0</div>
+					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" /><br />
+					<input id="MONITOR_PATH_A" name="MONITOR_PATH_A" class="long" type="text" value="{$ftmux->MONITOR_PATH_A}" /><br />
+					<input id="MONITOR_PATH_B" name="MONITOR_PATH_B" class="long" type="text" value="{$ftmux->MONITOR_PATH_B}" />
+					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
+					gid == group id == /etc/groups, uid == user id == /etc/passwd</div>
 				</td>
 			</tr>
 		

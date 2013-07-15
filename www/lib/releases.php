@@ -1788,14 +1788,14 @@ class Releases
 		return $tot_nzbcount;
 	}
 
-	public function processReleasesStage5b($groupID, $echooutput=false)
+	public function processReleasesStage5b($groupID, $echooutput=true)
 	{
 		$db = new DB();
 		$page = new Page();
 		$n = "\n";
 		$consoletools = new consoleTools();
 		$iFoundcnt = 0;
-		
+
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
 		if ($page->site->lookup_reqids == 1)
@@ -1843,6 +1843,8 @@ class Releases
 				else
 				{
 					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
+					//if ($this->echooutput)
+						echo ".";
 				}
 			}
 

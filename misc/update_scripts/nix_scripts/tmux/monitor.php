@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2779";
+$version="0.1r2807";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -17,6 +17,9 @@ $powerline = $tmux->get()->POWERLINE;
 $colors_start = $tmux->get()->COLORS_START;
 $colors_end = $tmux->get()->COLORS_END;
 $colors_exc = $tmux->get()->COLORS_EXC;
+
+$s = new Sites();
+$alternate_nntp_provider = $s->get()->alternate_nntp;
 
 //totals per category in db, results by parentID
 $qry = "SELECT COUNT( releases.categoryID ) AS cnt, parentID FROM releases INNER JOIN category ON releases.categoryID = category.ID WHERE nzbstatus = 1 and parentID IS NOT NULL GROUP BY parentID";
@@ -80,6 +83,8 @@ $proc_tmux = "SELECT
 	( SELECT value from tmux where setting = 'UPDATE_TV' ) AS update_tv,
 	( SELECT value from tmux where setting = 'POST_KILL_TIMER' ) AS post_kill_timer,
 	( SELECT value from tmux where setting = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT value from tmux where setting = 'MONITOR_PATH_A' ) AS monitor_path_a,
+	( SELECT value from tmux where setting = 'MONITOR_PATH_B' ) AS monitor_path_b,
 	( SELECT value from tmux where setting = 'SORTER' ) AS sorter,
 	( SELECT value from tmux where setting = 'SORTER_TIMER' ) AS sorter_timer,
 	( SELECT value from tmux where setting = 'PROGRESSIVE' ) AS progressive,
@@ -278,6 +283,11 @@ $all_groups = 0;
 $totalnzbs = 0;
 $distinctnzbs = 0;
 $pendingnzbs = 0;
+$usp1activeconnections = 0;
+$usp1totalconnections = 0;
+$usp2activeconnections = 0;
+$usp2totalconnections = 0;
+
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-49.49s \n";
 $mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
@@ -286,6 +296,9 @@ $mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
+printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
+if ($alternate_nntp_provider == "1")
+	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
@@ -434,8 +447,15 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['post'] != NULL ) { $post = $proc_tmux_result[0]['post']; }
 	if ( @$proc_tmux_result[0]['releases_run'] != NULL ) { $releases_run = $proc_tmux_result[0]['releases_run']; }
 	if ( @$proc_tmux_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
-	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
 	if ( @$proc_tmux_result[0]['dehash'] != NULL ) { $dehash = $proc_tmux_result[0]['dehash']; }
+
+	//reset monitor paths before query
+	$monitor_path = "";
+	$monitor_path_a = "";
+	$monitor_path_b = "";
+	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
+	if ( @$proc_tmux_result[0]['monitor_path_a'] != NULL ) { $monitor_path_a = $proc_tmux_result[0]['monitor_path_a']; }
+	if ( @$proc_tmux_result[0]['monitor_path_b'] != NULL ) { $monitor_path_b = $proc_tmux_result[0]['monitor_path_b']; }
 
 	if ( @$proc_tmux_result[0]['debug'] != NULL ) { $debug = $proc_tmux_result[0]['debug']; }
 	if ( @$proc_tmux_result[0]['post_amazon'] != NULL ) { $post_amazon = $proc_tmux_result[0]['post_amazon']; }
@@ -515,10 +535,27 @@ while( $i > 0 )
 		$misc_percent = 0;
 	}
 
+	//get usenet connections
+	if ($alternate_nntp_provider == "1")
+	{
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER.":".NNTP_PORT." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER.":".NNTP_PORT.""));
+		$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER_A.":".NNTP_PORT_A." | grep -c ESTAB"));
+		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER_A.":".NNTP_PORT_A.""));
+	} else {
+	
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT.""));
+	}
+
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
+	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
+	if ($alternate_nntp_provider == "1")
+		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
+
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
@@ -535,18 +572,42 @@ while( $i > 0 )
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), "~".number_format($parts_table));
 
-	if (( isset($monitor_path) ) && ( file_exists( $monitor_path ))) {
+	if ((( isset( $monitor_path )) && ( file_exists( $monitor_path ))) || (( isset( $monitor_path_a )) && ( file_exists( $monitor_path_a ))) || (( isset( $monitor_path_b )) && ( file_exists( $monitor_path_b ))))
+	{
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
 		printf($mask, "====================", "=========================", "====================");
 		printf("\033[38;5;214m");
-		$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
-		$disk_free = decodeSize( disk_free_space($monitor_path) );
-		if ( basename($monitor_path) == "" )
-			$show = "/";
-		else
-			$show = basename($monitor_path);
-		printf($mask, $show, $disk_use, $disk_free);
+		if ( isset( $monitor_path ) && $monitor_path != "" && file_exists( $monitor_path ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path) - disk_free_space($monitor_path) );
+			$disk_free = decodeSize( disk_free_space($monitor_path) );
+			if ( basename($monitor_path) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
+		if ( isset( $monitor_path_a ) && $monitor_path_a != "" && file_exists( $monitor_path_a ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a) );
+			$disk_free = decodeSize( disk_free_space($monitor_path_a) );
+			if ( basename($monitor_path_a) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path_a);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
+		if ( isset( $monitor_path_b ) && $monitor_path_b != "" && file_exists( $monitor_path_b ))
+		{
+			$disk_use = decodeSize( disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b) );
+			$disk_free = decodeSize( disk_free_space($monitor_path_b) );
+			if ( basename($monitor_path_b) == "" )
+				$show = "/";
+			else
+				$show = basename($monitor_path_b);
+			printf($mask, $show, $disk_use, $disk_free);
+		}
 	}
 
 	printf("\033[1;33m\n");
@@ -555,7 +616,7 @@ while( $i > 0 )
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
-	printf($mask, "requestID",$requestID_inprogress."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
+	printf($mask, "requestID",number_format($requestID_inprogress)."(".$requestID_diff.")",number_format($requestID_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
 	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
 	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
@@ -713,7 +774,42 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 		}
 
-		if (( $post != "0" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
+		if (( $post == "1" ) && ( $work_remaining_now > 0))
+		{
+			//run postprocess_releases additional
+			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
+			if ( $last_history != $history )
+			{
+				$last_history = $history;
+				$time2 = TIME();
+			}
+			else
+			{
+				if ( TIME() - $time2 >= $post_kill_timer )
+				{
+					shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
+					$wipe = `tmux clearhist -t${tmux_session}:2.0`;
+					$color = get_color($colors_start, $colors_end, $colors_exc);
+					$time2 = TIME();
+				}
+			}
+			$dead1 = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l` );
+			if ( $dead1 == 1 )
+				$time2 = TIME();
+			$log = writelog($panes2[0]);
+			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+					rm -rf $tmpunrar/*; \
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		elseif (( $post == "2" ) && ( $nfo_remaining_now > 0))
+		{
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			$log = writelog($panes2[0]);
+			shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+					rm -rf $tmpunrar/*; \
+					$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+		}
+		elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
 		{
 			//run postprocess_releases additional
 			$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -1100,6 +1196,6 @@ while( $i > 0 )
 	}
 
 	$i++;
-	sleep(5);
+	sleep(10);
 }
 ?>
