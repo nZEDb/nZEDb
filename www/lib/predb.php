@@ -25,7 +25,7 @@ Class Predb
 		$db = new DB();
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, ID FROM predb ORDER BY adddate DESC LIMIT 1");
-		if (strtotime($newestrel["adddate"]) < time()-600)
+		if (strtotime($newestrel["adddate"]) < time()-900)
 		{
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
