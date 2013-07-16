@@ -17,7 +17,7 @@ import lib.info as info
 import signal
 import datetime
 
-threads = 10
+threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()

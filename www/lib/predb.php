@@ -42,10 +42,10 @@ Class Predb
 		}
 		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
-			echo "Matched ".$matched." predDB titles to release search names.\n";
+			echo "\nMatched ".$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
-			echo "Added ".$nfos." missing NFOs from preDB sources.\n";
+			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
 	}
 
@@ -371,7 +371,7 @@ Class Predb
 			}
 			return $updated;
 		}
-		if($res = $db->queryDirect("SELECT p.ID, p.category, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
+		elseif($res = $db->queryDirect("SELECT p.ID, p.category, r.ID as releaseID from predb p inner join releases r on p.title = r.searchname where p.releaseID is null"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
@@ -388,11 +388,12 @@ Class Predb
 			}
 			return $updated;
 		}
-		if($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.name where p.releaseID is null"))
+		elseif($res = $db->queryDirect("SELECT p.ID, r.ID as releaseID from predb p inner join releases r on p.title = r.name where p.releaseID is null"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
 				$db->query(sprintf("UPDATE predb SET releaseID = %d where ID = %d", $row["releaseID"], $row["ID"]));
+				$db->query(sprintf("UPDATE releases SET relnamestatus = 6 where ID = %d", $row["releaseID"]));
 				echo ".";
 				$updated++;
 			}

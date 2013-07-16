@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2819";
+$version="0.1r2820";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -342,7 +342,8 @@ $monitor = 30;
 $i = 1;
 while( $i > 0 )
 {
-	//update db connection
+	//create new db connection
+	unset($db);
 	$db = new DB();
 
 	$getdate = gmDate("Ymd");
@@ -722,7 +723,7 @@ while( $i > 0 )
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
-					$_php ${DIR}update_scripts/decrypt_hashes.ph $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+					$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $dehash == 2 )
 		{
@@ -737,7 +738,7 @@ while( $i > 0 )
 			$log = writelog($panes1[3]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
 					$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; \
-					$_php ${DIR}update_scripts/decrypt_hashes.ph $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+					$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{

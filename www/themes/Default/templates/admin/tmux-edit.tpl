@@ -402,7 +402,7 @@
 			<tr>
 				<td><label for="explain">Information:</label></td>
 				<td>
-					<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.<br />
+					<div class="explanation">Decrypt hashes works by matching a hashed release to the md5 of a release in the predb.<br />
 					Included in the same pane is Update Predb. This scrapes several predb sites and then tries to match against releases.</div>
 				</td>
 			</tr>

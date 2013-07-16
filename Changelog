@@ -1,3 +1,7 @@
+07162013 -> jonnyboy -> fixed bug in nfo nntp connection
+						added option to import gzipped nzbs, not working in www/admin/nzb-import.php
+						changed import copy file to save stream, increased import speed
+						fixed typo in namecleaning.php
 07152013 -> jonnyboy -> replaced external decrypt hashes script with internal one
 						added preg_replace to grabnzbs and nzb-import to remove part number from end of subject
 07152013 -> kevin    -> update namecleaning     Added some regex to name cleaning.

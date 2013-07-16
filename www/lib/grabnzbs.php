@@ -27,11 +27,7 @@ class Import
 		$nzb = array();
 		$s = new Sites();
 		$site = $s->get();
-		$grapbnzbs = $site->grabnzbs;
-		if ($grapbnzbs == 1)
-			$_connect = $nntp->doConnect();
-		else
-			$_connect = $nntp->doConnect_A();
+		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 
 		if ($hash == '')
 		{
@@ -66,7 +62,7 @@ class Import
 			}
 		}
 		//var_dump($nzb);
-		$_connect;
+		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 		if($nzb && array_key_exists('group', $nzb))
 		{
 			$article = $nntp->getArticles($nzb['group'], $arr);
@@ -74,7 +70,7 @@ class Import
 			{
 				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
 				$nntp->doQuit();
-				$_connect;
+				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$nntp->selectGroup($groupArr['name']);
 				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
