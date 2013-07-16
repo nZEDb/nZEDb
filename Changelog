@@ -1,4 +1,5 @@
-07162013 -> jonnyboy -> fixed pass by reference error
+07162013 -> jonnyboy -> fixed bug in threaded import using tmux
+						fixed pass by reference error
 						added group check in binaries scan
 						typo in postprocess.php
 						fixed bug in grabnzbs
