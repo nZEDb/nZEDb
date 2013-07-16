@@ -134,7 +134,6 @@ class Import
 			{
 				//file info
 				$groupID = -1;
-				//$subject = utf8_encode(trim($partless));
 				$name = (string)$file->attributes()->subject;
 				$firstname[] = $name;
 				$fromname = (string)$file->attributes()->poster;
@@ -143,7 +142,8 @@ class Import
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$subject = utf8_encode(trim($firstname['0']));
+				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
+				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 				$cleanerName = $namecleaning->releaseCleaner($subject);
 
@@ -208,8 +208,8 @@ class Import
 			{
 				$relguid = sha1(uniqid());
 				$nzb = new NZB();
-				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $subject);
-				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($partless), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+
+				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');

@@ -1,4 +1,5 @@
-07162013 -> jonnyboy -> fixed bug in nfo nntp connection
+07162013 -> jonnyboy -> fixed bug in grabnzbs
+						fixed bug in nfo nntp connection
 						added option to import gzipped nzbs, not working in www/admin/nzb-import.php
 						changed import copy file to save stream, increased import speed
 						fixed typo in namecleaning.php

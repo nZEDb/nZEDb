@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2820";
+$version="0.1r2821";
 
 $db = new DB();
 $DIR = MISC_DIR;
