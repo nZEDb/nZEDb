@@ -15,6 +15,7 @@ $n = "\n";
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+$namecleaning = new nameCleaning();
 
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
@@ -103,15 +104,26 @@ else
 		return;
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 	foreach($objects as $filestoprocess => $nzbFile){
-		if(!$nzbFile->getExtension() == "nzb")
+		if(!$nzbFile->getExtension() == "nzb" || !$nzbFile->getExtension() == "gz")
 		{
 			continue;
 		}
+		$compressed = false;
 		$isBlackListed = FALSE;
 		$importfailed = false;
-		$nzb = file_get_contents($nzbFile);
+		if ($nzbFile->getExtension() == "nzb")
+		{
+			$nzba = file_get_contents($nzbFile);
+			$compressed = false;
+		}
+		elseif ($nzbFile->getExtension() == "gz")
+		{
+			$nzbc = 'compress.zlib://'.$nzbFile;
+			$nzba = file_get_contents($nzbc);
+			$compressed = true;
+		}
 
-		$xml = @simplexml_load_string($nzb);
+		$xml = @simplexml_load_string($nzba);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 		{
 			continue;
@@ -137,16 +149,18 @@ else
 			$totalFiles++;
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
-			$subject = utf8_encode(trim($firstname['0']));
+            $partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
+            $subject = utf8_encode(trim($partless));
 			$namecleaning = new nameCleaning();
-			
+
 			// make a fake message object to use to check the blacklist
-			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
+			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
 
 			// if the release is in our DB already then don't bother importing it
 			if ($usenzbname && $skipCheck !== true)
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
+				$usename = str_replace('.gz', '', $usename);
 				$cleanerName = $usename;
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -171,7 +185,7 @@ else
 				$usename = $db->escapeString($name);
 				$cleanerName = $namecleaning->releaseCleaner($subject);
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
-					$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
 				// only check one binary per nzb, they should all be in the same release anyway
@@ -239,7 +253,7 @@ else
 			$nzb = new NZB();
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 			{
-				if($nzb->copyNZBforImport($relguid, $nzbFile))
+				if($nzb->copyNZBforImport($relguid, $nzba))
 				{
 					if ( $nzbCount % 100 == 0)
 					{

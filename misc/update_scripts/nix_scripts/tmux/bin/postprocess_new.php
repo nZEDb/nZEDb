@@ -8,11 +8,11 @@ $torun = $tmux->get()->POST;
 
 $pieces = explode("           =+=            ", $argv[1]);
 $postprocess = new PostProcess(true);
-if (isset($pieces[6]) && ($torun == "1" || $torun == "3"))
+if (isset($pieces[6]))
 {
 	$postprocess->processAdditional($argv[1]);
 }
-elseif (isset($pieces[3]) && ($torun == "2" || $torun == "3"))
+elseif (isset($pieces[3]))
 {
     $postprocess->processNfos($argv[1]);
 }

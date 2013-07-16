@@ -27,11 +27,7 @@ class Import
 		$nzb = array();
 		$s = new Sites();
 		$site = $s->get();
-		$grapbnzbs = $site->grabnzbs;
-		if ($grapbnzbs == 1)
-			$_connect = $nntp->doConnect();
-		else
-			$_connect = $nntp->doConnect_A();
+		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 
 		if ($hash == '')
 		{
@@ -66,7 +62,7 @@ class Import
 			}
 		}
 		//var_dump($nzb);
-		$_connect;
+		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 		if($nzb && array_key_exists('group', $nzb))
 		{
 			$article = $nntp->getArticles($nzb['group'], $arr);
@@ -74,7 +70,7 @@ class Import
 			{
 				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
 				$nntp->doQuit();
-				$_connect;
+				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$nntp->selectGroup($groupArr['name']);
 				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
@@ -138,7 +134,6 @@ class Import
 			{
 				//file info
 				$groupID = -1;
-				//$subject = utf8_encode(trim($partless));
 				$name = (string)$file->attributes()->subject;
 				$firstname[] = $name;
 				$fromname = (string)$file->attributes()->poster;
@@ -147,10 +142,11 @@ class Import
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$subject = utf8_encode(trim($firstname['0']));
+				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
+				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 				$cleanerName = $namecleaning->releaseCleaner($subject);
-				
+
 
 				// make a fake message object to use to check the blacklist
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
