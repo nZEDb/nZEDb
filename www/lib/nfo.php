@@ -57,7 +57,7 @@ class Nfo
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new Nntp();
-		$connect = ($site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
+		$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents($this->echooutput);
 		$nfocount = 0;
@@ -93,7 +93,7 @@ class Nfo
 				$relID = $arr['ID'];
 				$groupID = $arr['groupID'];
 
-				$connect;
+				$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
 				if (PEAR::isError($fetchedBinary))
 				{
@@ -101,9 +101,9 @@ class Nfo
 					$nntp->doQuit();
 					unset($nntp);
 					$nntp = new Nntp;
-					$connect;
+					$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$data = $nntp->selectGroup($groupName);
-					$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+					$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
 					if (PEAR::isError($fetchedBinary))
 					{
 						echo $n.$n."Error {$fetchedBinary->code}: {$fetchedBinary->message}".$n.$n;
