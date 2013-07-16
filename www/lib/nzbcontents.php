@@ -75,10 +75,23 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
+		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+        {
+            echo "\n".$nzbpath." appears to be an invalid path, skipping.\n";
+            return false;
+        }
+		else
 		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
+			if(!$nzbpath = 'compress.zlib://'.$nzbpath)
+			{
+				echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
+				return false;
+			}
+			if(!$nzbfile = simplexml_load_file($nzbpath))
+			{
+				echo "\n".$guid." appears to be an invalid nzb, skipping\n";
+				return false;
+			}
 			$foundnfo = false;
 			$actualParts = 0;
 			$artificialParts = 0;
@@ -138,11 +151,6 @@ Class NZBcontents
 						return false;
 				}
 			}
-		}
-		else
-		{
-			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
-			return false;
 		}
 	}
 
