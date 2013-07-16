@@ -1,4 +1,5 @@
-07162013 -> jonnyboy -> typo in postprocess.php
+07162013 -> jonnyboy -> added group check in binaries scan
+						typo in postprocess.php
 						fixed bug in grabnzbs
 						fixed bug in nfo nntp connection
 						added option to import gzipped nzbs, not working in www/admin/nzb-import.php
