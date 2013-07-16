@@ -31,7 +31,7 @@ do
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all true
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
-#	$PHP ${NZEDB_PATH}/nzbx_ws_hashdecrypt.php
+#	$PHP ${NZEDB_PATH}/decrypt_hashes.php
 #	$PHP ${DEV_PATH}/test_misc_sorter.php
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py additional
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo

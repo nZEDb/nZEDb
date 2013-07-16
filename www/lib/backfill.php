@@ -298,8 +298,10 @@ class Backfill
 		}
 
 		// Check if we are grabbing further than the server has.
-		if($groupArr['first_record'] <= $data['first']+50000)
+		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
+			//echo $groupArr['first_record']."\n";
+			//echo $data['first']."\n";
 			echo "We have hit the maximum we can backfill for ".$data['group'].", disabling it.".$n.$n;
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
