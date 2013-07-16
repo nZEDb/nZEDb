@@ -44,7 +44,7 @@ require_once dirname(__FILE__).'/rarinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.1
+ * @version    2.2
  */
 class SrrInfo extends RarInfo
 {
@@ -235,6 +235,7 @@ class SrrInfo extends RarInfo
 	// SRR files do not include any file contents
 	public function getFileData($filename) {return false;}
 	public function saveFileData($filename, $destination) {return false;}
+	public function extractFile($filename, $destination=null, $password=null) {return false;}
 
 	/**
 	 * Parses the SRR data and stores a list of valid blocks locally.

@@ -89,13 +89,21 @@ class Binaries
 		//if server return 411, skip group
 		if (PEAR::isError($data) && $data->code == 411)
 		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($data) && $data->code == 411)
+			{
+				echo $n.$n."Error {$data->code}: {$data->message}".$n;
+				echo "Skipping group: {$groupArr['name']}".$n;
+				return;
+			}
 		}
 
 		if (PEAR::isError($data))
 		{
-			echo $n.$n."Error {$data->code}: {$data->message}".$n.$n;
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -233,11 +241,20 @@ class Binaries
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 
-		//if server return 411, skip
+		//if server return 411, skip group
 		if (PEAR::isError($msgs) && $msgs->code == 411)
 		{
-			echo "Skipping group: {$groupArr['name']}".$n;
-			return;
+			$nntp->doQuit();
+			unset($nntp);
+			$nntp = new Nntp;
+			$nntp->doConnect();
+			$data = $nntp->selectGroup($groupArr['name']);
+			if (PEAR::isError($msgs) && $msgs->code == 411)
+			{
+				echo $n.$n."Error {$data->code}: {$data->message}".$n;
+				echo "Skipping group: {$groupArr['name']}".$n;
+				return;
+			}
 		}
 
 		if (PEAR::isError($msgs) && $msgs->code == 400)
@@ -269,8 +286,8 @@ class Binaries
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
 		}
-		//if(PEAR::isError($msgs))
-			//echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
+		if(PEAR::isError($msgs))
+			echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
 
 		$rangerequested = range($first, $last);
 		$msgsreceived = array();
@@ -307,11 +324,8 @@ class Binaries
 
 				$msgsreceived[] = $msg['Number'];
 
-				// For part count.
-				$pattern = '/\((\d+)\/(\d+)\)$/i';
-
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match($pattern, $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/i', $msg['Subject'], $matches))
 				{
 					$msgsignored[] = $msg['Number'];
 					continue;
@@ -325,7 +339,7 @@ class Binaries
 				}
 
 				// Attempt to get file count.
-				$partless = preg_replace($pattern, '', $msg['Subject']);
+				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $msg['Subject']);
 				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)/i', $partless, $filecnt))
 				{
 					$filecnt[2] = "0";
