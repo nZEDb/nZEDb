@@ -166,19 +166,22 @@ Class NZBcontents
 		// Fetch the NZB location using the GUID.
         if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
         {
-            echo "\n".$guid." appears to be an invalid release, skipping.";
+            echo "\n".$guid." appears to be an invalid release, skipping permanently.";
+			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
             return false;
         }
         else
         {
             if(!$nzbpath = 'compress.zlib://'.$nzbpath)
             {
-                echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.";
+                echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping permanently.";
+				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
                 return false;
             }
             if(!$nzbfile = simplexml_load_file($nzbpath))
             {
-                echo "\n".$guid." appears to be an invalid nzb, skipping.";
+                echo "\n".$guid." appears to be an invalid nzb, skipping permanently.";
+				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
                 return false;
             }
 			$foundnfo = false;
