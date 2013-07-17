@@ -5,11 +5,16 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2825";
+$version="0.1r2832";
 
 $db = new DB();
 $DIR = MISC_DIR;
 $db_name = DB_NAME;
+
+if ( isset($argv['1']) && $argv['1'] == "limited" )
+    $limited = true;
+else
+    $limited = false;
 
 $tmux = new Tmux();
 $seq = $tmux->get()->SEQUENTIAL;
@@ -351,7 +356,8 @@ while( $i > 0 )
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
-	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" )) || ( $i == 1 )) {
+	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
+	{
 		$result = @$db->query($qry);
 		$initquery = array();
 		foreach ($result as $cat=>$sub)
@@ -361,7 +367,9 @@ while( $i > 0 )
 		$proc_work_result = @$db->query($proc_work);
 		$time1 = TIME();
 		$runloop = "true";
-	} else {
+	}
+	else
+	{
 		$runloop = "false";
 	}
 
