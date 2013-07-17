@@ -8,6 +8,11 @@ require_once(WWW_DIR."lib/site.php");
 $db = new DB();
 $DIR = MISC_DIR;
 
+if ( isset($argv['1']) && $argv['1'] == "limited" )
+	$limited = true;
+else
+	$limited = false;
+
 $tmux = new Tmux();
 $tmux_session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
@@ -170,7 +175,10 @@ function attach($DIR, $tmux_session)
 	$panes_win_1 = exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
-	exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
+	if ( !$limited )
+		exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
+	else
+		exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php limited $log'");
 	exec("tmux select-window -t $tmux_session:0; tmux attach-session -d -t $tmux_session");
 }
 

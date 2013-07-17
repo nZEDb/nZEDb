@@ -75,10 +75,23 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
+		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+        {
+            echo "\n".$guid." appears to be an invalid release, skipping.";
+            return false;
+        }
+		else
 		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
+			if(!$nzbpath = 'compress.zlib://'.$nzbpath)
+			{
+				echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.";
+				return false;
+			}
+			if(!$nzbfile = simplexml_load_file($nzbpath))
+			{
+				echo "\n".$guid." appears to be an invalid nzb, skipping.";
+				return false;
+			}
 			$foundnfo = false;
 			$actualParts = 0;
 			$artificialParts = 0;
@@ -139,11 +152,6 @@ Class NZBcontents
 				}
 			}
 		}
-		else
-		{
-			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
-			return false;
-		}
 	}
 
 	//
@@ -156,10 +164,26 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
-		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = @simplexml_load_file($nzbpath);
+        if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+        {
+            echo "\n".$guid." appears to be an invalid release, skipping permanently.";
+			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
+            return false;
+        }
+        else
+        {
+            if(!$nzbpath = 'compress.zlib://'.$nzbpath)
+            {
+                echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping permanently.";
+				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
+                return false;
+            }
+            if(!$nzbfile = simplexml_load_file($nzbpath))
+            {
+                echo "\n".$guid." appears to be an invalid nzb, skipping permanently.";
+				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
+                return false;
+            }
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
@@ -248,12 +272,6 @@ Class NZBcontents
 					echo "f";
 				return false;
 			}
-		}
-		else
-		{
-			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
-			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
-			return false;
 		}
 	}
 

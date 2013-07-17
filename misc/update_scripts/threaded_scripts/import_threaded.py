@@ -75,7 +75,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	if int(use_true[0]) == 2 or sys.argv[1] == "true":
+	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 		print("We will be using filename as searchname")
 	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
