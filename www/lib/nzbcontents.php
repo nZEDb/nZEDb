@@ -77,19 +77,19 @@ Class NZBcontents
 		// Fetch the NZB location using the GUID.
 		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
         {
-            echo "\n".$nzbpath." appears to be an invalid path, skipping.\n";
+            echo "\n".$guid." appears to be an invalid release, skipping.";
             return false;
         }
 		else
 		{
 			if(!$nzbpath = 'compress.zlib://'.$nzbpath)
 			{
-				echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
+				echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.";
 				return false;
 			}
 			if(!$nzbfile = simplexml_load_file($nzbpath))
 			{
-				echo "\n".$guid." appears to be an invalid nzb, skipping\n";
+				echo "\n".$guid." appears to be an invalid nzb, skipping.";
 				return false;
 			}
 			$foundnfo = false;
@@ -164,10 +164,23 @@ Class NZBcontents
 		$nzb = new NZB();
 		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
-		if (file_exists($nzbpath = $nzb->NZBPath($guid)))
-		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = @simplexml_load_file($nzbpath);
+        if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+        {
+            echo "\n".$guid." appears to be an invalid release, skipping.";
+            return false;
+        }
+        else
+        {
+            if(!$nzbpath = 'compress.zlib://'.$nzbpath)
+            {
+                echo "\n".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.";
+                return false;
+            }
+            if(!$nzbfile = simplexml_load_file($nzbpath))
+            {
+                echo "\n".$guid." appears to be an invalid nzb, skipping.";
+                return false;
+            }
 			$foundnfo = false;
 			$failed = false;
 			$groupName = $groups->getByNameByID($groupID);
@@ -256,12 +269,6 @@ Class NZBcontents
 					echo "f";
 				return false;
 			}
-		}
-		else
-		{
-			echo "ERROR: Wrong permissions on NZB file, or it does not exist.\n";
-			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
-			return false;
 		}
 	}
 
