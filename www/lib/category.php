@@ -213,8 +213,10 @@ class Category
 	public function getNameByID($ID)
 	{
 		$db = new DB();
-		$parent = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", substr($ID, 0, 1)."000")));
-		$cat = array_shift($db->queryOneRow(sprintf("SELECT title from category where ID = %d", $ID)));
+		$arr1 = $db->queryOneRow(sprintf("SELECT title from category where ID = %d", substr($ID, 0, 1)."000"));
+		$parent = array_shift($arr1);
+		$arr2 = $db->queryOneRow(sprintf("SELECT title from category where ID = %d", $ID));
+		$cat = array_shift($arr2);
 		return $parent." ".$cat;
 	}
 

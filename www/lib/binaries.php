@@ -235,6 +235,7 @@ class Binaries
 			$nntp->doConnect();
 		}
 		$this->startHeaders = microtime(true);
+		$data = $nntp->selectGroup($groupArr['name']);
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
 		$s = new Sites;
@@ -249,6 +250,7 @@ class Binaries
 			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
 			if (PEAR::isError($msgs) && $msgs->code == 411)
 			{
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;

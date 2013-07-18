@@ -92,9 +92,9 @@ class NZB
 		$page = new Page();
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
 		$fp = gzopen($path, 'w6');
-		if ($fp && file_exists($nzb))
+		if ($fp && $nzb)
 		{
-			gzwrite ($fp, file_get_contents($nzb));
+			gzwrite ($fp, $nzb);
 			gzclose($fp);
 			chmod($path, 0777); // change the chmod to fix issues some users have with file permissions
 			return true;

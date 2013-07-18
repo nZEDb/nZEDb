@@ -1,3 +1,17 @@
+07162013 -> jonnyboy -> changed output for nzb errors during nfo processing
+						fixed bug in threaded import using tmux
+						fixed pass by reference error
+						added group check in binaries scan
+						typo in postprocess.php
+						fixed bug in grabnzbs
+						fixed bug in nfo nntp connection
+						added option to import gzipped nzbs, not working in www/admin/nzb-import.php
+						changed import copy file to save stream, increased import speed
+						fixed typo in namecleaning.php
+07152013 -> jonnyboy -> replaced external decrypt hashes script with internal one
+						added preg_replace to grabnzbs and nzb-import to remove part number from end of subject
+07152013 -> kevin    -> update namecleaning     Added some regex to name cleaning.
+						Make sure that yEnc is before part count in binaries.php (some High Compressed virus posts were getting through).
 07142013 -> jonnyboy -> reverted last
 						changed default user view to list view
 						updated rarinfo libs
@@ -50,7 +64,7 @@
 						added more rss feeds for predb.me
 07062013 -> jonnyboy -> fixed patch
 						Added threaded requestID for initial pull
-07062013 -> Miatrix  -> Added Request ID Lookup.  This looks up requests from the URL we provide to fix naming where possible.  
+07062013 -> Miatrix  -> Added Request ID Lookup.  This looks up requests from the URL we provide to fix naming where possible.
 						This is very usefull for pron, but helps sometimes on tv/movies/console releases.
 07062013 -> jonnyboy -> removed remove stale folders from threaded pp additional, wrong place
 07052013 -> jonnyboy -> fixed bug in tmux-edit and monitor
