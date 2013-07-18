@@ -17,6 +17,7 @@ $n = "\n";
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+$namecleaning = new nameCleaning();
 
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.".$n);
@@ -103,15 +104,26 @@ else
 	//iterate over all nzb files in all folders and subfolders
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 	foreach($objects as $filestoprocess => $nzbFile){
-		if(!$nzbFile->getExtension() == "nzb")
+		if(!$nzbFile->getExtension() == "nzb" || !$nzbFile->getExtension() == "gz")
 		{
 			continue;
 		}
+		$compressed = false;
 		$isBlackListed = FALSE;
 		$importfailed = false;
-		$nzb = file_get_contents($nzbFile);
+		if ($nzbFile->getExtension() == "nzb")
+		{
+			$nzba = file_get_contents($nzbFile);
+			$compressed = false;
+		}
+		elseif ($nzbFile->getExtension() == "gz")
+		{
+			$nzbc = 'compress.zlib://'.$nzbFile;
+			$nzba = file_get_contents($nzbc);
+			$compressed = true;
+		}
 
-		$xml = @simplexml_load_string($nzb);
+		$xml = @simplexml_load_string($nzba);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 		{
 			continue;
@@ -137,16 +149,18 @@ else
 			$totalFiles++;
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
-			$subject = utf8_encode(trim($firstname['0']));
+            $partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
+            $subject = utf8_encode(trim($partless));
 			$namecleaning = new nameCleaning();
 
 			// make a fake message object to use to check the blacklist
-			$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
+			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
 
 			// if the release is in our DB already then don't bother importing it
 			if ($usenzbname && $skipCheck !== true)
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
+				$usename = str_replace('.gz', '', $usename);
 				$cleanerName = $usename;
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -159,7 +173,7 @@ else
 				if ($res !== false || $res1 !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
-					//@unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -170,7 +184,7 @@ else
 				$usename = $db->escapeString($name);
 				$cleanerName = $namecleaning->releaseCleaner($subject);
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
-					$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
 				// only check one binary per nzb, they should all be in the same release anyway
@@ -180,7 +194,7 @@ else
 				if ($res !== false)
 				{
 					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
-					//@unlink($nzbFile);
+					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					break;
@@ -236,9 +250,8 @@ else
 		{
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
-
 			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
-			if($nzb->copyNZBforImport($relguid, $nzbFile))
+			if($nzb->copyNZBforImport($relguid, $nzba))
 			{
 				if ( $nzbCount % 100 == 0)
 				{
@@ -252,7 +265,7 @@ else
 						{
 							unset($data);
 							foreach ($filenames as $value) {
- 								//@unlink($value);
+ 								@unlink($value);
 							}
 							unset($filenames);
 							categorize();
