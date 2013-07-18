@@ -1,4 +1,6 @@
-07182013 -> jonnyboy -> fixed bug in threaded postprocess
+07182013 -> jonnyboy -> added alternate nntp to install
+						fixed bug in orlydb
+						fixed bug in threaded postprocess
 						attempt to fix sab view queue
 07162013 -> jonnyboy -> changed output for nzb errors during nfo processing
 						fixed bug in threaded import using tmux

@@ -72,7 +72,7 @@ Class Predb
 									continue;
 								else
 								{
-									if (!isset($matches2["size1"]) && empty($matches["size1"]))
+									if (!isset($matches2["size1"]) && empty($matches2["size1"]))
 										$size = "NULL";
 									else
 										$size = $db->escapeString($matches2["size1"].$matches2["size2"]);
@@ -88,7 +88,7 @@ Class Predb
 							}
 							else
 							{
-								if (!isset($matches2["size1"]) && empty($matches["size1"]))
+								if (!isset($matches2["size1"]) && empty($matches2["size1"]))
 									$size = "NULL";
 								else
 									$size = $db->escapeString($matches2["size1"].$matches2["size2"]);
@@ -176,7 +176,7 @@ Class Predb
 								continue;
 							else
 							{
-								if (!isset($matches2["size1"]) && empty($matches["size1"]))
+								if (!isset($matches2["size1"]) && empty($matches2["size1"]))
 									$size = "NULL";
 								else
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
@@ -220,7 +220,7 @@ Class Predb
 								continue;
 							else
 							{
-								if (!isset($matches2["size"]) && empty($matches["size"]))
+								if (!isset($matches2["size"]) && empty($matches2["size"]))
 									$size = "NULL";
 								else
 									$size = $db->escapeString(round($matches2["size"]));
@@ -259,7 +259,7 @@ Class Predb
 		{
 			if (preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match))
 			{
-				if (preg_match_all('/<div>.+<\/div>/s', $match["1"], $matches))
+				if (preg_match_all('/<div>.+?<\/div>/s', $match["1"], $matches))
 				{
 					foreach ($matches as $m1)
 					{
@@ -272,7 +272,7 @@ Class Predb
 									continue;
 								else
 								{
-									if (!isset($matches2["size"]) && empty($matches["size"]))
+									if (!isset($matches2["size"]) && empty($matches2["size"]))
 										$size = "NULL";
 									else
 										$size = $db->escapeString($matches2["size"]);
