@@ -18,11 +18,13 @@ import signal
 import datetime
 
 print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-if sys.argv[1] == "additional":
+if len(sys.argv) > 1 and sys.argv[1] == "additional":
 	print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
 	print("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo.")
-elif sys.argv[1] == "nfo":
+elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	print("* = hidden NFO, + = NFO, - = no NFO, f = download failed.")
+else:
+    sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
