@@ -1,3 +1,4 @@
+07182013 -> jonnyboy -> attempt to fix sab view queue
 07162013 -> jonnyboy -> changed output for nzb errors during nfo processing
 						fixed bug in threaded import using tmux
 						fixed pass by reference error
