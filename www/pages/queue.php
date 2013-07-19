@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once(WWW_DIR."lib/sabnzbd.php");
 
 if (!$users->isLoggedIn())
 	$page->show403();
@@ -17,17 +17,17 @@ if (isset($_REQUEST["del"]))
 
 if (isset($_REQUEST["pause"]))
 	$sab->pauseFromQueue($_REQUEST['pause']);
-	
+
 if (isset($_REQUEST["resume"]))
 	$sab->resumeFromQueue($_REQUEST['resume']);
 
 if (isset($_REQUEST["pall"]))
 	$sab->pauseAll($_REQUEST['pall']);
-	
+
 if (isset($_REQUEST["rall"]))
 	$sab->resumeAll($_REQUEST['rall']);
 
-$page->smarty->assign('sabserver',$sab->url);	
+$page->smarty->assign('sabserver',$sab->url);
 $page->title = "Your Download Queue";
 $page->meta_title = "View Sabnzbd Queue";
 $page->meta_keywords = "view,sabznbd,queue";
@@ -35,5 +35,3 @@ $page->meta_description = "View Sabnzbd Queue";
 
 $page->content = $page->smarty->fetch('viewqueue.tpl');
 $page->render();
-
-?>

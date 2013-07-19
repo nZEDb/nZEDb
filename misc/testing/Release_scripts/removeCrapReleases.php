@@ -113,7 +113,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Executable";
 		$db = new DB();
-		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.categoryID not in (4010, 4020, 4050, 7010)'.$and);
+		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.categoryID not in (4000, 4010, 4020, 4050, 7010)'.$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -143,7 +143,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Passworded";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP 'Passworded|Password Protect' and nzbstatus = 1".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '/passworded|password protect|password/i' and nzbstatus in (1, 2)".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -153,7 +153,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Size";
 		$db = new DB();
-		$sql = $db->query('select ID, guid, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8010, 8020, 8030, 8050)'.$and);
+		$sql = $db->query("select ID, guid, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8000, 8010, 8020, 8030, 8040, 8050, 8060, 3010)".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}

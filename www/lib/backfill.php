@@ -553,7 +553,7 @@ class Backfill
 		echo 'Processing '.$groupArr['name']." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
 		$this->startLoop = microtime(true);
 		//let scan handle the connection
-		$lastId = $binaries->scan(null, $groupArr, $last, $first);
+		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
 		if ($lastId === false)
 		{
 			//scan failed - skip group
