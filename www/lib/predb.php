@@ -135,7 +135,6 @@ Class Predb
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-
 									$db->query(sprintf("UPDATE predb SET size = %s, category = %s, predate = FROM_UNIXTIME(".strtotime($matches2["date"])."), adddate = now(), source = %s where ID = %d", $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $oldname["ID"]));
 									$newnames++;
 								}
@@ -143,8 +142,8 @@ Class Predb
 							else
 							{
 								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-
-								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
+								$title = preg_replace("/  - omgwtfnzbs.org/", "", $matches2["title"]);
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($title), $size, $db->escapeString($matches2["category"]), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
 								$newnames++;
 							}
 						}

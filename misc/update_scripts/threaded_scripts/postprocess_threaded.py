@@ -18,7 +18,7 @@ import signal
 import datetime
 
 print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-if len(sys.argv) > 1:
+if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
 if sys.argv[1] == "additional":
 	print("Fetch for: b = binary, s = sample, m = mediainfo, a = audio, j = jpeg")
