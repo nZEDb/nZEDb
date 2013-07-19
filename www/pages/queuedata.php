@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once(WWW_DIR."lib/sabnzbd.php");
 
 if (!$users->isLoggedIn())
 	$page->show403();
@@ -11,25 +11,25 @@ if (empty($sab->url))
 
 if (empty($sab->apikey))
 	$page->show404();
-	
+
 $output = "";
 
 $json = $sab->getQueue();
+
 if ($json !== false)
 {
 	$obj = json_decode($json);
 	$queue = $obj->{'jobs'};
 	$count = 1;
-	
+
 	$speed = $obj->{'speed'};
 	$queued = round($obj->{'mbleft'}, 2)."MB / ".round($obj->{'mb'}, 2)."MB";
 	$status = ucwords(strtolower($obj->{'state'}));
 	$load = $obj->{'loadavg'};
 	$space1 = $obj->{'diskspace1'};
 	$space2 = $obj->{'diskspace2'};
-	
+
 	$output .= "<p><b>Download speed:</b> ".$speed."B/s - <b>Queued:</b> ".$queued." - <b>Status:</b> ".$status." - <b>Server stats:</b> ".$load." - <b>Space left download dir:</b> ".round($space1)."GB - <b>Complete dir:</b> ".round($space2)."GB</p>";
-	
 	if (count($queue) > 0)
 	{
 		$output.="<table class=\"data highlight\">";
@@ -77,4 +77,4 @@ else
 }
 
 print $output;
-?>
+

@@ -76,6 +76,7 @@ class SABnzbd
 	public function getQueue()
 	{
 		$queueUrl = $this->url."api?mode=qstatus&output=json&apikey=".$this->apikey;
+		//$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
 		return getUrl($queueUrl);
 	}
 
