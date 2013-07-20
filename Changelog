@@ -1,4 +1,5 @@
-07202013 -> jonnyboy -> fixed bug in predb with zenet
+07202013 -> jonnyboy -> added release count per group to active_groups.php
+						fixed bug in predb with zenet
 						added 5 indexes to releases to improve postprocess queries
 						improved query time in monitor
 07192013 -> jonnyboy -> fixed bug in postprocess(windows)

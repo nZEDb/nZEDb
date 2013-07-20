@@ -2076,7 +2076,7 @@ class Releases
 			$tot_retcount = $tot_retcount + $retcount;
 			$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
-			/*if ($this->requestids == "1")
+			if ($this->requestids == "1")
 			{
 				$this->processReleasesStage5b($groupID, $echooutput);
 			}
@@ -2091,7 +2091,7 @@ class Releases
 				if ($this->echooutput)
 					echo "\nReleases updated in " . $timing . ".";
 
-			}*/
+			}
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);

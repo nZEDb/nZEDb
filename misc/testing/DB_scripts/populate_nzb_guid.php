@@ -30,7 +30,7 @@ function create_guids($live)
 	if ($live == "true")
 		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc"));
 	elseif ($live == "limited")
-		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by RAND() desc limit 10000"));
+		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc limit 10000"));
 
 	echo "\nUpdating ".sizeof($relrecs)." release guids\n";
 	$releases = new Releases();
