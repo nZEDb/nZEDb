@@ -1,3 +1,7 @@
+07202013 -> jonnyboy -> added release count per group to active_groups.php
+						fixed bug in predb with zenet
+						added 5 indexes to releases to improve postprocess queries
+						improved query time in monitor
 07192013 -> jonnyboy -> fixed bug in postprocess(windows)
 						fixed bug in safe backfill, was adding parts to partrepair, you many need to run: truncate table partrepair;
 						fixed bug in predb, you will need to run this query: update predb set title = replace (title, '  - omgwtfnzbs.org', '');
