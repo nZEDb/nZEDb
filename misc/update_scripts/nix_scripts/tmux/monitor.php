@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r2838";
+$version="0.1r2839";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -417,14 +417,14 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['parts'] != NULL ) { $parts_rows = $proc_work_result[0]['parts']; }
 	if ( @$proc_work_result[0]['partsize'] != NULL ) { $parts_size_gb = $proc_work_result[0]['partsize']; }
 	if ( @$proc_work_result2[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result2[0]['collections_table']; }
-	if ( @$proc_work_result[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result[0]['binaries_table']; }
-	if ( @$proc_work_result[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result[0]['parts_table']; }
+	if ( @$proc_work_result2[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result2[0]['binaries_table']; }
+	if ( @$proc_work_result2[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result2[0]['parts_table']; }
 
-	if ( @$proc_work_result[0]['predb'] != NULL ) { $predb = $proc_work_result[0]['predb']; }
+	if ( @$proc_work_result2[0]['predb'] != NULL ) { $predb = $proc_work_result2[0]['predb']; }
 	if ( @$proc_work_result2[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result2[0]['predb_matched']; }
-	if ( @$proc_work_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_work_result[0]['distinctnzbs']; }
-	if ( @$proc_work_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_work_result[0]['totalnzbs']; }
-	if ( @$proc_work_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_work_result[0]['pendingnzbs']; }
+	if ( @$proc_work_result2[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_work_result2[0]['distinctnzbs']; }
+	if ( @$proc_work_result2[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_work_result2[0]['totalnzbs']; }
+	if ( @$proc_work_result2[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_work_result2[0]['pendingnzbs']; }
 	if ( @$proc_work_result[0]['requestID_inprogress'] != NULL ) { $requestID_inprogress = $proc_work_result[0]['requestID_inprogress']; }
 	if ( @$proc_work_result[0]['requestID_matched'] != NULL ) { $requestID_matched = $proc_work_result[0]['requestID_matched']; }
 
