@@ -30,16 +30,14 @@ function preName()
 					$db->query(sprintf("update releases set dehashstatus = 1, relnamestatus = 6, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
 					if ($db->getAffectedRows() >= 1)
 					{
+						echo "Renamed hashed release: ".$res1['title']."\n";
 						$success = true;
 						$counter++;
 					}
 				}
 			}
 			if ($success == false)
-			{
 				$db->query(sprintf("update releases set dehashstatus = dehashstatus - 1 where ID = %d", $row['ID']));
-				echo "Renamed hashed release: ".$res1['title'];
-			}
 			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,mysqli_num_rows($res)));
 		}
 	}
