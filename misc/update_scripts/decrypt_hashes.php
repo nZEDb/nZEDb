@@ -36,7 +36,10 @@ function preName()
 				}
 			}
 			if ($success == false)
+			{
 				$db->query(sprintf("update releases set dehashstatus = dehashstatus - 1 where ID = %d", $row['ID']));
+				echo "Renamed hashed release: ".$res1['title'];
+			}
 			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,mysqli_num_rows($res)));
 		}
 	}
