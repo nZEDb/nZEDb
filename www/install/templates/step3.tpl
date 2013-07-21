@@ -5,7 +5,7 @@
 	</div>
 {else}
 
-<p>If you already have a news server (NNTP), please provide the following information:</p>
+<p>If you already have a primary news server (NNTP), please provide the following information:</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
@@ -39,6 +39,39 @@
 			</td>
 		</tr>		
 	</table>
+<p>If you already have an alternate news server (NNTP), please provide the following information:</p>
+	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
+		<tr class="">
+			<td><label for="servera">Server:</label></td>
+			<td>
+				<input type="text" name="servera" id="servera" value="{$cfg->NNTP_SERVER_A}" />
+				<div class="hint">e.g. eu.news.astraweb.com</div>
+			</td>
+		</tr>
+		<tr class="alt">
+			<td><label for="usera">Username:</label></td>
+			<td><input type="text" name="usera" id="usera" value="{$cfg->NNTP_USERNAME_A}" /></td>
+		</tr>
+		<tr class="">
+			<td><label for="passa">Password:</label></td>
+			<td>
+				<input type="text" name="passa" id="passa" value="{$cfg->NNTP_PASSWORD_A}" />
+			</td>
+		</tr>
+		<tr class="alt">
+			<td><label for="porta">Port:</label></td>
+			<td>
+				<input type="text" name="porta" id="porta" value="{$cfg->NNTP_PORT_A}" />
+				<div class="hint">e.g. 119 or 443,563 for SSL</div>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="ssla">SSL?:</label></td>
+			<td>
+				<input type="checkbox" name="ssla" id="ssla" value="1" {if $cfg->NNTP_SSLENABLED_A=="true"}checked="checked"{/if} />
+			</td>
+		</tr>		
+	</table>
 
 	<div style="padding-top:20px; text-align:center;">
 			{if $cfg->error}
@@ -48,7 +81,7 @@
 				<br />
 			</div>
 			{/if}
-			<input type="submit" value="Test Connection" />
+			<input type="submit" value="Test Primary Connection" />
 	</div>
 
 </form>

@@ -815,27 +815,27 @@ class Movie
 		{
 			$rt = new RottenTomato($site->rottentomatokey);
 
-	  	$ret = $rt->getBoxOffice();
-	  	if ($ret != "")
-	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $ret);
+			$ret = $rt->getBoxOffice();
+			if ($ret != "")
+				$this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $ret);
 
-	  	$ret = $rt->getInTheaters();
-	  	if ($ret != "")
-	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $ret);
+			$ret = $rt->getInTheaters();
+			if ($ret != "")
+				$this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $ret);
 
-	  	$ret = $rt->getOpening();
-	  	if ($ret != "")
-	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $ret);
+			$ret = $rt->getOpening();
+			if ($ret != "")
+				$this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $ret);
 
-	  	$ret = $rt->getUpcoming();
-	  	if ($ret != "")
-	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $ret);
+			$ret = $rt->getUpcoming();
+			if ($ret != "")
+				$this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $ret);
 
-	  	$ret = $rt->getDVDReleases();
-	  	if ($ret != "")
-	  		$this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
-	  	if ($this->echooutput)
-			echo "Updated successfully.\n";
+			$ret = $rt->getDVDReleases();
+			if ($ret != "")
+				$this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
+			if ($this->echooutput)
+				echo "Updated successfully.\n";
 	  }
   }
 
