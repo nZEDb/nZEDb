@@ -1,3 +1,15 @@
+07202013 -> jonnyboy -> added release name to output of decrypt_hashes.php
+						added release count per group to active_groups.php
+						fixed bug in predb with zenet
+						added 5 indexes to releases to improve postprocess queries
+						improved query time in monitor
+07192013 -> jonnyboy -> fixed bug in postprocess(windows)
+						fixed bug in safe backfill, was adding parts to partrepair, you many need to run: truncate table partrepair;
+						fixed bug in predb, you will need to run this query: update predb set title = replace (title, '  - omgwtfnzbs.org', '');
+07182013 -> jonnyboy -> added alternate nntp to install
+						fixed bug in orlydb
+						fixed bug in threaded postprocess
+						attempt to fix sab view queue
 07162013 -> jonnyboy -> changed output for nzb errors during nfo processing
 						fixed bug in threaded import using tmux
 						fixed pass by reference error

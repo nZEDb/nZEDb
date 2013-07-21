@@ -59,7 +59,7 @@ class NZB
 					{
 						if ($nzb_guid == "")
 							$nzb_guid = $partsrow["messageID"];
-							
+
 						gzwrite($fp, "  <segment bytes=\"".$partsrow["size"]."\" number=\"".$partsrow["partnumber"]."\">".htmlspecialchars($partsrow["messageID"], ENT_QUOTES, 'utf-8')."</segment>\n");
 					}
 					gzwrite($fp, " </segments>\n</file>\n");
