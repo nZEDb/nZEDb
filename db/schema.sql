@@ -98,6 +98,11 @@ CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
 CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
 CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
 CREATE INDEX ix_releases_reqidstatus ON `releases`(`reqidstatus` ASC) USING HASH ;
+CREATE INDEX ix_releases_nfostatus ON releases (`nfostatus` ASC) USING HASH;
+CREATE INDEX ix_releases_musicinfoID ON releases (`musicinfoID`);
+CREATE INDEX ix_releases_consoleinfoID ON releases (`consoleinfoID`);
+CREATE INDEX ix_releases_bookinfoID ON releases (`bookinfoID`);
+CREATE INDEX ix_releases_haspreview ON releases (`haspreview` ASC) USING HASH;
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -1036,7 +1041,7 @@ INSERT INTO `site`
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
-	('sqlpatch','97');
+	('sqlpatch','98');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;

@@ -168,10 +168,10 @@ Class Predb
 				{
 					foreach ($match as $m)
 					{
-						if (preg_match('/<tr bgcolor=".+?<td.+?">(?P<date>.+?)<\/td.+?<td.+?(<font.+?">(?P<category>.+?)<\/a.+?|">(?P<category1>NUKE)+?)?<\/td.+?<td.+?">(?P<title>.+?)-<a.+?<\/td.+?<td.+<td.+?(">(?P<size1>[\d.]+)<b>(?P<size2>.+?)<\/b>.+)?<\/tr>/s', $m, $matches2))
+						if (preg_match('/<tr bgcolor=".+?<td.+?">(?P<date>.+?)<\/td.+?<td.+?(<font.+?">(?P<category>.+?)<\/a.+?|">(?P<category1>NUKE)+?)?<\/td.+?<td.+?">(?P<title>.+?-)<a.+?<b>(?P<title2>.+?)<\/b>.+?<\/td.+?<td.+<td.+?(">(?P<size1>[\d.]+)<b>(?P<size2>.+?)<\/b>.+)?<\/tr>/s', $m, $matches2))
 						{
 							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"])
+							if ($oldname["title"] == $matches2["title"].$matches2["title2"])
 								continue;
 							else
 							{
@@ -187,7 +187,7 @@ Class Predb
 								else
 									$category = "NULL";
 
-								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"]))));
+								$db->query(sprintf("INSERT IGNORE INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, FROM_UNIXTIME(".strtotime($matches2["date"])."), now(), %s, %s)", $db->escapeString($matches2["title"].$matches2["title2"]), $size, $category, $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"].$matches2["title2"]))));
 								$newnames++;
 							}
 						}
