@@ -1,4 +1,5 @@
-07202013 -> jonnyboy -> added release count per group to active_groups.php
+07202013 -> jonnyboy -> added release name to output of decrypt_hashes.php
+						added release count per group to active_groups.php
 						fixed bug in predb with zenet
 						added 5 indexes to releases to improve postprocess queries
 						improved query time in monitor
