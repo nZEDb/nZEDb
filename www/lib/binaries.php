@@ -60,14 +60,14 @@ class Binaries
 			{
 				// Create new tables for the parts/binaries/collections for the group.
 				$gname = $db->escapeString(str_replace('alt.binaries.', '', $groupArr['name']));
-				$dbname = $db->escapeString(DB:DB_NAME);
-				$res = $db->queryDirect(sprintf("SHOW TABLES FROM %s WHERE tables_in_%s like collections%s or tables_in_%s like binaries%s or tables_in_%s like parts%s", $dbname, $dbname, $gname, $gname, $gname));
+				$dbname = $db->escapeString(DB::DB_NAME);
+				$res = $db->queryDirect(sprintf("SHOW TABLES FROM %s WHERE tables_in_%s like collections%s or tables_in_%s like binaries%s or tables_in_%s like parts%s", $dbname, $dbname, $gname, $dbname, $gname, $dbname, $gname));
 				
 				if(mysql_num_rows($res) < 3)
 				{
-					$db->queryDirect(sprintf("CREATE TABLE collections%s LIKE collections", $strgname);
-					$db->queryDirect(sprintf("CREATE TABLE binaries%s LIKE binaries", $strgname);
-					$db->queryDirect(sprintf("CREATE TABLE parts%s LIKE parts", $strgname);
+					$db->queryDirect(sprintf("CREATE TABLE collections%s LIKE collections", $strgname));
+					$db->queryDirect(sprintf("CREATE TABLE binaries%s LIKE binaries", $strgname));
+					$db->queryDirect(sprintf("CREATE TABLE parts%s LIKE parts", $strgname));
 				}
 				else
 				{
