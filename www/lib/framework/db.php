@@ -31,20 +31,23 @@ class DB
 				exit();
 			}
 
-			DB::$mysqli->set_charset('utf8');
+			if (!DB::$mysqli->set_charset('utf8')) {
+				printf(DB::$mysqli->error);
+			} else {
+				DB::$mysqli->character_set_name();
+			}
+
 			DB::$initialized = true;
 		}
 	}
 
 	public function escapeString($str)
 	{
-		if (is_null($str))
-		{
+		if (is_null($str)){
 			return "NULL";
 		} else {
-		$str = preg_replace("/[\x80-\xff]/", " ", $str);
-		return "'".DB::$mysqli->real_escape_string($str)."'";
-	}
+			return "'".DB::$mysqli->real_escape_string($str)."'";
+		}	
 	}
 
 	public function makeLookupTable($rows, $keycol)
