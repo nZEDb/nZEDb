@@ -242,61 +242,32 @@ class Binaries
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 
-		//if server return 411, skip group
-		if (PEAR::isError($msgs) && $msgs->code == 411)
+		if (PEAR::isError($msgs) && ($msgs->code == 400 || $msgs->code == 411 || $msgs->code == 412 || $msgs->code == 1000))
 		{
+			if ($msgs->code == 400)
+				echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
-			if (PEAR::isError($msgs) && $msgs->code == 411)
+			if (PEAR::isError($msgs))
 			{
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;
-				echo "Skipping group: {$groupArr['name']}".$n;
-				return;
+				// If server returns error 411, skip group.
+				if ($msgs->code == 411)
+				{
+					echo "Skipping group: {$groupArr['name']}".$n;
+					return;
+				}
 			}
 		}
-
-		if (PEAR::isError($msgs) && $msgs->code == 400)
-		{
-			echo "NNTP connection timed out. Reconnecting...$n";
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$nntp->selectGroup($groupArr['name']);
-			$msgs = $nntp->getOverview($first."-".$last, true, false);
-		}
-
-		if (PEAR::isError($msgs) && $msgs->code == 412)
-		{
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$nntp->selectGroup($groupArr['name']);
-			$msgs = $nntp->getOverview($first."-".$last, true, false);
-		}
-		if (PEAR::isError($msgs) && $msgs->code == 1000)
-		{
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$nntp->selectGroup($groupArr['name']);
-			$msgs = $nntp->getOverview($first."-".$last, true, false);
-		}
-		if(PEAR::isError($msgs))
-			echo $n.$n."Error {$msgs->code}: {$msgs->message}".$n.$n;
+		else if (PEAR::isError($msgs))
+			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
 		$rangerequested = range($first, $last);
-		$msgsreceived = array();
-		$msgsblacklisted = array();
-		$msgsignored = array();
-		$msgsnotinserted = array();
-
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
 
 		if ($type != 'partrepair')
@@ -312,13 +283,15 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		if (is_array($msgs))
 		{
-			// Loop articles, figure out files/parts.
 			if ($this->debug)
 				$colnames = $orignames = array();
+			
+			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
 					continue;
+				
 				if (isset($msg['Bytes']))
 					$bytes = $msg['Bytes'];
 				else
@@ -327,7 +300,7 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/i', $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc) \((\d+)\/(\d+)\)$/i', $msg['Subject'], $matches))
 				{
 					$msgsignored[] = $msg['Number'];
 					continue;
@@ -339,59 +312,79 @@ class Binaries
 					$msgsblacklisted[] = $msg['Number'];
 					continue;
 				}
-
-				// Attempt to get file count.
-				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $msg['Subject']);
+				
+				// Attempt to find the file count. If it is not found, set it to 0.
 				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)/i', $partless, $filecnt))
-				{
-					$filecnt[2] = "0";
-					$filecnt[6] = "0";
-				}
-				if(is_numeric($matches[1]) && is_numeric($matches[2]))
+					$filecnt[2] = $filecnt[6] = "0";
+				
+				// Make sure the part count is set or else continue.
+				if(is_numeric($matches[2]) && is_numeric($matches[3]))
 				{
 					array_map('trim', $matches);
-					$subject = utf8_encode(trim($partless));
-					$cleansubject = $namecleaning->collectionsCleaner($msg['Subject']);
+					
+					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
+					if(!$cleanerArray = $namecleaning->collectionsCleaner($msg['Subject']))
+					{
+						if ($this->debug)
+							echo "The following article has not matched on a regex: ".$msg['Subject']."\n";
+						$msgsignored[] = $msg['Number'];
+						continue;
+					}
+					else
+					{
+						// Used for the SHA1.
+						$hashsubject = $cleanerArray["hash"];
+						// The cleaned up subject. Inserted into the collections table as the name.
+						$cleansubject = $cleanerArray["clean"];
+						// Inserted into the collections table as the subject.
+						$subject = utf8_encode(trim($matches[1]));
+					}
+					
+					// Used for looking at the difference between the original name and the clean subject.
 					if ($this->debug)
 					{
-						if (!in_array($cleansubject, $colnames))
+						if (!in_array($hashsubject, $colnames))
 						{
-							$colnames[] = $cleansubject;
+							$colnames[] = $hashsubject;
 							$orignames[] = $msg['Subject'];
 						}
 					}
 
+					// Set up the info for inserting.
 					if(!isset($this->message[$subject]))
 					{
 						$this->message[$subject] = $msg;
-						$this->message[$subject]['MaxParts'] = (int)$matches[2];
+						$this->message[$subject]['MaxParts'] = (int)$matches[3];
 						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
-						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
+						$this->message[$subject]['CollectionHash'] = sha1($hashsubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-
-					if(preg_match('/.nzb\"/', $msg['Subject']) && $site->grabnzbs != 0)
+					if((int)$matches[2] > 0)
+						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
+					
+					// Used for the grabnzb function.
+					if(preg_match('/\.nzb" yEnc$/', $subject) && $site->grabnzbs != 0)
 					{
-						$nzbparts = 0;
-						$totalparts = 1;
-						if(preg_match('/\((?P<part>\d*)\/(?P<total>\d*)\)/', $msg['Subject'], $matchesparts))
-						{
-							$nzbparts = $matchesparts['part'];
-							$totalparts = $matchesparts['total'];
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$nzbparts, (int)$totalparts, $db->escapeString($this->message[$subject]['Date'])));
-							$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
-						}
-					}
 
-					if((int)$matches[1] > 0)
-					{
-						$this->message[$subject]['Parts'][(int)$matches[1]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[1], 'size' => $bytes);
+						/* We already have the group if we are grabbing articles from it.
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
+						*/
+						
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
+						// I'm guessing this is to update the other parts in this table.
+						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
 					}
+				}
+				else
+				{
+					// Ignore if there is no part count.
+					$msgsignored[] = $msg['Number'];
+					continue;
 				}
 			}
 
+			// Used for looking at the difference between the original name and the clean subject.
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
 				$arr = array_combine($colnames, $orignames);
@@ -399,15 +392,15 @@ class Binaries
 				print_r($arr);
 			}
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
-			unset($msg);
-			unset($msgs);
+			unset($msg, $msgs);
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
 				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary at ".date('H:i:s').$n;
 
-			if (sizeof($rangenotreceived) > 0) {
+			if (sizeof($rangenotreceived) > 0)
+			{
 				switch($type)
 				{
 					case 'backfill':
@@ -428,17 +421,15 @@ class Binaries
 			if(isset($this->message) && count($this->message))
 			{
 				$maxnum = $first;
+				
 				// Insert binaries and parts into database. when binary already exists; only insert new parts.
-
 				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryID, number, messageID, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
 					$insPartsStmt->bind_param('dssss', $pBinaryID, $pNumber, $pMessageID, $pPartNumber, $pSize);
 				else
-					die("Couldn't prepare parts insert statement!");
+					exit("Couldn't prepare parts insert statement!");
 
-				$lastCollectionHash = "";
-				$lastCollectionID = -1;
-				$lastBinaryHash = "";
-				$lastBinaryID = -1;
+				$lastCollectionHash = $lastBinaryHash = "";
+				$lastCollectionID = $lastBinaryID = -1;
 
 				$db->setAutoCommit(false);
 
@@ -449,9 +440,7 @@ class Binaries
 						$collectionHash = $data['CollectionHash'];
 
 						if ($lastCollectionHash == $collectionHash)
-						{
 							$collectionID = $lastCollectionID;
-						}
 						else
 						{
 							$lastCollectionHash = $collectionHash;
@@ -461,9 +450,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								//$cleanerName = $namecleaning->releaseCleaner($subject, $groupArr['ID']);
-								$cleanerName = $subject;
-								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleanerName), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($subject), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
@@ -479,9 +466,7 @@ class Binaries
 						$binaryHash = md5($subject.$data['From'].$groupArr['ID']);
 
 						if ($lastBinaryHash == $binaryHash)
-						{
 							$binaryID = $lastBinaryID;
-						}
 						else
 						{
 							$lastBinaryHash = $binaryHash;
@@ -493,9 +478,7 @@ class Binaries
 								$binaryID = $db->queryInsert($bsql);
 							}
 							else
-							{
 								$binaryID = $bres["ID"];
-							}
 
 							$lastBinaryID = $binaryID;
 						}
@@ -511,9 +494,7 @@ class Binaries
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
 
 							if (!$insPartsStmt->execute())
-							{
 								$msgsnotinserted[] = $partdata['number'];
-							}
 						}
 					}
 				}
@@ -533,8 +514,7 @@ class Binaries
 			{
 				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
 			}
-			unset($this->message);
-			unset($data);
+			unset($this->message, $data);
 			return $maxnum;
 		}
 		else
