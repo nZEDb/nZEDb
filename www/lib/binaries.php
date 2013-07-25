@@ -58,6 +58,8 @@ class Binaries
 
 			foreach($res as $groupArr)
 			{
+				/* In the future possibly split the collections/binaries/parts tables by group??
+				 * 
 				// Create new tables for the parts/binaries/collections for the group.
 				$gname = $db->escapeString(str_replace('alt.binaries.', '', $groupArr['name']));
 				$dbname = $db->escapeString(DB::DB_NAME);
@@ -76,6 +78,11 @@ class Binaries
 					$this->updateGroup($groupArr);
 					$counter++;
 				}
+				*/
+				$this->message = array();
+				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
+				$this->updateGroup($groupArr);
+				$counter++;
 			}
 
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
