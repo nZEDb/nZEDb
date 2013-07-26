@@ -257,20 +257,83 @@ class nameCleaning
 		
 		else if ($groupName === "alt.binaries.barbarella")
 		{
-			//CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64<><>DRM<><> - (10/48)  "CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64.part09.rar" - 2,01 GB - yEnc
-			if (preg_match('/^(([a-zA-Z0-9].+?)<><>DRM<><> - \()\d+\/\d+\)  ".+?" - .+? yEnc$/', $subject, $match))
+			//ACDSee.Video.Converter.Pro.v3.5.41.Incl.Keymaker-CORE - [1/7] - "ACDSee.Video.Converter.Pro.v3.5.41.Incl.Keymaker-CORE.par2" yEnc
+			if (preg_match('/^(([a-zA-Z0-9].+?) - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
 			}
-			/*//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			//Die.Nacht.Der.Creeps.THEATRICAL.GERMAN.1986.720p.BluRay.x264-GH - "gh-notcreepskf720.nfo" yEnc
+			//The.Fast.and.the.Furious.Tokyo.Drift.2006.German.1080p.BluRay.x264.iNTERNAL-MWS  - "mws-tfatftd-1080p.nfo" yEnc
+			if (preg_match('/^(([\w\.\-]+)\s+-\s+").+?" yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
-			}*/
+			}
+			//CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64<><>DRM<><> - (10/48)  "CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64.part09.rar" - 2,01 GB - yEnc
+			//AnyDVD_7.1.9.3_-_HD-BR - Beta<>give-me-all.org<>DRM<><> - (1/3)  "AnyDVD_7.1.9.3_-_HD-BR - Beta.par2" - 14,53 MB - yEnc
+			//Android Softarchive.net Collection Pack 27^^give-me-all.org^^^^DRM^^^^ - (01/26)  "Android Softarchive.net Collection Pack 27.par2" - 1,01 GB - yEnc
+			//WIN7_ULT_SP1_x86_x64_IE10_19_05_13_TRIBAL <> give-me-all.org <> DRM <> <> PW <> - (154/155)  "WIN7_ULT_SP1_x86_x64_IE10_19_05_13_TRIBAL.vol57+11.par2" - 7,03 GB - yEnc
+			//[Android].Ultimate.iOS7.Apex.Nova.Theme.v1.45 <> DRM <> - (1/3)  "[Android].Ultimate.iOS7.Apex.Nova.Theme.v1.45.par2" - 21,14 MB - yEnc
+			else if (preg_match('/^(((\[[A-Za-z]+\]\.)?[a-zA-Z0-9].+?)([\^<> ]+give-me-all\.org[\^<> ]+|[\^<> ]+)DRM[\^<> ]+.+? - \()\d+\/\d+\)  ".+?" - .+? yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(59/81) "1973 .Lee.Jun.Fan.DVD9.untouched.z46" - 7,29 GB - Lee.Jun.Fan.sein.Film.DVD9.untouched yEnc
+			else if (preg_match('/^\(\d+\/\d+\) ".+?" - \d+,\d+ [kKmMgG]([bB] - (.+?) yEnc)$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//>>> www.lords-of-usenet.org <<<  "Der Schuh Des Manitu.par2" DVD5  [001/158] - 4,29 GB yEnc
+			else if (preg_match('/^(>>> www\.lords-of-usenet\.org <<<.+? "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") .+? \[\d+\/\d+\] - .+? yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//NEUES 4y - [@ usenet-4all.info - powered by ssl.news -] [5,58 GB] [002/120] "DovakinPack.part002.rar" yEnc
+			//NEUES 4y (PW)  [@ usenet-4all.info - powered by ssl.news -] [7,05 GB] [014/152] "EngelsGleich.part014.rar" yEnc
+			else if (preg_match('/^.+? (-|\(PW\))\s+\[.+? -\] \[\d+,\d+ [kKmMgG][bB]\] \[\d+(\/\d+\] "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//Old Dad uppt   Die Schatzinsel Teil 1+Teil2  AC3 DVD Rip German XviD Wp 01/33] - "upp11.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+?\s{2,}(.+?) )\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//>>>  20,36 MB   "Winamp.Pro.v5.70.3392.Incl.Keygen-FFF.par2"   552 B yEnc
+			//..:[DoAsYouLike]:..    9,64 MB    "Snooper 1.39.5.par2"    468 B yEnc
+			else if (preg_match('/^.+?\s{2,}\d+,\d+ [kKmMgG]([bB]\s{2,}"(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")\s{2,}(\d+ B|\d+,\d+ [kKmMgG][bB]) yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(MKV - DVD - Rip - German - English - Italiano) - "CALIGULA (1982) UNCUT.sfv" yEnc
+			else if (preg_match('/^(\(.+?\) - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//"sre56565ztrtzuzi8inzufft.par2" yEnc
+			else if (preg_match('/^"([a-z0-9]+)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
 			else
 				return false;
 		}

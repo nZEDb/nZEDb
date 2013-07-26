@@ -80,13 +80,13 @@ class Binaries
 		$nntp->doConnect();
 
 		echo 'Processing '.$groupArr['name'].$n;
-
-		// Connect to server.
+			
+		// Select the group.
 		$data = $nntp->selectGroup($groupArr['name']);
-
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($data) && ($data->code == 400 || $data->code == 411 || $data->code == 412 || $data->code == 1000))
+		if (PEAR::isError($data))
 		{
+			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 			if ($data->code == 400)
 				echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
@@ -96,6 +96,7 @@ class Binaries
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				$nntp->doQuit();
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				// If server returns error 411, skip group.
 				if ($data->code == 411)
@@ -105,8 +106,6 @@ class Binaries
 				}
 			}
 		}
-		else if (PEAR::isError($data))
-			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
 		// Attempt to repair any missing parts before grabbing new ones.
 		if ($this->DoPartRepair)
@@ -230,13 +229,13 @@ class Binaries
 		
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
+		
+		// Select the group.
 		$data = $nntp->selectGroup($groupArr['name']);
-		// Download the headers.
-		$msgs = $nntp->getOverview($first."-".$last, true, false);
-
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($data) && ($data->code == 400 || $data->code == 411 || $data->code == 412 || $data->code == 1000))
+		if (PEAR::isError($data))
 		{
+			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 			if ($data->code == 400)
 				echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
@@ -244,9 +243,9 @@ class Binaries
 			$nntp = new Nntp;
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
-			$msgs = $nntp->getOverview($first."-".$last, true, false);
 			if (PEAR::isError($data))
 			{
+				$nntp->doQuit();
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				// If server returns error 411, skip group.
 				if ($data->code == 411)
@@ -256,22 +255,48 @@ class Binaries
 				}
 			}
 		}
-		else if (PEAR::isError($data))
-			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
-		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $noregex = array();
-		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
-
+		// Download the headers.
+		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		if ($type != 'partrepair')
 		{
 			if(PEAR::isError($msgs))
 			{
-				echo "Error {$msgs->code}: {$msgs->message}$n";
-				echo "Skipping group: ${groupArr['name']}$n";
-				return false;
+				// This is usually a compression error, so lets try disabling compression.
+				echo "The server has not returned any data, we will try disabling compression temporarily and retry.";
+				$nntp->doQuit();
+				unset($nntp, $msgs);
+				$nntp = new Nntp;
+				$nntp->doConnectNC();
+				$data = $nntp->selectGroup($groupArr['name']);
+				if (PEAR::isError($data))
+				{
+					$nntp->doQuit();
+					echo $n.$n."Error {$data->code}: {$data->message}".$n;
+					// If server returns error 411, skip group.
+					if ($data->code == 411)
+					{
+						echo "Skipping group: {$groupArr['name']}".$n;
+						return;
+					}
+				}
+				else
+				{
+					$msgs = $nntp->getOverview($first."-".$last, true, false);
+					if(PEAR::isError($msgs))
+					{
+						$nntp->doQuit();
+						echo "Error {$msgs->code}: {$msgs->message}$n";
+						echo "Skipping group: ${groupArr['name']}$n";
+						return;
+					}
+				}
 			}
 		}
+		
+		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
+		$rangerequested = range($first, $last);
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $noregex = array();
 
 		$this->startCleaning = microtime(true);
 		if (is_array($msgs))

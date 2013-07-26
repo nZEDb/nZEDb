@@ -371,7 +371,7 @@ class Nntp extends Net_NNTP_Client
 						// Compare the data to the empty string if the data is a compressed empty string. Throw an error, else return the data.
 						if (($data === $emptyreturn)||($data === $emptyreturn2)||($data === $emptyreturn3)||($data === $emptyreturn4))
 						{
-							return $this->throwError('No data returned. This is normal. Do not cry.', 1000);
+							return $this->throwError('The server has returned no data, turn off header compression to attempt to solve the issue.', 1000);
 						}
 					}
 					else
