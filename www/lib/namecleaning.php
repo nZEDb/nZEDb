@@ -145,8 +145,8 @@ class nameCleaning
 			//>>>>>Hell-of-Usenet>>>>> - [01/33] - "Cassadaga Hier lebt der Teufel 2011 German AC3 DVDRip XViD iNTERNAL-VhV.par2" yEnc
 			else if (preg_match('/^(>>>>>Hell-of-Usenet(\.org)?>>>>> - \[)\d+\/\d+\] - "(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 			{
-				$cleansubject["hash"] = $match[1].$match[2];
-				$cleansubject["clean"] = $match[2];
+				$cleansubject["hash"] = $match[1].$match[3];
+				$cleansubject["clean"] = $match[3];
 				return $cleansubject;
 			}
 			//1dbo1u5ce6182436yb2eo (001/105) "1dbo1u5ce6182436yb2eo.par2" yEnc
@@ -170,6 +170,60 @@ class nameCleaning
 				$cleansubject["clean"] = $match[3];
 				return $cleansubject;
 			}
+			else
+				return false;
+		}
+		
+		else if ($groupName === "alt.binaries.audio.warez")
+		{
+			//[#nzbx.audio/EFnet]-[1681]-[MagicScore.Note.v7.084-UNION]-[02/12] - "u-msn7.r00" yEnc
+			if (preg_match('/^(Re: )?(\[.+?\]-\[\d+\]-\[(.+?)\]-\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[2];
+				$cleansubject["clean"] = $match[3];
+				return $cleansubject;
+			}
+			//MacProVideo.com.Pro.Tools8.101.Core.Pro.Tools8.TUTORiAL-DYNAMiCS [2 of 50] "dyn-mpvprtls101.sfv" yEnc
+			//Native.Instruments.Komplete.7.VSTi.RTAS.AU.DVDR.D02-DYNAMiCS[01/13] - "dyn.par2" yEnc
+			//Native.Instruments.Komplete.7.VSTi.RTAS.AU.DVDR.DYNAMiCS.NZB.ONLY [02/13] - "dyn.vol0000+001.PAR2" yEnc
+			else if (preg_match('/^(([\w\.\-]+) ?\[)\d+( of |\/)\d+\] ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//REQ : VSL Stuff ~ Here's PreSonus Studio One 1.5.2 for OS X [16 of 22] "a-p152x.rar" yEnc
+			else if (preg_match('/^(REQ : .+? ~ (.+?) \[)\d+ of \d+\] ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//Eminem - Recovery (2010) - [1/1] - "Eminem - Recovery (2010).rar" yEnc
+			else if (preg_match('/^(([a-zA-Z0-9].+?) - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(????) [1/1] - "Dust in the Wind - the Violin Solo.rar" yEnc
+			else if (preg_match('/^\((\?{4}\) \[)\d+(\/\d+\] - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2];
+				$cleansubject["clean"] = $match[3];
+				return $cleansubject;
+			}
+			//Native Instruments Battery 3 incl Library ( VST DX RTA )( windows ) Libraries [1/1] - "Native Instruments Battery 2 + 3 SERIAL KEY KEYGEN.nfo" yEnc
+			else if (preg_match('/^((.+?) \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			/*TODO:
+			 *  REFRESH : Tonehammer Ambius 1 'Transmissions' ~ REQ: SAMPLE LOGIC SYNERGY [1 of 52] "dynamics.nfo" yEnc
+			 * 
+			 */
 			else
 				return false;
 		}

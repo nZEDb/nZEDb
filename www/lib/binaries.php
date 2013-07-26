@@ -235,9 +235,9 @@ class Binaries
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($msgs) && ($msgs->code == 400 || $msgs->code == 411 || $msgs->code == 412 || $msgs->code == 1000))
+		if (PEAR::isError($data) && ($data->code == 400 || $data->code == 411 || $data->code == 412 || $data->code == 1000))
 		{
-			if ($msgs->code == 400)
+			if ($data->code == 400)
 				echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
 			unset($nntp);
@@ -245,18 +245,18 @@ class Binaries
 			$nntp->doConnect();
 			$data = $nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first."-".$last, true, false);
-			if (PEAR::isError($msgs))
+			if (PEAR::isError($data))
 			{
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;
 				// If server returns error 411, skip group.
-				if ($msgs->code == 411)
+				if ($data->code == 411)
 				{
 					echo "Skipping group: {$groupArr['name']}".$n;
 					return;
 				}
 			}
 		}
-		else if (PEAR::isError($msgs))
+		else if (PEAR::isError($data))
 			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
 		$rangerequested = range($first, $last);
