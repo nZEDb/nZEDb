@@ -338,6 +338,40 @@ class nameCleaning
 				return false;
 		}
 		
+		else if ($groupName === "alt.binaries.big")
+		{
+			//(08/22) - "538D7B021B362A4300D1C0D84DD17E6D.r06" yEnc
+			if (preg_match('/^\(\d+(\/\d+\) - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(????) [02/71] - "Lasting Weep (1969-1971).part.par2" yEnc
+			else if (preg_match('/^(\(\?{4}\) \[)\d+(\/\d+\] - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2];
+				$cleansubject["clean"] = $match[3];
+				return $cleansubject;
+			}
+			//(01/59) "ThienSuChungQuy_II_E16.avi.001" - 1,49 GB - yEnc
+			else if (preg_match('/^\(\d+(\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			/*//[AoU] Upload#00287 - [04/43] - "Upload-ZGT1-20130525.part03.rar" yEnc
+			else if (preg_match('/^\(\d+(\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}*/
+			else
+				return false;
+		}
+		
 		else if ($groupName === "alt.binaries.moovee")
 		{
 			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
