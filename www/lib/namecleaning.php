@@ -10,8 +10,21 @@ class nameCleaning
 {
 	
 	//
-	//	Cleans usenet subject before inserting, used for sha1 hash and release name.
+	//	Cleans a usenet subject.
+	//	Returns an array of 2 results, hash and clean.
+	//	Hash is used for matching subjects into a collection.
+	//	Clean is used for the searchname.
 	//
+	/*
+	 * Basic guide of what this does:
+	 * First we see if the group name matches.
+	 * If the group matches, we have regex that try to match the article subject.
+	 * Finally we return 2 matches.
+	 * One used for a sha1 hash (which is used to "group" the articles together (which makes a collection of parts)).
+	 * The other one is a name without all the rest of the crap in the subject (like [01/12], yEnc etc).
+	 * The order of these regex can be important, we don't want a subject to match on the wrong regex.
+	 * Also a more popular regex can be beneficial to be on top since it will match more often and speed up the process.
+	 */
 	public function collectionsCleaner($subject, $groupName="")
 	{
 		$cleansubject = array();
@@ -122,8 +135,15 @@ class nameCleaning
 				$cleansubject["clean"] = $match[1];
 				return $cleansubject;
 			}
+			//nmlsrgnb - [04/37] - "htwlngmrstdsntdnh.part03.rar" yEnc
+			else if (preg_match('/^(([a-z]+) - \[)\d+\/\d+\] - "[a-z]+\..+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
 			//>>>>>Hell-of-Usenet>>>>> - [01/33] - "Cassadaga Hier lebt der Teufel 2011 German AC3 DVDRip XViD iNTERNAL-VhV.par2" yEnc
-			else if (preg_match('/^(>>>>>Hell-of-Usenet>>>>> - \[)\d+\/\d+\] - "(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^(>>>>>Hell-of-Usenet(\.org)?>>>>> - \[)\d+\/\d+\] - "(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1].$match[2];
 				$cleansubject["clean"] = $match[2];
@@ -134,6 +154,20 @@ class nameCleaning
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
+			//<<<>>>kosova-shqip.eu<<< Deep SWG - 90s Club Megamix 2011 >>>kosova-shqip.eu<<<<<< - (2/4) - "Deep SWG - 90s Club Megamix 2011.rar" yEnc
+			else if (preg_match('/^(<<<>>>kosova-shqip\.eu<<< (.+?) >>>kosova-shqip.eu<<<<<< - \()\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//<Have Fun> [02/39] - SpongeBoZZ yEnc
+			else if (preg_match('/^(<Have Fun> \[)\d+(\/\d+\] - (.+?) )yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2];
+				$cleansubject["clean"] = $match[3];
 				return $cleansubject;
 			}
 			else
@@ -195,8 +229,6 @@ class nameCleaning
 		}
 		else
 			return false;
-		
-			
 	}
 
 	//

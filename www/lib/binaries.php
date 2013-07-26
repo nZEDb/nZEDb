@@ -30,7 +30,8 @@ class Binaries
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->debug = ($site->debuginfo == "0") ? false : true;
 
-		$this->blackList = array(); //cache of our black/white list
+		// Cache of our black/white list.
+		$this->blackList = array();
 		$this->message = array();
 		$this->blackListLoaded = false;
 	}
@@ -58,39 +59,15 @@ class Binaries
 
 			foreach($res as $groupArr)
 			{
-				/* In the future possibly split the collections/binaries/parts tables by group??
-				 * 
-				// Create new tables for the parts/binaries/collections for the group.
-				$gname = $db->escapeString(str_replace('alt.binaries.', '', $groupArr['name']));
-				$dbname = $db->escapeString(DB::DB_NAME);
-				$res = $db->queryDirect(sprintf("SHOW TABLES FROM %s WHERE tables_in_%s like collections%s or tables_in_%s like binaries%s or tables_in_%s like parts%s", $dbname, $dbname, $gname, $dbname, $gname, $dbname, $gname));
-				
-				if(mysql_num_rows($res) < 3)
-				{
-					$db->queryDirect(sprintf("CREATE TABLE collections%s LIKE collections", $strgname));
-					$db->queryDirect(sprintf("CREATE TABLE binaries%s LIKE binaries", $strgname));
-					$db->queryDirect(sprintf("CREATE TABLE parts%s LIKE parts", $strgname));
-				}
-				else
-				{
-					$this->message = array();
-					echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
-					$this->updateGroup($groupArr);
-					$counter++;
-				}
-				*/
 				$this->message = array();
 				echo "\nStarting group ".$counter." of ".sizeof($res)."\n";
 				$this->updateGroup($groupArr);
 				$counter++;
 			}
-
 			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
 		}
 		else
-		{
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
-		}
 	}
 
 	function updateGroup($groupArr)
@@ -104,27 +81,14 @@ class Binaries
 
 		echo 'Processing '.$groupArr['name'].$n;
 
-		// Connect to server
+		// Connect to server.
 		$data = $nntp->selectGroup($groupArr['name']);
 
-		//if server return 411, skip group
-		if (PEAR::isError($data) && $data->code == 411)
+		// Attempt to reconnect if there is an error.
+		if (PEAR::isError($data) && ($data->code == 400 || $data->code == 411 || $data->code == 412 || $data->code == 1000))
 		{
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data) && $data->code == 411)
-			{
-				echo $n.$n."Error {$data->code}: {$data->message}".$n;
-				echo "Skipping group: {$groupArr['name']}".$n;
-				return;
-			}
-		}
-
-		if (PEAR::isError($data))
-		{
+			if ($data->code == 400)
+				echo "NNTP connection timed out. Reconnecting...$n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -133,12 +97,18 @@ class Binaries
 			if (PEAR::isError($data))
 			{
 				echo $n.$n."Error {$data->code}: {$data->message}".$n;
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
-				return;
+				// If server returns error 411, skip group.
+				if ($data->code == 411)
+				{
+					echo "Skipping group: {$groupArr['name']}".$n;
+					return;
+				}
 			}
 		}
+		else if (PEAR::isError($data))
+			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
-		//Attempt to repair any missing parts before grabbing new ones
+		// Attempt to repair any missing parts before grabbing new ones.
 		if ($this->DoPartRepair)
 		{
 			echo "Part Repair Enabled... Repairing..." . $n;
@@ -147,7 +117,7 @@ class Binaries
 		elseif ($this->DoPartRepairMsg)
 			echo "Part Repair Disabled... Skipping..." . $n;
 
-		//Get first and last part numbers from newsgroup
+		// Get first and last part numbers from newsgroup.
 		$last = $grouplast = $data['last'];
 
 		// For new newsgroups - determine here how far you want to go back.
@@ -173,18 +143,11 @@ class Binaries
 			$db->query(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = FROM_UNIXTIME(".$first_record_postdate.") WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 		}
 		else
-		{
 			$first = $groupArr['last_record'] + 1;
-		}
 
 		// Generate postdates for first and last records, for those that upgraded
 		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
 			 $db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'])."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']).") WHERE ID = %d", $groupArr['ID']));
-
-		////////NEED TO FIND BUG IN THIS
-		// Deactivate empty groups
-		//if (($data['last'] - $data['first']) <= 5)
-			//$db->query(sprintf("UPDATE groups SET active = %s, last_updated = now() WHERE ID = %d", $db->escapeString('0'), $groupArr['ID']));
 
 		// Calculate total number of parts
 		$total = $grouplast - $first + 1;
@@ -227,8 +190,10 @@ class Binaries
 				if ($last == $grouplast)
 					$done = true;
 				else
+				{
 					$last = $lastId;
 					$first = $last + 1;
+				}
 			}
 
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
@@ -237,16 +202,18 @@ class Binaries
 			echo $data["group"]." processed in $timeGroup seconds $n $n";
 		}
 		else
-		{
 			echo "No new articles for ".$data["group"]." (first ".number_format($first)." last ".number_format($last)." total ".number_format($total).") grouplast ".number_format($groupArr['last_record']).$n.$n;
-
-		}
 	}
 
 	function scan($nntp, $groupArr, $first, $last, $type='update')
 	{
 		$db = new Db();
 		$namecleaning = new nameCleaning();
+		$s = new Sites;
+		$site = $s->get();
+		$tmpPath = $site->tmpunrarpath."/";
+		$n = $this->n;
+		
 		if ($this->debug)
 		{
 			$consoletools = new ConsoleTools();
@@ -254,20 +221,20 @@ class Binaries
 			if (!$res)
 				$db->queryDirect("CREATE TABLE regextesting like collections");
 		}
-		$n = $this->n;
+		
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp();
 			$nntp->doConnect();
 		}
+		
 		$this->startHeaders = microtime(true);
-		$data = $nntp->selectGroup($groupArr['name']);
-		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		$this->startLoop = microtime(true);
-		$s = new Sites;
-		$site = $s->get();
-		$tmpPath = $site->tmpunrarpath."/";
+		$data = $nntp->selectGroup($groupArr['name']);
+		// Download the headers.
+		$msgs = $nntp->getOverview($first."-".$last, true, false);
 
+		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($msgs) && ($msgs->code == 400 || $msgs->code == 411 || $msgs->code == 412 || $msgs->code == 1000))
 		{
 			if ($msgs->code == 400)
@@ -340,7 +307,7 @@ class Binaries
 				}
 				
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/(.+?)?(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)(.+)?/i', $matches[1], $filecnt))
+				if (!preg_match('/(.+?)?(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)(.+)?/i', $matches[1], $filecnt))
 					$filecnt[3] = $filecnt[7] = "0";
 				
 				if(is_numeric($matches[2]) && is_numeric($matches[3]))
@@ -350,17 +317,10 @@ class Binaries
 					$subject = utf8_encode(trim($matches[1]));
 					
 					// Used for the grabnzb function.
-					if(preg_match('/\.nzb" yEnc$/', $subject) && $site->grabnzbs != 0)
+					if($site->grabnzbs != 0 && preg_match('/"(.+?)\.nzb" yEnc$/', $subject, $match))
 					{
-
-						/* We already have the group if we are grabbing articles from it.
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
-						*/
-						
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
-						
-						// Removing the following since it didn't work before (ID = collectionhash?) also it can't work anymore since we run this over anything else (in case we don't have a regex that matches the subject).
-						//$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`collectionhash`, `message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString($match[1]), $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
+						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE collectionhash = %s", $db->escapeString($match[1])));
 					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
