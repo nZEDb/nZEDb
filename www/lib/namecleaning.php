@@ -257,14 +257,14 @@ class nameCleaning
 				$cleansubject["clean"] = $match[1];
 				return $cleansubject;
 			}
-			/*//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			//[02/12] - "The.Call.GERMAN.2013.DL.AC3.Dubbed.720p.BluRay.x264 (Avi-RiP ).rar" yEnc
+			else if (preg_match('/^\[\d+(\/\d+\] - "(.+?) \().+?" yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
 			}
-			else*/
+			else
 				return false;
 		}
 		
