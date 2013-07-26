@@ -343,7 +343,6 @@ class Binaries
 				if (!preg_match('/(.+?)?(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)(.+)?/i', $matches[1], $filecnt))
 					$filecnt[3] = $filecnt[7] = "0";
 				
-				// Make sure the part count is set or else continue.
 				if(is_numeric($matches[2]) && is_numeric($matches[3]))
 				{
 					array_map('trim', $matches);
@@ -415,12 +414,6 @@ class Binaries
 					}
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
-				}
-				else
-				{
-					// Ignore if there is no part count.
-					$msgsignored[] = $msg['Number'];
-					continue;
 				}
 			}
 

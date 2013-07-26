@@ -51,6 +51,61 @@ class nameCleaning
 				return false;
 		}
 		
+		else if ($groupName === "alt.binaries.anime")
+		{
+			//([AST] One Piece Episode 301-350 [720p]) [007/340] - "One Piece episode 301-350.part006.rar" yEnc
+			if (preg_match('/^\(((\[.+?\] .+?)\) \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[REPOST][ New Doraemon 2013.05.03 Episode 328 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [35/61] - "doraclub.org-doraemon-20130503-b8de1f8e.r32" yEnc
+			else if (preg_match('/^(\[.+?\]\[ (.+?) \] \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D] [000/357] - "[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D].nzb" yEnc
+			else if (preg_match('/^(\[.+?\] (.+? \[[A-F0-9]+\]) \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) - [01/65] - "[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) .md5" yEnc
+			else if (preg_match('/^(\[.+?\] (.+?) - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(01/27) - Maid.Sama.Jap.dubbed.german.english.subbed - "01 Misaki ist eine Maid!.divx" - 6,44 GB - yEnc
+			else if (preg_match('/^\(\d+(\/\d+\) - (.+?) - ").+?" - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[ New Doraemon 2013.06.14 Episode 334 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [01/60] - "doraclub.org-doraemon-20130614-fae28cec.nfo" yEnc
+			else if (preg_match('/^(\[ (.+?) \] \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//<TOWN> www.town.ag > sponsored by www.ssl-news.info > (1/3) "HolzWerken_40.par2" - 43,89 MB - yEnc
+			else if (preg_match('/^(<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		
 		else if ($groupName === "alt.binaries.moovee")
 		{
 			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
@@ -61,7 +116,7 @@ class nameCleaning
 				return $cleansubject;
 			}
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
