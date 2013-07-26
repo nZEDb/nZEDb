@@ -142,7 +142,7 @@ class Backfill
 		}
 
 		echo "Group ".$data["group"].": server has ".number_format($data['first'])." - ".number_format($data['last']).", or ~".
-				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE.$groupArr['name']))/86400)).
+				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
 				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
