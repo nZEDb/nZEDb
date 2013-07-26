@@ -340,8 +340,23 @@ class nameCleaning
 		
 		else if ($groupName === "alt.binaries.big")
 		{
+			//Girls.against.Boys.2012.German.720p.BluRay.x264-ENCOUNTERS - "encounters-giagbo_720p.nfo" yEnc
+			if (preg_match('/^(([\w\.\-]+) - ").+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//wtvrwschdhfthj - [001/246] - "dtstchhtmrrnvn.par2" yEnc
+			//oijhuiurfjvbklk - [01/18] - "tb5-3ioewr90f.par2" yEnc
+			else if (preg_match('/^(([a-z]{3,}) - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
 			//(08/22) - "538D7B021B362A4300D1C0D84DD17E6D.r06" yEnc
-			if (preg_match('/^\(\d+(\/\d+\) - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\(\d+(\/\d+\) - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
@@ -355,19 +370,41 @@ class nameCleaning
 				return $cleansubject;
 			}
 			//(01/59) "ThienSuChungQuy_II_E16.avi.001" - 1,49 GB - yEnc
-			else if (preg_match('/^\(\d+(\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			//(058/183) "LS_HoangChui_2xdvd5.part057.rar" - 8,36 GB -re yEnc
+			else if (preg_match('/^\(\d+(\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] -(re)? yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
 			}
-			/*//[AoU] Upload#00287 - [04/43] - "Upload-ZGT1-20130525.part03.rar" yEnc
-			else if (preg_match('/^\(\d+(\/\d+\) "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			//[AoU] Upload#00287 - [04/43] - "Upload-ZGT1-20130525.part03.rar" yEnc
+			else if (preg_match('/^(\[[a-zA-Z]+\] (.+?) - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
-			}*/
+			}
+			//(nate) [01/27] - "nate_light_13.05.23.par2" yEnc
+			else if (preg_match('/^\([a-z]+\) \[\d+(\/\d+\] - "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//""Absolute Database Component for BCBuilder 4-6 MultiUser Edit 4.85.rar"" yEnc
+			else if (preg_match('/^(""(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//781e1d8dccc641e8df6530edb7679a0e - (26/30) - "781e1d8dccc641e8df6530edb7679a0e.rar" yEnc
+			else if (preg_match('/^([a-f0-9]{32}) - \(\d+\/\d+\) - "[a-f0-9]{32}.+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
 			else
 				return false;
 		}
