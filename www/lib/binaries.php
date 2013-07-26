@@ -486,7 +486,7 @@ class Binaries
 							$lastBinaryHash = "";
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf("SELECT collectionhash FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
+							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
 								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleansubject), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
