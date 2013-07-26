@@ -12,10 +12,8 @@ class nameCleaning
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
 	//
-	public function collectionsCleaner($subject, $type="normal", $groupID="")
+	public function collectionsCleaner($subject, $groupName="")
 	{
-		$groups = new Groups();
-		$groupName = $groups->getByNameByID($groupID);
 		$cleansubject = array();
 		
 		if ($groupName == "alt.binaries.moovee")
