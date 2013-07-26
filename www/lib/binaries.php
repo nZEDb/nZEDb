@@ -248,7 +248,12 @@ class Binaries
 		$db = new Db();
 		$namecleaning = new nameCleaning();
 		if ($this->debug)
+		{
 			$consoletools = new ConsoleTools();
+			$res = $db->queryDirect("SHOW TABLES LIKE regextesting");
+			if (!mysqli_num_rows($res) > 0)
+				$db->queryDirect("CREATE TABLE regextesting like collections");
+		}
 		$n = $this->n;
 		if (!isset($nntp))
 		{
@@ -335,19 +340,47 @@ class Binaries
 				}
 				
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)/i', $partless, $filecnt))
-					$filecnt[2] = $filecnt[6] = "0";
+				if (!preg_match('/(.+?)?(\[|\(|\s)(\d{1,4})(\/|(\s|_)of(\s|_)|\-)(\d{1,4})(\]|\)|\s|$|:)(.+)?/i', $matches[1], $filecnt))
+					$filecnt[3] = $filecnt[7] = "0";
 				
 				// Make sure the part count is set or else continue.
 				if(is_numeric($matches[2]) && is_numeric($matches[3]))
 				{
 					array_map('trim', $matches);
+					// Inserted into the collections table as the subject.
+					$subject = utf8_encode(trim($matches[1]));
+					
+					// Used for the grabnzb function.
+					if(preg_match('/\.nzb" yEnc$/', $subject) && $site->grabnzbs != 0)
+					{
+
+						/* We already have the group if we are grabbing articles from it.
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
+						*/
+						
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
+						
+						// Removing the following since it didn't work before (ID = collectionhash?) also it can't work anymore since we run this over anything else (in case we don't have a regex that matches the subject).
+						//$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
+					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
 					if(!$cleanerArray = $namecleaning->collectionsCleaner($msg['Subject']))
 					{
 						if ($this->debug)
+						{
 							echo "The following article has not matched on a regex: ".$msg['Subject']."\n";
+							// Insert the subject minus the file count for future making regexes.
+							$name1 = $name2 = "";
+							if (isset($filecnt[1]))
+								$name1 = $filecnt[1];
+							if (isset($filecnt[8]))
+								$name2 = $filecnt[8];
+							$res = $db->queryOneRow(sprintf("SELECT ID FROM regextesting WHERE name = %s", $db->escapeString($name1.$name2)));
+							if(!$res)
+								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID'], $db->escapeString($collectionHash));
+								
+						}
 						$msgsignored[] = $msg['Number'];
 						continue;
 					}
@@ -357,8 +390,6 @@ class Binaries
 						$hashsubject = $cleanerArray["hash"];
 						// The cleaned up subject. Inserted into the collections table as the name.
 						$cleansubject = $cleanerArray["clean"];
-						// Inserted into the collections table as the subject.
-						$subject = utf8_encode(trim($matches[1]));
 					}
 					
 					// Used for looking at the difference between the original name and the clean subject.
@@ -377,25 +408,12 @@ class Binaries
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int)$matches[3];
 						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
-						$this->message[$subject]['CollectionHash'] = sha1($hashsubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
-						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
-						$this->message[$subject]['File'] = (int)$filecnt[2];
+						$this->message[$subject]['CollectionHash'] = sha1($hashsubject.$msg['From'].$groupArr['ID'].$filecnt[7]);
+						$this->message[$subject]['MaxFiles'] = (int)$filecnt[7];
+						$this->message[$subject]['File'] = (int)$filecnt[3];
 					}
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
-					
-					// Used for the grabnzb function.
-					if(preg_match('/\.nzb" yEnc$/', $subject) && $site->grabnzbs != 0)
-					{
-
-						/* We already have the group if we are grabbing articles from it.
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `groups` (`name`, `active`, `backfill`) VALUES (%s,0,0)", $db->escapeString($groupArr['name'])));
-						*/
-						
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
-						// I'm guessing this is to update the other parts in this table.
-						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE ID = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
-					}
 				}
 				else
 				{
@@ -468,7 +486,7 @@ class Binaries
 							$lastBinaryHash = "";
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
+							$cres = $db->queryOneRow(sprintf("SELECT collectionhash FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
 								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleansubject), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
