@@ -365,7 +365,14 @@ class Binaries
 					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
-					if(!$cleanerArray = $namecleaning->collectionsCleaner($matches[1], $groupArr['name']))
+					if($cleanerArray = $namecleaning->collectionsCleaner($matches[1], $groupArr['name']))
+					{
+						// Used for the SHA1.
+						$hashsubject = $cleanerArray["hash"];
+						// The cleaned up subject. Inserted into the collections table as the name.
+						$cleansubject = $cleanerArray["clean"];
+					}
+					else
 					{
 						if ($this->debug)
 						{
@@ -378,20 +385,12 @@ class Binaries
 							$res = $db->queryOneRow(sprintf("SELECT ID FROM regextesting WHERE name = %s", $db->escapeString($name1.$name2)));
 							if(!$res)
 							{
-								echo "The following article has not matched on a regex: ".$msg['Subject']."\n";
+								echo "The following article has not matched on a regex: ".$subject."\n";
 								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, dateadded) VALUES (%s, %s, %s, %s, %d, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID']));
-							}
-								
+							}	
 						}
 						$msgsignored[] = $msg['Number'];
 						continue;
-					}
-					else
-					{
-						// Used for the SHA1.
-						$hashsubject = $cleanerArray["hash"];
-						// The cleaned up subject. Inserted into the collections table as the name.
-						$cleansubject = $cleanerArray["clean"];
 					}
 					
 					// Used for looking at the difference between the original name and the clean subject.
@@ -430,7 +429,8 @@ class Binaries
 			{
 				$arr = array_combine($colnames, $orignames);
 				ksort($arr);
-				print_r($arr);
+				// Uncomment to see the difference.
+				//print_r($arr);
 			}
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 			unset($msg, $msgs);

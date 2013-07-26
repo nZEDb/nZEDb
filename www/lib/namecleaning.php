@@ -10,13 +10,48 @@ class nameCleaning
 {
 	
 	//
-	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
+	//	Cleans usenet subject before inserting, used for sha1 hash and release name.
 	//
 	public function collectionsCleaner($subject, $groupName="")
 	{
 		$cleansubject = array();
 		
-		if ($groupName == "alt.binaries.moovee")
+		
+		if ($groupName === "alt.binaries.0day.stuffz")
+		{
+			//ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0 - [08/35] - "ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0.vol43+09.par2" yEnc
+			if (preg_match('/^([a-zA-Z0-9].+?)( - )\[\d+(\/\d+\] - ").+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2].$match[3];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
+			//rld-tcavu1 [5/6] - "rld-tcavu1.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+?)( )\[\d+(\/\d+\] - ").+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[3];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(DVD Shrink.ss) [1/1] - "DVD Shrink.ss.rar" yEnc
+			else if (preg_match('/^(\((.+?\))) \[\d+(\/\d+] - ").+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[3];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//WinASO.Registry.Optimizer.4.8.0.0(1/4) - "WinASO_RO_v4.8.0.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+?)\(\d+(\/\d+\) - ").+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		
+		else if ($groupName === "alt.binaries.moovee")
 		{
 			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
 			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
@@ -35,7 +70,8 @@ class nameCleaning
 			else
 				return false;
 		}
-		else if ($groupName == "alt.binaries.teevee")
+		
+		else if ($groupName === "alt.binaries.teevee")
 		{
 			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
 			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
@@ -70,43 +106,9 @@ class nameCleaning
 		}
 		else
 			return false;
+		
 			
 	}
-	
-	/*
-	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
-	//
-	public function collectionsCleaner($subject, $type="normal", $groupID="")
-	{
-		/* This section will do on a group to group basis, which will help with bunched collections.
-		if ($groupID !== "")
-		{
-			$groups = new Groups();
-			$groupName = $groups->getByNameByID($groupID);
-			$cleansubject = array();
-			
-			if (preg_match('/alt\.binaries\.dvd-r$/', $groupName))
-			{
-				//katanxya "katanxya7221.par2" yEnc
-				if (preg_match('/^katanxya "katanxya\d+/', $subject, $match))
-					$cleansubject = $match[0];
-				//[01/52] - "H1F3E_20130715_005.par2" - 4.59 GB yEnc
-				else if (preg_match('/^\[\d+(\/\d+\] - "[a-zA-Z0-9\-_]+\.).+?(" - \d).+?( yEnc)$/', $subject, $match))
-					$cleansubject = $match[1].$match[2].$match[3];
-				else
-					$cleansubject = $this->collectionsCleanerHelper($subject, $type);
-				
-				if (empty($cleansubject))
-					return $subject;
-				else
-					return $cleansubject;
-			}
-			else
-				return $this->collectionsCleanerHelper($subject, $type);
-		}
-		else
-			return $this->collectionsCleanerHelper($subject, $type);
-	}*/
 
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Fallback from collectionsCleaner.
