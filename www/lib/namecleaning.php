@@ -228,26 +228,6 @@ class nameCleaning
 				return false;
 		}
 		
-		else if ($groupName === "alt.binaries.moovee")
-		{
-			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
-			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-			{
-				$cleansubject["hash"] = $match[1];
-				$cleansubject["clean"] = $match[2];
-				return $cleansubject;
-			}
-			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
-			{
-				$cleansubject["hash"] = $match[1];
-				$cleansubject["clean"] = $match[2];
-				return $cleansubject;
-			}
-			else
-				return false;
-		}
-		
 		else if ($groupName === "alt.binaries.b4e")
 		{
 			//"B4E-vip2851.r83" yEnc
@@ -259,6 +239,53 @@ class nameCleaning
 			}
 			//[02/12] - "The.Call.GERMAN.2013.DL.AC3.Dubbed.720p.BluRay.x264 (Avi-RiP ).rar" yEnc
 			else if (preg_match('/^\[\d+(\/\d+\] - "(.+?) \().+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//- "as-jew3.vol03+3.PAR2" - yEnc
+			else if (preg_match('/^(- "(.+?))(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		
+		else if ($groupName === "alt.binaries.barbarella")
+		{
+			//CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64<><>DRM<><> - (10/48)  "CorelDRAW Technical Suite X6-16.3.0.1114 x32-x64.part09.rar" - 2,01 GB - yEnc
+			if (preg_match('/^(([a-zA-Z0-9].+?)<><>DRM<><> - \()\d+\/\d+\)  ".+?" - .+? yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			/*//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}*/
+			else
+				return false;
+		}
+		
+		else if ($groupName === "alt.binaries.moovee")
+		{
+			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
+			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 			{
 				$cleansubject["hash"] = $match[1];
 				$cleansubject["clean"] = $match[2];

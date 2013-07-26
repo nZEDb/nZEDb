@@ -319,7 +319,7 @@ class Binaries
 					// Used for the grabnzb function.
 					if($site->grabnzbs != 0 && preg_match('/"(.+?)\.nzb" yEnc$/', $subject, $match))
 					{
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`collectionhash`, `message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString($match[1]), $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`collectionhash`, `message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(utf8_encode(trim($match[1]))), $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
 						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE collectionhash = %s", $db->escapeString($match[1])));
 					}
 					
