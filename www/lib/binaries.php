@@ -260,7 +260,7 @@ class Binaries
 			echo $n.$n."Error {$data->code}: {$data->message}".$n;
 
 		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $noregex = array();
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
 
 		if ($type != 'partrepair')
@@ -324,14 +324,8 @@ class Binaries
 					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
-					if($cleanerArray = $namecleaning->collectionsCleaner($matches[1], $groupArr['name']))
-					{
-						// Used for the SHA1.
-						$hashsubject = $cleanerArray["hash"];
-						// The cleaned up subject. Inserted into the collections table as the name.
-						$cleansubject = $cleanerArray["clean"];
-					}
-					else
+					$cleanerArray = $namecleaning->collectionsCleaner($matches[1], $groupArr['name']);
+					if($cleanerArray == false)
 					{
 						if ($this->debug)
 						{
@@ -348,8 +342,15 @@ class Binaries
 								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, dateadded) VALUES (%s, %s, %s, %s, %d, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID']));
 							}	
 						}
-						$msgsignored[] = $msg['Number'];
+						$noregex[] = $msg['Number'];
 						continue;
+					}
+					else
+					{
+						// Used for the SHA1.
+						$hashsubject = $cleanerArray["hash"];
+						// The cleaned up subject. Inserted into the collections table as the name.
+						$cleansubject = $cleanerArray["clean"];
 					}
 					
 					// Used for looking at the difference between the original name and the clean subject.
@@ -392,7 +393,7 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary at ".date('H:i:s').$n;
+				echo date('H:i:s').": Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not binary, ".sizeof($noregex)." not matched by a regex.".$n;
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -507,7 +508,7 @@ class Binaries
 
 			if ($type != 'partrepair')
 			{
-				echo $timeHeaders."s to download articles, ".$timeCleaning."s to clean articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
+				echo $timeHeaders."s to download articles, ".$timeCleaning."s to process articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.".$n;
 			}
 			unset($this->message, $data);
 			return $maxnum;

@@ -248,6 +248,26 @@ class nameCleaning
 				return false;
 		}
 		
+		else if ($groupName === "alt.binaries.b4e")
+		{
+			//"B4E-vip2851.r83" yEnc
+			if (preg_match('/^("B4E-vip\d+)\..+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
+			/*//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else*/
+				return false;
+		}
+		
 		else if ($groupName === "alt.binaries.teevee")
 		{
 			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
@@ -281,6 +301,9 @@ class nameCleaning
 			else
 				return false;
 		}
+		// db.binaer.tv
+		//Store.Boligdroemme.S02E06.DANiS H.HDTV.x264-TVBYEN - [01/28] - "store.boligdroemme.s02e06.danis h.hdtv.x264-tvbyen.nfo" yEnc
+		///^(([a-zA-Z0-9].+?) - \[)\d+\/\d+\] - ".+?" yEnc$/
 		else
 			return false;
 	}
