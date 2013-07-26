@@ -1563,9 +1563,8 @@ class Releases
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				//$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
+				$cleanerName = str_replace($cleanArr, '', $rowcol['name']);
 				$relguid = sha1(uniqid());
 				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",

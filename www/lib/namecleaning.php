@@ -8,16 +8,64 @@ require_once(WWW_DIR."/lib/predb.php");
 //
 class nameCleaning
 {
+	
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
 	//
 	public function collectionsCleaner($subject, $type="normal", $groupID="")
 	{
-		/* This section will do on a group to group basis, which will help with bunched collections. */
+		$groups = new Groups();
+		$groupName = $groups->getByNameByID($groupID);
+		$cleansubject = array();
+		
+		if ($groupname == "alt.binaries.moovee")
+		{
+			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
+			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		else if ($groupname == "alt.binaries.teeve")
+		{
+			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
+			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
+			else if (preg_match('/^(([a-z0-9]+) - )\[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+			
+	}
+	
+	
+	/*
+	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
+	//
+	public function collectionsCleaner($subject, $type="normal", $groupID="")
+	{
+		/* This section will do on a group to group basis, which will help with bunched collections.
 		if ($groupID !== "")
 		{
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
+			$cleansubject = array();
 			
 			if (preg_match('/alt\.binaries\.dvd-r$/', $groupName))
 			{
@@ -40,7 +88,7 @@ class nameCleaning
 		}
 		else
 			return $this->collectionsCleanerHelper($subject, $type);
-	}
+	}*/
 
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Fallback from collectionsCleaner.
