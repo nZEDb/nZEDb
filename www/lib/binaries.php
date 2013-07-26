@@ -250,8 +250,8 @@ class Binaries
 		if ($this->debug)
 		{
 			$consoletools = new ConsoleTools();
-			$res = $db->queryDirect("SHOW TABLES LIKE regextesting");
-			if (!mysqli_num_rows($res) > 0)
+			$res = $db->query("SHOW TABLES LIKE `regextesting`");
+			if (!$res)
 				$db->queryDirect("CREATE TABLE regextesting like collections");
 		}
 		$n = $this->n;
@@ -378,7 +378,7 @@ class Binaries
 								$name2 = $filecnt[8];
 							$res = $db->queryOneRow(sprintf("SELECT ID FROM regextesting WHERE name = %s", $db->escapeString($name1.$name2)));
 							if(!$res)
-								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID'], $db->escapeString($collectionHash)));
+								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, dateadded) VALUES (%s, %s, %s, %s, %d, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID']));
 								
 						}
 						$msgsignored[] = $msg['Number'];

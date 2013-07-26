@@ -18,7 +18,7 @@ class nameCleaning
 		$groupName = $groups->getByNameByID($groupID);
 		$cleansubject = array();
 		
-		if ($groupname == "alt.binaries.moovee")
+		if ($groupName == "alt.binaries.moovee")
 		{
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- )"(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
@@ -30,7 +30,7 @@ class nameCleaning
 			else
 				return false;
 		}
-		else if ($groupname == "alt.binaries.teeve")
+		else if ($groupName == "alt.binaries.teeve")
 		{
 			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
 			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
