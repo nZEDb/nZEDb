@@ -369,7 +369,6 @@ class Binaries
 					{
 						if ($this->debug)
 						{
-							echo "The following article has not matched on a regex: ".$msg['Subject']."\n";
 							// Insert the subject minus the file count for future making regexes.
 							$name1 = $name2 = "";
 							if (isset($filecnt[1]))
@@ -378,7 +377,10 @@ class Binaries
 								$name2 = $filecnt[8];
 							$res = $db->queryOneRow(sprintf("SELECT ID FROM regextesting WHERE name = %s", $db->escapeString($name1.$name2)));
 							if(!$res)
+							{
+								echo "The following article has not matched on a regex: ".$msg['Subject']."\n";
 								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, dateadded) VALUES (%s, %s, %s, %s, %d, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID']));
+							}
 								
 						}
 						$msgsignored[] = $msg['Number'];
