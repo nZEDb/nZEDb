@@ -411,6 +411,7 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($hashsubject.$msg['From'].$groupArr['ID'].$filecnt[7]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[7];
 						$this->message[$subject]['File'] = (int)$filecnt[3];
+						$this->message[$subject]["SearchName"] = $cleansubject;
 					}
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
@@ -484,7 +485,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($cleansubject), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($this->message[$subject]["SearchName"]), $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['ID'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
