@@ -378,7 +378,7 @@ class Binaries
 								$name2 = $filecnt[8];
 							$res = $db->queryOneRow(sprintf("SELECT ID FROM regextesting WHERE name = %s", $db->escapeString($name1.$name2)));
 							if(!$res)
-								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID'], $db->escapeString($collectionHash));
+								$db->queryDirect(sprintf("INSERT IGNORE INTO regextesting (name, subject, fromname, xref, groupID, collectionhash, dateadded) VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($name1.$name2), $db->escapeString($subject), $db->escapeString($msg['From']), $db->escapeString($msg['Xref']), $groupArr['ID'], $db->escapeString($collectionHash)));
 								
 						}
 						$msgsignored[] = $msg['Number'];
