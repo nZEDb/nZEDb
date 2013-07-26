@@ -51,6 +51,20 @@ class nameCleaning
 				$cleansubject["clean"] = $match[2];
 				return $cleansubject;
 			}
+			//fhdbg34rgjdsfd008c (42/43) "fhdbg34rgjdsfd008c.vol062+64.par2" - 3,68 GB - yEnc
+			else if (preg_match('/^(([a-z0-9]+) )\(\d+\/\d+\) ".+?"( - )\d+,\d+ [kKmMgG][bB]( - yEnc)$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[3].$match[4];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//t2EI3CdWdF0hi5b8L9tkx[08/52] - "t2EI3CdWdF0hi5b8L9tkx.part07.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9]+)\[\d+\/\d+\]( - )".+?"( yEnc)$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2].$match[3];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
 			else
 				return false;
 		}
@@ -58,7 +72,6 @@ class nameCleaning
 			return false;
 			
 	}
-	
 	
 	/*
 	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
