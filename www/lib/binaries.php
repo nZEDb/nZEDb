@@ -365,7 +365,7 @@ class Binaries
 					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
-					if(!$cleanerArray = $namecleaning->collectionsCleaner($msg['Subject']))
+					if(!$cleanerArray = $namecleaning->collectionsCleaner($matches[1]))
 					{
 						if ($this->debug)
 						{
