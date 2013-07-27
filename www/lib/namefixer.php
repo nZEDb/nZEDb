@@ -31,43 +31,31 @@ class Namefixer
     public function fixNamesWithNfo($time, $echo, $cats, $namestatus)
     {
 
-            if ($time == 1)
-        {
+		if ($time == 1)
                 echo "Fixing search names in the past 6 hours using .nfo files.\n";
-        }
         else
-        {
                 echo "Fixing search names since the beginning using .nfo files.\n";
-        }
 
-            $db = new DB();
+		$db = new DB();
         $type = "NFO, ";
-        // Only select releases we haven't checked here before
-        $query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
+		
+		// Only select releases we haven't checked here before
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
 
         //24 hours, other cats
         if ($time == 1 && $cats == 1)
-        {
             $relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
-        }
         //24 hours, all cats
         if ($time == 1 && $cats == 2)
-        {
             $relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc");
-        }
         //other cats
         if ($time == 2 && $cats == 1)
-        {
             $relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
-        }
         //all cats
         if ($time == 2 && $cats == 2)
-        {
             $relres = $db->queryDirect($query." order by postdate desc");
-        }
 
         $rowcount = $db->getAffectedRows();
-
         if ($rowcount > 0)
         {
             while ($relrow = $db->fetchArray($relres))
@@ -95,14 +83,10 @@ class Namefixer
     //
     public function fixNamesWithFiles($time, $echo, $cats, $namestatus)
     {
-            if ($time == 1)
-        {
-                echo "Fixing search names in the past 6 hours using the filename.\n";
-        }
+		if ($time == 1)
+			echo "Fixing search names in the past 6 hours using the filename.\n";
         else
-        {
-                echo "Fixing search names since the beginning using the filename.\n";
-        }
+			echo "Fixing search names since the beginning using the filename.\n";
 
         $db = new DB();
         $type = "Filenames, ";
@@ -110,27 +94,18 @@ class Namefixer
 
         //24 hours, other cats
         if ($time == 1 && $cats == 1)
-        {
-            $relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
-        }
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
         //24 hours, all cats
         if ($time == 1 && $cats == 2)
-        {
-            $relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc");
-        }
+			$relres = $db->queryDirect($query." and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc");
         //other cats
         if ($time == 2 && $cats == 1)
-        {
-            $relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
-        }
+			$relres = $db->queryDirect($query." and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc");
         //all cats
         if ($time == 2 && $cats == 2)
-        {
-            $relres = $db->queryDirect($query." order by postdate desc");
-        }
+			$relres = $db->queryDirect($query." order by postdate desc");
 
         $rowcount = $db->getAffectedRows();
-
         if ($rowcount > 0)
         {
             while ($relrow = $db->fetchArray($relres))
@@ -223,15 +198,10 @@ class Namefixer
         // Just for NFOs.
         if ($type == "NFO, ")
         {
-            // echo "Checking TV\n";
             $this->nfoCheckTV($release, $echo, $type, $namestatus);
-            // echo "Checking Mov\n";
             $this->nfoCheckMov($release, $echo, $type, $namestatus);
-            // echo "Checking Mus\n";
             $this->nfoCheckMus($release, $echo, $type, $namestatus);
-            // echo "Checking TY\n";
             $this->nfoCheckTY($release, $echo, $type, $namestatus);
-            // echo "Checking G\n";
             $this->nfoCheckG($release, $echo, $type, $namestatus);
         }
     }

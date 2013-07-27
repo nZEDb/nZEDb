@@ -535,7 +535,7 @@ class nameCleaning
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Fallback from collectionsCleaner.
 	//
-	public function collectionsCleanerHelper($subject, $type)
+	public function collectionsCleanerHelper($subject)
 	{
 		/* This section is more generic, it will work on most releases. */
 		//Parts/files
@@ -549,23 +549,14 @@ class nameCleaning
 		//Random stuff.
 		$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 		$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
-
-		if ($type == "split")
-		{
-			$one = $two = "";
-			if (preg_match('/"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
-				$one = $matches[1];
-			else if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!](19|20)\d\d[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!]/i', $subject, $matches2))
-				$two = $matches2[0];
-			return $cleansubject.$one.$two;
-		}
-		else if ($type !== "split" && (strlen($cleansubject) <= 7 || preg_match('/^[a-z0-9 \-\$]{1,9}$/i', $cleansubject)))
+		
+		if (strlen($cleansubject) <= 7 || preg_match('/^[a-z0-9 \-\$]{1,9}$/i', $cleansubject))
 		{
 			$one = $two = "";
 			if (preg_match('/.+?"(.+?)".+?".+?".+/', $subject, $matches))
 				$one = $matches[1];
-			else if (preg_match('/(^|.+)"(.+?)(\d{2,3} ?\(\d{4}\).+?)?\.[a-z0-9].+?"/i', $subject, $matches))
-				$one = $matches[2];
+			else if (preg_match('/(^|.+)"(.+?)(\d{2,3} ?\(\d{4}\).+?)?\.[a-z0-9].+?"/i', $subject, $matches2))
+				$one = $matches2[2];
 			if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!](19|20)\d\d[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!]/i', $subject, $matches2))
 				$two = $matches2[0];
 			if ($one == "" && $two == "")
