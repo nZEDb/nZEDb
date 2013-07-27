@@ -341,12 +341,6 @@ class Binaries
 					// Inserted into the collections table as the subject.
 					$subject = utf8_encode(trim($matches[1]));
 					
-					// Used for the grabnzb function.
-					if($site->grabnzbs != 0 && preg_match('/"(.+?)\.nzb" yEnc$/', $subject, $match))
-					{
-						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`collectionhash`, `message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(utf8_encode(trim($match[1]))), $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
-						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE collectionhash = %s", $db->escapeString($match[1])));
-					}
 					
 					// Used for the collection hash and the clean name. If it returns false continue (we ignore the message - which means it did not match on a regex).
 					$cleanerArray = $namecleaning->collectionsCleaner($matches[1], $groupArr['name']);
@@ -401,6 +395,13 @@ class Binaries
 					}
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'],1,-1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
+				
+					// Used for the grabnzb function.
+					if($site->grabnzbs != 0 && preg_match('/"(.+?)\.nzb" yEnc$/', $subject, $match))
+					{
+						$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`collectionhash`, `message_id`, `group`, `article-number`, `subject`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString($this->message[$subject]['CollectionHash']), $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->escapeString($this->message[$subject]['Date'])));
+						$db->queryDirect(sprintf("UPDATE `nzbs` set `dateadded` = now() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash']);
+					}
 				}
 			}
 
