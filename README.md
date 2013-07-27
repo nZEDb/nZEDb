@@ -78,8 +78,13 @@ Notes:
 The team:
 
 Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo <br /><br /k>
-<a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
-<a class="coinbase-button" data-code="8a86a41801aa9480d9a94e8cbfbf9a57" data-button-style="donation_small" href="https://coinbase.com/checkouts/8a86a41801aa9480d9a94e8cbfbf9a57">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="MLRRNW5D5R6L4">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
 
 <hr>
 
