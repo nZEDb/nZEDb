@@ -472,6 +472,62 @@ class nameCleaning
 				return false;
 		}
 		
+		else if ($groupName === "alt.binaries.blu-ray")
+		{
+			//"786936833607.MK.A.part086.rar" yEnc
+			if (preg_match('/^"(\d+\.MK\.[A-Z])\..+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[1];
+				return $cleansubject;
+			}
+			//(????) [001/107] - "260713thbldnstnsclw.par2" yEnc
+			else if (preg_match('/^(\(\?{4}\) \[)\d+\/\d+\] - "([a-z0-9]+)\..+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1].$match[2];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//[www.allyourbasearebelongtous.pw]-[The Place Beyond the Pines 2012 1080p US Blu-ray AVC DTS-HD MA 5.1-HDWinG]-[03/97] "tt1817273-us-hdwing-bd.r00" - 46.51 GB - yEnc
+			else if (preg_match('/^(\[www\..+?\]-\[(.+?)\]-\[)\d+\/\d+\] ".+?" - \d+\.\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//(01/71)  - "EwRQCtU4BnaeXmT48hbg7bCn.par2" - 54,15 GB - yEnc
+			//(002/228) "xcvvcxvfGDGFKGFDKG54tgre.r00" - 42.24 GB - yEnc
+			else if (preg_match('/^\(\d+(\/\d+\)(\s+ -)? "([a-zA-Z0-9]+)\.).+?" - \d+[\.,]\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[3];
+				return $cleansubject;
+			}
+			//[01/67] - "O3tk4u681gd767Y.par2" yEnc
+			else if (preg_match('/^\[\d+(\/\d+\] - "([a-zA-Z0-9]+)\.).+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//209a212675ba31ca24a8 [usenet-4all.info] [powered by ssl-news] [21,59 GB] [002/223] "209a212675ba31ca24a8.part001.rar" yEnc
+			else if (preg_match('/^(([a-z0-9]+) \[.+?\] \[.+?\] \[)\d+,\d+ [kKmMgG][bB]\] \[\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			//TIS97CC - "tis97cc.par2" yEnc
+			else if (preg_match('/^(([A-Z0-9]+) - "[a-z0-9]+\.).+?" yEnc$/', $subject, $match))
+			{
+				$cleansubject["hash"] = $match[1];
+				$cleansubject["clean"] = $match[2];
+				return $cleansubject;
+			}
+			else
+				return false;
+		}
+		
 		else if ($groupName === "alt.binaries.moovee")
 		{
 			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
@@ -570,253 +626,6 @@ class nameCleaning
 		}
 		else
 			return $cleansubject;
-	}
-
-	//
-	//	Cleans a usenet subject before inserting, used for searchname. Also used for imports.
-	//	Some of these also have MD5 Hashes, I will comment where they do.
-	//
-	public function releaseCleaner($subject, $groupID="")
-	{
-		if ($groupID !== "")
-		{
-			$groups = new Groups();
-			$groupName = $groups->getByNameByID($groupID);
-			$predb = new Predb();
-			
-			/* First, try to do regex that can match on many groups. */
-			
-			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
-			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-			{
-				$cleanerName = $match[1];
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			//>ghost-of-usenet.org>Udo Lindenberg & Alla Borissowna Pugatschowa - Songs Instead Of Letters [01/11] - "ul_abp.nfo" yEnc
-			elseif (preg_match('/^>ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-			{
-				$cleanerName = $match[1];
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			//<<< <ghost-of-usenet.org> <"ABBYY.FineReader.v11.0.102.583.Corporate.Edition.MULTiLANGUAGE-PillePalle.7z.007"> >www.SSL-News.info< - - 397,31 MB yEnc
-			elseif (preg_match('/.+?<ghost-of-usenet\.org>( <[a-zA-Z]+>)? <"(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|")> >www\..+? yEnc$/', $subject, $match))
-			{
-				$cleanerName = $match[2];
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			//<ghost-of-usenet.org>Das.Glueck.dieser.Erde.S01E04.German.WS.DVDRiP.XViD-AMBASSADOR<>www.SSL-News.info< "ar-dgde-s01e04-xvid-sample.avi" yEnc
-			elseif (preg_match('/^<ghost-of-usenet\.org>(.+?)<>www\..+? ".+?" yEnc$/', $subject, $match))
-			{
-				$cleanerName = $match[2];
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			
-			/* Now, we try to match on individual groups. */
-			elseif (preg_match('/alt\.binaries\.erotica$/', $groupName))
-			{
-				$cleanerName = "";
-				//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [01/28] - "TayTO-heyzo_hd_0317_full.par2" - 2,17 GB yEnc
-				if (preg_match('/^<TOWN><www\.town\.ag > <download all our files with>>> www\.ssl-news\.info <<< > \[\d+\/\d+\] - "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") - /', $subject, $match))
-					$cleanerName = $match[1];
-				//NihilCumsteR [1/8] - "Conysgirls.cumpilation.xxx.NihilCumsteR.par2" yEnc
-				else if (preg_match('/^NihilCumsteR.+?"(.+?)NihilCumsteR\./', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.fz$/', $groupName))
-			{
-				$cleanerName = "";
-				//>ghost-of-usenet.org>Monte.Cristo.GERMAN.2002.AC3.DVDRiP.XviD.iNTERNAL-HACO<HAVE FUN> "haco-montecristo-xvid-a.par2" yEnc
-				if (preg_match('/^>ghost-of-usenet\.org>(.+?)<.+?> ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.games$/', $groupName))
-			{
-				$cleanerName = "";
-				//>ghost-of-usenet.org>Monte.Cristo.GERMAN.2002.AC3.DVDRiP.XviD.iNTERNAL-HACO<HAVE FUN> "haco-montecristo-xvid-a.par2" yEnc
-				if (preg_match('/^>ghost-of-usenet\.org>(.+?)<.+?> ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				//<ghost-of-usenet.org>XCOM.Enemy.Unknown.Deutsch.Patch.TokZic [0/9] - "XCOM Deutsch.nzb" ein CrazyUpp yEnc
-				else if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.german\.movies$/', $groupName))
-			{
-				$cleanerName = "";
-				//>ghost-of-usenet.org>Monte.Cristo.GERMAN.2002.AC3.DVDRiP.XviD.iNTERNAL-HACO<HAVE FUN> "haco-montecristo-xvid-a.par2" yEnc
-				if (preg_match('/^>ghost-of-usenet\.org>(.+?)<.+?> ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.ghosts$/', $groupName))
-			{
-				$cleanerName = "";
-				//<ghost-of-usenet.org>XCOM.Enemy.Unknown.Deutsch.Patch.TokZic [0/9] - "XCOM Deutsch.nzb" ein CrazyUpp yEnc
-				if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.inner-sanctum$/', $groupName))
-			{
-				$cleanerName = "";
-				//ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
-/* $match[1] = MD5 */
-				if (preg_match('/^([a-fA-F0-9]+) \[\d+\/\d+\] - ".+?(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
-					$cleanerName = $match[2];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.mom$/', $groupName))
-			{
-				$cleanerName = "";
-				//[usenet4ever.info] und [SecretUsenet.com] - 96e323468c5a8a7b948c06ec84511839-u4e - "96e323468c5a8a7b948c06ec84511839-u4e.par2" yEnc
-/* $match[1] = MD5 */
-				if (preg_match('/^\[usenet4ever\.info\] und \[SecretUsenet\.com\] - (.+?)-u4e - ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
-				else if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				//<ghost-of-usenet.org>XCOM.Enemy.Unknown.Deutsch.Patch.TokZic [0/9] - "XCOM Deutsch.nzb" ein CrazyUpp yEnc
-				else if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.moovee$/', $groupName))
-			{
-				$cleanerName = "";
-				//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-				if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.mp3\.complete_cd$/', $groupName))
-			{
-				$cleanerName = "";
-				//[052713]-[#eos@EFNet]-[All_Shall_Perish-Montreal_QUE_0628-2007-EOS]-[09/14] "06-all_shall_perish-deconstruction-eos.mp3" yEnc
-				if (preg_match('/^\[(\d+)\]-\[.+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.multimedia\.anime(\.highspeed)?/', $groupName))
-			{
-				$cleanerName = "";
-				//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-				if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
-					$cleanerName = $match[2];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.teevee$/', $groupName))
-			{
-				$cleanerName = "";
-				//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
-				if (preg_match('/^\(\d+\/\d+\) "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") - \d.+? - (\d.+? -)? yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				//ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
-				else if (preg_match('/^([a-z0-9]+) - \[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $this->releaseCleanerHelper($subject);
-				else
-					return $cleanerName;
-			}
-			elseif (preg_match('/alt\.binaries\.tv$/', $groupName))
-			{
-				$cleanerName = "";
-				//Borgen.2x02.A.Bruxelles.Non.Ti.Sentono.Urlare.ITA.BDMux.x264-NovaRip [02/22] - "borgen.2x02.ita.bdmux.x264-novarip.par2" yEnc
-				if (preg_match('/^([a-zA-Z0-9.\-]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-					$cleanerName = $match[1];
-				//(bf1) [03/31] - "The.Block.AU.Sky.High.S07E56.WS.PDTV.XviD.BF1.part01.sfv" yEnc
-				else if (preg_match('/^\(bf1\) \[\d+\/\d+\] - "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
-					$cleanerName = $match[2];
-				else
-					$cleanerName = $this->releaseCleanerHelper($subject);
-
-				if (empty($cleanerName))
-					return $subject;
-				else
-					return $cleanerName;
-			}
-			else
-				return $this->releaseCleanerHelper($subject);
-		}
-		else
-			return $this->releaseCleanerHelper($subject);
 	}
 	
 	public function releaseCleanerHelper($subject)
