@@ -395,7 +395,7 @@ class Backfill
 				if (PEAR::isError($data))
 				{
 					$nntp->doQuit();
-					echo "Error {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+					echo "Error {$data->code}: {$data->message}\nReturning from postdate.\n";
 					return;
 				}
 				else
@@ -404,7 +404,7 @@ class Backfill
 					if(PEAR::isError($msgs))
 					{
 						$nntp->doQuit();
-						echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${$group}\n";
+						echo "Error {$msgs->code}: {$msgs->message}\nReturning from postdate.\n";
 						return;
 					}
 				}
@@ -554,7 +554,7 @@ class Backfill
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
 		if ($lastId === false)
 		{
-			// Ccan failed - skip group.
+			// Scan failed - skip group.
 			return;
 		}
 	}
