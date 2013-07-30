@@ -76,22 +76,6 @@ class Backfill
 			$nntpc = new Nntp;
 			$nntpc->doConnect();
 		}
-
-		$datac = $nntpc->selectGroup($groupArr['name']);
-		if (PEAR::isError($datac))
-		{
-			$nntpc->doQuit();
-			unset($nntpc);
-			$nntpc = new Nntp;
-			$nntpc->doConnect();
-			$datac = $nntpc->selectGroup($groupArr['name']);
-			if (PEAR::isError($datac))
-			{
-				echo "Error {$datac->code}: {$datac->message}.".$n;
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
-				return;
-			}
-		}
 		
 		// Select the group.
 		$datac = $nntpc->selectGroup($groupArr['name']);
