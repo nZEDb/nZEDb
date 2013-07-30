@@ -15,9 +15,12 @@ class nameCleaning
 	//	$groupName = The name of the group for the article.
 	//	$nofiles = Wether the article has a filecount or not.
 	//
+	//	First, try against groups with strict regex.
+	//	If that fails, try against more generic regex.
+	//	$nofiles can help with bunched releases, by having its own set of regex.
+	//
 	public function collectionsCleaner($subject, $groupID="", $nofiles=false)
 	{
-		/* This section will do on a group to group basis, which will help with bunched collections. */
 		if ($groupID !== "")
 		{
 			$groups = new Groups();
