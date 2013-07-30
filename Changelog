@@ -1,3 +1,7 @@
+07302013 -> kevin    -> Clean up binaries.php and backfill.php and attempting to fix the connection errors.
+                        Modify files that use namecleaning to send the groupID.
+                        Modify namecleaning collectionsCleaner to be notified if there are files or not.
+                        Drop the name column on the collections table since it is useless now.
 07202013 -> jonnyboy -> added release name to output of decrypt_hashes.php
 						added release count per group to active_groups.php
 						fixed bug in predb with zenet

@@ -15,7 +15,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]) && $argv[1] == "full")
 {
 	$db = new DB();
-	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
+	$res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
 	
 	if (sizeof($res) > 0)
 	{
@@ -26,7 +26,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 		while ($row = mysqli_fetch_assoc($res))
 		{
 			$nc = new nameCleaning();
-			$newname = $nc-> releaseCleaner($row['name']);
+			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
 			$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
@@ -63,7 +63,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		while ($row = mysqli_fetch_assoc($res))
 		{
 			$nc = new nameCleaning();
-			$newname = $nc-> releaseCleaner($row['name']);
+			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
 			$db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
@@ -100,7 +100,7 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
         while ($row = mysqli_fetch_assoc($res))
         {
             $nc = new nameCleaning();
-            $newname = $nc-> releaseCleaner($row['name']);
+            $newname = $nc->releaseCleaner($row['name'], $row['groupID']);
             $db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
             $done++;
             $consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
