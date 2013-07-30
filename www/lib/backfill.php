@@ -357,56 +357,41 @@ class Backfill
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
-			$nntp->doConnect();
+			$nntp->doConnectNC();
 		}
 
 		$attempts=0;
 		do
 		{
-			// Select the group.
 			$data = $nntp->selectGroup($group);
-			// Attempt to reconnect if there is an error.
-			if (PEAR::isError($data))
+			if(PEAR::isError($data))
 			{
-				echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
 				$nntp->doQuit();
 				unset($nntp);
 				$nntp = new Nntp;
-				$nntp->doConnect();
+				$nntp->doConnectNC();
 				$data = $nntp->selectGroup($group);
-				if (PEAR::isError($data))
+				if(PEAR::isError($data))
 				{
-					echo "Error {$data->code}: {$data->message}\nSkipping group: {$group}\n";
-					$nntp->doQuit();
+					echo "Error {$data->code}: {$data->message}.\n";
 					return;
 				}
 			}
-
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
 			if(PEAR::isError($msgs))
 			{
-				// This is usually a compression error, so lets try disabling compression.
-				echo "\n\nThe server has not returned any data, we will try disabling compression temporarily and retry.\n";
 				$nntp->doQuit();
-				unset($nntp, $msgs);
+				unset($nntp);
 				$nntp = new Nntp;
 				$nntp->doConnectNC();
-				$data = $nntp->selectGroup($groupArr['name']);
-				if (PEAR::isError($data))
+				$data = $nntp->selectGroup($group);
+				// Try to get different article.
+				$post = $post - 10;
+				$msgs = $nntp->getOverview($post."-".$post,true,true);
+				if(PEAR::isError($msgs))
 				{
-					$nntp->doQuit();
-					echo "Error {$data->code}: {$data->message}\nReturning from postdate.\n";
+					echo "Error {$msgs->code}: {$msgs->message}.\nReturning from postdate.\n";
 					return;
-				}
-				else
-				{
-					$msgs = $nntp->getOverview($post."-".$post,true,true);
-					if(PEAR::isError($msgs))
-					{
-						$nntp->doQuit();
-						echo "Error {$msgs->code}: {$msgs->message}\nReturning from postdate.\n";
-						return;
-					}
 				}
 			}
 
