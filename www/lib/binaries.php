@@ -87,9 +87,7 @@ class Binaries
 		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\n";
-			if ($data->code == 400)
-				echo "NNTP connection timed out. Reconnecting...\n";
+			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -97,14 +95,9 @@ class Binaries
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
+				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
 				$nntp->doQuit();
-				echo "\nError {$data->code}: {$data->message}\n";
-				// If server returns error 411, skip group.
-				if ($data->code == 411)
-				{
-					echo "Skipping group: {$groupArr['name']}\n";
-					return;
-				}
+				return;
 			}
 		}
 
@@ -230,9 +223,7 @@ class Binaries
 		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\n";
-			if ($data->code == 400)
-				echo "NNTP connection timed out. Reconnecting...\n";
+			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -240,14 +231,9 @@ class Binaries
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "\n\nError {$data->code}: {$data->message}\n";
-				// If server returns error 411, skip group.
-				if ($data->code == 411)
-				{
-					$nntp->doQuit();
-					echo "Skipping group: {$groupArr['name']}\n";
-					return;
-				}
+				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
+				$nntp->doQuit();
+				return;
 			}
 		}
 		
@@ -258,7 +244,7 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				// This is usually a compression error, so lets try disabling compression.
-				echo "The server has not returned any data, we will try disabling compression temporarily and retry.\n";
+				echo "\n\nThe server has not returned any data, we will try disabling compression temporarily and retry.\n";
 				$nntp->doQuit();
 				unset($nntp, $msgs);
 				$nntp = new Nntp;
@@ -266,14 +252,9 @@ class Binaries
 				$data = $nntp->selectGroup($groupArr['name']);
 				if (PEAR::isError($data))
 				{
-					echo "\n\nError {$data->code}: {$data->message}\n";
-					// If server returns error 411, skip group.
-					if ($data->code == 411)
-					{
-						$nntp->doQuit();
-						echo "Skipping group: {$groupArr['name']}\n";
-						return;
-					}
+					$nntp->doQuit();
+					echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
+					return;
 				}
 				else
 				{
@@ -281,8 +262,7 @@ class Binaries
 					if(PEAR::isError($msgs))
 					{
 						$nntp->doQuit();
-						echo "Error {$msgs->code}: {$msgs->message}\n";
-						echo "Skipping group: ${groupArr['name']}\n";
+						echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
 						return;
 					}
 				}

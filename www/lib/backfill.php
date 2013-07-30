@@ -30,19 +30,15 @@ class Backfill
 		{
 			$grp = $groups->getByName($groupName);
 			if ($grp)
-			{
 				$res = array($grp);
-			}
 		}
 		else
-		{
 			$res = $groups->getActiveBackfill();
-		}
 
 		$counter = 1;
 		if (@$res)
 		{
-			// No compression.
+			// No compression. Used for interval, otherwise it stalls.
 			$nntp = new Nntp();
 			$nntp->doConnectNC();
 			// Compression.
@@ -51,18 +47,15 @@ class Backfill
 
 			foreach($res as $groupArr)
 			{
-				$left = sizeof($res)-$counter;
-				echo $n."Starting group ".$counter." of ".sizeof($res).".".$n;
-				$this->backfillGroup($nntp, $nntpc, $groupArr, $left);
+				echo $n."Starting group ".$counter." of ".sizeof($res).".\n";
+				$this->backfillGroup($nntp, $nntpc, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
 			$nntp->doQuit();
 			$nntpc->doQuit();
 		}
 		else
-		{
-			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.".$n;
-		}
+			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
 	}
 
 	function backfillGroup($nntp, $nntpc, $groupArr, $left)
@@ -71,18 +64,19 @@ class Backfill
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-
-		// Compression.
+		
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
 			$nntp->doConnectNC();
 		}
+
 		if (!isset($nntpc))
 		{
-			$nntp = new Nntp;
-			$nntp->doConnect();
+			$nntpc = new Nntp;
+			$nntpc->doConnect();
 		}
+
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		if (PEAR::isError($datac))
 		{
@@ -98,11 +92,30 @@ class Backfill
 				return;
 			}
 		}
+		
+		// Select the group.
+		$datac = $nntpc->selectGroup($groupArr['name']);
+		// Attempt to reconnect if there is an error.
+		if (PEAR::isError($datac))
+		{
+			echo "\n\nError {$datac->code}: {$datac->message}\nAttempting to reconnect to usenet.";
+			$nntpc->doQuit();
+			unset($nntpc);
+			$nntpc = new Nntp;
+			$nntpc->doConnect();
+			$datac = $nntpc->selectGroup($groupArr['name']);
+			if (PEAR::isError($datac))
+			{
+				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
+				$nntpc->doQuit();
+				return;
+			}
+		}
 
-		// No comp - for interval.
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
+			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -110,8 +123,8 @@ class Backfill
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Error {$data->code}: {$data->message}.".$n;
-				echo "Reconnected but could not select group (bad name?): {$groupArr['name']}".$n;
+				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
+				$nntp->doQuit();
 				return;
 			}
 		}
