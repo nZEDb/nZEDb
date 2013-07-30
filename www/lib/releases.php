@@ -2166,7 +2166,10 @@ class Releases
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
-					$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname']).$row['fromname'].$row['groupID'].$row['totalFiles']);
+					$nofiles = true;
+					if ($row['totalFiles'] > 0)
+						$nofiles = false;
+					$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $row['groupID'], $nofiles).$row['fromname'].$row['groupID'].$row['totalFiles']);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{

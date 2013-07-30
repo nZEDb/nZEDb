@@ -133,7 +133,6 @@ if (!empty($argc) || $page->isPostBack() )
 				if ($usenzbname && $skipCheck !== true)
 				{
 					$usename = str_replace('.nzb', '', ($viabrowser ? $browserpostednames[$nzbFile] : basename($nzbFile)));
-					$cleanerName = $usename;
 					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
@@ -164,7 +163,6 @@ if (!empty($argc) || $page->isPostBack() )
 				if (!$usenzbname && $skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$cleanerName = $namecleaning->releaseCleaner($subject);
 					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
 						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
@@ -177,12 +175,12 @@ if (!empty($argc) || $page->isPostBack() )
 					{
 						if (!empty($argc))
 						{
-							echo "Skipping ".$cleanerName.", it already exists in your database.\n";
+							echo "Skipping ".$subject.", it already exists in your database.\n";
 							flush();
 						}
 						else
 						{
-							$retval.= "Skipping ".$cleanerName.", it already exists in your database<br />";
+							$retval.= "Skipping ".$subject.", it already exists in your database<br />";
 						}
 						$importfailed = true;
 						break;
@@ -225,7 +223,7 @@ if (!empty($argc) || $page->isPostBack() )
 				{
 					if ($isBlackListed)
 					{
-						$errorMessage = "Subject is blacklisted: ".$cleanerName;
+						$errorMessage = "Subject is blacklisted: ".$subject;
 					}
 					else
 					{
@@ -252,6 +250,7 @@ if (!empty($argc) || $page->isPostBack() )
 				$nzb = new NZB();
 				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
 				$subject = utf8_encode(trim($partless));
+				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 				if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					if($nzb->copyNZBforImport($relguid, $nzba))

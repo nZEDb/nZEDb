@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS `collections`;
 CREATE TABLE `collections` (
 		`ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-		`name` VARCHAR(255) NOT NULL DEFAULT '',
 		`subject` VARCHAR(255) NOT NULL DEFAULT '',
 		`fromname` VARCHAR(255) NOT NULL DEFAULT '',
 		`date` DATETIME DEFAULT NULL,
@@ -1041,7 +1040,7 @@ INSERT INTO `site`
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
-	('sqlpatch','98');
+	('sqlpatch','99');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
