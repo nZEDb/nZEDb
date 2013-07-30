@@ -31,7 +31,6 @@ else
 	$path = $argv[1];
 	$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 }
-
 $filestoprocess = Array();
 
 if (substr($path, strlen($path) - 1) != '/')
@@ -101,7 +100,10 @@ else
 
 	//iterate over all nzb files in all folders and subfolders
 	if(!file_exists($path))
+	{
+		echo "ERROR: Unable to access the specified path. Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
 		return;
+	}
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 	foreach($objects as $filestoprocess => $nzbFile){
 		if(!$nzbFile->getExtension() == "nzb" || !$nzbFile->getExtension() == "gz")
