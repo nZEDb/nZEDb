@@ -1386,10 +1386,6 @@ class Releases
 		$db->query("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID)
 						in (c.totalFiles, c.totalFiles + 1)) AND c.totalFiles > 0 AND c.filecheck = 0 ".$where);
 
-		// Attempt to split bundled collections.
-		//$db->query("UPDATE collections SET filecheck = 10 WHERE ID IN (SELECT ID FROM (SELECT c.ID FROM collections c LEFT JOIN binaries b ON b.collectionID = c.ID WHERE c.totalFiles > 0 AND c.dateadded < (now() - interval 20 minute) AND c.filecheck = 0".$where." GROUP BY c.ID, c.totalFiles HAVING count(b.ID) > c.totalFiles+2) as tmpTable)");
-		//$this->splitBunchedCollections();
-
 		// Set filecheck to 16 if theres a file that starts with 0.
 		$db->query("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0 ".$where."
 						GROUP BY b.collectionID) AND c.totalFiles > 0 AND c.filecheck = 1");
@@ -1563,7 +1559,6 @@ class Releases
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				//$cleanSearchName = str_replace($cleanArr, '', $rowcol['name']);
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
 				$relguid = sha1(uniqid());
@@ -2152,71 +2147,6 @@ class Releases
 		return $releasesAdded;
 	}
 
-	//
-	// When multiple collections are bunched up with the same Sha1 ((ebooklezer) [0/2] - "geheimen.nzb" yEnc (1/1) | (ebooklezer) [1/2] - "destiny.par2" yEnc (1/1))
-	// Seperate them using a different namecleaner and change the ID's on the parts/binaries.
-	//
-	public function splitBunchedCollections()
-	{
-		// Create new collections from collections with filecheck = 10 , set them to filecheck = 11, using the binaries table and the alternate namecleaner.
-		$db = new DB();
-		$namecleaner = new nameCleaning();
-		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID where c.filecheck = 10"))
-		{
-			if (mysqli_num_rows($res) > 0)
-			{
-				if ($this->echooutput)
-					echo "Extracting bunched up collections.\n";
-				$bunchedcnt = 0;
-				$cIDS = $colnames = $binnames = array();
-				while ($row = mysqli_fetch_assoc($res))
-				{
-					$newcolname = $namecleaner->collectionsCleaner($row['bname'], "split");
-					$newSHA1 = sha1($newcolname.$row['fromname'].$row['groupID'].$row['totalFiles']);
-					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
-					if(!$cres)
-					{
-						if ($this->debug)
-						{
-							if (!in_array($newcolname, $binnames))
-							{
-								$colnames[] = $newcolname;
-								$binnames[] = $row['bname'];
-							}
-						}
-						$cIDS[] = $row['ID'];
-						$bunchedcnt++;
-						$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 11, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
-						$collectionID = $db->queryInsert($csql);
-					}
-					else
-					{
-						$collectionID = $cres['ID'];
-						//Update the collection table with the last seen date for the collection.
-						$db->queryDirect(sprintf("UPDATE collections set dateadded = now() where ID = %d", $collectionID));
-					}
-					//Update the binaries with the new info.
-					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row['bID']));
-				}
-				if ($this->debug && count($colnames) > 1 && count($binnames) > 1)
-				{
-					$arr = array_combine($colnames, $binnames);
-					ksort($arr);
-					print_r($arr);
-				}
-				//Remove the old collections.
-				foreach (array_unique($cIDS) as $cID)
-				{
-					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
-				}
-				//Update the collections to say we are done.
-				$db->query("UPDATE collections SET filecheck = 0 WHERE filecheck = 11");
-				if ($this->echooutput)
-					echo "Extracted ".$bunchedcnt." bunched collections.\n";
-			}
-		}
-	}
-
 	// This resets collections, useful when the namecleaning class's collectioncleaner function changes.
 	public function resetCollections()
 	{
@@ -2236,7 +2166,10 @@ class Releases
 				$cIDS = array();
 				while ($row = mysqli_fetch_assoc($res))
 				{
-					$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname']).$row['fromname'].$row['groupID'].$row['totalFiles']);
+					$nofiles = true;
+					if ($row['totalFiles'] > 0)
+						$nofiles = false;
+					$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $row['groupID'], $nofiles).$row['fromname'].$row['groupID'].$row['totalFiles']);
 					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 					if(!$cres)
 					{
