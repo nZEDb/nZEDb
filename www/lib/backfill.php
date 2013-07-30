@@ -453,21 +453,6 @@ class Backfill
 			$nntp->doConnect();
 		}
 
-		$data = $nntp->selectGroup($group);
-		if(PEAR::isError($data))
-		{
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($group);
-			if(PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}".$n."Returning from daytopost.".$n;
-				return;
-			}
-		}
-
 		// Select the group.
 		$data = $nntp->selectGroup($group);
 		// Attempt to reconnect if there is an error.
