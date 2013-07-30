@@ -161,7 +161,6 @@ else
 			{
 				$usename = str_replace('.nzb', '', basename($nzbFile));
 				$usename = str_replace('.gz', '', $usename);
-				$cleanerName = $usename;
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
@@ -173,7 +172,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false || $res1 !== false)
 				{
-					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m";
+					echo $n."\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m";
 					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
@@ -183,7 +182,6 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
-				$cleanerName = $namecleaning->releaseCleaner($subject);
 				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
 					$db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
@@ -194,7 +192,7 @@ else
 				// if the release is in the DB already then just skip this whole procedure
 				if ($res !== false)
 				{
-					echo $n."\033[38;5;".$color_skipped."mSkipping ".$cleanerName.", it already exists in your database.\033[0m".$n;
+					echo $n."\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m".$n;
 					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
@@ -236,11 +234,11 @@ else
 			{
 				if ($isBlackListed)
 				{
-					$errorMessage = $n."\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$cleanerName."\033[0m".$n;
+					$errorMessage = $n."\033[38;5;".$color_blacklist."mSubject is blacklisted: ".$subject."\033[0m".$n;
 				}
 				else
 				{
-					$errorMessage = $n."\033[38;5;".$color_group."mNo group found for ".$cleanerName." (one of ".implode(', ', $groupArr)." are missing)\033[0m".$n;
+					$errorMessage = $n."\033[38;5;".$color_group."mNo group found for ".$subject." (one of ".implode(', ', $groupArr)." are missing)\033[0m".$n;
 				}
 				$importfailed = true;
 				echo $errorMessage.$n;
@@ -251,6 +249,7 @@ else
 		{
 			$relguid = sha1(uniqid());
 			$nzb = new NZB();
+			$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 			if($relID = $db->queryInsert(sprintf("insert into releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 			{
 				if($nzb->copyNZBforImport($relguid, $nzba))
