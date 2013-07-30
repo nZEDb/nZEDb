@@ -380,7 +380,7 @@ class nameCleaning
 		else if ($groupName === "alt.binaries.inner-sanctum")
 		{
 			////ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
-			if (preg_match('/^([a-fA-F0-9]+) \[\d+\/\d+\] - ".+?(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			if (preg_match('/^([a-fA-F0-9]+) \[\d+\/\d+\] - ".+?(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
@@ -391,7 +391,7 @@ class nameCleaning
 			if (preg_match('/^(\[usenet4ever\.info\] und \[SecretUsenet\.com\] - .+?-u4e - ").+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
-			else if (preg_match('/(.+?\.net <<<Partner von SSL-News\.info>>> - \[)\d+(\/\d+\] - ".+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/(.+?\.net <<<Partner von SSL-News\.info>>> - \[)\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1].$match[2];
 			//<ghost-of-usenet.org>XCOM.Enemy.Unknown.Deutsch.Patch.TokZic [0/9] - "XCOM Deutsch.nzb" ein CrazyUpp yEnc
 			else if (preg_match('/^(<ghost-of-usenet\.org>.+? \[)\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
@@ -449,8 +449,12 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9]+)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
-			else if (preg_match('/^\(\d+(\/\d+\) ".+?)(\.part\d+)?(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[\.,]\d+ [kKmMgG][bB] - (\d.+? -)? yEnc$/', $subject, $match))
+			else if (preg_match('/^\(\d+(\/\d+\) ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[\.,]\d+ [kKmMgG][bB] - (\d.+? -)? yEnc$/', $subject, $match))
 				return $match[1];
+			//Divers (12/42) -"Juste.Pour.Rire.2013.Gala.JF.Mercier.FRENCH.720p.HDTV.x264-QuebecRules.part11.rar" yEnc
+			//Par le chapeau (06/43) - "8C7D59F472E03.part04.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9 ]+ \()\d+(\/\d+\) - ?".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1].$match[2];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
 		}
@@ -882,7 +886,7 @@ class nameCleaning
 		else if ($groupName === "alt.binaries.inner-sanctum")
 		{
 			//ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
-			if (preg_match('/^[a-fA-F0-9]+ \[\d+\/\d+\] - "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			if (preg_match('/^[a-fA-F0-9]+ \[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
@@ -893,7 +897,7 @@ class nameCleaning
 			if (preg_match('/^\[usenet4ever\.info\] und \[SecretUsenet\.com\] - (.+?)-u4e - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
-			else if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "(.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//<ghost-of-usenet.org>XCOM.Enemy.Unknown.Deutsch.Patch.TokZic [0/9] - "XCOM Deutsch.nzb" ein CrazyUpp yEnc
 			else if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
@@ -952,6 +956,10 @@ class nameCleaning
 				return $match[1];
 			//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 			else if (preg_match('/^\(\d+\/\d+\) "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[\.,]\d+ [kKmMgG][bB] - (\d.+? -)? yEnc$/', $subject, $match))
+				return $match[1];
+			//Divers (12/42) -"Juste.Pour.Rire.2013.Gala.JF.Mercier.FRENCH.720p.HDTV.x264-QuebecRules.part11.rar" yEnc
+			//Par le chapeau (06/43) - "8C7D59F472E03.part04.rar" yEnc
+			else if (preg_match('/^[a-zA-Z0-9 ]+ \(\d+\/\d+\) - ?"(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
