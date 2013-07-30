@@ -9,9 +9,13 @@ require_once(WWW_DIR."/lib/predb.php");
 class nameCleaning
 {
 	//
-	//	Cleans usenet subject before inserting, used for collectionhash. Uses groups first (useful for bunched collections).
+	//	Cleans a usenet subject returning something that can tie many articles together.
 	//
-	public function collectionsCleaner($subject, $type="normal", $groupID="")
+	//	$subject = The usenet subject, ending with yEnc (part count removed from the end).
+	//	$groupName = The name of the group for the article.
+	//	$nofiles = Wether the article has a filecount or not.
+	//
+	public function collectionsCleaner($subject, $groupID="", $nofiles=false)
 	{
 		/* This section will do on a group to group basis, which will help with bunched collections. */
 		if ($groupID !== "")
@@ -28,7 +32,7 @@ class nameCleaning
 				else if (preg_match('/^\[\d+(\/\d+\] - "[a-zA-Z0-9\-_]+\.).+?(" - \d).+?( yEnc)$/', $subject, $match))
 					$cleansubject = $match[1].$match[2].$match[3];
 				else
-					$cleansubject = $this->collectionsCleanerHelper($subject, $type);
+					$cleansubject = $this->collectionsCleanerHelper($subject);
 				
 				if (empty($cleansubject))
 					return $subject;
@@ -36,16 +40,16 @@ class nameCleaning
 					return $cleansubject;
 			}
 			else
-				return $this->collectionsCleanerHelper($subject, $type);
+				return $this->collectionsCleanerHelper($subject);
 		}
 		else
-			return $this->collectionsCleanerHelper($subject, $type);
+			return $this->collectionsCleanerHelper($subject);
 	}
 
 	//
 	//	Cleans usenet subject before inserting, used for collectionhash. Fallback from collectionsCleaner.
 	//
-	public function collectionsCleanerHelper($subject, $type)
+	public function collectionsCleanerHelper($subject)
 	{
 		/* This section is more generic, it will work on most releases. */
 		//Parts/files
@@ -60,16 +64,7 @@ class nameCleaning
 		$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 		$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
 
-		if ($type == "split")
-		{
-			$one = $two = "";
-			if (preg_match('/"(.+?)\.[a-z0-9].+?"/i', $subject, $matches))
-				$one = $matches[1];
-			else if(preg_match('/s\d{1,3}[.-_ ]?(e|d)\d{1,3}|EP[\.\-_ ]?\d{1,3}[\.\-_ ]|[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!](19|20)\d\d[a-z0-9\.\-_ \(\[\)\]{}<>,"\'\$^\&\*\!]/i', $subject, $matches2))
-				$two = $matches2[0];
-			return $cleansubject.$one.$two;
-		}
-		else if ($type !== "split" && (strlen($cleansubject) <= 7 || preg_match('/^[a-z0-9 \-\$]{1,9}$/i', $cleansubject)))
+		if (strlen($cleansubject) <= 7 || preg_match('/^[a-z0-9 \-\$]{1,9}$/i', $cleansubject))
 		{
 			$one = $two = "";
 			if (preg_match('/.+?"(.+?)".+?".+?".+/', $subject, $matches))
