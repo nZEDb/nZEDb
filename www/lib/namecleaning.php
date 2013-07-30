@@ -441,7 +441,6 @@ class nameCleaning
 				return $match[1];
 			//ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
 			else if (preg_match('/^([a-z0-9]+ - )\[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $subject, $match))
-			{
 				return $match[1];
 			//fhdbg34rgjdsfd008c (42/43) "fhdbg34rgjdsfd008c.vol062+64.par2" - 3,68 GB - yEnc
 			else if (preg_match('/^([a-z0-9]+ \()\d+\/\d+\) ".+?" - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
@@ -944,7 +943,6 @@ class nameCleaning
 				return $match[1];
 			//ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
 			else if (preg_match('/^([a-z0-9]+) - \[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $subject, $match))
-			{
 				return $match[1];
 			//fhdbg34rgjdsfd008c (42/43) "fhdbg34rgjdsfd008c.vol062+64.par2" - 3,68 GB - yEnc
 			else if (preg_match('/^([a-z0-9]+) \(\d+\/\d+\) ".+?" - \d+,\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
