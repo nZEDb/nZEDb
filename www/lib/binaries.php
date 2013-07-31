@@ -213,6 +213,8 @@ class Binaries
 
 		if (!isset($nntp))
 		{
+			$nntp->doQuit();
+			unset($nntp);
 			$nntp = new Nntp();
 			$nntp->doConnect();
 		}

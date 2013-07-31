@@ -248,12 +248,12 @@ class Backfill
 		$db = new DB();
 		$binaries = new Binaries();
 		$nntp = new Nntp();
-		$nntp->doConnect();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
 
 		echo 'Processing '.$groupArr['name'].$n;
 		
+		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
@@ -316,12 +316,15 @@ class Backfill
 		if($targetpost > $first)
 			$first = $targetpost;
 
+		$nntp->doQuit();
+		$nntp->doConnect();
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
 
 			echo "\nGetting ".($last-$first+1)." articles from ".$data["group"].", ".$left." group(s) left. (".($first-$targetpost)." articles in queue).\n";
 			flush();
+
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
 			$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$this->postdate($nntp,$first,false,$groupArr['name'])."), first_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
