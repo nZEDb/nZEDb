@@ -420,7 +420,8 @@ class nameCleaning
 			else if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
-			else if (preg_match('/^([a-zA-Z0-9\.\-_]+ - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Antony.and.Cleopatra.1972.720p.WEB-DL.H264-brento -[35/57] - "Antony.and.Cleopatra.1972.720p.WEB-DL.AAC2.0.H.264-brento.part34.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9\.\-_]+ - ?\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
 			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part(\d+)?)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
@@ -974,7 +975,8 @@ class nameCleaning
 			else if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
-			else if (preg_match('/^([a-zA-Z0-9\.\-_]+) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Antony.and.Cleopatra.1972.720p.WEB-DL.H264-brento -[35/57] - "Antony.and.Cleopatra.1972.720p.WEB-DL.AAC2.0.H.264-brento.part34.rar" yEnc
+			else if (preg_match('/^([a-zA-Z0-9\.\-_]+) - ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
 			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part(\d+)?)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
