@@ -1010,10 +1010,10 @@ class nameCleaning
 			if (preg_match('/^([a-zA-Z0-9].+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->collectionsCleanerHelper($subject, $nofiles);
+				return $this->releaseCleanerHelper($subject);
 		}
 		else
-			return $this->collectionsCleanerHelper($subject, $nofiles);
+			return $this->releaseCleanerHelper($subject);
 	}
 	
 	public function releaseCleanerHelper($subject)
