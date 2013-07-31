@@ -403,10 +403,15 @@ class nameCleaning
 		{
 			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
 			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
-			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \]-)\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
+			//[134212]-[FULL]-[#a.b.moovee]-[ Monsters.Inc.2001.1080p.BluRay.x264-CiNEFiLE ] [80/83] - "monsters.inc.2001.1080p.bluray.x264-cinefile.vol015+16.par2" yEnc
+			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \](-| ))\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- ").+?(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//[ Hammer.of.the.Gods.2013.720p.WEB-DL.DD5.1.H.264-ELiTE ]-[01/44] - "Hammer.of.the.Gods.2013.720p.WEB-DL.DD5.1.H.264-ELiTE.par2" yEnc
+			//[ Admission.2013.720p.WEB-DL.DD5.1.H.264-HD4FUN ] - [01/82] - "Admission.2013.720p.WEB-DL.DD5.1.H.264-HD4FUN.nfo" yEnc
+			else if (preg_match('/^(\[ [a-zA-Z0-9\.\-]+ \] ?- ?\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(????) [0/1] - "A.Good.Day.to.Die.Hard.2013.nzb" yEnc
 			else if (preg_match('/^\(\?{4}\) \[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
@@ -416,6 +421,18 @@ class nameCleaning
 				return $match[1];
 			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
 			else if (preg_match('/^([a-zA-Z0-9\.\-_]+ - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
+			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part(\d+)?)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
+				return $match[1];
+			//[134517]-[01/76] - "Lara Croft Tomb Raider 2001 720p BluRay DTS x264-RightSiZE.nfo" yEnc
+			else if (preg_match('/^\[\d+\]-\[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//(Iron.Man.3.2013.R5.DVDRip.XviD-AsA) (01/26) - "Iron.Man.3.2013.R5.DVDRip.XviD-AsA.part01.part.sfv" yEnc
+			else if (preg_match('/^(\([a-zA-Z0-9\.\-]+\) \()\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//(Classic Surf) Morning.Of.The.Earth.1971 [03/29] - "Morning.Of.The.Earth.1971.part02.rar" yEnc
+			else if (preg_match('/^(\([a-zA-Z0-9].+?\) [a-zA-Z0-9\.\-]+ \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
@@ -940,10 +957,15 @@ class nameCleaning
 		{
 			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
 			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
-			if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
+			//[134212]-[FULL]-[#a.b.moovee]-[ Monsters.Inc.2001.1080p.BluRay.x264-CiNEFiLE ] [80/83] - "monsters.inc.2001.1080p.bluray.x264-cinefile.vol015+16.par2" yEnc
+			if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \](-| )\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//[ Hammer.of.the.Gods.2013.720p.WEB-DL.DD5.1.H.264-ELiTE ]-[01/44] - "Hammer.of.the.Gods.2013.720p.WEB-DL.DD5.1.H.264-ELiTE.par2" yEnc
+			//[ Admission.2013.720p.WEB-DL.DD5.1.H.264-HD4FUN ] - [01/82] - "Admission.2013.720p.WEB-DL.DD5.1.H.264-HD4FUN.nfo" yEnc
+			else if (preg_match('/^\[ ([a-zA-Z0-9\.\-]+) \] ?- ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(????) [0/1] - "A.Good.Day.to.Die.Hard.2013.nzb" yEnc
 			else if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
@@ -953,6 +975,18 @@ class nameCleaning
 				return $match[1];
 			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
 			else if (preg_match('/^([a-zA-Z0-9\.\-_]+) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
+			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part(\d+)?)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
+				return $match[1];
+			//[134517]-[01/76] - "Lara Croft Tomb Raider 2001 720p BluRay DTS x264-RightSiZE.nfo" yEnc
+			else if (preg_match('/^\[\d+\]-\[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//(Iron.Man.3.2013.R5.DVDRip.XviD-AsA) (01/26) - "Iron.Man.3.2013.R5.DVDRip.XviD-AsA.part01.part.sfv" yEnc
+			else if (preg_match('/^\(([a-zA-Z0-9\.\-]+)\) \(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//(Classic Surf) Morning.Of.The.Earth.1971 [03/29] - "Morning.Of.The.Earth.1971.part02.rar" yEnc
+			else if (preg_match('/^\([a-zA-Z0-9].+?\) ([a-zA-Z0-9\.\-]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
