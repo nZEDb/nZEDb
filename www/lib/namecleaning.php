@@ -397,7 +397,7 @@ class nameCleaning
 		{
 			//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
 			if (preg_match('/^\[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[,\.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
-				return $match[1]
+				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
 		}
@@ -1026,7 +1026,7 @@ class nameCleaning
 		{
 			//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
 			if (preg_match('/^\[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[,\.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
-				return $match[1]
+				return $match[1];
 			//>ghost-of-usenet.org>The A-Team S01-S05(Folgen einzelnd ladbar)<Sponsored by Astinews< (1930/3217) "isd-ateamxvid-s04e21.r19" yEnc
 			else if (preg_match('/^>ghost-of-usenet\.org>(.+?)\(.+?\).+? \(\d+\/\d+\) ".+?" yEnc$/', $subject, $match))
 				return $match[1];
