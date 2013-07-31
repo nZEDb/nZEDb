@@ -213,6 +213,8 @@ class Binaries
 
 		if (!isset($nntp))
 		{
+			$nntp->doQuit();
+			unset($nntp);
 			$nntp = new Nntp();
 			$nntp->doConnect();
 		}
@@ -331,8 +333,19 @@ class Binaries
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex. */
+							
+							if (preg_match('/yEnc$/', $cleansubject))
+							{
+								$colnames[] = $cleansubject;
+								$orignames[] = $msg['Subject'];
+							}
+							/**/
+							
+							//If you uncommented the above, comment following line..
+							//$colnames[] = $cleansubject;
+							//$orignames[] = $msg['Subject'];
+							//Until previous line.
 						}
 					}
 
