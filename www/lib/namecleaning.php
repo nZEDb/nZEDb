@@ -401,11 +401,21 @@ class nameCleaning
 		}
 		else if ($groupName === "alt.binaries.moovee")
 		{
-			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
-			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
+			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
+			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \]-)\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- ").+?(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//(????) [0/1] - "A.Good.Day.to.Die.Hard.2013.nzb" yEnc
+			else if (preg_match('/^\(\?{4}\) \[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//[xxxxx]-[#a.b.moovee@EFNet]-[ xxxxx ]-[02/66] - "tulob88.part01.rar" yEnc
+			else if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+(\/\d+\] - ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9\.\-_]+ - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $nofiles);
@@ -928,11 +938,21 @@ class nameCleaning
 		}
 		else if ($groupName === "alt.binaries.moovee")
 		{
-			//[134551]-[FULL]-[#a.b.moovee]-[ Bittersweet.1995.DVDRip.XviD-FiCO ]-[20/70] - "fico-bitter.r06" yEnc
-			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
+			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
+			if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//(????) [0/1] - "A.Good.Day.to.Die.Hard.2013.nzb" yEnc
+			else if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//[xxxxx]-[#a.b.moovee@EFNet]-[ xxxxx ]-[02/66] - "tulob88.part01.rar" yEnc
+			else if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+\/\d+\] - "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//Groove.2000.iNTERNAL.DVDRip.XviD-UBiK - [001/111] - "ubik-groove-cd1.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9\.\-_]+) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
