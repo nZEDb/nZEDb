@@ -49,6 +49,9 @@ From a command line:
 	(change Europe/London to your settings, see the php.net site for valid ones, remove the ; if there is one preceeding the date.timezone)
 	date.timezone = Europe/London
 
+	**For Apache 2.4, you must do the following:**
+	Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
+
 	Press control+x when you are done.
 
 3. Install MYSQL.
@@ -71,6 +74,9 @@ From a command line:
 	memory_limit = 1024M
 	(change Europe/London to your settings, see the php.net site for valid ones, remove the ; if there is one preceeding the date.timezone)
 	date.timezone = Europe/London
+
+	**For Apache 2.4, you must do the following:**
+	Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
 
 	Create the site config:
 	sudo nano /etc/apache2/sites-available/nZEDb
