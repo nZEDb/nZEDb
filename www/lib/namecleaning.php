@@ -538,8 +538,6 @@ class nameCleaning
 		}
 		else if ($groupName === "alt.binaries.teevee")
 		{
-			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \]-)\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-				return $match[1];
 			//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
 			//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
 			//Re: [147053]-[FULL]-[#a.b.teevee]-[ Top_Gear.20x04.HDTV_x264-FoV ]-[11/59] - "top_gear.20x04.hdtv_x264-fov.r00" yEnc (01/20)
