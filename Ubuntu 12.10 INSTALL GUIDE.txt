@@ -72,6 +72,10 @@ From a command line:
 	(change Europe/London to your settings, see the php.net site for valid ones, remove the ; if there is one preceeding the date.timezone)
 	date.timezone = Europe/London
 
+	**For Apache 2.4, you must do the following change to /etc/apache2/apache2.conf:**
+	Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
+	**********************************************************************************
+
 	Create the site config:
 	sudo nano /etc/apache2/sites-available/nZEDb
 

@@ -1,3 +1,5 @@
+08012013 -> ThePeePs -> Add logging of failed site login attempts.
+08012013 -> kevin    -> Add more regex to namecleaning.
 07302013 -> kevin    -> Clean up binaries.php and backfill.php and attempting to fix the connection errors.
                         Modify files that use namecleaning to send the groupID.
                         Modify namecleaning collectionsCleaner to be notified if there are files or not.

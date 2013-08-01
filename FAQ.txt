@@ -1,5 +1,8 @@
 Some common mistakes/errors people encounter.
 
+Q: Pages (like localhost/movies) are giving 404 errors with apache 2.4.
+A: In apache2.conf change the setting AllowOverride None for <Directory /var/www/> to AllowOverride All
+
 Q: Sabnzbd is not working.
 A: Make sure you have the sabnzbd/ in the url.
 
