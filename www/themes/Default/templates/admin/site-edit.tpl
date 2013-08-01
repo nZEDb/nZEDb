@@ -117,6 +117,21 @@
 	</td>
 </tr>
 
+<tr>
+    <td><label for="loggingopt">Logging Option:</label></td>
+    <td>
+       {html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+        <div class="hint">Where you would like to log failed logins to the site.</div>
+    </td>
+</tr>
+<tr>
+    <td><label for="logfile">Logfile Location:</label></td>
+    <td>
+        <input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
+        <div class="hint">Location of log file (MUST be set if logging to file is set).</div>
+    </td>    
+</tr>
+
 </table>
 </fieldset>
 

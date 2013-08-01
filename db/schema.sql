@@ -1040,7 +1040,17 @@ INSERT INTO `site`
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
-	('sqlpatch','99');
+	('loggingopt', '2'),
+	('logfile', '/var/www/nZEDb/failed-login.log'),
+	('sqlpatch','100');
+
+
+DROP TABLE IF EXISTS `logging`;
+CREATE TABLE `logging` (
+  `time` datetime DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `host` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
