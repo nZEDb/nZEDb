@@ -875,7 +875,7 @@ class nameCleaning
 			else if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([a-z0-9]+)\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[www.allyourbasearebelongtous.pw]-[The Place Beyond the Pines 2012 1080p US Blu-ray AVC DTS-HD MA 5.1-HDWinG]-[03/97] "tt1817273-us-hdwing-bd.r00" - 46.51 GB - yEnc
-			else if (preg_match('/^\[www\..+?\]-\[(.+?\)]-\[\d+\/\d+\] ".+?" - \d+\.\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
+			else if (preg_match('/^\[www\..+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" - \d+\.\d+ [kKmMgG][bB] - yEnc$/', $subject, $match))
 				return $match[1];
 			//(01/71)  - "EwRQCtU4BnaeXmT48hbg7bCn.par2" - 54,15 GB - yEnc
 			//(002/228) "xcvvcxvfGDGFKGFDKG54tgre.r00" - 42.24 GB - yEnc
