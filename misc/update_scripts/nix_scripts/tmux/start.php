@@ -163,7 +163,7 @@ function window_optimize($tmux_session)
 	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
-function attach($DIR, $tmux_session, $limited)
+function attach($DIR, $tmux_session, $limited=false)
 {
 	if (command_exist("php5"))
 		$PHP = "php5";
