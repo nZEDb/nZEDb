@@ -11,7 +11,7 @@
 	</tr>
 	<tr>
 		<td><input id="title" type="text" name="title" value="{$title}" size="15" /></td>
-		<td><input id="author" type="text" name="author value="{$author}" size="15" /></td>
+		<td><input id="author" type="text" name="author" value="{$author}" size="15" /></td>
 		<td>
 			<select id="category" name="t">
 			<option class="grouping" value="8000"></option>
