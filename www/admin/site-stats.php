@@ -9,7 +9,7 @@ require_once(WWW_DIR."/lib/logging.php");
 $page = new AdminPage();
 $users = new Users();
 $releases = new Releases();
-$logging = new Logging():
+$logging = new Logging();
 
 $page->title = "Site Stats";
 
