@@ -333,14 +333,14 @@ class PostProcess
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
-			if ($this->echooutput)
+			/*if ($this->echooutput)
 			{
 				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
 				if ($releaseToWork != '')
 					echo ", working 1 release: ";
 				else
 					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-			}
+			}*/
 
 			if ($this->echooutput && $rescount > 1)
 			{
@@ -374,10 +374,10 @@ class PostProcess
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				$passStatus = array(Releases::PASSWD_NONE);
 
-				if ($this->echooutput && $threads > 0)
+				/*if ($this->echooutput && $threads > 0)
 					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
 				else if ($this->echooutput)
-					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
+					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));*/
 
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
 				$nzbcontents = new NZBcontents(true);
@@ -490,7 +490,7 @@ class PostProcess
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
 				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
 				{
-					$this->sum = $this->size = $this->segsize = $this->ad = $notinfinite = $failed = 0;
+					$this->sum = $this->size = $this->segsize = $this->adj = $notinfinite = $failed = 0;
 					$this->name = '';
 					$this->ignorenumbered = $foundcontent = false;
 
@@ -1150,8 +1150,7 @@ class PostProcess
 			{
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
-				$this->sum = 0;
-				$this->adj = 0;
+				$this->adj = $this->sum = 0;
 
 				// If archive is not stored compressed, process data
 				foreach ($files as $file)
@@ -1246,8 +1245,7 @@ class PostProcess
 			{
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
-				$this->sum = 0;
-				$this->adj = 0;
+				$this->sum = $this->adj =  0;
 
 				foreach ($files as $file)
 				{
