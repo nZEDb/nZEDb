@@ -769,7 +769,7 @@ class nameCleaning
 			else if (preg_match('/^([a-z0-9]{10,}) \(\d+\/\d+\) "[a-z0-9]{10,}\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//<<<>>>kosova-shqip.eu<<< Deep SWG - 90s Club Megamix 2011 >>>kosova-shqip.eu<<<<<< - (2/4) - "Deep SWG - 90s Club Megamix 2011.rar" yEnc
-			else if (preg_match('/^<<<>>>kosova-shqip\.eu<<< (.+?) >>>kosova-shqip.eu<<<<<< - \()\d+\/\d+\ - ".+?" yEnc$/', $subject, $match))
+			else if (preg_match('/^<<<>>>kosova-shqip\.eu<<< (.+?) >>>kosova-shqip.eu<<<<<< - \(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//<Have Fun> [02/39] - SpongeBoZZ yEnc
 			else if (preg_match('/^<Have Fun> \[\d+\/\d+\] - (.+?) yEnc$/', $subject, $match))
