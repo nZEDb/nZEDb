@@ -9,7 +9,7 @@ require_once(WWW_DIR."lib/releases.php");
 if(isset($argv[1]) && $argv[1] == "true")
 {
 
-	$releases = new Releases();
+	$releases = new Releases(true);
 	$releases->resetCollections();
 }
 else

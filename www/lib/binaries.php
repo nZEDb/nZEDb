@@ -42,8 +42,8 @@ class Binaries
 		{
 			echo "We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type yes, else type no to see how to run manually.\n";
 			if(trim(fgets(fopen("php://stdin","r"))) != 'yes')
-				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called resetCollections.php\n");
-			$relss = new Releases();
+				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n");
+			$relss = new Releases(true);
 			$relss->resetCollections();
 		}
 		$n = $this->n;
@@ -331,19 +331,18 @@ class Binaries
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex. */
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
 							
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
 							}
-							/**/
+							*/
 							
-							//If you uncommented the above, comment following line..
-							//$colnames[] = $cleansubject;
-							//$orignames[] = $msg['Subject'];
-							//Until previous line.
+							//If you uncommented the above, comment following 2 lines..
+							/**/$colnames[] = $cleansubject;
+							$orignames[] = $msg['Subject'];/**/
 						}
 					}
 
