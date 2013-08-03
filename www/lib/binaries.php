@@ -87,7 +87,6 @@ class Binaries
 		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
@@ -225,7 +224,6 @@ class Binaries
 		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;
