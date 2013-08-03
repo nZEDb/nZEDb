@@ -908,7 +908,7 @@ CREATE TABLE content
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 INSERT INTO content (title, body, contenttype, STATUS, metadescription, metakeywords, showinmenu)
-VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with sickbeard, couchpotato, etc...</p>', 3, 1, '','', 0);
+VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with nzbdrone, sickbeard, couchpotato, etc...</p>', 3, 1, '','', 0);
 
 INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
 VALUES ('example content','/great/seo/content/page/','<p>this is an example content page</p>', 2, 1, 1, '','');
