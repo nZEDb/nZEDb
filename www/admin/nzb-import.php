@@ -246,7 +246,7 @@ if (!empty($argc) || $page->isPostBack() )
 
 			if (!$importfailed)
 			{
-				$relguid = sha1(uniqid());
+				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
 				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
 				$subject = utf8_encode(trim($partless));

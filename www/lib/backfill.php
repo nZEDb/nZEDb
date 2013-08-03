@@ -82,7 +82,6 @@ class Backfill
 		// Attempt to reconnect if there is an error.
 		if (PEAR::isError($datac))
 		{
-			echo "\n\nError {$datac->code}: {$datac->message}\nAttempting to reconnect to usenet.";
 			$nntpc->doQuit();
 			unset($nntpc);
 			$nntpc = new Nntp;
@@ -99,7 +98,6 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.";
 			$nntp->doQuit();
 			unset($nntp);
 			$nntp = new Nntp;

@@ -205,7 +205,7 @@ class Import
 			}
 			if (!$importfailed)
 			{
-				$relguid = sha1(uniqid());
+				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 
