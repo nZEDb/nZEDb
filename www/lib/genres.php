@@ -2,14 +2,14 @@
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/category.php");
 
-class Genres 
+class Genres
 {
 	const CONSOLE_TYPE = Category::CAT_PARENT_GAME;
 	const MUSIC_TYPE = Category::CAT_PARENT_MUSIC;
 
 	const STATUS_ENABLED = 0;
 	const STATUS_DISABLED = 1;
-	
+
 	public function getGenres($type='', $activeonly=false)
 	{
 		$db = new DB();
@@ -22,7 +22,7 @@ class Genres
 			$typesql = sprintf(" and genres.type = %d", $type);
 		else
 			$typesql = '';
-		
+
 		if ($activeonly)
 		{
 			$sql = sprintf("SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreID FROM musicinfo) X ON X.genreID = genres.ID %s
@@ -31,8 +31,8 @@ class Genres
 			ORDER BY title", $typesql, $typesql);
 		}
 		else
-			$sql = sprintf("select genres.* from genres where 1 %s order by title", $typesql);		
-			
+			$sql = sprintf("select genres.* from genres where 1 %s order by title", $typesql);
+
 		return $sql;
 	}
 
@@ -51,12 +51,12 @@ class Genres
 	public function getCount($type='', $activeonly=false)
 	{
 		$db = new DB();
-		
+
 		if (!empty($type))
 			$typesql = sprintf(" and genres.type = %d", $type);
 		else
 			$typesql = '';
-		
+
 		if ($activeonly)
 		{
 			$sql = sprintf("SELECT count(*) as num  FROM genres INNER JOIN (SELECT DISTINCT genreID FROM musicinfo) X ON X.genreID = genres.ID %s
@@ -65,8 +65,8 @@ class Genres
 			ORDER BY title", $typesql, $typesql);
 		}
 		else
-			$sql = sprintf("select count(*) as num from genres where 1 %s order by title", $typesql);		
-			
+			$sql = sprintf("select count(*) as num from genres where 1 %s order by title", $typesql);
+
 		$res = $db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -89,4 +89,3 @@ class Genres
 		return $db->queryDirect("SELECT ID from genres where disabled = 1");
 	}
 }
-?>

@@ -2,37 +2,37 @@
 require_once(WWW_DIR."/lib/util.php");
 
 class SABnzbd
-{	
+{
 	public $url = '';
 	public $apikey = '';
 	public $priority = '';
 	public $apikeytype = '';
-	
+
 	public $integrated = false;
-	
+
 	public $uid = '';
 	public $rsstoken = '';
 	public $serverurl = '';
-	
+
 	const INTEGRATION_TYPE_USER = 2;
 	const INTEGRATION_TYPE_SITEWIDE = 1;
 	const INTEGRATION_TYPE_NONE = 0;
-	
+
 	const API_TYPE_NZB = 1;
 	const API_TYPE_FULL = 2;
-	
+
 	const PRIORITY_FORCE = 2;
 	const PRIORITY_HIGH = 1;
 	const PRIORITY_NORMAL = 0;
 	const PRIORITY_LOW = -1;
 	const PRIORITY_PAUSED = -2;
-	
+
 	function SABnzbd(&$page)
 	{
 		$this->uid = $page->userdata['ID'];
 		$this->rsstoken = $page->userdata['rsstoken'];
 		$this->serverurl = $page->serverurl;
-		
+
 		switch($page->site->sabintegrationtype)
 		{
 		 	case self::INTEGRATION_TYPE_USER:
@@ -72,43 +72,44 @@ class SABnzbd
 		$addToSabUrl = $addToSabUrl.'&name='.urlencode($nzbUrl);
 		return getUrl($addToSabUrl);
 	}
-	
+
 	public function getQueue()
 	{
 		$queueUrl = $this->url."api?mode=qstatus&output=json&apikey=".$this->apikey;
+		//$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
 		return getUrl($queueUrl);
 	}
-	
+
 	public function delFromQueue($id)
 	{
 		$delUrl = $this->url."api?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
 		return getUrl($delUrl);
 	}
-	
+
 	public function pauseFromQueue($id)
 	{
 		$pauseUrl = $this->url."api?mode=queue&name=pause&value=".$id."&apikey=".$this->apikey;
 		return getUrl($pauseUrl);
 	}
-	
+
 	public function resumeFromQueue($id)
 	{
 		$resumeUrl = $this->url."api?mode=queue&name=resume&value=".$id."&apikey=".$this->apikey;
 		return getUrl($resumeUrl);
 	}
-	
+
 	public function pauseAll()
 	{
 		$pauseallUrl = $this->url."api?mode=pause"."&apikey=".$this->apikey;
 		return getUrl($pauseallUrl);
 	}
-	
+
 	public function resumeAll()
 	{
 		$resumeallUrl = $this->url."api?mode=resume"."&apikey=".$this->apikey;
 		return getUrl($resumeallUrl);
 	}
-	
+
 	public function checkCookie()
 	{
 		$res = false;
@@ -120,10 +121,10 @@ class SABnzbd
 			$res = true;
 		if (isset($_COOKIE['sabnzbd_'.$this->uid.'__apitype']))
 			$res = true;
-		
+
 		return $res;
 	}
-	
+
 	public function setCookie($host, $apikey, $priority, $apitype)
 	{
 		setcookie('sabnzbd_'.$this->uid.'__host', $host, (time()+2592000));

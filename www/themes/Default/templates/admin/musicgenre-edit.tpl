@@ -18,7 +18,7 @@
 </tr>
 
 <tr>
-	<td><label for="disabled">Disabled</label>:</td>
+	<td><label for="disabled">Disabled:</label></td>
 	<td>
 		{html_radios id="disabled" name='disabled' values=$status_ids output=$status_names selected=$genre.disabled separator='<br />'}
 	</td>

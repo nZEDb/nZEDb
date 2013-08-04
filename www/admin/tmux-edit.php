@@ -14,7 +14,7 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 switch($action)
 {
-    case 'submit':
+	case 'submit':
 
 		$error = "";
 		$ret = $tmux->update($_POST);
@@ -22,24 +22,34 @@ switch($action)
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
 
-        break;
-    case 'view':
-    default:
+		break;
+	case 'view':
+	default:
 
-			$page->title = "Tmux Settings Edit";
-			$settings = $tmux->get();
-			$page->smarty->assign('ftmux', $settings);
+		$page->title = "Tmux Settings Edit";
+		$settings = $tmux->get();
+		$page->smarty->assign('ftmux', $settings);
 
-      break;
+		break;
 }
 
 $page->smarty->assign('yesno_names', array('yes', 'no'));
 $page->smarty->assign('truefalse_names', array('TRUE', 'FALSE'));
 
-$page->smarty->assign('backfill_ids', array(0,1,3,2));
-$page->smarty->assign('backfill_names', array('Disabled', 'Interval-Newest Complete', 'Interval-Oldest Complete', 'All'));
+$page->smarty->assign('backfill_ids', array(0,4,2,1));
+$page->smarty->assign('backfill_names', array('Disabled', 'Safe', 'All', 'Interval'));
+$page->smarty->assign('backfill_group_ids', array(1,2,3,4,5,6));
+$page->smarty->assign('backfill_group', array('Newest', 'Oldest', 'Alphabetical', 'Alphabetical - Reverse', 'Most Posts', 'Fewest Posts'));
+$page->smarty->assign('backfill_days', array('Days per Group', 'Safe Backfill day'));
+$page->smarty->assign('backfill_days_ids', array(1,2));
+$page->smarty->assign('dehash_ids', array(0,1,2,3));
+$page->smarty->assign('dehash_names', array('Disabled', 'Decrypt Hashes', 'Predb', 'All'));
+$page->smarty->assign('import_ids', array(0,1,2));
+$page->smarty->assign('import_names', array('Disabled', 'Import - Do Not Use Filenames', 'Import - Use Filenames'));
+$page->smarty->assign('post_ids', array(0,1,2,3));
+$page->smarty->assign('post_names', array('Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All'));
+$page->smarty->assign('fix_crap_ids', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
+$page->smarty->assign('fix_crap_names', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();
-
-

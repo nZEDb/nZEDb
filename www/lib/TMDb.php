@@ -952,5 +952,3 @@ class TMDb
  * @author Jonas De Smet - Glamorous
  */
 class TMDbException extends Exception{}
-
-?>

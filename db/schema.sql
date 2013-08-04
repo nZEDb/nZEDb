@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS `collections`;
 CREATE TABLE `collections` (
 		`ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-		`name` VARCHAR(255) NOT NULL DEFAULT '',
 		`subject` VARCHAR(255) NOT NULL DEFAULT '',
 		`fromname` VARCHAR(255) NOT NULL DEFAULT '',
 		`date` DATETIME DEFAULT NULL,
@@ -19,10 +18,10 @@ CREATE TABLE `collections` (
 		KEY `groupID` (`groupID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_collection_filecheck ON collections (filecheck);
-CREATE INDEX ix_collection_dateadded ON collections (dateadded);
-CREATE INDEX ix_collection_collectionhash ON collections (collectionhash);
-CREATE INDEX ix_collection_releaseID ON collections (releaseID);
+CREATE INDEX ix_collection_filecheck ON collections (`filecheck`);
+CREATE INDEX ix_collection_dateadded ON collections (`dateadded`);
+CREATE INDEX ix_collection_collectionhash ON collections (`collectionhash`);
+CREATE INDEX ix_collection_releaseID ON collections (`releaseID`);
 
 DROP TABLE IF EXISTS `binaries`;
 CREATE TABLE `binaries` (
@@ -37,21 +36,22 @@ CREATE TABLE `binaries` (
 		PRIMARY KEY  (`ID`)
 		) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
-CREATE INDEX ix_binary_partcheck ON binaries (partcheck);
-CREATE INDEX ix_binary_collection ON binaries (collectionID);
+CREATE INDEX ix_binary_binaryhash ON binaries (`binaryhash`);
+CREATE INDEX ix_binary_partcheck ON binaries (`partcheck`);
+CREATE INDEX ix_binary_collection ON binaries (`collectionID`);
 
 DROP TABLE IF EXISTS `releases`;
-CREATE TABLE `releases` 
+CREATE TABLE `releases`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255) NOT NULL DEFAULT '',
-`searchname` VARCHAR(255) NOT NULL DEFAULT '',	
-`totalpart` INT DEFAULT 0,	
+`searchname` VARCHAR(255) NOT NULL DEFAULT '',
+`totalpart` INT DEFAULT 0,
 `groupID` INT UNSIGNED NOT NULL DEFAULT '0',
 `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
 `postdate` DATETIME DEFAULT NULL,
 `adddate` DATETIME DEFAULT NULL,
+`updatetime` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 `guid` VARCHAR(50) NOT NULL,
 `fromname` VARCHAR(255) NULL,
 `completion` FLOAT NOT NULL DEFAULT '0',
@@ -79,6 +79,9 @@ CREATE TABLE `releases`
 `videostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `audiostatus` TINYINT(1) NOT NULL DEFAULT 0,
 `dehashstatus` TINYINT(1) NOT NULL DEFAULT 0,
+`relstatus` TINYINT(4) NOT NULL DEFAULT 0,
+`reqidstatus` TINYINT(1) NOT NULL DEFAULT '0',
+`nzb_guid` VARCHAR(50) NULL,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -90,8 +93,15 @@ CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
-CREATE INDEX ix_releases_relnamestatus on releases('relnamestatus');
-CREATE INDEX ix_releases_passwordstatus on releases('passwordstatus');
+CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
+CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
+CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
+CREATE INDEX ix_releases_reqidstatus ON `releases`(`reqidstatus` ASC) USING HASH ;
+CREATE INDEX ix_releases_nfostatus ON releases (`nfostatus` ASC) USING HASH;
+CREATE INDEX ix_releases_musicinfoID ON releases (`musicinfoID`);
+CREATE INDEX ix_releases_consoleinfoID ON releases (`consoleinfoID`);
+CREATE INDEX ix_releases_bookinfoID ON releases (`bookinfoID`);
+CREATE INDEX ix_releases_haspreview ON releases (`haspreview` ASC) USING HASH;
 
 DROP TABLE IF EXISTS `releasefiles`;
 CREATE TABLE `releasefiles` (
@@ -161,7 +171,7 @@ CREATE TABLE `releaseextrafull` (
 
 
 DROP TABLE IF EXISTS `releasecomment`;
-CREATE TABLE `releasecomment` 
+CREATE TABLE `releasecomment`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `releaseID` INT(11) UNSIGNED NOT NULL,
@@ -175,9 +185,8 @@ PRIMARY KEY  (`ID`)
 CREATE INDEX ix_releasecomment_releaseID ON releasecomment (`releaseID`);
 CREATE INDEX ix_releasecomment_userID ON releasecomment (`userID`);
 
-
 DROP TABLE IF EXISTS `predb`;
-CREATE TABLE `predb` 
+CREATE TABLE `predb`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `title` VARCHAR(255) NOT NULL DEFAULT '',
@@ -200,9 +209,8 @@ CREATE INDEX ix_predb_source ON predb(`source`);
 CREATE INDEX ix_predb_md5 ON predb(`md5`);
 CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
 
-
 DROP TABLE IF EXISTS `menu`;
-CREATE TABLE `menu` 
+CREATE TABLE `menu`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `href` VARCHAR(2000) NOT NULL DEFAULT '',
@@ -217,88 +225,88 @@ PRIMARY KEY  (`ID`)
 
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('search', 'Advanced Search', 
+VALUES ('search','Advanced Search',
 	'Search for releases.', 1, 10);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('browsegroup', 'Groups List', 
+VALUES ('browsegroup','Groups List',
 	'Browse by Group.', 1, 25);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('movies', 'Movies', 
+VALUES ('movies','Movies',
 	'Browse Movies.', 1, 40);
-	
-INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('upcoming', 'Theatres', 
-	'Movies currently in theatres.', 1, 45);	
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('series', 'TV Series', 
+VALUES ('upcoming','Theatres',
+	'Movies currently in theatres.', 1, 45);
+
+INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
+VALUES ('series','TV Series',
 	'Browse TV Series.', 1, 50);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('predb', 'PreDB', 
+VALUES ('predb','PreDB',
 	'Browse PreDB.', 1, 51);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('calendar', 'TV Calendar', 
+VALUES ('calendar','TV Calendar',
 	'View what\'s on TV.', 1, 53);
 
 	INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`)
-VALUES ('anime', 'Anime', 'Browse Anime', 1, 55);
-	
+VALUES ('anime','Anime','Browse Anime', 1, 55);
+
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('music', 'Music', 
+VALUES ('music','Music',
 	'Browse Music.', 1, 60);
-	
+
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('console', 'Console', 
+VALUES ('console','Console',
 	'Browse Games.', 1, 65);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('books', 'Books', 
+VALUES ('books','Books',
 	'Browse Books.', 1, 67);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('admin', 'Admin', 
+VALUES ('admin','Admin',
 	'Admin', 2, 70);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('cart', 'My Cart', 
+VALUES ('cart','My Cart',
 	'Your Nzb cart.', 1, 75);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('myshows', 'My Shows', 
+VALUES ('myshows','My Shows',
 	'Your TV shows.', 1, 77);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('mymovies', 'My Movies', 
+VALUES ('mymovies','My Movies',
 	'Your Movie Wishlist.', 1, 78);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('apihelp', 'API', 
+VALUES ('apihelp','API',
 	'Information on the API.', 1, 79);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('rss', 'RSS', 
+VALUES ('rss','RSS',
 	'RSS Feeds.', 1, 80);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal`, `menueval` )
-VALUES ('queue', 'Sab Queue', 
+VALUES ('queue','Sab Queue',
 	'View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('forum', 'Forum', 
+VALUES ('forum','Forum',
 	'Browse Forum.', 1, 85);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('login', 'Login', 
+VALUES ('login','Login',
 	'Login.', 0, 100);
 
 INSERT INTO menu (`href`, `title`, `tooltip`, `role`, `ordinal` )
-VALUES ('register', 'Register', 
+VALUES ('register','Register',
 	'Register.', 0, 110);
-	
+
 
 
 DROP TABLE IF EXISTS `releasenfo`;
@@ -323,19 +331,19 @@ CREATE TABLE `binaryblacklist` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=100000 ;
 
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (1, 'alt.binaries.*', '(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\\)]?( \\-)?[ \\-\\.]((19|20)\\d\\d|(480|720|1080)(i|p)|3d|5\\.1|dts|ac3|truehd|(bd|dvd|hd|sat|vhs|web)\\.?rip|(bd.)?(h|x).?2?64|divx|xvid|bluray|svcd|board|custom|"|(d|h|p|s)d?v?tv|m?dvd(-|sc)?r|int(ernal)?|nzb|par2|\\b(((dc|ld|md|ml|dl|hr|se)[.])|(anime\\.)|(fs|ws)|dsr|pal|ntsc|iso|complete|cracked|ebook|extended|dirfix|festival|proper|game|limited|read.?nfo|real|rerip|repack|remastered|retail|samplefix|scan|screener|theatrical|uncut|unrated|incl|winall)\\b|doku|doc|dub|sub|\\(uncut\\))', 1, 1, 0, 'Blacklists non-english releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (2, 'alt.binaries.*', '[ -.](bl|cz|de|es|fr|ger|heb|hu|hun|ita|ko|kor|nl|pl|se)[ -.]((19|20)\\d\\d|(480|720|1080)(i|p)|(bd|dvd.?|sat|vhs)?rip?|(bd|dl)mux|( -.)?(dub|sub)(ed|bed)?|complete|convert|(d|h|p|s)d?tv|dirfix|docu|dual|dvbs|dvdscr|eng|(h|x).?2?64|int(ernal)?|pal|proper|repack|xbox)', 1, 1, 0, 'Blacklists non-english abbreviated releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (3, 'alt.binaries.*', '[ -.]((19|20)\\d\\d|(bd|dvd.?|sat|vhs)?rip?|custom|divx|dts)[ -.](bl|cz|de|es|fr|ger|heb|hu|ita|ko|kor|nl|pl|se)[ -.]', 1, 1, 0, 'Blacklists non-english abbreviated (reversed) releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (4, 'alt.binaries.*', '[ -.](chinese.subbed|dksubs|fansubs?|finsub|hebdub|hebsub|korsub|norsub|nordicsubs|nl( -.)?sub(ed|bed|s)?|nlvlaams|pldub|plsub|slosinh|swesub|truefrench|vost(fr)?)[ -.]', 1, 1, 0, 'Blacklists non-english subtitled releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (5, 'alt.binaries.*', '[ -._](4u\\.nl|nov[ a]+rip|realco|videomann|vost)[ -._]', 1, 1, 0, 'Blacklists non-english (release group specific) releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (6, 'alt.binaries.*', '[ -.]((bd|dl)mux|doku|\\[foreign\\]|seizoen|staffel)[ -.]', 1, 1, 0, 'Blacklists non-english (lang specific) releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (7, 'alt.binaries.*', '[ -.](imageset|pictureset|xxx)[ -.]', 1, 1, 0, 'Blacklists porn releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (8, 'alt.binaries.*', 'hdnectar|nzbcave', 1, 1, 0, 'Bad releases.');
-INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (9, 'alt.binaries.*', 'Passworded', 1, 1, 0, 'Removes passworded releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (1, 'alt.binaries.*','(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\\)]?( \\-)?[ \\-\\.]((19|20)\\d\\d|(480|720|1080)(i|p)|3d|5\\.1|dts|ac3|truehd|(bd|dvd|hd|sat|vhs|web)\\.?rip|(bd.)?(h|x).?2?64|divx|xvid|bluray|svcd|board|custom|"|(d|h|p|s)d?v?tv|m?dvd(-|sc)?r|int(ernal)?|nzb|par2|\\b(((dc|ld|md|ml|dl|hr|se)[.])|(anime\\.)|(fs|ws)|dsr|pal|ntsc|iso|complete|cracked|ebook|extended|dirfix|festival|proper|game|limited|read.?nfo|real|rerip|repack|remastered|retail|samplefix|scan|screener|theatrical|uncut|unrated|incl|winall)\\b|doku|doc|dub|sub|\\(uncut\\))', 1, 1, 0, 'Blacklists non-english releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (2, 'alt.binaries.*','[ -.](bl|cz|de|es|fr|ger|heb|hu|hun|ita|ko|kor|nl|pl|se)[ -.]((19|20)\\d\\d|(480|720|1080)(i|p)|(bd|dvd.?|sat|vhs)?rip?|(bd|dl)mux|( -.)?(dub|sub)(ed|bed)?|complete|convert|(d|h|p|s)d?tv|dirfix|docu|dual|dvbs|dvdscr|eng|(h|x).?2?64|int(ernal)?|pal|proper|repack|xbox)', 1, 1, 0, 'Blacklists non-english abbreviated releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (3, 'alt.binaries.*','[ -.]((19|20)\\d\\d|(bd|dvd.?|sat|vhs)?rip?|custom|divx|dts)[ -.](bl|cz|de|es|fr|ger|heb|hu|ita|ko|kor|nl|pl|se)[ -.]', 1, 1, 0, 'Blacklists non-english abbreviated (reversed) releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (4, 'alt.binaries.*','[ -.](chinese.subbed|dksubs|fansubs?|finsub|hebdub|hebsub|korsub|norsub|nordicsubs|nl( -.)?sub(ed|bed|s)?|nlvlaams|pldub|plsub|slosinh|swesub|truefrench|vost(fr)?)[ -.]', 1, 1, 0, 'Blacklists non-english subtitled releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (5, 'alt.binaries.*','[ -._](4u\\.nl|nov[ a]+rip|realco|videomann|vost)[ -._]', 1, 1, 0, 'Blacklists non-english (release group specific) releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (6, 'alt.binaries.*','[ -.]((bd|dl)mux|doku|\\[foreign\\]|seizoen|staffel)[ -.]', 1, 1, 0, 'Blacklists non-english (lang specific) releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (7, 'alt.binaries.*','[ -.](imageset|pictureset|xxx)[ -.]', 1, 1, 0, 'Blacklists porn releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (8, 'alt.binaries.*','hdnectar|nzbcave', 1, 1, 0, 'Bad releases.');
+INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (9, 'alt.binaries.*','Passworded', 1, 1, 0, 'Removes passworded releases.');
 
 
 DROP TABLE IF EXISTS `tvrage`;
-CREATE TABLE `tvrage` 
+CREATE TABLE `tvrage`
 (
 `ID` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `rageID` INT NOT NULL,
@@ -380,7 +388,7 @@ VALUES (1,0,1,'Welcome to nZEDb!','Feel free to leave a message.',  0, 0, 0,  NO
 
 
 DROP TABLE IF EXISTS `movieinfo`;
-CREATE TABLE `movieinfo` 
+CREATE TABLE `movieinfo`
 (
  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `imdbID` mediumint(7) unsigned zerofill NOT NULL,
@@ -405,7 +413,7 @@ CREATE TABLE `movieinfo`
 
 
 DROP TABLE IF EXISTS `animetitles`;
-CREATE TABLE `animetitles` 
+CREATE TABLE `animetitles`
 (
   `anidbID` INT(7) UNSIGNED NOT NULL,
   `title` VARCHAR(255) NOT NULL,
@@ -415,7 +423,7 @@ CREATE TABLE `animetitles`
 
 
 DROP TABLE IF EXISTS `anidb`;
-CREATE TABLE `anidb` 
+CREATE TABLE `anidb`
 (
   `ID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `anidbID` INT(7) UNSIGNED NOT NULL,
@@ -460,181 +468,181 @@ CREATE TABLE `groups` (
 
 ALTER TABLE groups ADD UNIQUE (NAME);
 
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.0day.stuffz', 'This group contains mostly 0day software.', 2, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.anime', 'This group contains mostly Anime Television.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ath', 'This group contains a variety of Music. Some Foreign.', 8, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.barbarella', 'This group contains a variety of German content.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.audio.warez', 'Theres some old stuff in here, but this group is pretty much dead.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.b4e', 'This group contains 0day and has some foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.big', 'This group contains XVID Movies. Mostly Foreign.', NULL,NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.bloaf', 'This group contains a variety. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.blu-ray', 'This group contains blu-ray movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.boneless', 'This group contains XVID and X264 Movies. Some Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.british.drama', 'This group contains British TV shows.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cartoons.french', 'This group contains French cartoons.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cats', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image.linux', 'This group contains Linux distributions.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image', 'This group contains PC-ISO.', 4, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.lossless', 'This group contains a variety of lossless Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.chello', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.classic.tv.shows', 'This group contains Classic TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comics.dcp', 'This group contains Comic Books', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comp', 'This group contains Warez. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.console.ps3', 'This group contains PS3 Games.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cores', 'This group contains a variety including Nintendo DS. Lots of Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.country.mp3', 'This group contains Country Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dc', 'This group contains XVID and X264 Movies and TV. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dgma', 'This group contains XVID Movies. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.divx.french', 'This group contains French XVID Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries', 'This group contains Documentaries TV and Movies.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries.french', 'This group contains French Documentaries TV and Movies.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.downunder', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd', 'This group contains DVD Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd.movies', 'This group contains DVDR Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvdr', 'This group contains DVD Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd-r', 'This group contains DVD Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book.flood', 'This group contains E-Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book.technical', 'This group contains E-Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book', 'This group contains E-Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ebook', 'This group contains Ebook\'s.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica.divx', 'This group contains XXX.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica', 'This group contains XXX.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.etc', 'This group contains a variety of items.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.font', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.french-tv', 'This group contains French TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.frogs', 'This group contains a variety.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ftn', 'This group contains a variety of Music and TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.nintendods', 'This group contains Nintendo DS Games ', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games', 'This group contains PC and Console Games.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.wii', 'This group contains Nintendo WII Games, WII-Ware, and VC.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.xbox360', 'This group contains XBOX 360 Games and DLC.', 4, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.xbox', 'This group contains original XBOX Games.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ghosts', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv', 'This group contains mostly HDTV 1080i rips.', 2, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv.german', 'This group contains German HDTV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv.x264', 'This group contains X264 Movies and HDTV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.highspeed', 'This group contains XVID Movies. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hou', 'This group contains a variety of content. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ijsklontje', 'This group contains XXX.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.inner-sanctum', 'This group contains PC and Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.illuminaten', 'This group contains mostly German.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ipod.videos', 'This group contains Mobile TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.linux.iso', 'This group contains Linux distributions.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.lou', 'This group contains mostly german TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac', 'This group contains MAC/OSX Software.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac.applications', 'This group contains MAC/OSX Software.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.milo', 'This group contains mostly TV, some german.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.misc', 'This group contains a variety of items.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mojo', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mma', 'This group contains MMA/TNA Sport TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mom', 'This group contains a variety. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.moovee', 'This group contains XVID and X264 Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.divx', 'This group contains XVID Movies', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.erotica', 'This group contains XXX', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.french', 'This group contains French Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies', 'This group contains an assortment of Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.xvid', 'This group contains XVID Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.audiobooks', 'This group contains Audio Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.bootlegs', 'This group contains Bootleg Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.full_albums', 'This group contains a variety of Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3', 'This group contains a variety of Music.', 11, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mpeg.video.music', 'This group contains a variety of Music Videos.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime.highspeed', 'This group contains Anime Television.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime.repost', 'This group contains Anime Television.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime', 'This group contains Anime TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.cartoons', 'This group contains Cartoon TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.classic-films', 'This group contains Classic TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.comedy.british', 'This group contains British Comedy TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.disney', 'This group contains Disney TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.documentaries', 'This group contains Documentary Movies and TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.erotica', 'This group contains XXX.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.erotica.amateur', 'This group contains XXX.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.scifi', 'This group contains science-fiction TV and movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.scifi-and-fantasy', 'This group contains science-fiction and fantasy TV and movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.sitcoms', 'This group contains Sitcom TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.sports', 'This group contains Sports TV and Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia', 'This group contains TV, Movies, and Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.tv', 'This group contains XVID and X264 TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.vintage-film', 'This group contains Vintage Movies pre 1960.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.vintage-film.post-1960', 'This group contains Vintage Movies post 1960.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.music.flac', 'This group contains a variety of lossless Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.music.opera', 'This group contains Opera Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.nintendo.ds', 'This group contains Nintendo DS Games.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.nospam.cheerleaders', 'This group contains various.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.complete', 'This group contains comics.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.dcp', 'This group contains Comic Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.reposts', 'This group contains Comic Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.repost', 'This group contains Comic Books.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pro-wrestling', 'This group contains WWE Sport TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.scary.exe.files', 'This group contains XVID and X264 Movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.series.tv.divx.french', 'This group contains French DIVX TV shows.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sony.psp', 'This group contains PSP Games.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sound.audiobooks', 'This group contains Audiobooks.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sound.mp3', 'This group contains a variety of Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.1960s.mp3', 'This group contains Music from the 1960\'s.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.1970s.mp3', 'This group contains Music from the 1970\'s.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.audiobooks.repost', 'This group contains Audiobooks.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.country.mp3', '', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.flac.jazz', 'This group contains lossless Jazz Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.jpop', 'This group contains mostly Jpop music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.1960s', 'This group contains lossless 1960\'s Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.classical', 'This group contains lossless Classical Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.country', 'This group contains lossless Country Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless', 'This group contains a variety of Lossless Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1950s', 'This group contains Music from the 1950\'s.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1970s', 'This group contains Music from the 1970\'s.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1980s', 'This group contains Music from the 1980\'s.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1990s', 'This group contains Music from the 1990\'s.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.2000s', 'This group contains Music from the 2000\'s.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.acoustic', 'This group contains Accoustic Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.audiobooks', 'This group contains Audiobooks.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.bluegrass', 'This group contains Bluegrass Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.christian', 'This group contains Christian Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.classical', 'This group contains Classical Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.comedy', 'This group contains Comedy Audio.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.complete_cd', 'This group contains a variety of Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.country', 'This group contains mostly country music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.dance', 'This group contains Dance Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.disco', 'This group contains Disco Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.emo', 'This group contains Emo Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.full_albums', 'This group contains a variety of Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.heavy-metal', 'This group contains Heavy Metal Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.jazz', 'This group contains Jazz Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.jazz.vocals', 'This group contains Jazz Vocal Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.musicals', 'This group contains Musicals Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.nospam', 'This group contains a variety of Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.opera', 'This group contains Opera Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.progressive-country', 'This group contains Country Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rap-hiphop.full-albums', 'This group contains Rap and Hip-Hop Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rap-hiphop', 'This group contains Rap and Hip-Hop Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rock', 'This group contains Rock Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3', 'This group contains a variety of Music.', 5, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.bbc', 'This group contains BBC Radio Music', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.british', 'This group contains British Radio Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.whitburn.pop', 'This group contains Pop Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tatu', 'This group contains mostly French TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.teevee', 'This group contains X264 and XVID TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.test', 'This group contains a variety of content.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.town', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.triballs', 'This group contains various.', 2, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tun', 'This group contains various.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tvseries', 'This group contains X264 and XVID TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tv', 'This group contains XVID TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u-4all', 'This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u4e', 'This group contains a variery, mostly German movies.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ucc', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ufg', 'This group contains mostly TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.uzenet', 'This group contains XXX. Some Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.ibm-pc.0-day', 'This group contains PC-0Day.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.quebec-hackers', 'This group contains PC-0day. Some Foreign.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.smartphone', 'This group contains Mobile Phone Apps.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez', 'This group contains PC 0DAY, PC ISO, and PC PHONE.', 5, 1000000);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.uk.mp3', 'This group contains a variety of Music.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.wii', 'This group contains Nintendo WII Games, WII-Ware, and VC.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.wmvhd', 'This group contains WMVHD Movies.', NULL, '40000000');
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.worms', 'I have no idea what this group contains besides a lot of U4ALL which isn\'t really usable.', 2, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.x264', 'This group contains X264 Movies and TV.', NULL, NULL);
-INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.x', 'This group contains a variety of content. Some Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.0day.stuffz','This group contains mostly 0day software.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.anime','This group contains mostly Anime Television.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ath','This group contains a variety of Music. Some Foreign.', 8, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.barbarella','This group contains a variety of German content.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.audio.warez','Theres some old stuff in here, but this group is pretty much dead.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.b4e','This group contains 0day and has some foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.big','This group contains XVID Movies. Mostly Foreign.', NULL,NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.bloaf','This group contains a variety. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.blu-ray','This group contains blu-ray movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.boneless','This group contains XVID and X264 Movies. Some Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.british.drama','This group contains British TV shows.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cartoons.french','This group contains French cartoons.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cats','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image.linux','This group contains Linux distributions.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.image','This group contains PC-ISO.', 4, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cd.lossless','This group contains a variety of lossless Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.chello','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.classic.tv.shows','This group contains Classic TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comics.dcp','This group contains Comic Books', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.comp','This group contains Warez. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.console.ps3','This group contains PS3 Games.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.cores','This group contains a variety including Nintendo DS. Lots of Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.country.mp3','This group contains Country Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dc','This group contains XVID and X264 Movies and TV. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dgma','This group contains XVID Movies. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.divx.french','This group contains French XVID Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries','This group contains Documentaries TV and Movies.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.documentaries.french','This group contains French Documentaries TV and Movies.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.downunder','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd','This group contains DVD Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd.movies','This group contains DVDR Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvdr','This group contains DVD Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.dvd-r','This group contains DVD Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book.flood','This group contains E-Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book.technical','This group contains E-Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.e-book','This group contains E-Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ebook','This group contains Ebook\'s.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica.divx','This group contains XXX.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.erotica','This group contains XXX.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.etc','This group contains a variety of items.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.font','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.french-tv','This group contains French TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.frogs','This group contains a variety.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ftn','This group contains a variety of Music and TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.nintendods','This group contains Nintendo DS Games ', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games','This group contains PC and Console Games.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.wii','This group contains Nintendo WII Games, WII-Ware, and VC.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.xbox360','This group contains XBOX 360 Games and DLC.', 4, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.games.xbox','This group contains original XBOX Games.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ghosts','This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv','This group contains mostly HDTV 1080i rips.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv.german','This group contains German HDTV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hdtv.x264','This group contains X264 Movies and HDTV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.highspeed','This group contains XVID Movies. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.hou','This group contains a variety of content. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ijsklontje','This group contains XXX.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.inner-sanctum','This group contains PC and Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.illuminaten','This group contains mostly German.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ipod.videos','This group contains Mobile TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.linux.iso','This group contains Linux distributions.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.lou','This group contains mostly german TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac','This group contains MAC/OSX Software.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mac.applications','This group contains MAC/OSX Software.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.milo','This group contains mostly TV, some german.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.misc','This group contains a variety of items.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mojo','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mma','This group contains MMA/TNA Sport TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mom','This group contains a variety. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.moovee','This group contains XVID and X264 Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.divx','This group contains XVID Movies', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.erotica','This group contains XXX', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.french','This group contains French Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies','This group contains an assortment of Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.movies.xvid','This group contains XVID Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.audiobooks','This group contains Audio Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.bootlegs','This group contains Bootleg Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3.full_albums','This group contains a variety of Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mp3','This group contains a variety of Music.', 11, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.mpeg.video.music','This group contains a variety of Music Videos.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime.highspeed','This group contains Anime Television.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime.repost','This group contains Anime Television.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.anime','This group contains Anime TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.cartoons','This group contains Cartoon TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.classic-films','This group contains Classic TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.comedy.british','This group contains British Comedy TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.disney','This group contains Disney TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.documentaries','This group contains Documentary Movies and TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.erotica','This group contains XXX.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.erotica.amateur','This group contains XXX.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.scifi','This group contains science-fiction TV and movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.scifi-and-fantasy','This group contains science-fiction and fantasy TV and movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.sitcoms','This group contains Sitcom TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.sports','This group contains Sports TV and Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia','This group contains TV, Movies, and Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.tv','This group contains XVID and X264 TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.vintage-film','This group contains Vintage Movies pre 1960.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.multimedia.vintage-film.post-1960','This group contains Vintage Movies post 1960.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.music.flac','This group contains a variety of lossless Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.music.opera','This group contains Opera Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.nintendo.ds','This group contains Nintendo DS Games.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.nospam.cheerleaders','This group contains various.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.complete','This group contains comics.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.dcp','This group contains Comic Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.reposts','This group contains Comic Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pictures.comics.repost','This group contains Comic Books.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.pro-wrestling','This group contains WWE Sport TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.scary.exe.files','This group contains XVID and X264 Movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.series.tv.divx.french','This group contains French DIVX TV shows.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sony.psp','This group contains PSP Games.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sound.audiobooks','This group contains Audiobooks.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sound.mp3','This group contains a variety of Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.1960s.mp3','This group contains Music from the 1960\'s.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.1970s.mp3','This group contains Music from the 1970\'s.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.audiobooks.repost','This group contains Audiobooks.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.country.mp3','', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.flac.jazz','This group contains lossless Jazz Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.jpop','This group contains mostly Jpop music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.1960s','This group contains lossless 1960\'s Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.classical','This group contains lossless Classical Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless.country','This group contains lossless Country Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.lossless','This group contains a variety of Lossless Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1950s','This group contains Music from the 1950\'s.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1970s','This group contains Music from the 1970\'s.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1980s','This group contains Music from the 1980\'s.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.1990s','This group contains Music from the 1990\'s.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.2000s','This group contains Music from the 2000\'s.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.acoustic','This group contains Accoustic Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.audiobooks','This group contains Audiobooks.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.bluegrass','This group contains Bluegrass Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.christian','This group contains Christian Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.classical','This group contains Classical Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.comedy','This group contains Comedy Audio.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.complete_cd','This group contains a variety of Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.country','This group contains mostly country music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.dance','This group contains Dance Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.disco','This group contains Disco Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.emo','This group contains Emo Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.full_albums','This group contains a variety of Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.heavy-metal','This group contains Heavy Metal Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.jazz','This group contains Jazz Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.jazz.vocals','This group contains Jazz Vocal Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.musicals','This group contains Musicals Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.nospam','This group contains a variety of Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.opera','This group contains Opera Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.progressive-country','This group contains Country Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rap-hiphop.full-albums','This group contains Rap and Hip-Hop Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rap-hiphop','This group contains Rap and Hip-Hop Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3.rock','This group contains Rock Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.mp3','This group contains a variety of Music.', 5, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.bbc','This group contains BBC Radio Music', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.radio.british','This group contains British Radio Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.sounds.whitburn.pop','This group contains Pop Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tatu','This group contains mostly French TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.teevee','This group contains X264 and XVID TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.test','This group contains a variety of content.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.town','This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.triballs','This group contains various.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tun','This group contains various.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tvseries','This group contains X264 and XVID TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.tv','This group contains XVID TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u-4all','This group contains XVID TV and Movies. Mostly Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.u4e','This group contains a variery, mostly German movies.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ucc','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ufg','This group contains mostly TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.uzenet','This group contains XXX. Some Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.ibm-pc.0-day','This group contains PC-0Day.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.quebec-hackers','This group contains PC-0day. Some Foreign.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.smartphone','This group contains Mobile Phone Apps.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez','This group contains PC 0DAY, PC ISO, and PC PHONE.', 5, 1000000);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.warez.uk.mp3','This group contains a variety of Music.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.wii','This group contains Nintendo WII Games, WII-Ware, and VC.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.wmvhd','This group contains WMVHD Movies.', NULL, '40000000');
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.worms','I have no idea what this group contains besides a lot of U4ALL which isn\'t really usable.', 2, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.x264','This group contains X264 Movies and TV.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.x','This group contains a variety of content. Some Foreign.', NULL, NULL);
 
 DROP TABLE IF EXISTS `parts`;
 CREATE TABLE `parts` (
@@ -648,7 +656,7 @@ CREATE TABLE `parts` (
   KEY `binaryID` (`binaryID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE INDEX ix_parts_number ON parts (number);
+CREATE INDEX ix_parts_number ON parts (`number`);
 
 DROP TABLE IF EXISTS `partrepair`;
 CREATE TABLE `partrepair` (
@@ -741,7 +749,7 @@ INSERT INTO category (ID, title, parentID) VALUES (8040, 'Technical', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8050, 'Other', 8000);
 INSERT INTO category (ID, title, parentID) VALUES (8060, 'Foreign', 8000);
 
-CREATE INDEX ix_category_status ON category('status');
+CREATE INDEX ix_category_status ON category(`status`);
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -763,7 +771,7 @@ CREATE TABLE `users` (
   `musicview` int not null default 1,
   `consoleview` int not null default 1,
   `bookview` int not null default 1,
-  `saburl` VARCHAR(255) NULL DEFAULT NULL,  
+  `saburl` VARCHAR(255) NULL DEFAULT NULL,
   `sabapikey` VARCHAR(255) NULL DEFAULT NULL,
   `sabapikeytype` TINYINT(1) NULL DEFAULT NULL,
   `sabpriority` TINYINT(1) NULL DEFAULT NULL,
@@ -862,7 +870,7 @@ CREATE TABLE `usercart` (
   `createddate` DATETIME NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (userID, releaseID);
+CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (`userID`, `releaseID`);
 
 DROP TABLE IF EXISTS `userexcat`;
 CREATE TABLE `userexcat` (
@@ -872,7 +880,7 @@ CREATE TABLE `userexcat` (
   `createddate` DATETIME NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (userID, categoryID);
+CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (`userID`, `categoryID`);
 
 DROP TABLE IF EXISTS `userinvite`;
 CREATE TABLE `userinvite` (
@@ -900,13 +908,13 @@ CREATE TABLE content
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 INSERT INTO content (title, body, contenttype, STATUS, metadescription, metakeywords, showinmenu)
-VALUES ('Welcome to nZEDb.', '<p>Since nZEDb is a fork of newznab, the API is compatible with sickbeard, couchpotato, etc...</p>', 3, 1, '', '', 0);
-
-INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords) 
-VALUES ('example content', '/great/seo/content/page/', '<p>this is an example content page</p>', 2, 1, 1, '', '');
+VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with sickbeard, couchpotato, etc...</p>', 3, 1, '','', 0);
 
 INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
-VALUES ('another example', '/another/great/seo/content/page/', '<p>this is another example content page</p>', 2, 1, 1, '', '');
+VALUES ('example content','/great/seo/content/page/','<p>this is an example content page</p>', 2, 1, 1, '','');
+
+INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
+VALUES ('another example','/another/great/seo/content/page/','<p>this is another example content page</p>', 2, 1, 1, '','');
 
 DROP TABLE IF EXISTS `site`;
 CREATE TABLE `site` (
@@ -923,24 +931,24 @@ UNIQUE (
 INSERT INTO `site`
 	(`setting`, `value`)
 	VALUES
-	('code', 'nZEDb'),
-	('title', 'nZEDb'),
-	('strapline', 'A great usenet indexer'),
-	('metatitle', 'An indexer'),
-	('metadescription', 'A usenet indexing website'),
-	('metakeywords', 'usenet,nzbs,cms,community'),
-	('footer', 'Usenet binary indexer.'),
-	('email', ''),
-	('google_adsense_search', ''),
-	('google_analytics_acc', ''),
-	('google_adsense_acc', ''),
+	('code','nZEDb'),
+	('title','nZEDb'),
+	('strapline','A great usenet `indexer'),
+	('metatitle','An indexer'),
+	('metadescription','A usenet indexing website'),
+	('metakeywords','usenet,nzbs,cms,community'),
+	('footer','Usenet binary indexer.'),
+	('email',''),
+	('google_adsense_search',''),
+	('google_analytics_acc',''),
+	('google_adsense_acc',''),
 	('siteseed', MD5(UUID())),
-	('tandc', '<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
+	('tandc','<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
 	('registerstatus', 0),
-	('style', 'Default'),
-	('home_link', '/'),
-	('dereferrer_link', ''),
-	('nzbpath', '/your/path/to/nzbs/'),
+	('style','Default'),
+	('home_link','/'),
+	('dereferrer_link',''),
+	('nzbpath','/your/path/to/nzbs/'),
 	('lookuptvrage', 1),
 	('lookupimdb', 1),
 	('lookupnfo', 1),
@@ -963,12 +971,12 @@ INSERT INTO `site`
     ('postthreads', 1),
     ('releasethreads', 1),
     ('nzbthreads', 1),
-	('amazonpubkey', 'AKIAIPDNG5EU7LB4AD3Q'),
-	('amazonprivkey', 'B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
-	('amazonassociatetag', 'n01369-20'),
-	('tmdbkey', '9a4e16adddcd1e86da19bcaf5ff3c2a3'),
-	('rottentomatokey', 'qxbxyngtujprvw7jxam2m6na'),
-	('trakttvkey', ''),
+	('amazonpubkey','AKIAIPDNG5EU7LB4AD3Q'),
+	('amazonprivkey','B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS'),
+	('amazonassociatetag','n01369-20'),
+	('tmdbkey','9a4e16adddcd1e86da19bcaf5ff3c2a3'),
+	('rottentomatokey','qxbxyngtujprvw7jxam2m6na'),
+	('trakttvkey',''),
 	('compressedheaders', 0),
 	('partrepair', 1),
 	('maxmssgs', 20000),
@@ -976,8 +984,8 @@ INSERT INTO `site`
 	('newgroupdaystoscan', 1),
 	('newgroupmsgstoscan', 100000),
 	('sabintegrationtype', 2),
-	('saburl', ''),
-	('sabapikey', ''),
+	('saburl',''),
+	('sabapikey',''),
 	('sabapikeytype', 1),
 	('sabpriority', 0),
 	('storeuserips', 0),
@@ -990,13 +998,13 @@ INSERT INTO `site`
 	('showpasswordedrelease', 0),
 	('deletepasswordedrelease', 0),
 	('releasecompletion', 0),
-	('unrarpath', ''),
-	('mediainfopath', ''),
-	('ffmpegpath', ''),
-	('tmpunrarpath', ''),
-	('adheader', ''),
-	('adbrowse', ''),
-	('addetail', ''),
+	('unrarpath',''),
+	('mediainfopath',''),
+	('ffmpegpath',''),
+	('tmpunrarpath',''),
+	('adheader',''),
+	('adbrowse',''),
+	('addetail',''),
 	('grabstatus', 1),
 	('nzbsplitlevel', 1),
 	('categorizeforeign', 1),
@@ -1007,18 +1015,32 @@ INSERT INTO `site`
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
 	('catwebdl', 0),
-	('safebackfilldate', '2012-06-24'),
+	('safebackfilldate','2012-06-24'),
 	('processjpg', 0),
 	('hashcheck', 1),
 	('debuginfo', 0),
 	('processvideos', 0),
 	('imdburl', 0),
-	('imdblanguage', 'en'),
+	('imdblanguage','en'),
 	('partretentionhours', 72),
 	('postdelay', 300),
 	('processaudiosample', 0),
 	('predbversion', 1),
-	('sqlpatch', '72');
+	('deletepossiblerelease', 0),
+	('miscotherretentionhours',0),
+	('grabnzbs', '0'),
+	('alternate_nntp', '0'),
+	('postthreadsamazon', '1'),
+	('postthreadsnon', '1'),
+	('currentppticket', '0'),
+	('nextppticket', '0'),
+	('segmentstodownload', '2'),
+	('ffmpeg_duration', '5'),
+	('ffmpeg_image_time', '5'),
+	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('lookup_reqids', '1'),
+	('grabnzbthreads', '1'),
+	('sqlpatch','99');
 
 
 DROP TABLE IF EXISTS `consoleinfo`;
@@ -1062,7 +1084,7 @@ CREATE TABLE `bookinfo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `musicinfo`;
-CREATE TABLE `musicinfo` 
+CREATE TABLE `musicinfo`
 (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -1096,7 +1118,7 @@ CREATE TABLE `upcoming` (
 
 
 DROP TABLE IF EXISTS `genres`;
-CREATE TABLE `genres` 
+CREATE TABLE `genres`
 (
   `ID` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -1105,7 +1127,7 @@ CREATE TABLE `genres`
   PRIMARY KEY (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-INSERT INTO `genres` 
+INSERT INTO `genres`
 (
   `title`, `type`
 ) VALUES
@@ -1261,19 +1283,12 @@ INSERT INTO `genres`
 
 DROP TABLE IF EXISTS `tmux`;
 CREATE TABLE `tmux` (
-  
-	`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  
-	`setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-  
-	`value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
-  
-	`updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-PRIMARY KEY (`ID`),
-  
-UNIQUE KEY `setting` (`setting`)
-
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `setting` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `value` varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updateddate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `setting` (`setting`)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
@@ -1282,12 +1297,12 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('NICENESS','19'),
 	('BINARIES','FALSE'),
 	('BACKFILL','0'),
-	('IMPORT','FALSE'),
+	('IMPORT','0'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
 	('SEQUENTIAL','FALSE'),
 	('NFOS','FALSE'),
-	('POST','FALSE'),
+	('POST','0'),
 	('RELEASES','FALSE'),
 	('RELEASES_THREADED','FALSE'),
 	('FIX_NAMES','FALSE'),
@@ -1303,7 +1318,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('COLLECTIONS_KILL','0'),
 	('POSTPROCESS_KILL','0'),
 	('CRAP_TIMER','30'),
-	('FIX_CRAP','FALSE'),
+	('FIX_CRAP','0'),
 	('TV_TIMER','43200'),
 	('UPDATE_TV','FALSE'),
 	('HTOP','FALSE'),
@@ -1320,18 +1335,45 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('OPTIMIZE','FALSE'),
 	('OPTIMIZE_TIMER','86400'),
 	('MONITOR_PATH', NULL),
-	('WRITE_LOGS', 'FALSE'),
-	('SORTER', 'FALSE'),
+	('WRITE_LOGS','FALSE'),
+	('SORTER','FALSE'),
 	('SORTER_TIMER', 30),
-	('POWERLINE', 'FALSE'),
-	('PATCHDB', 'FALSE'),
-	('PATCHDB_TIMER', '21600'),
-	('PROGRESSIVE', 'FALSE'),
-	('DEHASH','FALSE'),
-	('DEHASH_TIMER','30');
+	('POWERLINE','FALSE'),
+	('PATCHDB','FALSE'),
+	('PATCHDB_TIMER','21600'),
+	('PROGRESSIVE','FALSE'),
+	('DEHASH', '0'),
+	('DEHASH_TIMER','30'),
+	('BACKFILL_ORDER','2'),
+	('BACKFILL_DAYS', '1'),
+	('POST_AMAZON', 'FALSE'),
+	('POST_NON', 'FALSE'), 
+	('POST_TIMER_AMAZON', '30'),
+	('POST_TIMER_NON', '30'),
+	('COLORS_START', '1'),
+	('COLORS_END', '250'),
+	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
+	('MONITOR_PATH_A', NULL),
+	('MONITOR_PATH_B', NULL);
 
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+DROP TABLE IF EXISTS `nzbs`;
+CREATE TABLE `nzbs` (
+  `message_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `article-number` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `subject` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `collectionhash` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `filesize` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `partnumber` int(10) unsigned NOT NULL DEFAULT '0',
+  `totalparts` int(10) unsigned NOT NULL DEFAULT '0',
+  `postdate` datetime DEFAULT NULL,
+  `dateadded` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`)
+) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1,6318,'The Young and the Restless',NULL,now(),NULL,70328),
 (2,3557,'Flash Gordon (1954)',NULL,now(),NULL,70331),
 (3,77,'Jesse Hawkes',NULL,now(),NULL,70332),
@@ -1830,8 +1872,8 @@ VALUES
 (496,6227,'The Super Powers Team: Galactic Guardians',NULL,now(),NULL,70914),
 (497,18289,'The Last Precinct',NULL,now(),NULL,70915),
 (498,3177,'Crossroads (1992)',NULL,now(),NULL,70916);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (499,4721,'One On One',NULL,now(),NULL,70919),
 (500,618,'Animal Crackers',NULL,now(),NULL,70920),
 (501,9300,'The Estate Agents',NULL,now(),NULL,70921),
@@ -2330,8 +2372,8 @@ VALUES
 (994,5474,'Taxi',NULL,now(),NULL,71527),
 (995,2779,'Bewitched',NULL,now(),NULL,71528),
 (996,3423,'Edge of Darkness',NULL,now(),NULL,71529);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (997,1091,'The Dick Clark Show',NULL,now(),NULL,71530),
 (998,15499,'Hollywood Beat',NULL,now(),NULL,71533),
 (999,817,'Love Thy Neighbour',NULL,now(),NULL,71534),
@@ -2830,8 +2872,8 @@ VALUES
 (1492,3200,'Da Ali G Show',NULL,now(),NULL,72165),
 (1493,8332,'Today with Des and Mel',NULL,now(),NULL,72166),
 (1494,18436,'Andra Avenyn',NULL,now(),NULL,80703);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1495,3024,'Century City',NULL,now(),NULL,72168),
 (1496,23145,'The Mayor of Casterbridge',NULL,now(),NULL,72169),
 (1497,5755,'The Equalizer',NULL,now(),NULL,72170),
@@ -3330,8 +3372,8 @@ VALUES
 (1990,1191,'The Savage Dragon',NULL,now(),NULL,72839),
 (1991,5648,'The Brendan Leonard Show',NULL,now(),NULL,72840),
 (1992,153,'Scorch',NULL,now(),NULL,72841);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (1993,3706,'Gokudo',NULL,now(),NULL,72843),
 (1994,1196,'Zenki',NULL,now(),NULL,72844),
 (1995,1197,'Cyber Team in Akihabara',NULL,now(),NULL,72845),
@@ -3830,8 +3872,8 @@ VALUES
 (2488,17864,'Stranger from Space',NULL,now(),NULL,73516),
 (2489,1416,'Fireman Sam',NULL,now(),NULL,73517),
 (2490,23,'Empire (1962)',NULL,now(),NULL,73519);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (2491,9400,'Headbangers Ball',NULL,now(),NULL,73520),
 (2492,3364,'Dr. Shrinker',NULL,now(),NULL,73521),
 (2493,6017,'The New Adventures of Gilligan',NULL,now(),NULL,73523),
@@ -4330,8 +4372,8 @@ VALUES
 (2986,15943,'Hey Jeannie!',NULL,now(),NULL,74225),
 (2987,13393,'Thorndyke',NULL,now(),NULL,74226),
 (2988,8761,'If It Moves, File It',NULL,now(),NULL,74229);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (2989,2623,'Anna Lee',NULL,now(),NULL,74230),
 (2990,8363,'If You See God, Tell Him',NULL,now(),NULL,74231),
 (2991,10680,'The Neighbors',NULL,now(),NULL,74232),
@@ -4830,8 +4872,8 @@ VALUES
 (3484,3191,'Curse of Dracula',NULL,now(),NULL,74970),
 (3485,7285,'Zillion',NULL,now(),NULL,74973),
 (3486,6356,'Tilt',NULL,now(),NULL,74974);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (3487,7386,'Waste Not',NULL,now(),NULL,74979),
 (3488,3965,'Inside Dish with Rachael Ray',NULL,now(),NULL,74980),
 (3489,2226,'Miracle\'s Boys',NULL,now(),NULL,74982),
@@ -5330,8 +5372,8 @@ VALUES
 (3982,6354,'Thunderstone',NULL,now(),NULL,75746),
 (3983,299,'The Wayne Manifesto',NULL,now(),NULL,75747),
 (3984,9553,'The Culture Show',NULL,now(),NULL,75748);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (3985,2385,'Miss Popularity',NULL,now(),NULL,75754),
 (3986,7775,'Bumper Stumpers',NULL,now(),NULL,75755),
 (3987,7037,'Courting Alex',NULL,now(),NULL,75757),
@@ -5830,8 +5872,8 @@ VALUES
 (4480,5289,'Spencer\'s Pilots',NULL,now(),NULL,76473),
 (4481,12678,'Rafferty',NULL,now(),NULL,76474),
 (4482,17999,'The Public Defender',NULL,now(),NULL,76475);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (4483,4539,'Mr. Lucky',NULL,now(),NULL,76476),
 (4484,15617,'Going My Way',NULL,now(),NULL,76477),
 (4485,391,'The Lux Video Theatre',NULL,now(),NULL,76478),
@@ -6330,8 +6372,8 @@ VALUES
 (4978,2653,'Arthur of the Britons',NULL,now(),NULL,77053),
 (4979,1667,'Sabrina (1970)',NULL,now(),NULL,77056),
 (4980,6179,'The Secret Lives of Waldo Kitty',NULL,now(),NULL,77057);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (4981,4358,'Mama\'s Family',NULL,now(),NULL,77059),
 (4982,14591,'Classic Concentration',NULL,now(),NULL,77060),
 (4983,7448,'Win, Lose or Draw',NULL,now(),NULL,77061),
@@ -6830,8 +6872,8 @@ VALUES
 (5476,3795,'Harry and the Hendersons',NULL,now(),NULL,77624),
 (5477,6388,'Totally Spies',NULL,now(),NULL,77625),
 (5478,5989,'The Mommies',NULL,now(),NULL,77626);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (5479,19594,'Motown Revue',NULL,now(),NULL,77627),
 (5480,5202,'Simon',NULL,now(),NULL,77628),
 (5481,11035,'The Baileys of Balboa',NULL,now(),NULL,77629),
@@ -7330,8 +7372,8 @@ VALUES
 (5974,5245,'Someone Like Me',NULL,now(),NULL,78253),
 (5975,6088,'The Phoenix',NULL,now(),NULL,78254),
 (5976,4982,'Rescue 911',NULL,now(),NULL,78256);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (5977,5504,'That\'s So Raven',NULL,now(),NULL,78258),
 (5978,5760,'The Faculty',NULL,now(),NULL,78263),
 (5979,9948,'Vic Reeves Big Night Out',NULL,now(),NULL,78264),
@@ -7830,8 +7872,8 @@ VALUES
 (6472,4127,'Killer Instinct',NULL,now(),NULL,78865),
 (6473,630,'The Croc Files',NULL,now(),NULL,78867),
 (6474,3642,'Game Over',NULL,now(),NULL,78871);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (6475,1340,'Seven Wonders of the Industrial World',NULL,now(),NULL,78873),
 (6476,9591,'Connections',NULL,now(),NULL,78875),
 (6477,3740,'Greg the Bunny',NULL,now(),NULL,78877),
@@ -8330,8 +8372,8 @@ VALUES
 (6970,16623,'Stromberg',NULL,now(),NULL,79656),
 (6971,3245,'Darkwing Duck',NULL,now(),NULL,75475),
 (6972,15465,'Ruddy Hell! It\'s Harry And Paul',NULL,now(),NULL,80101);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (6973,3737,'Green Green Grass',NULL,now(),NULL,80102),
 (6974,7191,'The Wombles',NULL,now(),NULL,80104),
 (6975,11210,'Top Design',NULL,now(),NULL,80107),
@@ -8830,8 +8872,8 @@ VALUES
 (7468,12778,'Little Miss Jocelyn',NULL,now(),NULL,81127),
 (7469,17772,'Fairy Tales',NULL,now(),NULL,81132),
 (7470,22259,'The Blue and the Gray',NULL,now(),NULL,81133);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (7471,2287,'School Rumble',NULL,now(),NULL,79194),
 (7472,15265,'100 Greatest Discoveries',NULL,now(),NULL,81134),
 (7473,5092,'Samurai 7',NULL,now(),NULL,79127),
@@ -9330,8 +9372,8 @@ VALUES
 (7966,11063,'Stand Up!!',NULL,now(),NULL,82326),
 (7967,14091,'Water Boys',NULL,now(),NULL,82330),
 (7968,14092,'Wonderful Life',NULL,now(),NULL,82331);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (7969,14099,'Yamato Nadeshiko',NULL,now(),NULL,82334),
 (7970,8038,'The Alan Clark Diaries',NULL,now(),NULL,82335),
 (7971,16296,'Shiawase ni Naritai!',NULL,now(),NULL,82324),
@@ -9830,8 +9872,8 @@ VALUES
 (8464,2680,'Avatar: The Last Airbender',NULL,now(),NULL,74852),
 (8465,5962,'The Magnificent Seven',NULL,now(),NULL,75093),
 (8466,17971,'Apparitions',NULL,now(),NULL,83734);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (8467,8015,'Mouse',NULL,now(),NULL,83635),
 (8468,15671,'The Winds of War',NULL,now(),NULL,83637),
 (8469,21144,'The American Future: A History, by Simon Schama',NULL,now(),NULL,83640),
@@ -9907,7 +9949,7 @@ VALUES
 (8539,13318,'The Path to 9/11',NULL,now(),NULL,83821),
 (8540,2069,'The Koala Brothers',NULL,now(),NULL,74327),
 (8541,19586,'Iron Man: Armored Adventures ',NULL,now(),NULL,83826),
-(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
+(8542,2990,'CarnivÃƒÂ le',NULL,now(),NULL,70860),
 (8543,14810,'Wall Street Warriors',NULL,now(),NULL,83830),
 (8544,2747,'Beck: Mongolian Chop Squad',NULL,now(),NULL,75838),
 (8545,19890,'Extreme Fishing With Robson Green',NULL,now(),NULL,83834),
@@ -10330,8 +10372,8 @@ VALUES
 (8962,17190,'Dumped',NULL,now(),NULL,91141),
 (8963,12662,'True Blood',NULL,now(),NULL,82283),
 (8964,11092,'Saturday Kitchen',NULL,now(),NULL,85284);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (8965,3591,'Fraggle Rock',NULL,now(),NULL,76085),
 (8966,21063,'The Tonight Show with Conan O\'Brien',NULL,now(),NULL,85285),
 (8967,15138,'Primeval',NULL,now(),NULL,79809),
@@ -10830,8 +10872,8 @@ VALUES
 (9460,3267,'Deadwood',NULL,now(),NULL,72023),
 (9461,18813,'90210',NULL,now(),NULL,82716),
 (9462,15361,'Once Upon a Time... The Americas',NULL,now(),NULL,81661);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (9463,12641,'Mark Williams\' Big Bangs',NULL,now(),NULL,98291),
 (9464,22936,' Empire of Cricket',NULL,now(),NULL,98301),
 (9465,12984,'Trawlermen',NULL,now(),NULL,102551),
@@ -11330,8 +11372,8 @@ VALUES
 (9958,23894,'Merlin Secrets And Magic',NULL,now(),NULL,114661),
 (9959,23034,'The League',NULL,now(),NULL,114701),
 (9960,23815,'Trinity (UK)',NULL,now(),NULL,114711);
-INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`) 
-VALUES 
+INSERT INTO `tvrage` (`ID`, `rageID`, `releasetitle`, `description`, `createddate`, `imgdata`, `tvdbID`)
+VALUES
 (9961,21975,'Yellowstone',NULL,now(),NULL,85527),
 (9962,18331,'Satisfaction',NULL,now(),NULL,81053),
 (9963,5328,'Starman',NULL,now(),NULL,73794),

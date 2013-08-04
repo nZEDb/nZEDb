@@ -5,4 +5,3 @@ require_once(WWW_DIR."lib/predb.php");
 
 $postprocess = new PostProcess(true);
 $postprocess->processPredb();
-?>

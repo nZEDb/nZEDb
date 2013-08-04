@@ -91,11 +91,15 @@
 					<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
 					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a>
 					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a>
+					<a class="rndbtn" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">CouchPotato</a>
 				</div>
 				</div>
 			</td>
 			<td colspan="3" class="left">
-				<h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}</h2>
+				<h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
+				{foreach from=$result.languages item=movielanguage}
+					{release_flag($movielanguage, browse)}
+				{/foreach}</h2>
 				{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
 				{if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
 				{if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
@@ -162,6 +166,10 @@
 </div>
 
 </form>
+
+{else}
+
+<h4>There doesn't seem to be any releases here. Please try the <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">list</a> view.</h4>
 
 {/if}
 

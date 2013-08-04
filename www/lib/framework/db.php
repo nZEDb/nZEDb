@@ -2,8 +2,15 @@
 
 class DB
 {
+        //
+        // the element relstatus of table releases is used to hold the status of the release
+        // The variable is a bitwise AND of status 
+        // List of processed constants - used in releases table. Constants need to be powers of 2: 1, 2, 4, 8, 16 etc...
+        const NFO_PROCESSED_NAMEFIXER     = 1;  // We have processed the release against its .nfo file in the namefixer
+        const PREDB_PROCESSED_NAMEFIXER   = 2;  // We have processed the release against a predb name
+
 	private static $initialized = false;
-	private static $db = null;
+	private static $mysqli = null;
 
 	function DB()
 	{
@@ -12,31 +19,35 @@ class DB
 			// initialize db connection
 			if (defined("DB_PORT"))
 			{
-				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
+				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
 			}
 			else
 			{
-				DB::$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 			}
 
-			if (DB::$db->connect_errno) {
-				printf("Failed to connect to MySQL: (" . DB::$db->connect_errno . ") " . DB::$db->connect_error);
+			if (DB::$mysqli->connect_errno) {
+				printf("Failed to connect to MySQL: (" . DB::$mysqli->connect_errno . ") " . DB::$mysqli->connect_error);
 				exit();
 			}
 
-			DB::$db->set_charset('utf8');
+			if (!DB::$mysqli->set_charset('utf8')) {
+				printf(DB::$mysqli->error);
+			} else {
+				DB::$mysqli->character_set_name();
+			}
+
 			DB::$initialized = true;
 		}
 	}
 
 	public function escapeString($str)
 	{
-		if (is_null($str))
-		{
+		if (is_null($str)){
 			return "NULL";
 		} else {
-		return "'".DB::$db->real_escape_string($str)."'";
-	}
+			return "'".DB::$mysqli->real_escape_string($str)."'";
+		}	
 	}
 
 	public function makeLookupTable($rows, $keycol)
@@ -52,18 +63,18 @@ class DB
 		if ($query=="")
 			return false;
 
-		$result = DB::$db->query($query);
-		return ($returnlastid) ? DB::$db->insert_id : $result;
+		$result = DB::$mysqli->query($query);
+		return ($returnlastid) ? DB::$mysqli->insert_id : $result;
 	}
 
 	public function getInsertID()
 	{
-		return DB::$db->insert_id;
+		return DB::$mysqli->insert_id;
 	}
 
 	public function getAffectedRows()
 	{
-		return DB::$db->affected_rows;
+		return DB::$mysqli->affected_rows;
 	}
 
 	public function queryOneRow($query)
@@ -81,7 +92,7 @@ class DB
 		if ($query=="")
 			return false;
 
-		$result = DB::$db->query($query);
+		$result = DB::$mysqli->query($query);
 
 		if ($result === false || $result === true)
 			return array();
@@ -102,7 +113,7 @@ class DB
 
 	public function queryDirect($query)
 	{
-		return ($query=="") ? false : DB::$db->query($query);
+		return ($query=="") ? false : DB::$mysqli->query($query);
 	}
 
 	public function fetchAssoc($result)
@@ -126,9 +137,9 @@ class DB
 			echo "Optimizing table: ".$tablename['Name'].".\n";
 			if (strtolower($tablename['Engine']) == "myisam")
 				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
-				$this->queryDirect("FLUSH TABLES");
 			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
 		}
+		$this->queryDirect("FLUSH TABLES");
 		return $tablecnt;
 	}
 
@@ -139,27 +150,26 @@ class DB
 
 	public function Prepare($query)
 	{
-		return DB::$db->prepare($query);
+		return DB::$mysqli->prepare($query);
 	}
 
 	public function Error()
 	{
-		return DB::$db->error;
+		return DB::$mysqli->error;
 	}
 
 	public function setAutoCommit($enabled)
 	{
-		return DB::$db->autocommit($enabled);
+		return DB::$mysqli->autocommit($enabled);
 	}
 
 	public function Commit()
 	{
-		return DB::$db->commit();
+		return DB::$mysqli->commit();
 	}
 
 	public function Rollback()
 	{
-		return DB::$db->rollback();
+		return DB::$mysqli->rollback();
 	}
 }
-?>

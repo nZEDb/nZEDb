@@ -1,7 +1,7 @@
 
 <h1>{$release.searchname|escape:"htmlall"}</h1>
 
-{$site->addetail}	
+{$site->addetail}
 
 {if $rage && $release.rageID > 0 && $rage.imgdata != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" width="180" alt="{$rage.releasetitle|escape:"htmlall"}" style="float:right;" />{/if}
 {if $movie && $release.rageID < 0 && $movie.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" width="180" alt="{$movie.title|escape:"htmlall"}" style="float:right;" />{/if}
@@ -15,7 +15,7 @@
 	<tr><th>Admin:</th><td><a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a><a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td></tr>
 	{/if}
 	<tr><th>Name:</th><td>{$release.name|escape:"htmlall"}</td></tr>
-	
+
 	{if $rage && $release.rageID > 0}
 		<tr><th>Tv Info:</th><td>
 			<strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br />
@@ -24,14 +24,14 @@
 			{if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
 			{if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
 			<div style="margin-top:10px;">
-				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageID}">All Episodes</a> 
+				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageID}">All Episodes</a>
 				<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageID}" title="View at TV Rage">TV Rage</a>
 				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
 			</div>
 			</td>
 		</tr>
 	{/if}
-	
+
 	{if $movie && $release.rageID < 0}
 	<tr><th>Movie Info:</th><td>
 		<strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>
@@ -43,10 +43,11 @@
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbID}/" title="View at IMDB">IMDB</a>
 			{if $movie.tmdbID != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbID}" title="View at TMDb">TMDb</a>{/if}
+			<a class="rndbtn" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbID}&title={$movie.title}" name="CP{$release.imdbID}" title="Add to CouchPotato">CouchPotato</a>
 		</div>
 	</td></tr>
 	{/if}
-	
+
 	{if $anidb && $anidb.anidbID > 0}
 		<tr><th>Anime Info:</th><td>
 			<strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"}{/if}</strong><br />
@@ -54,14 +55,14 @@
 			{if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br />{/if}
 			{if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
 			<div style="margin-top:10px;">
-				<a class="rndbtn" title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbID}">All Episodes</a> 
+				<a class="rndbtn" title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbID}">All Episodes</a>
 				<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbID}" title="View at AniDB">AniDB</a>
 				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS feed for this anime">Anime RSS Feed</a>
 			</div>
 			</td>
 		</tr>
 	{/if}
-	
+
 	{if $con}
 	<tr><th>Console Info:</th><td>
 		<strong>{$con.title|escape:"htmlall"} ({$con.releasedate|date_format:"%Y"})</strong><br />
@@ -76,7 +77,7 @@
 		</div>
 	</td></tr>
 	{/if}
-	
+
 	{if $boo}
 	<tr><th>Book Info:</th><td>
 		<strong>{$boo.title|escape:"htmlall"}{if $boo.publishdate != "0000-00-00 00:00:00"} ({$boo.publishdate|date_format:"%Y"}){/if}</strong><br />
@@ -95,7 +96,7 @@
 		</div>
 	</td></tr>
 	{/if}
-	
+
 	{if $music}
 	<tr><th>Music Info:</th><td>
 		<strong>{$music.title|escape:"htmlall"} {if $music.year != ""}({$music.year}){/if}</strong><br />
@@ -113,12 +114,12 @@
 			{assign var="tracksplits" value="|"|explode:$music.tracks}
 			{foreach from=$tracksplits item=tracksplit}
 			<li>{$tracksplit|trim|escape:"htmlall"}</li>
-			{/foreach}		
+			{/foreach}
 		</ol>
 	</td></tr>
 	{/if}
 	{/if}
-	
+
 	<tr><th>Group:</th><td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></td></tr>
 	<tr><th>Category:</th><td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryID}">{$release.category_name}</a></td></tr>
 	{if $nfo.ID|@count > 0}
@@ -153,7 +154,7 @@
 					<td><strong>Video</strong></td>
 					<td>Duration</td>
 					<td class="right">{$reVideo.videoduration}</td>
-				</tr>				
+				</tr>
 				{/if}
 				{if $reVideo.videoformat != ""}
 				<tr>
@@ -181,14 +182,14 @@
 					<td></td>
 					<td>Aspect</td>
 					<td class="right">{$reVideo.videoaspect}</td>
-				</tr>				
+				</tr>
 				{/if}
 				{if $reVideo.videoframerate != ""}
 				<tr>
 					<td></td>
 					<td>Framerate</td>
 					<td class="right">{$reVideo.videoframerate} fps</td>
-				</tr>	
+				</tr>
 				{/if}
 				{if $reVideo.videolibrary != ""}
 				<tr>
@@ -208,64 +209,64 @@
 					<td></td>
 					<td>Language</td>
 					<td class="right">{$audio.audiolanguage}</td>
-				</tr>					
+				</tr>
 				{/if}
 				{if $audio.audiotitle != ""}
 				<tr>
 					<td></td>
 					<td>Title</td>
 					<td class="right">{$audio.audiotitle}</td>
-				</tr>					
-				{/if}						
+				</tr>
+				{/if}
 				{if $audio.audiomode != ""}
 				<tr>
 					<td></td>
 					<td>Mode</td>
 					<td class="right">{$audio.audiomode}</td>
-				</tr>		
+				</tr>
 				{/if}
 				{if $audio.audiobitratemode != ""}
 				<tr>
 					<td></td>
 					<td>Bitrate Mode</td>
 					<td class="right">{$audio.audiobitratemode}</td>
-				</tr>					
+				</tr>
 				{/if}
 				{if $audio.audiobitrate != ""}
 				<tr>
 					<td></td>
 					<td>Bitrate</td>
 					<td class="right">{$audio.audiobitrate}</td>
-				</tr>	
+				</tr>
 				{/if}
 				{if $audio.audiochannels != ""}
 				<tr>
 					<td></td>
 					<td>Channels</td>
 					<td class="right">{$audio.audiochannels}</td>
-				</tr>	
+				</tr>
 				{/if}
 				{if $audio.audiosamplerate != ""}
 				<tr>
 					<td></td>
 					<td>Sample Rate</td>
 					<td class="right">{$audio.audiosamplerate}</td>
-				</tr>	
+				</tr>
 				{/if}
 				{if $audio.audiolibrary != ""}
 				<tr>
 					<td></td>
 					<td>Library</td>
 					<td class="right">{$audio.audiolibrary}</td>
-				</tr>					
-				{/if}		
+				</tr>
+				{/if}
 				{/foreach}
 				{if $reSubs.subs != ""}
 				<tr>
 					<td><strong>Subtitles</strong></td>
 					<td>Languages</td>
 					<td class="right">{$reSubs.subs|escape:"htmlall"}</td>
-				</tr>					
+				</tr>
 				{/if}
 			</table>
 		</td>
@@ -311,11 +312,11 @@
 		</td>
 	</tr>
 	{/if}
-	
+
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
-			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Passworded{else}Unknown{/if}
+			{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}
 		</td>
 	</tr>
 	{/if}
@@ -347,9 +348,9 @@
 <div class="comments">
 	<a id="comments"></a>
 	<h2>Comments</h2>
-	
+
 	{if $comments|@count > 0}
-	
+
 		<table style="margin-bottom:20px;" class="data Sortable">
 			<tr class="{cycle values=",alt"}">
 			<th width="80">User</th>
@@ -362,11 +363,11 @@
 			</tr>
 		{/foreach}
 		</table>
-	
+
 	{/if}
-	
+
 	<form action="" method="post">
-		<label for="txtAddComment">Add Comment</label>:<br/>
+		<label for="txtAddComment">Add Comment:</label><br/>
 		<textarea id="txtAddComment" name="txtAddComment" rows="6" cols="60"></textarea>
 		<br/>
 		<input type="submit" value="submit"/>

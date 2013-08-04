@@ -8,7 +8,12 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
-	function doConnect() 
+	function Nntp()
+	{
+		$this->timeout = 15;
+	}
+
+	function doConnect()
 	{
 		if ($this->_isConnected())
 			return true;
@@ -20,14 +25,15 @@ class Nntp extends Net_NNTP_Client
 		unset($s);
 		unset($site);
 
-		$retries = 5;
+		$retries = 10;
 		while($retries >= 1)
 		{
+			usleep(10000);
 			$retries--;
 			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 				$enc = 'ssl';
 
-			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
@@ -36,7 +42,7 @@ class Nntp extends Net_NNTP_Client
 			if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
 			{
 				$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-				if(PEAR::isError($ret2)) 
+				if(PEAR::isError($ret2))
 				{
 					if ($retries < 1)
 						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
@@ -50,10 +56,53 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
+	function doConnect_A()
+	{
+		if ($this->_isConnected())
+			return true;
+		$enc = false;
+
+		$s = new Sites();
+		$site = $s->get();
+		$compressionstatus = $site->compressedheaders;
+		unset($s);
+		unset($site);
+
+		$retries = 10;
+		while($retries >= 1)
+		{
+			usleep(10000);
+			$retries--;
+			if (defined("NNTP_SSLENABLED_A") && NNTP_SSLENABLED_A == true)
+				$enc = 'ssl';
+
+			$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, $this->timeout);
+			if(PEAR::isError($ret))
+			{
+				if ($retries < 1)
+					echo "Cannot connect to server ".NNTP_SERVER_A.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
+			}
+			if(!defined(NNTP_USERNAME_A) && NNTP_USERNAME_A !="" )
+			{
+				$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
+				if(PEAR::isError($ret2))
+				{
+					if ($retries < 1)
+						echo "Cannot authenticate to server ".NNTP_SERVER_A.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME_A." (".$ret2->getMessage().")";
+				}
+			}
+			if($compressionstatus == "1")
+			{
+				$this->enableCompression();
+			}
+			return $ret && $ret2;
+		}
+	}
+
 	//
 	//	No compression.
 	//
-	function doConnectNC() 
+	function doConnectNC()
 	{
 		if ($this->_isConnected())
 			return;
@@ -61,7 +110,7 @@ class Nntp extends Net_NNTP_Client
 		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
 
-		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT);
+		$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 		if(PEAR::isError($ret))
 		{
 			echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
@@ -70,39 +119,39 @@ class Nntp extends Net_NNTP_Client
 		if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
 		{
 			$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-			if(PEAR::isError($ret2)) 
+			if(PEAR::isError($ret2))
 			{
 				echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
 				die();
 			}
 		}
 	}
-	
-	function doQuit() 
+
+	function doQuit()
 	{
 		$this->quit();
 	}
-	
+
 	function getMessage($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
 		$message = $dec = '';
 
-		if (PEAR::isError($summary)) 
+		if (PEAR::isError($summary))
 		{
 			echo $summary->getMessage();
 			return false;
 		}
 
 		$body = $this->getBody('<'.$partMsgId.'>', true);
-		if (PEAR::isError($body)) 
+		if (PEAR::isError($body))
 		{
 		   //echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
 		   return false;
 		}
-		
+
 		$message = $this->decodeYenc($body);
-		if (!$message) 
+		if (!$message)
 		{
 			//echo "Yenc decode failure";
 			return false;
@@ -122,28 +171,43 @@ class Nntp extends Net_NNTP_Client
 			return false;
 		}
 
-		$body = $this->getArticle($partMsgId, true);
+		$body = $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 		{
-			echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
+			//echo 'Error fetching part number '.$partMsgId.' in '.$groupname.' (Server response: '. $body->getMessage().')'."\n";
 			return false;
 		}
 
 		$message = $this->decodeYenc($body);
 		if (!$message)
 		{
-			echo "Yenc decode failure";
+			//echo "Yenc decode failure";
 			return false;
-        }
+		}
 
 		return $message;
+	}
+
+	function getArticles($groupname, $msgIds)
+	{
+		$body = '';
+
+		foreach ($msgIds as $m)
+		{
+			$message = $this->get_Article($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
 	}
 
 
 	function getMessages($groupname, $msgIds)
 	{
 		$body = '';
-		
+
 		foreach ($msgIds as $m)
 		{
 			$message = $this->getMessage($groupname, $m);
@@ -154,44 +218,44 @@ class Nntp extends Net_NNTP_Client
 		}
 		return $body;
 	}
-	
+
 	function getBinary($binaryId, $isNfo=false)
 	{
 		$db = new DB();
 		$bin = new Binaries();
-		
+
 		$binary = $bin->getById($binaryId);
 		if (!$binary)
 			return false;
-		
+
 		$summary = $this->selectGroup($binary['groupname']);
 		$message = $dec = '';
 
-		if (PEAR::isError($summary)) 
+		if (PEAR::isError($summary))
 		{
 			echo $summary->getMessage();
 			return false;
 		}
 
 		$resparts = $db->query(sprintf("SELECT size, partnumber, messageID FROM parts WHERE binaryID = %d ORDER BY partnumber", $binaryId));
-		
+
 		if (sizeof($resparts) > 1 && $isNfo === true)
 		{
 			echo 'NFO is more than 1 part, skipping. ';
 			return false;
 		}
-		
-		foreach($resparts as $part) 
+
+		foreach($resparts as $part)
 		{
 			$messageID = '<'.$part['messageID'].'>';
 			$body = $this->getBody($messageID, true);
-			if (PEAR::isError($body)) 
+			if (PEAR::isError($body))
 			{
 			   return false;
 			}
 
 			$dec = $this->decodeYenc($body);
-			if (!$dec) 
+			if (!$dec)
 			{
 				echo "Yenc decode failure";
 				return false;
@@ -201,24 +265,24 @@ class Nntp extends Net_NNTP_Client
 		}
 		return $message;
 	}
-	
+
 	function decodeYenc($yencodedvar)
 	{
 		$input = array();
 		preg_match("/^(=ybegin.*=yend[^$]*)$/ims", $yencodedvar, $input);
 		if (isset($input[1]))
-		{		
+		{
 			$ret = "";
 			$input = trim(preg_replace("/\r\n/im", "",  preg_replace("/(^=yend.*)/im", "", preg_replace("/(^=ypart.*\\r\\n)/im", "", preg_replace("/(^=ybegin.*\\r\\n)/im", "", $input[1], 1), 1), 1)));
-				
+
 			for( $chr = 0; $chr < strlen($input) ; $chr++)
 				$ret .= ($input[$chr] != "=" ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
-				
+
 			return $ret;
 		}
 		return false;
 	}
-	
+
 	/*
 	* Code by Wafflehouse : http://pastebin.com/A3YypDAJ
 	* Enable XFeature compression support for the current connection.
@@ -227,7 +291,7 @@ class Nntp extends Net_NNTP_Client
 	{
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
-		if (PEAR::isError($response) || $response != 290) 
+		if (PEAR::isError($response) || $response != 290)
 		{
 			return false;
 		}
@@ -256,13 +320,13 @@ class Nntp extends Net_NNTP_Client
 		$totalbytesreceived = 0;
 		$completed			= false;
 		$data 				= null;
-		// Build binary array that represents zero results basically a compressed empty string terminated with .(period) char(13) char(10)		
+		// Build binary array that represents zero results basically a compressed empty string terminated with .(period) char(13) char(10)
 		$emptyreturnend 	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
 		$emptyreturn  		= chr(0x78).chr(0x9C).$emptyreturnend;
 		$emptyreturn2 		= chr(0x78).chr(0x01).$emptyreturnend;
 		$emptyreturn3 		= chr(0x78).chr(0x5e).$emptyreturnend;
 		$emptyreturn4 		= chr(0x78).chr(0xda).$emptyreturnend;
-		
+
 		while (!feof($this->_socket))
 		{
 			$completed = false;
@@ -277,17 +341,17 @@ class Nntp extends Net_NNTP_Client
 			}
 			// Get any socket error codes.
 			 $errorcode = socket_last_error();
-			
+
 			// If the buffer is zero it's zero...
 			if ($bytesreceived === 0)
 				return $this->throwError('No data returned.', 1000);
-			// Did we have any socket errors?	
+			// Did we have any socket errors?
 			if ($errorcode === 0)
 			{
 				// Append buffer to final data object.
 				 $data .= $buffer;
 				 $totalbytesreceived = $totalbytesreceived+$bytesreceived;
-				 
+
 				 // Output byte count in real time once we have 10KB of data.
 				if ($totalbytesreceived > 10240)
 				if ($totalbytesreceived%128 == 0)
@@ -295,7 +359,7 @@ class Nntp extends Net_NNTP_Client
 					$kb = 1024;
 					echo "Receiving ".round($totalbytesreceived/$kb)."KB\r";
 				}
-				
+
 				// Check to see if we have the magic terminator on the byte stream.
 				$b1 = null;
 				if ($bytesreceived > 2)
@@ -314,7 +378,7 @@ class Nntp extends Net_NNTP_Client
 					{
 						echo "\n";
 						$completed = true;
-					}				
+					}
 				}
 			 }
 			 else
@@ -322,7 +386,7 @@ class Nntp extends Net_NNTP_Client
 				 echo "Failed to read line from socket.\n";
 				 return $this->throwError('Failed to read line from socket.', 1000);
 			 }
-		
+
 			if ($completed)
 			{
 				// Check if the header is valid for a gzip stream.
@@ -354,11 +418,10 @@ class Nntp extends Net_NNTP_Client
 			}
 		}
 		// Throw an error if we get out of the loop.
-		if (!feof($this->_socket)) 
+		if (!feof($this->_socket))
 		{
 			return "\nError: unexpected fgets() fail.\n";
 		}
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
 	}
 }
-?>

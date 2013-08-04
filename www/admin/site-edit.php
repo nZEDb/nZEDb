@@ -89,10 +89,17 @@ $page->smarty->assign('sabpriority_names', array( 'Force', 'High', 'Normal', 'Lo
 $page->smarty->assign('newgroupscan_names', array('Days','Posts'));
 $page->smarty->assign('registerstatus_ids', array(Sites::REGISTER_STATUS_API_ONLY, Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_INVITE, Sites::REGISTER_STATUS_CLOSED));
 $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite', 'Closed'));
-$page->smarty->assign('passworded_ids', array(0,1,2));
+$page->smarty->assign('passworded_ids', array(0,1,10));
 $page->smarty->assign('passworded_names', array( 'Dont show passworded or potentially passworded', 'Dont show passworded', 'Show everything'));
 
+$page->smarty->assign('grabnzbs_ids', array(0,1,2));
+$page->smarty->assign('grabnzbs_names', array( 'Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));
 
+$page->smarty->assign('partrepair_ids', array(0,1,2));
+$page->smarty->assign('partrepair_names', array( 'Disabled', 'Part Repair', 'Part Repair Threaded'));
+
+$page->smarty->assign('lookup_reqids_ids', array(0,1,2));
+$page->smarty->assign('lookup_reqids_names', array( 'Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
 
 $themelist = array();
 $themes = scandir(WWW_DIR."/themes");

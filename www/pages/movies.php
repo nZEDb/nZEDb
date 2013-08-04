@@ -36,6 +36,7 @@ foreach($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
+	$result['languages'] = explode(", ", $result['language']);
 
 	$movies[] = $result;
 }

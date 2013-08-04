@@ -78,7 +78,10 @@ Notes:
 The team:
 
 Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh and ugo <br /><br /k>
-<a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+
+Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
+
 <hr>
 
 Original Newznab readme:

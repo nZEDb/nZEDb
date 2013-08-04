@@ -23,6 +23,7 @@ switch($page->page) {
 	case 'predb':
 	case 'search':
 	case 'apihelp':
+	case 'rss-info':
 	case 'movies':
 	case 'movie':
 	case 'series':
