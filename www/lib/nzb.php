@@ -112,7 +112,6 @@ class NZB
 		{
 			$s = new Sites();
 			$site = $s->get();
-			//echo "create site #2\n";
 			$sitenzbpath = $site->nzbpath;
 			if (substr($sitenzbpath, strlen($sitenzbpath) - 1) != '/')
 				$sitenzbpath = $sitenzbpath."/";
