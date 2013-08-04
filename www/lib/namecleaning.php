@@ -68,6 +68,9 @@ class nameCleaning
 			//(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
 			else if (preg_match('/^\(\d+\/\d+\)(.+?www\.town\.ag.+?sponsored by www\.ssl-news\.info<+?.+? ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
+			//blazedazer_NAN000010 [140/245] - "blazedazer_NAN000010.part138.rar" yEnc
+			else if (preg_match('/^(blazedazer_.+? \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
