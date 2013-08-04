@@ -26,6 +26,7 @@
     <style>
     select { min-width: 120px ; width: auto; }
     input { width: 180px; }
+    .rarfilelist img { position: relative; display: inline; height: 16px; text-align: center; white-space: nowrap; width: 16px; opacity: 1; }
     </style>
 
     <!-- Site Icon files -->
