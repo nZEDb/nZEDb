@@ -2174,9 +2174,10 @@ class Releases
 					if(!$cres)
 					{
 						$cIDS[] = $row['ID'];
-						$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT IGNORE INTO collections (subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
-						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
+						if ($this->echooutput)
+							$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}
 					else
 						$collectionID = $cres['ID'];
@@ -2191,7 +2192,8 @@ class Releases
 				{
 					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 					$delcount++;
-					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+					if ($this->echooutput)
+						$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
 				// Delete previous failed attempts.
 				$db->query('DELETE FROM collections where collectionhash = "0"');
@@ -2199,7 +2201,7 @@ class Releases
 				if ($this->hashcheck == 0)
 					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				if ($this->echooutput)
-					echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
+					echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart)."\n";
 			}
 			else
 				$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');

@@ -1,4 +1,6 @@
+08032013 -> kevin    ->	Update namecleaning, requires a reset of the collection hash.
 08022013 -> kevin    -> When many releases are added at the same time the hash for the guid can be the same, so add mt_rand while hashing.
+			Clean up postprocess.php a bit.
 08012013 -> ThePeePs -> Add logging of failed site login attempts.
 08012013 -> kevin    -> Add more regex to namecleaning.
 07302013 -> kevin    -> Clean up binaries.php and backfill.php and attempting to fix the connection errors.
