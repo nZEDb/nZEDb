@@ -333,18 +333,11 @@ class PostProcess
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
-			/*if ($this->echooutput)
-			{
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
-				if ($releaseToWork != '')
-					echo ", working 1 release: ";
-				else
-					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-			}*/
 
 			if ($this->echooutput && $rescount > 1)
 			{
-				$this->doecho("\nFetch for: b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
+				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
+				$this->doecho("b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
 				$this->doecho("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo");
 			}
 
@@ -783,8 +776,6 @@ class PostProcess
 					{
 						if (strlen($audioBinary) > 100)
 						{
-							if ($this->echooutput)
-								echo "a";
 							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
 							$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel["guid"], $rel["ID"]);
 						}
@@ -1347,6 +1338,7 @@ class PostProcess
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
 						$retval = true;
+						break;
 					}
 				}
 			}
@@ -1377,35 +1369,34 @@ class PostProcess
 				{
 					if ($retval === false)
 					{
-					@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
-					if (is_array($xmlarray))
-					{
-						$xmlarray = implode("\n",$xmlarray);
-						$xmlObj = @simplexml_load_string($xmlarray);
-						$arrXml = objectsIntoArray($xmlObj);
-						if (isset($arrXml["File"]["track"]))
+						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						if (is_array($xmlarray))
 						{
-							foreach ($arrXml["File"]["track"] as $track)
+							$xmlarray = implode("\n",$xmlarray);
+							$xmlObj = @simplexml_load_string($xmlarray);
+							$arrXml = objectsIntoArray($xmlObj);
+							if (isset($arrXml["File"]["track"]))
 							{
-								if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+								foreach ($arrXml["File"]["track"] as $track)
 								{
-									if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-										$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
-									else
-										$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-									$category = new Category();
-									$newcat = $category->determineCategory($newname, $catID["groupID"]);
+									if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+									{
+										if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+										else
+											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
+										$category = new Category();
+										$newcat = $category->determineCategory($newname, $catID["groupID"]);
 										if ($catID["relnamestatus"] != "3")
-									$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
-									$re = new ReleaseExtra();
-									$re->addFromXml($releaseID, $xmlarray);
-									$retval = true;
-										if($this->processAudioSample === false)
-									break;
+											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+										$re = new ReleaseExtra();
+										$re->addFromXml($releaseID, $xmlarray);
+										$retval = true;
+										break;
+									}
 								}
 							}
-					}
-				}
+						}
 					}
 					if($this->processAudioSample && $audval === false)
 					{
@@ -1426,6 +1417,7 @@ class PostProcess
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
+										break;
 									}
 								}
 							}
@@ -1435,15 +1427,15 @@ class PostProcess
 							{
 								@unlink($v);
 							}
-							if ($retval === true && $audval === true)
-								break;
 						}
 					}
+					if ($retval === true && $audval === true)
+						break;
 				}
 			}
 		}
 		if ($this->echooutput && $retval !== false)
-			echo "A";
+			echo "a";
 		return $retval;
 	}
 
@@ -1491,7 +1483,10 @@ class PostProcess
 
 								$ri->saveImage($releaseguid.'_thumb', $ramdrive.$file, $ri->imgSavePath, 800, 600);
 								if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
+								{
 									$retval = true;
+									break;
+								}
 							}
 						}
 
@@ -1548,18 +1543,17 @@ class PostProcess
 										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
 										$this->db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
 										$retval = true;
+										break;
 									}
 								}
 							}
-							if ($retval === true)
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogv') as $v)
 							{
-								// Clean up all files.
-								foreach(glob($ramdrive.'*.ogv') as $v)
-								{
-									@unlink($v);
-								}
-								break;
+								@unlink($v);
 							}
+							if ($retval === true)
+								break;
 						}
 					}
 				}
