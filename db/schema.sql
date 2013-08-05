@@ -93,6 +93,8 @@ CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
+CREATE INDEX ix_releases_searchname ON releases(`searchname`);
+CREATE INDEX ix_releases_groupid ON releases(`groupID`);
 CREATE INDEX ix_releases_relnamestatus on releases(`relnamestatus`);
 CREATE INDEX ix_releases_passwordstatus on releases(`passwordstatus`);
 CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
@@ -111,7 +113,8 @@ CREATE TABLE `releasefiles` (
   `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
   `createddate` DATETIME DEFAULT NULL,
   `passworded` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `name` (`name`, `releaseID`)
 ) ENGINE=MYISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_releasefiles_releaseID ON releasefiles (`releaseID`);
@@ -332,6 +335,7 @@ CREATE TABLE `binaryblacklist` (
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=100000 ;
 
 CREATE INDEX ix_binaryblacklist_groupname ON binaryblacklist(`groupname`);
+CREATE INDEX ix_binaryblacklist_status ON binaryblacklist(`status`);
 
 INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (1, 'alt.binaries.*','(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[\\)]?( \\-)?[ \\-\\.]((19|20)\\d\\d|(480|720|1080)(i|p)|3d|5\\.1|dts|ac3|truehd|(bd|dvd|hd|sat|vhs|web)\\.?rip|(bd.)?(h|x).?2?64|divx|xvid|bluray|svcd|board|custom|"|(d|h|p|s)d?v?tv|m?dvd(-|sc)?r|int(ernal)?|nzb|par2|\\b(((dc|ld|md|ml|dl|hr|se)[.])|(anime\\.)|(fs|ws)|dsr|pal|ntsc|iso|complete|cracked|ebook|extended|dirfix|festival|proper|game|limited|read.?nfo|real|rerip|repack|remastered|retail|samplefix|scan|screener|theatrical|uncut|unrated|incl|winall)\\b|doku|doc|dub|sub|\\(uncut\\))', 1, 1, 0, 'Blacklists non-english releases.');
 INSERT INTO `binaryblacklist` (`ID`, `groupname`, `regex`, `msgcol`, `optype`, `status`, `description`) VALUES (2, 'alt.binaries.*','[ -.](bl|cz|de|es|fr|ger|heb|hu|hun|ita|ko|kor|nl|pl|se)[ -.]((19|20)\\d\\d|(480|720|1080)(i|p)|(bd|dvd.?|sat|vhs)?rip?|(bd|dl)mux|( -.)?(dub|sub)(ed|bed)?|complete|convert|(d|h|p|s)d?tv|dirfix|docu|dual|dvbs|dvdscr|eng|(h|x).?2?64|int(ernal)?|pal|proper|repack|xbox)', 1, 1, 0, 'Blacklists non-english abbreviated releases.');
@@ -360,7 +364,8 @@ CREATE TABLE `tvrage`
 `previnfo` VARCHAR( 255 ) NULL,
 `nextdate` DATETIME NULL,
 `nextinfo` VARCHAR( 255 ) NULL,
-PRIMARY KEY  (`ID`)
+PRIMARY KEY  (`ID`),
+UNIQUE KEY `rageID` (`rageID`, `releasetitle`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_tvrage_rageID ON tvrage (`rageID`);
@@ -414,6 +419,7 @@ CREATE TABLE `movieinfo`
   UNIQUE KEY `imdbID` (`imdbID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+CREATE INDEX ix_movieinfo_title ON movieinfo(`title`);
 
 DROP TABLE IF EXISTS `animetitles`;
 CREATE TABLE `animetitles`
@@ -468,6 +474,8 @@ CREATE TABLE `groups` (
   PRIMARY KEY  (`ID`),
   KEY `active` (`active`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE INDEX ix_groups_id ON groups(`ID`);
 
 ALTER TABLE groups ADD UNIQUE (NAME);
 
@@ -671,6 +679,7 @@ CREATE TABLE `partrepair` (
   UNIQUE KEY `ix_partrepair_numberID_groupID` (`numberID`,`groupID`)
 ) ENGINE=MyISAM  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+CREATE INDEX ix_partrepair_attempts ON partrepair(`attempts`);
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE category
@@ -1044,7 +1053,7 @@ INSERT INTO `site`
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
-	('sqlpatch','103');
+	('sqlpatch','105');
 
 
 DROP TABLE IF EXISTS `logging`;

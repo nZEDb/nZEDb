@@ -31,7 +31,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.9
+ * @version    2.0
  */
 class SfvInfo extends ArchiveReader
 {
@@ -71,13 +71,10 @@ class SfvInfo extends ArchiveReader
 	 * Returns a list of file records with checksums from the source SFV file.
 	 *
 	 * @param   boolean  $basenames  don't include full file paths?
-	 * @return  array|boolean  list of file records, or false if none are available
+	 * @return  array  list of file records, empty if none are available
 	 */
 	public function getFileList($basenames=false)
 	{
-		if (empty($this->fileList))
-			return false;
-
 		if ($basenames) {
 			$ret = array();
 			foreach ($this->fileList as $item) {

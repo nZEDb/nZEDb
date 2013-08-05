@@ -333,18 +333,11 @@ class PostProcess
 		$rescount = count($result);
 		if ($rescount > 0)
 		{
-			/*if ($this->echooutput)
-			{
-				echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
-				if ($releaseToWork != '')
-					echo ", working 1 release: ";
-				else
-					$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-			}*/
 
 			if ($this->echooutput && $rescount > 1)
 			{
-				$this->doecho("\nFetch for: b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
+				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
+				$this->doecho("b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
 				$this->doecho("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo");
 			}
 
@@ -571,6 +564,8 @@ class PostProcess
 
 							if ($fetchedBinary !== false)
 							{
+								if ($this->echooutput)
+									echo "b";
 								$notinfinite++;
 								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel["ID"], $rel["nfostatus"], $rarFile["title"]);
 								if ($this->password)
@@ -589,6 +584,8 @@ class PostProcess
 							}
 							else
 							{
+								if ($this->echooutput)
+									echo "f";
 								$notinfinite = $notinfinite + 0.2;
 								$failed++;
 							}
@@ -707,6 +704,8 @@ class PostProcess
 					{
 						if (strlen($sampleBinary) > 100)
 						{
+							if ($this->echooutput)
+								echo "s";
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo)
@@ -810,6 +809,8 @@ class PostProcess
 						{
 							if (filesize($this->tmpPath."samplepicture.jpg") > 15 && exif_imagetype($this->tmpPath."samplepicture.jpg") !== false && $blnTookJPG === false)
 							{
+								if ($this->echooutput)
+									echo " j";
 								$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $this->tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 								if ($blnTookJPG !== false)
 									$this->db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel["ID"]));
@@ -851,6 +852,7 @@ class PostProcess
 				// If update_files is true, the add previously found files to releasefiles.
 				if ($update_files)
 				{
+					$nooldfiles = false;
 					$rf = new ReleaseFiles();
 					foreach ($oldreleasefiles as $file)
 					{
@@ -858,9 +860,17 @@ class PostProcess
 						$row = $this->db->queryOneRow($query);
 
 						if ($row === false)
+						{
+							$nooldfiles = true;
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
+						}
 					}
-					unset($rf);
+					if ($nooldfiles === true)
+					{
+						if ($this->echooutput)
+							echo "o";
+					}
+					unset($rf, $nooldfiles);
 				}
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
@@ -944,7 +954,11 @@ class PostProcess
 			}*/
 
 			$rf = new ReleaseFiles();
-			$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]);
+			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
+			{
+				if ($this->echooutput)
+					echo "^";
+			}
 
 			if ($tmpdata !== false)
 			{
@@ -958,6 +972,8 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -1002,6 +1018,8 @@ class PostProcess
 		$dataarray = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput)
+				echo "z";
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
@@ -1017,6 +1035,8 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -1071,6 +1091,8 @@ class PostProcess
 		$retval = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput)
+				echo "r";
 			foreach ($files as $file)
 			{
 				if (isset($file["name"]))
@@ -1146,6 +1168,8 @@ class PostProcess
 
 			if ($files[0]["compressed"] == 0 && $files[0]["name"] != $this->name)
 			{
+				if ($this->echooutput)
+					echo "r";
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
 				$this->adj = $this->sum = 0;
@@ -1314,10 +1338,13 @@ class PostProcess
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
 						$retval = true;
+						break;
 					}
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "m";
 		return $retval;
 	}
 
@@ -1342,35 +1369,34 @@ class PostProcess
 				{
 					if ($retval === false)
 					{
-					@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
-					if (is_array($xmlarray))
-					{
-						$xmlarray = implode("\n",$xmlarray);
-						$xmlObj = @simplexml_load_string($xmlarray);
-						$arrXml = objectsIntoArray($xmlObj);
-						if (isset($arrXml["File"]["track"]))
+						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						if (is_array($xmlarray))
 						{
-							foreach ($arrXml["File"]["track"] as $track)
+							$xmlarray = implode("\n",$xmlarray);
+							$xmlObj = @simplexml_load_string($xmlarray);
+							$arrXml = objectsIntoArray($xmlObj);
+							if (isset($arrXml["File"]["track"]))
 							{
-								if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+								foreach ($arrXml["File"]["track"] as $track)
 								{
-									if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-										$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
-									else
-										$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-									$category = new Category();
-									$newcat = $category->determineCategory($newname, $catID["groupID"]);
+									if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+									{
+										if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+										else
+											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
+										$category = new Category();
+										$newcat = $category->determineCategory($newname, $catID["groupID"]);
 										if ($catID["relnamestatus"] != "3")
-									$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
-									$re = new ReleaseExtra();
-									$re->addFromXml($releaseID, $xmlarray);
-									$retval = true;
-										if($this->processAudioSample === false)
-									break;
+											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+										$re = new ReleaseExtra();
+										$re->addFromXml($releaseID, $xmlarray);
+										$retval = true;
+										break;
+									}
 								}
 							}
-					}
-				}
+						}
 					}
 					if($this->processAudioSample && $audval === false)
 					{
@@ -1391,6 +1417,7 @@ class PostProcess
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
+										break;
 									}
 								}
 							}
@@ -1400,13 +1427,15 @@ class PostProcess
 							{
 								@unlink($v);
 							}
-							if ($retval === true && $audval === true)
-								break;
 						}
 					}
+					if ($retval === true && $audval === true)
+						break;
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "a";
 		return $retval;
 	}
 
@@ -1454,7 +1483,10 @@ class PostProcess
 
 								$ri->saveImage($releaseguid.'_thumb', $ramdrive.$file, $ri->imgSavePath, 800, 600);
 								if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
+								{
 									$retval = true;
+									break;
+								}
 							}
 						}
 
@@ -1469,6 +1501,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "S";
 		// If an image was made, return true, else return false.
 		return $retval;
 	}
@@ -1509,23 +1543,24 @@ class PostProcess
 										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
 										$this->db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
 										$retval = true;
+										break;
 									}
 								}
 							}
-							if ($retval === true)
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogv') as $v)
 							{
-								// Clean up all files.
-								foreach(glob($ramdrive.'*.ogv') as $v)
-								{
-									@unlink($v);
-								}
-								break;
+								@unlink($v);
 							}
+							if ($retval === true)
+								break;
 						}
 					}
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "V";
 		// If an video was made, return true, else return false.
 		return $retval;
 	}
@@ -1533,5 +1568,7 @@ class PostProcess
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
+		if ($this->echooutput)
+			echo "P";
 	}
 }

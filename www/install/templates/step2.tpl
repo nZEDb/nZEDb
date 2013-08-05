@@ -18,7 +18,7 @@
             <td><input type="text" name="sql_port" id="sql_port" value="{$cfg->DB_PORT}" /></td>
         </tr>
         <tr class="">
-            <td><label for="sql_socket">Socket Path:</label></td>
+            <td><label for="sql_socket">Socket Path(optional):</label></td>
             <td><input type="text" name="sql_socket" id="sql_socket" value="{$cfg->DB_SOCKET}" /></td>
         </tr>
 		<tr class="alt">

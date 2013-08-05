@@ -50,7 +50,7 @@ require_once dirname(__FILE__).'/pipereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    5.1
+ * @version    5.3
  */
 class RarInfo extends ArchiveReader
 {
@@ -373,7 +373,7 @@ class RarInfo extends ArchiveReader
 			$summary['comments'] = $this->comments;
 		}
 		$fileList = $this->getFileList($skipDirs);
-		$summary['file_count'] = $fileList ? count($fileList) : 0;
+		$summary['file_count'] = count($fileList);
 		if ($full) {
 			$summary['file_list'] = $fileList;
 		}
@@ -421,14 +421,10 @@ class RarInfo extends ArchiveReader
 	 * files in the archive.
 	 *
 	 * @param   boolean  $skipDirs  should directory entries be skipped?
-	 * @return  array|boolean  list of file records, or false if none are available
+	 * @return  array  list of file records, empty if none are available
 	 */
 	public function getFileList($skipDirs=false)
 	{
-		// Check that blocks are stored
-		if (empty($this->blocks)) {return false;}
-
-		// Build the file list
 		$ret = array();
 		foreach ($this->blocks as $block) {
 			if (($block['head_type'] == self::BLOCK_FILE || $block['head_type'] == self::R50_BLOCK_FILE)
@@ -692,6 +688,9 @@ class RarInfo extends ArchiveReader
 			$start = $this->start + $block['offset'] + $block['head_size'];
 			$end   = min($this->end, $start + $block['pack_size'] - 1);
 			$ret['range'] = "{$start}-{$end}";
+		}
+		if (!empty($block['file_crc'])) {
+			$ret['crc32'] = dechex($block['file_crc']);
 		}
 		if (!empty($block['split_after']) || !empty($block['split_before'])) {
 			$ret['split'] = 1;

@@ -157,7 +157,7 @@ class nameCleaning
 			else if (preg_match('/^((\[[A-Za-z]+\]\.)?[a-zA-Z0-9].+?([\^<> ]+give-me-all\.org[\^<> ]+|[\^<> ]+)DRM[\^<> ]+.+? - \()\d+\/\d+\)  ".+?" - .+? yEnc$/', $subject, $match))
 				return $match[1];
 			//(59/81) "1973 .Lee.Jun.Fan.DVD9.untouched.z46" - 7,29 GB - Lee.Jun.Fan.sein.Film.DVD9.untouched yEnc
-			else if (preg_match('/^\(\d+\/\d+\) ".+?" - \d+[,.]\d+ [mMkKgG][bB] - .+? yEnc)$/', $subject, $match))
+			else if (preg_match('/^\(\d+\/\d+\) ".+?" - \d+[,.]\d+ [mMkKgG]([bB] - .+?) yEnc$/', $subject, $match))
 				return $match[1];
 			//>>> www.lords-of-usenet.org <<<  "Der Schuh Des Manitu.par2" DVD5  [001/158] - 4,29 GB yEnc
 			else if (preg_match('/^(>>> www\.lords-of-usenet\.org <<<.+? ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") .+? \[\d+\/\d+\] - .+? yEnc$/', $subject, $match))
