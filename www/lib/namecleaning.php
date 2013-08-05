@@ -66,7 +66,7 @@ class nameCleaning
 			else if (preg_match('/^<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+(\/\d+\) ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
 				return $match[1];
 			//(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
-			else if (preg_match('/^\(\d+\/\d+\)(.+?www\.town\.ag.+?sponsored by www\.ssl-news\.info<+?.+? ".+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\(\d+\/\d+\)(.+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+?) ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//blazedazer_NAN000010 [140/245] - "blazedazer_NAN000010.part138.rar" yEnc
 			else if (preg_match('/^(blazedazer_.+? \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
@@ -808,8 +808,8 @@ class nameCleaning
 			else if (preg_match('/^<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+\/\d+\) "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
 				return $match[1];
 			//(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
-			else if (preg_match('/^\(\d+\/\d+\).+?www\.town\.ag.+?sponsored by www\.ssl-news\.info<+?.+? "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
-				return $match[1];
+			else if (preg_match('/^\(\d+\/\d+\).+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+? "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[2];
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
@@ -833,8 +833,8 @@ class nameCleaning
 			//<<<>>>kosova-shqip.eu<<< Deep SWG - 90s Club Megamix 2011 >>>kosova-shqip.eu<<<<<< - (2/4) - "Deep SWG - 90s Club Megamix 2011.rar" yEnc
 			else if (preg_match('/^<<<>>>kosova-shqip\.eu<<< (.+?) >>>kosova-shqip.eu<<<<<< - \(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
-			//<Have Fun> [02/39] - SpongeBoZZ yEnc
-			else if (preg_match('/^<Have Fun> \[\d+\/\d+\] - (.+?) yEnc$/', $subject, $match))
+			//<Have Fun> "Invader.German.2012.PAL.DVDR-MORTAL.nfo" SpongeBoZZ yEnc
+			else if (preg_match('/^<Have Fun> "(.+?)(\.part(\d+)?)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") SpongeBoZZ yEnc$/', $subject, $match))
 				return $match[1].$match[2];
 			else
 				return $this->releaseCleanerHelper($subject);

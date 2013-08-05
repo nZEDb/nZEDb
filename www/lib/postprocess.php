@@ -367,8 +367,6 @@ class PostProcess
 					}
 				}
 
-				if ($this->echooutput)
-					echo "\n".$rel['guid']."->";
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
