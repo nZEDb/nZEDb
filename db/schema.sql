@@ -361,6 +361,7 @@ CREATE TABLE `tvrage`
 `nextdate` DATETIME NULL,
 `nextinfo` VARCHAR( 255 ) NULL,
 PRIMARY KEY  (`ID`)
+UNIQUE KEY `rageID` (`rageID`,`releasetitle`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_tvrage_rageID ON tvrage (`rageID`);
