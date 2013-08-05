@@ -265,7 +265,7 @@ if (!empty($argc) || $page->isPostBack() )
 						}
 						else
 						{
-							$retval.= $Message."<br />";
+							$retval.= $message."<br />";
 						}
 					}
 					else
