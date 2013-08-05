@@ -571,6 +571,8 @@ class PostProcess
 
 							if ($fetchedBinary !== false)
 							{
+								if ($this->echooutput)
+									echo "b";
 								$notinfinite++;
 								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel["ID"], $rel["nfostatus"], $rarFile["title"]);
 								if ($this->password)
@@ -589,6 +591,8 @@ class PostProcess
 							}
 							else
 							{
+								if ($this->echooutput)
+									echo "f";
 								$notinfinite = $notinfinite + 0.2;
 								$failed++;
 							}
@@ -707,6 +711,8 @@ class PostProcess
 					{
 						if (strlen($sampleBinary) > 100)
 						{
+							if ($this->echooutput)
+								echo "s";
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo)
@@ -739,6 +745,8 @@ class PostProcess
 					{
 						if (strlen($mediaBinary ) > 100)
 						{
+							if ($this->echooutput)
+								echo "m";
 							$mediafile = $this->tmpPath.'media.avi';
 							$this->addmediafile($mediafile, $mediaBinary);
 							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
@@ -777,6 +785,8 @@ class PostProcess
 					{
 						if (strlen($audioBinary) > 100)
 						{
+							if ($this->echooutput)
+								echo "a";
 							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
 							$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel["guid"], $rel["ID"]);
 						}
@@ -810,6 +820,8 @@ class PostProcess
 						{
 							if (filesize($this->tmpPath."samplepicture.jpg") > 15 && exif_imagetype($this->tmpPath."samplepicture.jpg") !== false && $blnTookJPG === false)
 							{
+								if ($this->echooutput)
+									echo " j";
 								$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $this->tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 								if ($blnTookJPG !== false)
 									$this->db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel["ID"]));
@@ -851,6 +863,7 @@ class PostProcess
 				// If update_files is true, the add previously found files to releasefiles.
 				if ($update_files)
 				{
+					$nooldfiles = false;
 					$rf = new ReleaseFiles();
 					foreach ($oldreleasefiles as $file)
 					{
@@ -858,9 +871,17 @@ class PostProcess
 						$row = $this->db->queryOneRow($query);
 
 						if ($row === false)
+						{
+							$nooldfiles = true;
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
+						}
 					}
-					unset($rf);
+					if ($nooldfiles === true)
+					{
+						if ($this->echooutput)
+							echo "o";
+					}
+					unset($rf, $nooldfiles);
 				}
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
@@ -944,7 +965,11 @@ class PostProcess
 			}*/
 
 			$rf = new ReleaseFiles();
-			$rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]);
+			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
+			{
+				if ($this->echooutput)
+					echo "^";
+			}
 
 			if ($tmpdata !== false)
 			{
@@ -958,6 +983,8 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -1002,6 +1029,8 @@ class PostProcess
 		$dataarray = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput)
+				echo "z";
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
@@ -1017,6 +1046,8 @@ class PostProcess
 						$nfo->addReleaseNfo($relid);
 						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						if ($this->echooutput)
+							echo "n";
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -1071,6 +1102,8 @@ class PostProcess
 		$retval = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput)
+				echo "r";
 			foreach ($files as $file)
 			{
 				if (isset($file["name"]))
@@ -1146,6 +1179,8 @@ class PostProcess
 
 			if ($files[0]["compressed"] == 0 && $files[0]["name"] != $this->name)
 			{
+				if ($this->echooutput)
+					echo "r";
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
 				$this->adj = $this->sum = 0;
@@ -1318,6 +1353,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "M";
 		return $retval;
 	}
 
@@ -1407,6 +1444,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "A";
 		return $retval;
 	}
 
@@ -1469,6 +1508,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "S";
 		// If an image was made, return true, else return false.
 		return $retval;
 	}
@@ -1526,6 +1567,8 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "V";
 		// If an video was made, return true, else return false.
 		return $retval;
 	}
@@ -1533,5 +1576,7 @@ class PostProcess
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
+		if ($this->echooutput)
+			echo "P";
 	}
 }
