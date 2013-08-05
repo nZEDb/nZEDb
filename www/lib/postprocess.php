@@ -745,8 +745,6 @@ class PostProcess
 					{
 						if (strlen($mediaBinary ) > 100)
 						{
-							if ($this->echooutput)
-								echo "m";
 							$mediafile = $this->tmpPath.'media.avi';
 							$this->addmediafile($mediafile, $mediaBinary);
 							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
@@ -1354,7 +1352,7 @@ class PostProcess
 			}
 		}
 		if ($this->echooutput && $retval !== false)
-			echo "M";
+			echo "m";
 		return $retval;
 	}
 
