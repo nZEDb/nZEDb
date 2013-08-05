@@ -1,3 +1,5 @@
+08052013 -> wtf911   -> Attempt to fix duplicate tvrage entries when running threaded.
+08042013 -> sinfulj  -> Fix up some theme issues.	
 08042013 -> kevin    ->	Add more regex, fix up a few issues, reset collection hash again with these changes.
 08032013 -> kevin    ->	Update namecleaning, requires a reset of the collection hash.
 08022013 -> kevin    -> When many releases are added at the same time the hash for the guid can be the same, so add mt_rand while hashing.
