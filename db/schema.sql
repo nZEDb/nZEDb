@@ -113,7 +113,8 @@ CREATE TABLE `releasefiles` (
   `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
   `createddate` DATETIME DEFAULT NULL,
   `passworded` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `name` (`name`, `releaseID`)
 ) ENGINE=MYISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_releasefiles_releaseID ON releasefiles (`releaseID`);
@@ -1052,7 +1053,7 @@ INSERT INTO `site`
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
-	('sqlpatch','104');
+	('sqlpatch','105');
 
 
 DROP TABLE IF EXISTS `logging`;
