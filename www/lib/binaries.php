@@ -293,7 +293,7 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/.+yEnc \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
 					/*if ($this->debug)
