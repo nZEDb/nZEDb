@@ -1122,7 +1122,7 @@ class nameCleaning
 			if (preg_match('/^([a-zA-Z0-9]{5,}) ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+				return $this->releaseCleanerHelper($subject);
 		}
 		else if ($groupName === "alt.binaries.classic.tv.shows")
 		{
