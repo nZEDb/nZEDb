@@ -367,17 +367,44 @@ class nameCleaning
 		}
 		else if ($groupName === "alt.binaries.cd.image")
 		{
+			//[27849]-[altbinEFNet]-[Full]- "ppt-sogz.001" - 7,62 GB - yEnc
+			//[27925]--[altbinEFNet]-[Full]- "unl_p2rd.par2" yEnc
 			//[27608]-[FULL]-[#altbin@EFNet]-[007/136] "27608-1.005" yEnc
-			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
+			if (preg_match('/^(\[\d+\]-+\[.+?\]-\[.+?\]-)(\[\d+\/\d+\])? ".+?"( - \d+[,.]\d+ [mMkKgG][bB] -)? yEnc$/', $subject, $match))
 				return $match[1];
+			//[27930]-[FULL]-[altbinEFNet]-[ Ubersoldier.UNCUT.PATCH-RELOADED ]-[3/5] "rld-usuc.par2" yEnc
 			//[27607]-[#altbin@EFNet]-[Full]-[ Cars.Radiator.Springs.Adventure.READNFO-CRIME ] - [02/49] - "crm-crsa.par2" yEnc
-			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \] - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \] ?- ?\[)\d+\/\d+\] (- )?".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[27575]-[#altbin@EFNet]-[Full]-[CD1]-[01/58] - "CD1.par2" yEnc
+			//[27575]-[altbinEFNet]-[Full]-[CD3]-[00/59] - "dev-gk3c.sfv" yEnc
 			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(27608-1) [2/5] - "skidrow.nfo" yEnc
 			else if (preg_match('/^(\(\d+(-\d+)?\) \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[www.drlecter.tk]-[The_Night_of_the_Rabbit-FLT]-[01/67] "Dr.Lecter.nfo" - 5.61 GB - yEnc
+			else if (preg_match('/^(\[www\..+?\]-\[.+?\]-\[)\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
+				return $match[1];
+			//Slender.The.Arrival-WaLMaRT.PC - [01/26] - "wmt-stal.nfo" - yEnc
+			//The.Night.of.the.Rabbit-FLT - [03/66] - "flt-notr.r00" - FAiRLIGHT - 5,10 GB - yEnc
+			//Resident.Evil.Revelations-FLT - PC GAME - [03/97] - "Resident.Evil.Revelations-FLT.r00" - FAiRLIGHT - yEnc
+			//Afterfall.Insanity.Dirty.Arena.Edition-WaLMaRT - [MULTI6][PCDVD] - [02/45] - "wmt-adae.r00" - PC GAME - yEnc
+			else if (preg_match('/^([a-zA-Z0-9.-]{10,} -( PC GAME -| [A-Z0-9\[\]]+ -)? \[)\d+\/\d+\] - ".+?" - (.+? - (\d+[,.]\d+ [mMkKgG][bB] - )?)?yEnc$/', $subject, $match))
+				return $match[1];
+			//[01/46] - Crashtime 5 Undercover RELOADED - "rld-ct5u.nfo" - PC - yEnc
+			//[01/76] - Of.Orcs.And.Men-SKIDROW - "sr-oforcsandmen.nfo" - yEnc
+			//PC Game - [01/71] - MotoGP 13-RELOADED Including NoDVD Fix - "MotoGP 13-RELOADED Including NoDVD Fix nfo" - yEnc
+			else if (preg_match('/^(PC Game - )?\[\d+(\/\d+\] - .+? - ").+?" -( .+? -)? yEnc$/', $subject, $match))
+				return $match[2];
+			//Magrunner Dark Pulse FLT (FAiRLIGHT) - [02/70] - "flt-madp par2" - PC - yEnc
+			//MotoGP 13 RELOADED - [01/71] - "rld-motogp13 nfo" - PC - yEnc
+			//Dracula 4: Shadow of the Dragon FAiRLIGHT - [01/36] - "flt-drc4 nfo" - PC - yEnc
+			else if (preg_match('/^([A-Za-z0-9][a-zA-Z0-9: ]{8,}(-[a-zA-Z]+)?( \(.+?\)| - [\[A-Z0-9\]]+)? - \[)\d+\/\d+\] - ".+?" - .+? - yEnc$/', $subject, $match))
+				return $match[1];
+			//[NEW PC GAME] - Lumber.island-WaLMaRT - "wmt-lisd.nfo" - [01/18] - yEnc
+			//Trine.2.Complete.Story-SKIDROW - "sr-trine2completestory.nfo" - [01/78] - yEnc
+			else if (preg_match('/^((\[[A-Z ]+\] - )?[a-zA-Z0-9.-]{10,} - ").+?" - \[\d+\/\d+\] - yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -1141,6 +1168,44 @@ class nameCleaning
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
+		else if ($groupName === "alt.binaries.cd.image")
+		{
+			//[27930]-[FULL]-[altbinEFNet]-[ Ubersoldier.UNCUT.PATCH-RELOADED ]-[3/5] "rld-usuc.par2" yEnc
+			//[27607]-[#altbin@EFNet]-[Full]-[ Cars.Radiator.Springs.Adventure.READNFO-CRIME ] - [02/49] - "crm-crsa.par2" yEnc
+			//[27774]-[FULL]-[altbinEFNet]-[ DVD4 ]-[01/61] "unl-totwar.sfv" yEnc
+			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \] ?- ?\[\d+\/\d+\] (- )?"(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				if (strlen($match[1]) > 7)
+					return $match[1];
+				else
+					return $match[3];
+			}
+			//[www.drlecter.tk]-[The_Night_of_the_Rabbit-FLT]-[01/67] "Dr.Lecter.nfo" - 5.61 GB - yEnc
+			else if (preg_match('/^\[www\..+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
+				return $match[1];
+			//Slender.The.Arrival-WaLMaRT.PC - [01/26] - "wmt-stal.nfo" - yEnc
+			//The.Night.of.the.Rabbit-FLT - [03/66] - "flt-notr.r00" - FAiRLIGHT - 5,10 GB - yEnc
+			//Resident.Evil.Revelations-FLT - PC GAME - [03/97] - "Resident.Evil.Revelations-FLT.r00" - FAiRLIGHT - yEnc
+			//Afterfall.Insanity.Dirty.Arena.Edition-WaLMaRT - [MULTI6][PCDVD] - [02/45] - "wmt-adae.r00" - PC GAME - yEnc
+			else if (preg_match('/^([a-zA-Z0-9.-]{10,}) -( PC GAME -| [A-Z0-9\[\]]+ -)? \[\d+\/\d+\] - ".+?" - (.+? - (\d+[,.]\d+ [mMkKgG][bB] - )?)?yEnc$/', $subject, $match))
+				return $match[1];
+			//[01/46] - Crashtime 5 Undercover RELOADED - "rld-ct5u.nfo" - PC - yEnc
+			//[01/76] - Of.Orcs.And.Men-SKIDROW - "sr-oforcsandmen.nfo" - yEnc
+			//PC Game - [01/71] - MotoGP 13-RELOADED Including NoDVD Fix - "MotoGP 13-RELOADED Including NoDVD Fix nfo" - yEnc
+			else if (preg_match('/^(PC Game - )?\[\d+\/\d+\] - (.+?) - ".+?" -( .+? -)? yEnc$/', $subject, $match))
+				return $match[2];
+			//Magrunner Dark Pulse FLT (FAiRLIGHT) - [02/70] - "flt-madp par2" - PC - yEnc
+			//MotoGP 13 RELOADED - [01/71] - "rld-motogp13 nfo" - PC - yEnc
+			//Dracula 4: Shadow of the Dragon FAiRLIGHT - [01/36] - "flt-drc4 nfo" - PC - yEnc
+			else if (preg_match('/^([A-Za-z0-9][a-zA-Z0-9: ]{8,}(-[a-zA-Z]+)?)( \(.+?\)| - [\[A-Z0-9\]]+)? - \[\d+\/\d+\] - ".+?" - .+? - yEnc$/', $subject, $match))
+				return $match[1];
+			//[NEW PC GAME] - Lumber.island-WaLMaRT - "wmt-lisd.nfo" - [01/18] - yEnc
+			//Trine.2.Complete.Story-SKIDROW - "sr-trine2completestory.nfo" - [01/78] - yEnc
+			else if (preg_match('/^(\[[A-Z ]+\] - )?([a-zA-Z0-9.-]{10,}) - ".+?" - \[\d+\/\d+\] - yEnc$/', $subject, $match))
+				return $match[2];
+			else
+				return $this->releaseCleanerHelper($subject);
+		}
 		else if ($groupName === "alt.binaries.classic.tv.shows")
 		{
 			//Re: REQ: All In The Family - "Archie Bunkers Place 1x01 Archies New Partner part 1.nzb" yEnc
@@ -1509,9 +1574,9 @@ class nameCleaning
 			return $this->releaseCleanerHelper($subject);
 	}
 	
-	public function releaseCleanerHelper($subject)
+	public function releaseCleanerHelper($cleanerName)
 	{
-		//File and part count.
+		/*//File and part count.
 		$cleanerName = preg_replace('/(File ?)?(\(|\[|\s|Part)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
 		//Size.
 		$cleanerName = preg_replace('/\d+[.,]\d+ [KMG]B|\d+[KMG]B|\d+ bytes?|[- ]?\d+[.,]?\d+ [KMG]?B -( yEnc)?| \(\d+[.,]\d+ [KMG]B\) |\(\d+K\) yEnc|yEnc \d+k$/i', ' ', $cleanerName);
@@ -1520,9 +1585,9 @@ class nameCleaning
 		$cleanerName = preg_replace('/ [a-z0-9]+\.jpg |\.avi\.\d+ |((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=")|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par\s?2|zip|z{2}) |(\s|(\d{2,3})?-)\d{2,3}\.mp3 |\d{2,3}\.pdf |\.part\d{1,4}\./i', ' ', $cleanerName);
 		//Remove multiple chars.
 		$cleanerName = preg_replace('/-{2,}|~{2,}|`{2,}|!{2,}|@{2,}|#{2,}|\${2,}|%{2,}|\^{2,}|&{2,}|\*{2,}|\({2,}|\){2,}|_{2,}|\+{2,}|={2,}|\{{2,}|\}{2,}|\[{2,}|\]{2,}|\|{2,}|\\{2,}|:{2,}|;{2,}|"{2,}|\'{2,}|<{2,}|>{2,}|,{2,}|\.{2,}|\?{2,}|\/{2,}/i', ' ', $cleanerName);
-		//Remove some starting/ending stuff.
-		$cleanerName = preg_replace('/^(ATTN:|Re: ?|(As ?)?Req?(:| ?-)?)| yEnc$|^[^a-z0-9]+|[^a-z0-9"]+$/i', ' ', $cleanerName);
-		//Multiple spaces.
+		//Remove some starting stuff.
+		$cleanerName = preg_replace('/^(ATTN:|Re: ?|(As ?)?Req?(:| ?-)?)|^[^a-z0-9]+/i', ' ', $cleanerName);
+		//Multiple spaces.*/
 		$cleanerName = trim(preg_replace('/\s\s+/', ' ', $cleanerName));
 		
 		/*//Extensions.
