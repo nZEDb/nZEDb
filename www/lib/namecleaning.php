@@ -306,7 +306,8 @@ class nameCleaning
 			else if (preg_match('/^"([a-zA-Z0-9]+)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \(\d+\/\d+\) - yEnc$/', $subject, $match))
 				return $match[1];
 			//Lutheria - FC Twente TV Special - Ze wilde op voetbal [16/49] - "Lutheria - FC Twente TV Special - Ze wilde op voetbal.part16.rar" yEnc
-			else if (preg_match('/^([-a-zA-Z0-9 ]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			// panter - [001/101] - "74518-The Hunters (2011).par2" yEnc
+			else if (preg_match('/^[-a-zA-Z0-9 ]+ \[\d+(\/\d+\] - ".+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Pee Mak Prakanong - 2013 - Thailand - ENG Subs - "Pee Mak Prakanong.2013.part22.rar" yEnc
 			//P2H - "AMHZQHPHDUZZJSFZ.vol181+33.par2" yEnc

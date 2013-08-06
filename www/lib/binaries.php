@@ -244,7 +244,6 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				// This is usually a compression error, so lets try disabling compression.
-				echo "\n\nThe server has not returned any data, we will try disabling compression temporarily and retry.\n";
 				$nntp->doQuit();
 				unset($nntp, $msgs);
 				$nntp = new Nntp;
