@@ -82,20 +82,18 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <tbody>
 {foreach from=$results item=result}
 <tr>
-<td style="vertical-align: top"><center>
+<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 <div class="movcover">
-<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb thumbnail" rel="movie" >
+<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
 <img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.movie.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
 </a>
-<div class="relextra"><center>
-<span class="label label-inverse"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
-<span class="label label-inverse"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
-<span class="label label-inverse"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
-{*<span class="label label-inverse"><a target="blackhole" href="#" name="CP{$result.imdbID}" title="Send to Sabnzbd - NYI">Sab</a></span>
-<span class="label label-inverse"><a target="blackhole" href="#" name="CP{$result.imdbID}" title="Add to CouchPotato - NYI">CP</a></span>
-<span class="label label-inverse"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">CouchPotato</a></span>*}</center>
+<div class="relextra" style="margin-top:5px;">
+<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
+<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
+<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
+<span class="label"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>
 </div>
-</div></center>
+</div>
 </td>
 <td colspan="3" class="left">
 <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
@@ -136,11 +134,11 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <div class="pull-left">Posted {$mpostdate[$m@index]|timeago},  {$msize[$m@index]|fsize_format:"MB"},  <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a>,  <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a>, {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 </div>
 <div class="pull-right">
-{if $mnfo[$m@index] > 0}<span class="label"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span>{/if}
-{if $mpass[$m@index] == 1}<span class="label">Passworded</span>{elseif $mpass[$m@index] == 2}<span class="label">Potential Password</span>{/if}
-<span class="label"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span>
-{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<span class="label"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a></span>{/if}
-{if $minnerfiles[$m@index] > 0}<span class="label"><a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a></span>{/if}
+{if $mnfo[$m@index] > 0}<span class="label"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span> {/if}
+{if $mpass[$m@index] == 1}<span class="label">Passworded</span>{elseif $mpass[$m@index] == 2}<span class="label">Potential Password</span> {/if}
+<span class="label"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span> 
+{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<span class="label"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a></span> {/if}
+{if $minnerfiles[$m@index] > 0}<span class="label"><a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a></span> {/if}
 </div>
 </div>
 </td>
