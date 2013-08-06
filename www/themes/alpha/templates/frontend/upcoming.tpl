@@ -1,3 +1,13 @@
+{if {$site->adbrowse} != ''}
+<div class="row">
+    <div class="container" style="width:500px;">
+<fieldset class="adbanner div-center">
+<legend class="adbanner">Advertisement</legend>
+{$site->adbrowse}
+</fieldset></div></div>
+<br>
+{/if}
+
 <p>
 <a href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a> |
 <a href="{$smarty.const.WWW_TOP}/upcoming/2">In Theatre</a> |
@@ -6,11 +16,9 @@
 <a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
 
-{$site->adbrowse}
-
 {if $data|@count > 0}
 
-<table class="table data highlight icons" id="coverstable">
+<table class="table table-condensed data icons" id="coverstable">
 		<thead>
         <tr>
 			<th></th>
@@ -19,15 +27,15 @@
 </thead>
 <tbody>
 		{foreach $data as $result}
-		<tr class="{cycle values=",alt"}">
-			<td class="mid">
+		<tr>
+			<td style="width:150px;padding:10px;text-align:center;">
 				<div class="movcover">
-					<img class="shadow img-polaroid" src="{$result->posters->profile}" width="120" border="0" alt="{$result->title|escape:"htmlall"}" />
+					<img class="shadow img-thumbnail" src="{$result->posters->profile}" width="120" border="0" alt="{$result->title|escape:"htmlall"}">
 					<div class="movextra">
 					</div>
 				</div>
 			</td>
-			<td colspan="3" class="left">
+			<td colspan="3">
 				<h2><a href="{$smarty.const.WWW_TOP}/movies?title={$result->title}&year={$result->year}">{$result->title|escape:"htmlall"}</a> (<a class="title" title="{$result->year}" href="{$smarty.const.WWW_TOP}/movies?year={$result->year}">{$result->year}</a>) {if $result->ratings->critics_score > 0}{$result->ratings->critics_score}/100{/if}</h2>
 				{if $result->synopsis == ""}No synopsis. Check <a target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten Tomatoes</a> for more information.{else}{$result->synopsis}{/if}
 				{if $result->abridged_cast|@count > 0}
