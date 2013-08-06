@@ -1,6 +1,12 @@
-<div class="well">{$site->adbrowse}</div>
+{if {$site->addetail} != ''}
+<div class="row">
+    <div class="container" style="width:500px;">
+<fieldset class="adbanner div-center">
+<legend class="adbanner">Advertisement</legend>
+{$site->addetail}
+</fieldset></div></div>
 <br>
-
+{/if}
 
 <h2>{$release.searchname|escape:"htmlall"}</h2>
 <span class="label">{$release.category_name}</span> <span class="label">{$release.group_name}</span>
@@ -142,22 +148,22 @@
 </table>
 </div>
 <div class="col-4" style="text-align:center" >
-{if $rage && $release.rageID > 0 && $rage.imgdata != ""}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $rage && $release.rageID > 0 && $rage.imgdata != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
 
-{if $movie && $release.rageID < 0 && $movie.cover == 1}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $movie && $release.rageID < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
-{if $anidb && $release.anidbID > 0 && $anidb.picture != ""}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $anidb && $release.anidbID > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbID}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
 
-{if $con && $con.cover == 1}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*{$smarty.const.WWW_TOP}/covers/console/{$con.ID}.jpg" width="160" alt="{$con.title|escape:"htmlall"}*}
 
-{if $music && $music.cover == 1}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.ID}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}
 
-{if $book && $book.cover == 1}<img class="shadow img-responsive img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*{$smarty.const.WWW_TOP}/covers/book/{$book.ID}.jpg" width="160" alt="{$book.title|escape:"htmlall"}*}
 
 </div>

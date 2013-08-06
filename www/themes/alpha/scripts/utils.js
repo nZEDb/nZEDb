@@ -52,7 +52,7 @@ jQuery(function ($) {
         if ($(this).hasClass('icon_cart_clicked')) {
             return false;
         }
-        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var guid = $(this).parent().parent().attr('id').substring(4);
         $.post(SERVERROOT + "cart?add=" + guid, function (resp) {
             $(e.target).addClass('icon_cart_clicked').attr('title', 'Added to Cart');
 
@@ -70,7 +70,7 @@ jQuery(function ($) {
         if ($(this).hasClass('icon_sab_clicked')) {
             return false;
         }
-        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var guid = $(this).parent().parent().attr('id').substring(4);
         var nzburl = SERVERROOT + "sendtosab/" + guid;
 
         $.post(nzburl, function (resp) {

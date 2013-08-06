@@ -1,13 +1,12 @@
 {if {$site->adbrowse} != ''}
 <div class="row">
-    <div class="container">
+    <div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
 </fieldset></div></div>
-{/if}
 <br>
-
+{/if}
 {* {if $covergrp != ''}
 <div class="accordion" id="searchtoggle">
 <div class="accordion-group">
@@ -27,18 +26,19 @@
 
 <form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
-<div class="row" style="text-align: right;">
+<div class="row" style="text-align:right;margin-bottom:5px;">
 {if $covergrp != ''}View:
 <a href="{$smarty.const.WWW_TOP}/{$covergrp}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
 <span><i class="icon-align-justify"></i></span>{/if}
-&nbsp;&nbsp;
 {if $isadmin || $ismod}
+&nbsp;&nbsp;
 Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations_edit" value="Edit">
 <input type="button" class="btn btn-danger btn-mini nzb_multi_operations_delete" value="Delete">
 {/if}
-</div><br>
+</div>
 {include file='multi-operations.tpl'}
 </div>
+
 
 <table class="table table-striped table-bordered table-condensed table-hover data highlight icons" id="browsetable">
 <thead>
@@ -59,7 +59,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <td style="width:26px;text-align:center;white-space:nowrap;">
 <input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">
 </td>
-<td style="width:100%;text-align:left;white-space:nowrap;">
+<td style="width:100%;text-align:left;">
 <a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong></a>
 <div class="resextra">
 {if $result.passwordstatus == 2 or $result.passwordstatus == 1}
@@ -119,7 +119,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <br/>{$result.grabs} <i class="icon-download-alt"></i>
 </td>
 <td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
-<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"></a></div>
+<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"></a></div>
 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 <div class="icon icon_cart" title="Add to Cart"></div>
 </td>
@@ -137,6 +137,6 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 {else}
 <div class="alert alert-link" style="vertical-align:middle;">
 <button type="button" class="close" data-dismiss="alert">&times;</button>
-<div class="pull-left" style="margin-right: 15px;">{*<i class="icon-meh icon-3x"></i>*}<h2 style="margin-top: 7px;"> ಠ_ಠ </h2></div><p>There doesn't seem to be any releases found.</p>
+<div class="pull-left" style="margin-right: 15px;"><h2 style="margin-top: 7px;"> ಠ_ಠ </h2></div><p>There doesn't seem to be any releases found.</p>
 </div>
 {/if}

@@ -1,10 +1,13 @@
 
 {if {$site->adbrowse} != ''}
-<center><fieldset class="adbanner" style="width:500px;">
+<div class="row">
+    <div class="container" style="width:500px;">
+<fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
-</fieldset></center>{/if}
+</fieldset></div></div>
 <br>
+{/if}
 
 <div class="accordion" id="searchtoggle">
 <div class="accordion-group">
@@ -46,21 +49,18 @@
 
 <form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
-<div class="row">
-<div class="col-lg-12" style="text-align: right; padding-bottom: 4px;">
+<div class="row" style="text-align:right;margin-bottom:5px;">
 View:
 <span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 <a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
-&nbsp;&nbsp;
 {if $isadmin || $ismod}
-Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operations_edit" value="Edit">
-<input type="button" class="btn btn-danger btn-small nzb_multi_operations_delete" value="Delete">
+&nbsp;&nbsp;
+Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" value="Edit">
+<input type="button" class="btn btn-danger nzb_multi_operations_delete" value="Delete">
 {/if}
-</div>
 </div>
 {include file='multi-operations.tpl'}
 </div>
-</form>
 
 <table class="table table-striped table-hover table-condensed data" id="coverstable">
 <thead>
@@ -81,8 +81,8 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 <td style="width:150px;padding:10px;">
 <div class="movcover" style="padding-bottom:5px;">
 <center>
-<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
-<img class="img-responsive img-thumbnail" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoID}.jpg{else}no-cover.music.jpg{/if}" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}">
+<a class="title thumbnail" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
+<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoID}.jpg{else}no-cover.music.jpg{/if}" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}">
 </a>
 </center>
 </div>
@@ -129,7 +129,6 @@ Posted {$result.postdate|timeago}, {$result.size|fsize_format:"MB"}, <a title="V
 
 
 {if $results|@count > 10}
-<form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
 {include file='multi-operations.tpl'}
 </div>

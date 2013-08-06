@@ -22,6 +22,7 @@
 <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
 <!-- nZEDb extras -->
 {if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
+<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
 <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.qtip.css" rel="stylesheet" media="screen">
 
 <!-- Manual Adjustment for Search input fields on browse pages. -->
@@ -43,6 +44,7 @@ legend.adbanner {
 .dropdown-menu { border: 0; }
 .grey-box .row { margin-left:0;margin-right:0; }
 .div-center { float:none;margin-left:auto;margin-right:auto; }
+.rarfilelist img { display:inline;opacity:1;position:relative; }
 </style>
 
 <!-- Favicons WWWIIIPPP Larger Icons-->
@@ -103,7 +105,7 @@ legend.adbanner {
 </div>
 </div><!--/.col-lg- -->
 <div class="col-4 col-sm-4 col-lg-4">
-{$site->adhead}<!-- SITE AD BANNER -->
+{$site->adheader}<!-- SITE AD BANNER -->
 </div><!--/.col-lg- -->
 </div><!--/.row -->
 </div><!-- end header-wrapper -->
@@ -176,6 +178,7 @@ legend.adbanner {
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/holder.js"></script>
+<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.pnotify.min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.qtip.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.autosize-min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.colorbox-min.js"></script>

@@ -1,9 +1,12 @@
 {if {$site->adbrowse} != ''}
-<center><fieldset class="adbanner" style="width:500px;">
+<div class="row">
+    <div class="container">
+<fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
-</fieldset></center>{/if}
+</fieldset></div></div>
 <br>
+{/if}
 
 <div class="accordion" id="searchtoggle">
 <div class="accordion-group">
@@ -38,17 +41,15 @@
 
 <form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
-<div class="row">
-<div class="col-lg-12" style="text-align: right; padding-bottom: 4px;">
+<div class="row" style="text-align:right;margin-bottom:5px;">
 View:
 <span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 <a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
-&nbsp;&nbsp;
 {if $isadmin || $ismod}
-Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operations_edit" value="Edit">
-<input type="button" class="btn btn-danger btn-small nzb_multi_operations_delete" value="Delete">
+&nbsp;&nbsp;
+Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" value="Edit">
+<input type="button" class="btn btn-danger nzb_multi_operations_delete" value="Delete">
 {/if}
-</div>
 </div>
 {include file='multi-operations.tpl'}
 </div>
