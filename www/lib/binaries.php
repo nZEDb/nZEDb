@@ -335,18 +335,18 @@ class Binaries
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.*/
 							
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
 							}
-							*/
+							/**/
 							
-							//If you uncommented the above, comment following 2 lines..
-							/**/$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];/**/
+							/*If you uncommented the above, comment following 2 lines..
+							$colnames[] = $cleansubject;
+							$orignames[] = $msg['Subject'];*/
 						}
 					}
 
