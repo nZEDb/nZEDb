@@ -1,3 +1,5 @@
+08062013 -> sinfulj  -> Add a new theme (currently in alpha testing).
+08052013 -> kevin    -> Clean up postprocess.php, make sure there are no duplicate names for releaseID's in the releasefiles table, more regex in namecleaning.
 08052013 -> wtf911   -> Attempt to fix duplicate tvrage entries when running threaded.
 08042013 -> sinfulj  -> Fix up some theme issues.	
 08042013 -> kevin    ->	Add more regex, fix up a few issues, reset collection hash again with these changes.
