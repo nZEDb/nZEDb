@@ -1626,7 +1626,7 @@ class nameCleaning
 			return $this->releaseCleanerHelper($subject);
 	}
 	
-	public function releaseCleanerHelper($cleanerName)
+	public function releaseCleanerHelper($subject)
 	{
 		/*//File and part count.
 		$cleanerName = preg_replace('/(File ?)?(\(|\[|\s|Part)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
@@ -1640,6 +1640,7 @@ class nameCleaning
 		//Remove some starting stuff.
 		$cleanerName = preg_replace('/^(ATTN:|Re: ?|(As ?)?Req?(:| ?-)?)|^[^a-z0-9]+/i', ' ', $cleanerName);
 		//Multiple spaces.*/
+		$cleanerName = preg_replace('/(- )?yEnc$/', '', $subject);
 		$cleanerName = trim(preg_replace('/\s\s+/', ' ', $cleanerName));
 		
 		/*//Extensions.
