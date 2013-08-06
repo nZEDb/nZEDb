@@ -85,7 +85,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 <div class="movcover">
 <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
-<img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.movie.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
+<img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
 </a>
 <div class="relextra" style="margin-top:5px;">
 <span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
