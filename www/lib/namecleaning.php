@@ -365,6 +365,23 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.cd.image")
+		{
+			//[27608]-[FULL]-[#altbin@EFNet]-[007/136] "27608-1.005" yEnc
+			if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[27607]-[#altbin@EFNet]-[Full]-[ Cars.Radiator.Springs.Adventure.READNFO-CRIME ] - [02/49] - "crm-crsa.par2" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \] - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[27575]-[#altbin@EFNet]-[Full]-[CD1]-[01/58] - "CD1.par2" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//(27608-1) [2/5] - "skidrow.nfo" yEnc
+			else if (preg_match('/^(\(\d+(-\d+)?\) \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.classic.tv.shows")
 		{
 			//Re: REQ: All In The Family - "Archie Bunkers Place 1x01 Archies New Partner part 1.nzb" yEnc
@@ -1495,7 +1512,7 @@ class nameCleaning
 	public function releaseCleanerHelper($subject)
 	{
 		//File and part count.
-		$cleanerName = preg_replace('/(File )?(\(|\[|\s|Part)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
+		$cleanerName = preg_replace('/(File ?)?(\(|\[|\s|Part)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
 		//Size.
 		$cleanerName = preg_replace('/\d+[.,]\d+ [KMG]B|\d+[KMG]B|\d+ bytes?|[- ]?\d+[.,]?\d+ [KMG]?B -( yEnc)?| \(\d+[.,]\d+ [KMG]B\) |\(\d+K\) yEnc|yEnc \d+k$/i', ' ', $cleanerName);
 		//Extensions.
