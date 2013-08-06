@@ -359,7 +359,8 @@ class nameCleaning
 		else if ($groupName === "alt.binaries.cats")
 		{
 			//Pb7cvL3YiiOu06dsYPzEfpSvvTul[02/37] - "Fkq33mlTVyHHJLm0gJNU.par2" yEnc
-			if (preg_match('/^([a-zA-Z0-9]{10,}\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//DLJorQ37rMDvc [01/16] - "DLJorQ37rMDvc.part1.rar" yEnc
+			if (preg_match('/^([a-zA-Z0-9]{5,} ?\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -1113,6 +1114,15 @@ class nameCleaning
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
+		}
+		else if ($groupName === "alt.binaries.cats")
+		{
+			//Pb7cvL3YiiOu06dsYPzEfpSvvTul[02/37] - "Fkq33mlTVyHHJLm0gJNU.par2" yEnc
+			//DLJorQ37rMDvc [01/16] - "DLJorQ37rMDvc.part1.rar" yEnc
+			if (preg_match('/^([a-zA-Z0-9]{5,}) ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
 		else if ($groupName === "alt.binaries.classic.tv.shows")
 		{
