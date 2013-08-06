@@ -1,4 +1,12 @@
-<div class="well">{$site->adbrowse}</div>
+{if {$site->adbrowse} != ''}
+<div class="row">
+    <div class="container" style="width:500px;">
+<fieldset class="adbanner div-center">
+<legend class="adbanner">Advertisement</legend>
+{$site->adbrowse}
+</fieldset></div></div>
+<br>
+{/if}
 
 
 <h3 class="text-center"><a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a></h3>
