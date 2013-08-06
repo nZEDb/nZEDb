@@ -1,6 +1,6 @@
 {if {$site->adbrowse} != ''}
 <div class="row">
-    <div class="container">
+    <div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
@@ -54,18 +54,18 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {include file='multi-operations.tpl'}
 </div>
 
-<table class="table table-striped table-condensed table-hover data highlight icons" id="coverstable">
+<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 <thead>
 <tr>
-<th width="130"><input type="checkbox" class="nzb_check_all"></th>
-<th width="140" >title <a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-caret-up"></i></a></th>
-<th>platform <a title="Sort Descending" href="{$orderbyplatform_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><i class="icon-caret-up"></i></a></th>
-<th>genre <a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-caret-up"></i></a></th>
-<th>release date <a title="Sort Descending" href="{$orderbyreleasedate_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><i class="icon-caret-up"></i></a></th>
-<th>posted <a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-caret-up"></i></a></th>
-<th>size <a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-caret-up"></i></a></th>
-<th>files <a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-caret-up"></i></a></th>
-<th>stats <a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-caret-down"></i></a><a title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-caret-up"></i></a></th>
+<th><input type="checkbox" class="nzb_check_all"></th>
+<th>title <a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>platform <a title="Sort Descending" href="{$orderbyplatform_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>genre <a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>release date <a title="Sort Descending" href="{$orderbyreleasedate_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>posted <a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>size <a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>files <a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-chevron-up"></i></a></th>
+<th>stats <a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-chevron-down"></i></a><a title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-chevron-up"></i></a></th>
 </tr>
 </thead>
 
@@ -73,55 +73,49 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {foreach from=$results item=result}
 <tr>
 
-<td class="mid">
-<div class="relcover">
+<td style="width:150px;padding:10px;">
+<div class="movcover" style="padding-bottom:5px;">
 <center>
-<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
-<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.console.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}"></a>
+<a class="title thumbnail" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
+<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.console.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}"></a>
 </center>
 <div class="relextra">
 <center>
-{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo badge" rel="nfo">Nfo</a>{/if}
-{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a>{/if}
-<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
+{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="label modal_nfo" rel="nfo">Nfo</a>{/if}
+{if $result.url != ""}<a class="label" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a>{/if}
+<a class="label" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 </center>
 </div>
 </div>
 </td>
 
 <td colspan="8" class="left" id="guid{$result.guid}">
-<ul class="inline">
-<li><h4><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">{$result.title|escape:"htmlall"} - {$result.platform|escape:"htmlall"}</a></h4></li>
-<li style="vertical-align:text-bottom;"><div class="icon"><input type="checkbox" class="nzb_check" value="{$result.guid}"></div></li>
-<li style="vertical-align:text-bottom;"><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"><img src="{$smarty.const.WWW_TOP}/templates/baffi/images/icons/nzbup.png"></a></div></li>
-<li style="vertical-align:text-bottom;"><div><a href="#" class="icon icon_cart" title="Add to Cart"><img src="{$smarty.const.WWW_TOP}/templates/baffi/images/icons/cartup.png"></a></div></li>
-<li style="vertical-align:text-bottom;">{if $sabintegrated}<div><a href="#" class="icon icon_sab" title="Send to my Sabnzbd"><img src="{$smarty.const.WWW_TOP}/templates/baffi/images/icons/sabup.png"></a></div>{/if}</li>
-</ul>
+<h4><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">{$result.title|escape:"htmlall"} - {$result.platform|escape:"htmlall"}</a></h4>
 
 {if $result.genre != ""}<b>Genre:</b> {$result.genre}<br>{/if}
 {if $result.esrb != ""}<b>Rating:</b> {$result.esrb}<br>{/if}
 {if $result.publisher != ""}<b>Publisher:</b> {$result.publisher}<br>{/if}
 {if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br>{/if}
 {if $result.review != ""}<b>Review:</b> {$result.review|escape:'htmlall'}<br>{/if}
-<br>
-
-<div class="relextra">
-<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn btn btn-mini btn-info" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
+<div class="container">
+<a class="label label-info" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
 {if $isadmin || $ismod}
-<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
-<a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+<a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+<a class="label confirm_action label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 {/if}
-<br>
-<ul class="inline">
-<li><b>Info:</b></li>
-<li>Posted {$result.postdate|timeago}</li>
-<li>{$result.size|fsize_format:"MB"}</li>
-<li><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="icon-file"></i></li>
-<li><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments}</a> <i class="icon-comments-alt"></i></li>
-<li>{$result.grabs} <i class="icon-download-alt"></i></li>
-</ul>
 </div>
-
+<hr>
+<div class="relextra">
+<b>{$result.searchname|escape:"htmlall"}</b>
+<div class="container">
+<div class="icon"><input type="checkbox" class="nzb_check" value="{$result.guid}" /></div>
+<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+<div class="icon icon_cart" title="Add to Cart"></div>
+{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+&nbsp;&nbsp;&nbsp;&nbsp;
+Posted {$result.postdate|timeago}, {$result.size|fsize_format:"MB"}, <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="icon-file"></i>, <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments}</a> <i class="icon-comments-alt"></i>, {$result.grabs} <i class="icon-download-alt"></i>
+</div>
+</div>
 </td>
 </tr>
 {/foreach}
