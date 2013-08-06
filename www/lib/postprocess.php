@@ -338,7 +338,7 @@ class PostProcess
 			{
 				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
 				$this->doecho("Downloaded: b = yEnc article, f= failed");
-				$this->doecho("Added: s = sample image, j = jpeg image, a = audio sample, v = video sample");
+				$this->doecho("Added: s = sample image, j = jpeg image, a = audio media and/or sample, v = video sample");
 				$this->doecho("Added: n = nfo, ^ = new releasefiles, o = old releasefiles");
 				$this->doecho("Processed: z = zip file, r = rar file");
 			}
