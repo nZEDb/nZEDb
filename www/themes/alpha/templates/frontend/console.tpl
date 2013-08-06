@@ -76,7 +76,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <td style="width:150px;padding:10px;text-align:center;">
 <div class="movcover" style="padding-bottom:5px;">
 <a class="title thumbnail" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
-<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.console.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}"></a>
+<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}"></a>
 <div class="relextra" style="margin-top:5px;">
 {if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="label modal_nfo" rel="nfo">Nfo</a> {/if}
 {if $result.url != ""}<a class="label" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a> {/if}
