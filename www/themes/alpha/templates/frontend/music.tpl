@@ -81,7 +81,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <td style="width:150px;padding:10px;text-align:center;">
 <div class="movcover">
 <a class="title thumbnail" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
-<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoID}.jpg{else}no-cover.music.jpg{/if}" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}">
+<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoID}.jpg{else}no-cover.jpg{/if}" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}">
 </a>
 </div>
 <div class="relextra" style="margin-top:5px;">
