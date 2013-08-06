@@ -365,6 +365,16 @@ class PostProcess
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
+				if ($processSample === false)
+					$blnTookSample = true;
+				if ($processVideo === false)
+					$blnTookVideo = true;
+				if ($processMediainfo === false)
+					$blnTookMediainfo = true;
+				if ($processAudioinfo === false)
+					$blnTookAudioinfo = true;
+				if ($processJPGSample === false)
+					$blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
 
 				/*if ($this->echooutput && $threads > 0)
@@ -414,7 +424,7 @@ class PostProcess
 						$notmatched = true;
 
 					// Look for a sample.
-					if ($processSample && !preg_match("/\.(jpg|jpeg)/i", $nzbcontents["title"]) && preg_match("/sample/i", $nzbcontents["title"]))
+					if ($processSample === true && !preg_match("/\.(jpg|jpeg)/i", $nzbcontents["title"]) && preg_match("/sample/i", $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($samplemsgid))
 						{
@@ -430,7 +440,7 @@ class PostProcess
 					}
 
 					// Look for a media file.
-					elseif ($processMediainfo && !preg_match("/sample/i", $nzbcontents["title"]) && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i', $nzbcontents["title"]))
+					elseif ($processMediainfo === true && !preg_match("/sample/i", $nzbcontents["title"]) && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i', $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($mediamsgid))
 						{
@@ -482,7 +492,7 @@ class PostProcess
 				}
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
-				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
+				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample === true || $processMediainfo === true || $processAudioinfo === true))
 				{
 					$this->sum = $this->size = $this->segsize = $this->adj = $notinfinite = $failed = 0;
 					$this->name = '';
@@ -649,13 +659,13 @@ class PostProcess
 						{
 							if (is_file($this->tmpPath.$file))
 							{
-								if ($processAudioinfo && $blnTookAudioinfo === false && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
+								if ($processAudioinfo === true && $blnTookAudioinfo === false && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
 								{
 									rename($this->tmpPath.$name[0], $this->tmpPath."audiofile.".$name[2]);
 									$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel["guid"], $rel["ID"]);
 									@unlink($this->tmpPath."sample.".$name[2]);
 								}
-								if ($processJPGSample && $blnTookJPG === false && preg_match("/\.(jpg|jpeg)$/",$file))
+								if ($processJPGSample === true && $blnTookJPG === false && preg_match("/\.(jpg|jpeg)$/",$file))
 								{
 									if (filesize($this->tmpPath.$file) < 15)
 										continue;
@@ -666,7 +676,7 @@ class PostProcess
 										$this->db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel["ID"]));
 
 								}
-								if (($processSample || $processVideo || $processMediainfo) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
+								if (($processSample === true || $processVideo === true || $processMediainfo === true) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
 								{
 									rename($this->tmpPath.$name[0], $this->tmpPath."sample.avi");
 									if ($processSample && $blnTookSample === false)
@@ -686,7 +696,7 @@ class PostProcess
 				}
 
 				// Download and process sample image.
-				if(($processSample || $processVideo) && !empty($samplemsgid) && ($blnTookSample === false || $blnTookVideo === false))
+				if(($processSample === true || $processVideo === true) && !empty($samplemsgid) && ($blnTookSample === false || $blnTookVideo === false))
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
@@ -710,7 +720,7 @@ class PostProcess
 						{
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
 							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							if ($processVideo)
+							if ($processVideo === true)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 						}
 						unset($sampleBinary);
@@ -718,7 +728,7 @@ class PostProcess
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
-				if (($processMediainfo || $processSample || $processVideo) && !empty($mediamsgid) && ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false))
+				if (($processMediainfo === true || $processSample === true || $processVideo === true) && !empty($mediamsgid) && ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false))
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
@@ -738,15 +748,15 @@ class PostProcess
 					}
 					if ($mediaBinary !== false)
 					{
-						if (strlen($mediaBinary ) > 100)
+						if (strlen($mediaBinary) > 100)
 						{
 							$mediafile = $this->tmpPath.'media.avi';
 							$this->addmediafile($mediafile, $mediaBinary);
 							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
 
-							if ($processSample && $blnTookSample === false)
+							if ($processSample === true && $blnTookSample === false)
 								$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							if ($processVideo && $blnTookVideo === false)
+							if ($processVideo === true && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 
 							unset($mediafile);
@@ -756,7 +766,7 @@ class PostProcess
 				}
 
 				// Download audio file, use mediainfo to try to get the artist / album.
-				if($processAudioinfo && !empty($audiomsgid) && $blnTookAudioinfo === false)
+				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
@@ -786,7 +796,7 @@ class PostProcess
 				}
 
 				// Download JPG file.
-				if($processJPGSample && !empty($jpgmsgid) && $blnTookJPG === false)
+				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
@@ -828,7 +838,7 @@ class PostProcess
 
 				// Set up release values.
 				$hpsql = '';
-				if ($blnTookSample)
+				if ($blnTookSample !== false)
 					$this->updateReleaseHasPreview($rel["guid"]);
 				else
 					$hpsql = ', haspreview = 0';
