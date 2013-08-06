@@ -63,31 +63,31 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong></a>
 <div class="resextra">
 {if $result.passwordstatus == 2 or $result.passwordstatus == 1}
-<span class="mediainfo label" title="{$result.guid}"><i class="icon-lock"></i></span>{/if}
+<span class="label mediainfo" title="{$result.guid}"><i class="icon-lock"></i></span> {/if}
 {if $result.videostatus == 1}
-<a class="model_prev label" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a>{/if}
+<span class="label"><a class="model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a></span> {/if}
 {if $result.nfoID > 0}
-<a class="modal_nfo label" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo"><i class="icon-info-sign"></i></a>{/if}
+<span class="label"><a class="modal_nfo" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo"><i class="icon-info-sign"></i></a></span> {/if}
 {if $result.imdbID > 0}
-<a class="modal_imdb label" href="#" name="name{$result.imdbID}" title="View movie info" rel="movie" >Cover</a>{/if}
+<span class="label"><a class="modal_imdb" href="#" name="name{$result.imdbID}" title="View movie info" rel="movie" >Cover</a></span> {/if}
 {if $result.musicinfoID > 0}
-<a class="modal_music label" href="#" name="name{$result.musicinfoID}" title="View music info" rel="music" >Cover</a>{/if}
+<span class="label"><a class="modal_music" href="#" name="name{$result.musicinfoID}" title="View music info" rel="music" >Cover</a></span> {/if}
 {if $result.consoleinfoID > 0}
-<a class="modal_console label" href="#" name="name{$result.consoleinfoID}" title="View console info" rel="console" >Cover</a>{/if}
+<span class="label"><a class="modal_console" href="#" name="name{$result.consoleinfoID}" title="View console info" rel="console" >Cover</a></span> {/if}
 {if $result.haspreview == 1 && $userdata.canpreview == 1}
-<a class="modal_prev label" href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" rel="preview">Preview</a>{/if}
+<span class="label"><a class="modal_prev" href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" rel="preview">Preview</a></span> {/if}
 {if $result.jpgstatus == 1 && $userdata.canpreview == 1}
-<a class="modal_prev label" href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" rel="preview">Sample</a>{/if}
+<span class="label"><a class="modal_prev" href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" rel="preview">Sample</a></span> {/if}
 {if $result.rageID > 0}
-<a class="label" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a>{/if}
+<span class="label"><a href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a></span> {/if}
 {if $result.anidbID > 0}
-<a class="label" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a>{/if}
+<span class="label"><a href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a></span> {/if}
 {if $result.tvairdate != ""}
-<span class="seriesinfo label" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
+<span class="label seriesinfo" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
 {if $result.reID > 0}
-<span class="mediainfo label" title="{$result.guid}">Media</span>{/if}
+<span class="label mediainfo" title="{$result.guid}">Media</span> {/if}
 {if $result.group_name != ""}
-<a class="label" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>{/if}
+<span class="label"><a href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a></span> {/if}
 </div>
 </td>
 <td style="width:auto;text-align:center;white-space:nowrap;">
@@ -100,7 +100,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 {$result.size|fsize_format:"MB"}
 {if $result.completion > 0}<br>
 {if $result.completion < 100}
-<span class="label label-important">{$result.completion}%</span>
+<span class="label label-warning">{$result.completion}%</span>
 {else}
 <span class="label label-success">{$result.completion}%</span>
 {/if}

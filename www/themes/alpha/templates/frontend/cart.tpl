@@ -1,9 +1,6 @@
-<p>
-<i class="icon-rss-sign icon-2x" style="color:orange;"></i> Download your cart as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.
-</p>
-
 {if $results|@count > 0}
 <div class="row">
+	<div class="pull-left"><i class="icon-rss-sign icon-2x" style="color:orange;"></i> Download your cart as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.</div>
 		<form id="nzb_multi_operations_form" action="get">
 			<div class="nzb_multi_operations pull-right">
 					With Selected: <input type="button" class="btn btn-danger btn-small nzb_multi_operations_cartdelete" value="Delete">
@@ -28,7 +25,7 @@
 				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
 			<td style="text-align:center;" class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-			<td style="text-align:center;"><a class="label label-important" title="Delete from your cart" href="?delete={$result.ID}">delete</a></td>
+			<td style="text-align:center;"><a class="label label-danger" title="Delete from your cart" href="?delete={$result.ID}">delete</a></td>
 		</tr>
 	{/foreach}
 </tbody>
