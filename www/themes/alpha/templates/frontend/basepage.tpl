@@ -45,6 +45,9 @@ legend.adbanner {
 .grey-box .row { margin-left:0;margin-right:0; }
 .div-center { float:none;margin-left:auto;margin-right:auto; }
 .rarfilelist img { display:inline;opacity:1;position:relative; }
+.label { font-size:100%;padding:.04em .3em; }
+hr { margin-top:5px;margin-bottom:5px; }
+.row { margin-left:0;margin-right:0; }
 </style>
 
 <!-- Favicons WWWIIIPPP Larger Icons-->

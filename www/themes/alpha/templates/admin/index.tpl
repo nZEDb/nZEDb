@@ -5,6 +5,7 @@
 	Welcome to nZEDb. In this area you will be able to configure many aspects of your site.<br>
 	If this is your first time here, you need to start the scripts which will fill nZEDb.
 </p>
+<h4 style="color:red;">This theme is a work in progress and being updated daily.<br> Cosmetic changes like font color and sizes will be adjust along the way, as well as correcting and fine-tuning the layout of various pages.<br> The admin area will come second.</h4>
 
 	<ol style="list-style-type:decimal; line-height: 180%;">
 	<li style="margin-bottom: 15px;">Configure your <a href="{$smarty.const.WWW_TOP}/site-edit.php">site options</a>. The defaults will probably work fine.</li>
