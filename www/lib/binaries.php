@@ -244,7 +244,6 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				// This is usually a compression error, so lets try disabling compression.
-				echo "\n\nThe server has not returned any data, we will try disabling compression temporarily and retry.\n";
 				$nntp->doQuit();
 				unset($nntp, $msgs);
 				$nntp = new Nntp;
@@ -276,9 +275,9 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		if (is_array($msgs))
 		{
-			// For looking at the difference between $subject and $cleansubject.
+			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
 			if ($this->debug)
-				$colnames = $orignames = array();
+				$colnames = $orignames = $notyenc = array();
 			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
@@ -295,6 +294,13 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
+					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
+					/*if ($this->debug)
+					{
+						preg_match('/(.+)\(\d+\/\d+\)$/i', $msg['Subject'], $ny);
+						if(!in_array($ny[1], $notyenc))
+							$notyenc[] = $ny[1];
+					}*/
 					$msgsignored[] = $msg['Number'];
 					continue;
 				}
@@ -329,18 +335,18 @@ class Binaries
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.*/
 							
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
 							}
-							*/
+							/**/
 							
-							//If you uncommented the above, comment following 2 lines..
-							/**/$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];/**/
+							/*If you uncommented the above, comment following 2 lines..
+							$colnames[] = $cleansubject;
+							$orignames[] = $msg['Subject'];*/
 						}
 					}
 
@@ -368,6 +374,9 @@ class Binaries
 				}
 			}
 
+			// Uncomment this to see which articles are not yEnc.
+			/*if ($this->debug && count($notyenc) > 1)
+				print_r($notyenc);*/
 			// For looking at the difference between $subject and $cleansubject.
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
