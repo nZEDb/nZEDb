@@ -1330,15 +1330,23 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9].+? \d{4}-\d\d-\d\d)( \[.+?\])? \(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//The.Love.Boat.S05E08 [01/31] - "The.Love.Boat.S05E08.Chefs.Special.Kleinschmidt.New.Beginnings.par2" yEnc
-			else if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9.-]+S\d+E\d+ \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
-				return $match[1];
+			//Barney.Miller.S08E05.Stress.Analyzer [01/18] - "Barney.Miller.S08E05.Stress.Analyzer.VHSTVRip.DivX.par2" yEnc
+			else if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9.-]+S\d+E\d+([a-zA-Z0-9.]+)? \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[2];
 			//"Batman - S1E13-The Thirteenth Hat.par2" yEnc
 			//"The Munsters - 1x01 Munster Masquerade.part.par" HQ DVDRip[02/16] yEnc
-			else if (preg_match('/^"(.+?)(\.avi|\.mkv)?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")( HQ DVDRip\[\d+\/\d+\])? yEnc$/', $subject, $match))
-				return $match[1];
-			//Re: Outside Edge series 1 - [01/20] - "Outside Edge S01.nfo" yEnc
-			else if (preg_match('/^(Re: )?[a-zA-Z0-9]+ .+? series \d+ - \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^(Re: )?"(.+?)(\.avi|\.mkv)?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")( HQ DVDRip\[\d+\/\d+\])? yEnc$/', $subject, $match))
 				return $match[2];
+			//Re: Outside Edge series 1 - [01/20] - "Outside Edge S01.nfo" yEnc
+			//Green Acres Season 1 [01/87] - "Green Acres Season 1.par2" yEnc
+			//MASH Season 1 - [01/54] - "MASH - Season 01.par2" yEnc
+			else if (preg_match('/^(Re: )?[a-zA-Z0-9]+.+? (series|Season) \d+ (- )?\[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[4];
+			//Rich.Little.Show - 1x12 - Season.and.Series.Finale - [02/33] - "Rich Little Show - 1x12 - Bill Bixby.avi.002" yEnc
+			//Rich.Little.Show - 1x11 - [01/33] - "Rich Little Show - 1x11 - Jessica Walter.avi.001" yEnc
+			//REQ - Banacek - 2x07 - [02/61] - "Banacek - 2x07 - Fly Me - If You Can Find Me.avi.002" yEnc
+			else if (preg_match('/^(REQ - )?[A-Z0-9a-z][A-Z0-9a-z.]+ - \d+x\d+ (- [A-Z0-9a-z.]+ )?- \[\d+\/\d+\] - "(.+?)(\.avi|\.mkv)?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[3];
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
