@@ -1061,7 +1061,7 @@ class PostProcess
 					{
 						$zip->setExternalClient($this->site->zippath);
 						$zipdata = $zip->extractFile($file["name"]);
-						if ($zipdata !== false);
+						if ($zipdata !== false && strlen($zipdata) > 5);
 						{
 							$nzbcontents = new NZBcontents($this->echooutput);
 							if ($nzbcontents->isNFO($zipdata) && $relid > 0)
