@@ -479,6 +479,9 @@ class nameCleaning
 			//"Batman - S1E13-The Thirteenth Hat.par2" yEnc
 			else if (preg_match('/^(".+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
+			//Re: Outside Edge series 1 - [01/20] - "Outside Edge S01.nfo" yEnc
+			else if (preg_match('/^(Re: )?([a-zA-Z0-9]+ .+? series \d+ - \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[2];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
@@ -1333,6 +1336,9 @@ class nameCleaning
 			//"The Munsters - 1x01 Munster Masquerade.part.par" HQ DVDRip[02/16] yEnc
 			else if (preg_match('/^"(.+?)(\.avi|\.mkv)?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")( HQ DVDRip\[\d+\/\d+\])? yEnc$/', $subject, $match))
 				return $match[1];
+			//Re: Outside Edge series 1 - [01/20] - "Outside Edge S01.nfo" yEnc
+			else if (preg_match('/^(Re: )?[a-zA-Z0-9]+ .+? series \d+ - \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[2];
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
