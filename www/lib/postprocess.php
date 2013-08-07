@@ -341,6 +341,7 @@ class PostProcess
 				$this->doecho("Added: s = sample image, j = jpeg image, a = audio media and/or sample, v = video sample");
 				$this->doecho("Added: m = mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
 				$this->doecho("Processed: z = zip file, r = rar file");
+				$this->doecho("Seperator(to show when it moved to the next release): |");
 			}
 
 			// Loop through the releases.
@@ -904,6 +905,7 @@ class PostProcess
 				}
 
 				@rmdir($this->tmpPath);
+				echo "|";
 			}
 			if ($this->echooutput)
 				echo "\n";
