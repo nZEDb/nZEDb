@@ -333,7 +333,6 @@ class PostProcess
 		$rescount = $startCount = count($result);
 		if ($rescount > 0)
 		{
-
 			if ($this->echooutput && $rescount > 1)
 			{
 				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
@@ -379,14 +378,9 @@ class PostProcess
 					$blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
 
-				/*if ($this->echooutput && $threads > 0)
-					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-				else if ($this->echooutput)
-					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));*/
-
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
-				$nzbcontents = new NZBcontents(true);
-				$nzb = new NZB(true);
+				$nzbcontents = new NZBcontents($this->echooutput);
+				$nzb = new NZB($this->echooutput);
 				$groups = new Groups();
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
@@ -973,7 +967,7 @@ class PostProcess
 				// Extract a NFO from the rar.
 				if ($v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
-					$nzbcontents = new NZBcontents(true);
+					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($tmpdata))
 					{
 						$nfo = new Nfo($this->echooutput);
@@ -1036,7 +1030,7 @@ class PostProcess
 				// Extract a NFO from the rar.
 				if ($nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
-					$nzbcontents = new NZBcontents(true);
+					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
 					{
 						$this->debug("adding zip nfo");
