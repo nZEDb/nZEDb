@@ -27,8 +27,8 @@
 <form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
 <div class="row" style="text-align:right;margin-bottom:5px;">
-{if $covergrp != ''}View:
-<a href="{$smarty.const.WWW_TOP}/{$covergrp}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
+{if $covgroup != ''}View:
+<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
 <span><i class="icon-align-justify"></i></span>{/if}
 {if $isadmin || $ismod}
 &nbsp;&nbsp;
@@ -62,8 +62,10 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <td style="width:100%;text-align:left;">
 <a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong></a>
 <div class="resextra">
-{if $result.passwordstatus == 2 or $result.passwordstatus == 1}
-<span class="label mediainfo" title="{$result.guid}"><i class="icon-lock"></i></span> {/if}
+{if $result.passwordstatus == 1}<span class="label" title="Probably Passworded"><i class="icon-unlock-alt"></i></span> 
+{elseif $result.passwordstatus == 2}<span class="label" title="Broken Post"><i class="icon-unlink"></i></span> 
+{elseif $result.passwordstatus == 10}<span class="label" title="Passworded Archive"><i class="icon-lock"></i></span> {/if}
+{release_flag($result.searchname, browse)}
 {if $result.videostatus == 1}
 <span class="label"><a class="model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a></span> {/if}
 {if $result.nfoID > 0}
@@ -110,7 +112,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="icon-file"></i>
 {if $result.rarinnerfilecount > 0}
 <div class="rarfilelist">
-<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip">
+<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}">
 </div>
 {/if}
 </td>
