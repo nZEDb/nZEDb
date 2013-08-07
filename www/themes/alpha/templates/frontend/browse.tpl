@@ -27,8 +27,8 @@
 <form id="nzb_multi_operations_form" action="get">
 <div class="nzb_multi_operations">
 <div class="row" style="text-align:right;margin-bottom:5px;">
-{if $covergrp != ''}View:
-<a href="{$smarty.const.WWW_TOP}/{$covergrp}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
+{if $covgroup != ''}View:
+<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
 <span><i class="icon-align-justify"></i></span>{/if}
 {if $isadmin || $ismod}
 &nbsp;&nbsp;
