@@ -154,51 +154,30 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 </thead>
 <tbody>
 {foreach from=$results item=result}
-<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
+<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
 <td class="check" style="text-align:center;"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}"></td>
-
 <td class="item" style="width:100%;text-align:left;white-space:nowrap;">
 <label for="chk{$result.guid|substr:0:7}">
 <a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>
 </label>
 
-{if $result.passwordstatus == 1}
-<img title="Probably Passworded" src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/lock2.png" alt="Probably Passworded">
-{elseif $result.passwordstatus == 2}
-<img title="Broken post" src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/broken.png" alt="Broken post">
-{elseif $result.passwordstatus == 10}
-<img title="Passworded archive" src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/lock.gif" alt="Passworded archive">
-{/if}
-
 <div class="resextra">
-{*<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>*}
-<div class="btns">
-<span class="label">{release_flag($result.searchname, browse)}</span>
-{if $result.videostatus == 1}
-<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev label" rel="preview"><i class="icon-youtube-play"></i></a>{/if}
-{if $result.nfoID > 0}
-<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo label" rel="nfo">Nfo</a>{/if}
-{if $result.imdbID > 0}
-<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb label" rel="movie" >Cover</a>{/if}
-{if $result.haspreview == 1 && $userdata.canpreview == 1}
-<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev label" rel="preview">Preview</a>{/if}
-{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
-<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" class="modal_prev label" rel="preview">Sample</a>{/if}
-{if $result.musicinfoID > 0}
-<a href="#" name="name{$result.musicinfoID}" title="View music info" class="modal_music label" rel="music" >Cover</a>{/if}
-{if $result.consoleinfoID > 0}
-<a href="#" name="name{$result.consoleinfoID}" title="View console info" class="modal_console label" rel="console" >Cover</a>{/if}
-{if $result.rageID > 0}
-<a class="label" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a>{/if}
-{if $result.anidbID > 0}
-<a class="label" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a>{/if}
-{if $result.tvairdate != ""}
-<span class="seriesinfo label" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
-{if $result.reID > 0}
-<span class="mediainfo label" title="{$result.guid}">Media</span>{/if}
-{if $result.group_name != ""}
-<a class="label" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>{/if}
-</div>
+{if $result.passwordstatus == 1}<span class="label" title="Probably Passworded"><i class="icon-unlock-alt"></i></span> 
+{elseif $result.passwordstatus == 2}<span class="label" title="Broken Post"><i class="icon-unlink"></i></span> 
+{elseif $result.passwordstatus == 10}<span class="label" title="Passworded Archive"><i class="icon-lock"></i></span> {/if}
+{release_flag($result.searchname, browse)}
+{if $result.videostatus == 1}<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev label" rel="preview"><i class="icon-youtube-play"></i></a> {/if}
+{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo label" rel="nfo">Nfo</a> {/if}
+{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb label" rel="movie" >Cover</a> {/if}
+{if $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev label" rel="preview">Preview</a> {/if}
+{if $result.jpgstatus == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" class="modal_prev label" rel="preview">Sample</a> {/if}
+{if $result.musicinfoID > 0}<a href="#" name="name{$result.musicinfoID}" title="View music info" class="modal_music label" rel="music" >Cover</a> {/if}
+{if $result.consoleinfoID > 0}<a href="#" name="name{$result.consoleinfoID}" title="View console info" class="modal_console label" rel="console" >Cover</a> {/if}
+{if $result.rageID > 0}<a class="label" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a> {/if}
+{if $result.anidbID > 0}<a class="label" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a> {/if}
+{if $result.tvairdate != ""}<span class="seriesinfo label" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
+{if $result.reID > 0}<span class="mediainfo label" title="{$result.guid}">Media</span> {/if}
+{if $result.group_name != ""}<a class="label" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a> {/if}
 </div>
 </td>
 <td class="category" style="width:auto;text-align:center;white-space:nowrap;"><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryID}">{$result.category_name}</a></td>
