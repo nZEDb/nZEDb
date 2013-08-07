@@ -65,6 +65,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 {if $result.passwordstatus == 1}<span class="label" title="Probably Passworded"><i class="icon-unlock-alt"></i></span> 
 {elseif $result.passwordstatus == 2}<span class="label" title="Broken Post"><i class="icon-unlink"></i></span> 
 {elseif $result.passwordstatus == 10}<span class="label" title="Passworded Archive"><i class="icon-lock"></i></span> {/if}
+{release_flag($result.searchname, browse)}
 {if $result.videostatus == 1}
 <span class="label"><a class="model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a></span> {/if}
 {if $result.nfoID > 0}
@@ -111,7 +112,7 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="icon-file"></i>
 {if $result.rarinnerfilecount > 0}
 <div class="rarfilelist">
-<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip">
+<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}">
 </div>
 {/if}
 </td>

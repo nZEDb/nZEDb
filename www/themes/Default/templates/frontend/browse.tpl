@@ -81,7 +81,7 @@
 				<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 				{if $result.rarinnerfilecount > 0}
 					<div class="rarfilelist">
-						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip" />
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/magnifier.png" alt="{$result.guid}" />
 					</div>
 				{/if}
 			</td>
