@@ -330,7 +330,7 @@ class PostProcess
 			}
 		}
 
-		$rescount = count($result);
+		$rescount = $startCount = count($result);
 		if ($rescount > 0)
 		{
 
@@ -341,12 +341,13 @@ class PostProcess
 				$this->doecho("Added: s = sample image, j = jpeg image, a = audio media and/or sample, v = video sample");
 				$this->doecho("Added: m = mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
 				$this->doecho("Processed: z = zip file, r = rar file");
-				$this->doecho("Seperator(to show when it moved to the next release): |");
 			}
 
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
+				if ($this->echooutput)
+					echo "[".$startCount--."]";
 				// Per release defaults.
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!is_dir($this->tmpPath))
@@ -905,7 +906,6 @@ class PostProcess
 				}
 
 				@rmdir($this->tmpPath);
-				echo "|";
 			}
 			if ($this->echooutput)
 				echo "\n";
