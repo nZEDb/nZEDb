@@ -947,7 +947,12 @@ class PostProcess
 		// Only process if not a support file, or file segment.
 		if (!isset($v["error"]) && !preg_match($this->supportfiles.")$/i", $v["name"]))
 		{
-			if ($rar !==  false)
+			if ($rar !== false && preg_match("/\.zip$/", $v["source"]))
+			{
+				$zip = new ZipInfo();
+				$tmpdata = $zip->getFileData($v["name"], $v["source"]);
+			}
+			else if ($rar !==  false)
 				$tmpdata = $rar->getFileData($v["name"], $v["source"]);
 			else
 				$tmpdata = false;
@@ -967,7 +972,7 @@ class PostProcess
 
 			if ($tmpdata !== false)
 			{
-				// Extract a NFO from the rar.
+				// Extract a NFO from the rar. Make sure not to get zips, 
 				if ($this->hasnfo === false && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
@@ -1031,8 +1036,10 @@ class PostProcess
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
-				// Extract a NFO from the rar.
-				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
+				
+				/* Extract a NFO from the rar. 
+					TODO: If the file is compressed, decompress it.*/
+				if ($this->hasnfo === false && $nfo === false && $file["compressed"] !== 1 && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
@@ -1048,6 +1055,7 @@ class PostProcess
 						$this->hasnfo = true;
 					}
 				}
+
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
 				{
 					$tmpfiles = $this->getRar($thisdata);
