@@ -552,7 +552,6 @@ class PostProcess
 						if ($this->sum > $this->size || $this->adj === 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
-
 							$bingroup = $groupName;
 							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
@@ -712,6 +711,8 @@ class PostProcess
 					}
 					if ($sampleBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($sampleBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
@@ -722,6 +723,8 @@ class PostProcess
 						}
 						unset($sampleBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
@@ -745,6 +748,8 @@ class PostProcess
 					}
 					if ($mediaBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($mediaBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'media.avi', $mediaBinary);
@@ -757,6 +762,8 @@ class PostProcess
 						}
 						unset($mediaBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download audio file, use mediainfo to try to get the artist / album.
@@ -780,6 +787,8 @@ class PostProcess
 					}
 					if ($audioBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($audioBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
@@ -787,6 +796,8 @@ class PostProcess
 						}
 						unset($audioBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download JPG file.
@@ -811,6 +822,8 @@ class PostProcess
 					}
 					if ($jpgBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($this->tmpPath))
 						{
@@ -828,6 +841,8 @@ class PostProcess
 						}
 						unset($jpgBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Set up release values.
@@ -947,7 +962,12 @@ class PostProcess
 		// Only process if not a support file, or file segment.
 		if (!isset($v["error"]) && !preg_match($this->supportfiles.")$/i", $v["name"]))
 		{
-			if ($rar !==  false)
+			if ($rar !== false && preg_match("/\.zip$/", $v["source"]))
+			{
+				$zip = new ZipInfo();
+				$tmpdata = $zip->getFileData($v["name"], $v["source"]);
+			}
+			else if ($rar !==  false)
 				$tmpdata = $rar->getFileData($v["name"], $v["source"]);
 			else
 				$tmpdata = false;
@@ -1001,6 +1021,7 @@ class PostProcess
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
+		$dezip = ($this->site->zippath != '') ? true : false;
 
 		if ($open)
 			$zip->open($fetchedBinary, true);
@@ -1031,32 +1052,59 @@ class PostProcess
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
-				// Extract a NFO from the rar.
+				
+				//Extract a NFO from the zip.
 				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
-					$nzbcontents = new NZBcontents($this->echooutput);
-					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+					if ($file["compressed"] !== 1)
 					{
-						$this->debug("adding zip nfo");
-						$nfo = new Nfo($this->echooutput);
-						$nfo->addReleaseNfo($relid);
-						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
-						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						$nfo = true;
-						if ($this->echooutput)
-							echo "n";
-						$this->hasnfo = true;
+						$nzbcontents = new NZBcontents($this->echooutput);
+						if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+						{
+							$this->debug("adding zip nfo");
+							$nfo = new Nfo($this->echooutput);
+							$nfo->addReleaseNfo($relid);
+							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
+							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+							$nfo = true;
+							if ($this->echooutput)
+								echo "n";
+							$this->hasnfo = true;
+						}
+					}
+					else if ($dezip !== false && $file["compressed"] === 1)
+					{
+						$zip->setExternalClient($this->site->zippath);
+						$zipdata = $zip->extractFile($file["name"]);
+						if ($zipdata !== false && strlen($zipdata) > 5);
+						{
+							$nzbcontents = new NZBcontents($this->echooutput);
+							if ($nzbcontents->isNFO($zipdata) && $relid > 0)
+							{
+								$this->debug("adding compressed zip nfo");
+								$nfo = new Nfo($this->echooutput);
+								$nfo->addReleaseNfo($relid);
+								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $relid));
+								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+								$nfo = true;
+								if ($this->echooutput)
+									echo "n";
+								$this->hasnfo = true;
+							}
+						}
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
 				{
 					$tmpfiles = $this->getRar($thisdata);
 					if ($tmpfiles != false)
+					{
 						foreach ($tmpfiles as $f)
 						{
 							$ret = $this->addfile($f, $relid);
 							$files[] = $f;
 						}
+					}
 				}
 			}
 		}

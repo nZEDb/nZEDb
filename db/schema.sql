@@ -1053,7 +1053,8 @@ INSERT INTO `site`
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
-	('sqlpatch','105');
+	('zippath',''),
+	('sqlpatch','106');
 
 
 DROP TABLE IF EXISTS `logging`;
