@@ -552,7 +552,6 @@ class PostProcess
 						if ($this->sum > $this->size || $this->adj === 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
-
 							$bingroup = $groupName;
 							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
@@ -712,6 +711,8 @@ class PostProcess
 					}
 					if ($sampleBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($sampleBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
@@ -722,6 +723,8 @@ class PostProcess
 						}
 						unset($sampleBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
@@ -745,6 +748,8 @@ class PostProcess
 					}
 					if ($mediaBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($mediaBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'media.avi', $mediaBinary);
@@ -757,6 +762,8 @@ class PostProcess
 						}
 						unset($mediaBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download audio file, use mediainfo to try to get the artist / album.
@@ -780,6 +787,8 @@ class PostProcess
 					}
 					if ($audioBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($audioBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
@@ -787,6 +796,8 @@ class PostProcess
 						}
 						unset($audioBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download JPG file.
@@ -811,6 +822,8 @@ class PostProcess
 					}
 					if ($jpgBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($this->tmpPath))
 						{
@@ -828,6 +841,8 @@ class PostProcess
 						}
 						unset($jpgBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Set up release values.

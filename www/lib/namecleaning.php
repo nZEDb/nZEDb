@@ -464,6 +464,21 @@ class nameCleaning
 			//I Spy HQ DVDRips "I Spy - 3x26 Pinwheel.part10.rar" [13/22] yEnc
 			else if (preg_match('/^([a-zA-Z ]+HQ DVDRips ".+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") \[\d+\/\d+\] yEnc$/', $subject, $match))
 				return $match[1];
+			//Sledge Hammer! S2D2 [016/138] - "SH! S2 D2.ISO.016" yEnc
+			//Sledge Hammer! S2D2 [113/138] - "SH! S2 D2.ISO.1132 yEnc
+			//Lost In Space - Season 1 - [13/40] - "S1E02 - The Derelict.avi" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+? (S\d+D\d+|- Season \d+ -) \[)\d+\/\d+\] - ".+?"? yEnc$/', $subject, $match))
+				return $match[1];
+			//Night Flight TV Show rec 1991-01-12 (02/54) - "night flight rec 1991-01-12.nfo" yEnc
+			//Night Flight TV Show rec 1991-05-05 [NEW PAR SET] (1/9) - "night flight rec 1991-05-05.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+? \d{4}-\d\d-\d\d( \[.+?\])? \()\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//The.Love.Boat.S05E08 [01/31] - "The.Love.Boat.S05E08.Chefs.Special.Kleinschmidt.New.Beginnings.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9][a-zA-Z0-9.-]+ \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//"Batman - S1E13-The Thirteenth Hat.par2" yEnc
+			else if (preg_match('/^(".+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
@@ -1301,6 +1316,22 @@ class nameCleaning
 				return $match[1];
 			//I Spy HQ DVDRips "I Spy - 3x26 Pinwheel.part10.rar" [13/22] yEnc
 			else if (preg_match('/^[a-zA-Z ]+HQ DVDRips "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") \[\d+\/\d+\] yEnc$/', $subject, $match))
+				return $match[1];
+			//Sledge Hammer! S2D2 [016/138] - "SH! S2 D2.ISO.016" yEnc
+			//Sledge Hammer! S2D2 [113/138] - "SH! S2 D2.ISO.1132 yEnc
+			//Lost In Space - Season 1 - [13/40] - "S1E02 - The Derelict.avi" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+? (S\d+D\d+|- Season \d+))( -)? \[\d+\/\d+\] - ".+?"? yEnc$/', $subject, $match))
+				return $match[1];
+			//Night Flight TV Show rec 1991-01-12 (02/54) - "night flight rec 1991-01-12.nfo" yEnc
+			//Night Flight TV Show rec 1991-05-05 [NEW PAR SET] (1/9) - "night flight rec 1991-05-05.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9].+? \d{4}-\d\d-\d\d)( \[.+?\])? \(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//The.Love.Boat.S05E08 [01/31] - "The.Love.Boat.S05E08.Chefs.Special.Kleinschmidt.New.Beginnings.par2" yEnc
+			else if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9.-]+S\d+E\d+ \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//"Batman - S1E13-The Thirteenth Hat.par2" yEnc
+			//"The Munsters - 1x01 Munster Masquerade.part.par" HQ DVDRip[02/16] yEnc
+			else if (preg_match('/^"(.+?)(\.avi|\.mkv)?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")( HQ DVDRip\[\d+\/\d+\])? yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);

@@ -1368,9 +1368,10 @@ class Releases
 			if ($this->echooutput)
 			{
 				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
-				echo "\n";
 			}
 		}
+		if ($this->echooutput !== false && $relcount > 0)
+			echo "\n";
 		return $relcount;
 	}
 
