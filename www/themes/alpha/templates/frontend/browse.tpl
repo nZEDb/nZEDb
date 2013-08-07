@@ -62,8 +62,9 @@ Admin: <input type="button" class="btn btn-warning btn-mini nzb_multi_operations
 <td style="width:100%;text-align:left;">
 <a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong></a>
 <div class="resextra">
-{if $result.passwordstatus == 2 or $result.passwordstatus == 1}
-<span class="label mediainfo" title="{$result.guid}"><i class="icon-lock"></i></span> {/if}
+{if $result.passwordstatus == 1}<span class="label" title="Probably Passworded"><i class="icon-unlock-alt"></i></span> 
+{elseif $result.passwordstatus == 2}<span class="label" title="Broken Post"><i class="icon-unlink"></i></span> 
+{elseif $result.passwordstatus == 10}<span class="label" title="Passworded Archive"><i class="icon-lock"></i></span> {/if}
 {if $result.videostatus == 1}
 <span class="label"><a class="model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a></span> {/if}
 {if $result.nfoID > 0}
