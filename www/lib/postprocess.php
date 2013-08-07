@@ -32,7 +32,7 @@ class PostProcess
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
-		$this->password = false;
+		$this->password = $this->hasnfo = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
@@ -336,10 +336,9 @@ class PostProcess
 			if ($this->echooutput && $rescount > 1)
 			{
 				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
-				$this->doecho("Downloaded: b = yEnc article, f= failed");
-				$this->doecho("Added: s = sample image, j = jpeg image, a = audio media and/or sample, v = video sample");
-				$this->doecho("Added: m = mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
-				$this->doecho("Processed: z = zip file, r = rar file");
+				$this->doecho("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
+				$this->doecho("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
+				$this->doecho("Added: m = video mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
 			}
 
 			// Loop through the releases.
@@ -387,7 +386,11 @@ class PostProcess
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
 				$hasrar = $ignoredbooks = $failed = 0;
-				$this->password = $notmatched = $flood = $foundcontent = false;
+				$this->password = $this->hasnfo = $notmatched = $flood = $foundcontent = false;
+				
+				// Make sure we don't already have an nfo.
+				if ($rel['nfostatus'] === 1)
+					$this->hasnfo = true;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 
@@ -965,7 +968,7 @@ class PostProcess
 			if ($tmpdata !== false)
 			{
 				// Extract a NFO from the rar.
-				if ($v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
+				if ($this->hasnfo === false && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($tmpdata))
@@ -976,6 +979,7 @@ class PostProcess
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
 						if ($this->echooutput)
 							echo "n";
+						$this->hasnfo = true;
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -1028,7 +1032,7 @@ class PostProcess
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				// Extract a NFO from the rar.
-				if ($nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
+				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
@@ -1041,6 +1045,7 @@ class PostProcess
 						$nfo = true;
 						if ($this->echooutput)
 							echo "n";
+						$this->hasnfo = true;
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
@@ -1095,6 +1100,8 @@ class PostProcess
 		$retval = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput !== false)
+				echo "r";
 			foreach ($files as $file)
 			{
 				if (isset($file["name"]))
@@ -1125,8 +1132,6 @@ class PostProcess
 
 		if (count($retval) == 0)
 			return false;
-		if ($this->echooutput && $retval !== false)
-			echo "r";
 		return $retval;
 	}
 
@@ -1176,6 +1181,8 @@ class PostProcess
 				$this->size = $files[0]["size"] * 0.95;
 				$this->adj = $this->sum = 0;
 
+				if ($this->echooutput)
+					echo "r";
 				// If archive is not stored compressed, process data
 				foreach ($files as $file)
 				{
@@ -1245,6 +1252,8 @@ class PostProcess
 				$output = runCmd($execstring, false, true);
 				if (isset($files[0]["name"]))
 				{
+					if ($this->echooutput)
+						echo "r";
 					foreach ($files as $file)
 					{
 						if (isset($file["name"]))
@@ -1267,6 +1276,8 @@ class PostProcess
 			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid);
 			if ($files !== false)
 			{
+				if ($this->echooutput)
+					echo "z";
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
 				$this->sum = $this->adj =  0;
@@ -1313,8 +1324,6 @@ class PostProcess
 
 		if (count($retval) == 0)
 			$retval = false;
-		if ($this->echooutput && $retval !== false)
-			echo "r";
 		unset($fetchedBinary, $rar, $rf, $nfo);
 		return $retval;
 	}
@@ -1396,6 +1405,7 @@ class PostProcess
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
 										$retval = true;
+										echo "a";
 										break;
 									}
 								}
@@ -1421,6 +1431,7 @@ class PostProcess
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
+										echo "A";
 										break;
 									}
 								}
@@ -1438,8 +1449,6 @@ class PostProcess
 				}
 			}
 		}
-		if ($this->echooutput && $retval !== false)
-			echo "a";
 		return $retval;
 	}
 
