@@ -838,7 +838,7 @@ class PostProcess
 
 				// Set up release values.
 				$hpsql = '';
-				if ($blnTookSample !== false)
+				if ($processSample === true && $blnTookSample !== false)
 					$this->updateReleaseHasPreview($rel["guid"]);
 				else
 					$hpsql = ', haspreview = 0';
