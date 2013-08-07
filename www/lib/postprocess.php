@@ -339,7 +339,7 @@ class PostProcess
 				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
 				$this->doecho("Downloaded: b = yEnc article, f= failed");
 				$this->doecho("Added: s = sample image, j = jpeg image, a = audio media and/or sample, v = video sample");
-				$this->doecho("Added: n = nfo, ^ = new releasefiles, o = old releasefiles");
+				$this->doecho("Added: m = mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
 				$this->doecho("Processed: z = zip file, r = rar file");
 			}
 
@@ -389,9 +389,9 @@ class PostProcess
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
-				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
+				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
 				$hasrar = $ignoredbooks = $failed = 0;
-				$this->password = $notmatched = $flood = false;
+				$this->password = $notmatched = $flood = $foundcontent = false;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 
@@ -417,9 +417,9 @@ class PostProcess
 
 					// Check if it's a rar/zip.
 					if (preg_match("/\.(part0*1|part0+|r0+|r0*1|0+|0*10?|zip)(\.rar)*($|[ \"\)\]\-])/i", $nzbcontents["title"]))
-						$hasrar= 1;
+						$hasrar = 1;
 					elseif (preg_match("/\.rar($|[ \"\)\]\-])/i", $nzbcontents["title"]))
-						$hasrar= 1;
+						$hasrar = 1;
 					elseif (!$hasrar)
 						$notmatched = true;
 
@@ -450,7 +450,7 @@ class PostProcess
 					}
 
 					// Look for a audio file.
-					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $nzbcontents["title"], $type))
+					elseif ($processAudioinfo === true && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $nzbcontents["title"], $type))
 					{
 						if (isset($nzbcontents["segments"]) && empty($audiomsgid))
 						{
@@ -461,7 +461,7 @@ class PostProcess
 					}
 
 					// Look for a JPG picture.
-					elseif ($processJPGSample && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents["title"]))
+					elseif ($processJPGSample === true && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($jpgmsgid))
 						{
@@ -480,9 +480,6 @@ class PostProcess
 				$this->db->query("DELETE FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
 
 				// Process rar contents until 1G or 85% of file size is found (smaller of the two).
-				$this->password = $foundcontent = false;
-				$rarpart = array();
-
 				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
 				{
 					if ($this->echooutput)
@@ -492,7 +489,7 @@ class PostProcess
 				}
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
-				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample === true || $processMediainfo === true || $processAudioinfo === true))
+				if ($flood === false && $hasrar !== 0 && ($this->site->checkpasswordedrar > 0 || $processSample === true || $processMediainfo === true || $processAudioinfo === true))
 				{
 					$this->sum = $this->size = $this->segsize = $this->adj = $notinfinite = $failed = 0;
 					$this->name = '';
@@ -512,7 +509,7 @@ class PostProcess
 								break;
 						}
 
-						if ($this->password)
+						if ($this->password !== false)
 						{
 							$this->debug("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
 								break;
@@ -553,7 +550,7 @@ class PostProcess
 						// Starting to look for content.
 						$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
 						$this->sum = $this->sum + $this->adj * $this->segsize;
-						if ($this->sum > $this->size || $this->adj == 0)
+						if ($this->sum > $this->size || $this->adj === 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
 
@@ -687,7 +684,7 @@ class PostProcess
 										$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
 									@unlink($this->tmpPath."sample.avi");
 								}
-								if ($blnTookJPG && $blnTookAudioinfo && $blnTookMediainfo && $blnTookVideo && $blnTookSample)
+								if ($blnTookJPG === true && $blnTookAudioinfo === true && $blnTookMediainfo === true && $blnTookVideo === true && $blnTookSample === true)
 									break;
 							}
 						}
@@ -719,8 +716,9 @@ class PostProcess
 						if (strlen($sampleBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
-							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							if ($processVideo === true)
+							if ($processSample === true && $blnTookSample === false)
+								$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
+							if ($processVideo === true && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 						}
 						unset($sampleBinary);
@@ -750,16 +748,13 @@ class PostProcess
 					{
 						if (strlen($mediaBinary) > 100)
 						{
-							$mediafile = $this->tmpPath.'media.avi';
-							$this->addmediafile($mediafile, $mediaBinary);
-							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
-
+							$this->addmediafile($this->tmpPath.'media.avi', $mediaBinary);
+							if ($processMediainfo === true && $blnTookMediainfo === false)
+								$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
 							if ($processSample === true && $blnTookSample === false)
 								$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 							if ($processVideo === true && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-
-							unset($mediafile);
 						}
 						unset($mediaBinary);
 					}
