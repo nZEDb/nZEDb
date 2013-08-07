@@ -28,7 +28,7 @@ Class Predb
 		if (strtotime($newestrel["adddate"]) < time()-900)
 		{
 			if ($this->echooutput)
-				echo "\nRetrieving titles from preDB sources.\n";
+				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
 			$newomgwtf = $this->retrieveOmgwtfnzbs();
 			$newzenet = $this->retrieveZenet();

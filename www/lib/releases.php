@@ -1366,7 +1366,10 @@ class Releases
 			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
 			$relcount ++;
 			if ($this->echooutput)
+			{
 				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
+				echo "\n";
+			}
 		}
 		return $relcount;
 	}

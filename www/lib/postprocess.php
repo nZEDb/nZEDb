@@ -972,7 +972,7 @@ class PostProcess
 
 			if ($tmpdata !== false)
 			{
-				// Extract a NFO from the rar. Make sure not to get zips, 
+				// Extract a NFO from the rar.
 				if ($this->hasnfo === false && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
@@ -1006,6 +1006,7 @@ class PostProcess
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
+		$dezip = ($this->site->zippath != '') ? true : false;
 
 		if ($open)
 			$zip->open($fetchedBinary, true);
@@ -1037,34 +1038,58 @@ class PostProcess
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				
-				/* Extract a NFO from the rar. 
-					TODO: If the file is compressed, decompress it.*/
-				if ($this->hasnfo === false && $nfo === false && $file["compressed"] !== 1 && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
+				//Extract a NFO from the zip.
+				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
-					$nzbcontents = new NZBcontents($this->echooutput);
-					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+					if ($file["compressed"] !== 1)
 					{
-						$this->debug("adding zip nfo");
-						$nfo = new Nfo($this->echooutput);
-						$nfo->addReleaseNfo($relid);
-						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
-						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						$nfo = true;
-						if ($this->echooutput)
-							echo "n";
-						$this->hasnfo = true;
+						$nzbcontents = new NZBcontents($this->echooutput);
+						if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+						{
+							$this->debug("adding zip nfo");
+							$nfo = new Nfo($this->echooutput);
+							$nfo->addReleaseNfo($relid);
+							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
+							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+							$nfo = true;
+							if ($this->echooutput)
+								echo "n";
+							$this->hasnfo = true;
+						}
+					}
+					else if ($dezip !== false && $file["compressed"] === 1)
+					{
+						$zip->setExternalClient($this->site->zippath);
+						$zipdata = $zip->extractFile($file["name"]);
+						if ($zipdata !== false);
+						{
+							$nzbcontents = new NZBcontents($this->echooutput);
+							if ($nzbcontents->isNFO($zipdata) && $relid > 0)
+							{
+								$this->debug("adding compressed zip nfo");
+								$nfo = new Nfo($this->echooutput);
+								$nfo->addReleaseNfo($relid);
+								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $relid));
+								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+								$nfo = true;
+								if ($this->echooutput)
+									echo "n";
+								$this->hasnfo = true;
+							}
+						}
 					}
 				}
-
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
 				{
 					$tmpfiles = $this->getRar($thisdata);
 					if ($tmpfiles != false)
+					{
 						foreach ($tmpfiles as $f)
 						{
 							$ret = $this->addfile($f, $relid);
 							$files[] = $f;
 						}
+					}
 				}
 			}
 		}
