@@ -1446,10 +1446,17 @@ class PostProcess
 											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
 										else
 											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-										$category = new Category();
-										$newcat = $category->determineCategory($newname, $catID["groupID"]);
 										if ($catID["relnamestatus"] != "3")
+										{
+											$category = new Category();
+											if (strtoupper($ext[1]) == "MP3")
+												$newcat = Category::CAT_MUSIC_MP3;
+											else if (strtoupper($ext[1]) == "FLAC")
+												$newcat = Category::CAT_MUSIC_FLAC;
+											else
+												$newcat = $category->determineCategory($newname, $catID["groupID"]);
 											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+										}
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
 										$retval = true;

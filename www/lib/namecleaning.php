@@ -617,6 +617,9 @@ class nameCleaning
 			////ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
 			if (preg_match('/^([a-fA-F0-9]+) \[\d+\/\d+\] - ".+?(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
+			//[30762]-[android]-[ Fairway.Solitaire.v1.91.1-AnDrOiD ] [01/10] - "AnDrOiD.nfo" yEnc
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[ .+? \] \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
@@ -1521,6 +1524,9 @@ class nameCleaning
 		{
 			//ea17079f47de702eead5114038355a70 [1/9] - "00-da_morty_-_boondock_sampler_02-(tbr002)-web-2013-srg.m3u" yEnc
 			if (preg_match('/^[a-fA-F0-9]+ \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
+			//[30762]-[android]-[ Fairway.Solitaire.v1.91.1-AnDrOiD ] [01/10] - "AnDrOiD.nfo" yEnc
+			else if (preg_match('/^\[\d+\]-\[.+?\]-\[ (.+?) \] \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
