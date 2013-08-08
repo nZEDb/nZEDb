@@ -597,7 +597,8 @@ class nameCleaning
 			//Old Dad uppt 18 und immer (noch) Jungfrau DvD Rip AC3 XviD German 02/34] - "18 und immer (noch) Jungfrau.part01.rar" yEnc
 			//Old Dad uppt In ihrem Haus DVD Ripp AC3 German Xvid [01/31] - "In ihrem Haus.par2" yEnc
 			//Old Dad uppt Eine offene Rechnung XviD German DVd Rip[02/41] - "Eine offene Rechnung.part01.rar" yEnc
-			if (preg_match('/^(Old\s+Dad\s+uppt .+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Old Dad uppMiss Marple: Der Wachsblumenstrauß , Wunschpost Xvid German10/29] - "Miss Marple Der Wachsblumenstrauß.part09.rar" yEnc
+			if (preg_match('/^(Old\s+Dad\s+uppt?.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
 			else if (preg_match('/^\[\d+(\/\d+\] - ".+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
@@ -1474,7 +1475,8 @@ class nameCleaning
 			//Old Dad uppt 18 und immer (noch) Jungfrau DvD Rip AC3 XviD German 02/34] - "18 und immer (noch) Jungfrau.part01.rar" yEnc
 			//Old Dad uppt In ihrem Haus DVD Ripp AC3 German Xvid [01/31] - "In ihrem Haus.par2" yEnc
 			//Old Dad uppt Eine offene Rechnung XviD German DVd Rip[02/41] - "Eine offene Rechnung.part01.rar" yEnc
-			if (preg_match('/^Old\s+Dad\s+uppt (.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Old Dad uppMiss Marple: Der Wachsblumenstrauß , Wunschpost Xvid German10/29] - "Miss Marple Der Wachsblumenstrauß.part09.rar" yEnc
+			if (preg_match('/^Old\s+Dad\s+uppt? ?(.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
 			//[40/54] - "Mankind.Die.Geschichte.der.Menschheit.S01E12.Das.Ende.der.Reise.GERMAN.DUBBED.DL.DOKU.1080p.BluRay.x264-TVP.part39.rar" - 4,79 GB yEnc
@@ -1502,8 +1504,16 @@ class nameCleaning
 			else if (preg_match('/^[A-Za-z0-9]+ postet (.+?) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[04/20 Geroellheimer - S03E19 - Freudige �berraschung Geroellheimer - S03E19 - Freudige �berraschung.mp4.004" yEnc
-			else if (preg_match('/^\[\d+\/\d+ (.+?)(\.(part(\d+)?|rar|avi|mp4|mkv|mpg))?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\[\d+\/\d+ (.+?)(\.(part(\d+)?|rar|avi|iso|mp4|mkv|mpg))?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return implode(' ', array_intersect_key(explode(' ', $match[1]), array_unique(array_map('strtolower', explode(' ', $match[1])))));
+			//"Homeland.S01.Complete.German.WS.DVDRiP.XViD-ETM.part001.rar" yEnc
+			else if (preg_match('/^"(.+?)(\.(part(\d+)?|rar|avi|mp4|mkv|mpg))?(\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			{
+				if (strlen($match[1]) > 7 && !preg_match('/\.vol.+/', $match[1]))
+					return $match[1];
+				else
+					return $this->releaseCleanerHelper($subject);
+			}
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
