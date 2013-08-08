@@ -1,3 +1,7 @@
+08082013 -> kevin    -> Fix a bug in releases.php where releases under minimum file/size setting were not deleted.
+						Add more regex for matching/name cleaning.
+08072013 -> kevin    -> 7zip to decompress nfos froms zips during post process (/usr/bin/7za on ubuntu, 7z command line windows(untested on windows)).
+						Fix many bugs in post proc.
 08062013 -> sinfulj  -> Add a new theme (currently in alpha testing).
 08052013 -> kevin    -> Clean up postprocess.php, make sure there are no duplicate names for releaseID's in the releasefiles table, more regex in namecleaning.
 08052013 -> wtf911   -> Attempt to fix duplicate tvrage entries when running threaded.
