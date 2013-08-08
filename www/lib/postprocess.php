@@ -1414,9 +1414,10 @@ class PostProcess
 	{
 		$retval = $audval = false;
 		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
-		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
+		if (!(is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
+		// Make sure the category is music or other->misc.
 		$catID = $this->db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
 			return $retval;
@@ -1428,7 +1429,8 @@ class PostProcess
 			{
 				if (is_file($audiofile) && preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
-					if ($retval === false)
+					// Process audio info, change searchname if we find a group/album name in the tags.
+					if ($processAudioinfo !== false && $retval === false)
 					{
 						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
 						if (is_array($xmlarray))
@@ -1440,9 +1442,9 @@ class PostProcess
 							{
 								foreach ($arrXml["File"]["track"] as $track)
 								{
-									if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+									if (isset($track["Album"]) && isset($track["Performer"]))
 									{
-										if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+										if (!empty($track["Recorded_date"]) && preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
 											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
 										else
 											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
@@ -1458,15 +1460,17 @@ class PostProcess
 											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
 										}
 										$re = new ReleaseExtra();
-										$re->addFromXml($releaseID, $xmlarray);
+										$re->addFromXml($releaseID,$xmlarray);
 										$retval = true;
-										echo "a";
+										if ($this->echooutput)
+											echo "a";
 										break;
 									}
 								}
 							}
 						}
 					}
+					// Create an audio sample in ogg format.
 					if($this->processAudioSample && $audval === false)
 					{
 						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$audiofile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
@@ -1486,12 +1490,12 @@ class PostProcess
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
-										echo "A";
+										if ($this->echooutput)
+											echo "A";
 										break;
 									}
 								}
 							}
-
 							// Clean up all files.
 							foreach(glob($ramdrive.'*.ogg') as $v)
 							{
