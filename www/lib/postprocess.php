@@ -1410,10 +1410,9 @@ class PostProcess
 	}
 
 	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid, $releaseID)
+	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid,$releaseID)
 	{
 		$retval = $audval = false;
-		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
 		if (!(is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
@@ -1430,7 +1429,7 @@ class PostProcess
 				if (is_file($audiofile) && preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
 					// Process audio info, change searchname if we find a group/album name in the tags.
-					if ($processAudioinfo !== false && $retval === false)
+					if ($this->site->mediainfopath != '' && $retval === false)
 					{
 						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
 						if (is_array($xmlarray))
