@@ -481,6 +481,7 @@ ALTER TABLE groups ADD UNIQUE (NAME);
 
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.0day.stuffz','This group contains mostly 0day software.', 2, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.anime','This group contains mostly Anime Television.', NULL, NULL);
+INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.astronomy','This group contains mostly movies.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.ath','This group contains a variety of Music. Some Foreign.', 8, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.barbarella','This group contains a variety of German content.', NULL, NULL);
 INSERT INTO `groups` (`name`, `description`, `minfilestoformrelease`, `minsizetoformrelease`) VALUES ('alt.binaries.audio.warez','Theres some old stuff in here, but this group is pretty much dead.', NULL, NULL);
@@ -1054,7 +1055,7 @@ INSERT INTO `site`
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
-	('sqlpatch','106');
+	('sqlpatch','107');
 
 
 DROP TABLE IF EXISTS `logging`;
