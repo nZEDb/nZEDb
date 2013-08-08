@@ -1350,6 +1350,19 @@ class nameCleaning
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
+		else if ($groupName === "alt.binaries.comics.dcp")
+		{
+			// Return anything between the quotes.
+			if (preg_match('/.*"(.+?)(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+			{
+				if (strlen($match[1]) > 7 && !preg_match('/\.vol.+/', $match[1]))
+					return $match[1];
+				else
+					return $this->releaseCleanerHelper($subject);
+			}
+			else
+				return $this->releaseCleanerHelper($subject);
+		}
 		else if ($groupName === "alt.binaries.documentaries")
 		{
 			//#sterntuary - Alex Jones Radio Show - "05-03-2009_INFO_BAK_ALJ.nfo" yEnc
