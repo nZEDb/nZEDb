@@ -828,7 +828,7 @@ class Category
 
 	public function isMovie($releasename)
 	{
-		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/auto(cad|desk)|divx[\.\-_ ]plus|[\.\-_ ]exe$|[\.\-_ ](jav|XXX)[\.\-_ ]|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
+		if(preg_match('/[\.\-_ ]AVC|[\.\-_ ]|(B|H)(D|R)RIP|Bluray|BD[\.\-_ ]?(25|50)?|BR|Camrip|[\.\-_ ]\d{4}[\.\-_ ].+(720p|1080p|Cam)|DIVX|[\.\-_ ]DVD[\.\-_ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[\.\-_ ](DTS|TVrip)[\.\-_ ]/i', $releasename) && !preg_match('/auto(cad|desk)|divx[\.\-_ ]plus|[\.\-_ ]exe$|[\.\-_ ](jav|XXX)[\.\-_ ]|SWE6RUS|\wXXX(1080p|720p|DVD)|Xilisoft/i', $releasename))
 		{
 			if($this->categorizeforeign)
 			{
@@ -940,7 +940,7 @@ class Category
 
 	public function isPC($releasename)
 	{
-		if(!preg_match('/[\.\-_ ](PDTV|PSP|UMD(RIP)?)[\.\-_ ]|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
+		if(!preg_match('/[\.\-_ ](PDTV|PSP|UMD(RIP)?)[\.\-_ ]|SWE6RUS|x264|[\.\-_ ]XXX[\.\-_ ]|Imageset/i', $releasename))
 		{
 			if($this->isPhone($releasename)){ return true; }
 			if($this->isMac($releasename)){ return true; }
@@ -1028,7 +1028,7 @@ class Category
 
 	public function isXxx($releasename)
 	{
-		if(preg_match('/[\.\-_ ](XXX|PORNOLATiON)/', $releasename))
+		if(preg_match('/[\.\-_ ](XXX|PORNOLATiON|SWE6RUS)/', $releasename))
 		{
 			if($this->isXxx264($releasename)){ return true; }
 			if($this->isXxxXvid($releasename)){ return true; }

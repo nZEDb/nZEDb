@@ -5,7 +5,7 @@
 	</div>
 {else}
 
-<p>If you already have a primary news server (NNTP), please provide the following information:</p>
+<p>If you have a primary news server (NNTP), please provide the following information (make sure the information is correct, some servers do not check if the password is good):</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
@@ -39,7 +39,7 @@
 			</td>
 		</tr>		
 	</table>
-<p>If you already have an alternate news server (NNTP), please provide the following information:</p>
+<p>(optional) If you have an alternate news server (NNTP), please provide the following information (make sure the information is correct, some servers do not check if the password is good):</p>
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
 			<td><label for="servera">Server:</label></td>

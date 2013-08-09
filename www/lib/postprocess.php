@@ -32,7 +32,7 @@ class PostProcess
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
-		$this->password = false;
+		$this->password = $this->hasnfo = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
@@ -257,7 +257,6 @@ class PostProcess
 		$processJPGSample = ($this->site->processjpg == "0") ? false : true;
 		$processPasswords = ($this->site->unrarpath != '') ? true : false;
 		$this->tmpPath = $this->site->tmpunrarpath;
-		
 
 		$nntp = new Nntp();
 		$connect = ($this->site->alternate_nntp == "1") ? $nntp->doConnect_A() : $nntp->doConnect();
@@ -266,7 +265,6 @@ class PostProcess
 			$this->tmpPath = $this->tmpPath.'/';
 
 		$tmpPath1 = $this->tmpPath;
-
 		if ($gui)
 		{
 			$ok = false;
@@ -285,9 +283,7 @@ class PostProcess
 					$this->db->Rollback();
 			}
 			$this->db->setAutoCommit(true);
-
 			$sleep = 1;
-
 			$delay = 100;
 
 			do
@@ -334,27 +330,22 @@ class PostProcess
 			}
 		}
 
-		$rescount = count($result);
+		$rescount = $startCount = count($result);
 		if ($rescount > 0)
 		{
-		//	if ($this->echooutput)
-		//	{
-		//		echo "(following started at: ".date("D M d, Y G:i a").")\nAdditional post-processing on {$rescount} release(s)\n";
-		//		if ($releaseToWork != '')
-		//			echo ", working 1 release: ";
-		//		else
-		//			$ppcount = $this->db->queryOneRow("SELECT COUNT(*) as cnt FROM releases r LEFT JOIN category c on c.ID = r.categoryID WHERE nzbstatus = 1 AND (r.passwordstatus BETWEEN -5 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)");
-		//	}
-
-			if ($rescount > 1)
+			if ($this->echooutput && $rescount > 1)
 			{
-				$this->doecho("\nFetch for: b = binary, f= failed binary, s = sample, m = mediainfo, a = audio, j = jpeg");
-				$this->doecho("^ added file content, o added previous, z = doing zip, r = doing rar, n = found nfo");
+				$this->doecho("Additional post-processing, started at: ".date("D M d, Y G:i a"));
+				$this->doecho("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
+				$this->doecho("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
+				$this->doecho("Added: m = video mediainfo, n = nfo, ^ = new releasefiles, o = old releasefiles");
 			}
 
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
+				if ($this->echooutput)
+					echo "[".$startCount--."]";
 				// Per release defaults.
 				$this->tmpPath = $tmpPath1.$rel['guid'].'/';
 				if (!is_dir($this->tmpPath))
@@ -371,31 +362,35 @@ class PostProcess
 					}
 				}
 
-				if ($this->echooutput)
-					echo "\n".$rel['guid']."->";
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
+				if ($processSample === false)
+					$blnTookSample = true;
+				if ($processVideo === false)
+					$blnTookVideo = true;
+				if ($processMediainfo === false)
+					$blnTookMediainfo = true;
+				if ($processAudioinfo === false)
+					$blnTookAudioinfo = true;
+				if ($processJPGSample === false)
+					$blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
 
-/*				if ($this->echooutput && $threads > 0)
-					$this->consoleTools->overWrite(" ".$rescount--." left..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-				else if ($this->echooutput)
-					$this->consoleTools->overWrite(", ".$rescount--." left in queue, ".$ppcount["cnt"]--." total in DB..".(($this->DEBUG_ECHO) ? "{$rel['guid']} " : ""));
-*/
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.
-				$nzbcontents = new NZBcontents(true);
-				$nzb = new NZB(true);
+				$nzbcontents = new NZBcontents($this->echooutput);
+				$nzb = new NZB($this->echooutput);
 				$groups = new Groups();
 				$groupName = $groups->getByNameByID($rel["groupID"]);
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
-				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = array();
-				$hasrar = 0;
-				$flood = false;
-				$ignoredbooks = 0;
-				$failed = 0;
-				$this->password = $notmatched = false;
+				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
+				$hasrar = $ignoredbooks = $failed = 0;
+				$this->password = $this->hasnfo = $notmatched = $flood = $foundcontent = false;
+				
+				// Make sure we don't already have an nfo.
+				if ($rel['nfostatus'] === 1)
+					$this->hasnfo = true;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 
@@ -421,14 +416,14 @@ class PostProcess
 
 					// Check if it's a rar/zip.
 					if (preg_match("/\.(part0*1|part0+|r0+|r0*1|0+|0*10?|zip)(\.rar)*($|[ \"\)\]\-])/i", $nzbcontents["title"]))
-						$hasrar= 1;
+						$hasrar = 1;
 					elseif (preg_match("/\.rar($|[ \"\)\]\-])/i", $nzbcontents["title"]))
-						$hasrar= 1;
+						$hasrar = 1;
 					elseif (!$hasrar)
 						$notmatched = true;
 
 					// Look for a sample.
-					if ($processSample && preg_match("/sample/i", $nzbcontents["title"]) && !preg_match("/\.(jpg|jpeg)/i", $nzbcontents["title"]))
+					if ($processSample === true && !preg_match("/\.(jpg|jpeg)/i", $nzbcontents["title"]) && preg_match("/sample/i", $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($samplemsgid))
 						{
@@ -444,7 +439,7 @@ class PostProcess
 					}
 
 					// Look for a media file.
-					elseif ($processMediainfo && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i', $nzbcontents["title"]) && !preg_match("/sample/i", $nzbcontents["title"]))
+					elseif ($processMediainfo === true && !preg_match("/sample/i", $nzbcontents["title"]) && preg_match('/'.$this->videofileregex.'[\. "\)\]]/i', $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($mediamsgid))
 						{
@@ -454,7 +449,7 @@ class PostProcess
 					}
 
 					// Look for a audio file.
-					elseif ($processAudioinfo && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $nzbcontents["title"], $type))
+					elseif ($processAudioinfo === true && preg_match('/'.$this->audiofileregex.'[\. "\)\]]/i', $nzbcontents["title"], $type))
 					{
 						if (isset($nzbcontents["segments"]) && empty($audiomsgid))
 						{
@@ -465,7 +460,7 @@ class PostProcess
 					}
 
 					// Look for a JPG picture.
-					elseif (!preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && $processJPGSample && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents["title"]))
+					elseif ($processJPGSample === true && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[\. "\)\]]/i', $nzbcontents["title"]))
 					{
 						if (isset($nzbcontents["segments"]) && empty($jpgmsgid))
 						{
@@ -476,9 +471,7 @@ class PostProcess
 						}
 					}
 					elseif (preg_match($this->ignorebookregex, $nzbcontents["title"], $type))
-					{
 						$ignoredbooks++;
-					}
 				}
 
 				// If this release has release files, delete them.
@@ -486,30 +479,20 @@ class PostProcess
 				$this->db->query("DELETE FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
 
 				// Process rar contents until 1G or 85% of file size is found (smaller of the two).
-				$this->password = $foundcontent = false;
-				$rarpart = array();
-
 				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
 				{
-					echo " skipping book flood";
+					if ($this->echooutput)
+						echo " skipping book flood";
 					$this->db->query($sql = sprintf("update releases set passwordstatus = 0, haspreview = 0, categoryID = 8050 where ID = %d", $rel["ID"]));
 					$flood = true;
 				}
 
 				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
-				if (!$flood && $hasrar && ($this->site->checkpasswordedrar > 0 || $processSample || $processMediainfo || $processAudioinfo))
+				if ($flood === false && $hasrar !== 0 && ($this->site->checkpasswordedrar > 0 || $processSample === true || $processMediainfo === true || $processAudioinfo === true))
 				{
-
-					$this->sum = 0;
-					$this->size = 0;
-					$this->segsize = 0;
-					$this->adj = 0;
+					$this->sum = $this->size = $this->segsize = $this->adj = $notinfinite = $failed = 0;
 					$this->name = '';
-
-					$foundcontent = false;
-					$notinfinite = 0;
-					$failed = 0;
-					$this->ignorenumbered = false;
+					$this->ignorenumbered = $foundcontent = false;
 
 					// Loop through the files, attempt to find if passworded and files. Starting with what not to process.
 					foreach ($nzbfiles as $rarFile)
@@ -525,7 +508,7 @@ class PostProcess
 								break;
 						}
 
-						if ($this->password)
+						if ($this->password !== false)
 						{
 							$this->debug("-Skipping processing of rar {$rarFile['title']} was found to be passworded");
 								break;
@@ -540,13 +523,13 @@ class PostProcess
 							continue;
 						}
 
-						if (preg_match("/\.\b(part\d+.rar)($|[ \"\)\]\-])/i", $rarFile["title"]) && !preg_match("/\.\b(part00.rar|part01.rar)($|[ \"\)\]\-])/i", $rarFile["title"]))
+						if (!preg_match("/\.\b(part00.rar|part01.rar)($|[ \"\)\]\-])/i", $rarFile["title"]) && preg_match("/\.\b(part\d+.rar)($|[ \"\)\]\-])/i", $rarFile["title"]))
 						{
 							$this->debug("Not matched and skipping ".$rarFile["title"]);
 							continue;
 						}
 
-/*						$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
+						/*$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
 						if (is_numeric($size["size"]) && $size["size"] > $bytes)
 							continue;
 
@@ -561,16 +544,14 @@ class PostProcess
 						{
 							//$this->doecho("New files don't seem to contribute.");
 							continue;
-						}
-*/
+						}*/
 
 						// Starting to look for content.
 						$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
 						$this->sum = $this->sum + $this->adj * $this->segsize;
-						if ($this->sum > $this->size || $this->adj == 0)
+						if ($this->sum > $this->size || $this->adj === 0)
 						{
 							$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
-
 							$bingroup = $groupName;
 							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 							$fetchedBinary = $nntp->getMessages($bingroup, $mid);
@@ -584,22 +565,20 @@ class PostProcess
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if (PEAR::isError($fetchedBinary))
 								{
-									echo $n.$n."Error {$fetchedBinary->code}: {$fetchedBinary->message}".$n.$n;
-								return;
+									if ($this->echooutput)
+										echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
+									return;
 								}
 							}
 
-							if ($this->echooutput)
-								echo " b";
-
 							if ($fetchedBinary !== false)
 							{
+								if ($this->echooutput)
+									echo "b";
 								$notinfinite++;
 								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel["ID"], $rel["nfostatus"], $rarFile["title"]);
 								if ($this->password)
-								{
 									$passStatus[] = Releases::PASSWD_RAR;
-								}
 
 								if ($relFiles === false)
 								{
@@ -614,10 +593,10 @@ class PostProcess
 							}
 							else
 							{
+								if ($this->echooutput)
+									echo "f";
 								$notinfinite = $notinfinite + 0.2;
 								$failed++;
-								if ($this->echooutput)
-									echo " f";
 							}
 						}
 					}
@@ -660,33 +639,28 @@ class PostProcess
 					}
 				}
 				elseif ($hasrar == 1)
-				{
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
-				}
 
 				if(!$foundcontent && $hasrar == 1)
-				{
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
-				}
 
 				// Try to get image/mediainfo/audioinfo, using extracted files before downloading more data
-				if (($blnTookSample === false || $blnTookAudioinfo === false || $blnTookMediainfo === false) && is_dir($this->tmpPath))
+				if (($blnTookSample === false || $blnTookAudioinfo === false || $blnTookMediainfo === false || $blnTookJPG === false || $blnTookVideo === false) && is_dir($this->tmpPath))
 				{
 					$files = @scandir($this->tmpPath);
 					if (isset($files) && is_array($files) && count($files) > 0)
 					{
-
 						foreach ($files as $file)
 						{
 							if (is_file($this->tmpPath.$file))
 							{
-								if ($blnTookAudioinfo === false && $processAudioinfo && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
+								if ($processAudioinfo === true && $blnTookAudioinfo === false && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
 								{
 									rename($this->tmpPath.$name[0], $this->tmpPath."audiofile.".$name[2]);
 									$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel["guid"], $rel["ID"]);
 									@unlink($this->tmpPath."sample.".$name[2]);
 								}
-								if ($processJPGSample && $blnTookJPG === false && preg_match("/\.(jpg|jpeg)$/",$file))
+								if ($processJPGSample === true && $blnTookJPG === false && preg_match("/\.(jpg|jpeg)$/",$file))
 								{
 									if (filesize($this->tmpPath.$file) < 15)
 										continue;
@@ -697,7 +671,7 @@ class PostProcess
 										$this->db->query(sprintf("UPDATE releases SET jpgstatus = %d WHERE ID = %d", 1, $rel["ID"]));
 
 								}
-								if (preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
+								if (($processSample === true || $processVideo === true || $processMediainfo === true) && preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
 								{
 									rename($this->tmpPath.$name[0], $this->tmpPath."sample.avi");
 									if ($processSample && $blnTookSample === false)
@@ -707,10 +681,9 @@ class PostProcess
 									if ($processMediainfo && $blnTookMediainfo === false)
 										$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
 									@unlink($this->tmpPath."sample.avi");
-
-									if ($blnTookSample)
-										break;
 								}
+								if ($blnTookJPG === true && $blnTookAudioinfo === true && $blnTookMediainfo === true && $blnTookVideo === true && $blnTookSample === true)
+									break;
 							}
 						}
 						unset($files);
@@ -718,7 +691,7 @@ class PostProcess
 				}
 
 				// Download and process sample image.
-				if(!empty($samplemsgid) && $processSample && $blnTookSample === false)
+				if(($processSample === true || $processVideo === true) && !empty($samplemsgid) && ($blnTookSample === false || $blnTookVideo === false))
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
@@ -736,23 +709,26 @@ class PostProcess
 							return;
 						}
 					}
-					if ($this->echooutput)
-						echo " s";
 					if ($sampleBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($sampleBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
-							$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							if ($processVideo)
+							if ($processSample === true && $blnTookSample === false)
+								$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
+							if ($processVideo === true && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
 						}
 						unset($sampleBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
-				if (!empty($mediamsgid) && $processMediainfo && $blnTookMediainfo === false)
+				if (($processMediainfo === true || $processSample === true || $processVideo === true) && !empty($mediamsgid) && ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false))
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
@@ -770,29 +746,28 @@ class PostProcess
 							return;
 						}
 					}
-					if ($this->echooutput)
-						echo " m";
 					if ($mediaBinary !== false)
 					{
-						if (strlen($mediaBinary ) > 100)
+						if ($this->echooutput)
+							echo "b";
+						if (strlen($mediaBinary) > 100)
 						{
-							$mediafile = $this->tmpPath.'media.avi';
-							$this->addmediafile($mediafile, $mediaBinary);
-							$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
-
-							if ($processSample && $blnTookSample === false)
+							$this->addmediafile($this->tmpPath.'media.avi', $mediaBinary);
+							if ($processMediainfo === true && $blnTookMediainfo === false)
+								$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel["ID"]);
+							if ($processSample === true && $blnTookSample === false)
 								$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-							if ($processVideo && $blnTookVideo === false)
+							if ($processVideo === true && $blnTookVideo === false)
 								$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel["guid"]);
-
-							unset($mediafile);
 						}
 						unset($mediaBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download audio file, use mediainfo to try to get the artist / album.
-				if(!empty($audiomsgid) && $processAudioinfo && $blnTookAudioinfo === false)
+				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
@@ -806,14 +781,14 @@ class PostProcess
 						$audioBinary = $nntp->getMessages($bingroup, $mid);
 						if (PEAR::isError($audioBinary))
 						{
-							echo $n.$n."Error {$audioBinary->code}: {$audioBinary->message}".$n.$n;
+							echo "\n\nError {$audioBinary->code}: {$audioBinary->message}\n\n";
 							return;
 						}
 					}
-					if ($this->echooutput)
-						echo " a";
 					if ($audioBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						if (strlen($audioBinary) > 100)
 						{
 							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
@@ -821,10 +796,12 @@ class PostProcess
 						}
 						unset($audioBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Download JPG file.
-				if(!empty($jpgmsgid) && $processJPGSample && $blnTookJPG === false)
+				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
 				{
 					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
@@ -838,14 +815,15 @@ class PostProcess
 						$jpgBinary = $nntp->getMessages($bingroup, $mid);
 						if (PEAR::isError($jpgBinary))
 						{
-							echo $n.$n."Error {$jpgBinary->code}: {$jpgBinary->message}".$n.$n;
+							if ($this->echooutput)
+								echo $n.$n."Error {$jpgBinary->code}: {$jpgBinary->message}".$n.$n;
 							return;
 						}
 					}
-					if ($this->echooutput)
-						echo " j";
 					if ($jpgBinary !== false)
 					{
+						if ($this->echooutput)
+							echo "b";
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
 						if (is_dir($this->tmpPath))
 						{
@@ -863,21 +841,19 @@ class PostProcess
 						}
 						unset($jpgBinary);
 					}
+					else
+						echo "f";
 				}
 
 				// Set up release values.
 				$hpsql = '';
-				if ($blnTookSample)
+				if ($processSample === true && $blnTookSample !== false)
 					$this->updateReleaseHasPreview($rel["guid"]);
 				else
 					$hpsql = ', haspreview = 0';
 
 				if ($failed > 0 && ($failed / count($nzbfiles) > 0.7 || $notinfinite > $this->passchkattempts || $notinfinite > $this->partsqty))
-				{
-					if ($this->echooutput)
-						echo "not viable";
 					$passStatus[] = Releases::BAD_FILE;
-				}
 
 				$size = $this->db->queryOneRow("SELECT SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
 				if (max($passStatus) > 0)
@@ -896,6 +872,7 @@ class PostProcess
 				// If update_files is true, the add previously found files to releasefiles.
 				if ($update_files)
 				{
+					$nooldfiles = false;
 					$rf = new ReleaseFiles();
 					foreach ($oldreleasefiles as $file)
 					{
@@ -904,12 +881,16 @@ class PostProcess
 
 						if ($row === false)
 						{
+							$nooldfiles = true;
 							$rf->add($rel["ID"], $file["name"], $file["size"], $file["date"], $file["pass"]);
-							if ($this->echooutput)
-								echo "o";
 						}
 					}
-					unset($rf);
+					if ($nooldfiles === true)
+					{
+						if ($this->echooutput)
+							echo "o";
+					}
+					unset($rf, $nooldfiles);
 				}
 
 				// rarinnerfilecount - This needs to be done or else the magnifier on the site does not show up.
@@ -981,16 +962,21 @@ class PostProcess
 		// Only process if not a support file, or file segment.
 		if (!isset($v["error"]) && !preg_match($this->supportfiles.")$/i", $v["name"]))
 		{
-			if ($rar !==  false)
+			if ($rar !== false && preg_match("/\.zip$/", $v["source"]))
+			{
+				$zip = new ZipInfo();
+				$tmpdata = $zip->getFileData($v["name"], $v["source"]);
+			}
+			else if ($rar !==  false)
 				$tmpdata = $rar->getFileData($v["name"], $v["source"]);
 			else
 				$tmpdata = false;
 
-			if (preg_match("/\.zip$/i", $v["name"]))
+			/*if (preg_match("/\.zip$/i", $v["name"]))
 			{
-//				$files = $this->processReleaseZips($tmpdata, false, false, $relid);
-//				var_dump($files);
-			}
+				$files = $this->processReleaseZips($tmpdata, false, false, $relid);
+				var_dump($files);
+			}*/
 
 			$rf = new ReleaseFiles();
 			if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
@@ -1002,9 +988,9 @@ class PostProcess
 			if ($tmpdata !== false)
 			{
 				// Extract a NFO from the rar.
-				if ($v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
+				if ($this->hasnfo === false && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
-					$nzbcontents = new NZBcontents(true);
+					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($tmpdata))
 					{
 						$nfo = new Nfo($this->echooutput);
@@ -1013,23 +999,18 @@ class PostProcess
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
 						if ($this->echooutput)
 							echo "n";
+						$this->hasnfo = true;
 					}
 				}
 				// Extract a video file from the compressed file.
-				elseif (preg_match('/'.$this->videofileregex.'$/i', $v["name"]))
-				{
+				elseif ($this->site->processvideos == "1" && preg_match('/'.$this->videofileregex.'$/i', $v["name"]))
 					$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).".avi", $tmpdata);
-				}
 				// Extract an audio file from the compressed file.
-				elseif (preg_match('/'.$this->audiofileregex.'$/i', $v["name"], $ext))
-				{
+				elseif ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v["name"], $ext))
 					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
-				}
 				else
-				{
 					if (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
 						$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
-				}
 			}
 			unset($tmpdata, $rf);
 		}
@@ -1040,6 +1021,7 @@ class PostProcess
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
+		$dezip = ($this->site->zippath != '') ? true : false;
 
 		if ($open)
 			$zip->open($fetchedBinary, true);
@@ -1060,39 +1042,69 @@ class PostProcess
 		}
 
 		$files = $zip->getFileList();
-		if ($this->echooutput)
-			echo "z";
 		$dataarray = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput)
+				echo "z";
+			$nfo = false;
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
-				// Extract a NFO from the rar.
-				if ($file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
+				
+				//Extract a NFO from the zip.
+				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
-					$nzbcontents = new NZBcontents(true);
-					if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+					if ($file["compressed"] !== 1)
 					{
-						$this->debug("adding zip nfo");
-						$nfo = new Nfo($this->echooutput);
-						$nfo->addReleaseNfo($relid);
-						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
-						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-						if ($this->echooutput)
-							echo "n";
+						$nzbcontents = new NZBcontents($this->echooutput);
+						if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+						{
+							$this->debug("adding zip nfo");
+							$nfo = new Nfo($this->echooutput);
+							$nfo->addReleaseNfo($relid);
+							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
+							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+							$nfo = true;
+							if ($this->echooutput)
+								echo "n";
+							$this->hasnfo = true;
+						}
+					}
+					else if ($dezip !== false && $file["compressed"] === 1)
+					{
+						$zip->setExternalClient($this->site->zippath);
+						$zipdata = $zip->extractFile($file["name"]);
+						if ($zipdata !== false && strlen($zipdata) > 5);
+						{
+							$nzbcontents = new NZBcontents($this->echooutput);
+							if ($nzbcontents->isNFO($zipdata) && $relid > 0)
+							{
+								$this->debug("adding compressed zip nfo");
+								$nfo = new Nfo($this->echooutput);
+								$nfo->addReleaseNfo($relid);
+								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $relid));
+								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+								$nfo = true;
+								if ($this->echooutput)
+									echo "n";
+								$this->hasnfo = true;
+							}
+						}
 					}
 				}
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
 				{
 					$tmpfiles = $this->getRar($thisdata);
 					if ($tmpfiles != false)
+					{
 						foreach ($tmpfiles as $f)
 						{
 							$ret = $this->addfile($f, $relid);
 							$files[] = $f;
 						}
+					}
 				}
 			}
 		}
@@ -1133,11 +1145,11 @@ class PostProcess
 			return false;
 		}
 		$files = $rar->getArchiveFileList();
-		if ($this->echooutput)
-			echo "r";
 		$retval = array();
 		if ($files !== false)
 		{
+			if ($this->echooutput !== false)
+				echo "r";
 			foreach ($files as $file)
 			{
 				if (isset($file["name"]))
@@ -1179,8 +1191,6 @@ class PostProcess
 		$rf = new ReleaseFiles();
 		$this->password = false;
 
-//		echo "\n$name ".preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \"\)\]\-])/i", $name)."\n";
-
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \"\)\]\-])/i", $name))
 		{
 			$rar->setData($fetchedBinary, true);
@@ -1209,8 +1219,6 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			if ($this->echooutput)
-				echo "r";
 
 			if (count($files) == 0)
 				return false;
@@ -1219,12 +1227,13 @@ class PostProcess
 			{
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
-				$this->sum = 0;
-				$this->adj = 0;
+				$this->adj = $this->sum = 0;
+
+				if ($this->echooutput)
+					echo "r";
 				// If archive is not stored compressed, process data
 				foreach ($files as $file)
 				{
-//					var_dump($file);
 					if (isset($file["name"]))
 					{
 						if (isset($file["error"]))
@@ -1251,9 +1260,7 @@ class PostProcess
 								foreach($data as $d)
 								{
 									if (preg_match('/\.(part\d+|r\d+|rar)(\.rar)?$/i', $d["zip"]["name"]))
-									{
 										$tmpfiles = $this->getRar($d["data"]);
-									}
 								}
 							}
 						}
@@ -1269,7 +1276,6 @@ class PostProcess
 				}
 
 				$this->sum = $this->adj;
-
 				$this->adj = $this->adj / $this->segsize;
 
 				if ($this->adj < .7)
@@ -1294,6 +1300,8 @@ class PostProcess
 				$output = runCmd($execstring, false, true);
 				if (isset($files[0]["name"]))
 				{
+					if ($this->echooutput)
+						echo "r";
 					foreach ($files as $file)
 					{
 						if (isset($file["name"]))
@@ -1316,10 +1324,11 @@ class PostProcess
 			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid);
 			if ($files !== false)
 			{
+				if ($this->echooutput)
+					echo "z";
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
-				$this->sum = 0;
-				$this->adj = 0;
+				$this->sum = $this->adj =  0;
 
 				foreach ($files as $file)
 				{
@@ -1347,8 +1356,8 @@ class PostProcess
 					$this->adj = 1;
 
 			}
-			else
 			// Not a compressed file, but segmented.
+			else
 				$this->ignorenumbered = true;
 		}
 
@@ -1356,13 +1365,9 @@ class PostProcess
 		foreach ($retval as $k => $v)
 		{
 			if (!preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $v["name"]) && count($retval) > 0)
-			{
 				$this->addfile($v, $relid, $rar);
-			}
 			else
-			{
 				unset($retval[$k]);
-			}
 		}
 
 		if (count($retval) == 0)
@@ -1394,23 +1399,24 @@ class PostProcess
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
 						$retval = true;
+						break;
 					}
 				}
 			}
 		}
-		if ($retval !== false && $this->echooutput)
-				echo "M";
+		if ($this->echooutput && $retval !== false)
+			echo "m";
 		return $retval;
 	}
 
 	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid, $releaseID)
+	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid,$releaseID)
 	{
 		$retval = $audval = false;
-		$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
-		if (!($processAudioinfo && is_dir($ramdrive) && ($releaseID > 0)))
+		if (!(is_dir($ramdrive) && ($releaseID > 0)))
 			return $retval;
 
+		// Make sure the category is music or other->misc.
 		$catID = $this->db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
 			return $retval;
@@ -1422,38 +1428,48 @@ class PostProcess
 			{
 				if (is_file($audiofile) && preg_match("/".$this->audiofileregex."$/i",$audiofile, $ext))
 				{
-					if ($retval === false)
+					// Process audio info, change searchname if we find a group/album name in the tags.
+					if ($this->site->mediainfopath != '' && $retval === false)
 					{
-					@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
-					if (is_array($xmlarray))
-					{
-						$xmlarray = implode("\n",$xmlarray);
-						$xmlObj = @simplexml_load_string($xmlarray);
-						$arrXml = objectsIntoArray($xmlObj);
-						if (isset($arrXml["File"]["track"]))
+						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						if (is_array($xmlarray))
 						{
-							foreach ($arrXml["File"]["track"] as $track)
+							$xmlarray = implode("\n",$xmlarray);
+							$xmlObj = @simplexml_load_string($xmlarray);
+							$arrXml = objectsIntoArray($xmlObj);
+							if (isset($arrXml["File"]["track"]))
 							{
-								if (isset($track["Album"]) && isset($track["Performer"]) && !empty($track["Recorded_date"]))
+								foreach ($arrXml["File"]["track"] as $track)
 								{
-									if (preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-										$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
-									else
-										$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-									$category = new Category();
-									$newcat = $category->determineCategory($newname, $catID["groupID"]);
+									if (isset($track["Album"]) && isset($track["Performer"]))
+									{
+										if (!empty($track["Recorded_date"]) && preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
+											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+										else
+											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
 										if ($catID["relnamestatus"] != "3")
-									$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
-									$re = new ReleaseExtra();
-									$re->addFromXml($releaseID, $xmlarray);
-									$retval = true;
-										if($this->processAudioSample === false)
-									break;
+										{
+											$category = new Category();
+											if (strtoupper($ext[1]) == "MP3")
+												$newcat = Category::CAT_MUSIC_MP3;
+											else if (strtoupper($ext[1]) == "FLAC")
+												$newcat = Category::CAT_MUSIC_FLAC;
+											else
+												$newcat = $category->determineCategory($newname, $catID["groupID"]);
+											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+										}
+										$re = new ReleaseExtra();
+										$re->addFromXml($releaseID,$xmlarray);
+										$retval = true;
+										if ($this->echooutput)
+											echo "a";
+										break;
+									}
 								}
 							}
+						}
 					}
-				}
-					}
+					// Create an audio sample in ogg format.
 					if($this->processAudioSample && $audval === false)
 					{
 						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$audiofile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
@@ -1473,24 +1489,24 @@ class PostProcess
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
 										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
 										$audval = true;
+										if ($this->echooutput)
+											echo "A";
+										break;
 									}
 								}
 							}
-
 							// Clean up all files.
 							foreach(glob($ramdrive.'*.ogg') as $v)
 							{
 								@unlink($v);
 							}
-							if ($retval === true && $audval === true)
-								break;
 						}
 					}
+					if ($retval === true && $audval === true)
+						break;
 				}
 			}
 		}
-		if ($retval !== false && $this->echooutput)
-			echo "A";
 		return $retval;
 	}
 
@@ -1538,7 +1554,10 @@ class PostProcess
 
 								$ri->saveImage($releaseguid.'_thumb', $ramdrive.$file, $ri->imgSavePath, 800, 600);
 								if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
+								{
 									$retval = true;
+									break;
+								}
 							}
 						}
 
@@ -1553,9 +1572,9 @@ class PostProcess
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "s";
 		// If an image was made, return true, else return false.
-		if ($retval !== false && $this->echooutput)
-			echo "S";
 		return $retval;
 	}
 
@@ -1595,33 +1614,30 @@ class PostProcess
 										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
 										$this->db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
 										$retval = true;
+										break;
 									}
 								}
 							}
-							if ($retval === true)
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogv') as $v)
 							{
-								// Clean up all files.
-								foreach(glob($ramdrive.'*.ogv') as $v)
-								{
-									@unlink($v);
-								}
-								break;
+								@unlink($v);
 							}
+							if ($retval === true)
+								break;
 						}
 					}
 				}
 			}
 		}
+		if ($this->echooutput && $retval !== false)
+			echo "v";
 		// If an video was made, return true, else return false.
-		if ($retval !== false && $this->echooutput)
-			echo "V";
 		return $retval;
 	}
 
 	public function updateReleaseHasPreview($guid)
 	{
 		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
-		if ($this->echooutput)
-			echo "P";
 	}
 }

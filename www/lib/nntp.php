@@ -13,6 +13,7 @@ class Nntp extends Net_NNTP_Client
 		$this->timeout = 15;
 	}
 
+	// Make a NNTP connection.
 	function doConnect()
 	{
 		if ($this->_isConnected())
@@ -56,6 +57,7 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
+	// Make a nntp connection (alternate server).
 	function doConnect_A()
 	{
 		if ($this->_isConnected())
@@ -99,9 +101,7 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
-	//
-	//	No compression.
-	//
+	// Make a nntp connection (no XFeature GZip compression).
 	function doConnectNC()
 	{
 		if ($this->_isConnected())
@@ -127,11 +127,13 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
+	// Quit the nntp connection.
 	function doQuit()
 	{
 		$this->quit();
 	}
 
+	// Get only the body of an article (no header).
 	function getMessage($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -160,6 +162,23 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Get multiple article bodies (string them together).
+	function getMessages($groupname, $msgIds)
+	{
+		$body = '';
+
+		foreach ($msgIds as $m)
+		{
+			$message = $this->getMessage($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
+	}
+
+	// Get a full article (body + header).
 	function get_Article($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -188,6 +207,7 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Get multiple articles (string them together).
 	function getArticles($groupname, $msgIds)
 	{
 		$body = '';
@@ -195,22 +215,6 @@ class Nntp extends Net_NNTP_Client
 		foreach ($msgIds as $m)
 		{
 			$message = $this->get_Article($groupname, $m);
-			if ($message !== false)
-				$body = $body . $message;
-			else
-				return false;
-		}
-		return $body;
-	}
-
-
-	function getMessages($groupname, $msgIds)
-	{
-		$body = '';
-
-		foreach ($msgIds as $m)
-		{
-			$message = $this->getMessage($groupname, $m);
 			if ($message !== false)
 				$body = $body . $message;
 			else
@@ -266,6 +270,7 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Decode a Yenc encoded article body.
 	function decodeYenc($yencodedvar)
 	{
 		$input = array();
