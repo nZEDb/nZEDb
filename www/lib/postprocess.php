@@ -1453,7 +1453,7 @@ class PostProcess
 											if (strtoupper($ext[1]) == "MP3")
 												$newcat = Category::CAT_MUSIC_MP3;
 											else if (strtoupper($ext[1]) == "FLAC")
-												$newcat = Category::CAT_MUSIC_FLAC;
+												$newcat = Category::CAT_MUSIC_LOSSLESS;
 											else
 												$newcat = $category->determineCategory($newname, $catID["groupID"]);
 											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
