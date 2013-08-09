@@ -778,6 +778,9 @@ class nameCleaning
 			//Sonny Landreth - 2010 - Mississippi Blues - 04 of 29 - 00 - Mississippi Blues.sfv yEnc
 			else if (preg_match('/^([A-Z0-9].+? - \d{4} - [A-Z0-9].+? - )\d+ of \d+ - \d+ - .+? yEnc$/', $subject, $match))
 				return $match[1];
+			//Restless Breed00/27] - ".nzb" yEnc
+			else if (preg_match('/^(.+?[a-zA-Z0-9][^\[( ])\d{2,}(\/\d+\] - ").+?" yEnc$/', $subject, $match))
+				return $match[1].$match[2];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
@@ -894,7 +897,7 @@ class nameCleaning
 		if (!preg_match('/\.(flac|lossless|mp3|music|sounds)/', $groupName))
 		{
 			// File/part count.
-			$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|[^\d]{4}-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
+			$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\)|\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|[^\d]{4}-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
 			// File extensions.
 			$cleansubject = preg_replace('/(-sample|-thumb)*(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")/i', ' ', $cleansubject);
 			// File extensions - If it was not in quotes.
@@ -1731,10 +1734,10 @@ class nameCleaning
 			else if (preg_match('/^([A-Z0-9].+? - VA - .+?) \[\d+ of \d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//Ryan McGarvey - Forward In Reverse [01/21] - "00 - Ryan Mcgarvey - Forward in Reverse.nfo" yEnc
-			//Dream Machine - 1981 - Dream Machine [00/22] - "Dream Machine - 1981 - Dream Machine.nzb" yEnc
 			//JFC - The Timerewinder (NMR) [01/15] - "00 - The Timerewinder.nfo" yEnc
 			//The Brothers Johnson - 1981 - Winners (2011 expanded remastered) [01/31] - "01 - The Real Thing.flac" yEnc
-			else if (preg_match('/^([A-Z0-9][A-Za-z0-9 ]{2,} -( \d{4} -)? [A-Z0-9][A-Za-z0-9 ]{2,}( \(.+?\))?) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Jermaine Jackson - 1980 - Let's Get Serious [00/23] - "Jermaine Jackson - 1980 - Let's Get Serious.nzb" yEnc
+			else if (preg_match('/^([A-Z0-9][A-Za-z0-9 ]{2,} -( \d{4} -)? [A-Z0-9].+?( \(.+?\))?) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//Miles Davis - In A Silent Way (1969) [2013 - HDTracks 24-176,4] - "iasw24-176.par2" yEnc
 			//Bob James & David Sanborn - Quartette Humaine (2013) [HDTracks 24-88,2] - "qh24-88.par2" yEnc
@@ -1748,6 +1751,9 @@ class nameCleaning
 				return $match[1];
 			//(152092XA20) [08/16] - "Guns and Roses - Use Your Illusion I - 08-Back Off Bitch.flac" yEnc
 			else if (preg_match('/^\([A-Z0-9]+\) \[\d+\/\d+\] - "(.+?) - \d+-.+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//Eros_Ramazzotti-Eros-IT-CD-FLAC-1997-FADA[04/26] - "00-eros_ramazzotti-eros-1997-fada.sfv" yEnc
+			else if (preg_match('/^([\w-]{5,})\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
