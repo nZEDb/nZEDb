@@ -776,7 +776,8 @@ class nameCleaning
 			if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+(\/\d+\] - ".+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Sonny Landreth - 2010 - Mississippi Blues - 04 of 29 - 00 - Mississippi Blues.sfv yEnc
-			else if (preg_match('/^([A-Z0-9].+? - \d{4} - [A-Z0-9].+? - )\d+ of \d+ - \d+ - .+? yEnc$/', $subject, $match))
+			//Fruteland Jackson - 1996 - ... Is All I Crave - 08 of 20 - 00 - Fruteland Jackson - ... Is All I Crave.log yEnc
+			else if (preg_match('/^([A-Z0-9].+? - \d{4} - .+? - )\d+ of \d+ - \d+ - .+? yEnc$/', $subject, $match))
 				return $match[1];
 			//Restless Breed00/27] - ".nzb" yEnc
 			else if (preg_match('/^(.+?[a-zA-Z0-9][^\[( ])\d{2,}(\/\d+\] - ").+?" yEnc$/', $subject, $match))
@@ -1744,7 +1745,8 @@ class nameCleaning
 			else if (preg_match('/^([A-Z0-9].+? - [A-Z0-9].+? \(\d{4}\) \[.*?HDTracks.+?\]) - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//Sonny Landreth - 2010 - Mississippi Blues - 04 of 29 - 00 - Mississippi Blues.sfv yEnc
-			else if (preg_match('/^([A-Z0-9].+? - \d{4} - [A-Z0-9].+?) - \d+ of \d+ - \d+ - .+? yEnc$/', $subject, $match))
+			//Fruteland Jackson - 1996 - ... Is All I Crave - 08 of 20 - 00 - Fruteland Jackson - ... Is All I Crave.log yEnc
+			else if (preg_match('/^([A-Z0-9].+? - \d{4} - .+?) - \d+ of \d+ - \d+ - .+? yEnc$/', $subject, $match))
 				return $match[1];
 			//(VA - Cafe Del Mar Dreams 5-2012-Samfie Man) [37/38] - "VA - Cafe Del Mar Dreams 5-2012-Samfie Man.vol063+040.par2" yEnc
 			else if (preg_match('/^\((VA - .+?)\) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
