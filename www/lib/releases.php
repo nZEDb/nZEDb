@@ -1613,10 +1613,7 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$minsizecount = 0;
-		$maxsizecount = 0;
-		$minfilecount = 0;
-		$catminsizecount = 0;
+		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
 
 		if ($this->echooutput)
 			echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
@@ -1625,7 +1622,7 @@ class Releases
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
 
 		foreach ($catresrel as $catrowrel) {
-			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d and nzbstatus = 0", $catrowrel['ID'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1640,11 +1637,11 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				if ($resrel = $db->query("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+				if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
-							FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
+							FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1656,7 +1653,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1666,11 +1663,11 @@ class Releases
 					}
 				}
 
-				if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN
-							(SELECT g.ID, guid, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
+				if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+							(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
-							FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
+							FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1682,11 +1679,11 @@ class Releases
 		}
 		else
 		{
-			if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN
-						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
+			if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+						(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
-						FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
+						FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1698,7 +1695,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1708,11 +1705,11 @@ class Releases
 				}
 			}
 
-			if ($resrel = $db->query("SELECT r.ID, guid FROM releases r LEFT JOIN
+			if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
-						FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
+						FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1724,7 +1721,7 @@ class Releases
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
 		if ($this->echooutput && $delcount > 0)
-				echo "Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." releases smaller/larger than group/site settings.".$n;
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}

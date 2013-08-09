@@ -346,7 +346,7 @@ class Binaries
 							
 							/*If you uncommented the above, comment following 2 lines..*/
 							$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];/**/
+							$orignames[] = $msg['Subject'];
 						}
 					}
 
