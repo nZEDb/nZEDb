@@ -782,6 +782,9 @@ class nameCleaning
 			//Restless Breed00/27] - ".nzb" yEnc
 			else if (preg_match('/^(.+?[a-zA-Z0-9][^\[( ])\d{2,}(\/\d+\] - ").+?" yEnc$/', $subject, $match))
 				return $match[1].$match[2];
+			//(Rolling Stones) [01/28] - "Bell Center, Montreal, QC - 09-06-2013 (alt source sb remaster).par2" yEnc
+			else if (preg_match('/^\([A-Z0-9][a-zA-Z0-9 ]+\) \[\d+(\/\d+\] - ".+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
