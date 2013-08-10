@@ -381,7 +381,8 @@ class Nntp extends Net_NNTP_Client
 					}
 					else
 					{
-						echo "\n";
+						if ($totalbytesreceived > 10240)
+							echo "\n";
 						$completed = true;
 					}
 				}

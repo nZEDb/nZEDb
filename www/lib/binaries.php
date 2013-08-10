@@ -187,8 +187,10 @@ class Binaries
 					$first = $last + 1;
 				}
 			}
-
+			$nntp->doQuit();
+			$nntp->doConnect();
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
+			$nntp->doQuit();
 			// Set group's last postdate.
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);

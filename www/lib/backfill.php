@@ -176,7 +176,10 @@ class Backfill
 				}
 			}
 		}
+		$nntp->doQuit();
+		$nntp->doConnect();
 		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
+		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$first_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 
@@ -314,8 +317,6 @@ class Backfill
 		if($targetpost > $first)
 			$first = $targetpost;
 
-		$nntp->doQuit();
-		$nntp->doConnect();
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
@@ -339,6 +340,8 @@ class Backfill
 				}
 			}
 		}
+		$nntp->doQuit();
+		$nntp->doConnect();
 		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
 		$nntp->doQuit();
 		// Set group's first postdate.
