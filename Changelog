@@ -1,3 +1,6 @@
+08102013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
+08102013 -> kevin    -> Clean up postprocess.php
+08092013 -> kevin    -> More regex in namecleaning.
 08082013 -> kevin    -> Fix a bug in releases.php where releases under minimum file/size setting were not deleted.
 						Add more regex for matching/name cleaning.
 08072013 -> kevin    -> 7zip to decompress nfos froms zips during post process (/usr/bin/7za on ubuntu, 7z command line windows(untested on windows)).
