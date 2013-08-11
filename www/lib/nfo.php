@@ -7,6 +7,9 @@ require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
 require_once(WWW_DIR."/lib/site.php");
 
+/*
+ * Class for handling fetching/storing of NFO files.
+ */
 class Nfo
 {
 	function Nfo($echooutput=false)
@@ -30,6 +33,7 @@ class Nfo
 		return $db->query(sprintf("delete from releasenfo where releaseID = %d", $relid));
 	}
 
+	// Find an IMDB ID in a NFO file.
 	public function parseImdb($str)
 	{
 		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
@@ -40,6 +44,7 @@ class Nfo
 		return false;
 	}
 
+	// Find a TVRage ID in a NFO.
 	public function parseRageId($str)
 	{
 		preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches);
@@ -50,9 +55,9 @@ class Nfo
 		return false;
 	}
 
+	// Loop through releases, look for NFO's in the NZB file.
 	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
 	{
-		$ret = 0;
 		$db = new DB();
 		$s = new Sites();
 		$site = $s->get();
@@ -60,7 +65,7 @@ class Nfo
 		$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
 		$nzbcontents = new NZBcontents($this->echooutput);
-		$nfocount = 0;
+		$nfocount = $ret = 0;
 
 		if ($releaseToWork == '')
 		{
@@ -89,21 +94,15 @@ class Nfo
 			$movie = new Movie($this->echooutput);
 			foreach ($res as $arr)
 			{
-				$guid = $arr['guid'];
-				$relID = $arr['ID'];
-				$groupID = $arr['groupID'];
-
 				$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
-				$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
+				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['ID'], $arr['groupID'], $nntp);
 				if (PEAR::isError($fetchedBinary))
 				{
-					$groupName = $groups->getByNameByID($groupID);
-					$nntp->doQuit();
-					unset($nntp);
+					$groupName = $groups->getByNameByID($arr['groupID']);
 					$nntp = new Nntp;
 					$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 					$data = $nntp->selectGroup($groupName);
-					$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
+					$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['ID'], $arr['groupID'], $nntp);
 					if (PEAR::isError($fetchedBinary))
 					{
 						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
@@ -120,11 +119,11 @@ class Nfo
 
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
-					$rageId = $this->parseRageId($fetchedBinary);
-					if ($rageId !== false)
+					// If set scan for tvrage info.
+					if ($processTvrage == 1)
 					{
-						//if set scan for tvrage info
-						if ($processTvrage == 1)
+						$rageId = $this->parseRageId($fetchedBinary);
+						if ($rageId !== false)
 						{
 							$tvrage = new Tvrage();
 							$show = $tvrage->parseNameEpSeason($arr['name']);
