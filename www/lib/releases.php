@@ -580,103 +580,68 @@ class Releases
 		return $db->query($sql);
 	}
 
-	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat, $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
+	public function search($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array(), $type="basic")
 	{
 		$db = new DB();
 		$groups = new Groups();
+		
+		$catsrch = "";
+		if ($type !== "advanced")
+		{
+			if (count($cat) > 0 && $cat[0] != -1)
+			{
+				$catsrch = " and (";
+				foreach ($cat as $category)
+				{
+					if ($category != -1)
+					{
+						$categ = new Category();
+						if ($categ->isParent($category))
+						{
+							$children = $categ->getChildren($category);
+							$chlist = "-99";
+							foreach ($children as $child)
+								$chlist.=", ".$child['ID'];
 
-		if ($cat == "-1"){$catsrch = ("");}
-		else{$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);}
+							if ($chlist != "-99")
+									$catsrch .= " releases.categoryID in (".$chlist.") or ";
+						}
+						else
+							$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
+					}
+				}
+				$catsrch.= "1=2 )";
+			}
+		}
+		else
+		{
+			if ($cat == "-1")
+				$catsrch = "";
+			else
+				$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);
+		}
 
 		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
+		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word
 		//
-		if ($searchname == "-1"){$searchnamesql.= ("");}
-		else
-		{
-			$words = explode(" ", $searchname);
+		if ($searchname == "-1")
 			$searchnamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$searchnamesql = sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$searcnamehsql = sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$searchnamesql = sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($usenetname == "-1"){$usenetnamesql.= ("");}
 		else
-		{
-			$words = explode(" ", $usenetname);
+			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
+
+		if ($usenetname == "-1")
 			$usenetnamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$usenetnamesql = sprintf(" and releases.name like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$usenetnamesql = sprintf(" and releases.name not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$usenetnamesql = sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
-
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($postername == "-1"){$posternamesql = ("");}
 		else
-		{
-			$words = explode(" ", $postername);
+			$searchnamesql = $this->searchSQL($usenetname, $db, "name");
+
+		if ($postername == "-1")
 			$posternamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$posternamesql = sprintf(" and releases.fromname like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$posternamesql = sprintf(" and releases.fromname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$posternamesql = sprintf(" and releases.fromname like %s", $db->escapeString("%".$word."%"));
+		else
+			$searchnamesql = $this->searchSQL($postername, $db, "fromname");
 
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($groupname == "-1"){$groupIDsql = ("");}
+		if ($groupname == "-1")
+			$groupIDsql = "";
 		else
 		{
 			$groupID = $groups->getIDByName($db->escapeString($groupname));
@@ -684,54 +649,69 @@ class Releases
 		}
 
 		if ($sizefrom == "-1"){$sizefromsql= ("");}
-		if ($sizefrom == "1"){$sizefromsql= (" and releases.size > 104857600 ");}
-		if ($sizefrom == "2"){$sizefromsql= (" and releases.size > 262144000 ");}
-		if ($sizefrom == "3"){$sizefromsql= (" and releases.size > 524288000 ");}
-		if ($sizefrom == "4"){$sizefromsql= (" and releases.size > 1073741824 ");}
-		if ($sizefrom == "5"){$sizefromsql= (" and releases.size > 2147483648 ");}
-		if ($sizefrom == "6"){$sizefromsql= (" and releases.size > 3221225472 ");}
-		if ($sizefrom == "7"){$sizefromsql= (" and releases.size > 4294967296 ");}
-		if ($sizefrom == "8"){$sizefromsql= (" and releases.size > 8589934592 ");}
-		if ($sizefrom == "9"){$sizefromsql= (" and releases.size > 17179869184 ");}
-		if ($sizefrom == "10"){$sizefromsql= (" and releases.size > 34359738368 ");}
-		if ($sizefrom == "11"){$sizefromsql= (" and releases.size > 68719476736 ");}
+		elseif ($sizefrom == "1"){$sizefromsql= (" and releases.size > 104857600 ");}
+		elseif ($sizefrom == "2"){$sizefromsql= (" and releases.size > 262144000 ");}
+		elseif ($sizefrom == "3"){$sizefromsql= (" and releases.size > 524288000 ");}
+		elseif ($sizefrom == "4"){$sizefromsql= (" and releases.size > 1073741824 ");}
+		elseif ($sizefrom == "5"){$sizefromsql= (" and releases.size > 2147483648 ");}
+		elseif ($sizefrom == "6"){$sizefromsql= (" and releases.size > 3221225472 ");}
+		elseif ($sizefrom == "7"){$sizefromsql= (" and releases.size > 4294967296 ");}
+		elseif ($sizefrom == "8"){$sizefromsql= (" and releases.size > 8589934592 ");}
+		elseif ($sizefrom == "9"){$sizefromsql= (" and releases.size > 17179869184 ");}
+		elseif ($sizefrom == "10"){$sizefromsql= (" and releases.size > 34359738368 ");}
+		elseif ($sizefrom == "11"){$sizefromsql= (" and releases.size > 68719476736 ");}
 
 		if ($sizeto == "-1"){$sizetosql= ("");}
-		if ($sizeto == "1"){$sizetosql= (" and releases.size < 104857600 ");}
-		if ($sizeto == "2"){$sizetosql= (" and releases.size < 262144000 ");}
-		if ($sizeto == "3"){$sizetosql= (" and releases.size < 524288000 ");}
-		if ($sizeto == "4"){$sizetosql= (" and releases.size < 1073741824 ");}
-		if ($sizeto == "5"){$sizetosql= (" and releases.size < 2147483648 ");}
-		if ($sizeto == "6"){$sizetosql= (" and releases.size < 3221225472 ");}
-		if ($sizeto == "7"){$sizetosql= (" and releases.size < 4294967296 ");}
-		if ($sizeto == "8"){$sizetosql= (" and releases.size < 8589934592 ");}
-		if ($sizeto == "9"){$sizetosql= (" and releases.size < 17179869184 ");}
-		if ($sizeto == "10"){$sizetosql= (" and releases.size < 34359738368 ");}
-		if ($sizeto == "11"){$sizetosql= (" and releases.size < 68719476736 ");}
+		elseif ($sizeto == "1"){$sizetosql= (" and releases.size < 104857600 ");}
+		elseif ($sizeto == "2"){$sizetosql= (" and releases.size < 262144000 ");}
+		elseif ($sizeto == "3"){$sizetosql= (" and releases.size < 524288000 ");}
+		elseif ($sizeto == "4"){$sizetosql= (" and releases.size < 1073741824 ");}
+		elseif ($sizeto == "5"){$sizetosql= (" and releases.size < 2147483648 ");}
+		elseif ($sizeto == "6"){$sizetosql= (" and releases.size < 3221225472 ");}
+		elseif ($sizeto == "7"){$sizetosql= (" and releases.size < 4294967296 ");}
+		elseif ($sizeto == "8"){$sizetosql= (" and releases.size < 8589934592 ");}
+		elseif ($sizeto == "9"){$sizetosql= (" and releases.size < 17179869184 ");}
+		elseif ($sizeto == "10"){$sizetosql= (" and releases.size < 34359738368 ");}
+		elseif ($sizeto == "11"){$sizetosql= (" and releases.size < 68719476736 ");}
 
-		if ($hasnfo == "0"){$hasnfosql= ("");}
-		else{$hasnfosql= (" and releases.nfostatus = 1 ");}
+		if ($hasnfo == "0")
+			$hasnfosql = "";
+		else
+			$hasnfosql= " and releases.nfostatus = 1 ";
 
-		if ($hascomments == "0"){$hascommentssql= ("");}
-		else{$hascommentssql= (" and releases.comments > 0 ");}
+		if ($hascomments == "0")
+			$hascommentssql = "";
+		else
+			$hascommentssql = " and releases.comments > 0 ";
 
-		if ($daysnew == "-1"){$daysnewsql= ("");}
-		else{$daysnewsql= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);}
+		if ($daysnew == "-1")
+			$daysnewsql= "";
+		else
+			$daysnewsql= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);
 
-		if ($daysold == "-1"){$daysoldsql= ("");}
-		else{$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);}
+		if ($daysold == "-1")
+			$daysoldsql= "";
+		else
+			$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
+		
+		if ($maxage > 0)
+			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
+		else
+			$maxage = "";
 
 		$exccatlist = "";
-		if (count($excludedcats) > 0){$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";}
+		if (count($excludedcats) > 0)
+			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
 		if ($orderby == "")
 		{
 			$order[0] = " postdate ";
 			$order[1] = " desc ";
 		}
-		else{$order = $this->getBrowseOrder($orderby);}
+		else
+			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $maxage, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -743,41 +723,8 @@ class Releases
 		return $res;
 	}
 
-	public function search($search, $cat=array(-1), $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
+	public function searchSQL($search, $db, $type)
 	{
-		$db = new DB();
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
 		$words = explode(" ", $search);
 		$searchsql = "";
 		$intwordcount = 0;
@@ -785,140 +732,20 @@ class Releases
 		{
 			foreach ($words as $word)
 			{
-				if ($word != "")
+			if ($word != "")
 				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
 					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString(substr($word, 1)."%"));
 					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
+						$searchsql = sprintf(" and releases.%s not like %s", $type, $db->escapeString("%".substr($word, 2)."%"));
 					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString("%".$word."%"));
 
 					$intwordcount++;
 				}
 			}
 		}
-
-		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
-
-		if ($orderby == "")
-		{
-			$order[0] = " postdate ";
-			$order[1] = " desc ";
-		}
-		else
-			$order = $this->getBrowseOrder($orderby);
-
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);
-		$orderpos = strpos($sql, "order by");
-		$wherepos = strpos($sql, "where");
-		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
-
-		$countres = $db->queryOneRow($sqlcount);
-		$res = $db->query($sql);
-		if (count($res) > 0)
-			$res[0]['_totalrows'] = $countres['num'];
-
-		return $res;
-	}
-
-	public function searchsubject($search, $cat=array(-1), $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
-	{
-		$db = new DB();
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $search);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.name like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.name not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
-
-		if ($orderby == "")
-		{
-			$order[0] = " postdate ";
-			$order[1] = " desc ";
-		}
-		else
-			$order = $this->getBrowseOrder($orderby);
-
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);
-		$orderpos = strpos($sql, "order by");
-		$wherepos = strpos($sql, "where");
-		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
-
-		$countres = $db->queryOneRow($sqlcount);
-		$res = $db->query($sql);
-		if (count($res) > 0)
-			$res[0]['_totalrows'] = $countres['num'];
-
-		return $res;
+		return $searchsql;
 	}
 
 	public function searchbyRageId($rageId, $series="", $episode="", $offset=0, $limit=100, $name="", $cat=array(-1), $maxage=-1)
