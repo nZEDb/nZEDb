@@ -17,7 +17,7 @@ class Backfill
 	}
 
 	//
-	// Update all active groups categories and descriptions
+	// Backfill groups using user specified time/date.
 	//
 	function backfillAllGroups($groupName='')
 	{
@@ -58,6 +58,7 @@ class Backfill
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
 	}
 
+	// Backfill 1 group using time.
 	function backfillGroup($nntp, $nntpc, $groupArr, $left)
 	{
 		$db = new DB();
@@ -80,35 +81,20 @@ class Backfill
 		// Select the group.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($datac))
+		if(PEAR::isError($datac))
 		{
-			$nntpc->doQuit();
-			unset($nntpc);
-			$nntpc = new Nntp;
-			$nntpc->doConnect();
-			$datac = $nntpc->selectGroup($groupArr['name']);
-			if (PEAR::isError($datac))
-			{
-				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
-				$nntpc->doQuit();
+			$datac = $nntpc->dataError($nntpc, $groupArr['name'], false);
+			if ($datac === false)
 				return;
-			}
 		}
 
+		//No compression.
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data))
+		if(PEAR::isError($data))
 		{
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnectNC();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
-				$nntp->doQuit();
+			$data = $nntp->dataError($nntp, $groupArr['name'], false);
+			if ($data === false)
 				return;
-			}
 		}
 
 		// Get targetpost based on days target.
@@ -140,7 +126,7 @@ class Backfill
 				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
 				" days.".$n."Local first = ".number_format($groupArr['first_record'])." (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
-				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost".$n;
+				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost\n";
 
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
@@ -151,9 +137,8 @@ class Backfill
 		$first = $last - $binaries->messagebuffer + 1;
 		// Just in case this is the last chunk we needed.
 		if($targetpost > $first)
-		{
 			$first = $targetpost;
-		}
+
 		while($done === false)
 		{
 			$binaries->startLoop = microtime(true);
@@ -171,11 +156,12 @@ class Backfill
 				$last = $first - 1;
 				$first = $last - $binaries->messagebuffer + 1;
 				if($targetpost > $first)
-				{
 					$first = $targetpost;
-				}
+
 			}
 		}
+
+		//Refresh the connection, sometimes it times out at this point.
 		$nntp->doQuit();
 		$nntp->doConnect();
 		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
@@ -189,15 +175,15 @@ class Backfill
 	}
 
 	//
-	// Safe backfill using posts.
+	// Safe backfill using posts. Going back to a date specified by the user on the site settings.
+	// This does 1 group for x amount of parts until it reaches the date.
 	//
 	function safeBackfill($articles='')
 	{
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
-		$db = new DB();
-		$n = $this->n;
 
+		$db = new DB();
 		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($this->safebdate)));
 
 		if (!$groupname)
@@ -207,13 +193,13 @@ class Backfill
 	}
 
 	//
-	// Update all active groups categories and descriptions using article numbers instead of date.
+	// Backfill groups using user specified article count.
 	//
-	function backfillPostAllGroups($groupName='', $articles = '', $type='')
+	function backfillPostAllGroups($groupName='', $articles='', $type='')
 	{
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
-		$n = $this->n;
+
 		$groups = new Groups();
 		if ($groupName != '')
 		{
@@ -229,13 +215,12 @@ class Backfill
 				$res = $groups->getActiveByDateBackfill();
 		}
 
-		$counter = 1;
 		if (@$res)
 		{
-			// We do not use interval here, so use a compressed connection only - testing.
+			$counter = 1;
 			foreach($res as $groupArr)
 			{
-				echo $n."Starting group ".$counter." of ".sizeof($res).".\n";
+				echo "\nStarting group ".$counter." of ".sizeof($res).".\n";
 				$this->backfillPostGroup($groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}
@@ -244,7 +229,7 @@ class Backfill
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
 	}
 
-	function backfillPostGroup($groupArr, $articles = '', $left)
+	function backfillPostGroup($groupArr, $articles='', $left)
 	{
 		$db = new DB();
 		$binaries = new Binaries();
@@ -256,20 +241,11 @@ class Backfill
 		
 		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data))
+		if(PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.";
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
-				$nntp->doQuit();
+			$data = $nntp->dataError($nntp, $groupArr['name'], false);
+			if ($data === false)
 				return;
-			}
 		}
 
 		// Get targetpost based on days target.
@@ -304,7 +280,7 @@ class Backfill
 				" days.".$n."Our oldest article is: ".number_format($groupArr['first_record'])." which is (".
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).$n.
-				" days old).".$n;
+				" days old).\n";
 
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
@@ -335,9 +311,8 @@ class Backfill
 				$last = $first - 1;
 				$first = $last - $binaries->messagebuffer + 1;
 				if($targetpost > $first)
-				{
 					$first = $targetpost;
-				}
+
 			}
 		}
 		$nntp->doQuit();
@@ -370,23 +345,15 @@ class Backfill
 			$data = $nntp->selectGroup($group);
 			if(PEAR::isError($data))
 			{
-				$nntp->doQuit();
-				unset($nntp);
-				$nntp = new Nntp;
-				$nntp->doConnectNC();
-				$data = $nntp->selectGroup($group);
-				if(PEAR::isError($data))
-				{
-					echo "Error {$data->code}: {$data->message}.\n";
+				$data = $nntp->dataError($nntp, $group, false);
+				if ($data === false)
 					return;
-				}
 			}
+
 			$msgs = $nntp->getOverview($post."-".$post,true,true);
 			if(PEAR::isError($msgs))
 			{
 				$nntp->doQuit();
-				unset($nntp);
-				$nntp = new Nntp;
 				$nntp->doConnectNC();
 				$data = $nntp->selectGroup($group);
 				// Try to get different article.
@@ -442,23 +409,12 @@ class Backfill
 			$nntp->doConnect();
 		}
 
-		// Select the group.
 		$data = $nntp->selectGroup($group);
-		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($data))
+		if(PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($group);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}\nReturning from daytopost.\n";
-				$nntp->doQuit();
+			$data = $nntp->dataError($nntp, $group, false);
+			if ($data === false)
 				return;
-			}
 		}
 
 		// Goal timestamp.
@@ -541,11 +497,9 @@ class Backfill
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
+		// Scan failed - skip group.
 		if ($lastId === false)
-		{
-			// Scan failed - skip group.
 			return;
-		}
 	}
 
 	function getFinal($group, $first)

@@ -101,7 +101,7 @@ Class NZBcontents
 
 				if ($foundnfo !== true)
 				{
-					if (preg_match('/\.\b(nfo|inf|ofn)\b(?![ \.\-])/i', $subject))
+					if (preg_match('/\.\b(nfo|inf|ofn)\b(?![ .-])/i', $subject))
 					{
 						$messageid = $nzbcontents->segments->segment;
 						$foundnfo = true;
@@ -175,7 +175,7 @@ Class NZBcontents
 				$subject = $nzbcontents->attributes()->subject;
 				if (preg_match('/(yEnc\s\(1\/1\)|\(1\/1\)$)/i', $subject))
 				{
-					if (preg_match('/\.([a-z][a-z0-9]{2,3})(?:\"|$)/i', $subject, $matches))
+					if (preg_match('/\.([a-z][a-z0-9]{2,3})(?:"|$)/i', $subject, $matches))
 					{
 						$ext[] = $matches[1];
 					}
@@ -197,7 +197,7 @@ Class NZBcontents
 			$ext = array_keys($ext);
 			$ext = implode("|", $ext);
 			$notout = '/\.(\d{2,4}|apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf';
-			$notout = $notout.'|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip';
+			$notout .= '|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip';
 
 			if (strlen($ext) > 0)
 				$notout = $notout."|".$ext;
@@ -304,13 +304,9 @@ Class NZBcontents
 				{
 					// Make sure it is JFIF header.
 					if (substr($bytes, 0, 4) == "JFIF")
-					{
 						return true;
-					}
 					else
-					{
 						return false;
-					}
 				}
 			}
 		}
