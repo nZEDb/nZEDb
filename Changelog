@@ -1,4 +1,4 @@
-08102013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
+08112013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
 08102013 -> kevin    -> Clean up postprocess.php
 08092013 -> kevin    -> More regex in namecleaning.
 08082013 -> kevin    -> Fix a bug in releases.php where releases under minimum file/size setting were not deleted.
