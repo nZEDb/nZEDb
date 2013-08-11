@@ -621,10 +621,6 @@ class Releases
 				$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);
 		}
 
-		//
-		// If the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
 		if ($searchname == "-1")
 			$searchnamesql = "";
 		else
@@ -723,8 +719,11 @@ class Releases
 		return $res;
 	}
 
+	// Creates a query for search based on the type of search.
 	public function searchSQL($search, $db, $type)
 	{
+		// If the query starts with a ^ it indicates the search is looking for items which start with the term
+		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(" ", $search);
 		$searchsql = "";
 		$intwordcount = 0;
