@@ -1254,18 +1254,6 @@ class Releases
 		return $retcount;
 	}
 
-	public function processReleasesStage4_loop($groupID, $echooutput=false)
-	{
-		$tot_retcount = 0;
-		do
-		{
-			$retcount = $this->processReleasesStage4($groupID);
-			$tot_retcount = $tot_retcount + $retcount;
-		} while ($retcount > 0);
-
-		return $tot_retcount;
-	}
-
 	/*
 	 *	Adding this in to delete releases before NZB's are created.
 	 */
@@ -1427,18 +1415,6 @@ class Releases
 		elseif ($this->echooutput)
 			echo $timing;
 		return $nzbcount;
-	}
-
-	public function processReleasesStage5_loop($groupID, $echooutput=false)
-	{
-		$tot_nzbcount = 0;
-		do
-		{
-			$nzbcount = $this->processReleasesStage5($groupID);
-			$tot_nzbcount = $tot_nzbcount + $nzbcount;
-		} while ($nzbcount > 0);
-
-		return $tot_nzbcount;
 	}
 
 	public function processReleasesStage5b($groupID, $echooutput=true)
