@@ -1209,18 +1209,19 @@ class Releases
 	public function processReleasesStage4($groupID, $echooutput=false)
 	{
 		$db = new DB();
-		$page = new Page();
 		$consoletools = new ConsoleTools();
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
-		$namecleaning = new nameCleaning();
-		$predb = new  Predb();
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
 		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
+			$namecleaning = new nameCleaning();
+			$predb = new  Predb();
+			$page = new Page();
+
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
@@ -1248,9 +1249,8 @@ class Releases
 			}
 		}
 
-		$timing = $consoletools->convertTime(TIME() - $stage4);
 		if ($this->echooutput)
-			echo $retcount." Releases added in ".$timing.".";
+			echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
 		return $retcount;
 	}
 
@@ -1273,11 +1273,10 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
+			echo "\n\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
 		$stage4dot5 = TIME();
 
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
@@ -1382,7 +1381,7 @@ class Releases
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
 		if ($this->echooutput && $delcount > 0)
-				echo "Deleted ".$delcount." releases smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." releases smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}
@@ -1399,15 +1398,13 @@ class Releases
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$nzbcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 
 		// Create NZB.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$start_nzbcount = $nzbcount;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
@@ -1426,10 +1423,9 @@ class Releases
 
 		$timing = $consoletools->convertTime(TIME() - $stage5);
 		if ($this->echooutput && $nzbcount > 0)
-			echo $n.$nzbcount." NZBs created in ". $timing.".";
-		else
-			if ($this->echooutput)
-				echo $nzbcount." NZBs created in ". $timing.".";
+			echo "\n".$nzbcount." NZBs created in ". $timing.".";
+		elseif ($this->echooutput)
+			echo $timing;
 		return $nzbcount;
 	}
 
@@ -1447,31 +1443,29 @@ class Releases
 
 	public function processReleasesStage5b($groupID, $echooutput=true)
 	{
-		$db = new DB();
 		$page = new Page();
-		$n = "\n";
-		$consoletools = new consoleTools();
-		$iFoundcnt = 0;
-
-		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
-
 		if ($page->site->lookup_reqids == 1)
 		{
+			$db = new DB();
+			$consoletools = new consoleTools();
+			$iFoundcnt = 0;
+			$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 			$stage8 = TIME();
-			if ($this->echooutput)
-				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
-			// Mark records that don't have regex titles
+			if ($this->echooutput)
+				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
+
+			// Mark records that don't have regex titles.
 			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
 
-			// look for records that potentially have regex titles
+			// Look for records that potentially have regex titles.
 			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
 										"WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
 
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				// Try to get reqid
+				// Try to get reqid.
 				$requestIDtmp = explode("]", substr($rowrel['name'], 1));
 				$bFound = false;
 				$newTitle = "";
@@ -1492,22 +1486,21 @@ class Releases
 
 				if ($bFound)
 				{
-					$db->query("UPDATE releases SET reqidstatus = 1, searchname = " . $db->escapeString($newTitle) . " WHERE ID = " . $rowrel['ID']);
+					$db->query("UPDATE releases SET reqidstatus = 1, searchname = ". $db->escapeString($newTitle)." WHERE ID = ". $rowrel['ID']);
 
 					if ($this->echooutput)
-						echo $n."Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
+						echo "\nUpdated requestID " . $requestID . " to release name: ".$newTitle."\n";
 				}
 				else
 				{
 					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
-					//if ($this->echooutput)
+					if ($this->echooutput)
 						echo ".";
 				}
 			}
 
-			$timing = $consoletools->convertTime(TIME() - $stage8);
 			if ($this->echooutput)
-				echo $iFoundcnt . " Releases updated in " . $timing . ".";
+				echo $iFoundcnt." Releases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
 		}
 	}
 
@@ -1515,17 +1508,15 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$where = (!empty($groupID)) ? "WHERE relnamestatus = 0 AND groupID = " . $groupID : "WHERE relnamestatus = 0";
 
 		// Categorize releases.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 6 -> Categorize and post process releases.\033[0m\n";
 		$stage6 = TIME();
 		if ($categorize == 1)
-		{
 			$this->categorizeRelease("name", $where);
-		}
+
 		if ($postproc == 1)
 		{
 			$postprocess = new PostProcess(true);
@@ -1534,7 +1525,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo "Post-processing is done in post window.".$n;
+				echo "Post-processing is not running through releases.php, in tmux or screen it might be running through another script.\n";
 		}
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage6).".";
@@ -1565,7 +1556,7 @@ class Releases
 
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
-			}
+	}
 
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
@@ -1574,14 +1565,13 @@ class Releases
 		$category = new Category();
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 7b -> Delete old releases and passworded releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 7b -> Delete old releases and passworded releases.\033[0m\n";
 		$stage7 = TIME();
 
 		// old collections that were missed somehow.
@@ -1689,7 +1679,7 @@ class Releases
 			}
 		}
 
-		// misc other
+		// Misc other.
 		if ($page->site->miscotherretentionhours > 0) {
 			$sql = sprintf("select ID, guid from releases where categoryID = %d AND adddate <= NOW() - INTERVAL %d HOUR", CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
 
@@ -1707,13 +1697,13 @@ class Releases
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
-			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
+			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.\n";
 		else
 			if ($this->echooutput)
-				echo ". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.".$n;
+				echo ". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.\n";
 
 		if ($this->echooutput)
-			echo $consoletools->convertTime(TIME() - $stage7).".".$n;
+			echo $consoletools->convertTime(TIME() - $stage7).".\n";
 	}
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
@@ -1724,9 +1714,7 @@ class Releases
 		else
 			$PYTHON = "python -OO";
 
-		$tot_retcount = 0;
-		$tot_nzbcount = 0;
-		$loops = 0;
+		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do
 		{
 			$retcount = $this->processReleasesStage4($groupID);
@@ -1734,9 +1722,7 @@ class Releases
 			$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == "1")
-			{
 				$this->processReleasesStage5b($groupID, $echooutput);
-			}
 			elseif ($this->requestids == "2")
 			{
 				$consoletools = new ConsoleTools();
@@ -1744,17 +1730,16 @@ class Releases
 				if ($this->echooutput)
 					echo "\n\033[1;33mStage 5b -> Request ID Threaded lookup.\033[0m\n";
 				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
-				$timing = $consoletools->convertTime(TIME() - $stage8);
 				if ($this->echooutput)
-					echo "\nReleases updated in " . $timing . ".";
-
+					echo "\nReleases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
 			}
+
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
 			$loops++;
-		//this loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
-		} while ($nzbcount > 0 || $retcount > 0 || $loops < 3);
+		// This loops as long as there were releases created or 1 loop, otherwise, you could loop indefinately
+		} while ($nzbcount > 0 || $retcount > 0 || $loops < 1);
 
 		return $tot_retcount;
 	}
@@ -1768,7 +1753,6 @@ class Releases
 		$groups = new Groups();
 		$page = new Page();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$groupID = "";
 
 		if (!empty($groupName))
@@ -1779,7 +1763,7 @@ class Releases
 
 		$this->processReleases = microtime(true);
 		if ($this->echooutput)
-			echo $n."Starting release update process (".date("Y-m-d H:i:s").")".$n;
+			echo "\nStarting release update process (".date("Y-m-d H:i:s").")\n";
 
 		if (!file_exists($page->site->nzbpath))
 		{
@@ -1791,21 +1775,14 @@ class Releases
 		$this->processReleasesStage1($groupID, $echooutput=false);
 		$this->processReleasesStage2($groupID, $echooutput=false);
 		$this->processReleasesStage3($groupID, $echooutput=false);
-		//$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
-		//$this->processReleasesStage4dot5($groupID, $echooutput=false);
-		//$this->processReleasesStage5_loop($groupID, $echooutput=false);
-		//$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
-		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
-		//Print amount of added releases and time it took.
-		$timeUpdate = $consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2));
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
 
-		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
+		//Print amount of added releases and time it took.
 		if ($this->echooutput)
-			echo "Completed adding ".number_format($releasesAdded)." releases in ".$timeUpdate.". ".number_format(array_shift($cremain))." collections waiting to be created (still incomplete or in queue for creation).".$n;
+			echo "Completed adding ".number_format($releasesAdded)." releases in ".$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).". ".number_format(array_shift($db->queryOneRow("select count(ID) from collections " . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n";
 		return $releasesAdded;
 	}
 
