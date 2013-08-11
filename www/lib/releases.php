@@ -639,6 +639,7 @@ class Releases
 		return $catsrch;
 	}
 
+	// Function for searching on the site (by subject, searchname or advanced).
 	public function search($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array(), $type="basic")
 	{
 		$db = new DB();
@@ -1010,20 +1011,16 @@ class Releases
 		}
 	}
 
-	//
 	// Sends releases back to other->misc.
-	//
 	public function resetCategorize($where="")
 	{
 		$db = new DB();
 		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
 	}
 
-	//
 	// Categorizes releases.
 	// $type = name or searchname
 	// Returns the quantity of categorized releases.
-	//
 	public function categorizeRelease($type, $where="", $echooutput=false)
 	{
 		$db = new DB();
@@ -1038,9 +1035,7 @@ class Releases
 			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
 			$relcount ++;
 			if ($this->echooutput)
-			{
 				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
-			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
 			echo "\n";
@@ -1051,10 +1046,9 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 
 		if ($this->echooutput)
-			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
+			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m\n";
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
@@ -1062,21 +1056,21 @@ class Releases
 		$db->query("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID)
 						in (c.totalFiles, c.totalFiles + 1)) AND c.totalFiles > 0 AND c.filecheck = 0 ".$where);
 
-		// Set filecheck to 16 if theres a file that starts with 0.
+		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->query("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0 ".$where."
 						GROUP BY b.collectionID) AND c.totalFiles > 0 AND c.filecheck = 1");
 
-		// Set filecheck to 15 on everything left over.
+		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
 		$db->query("UPDATE collections set filecheck = 15 where filecheck = 1");
 
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
 		{
-			// If filecheck 15, check if we have all the files then set part check.
+			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts) AND b.partcheck = 0");
 
-			// If filecheck 16, check if we have all the files+1(because of the 0) then set part check.
+			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1) AND b.partcheck = 0");
 		}
@@ -1088,11 +1082,11 @@ class Releases
 							c.groupID = ".$groupID." GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 ) AND b.partcheck = 0");
 		}
 
-		// Set file check to 2 if we have all the parts.
+		// Set filecheck to 2 if partcheck = 1.
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
-		// Set file check to 1 if we don't have all the parts.
+		// Set filecheck to 1 if we don't have all the parts.
 		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
@@ -1107,11 +1101,10 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m".$n;
+			echo "\n\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), c.filecheck = 3 WHERE
@@ -1125,13 +1118,10 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
-		$minsizecounts = 0;
-		$maxsizecounts= 0;
-		$minfilecounts = 0;
+		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
+			echo "\n\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
 		$stage3 = TIME();
 
 		if ($groupID == "")
@@ -1211,7 +1201,7 @@ class Releases
 
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
 		if ($this->echooutput && $delcount > 0)
-				echo "Deleted ".$delcount." collections smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." collections smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage3);
 	}
@@ -1221,14 +1211,13 @@ class Releases
 		$db = new DB();
 		$page = new Page();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		$namecleaning = new nameCleaning();
 		$predb = new  Predb();
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
 		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
@@ -1254,14 +1243,14 @@ class Releases
 				else
 				{
 					if ($this->echooutput)
-						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanerName . ": " . $db->Error() . $n;
+						echo "\033[01;31mError Inserting Release: \033[0m".$cleanerName.": ".$db->Error()."\n";
 				}
 			}
 		}
 
 		$timing = $consoletools->convertTime(TIME() - $stage4);
 		if ($this->echooutput)
-			echo $retcount . " Releases added in " . $timing . ".";
+			echo $retcount." Releases added in ".$timing.".";
 		return $retcount;
 	}
 

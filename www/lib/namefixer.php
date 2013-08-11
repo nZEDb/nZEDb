@@ -209,6 +209,7 @@ class Namefixer
 	// Match a MD5 from the predb to a release.
 	public function matchPredbMD5($md5, $release)
 	{
+		$db = new DB();
 		$matched = 0;
 		$res = $db->query("select title, source from predb where md5 = '".$md5."'");
 		if (count($res) > 0)
