@@ -206,6 +206,44 @@ class Namefixer
         }
     }
 
+	// Match a MD5 from the predb to a release.
+	public function matchPredbMD5($md5, $release)
+	{
+		$matched = 0;
+		$res = $db->query("select title, source from predb where md5 = '".$md5."'");
+		if (count($res) > 0)
+		{
+			foreach ($res as $row)
+			{
+				if ($row["title"] !== $release["searchname"])
+				{
+					$category = new Category();
+					$determinedcat = $category->determineCategory($row["title"], $release["groupID"]);
+
+					if ($echo == 1)
+					{
+						if ($namestatus == 1)
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+						else
+							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+					}
+					if ($this->echooutput)
+					{
+						$groups = new Groups();
+						echo"New name: ".$row["title"]."\n".
+							"Old name: ".$release["searchname"]."\n".
+							"New cat:  ".$category->getNameByID($determinedcat)."\n".
+							"Old cat:  ".$category->getNameByID($release["categoryID"])."\n".
+							"Group:    ".$groups->getByNameByID($release["groupID"])."\n".
+							"Method:   "."predb md5 release name: ".$row["source"]."\n"."\n";
+					}
+					$matched++;
+				}
+			}
+		}
+		return $matched;
+	}
+
     //
     //  Check the array using regex for a clean name.
     //
