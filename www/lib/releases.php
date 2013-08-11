@@ -580,39 +580,72 @@ class Releases
 		return $db->query($sql);
 	}
 
+	// Creates part of a query for searches based on the type of search.
+	public function searchSQL($search, $db, $type)
+	{
+		// If the query starts with a ^ it indicates the search is looking for items which start with the term
+		// still do the fulltext match, but mandate that all items returned must start with the provided word.
+		$words = explode(" ", $search);
+		$searchsql = "";
+		$intwordcount = 0;
+		if (count($words) > 0)
+		{
+			foreach ($words as $word)
+			{
+			if ($word != "")
+				{
+					if ($intwordcount == 0 && (strpos($word, "^") === 0))
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString(substr($word, 1)."%"));
+					elseif (substr($word, 0, 2) == '--')
+						$searchsql = sprintf(" and releases.%s not like %s", $type, $db->escapeString("%".substr($word, 2)."%"));
+					else
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString("%".$word."%"));
+
+					$intwordcount++;
+				}
+			}
+		}
+		return $searchsql;
+	}
+
+	// Creates part of a query for searches requiring the categoryID's.
+	public function categorySQL($cat)
+	{
+		$catsrch = "";
+		if (count($cat) > 0 && $cat[0] != -1)
+		{
+			$categ = new Category();
+			$catsrch = " and (";
+			foreach ($cat as $category)
+			{
+				if ($category != -1)
+				{
+					if ($categ->isParent($category))
+					{
+						$children = $categ->getChildren($category);
+						$chlist = "-99";
+						foreach ($children as $child)
+							$chlist.=", ".$child['ID'];
+
+						if ($chlist != "-99")
+								$catsrch .= " releases.categoryID in (".$chlist.") or ";
+					}
+					else
+						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
+				}
+			}
+			$catsrch.= "1=2 )";
+		}
+		return $catsrch;
+	}
+
 	public function search($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array(), $type="basic")
 	{
 		$db = new DB();
 		$groups = new Groups();
-		
-		$catsrch = "";
-		if ($type !== "advanced")
-		{
-			if (count($cat) > 0 && $cat[0] != -1)
-			{
-				$catsrch = " and (";
-				foreach ($cat as $category)
-				{
-					if ($category != -1)
-					{
-						$categ = new Category();
-						if ($categ->isParent($category))
-						{
-							$children = $categ->getChildren($category);
-							$chlist = "-99";
-							foreach ($children as $child)
-								$chlist.=", ".$child['ID'];
 
-							if ($chlist != "-99")
-									$catsrch .= " releases.categoryID in (".$chlist.") or ";
-						}
-						else
-							$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-				$catsrch.= "1=2 )";
-			}
-		}
+		if ($type !== "advanced")
+			$catsrch = $this->categorySQL($cat);
 		else
 		{
 			if ($cat == "-1")
@@ -719,34 +752,6 @@ class Releases
 		return $res;
 	}
 
-	// Creates a query for search based on the type of search.
-	public function searchSQL($search, $db, $type)
-	{
-		// If the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word.
-		$words = explode(" ", $search);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-			if ($word != "")
-				{
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql = sprintf(" and releases.%s not like %s", $type, $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-		return $searchsql;
-	}
-
 	public function searchbyRageId($rageId, $series="", $episode="", $offset=0, $limit=100, $name="", $cat=array(-1), $maxage=-1)
 	{
 		$db = new DB();
@@ -774,61 +779,8 @@ class Releases
 			$episode = sprintf(" and releases.episode like %s", $db->escapeString('%'.$episode.'%'));
 		}
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
 			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
@@ -856,61 +808,8 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" AND releases.searchname LIKE '%s' ", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" AND releases.searchname NOT LIKE '%s' ", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" AND releases.searchname LIKE '%s' ", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		$maxage = ($maxage > 0) ? sprintf(" and postdate > now() - interval %d day ", $maxage) : '';
 
@@ -947,61 +846,8 @@ class Releases
 			$imdbId = "";
 		}
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
 			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
