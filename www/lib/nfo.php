@@ -106,7 +106,7 @@ class Nfo
 					$fetchedBinary = $nzbcontents->getNFOfromNZB($guid, $relID, $groupID, $nntp);
 					if (PEAR::isError($fetchedBinary))
 					{
-						echo $n.$n."Error {$fetchedBinary->code}: {$fetchedBinary->message}".$n.$n;
+						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
 						return;
 					}
 				}
