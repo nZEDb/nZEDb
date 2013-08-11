@@ -424,13 +424,10 @@ class Namefixer
     //
     public function nfoCheckMov($release, $echo, $type, $namestatus)
     {
-        echo "1....\n";
         if ($this->relid !== $release["releaseID"] && preg_match('/(?:(\:\s{1,}))(.+?(19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result))
             $this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 1", $echo, $type, $namestatus);
-        echo "2....\n";
         if ($this->relid !== $release["releaseID"] && preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result))
             $this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 2", $echo, $type, $namestatus);
-        echo "3....\n";
         if ($this->relid !== $release["releaseID"] && preg_match('/(?:(\s{2,}))(.+?[\.\-_ ](NTSC|MULTi).+?(MULTi|DVDR)[\.\-_ ].+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result))
             $this->updateRelease($release, $result["2"], $methdod="nfoCheck: Generic Movies 3", $echo, $type, $namestatus);
     }

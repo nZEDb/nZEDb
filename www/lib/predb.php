@@ -362,7 +362,8 @@ Class Predb
 				if($catID = $db->queryOneRow(sprintf("SELECT ID FROM category WHERE title = %s", $db->escapeString($catName))))
 					$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", $db->escapeString($catID["ID"]), $db->escapeString($row["releaseID"])));
 				$db->query(sprintf("UPDATE releases SET relnamestatus = 6 WHERE ID = %d", $row["releaseID"]));
-				echo ".";
+				if($this->echooutput)
+					echo ".";
 				$updated++;
 			}
 		}
@@ -388,7 +389,8 @@ Class Predb
 					$nfo->addReleaseNfo($row["ID"]);
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
-					echo ".";
+					if($this->echooutput)
+						echo ".";
 					$nfos++;
 				}
 			}
