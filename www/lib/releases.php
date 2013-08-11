@@ -1238,7 +1238,7 @@ class Releases
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
 					if ($this->echooutput)
-						echo "Added release ".$cleanRelName.$n;
+						echo "Added release ".$cleanRelName."\n";
 				}
 				else
 				{
