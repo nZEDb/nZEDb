@@ -123,7 +123,7 @@ class Nfo
 					if ($processTvrage == 1)
 					{
 						$rageId = $this->parseRageId($fetchedBinary);
-						if ($rageId !== false && $processTvrage == 1)
+						if ($rageId !== false)
 						{
 							$tvrage = new Tvrage();
 							$show = $tvrage->parseNameEpSeason($arr['name']);

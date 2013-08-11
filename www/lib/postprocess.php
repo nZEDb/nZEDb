@@ -940,7 +940,7 @@ class PostProcess
 			}*/
 
 			// Check if we already have the file or not.
-			if ($test = $this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $relid, $v["name"], $v["size"])) === false)
+			if ($this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $relid, $v["name"], $v["size"])) === false)
 			{
 				$rf = new ReleaseFiles();
 				if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
