@@ -47,7 +47,7 @@ class Backfill
 
 			foreach($res as $groupArr)
 			{
-				echo $n."Starting group ".$counter." of ".sizeof($res).".\n";
+				echo "\nStarting group ".$counter." of ".sizeof($res).".\n";
 				$this->backfillGroup($nntp, $nntpc, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
