@@ -1,11 +1,11 @@
 <?php
 
 //
-// general util functions
+// General util functions.
 //
 
 //
-// central function for sending site email
+// Central function for sending site email.
 //
 function sendEmail($to, $subject, $contents, $from)
 {
@@ -265,87 +265,68 @@ function cp437toUTF($str) {
 	return $out;
 }
 
-// Function inpsired by c0r3@newznabforums for flags on the browse page.
+// Function inpsired by c0r3@newznabforums adds country flags on the browse page.
 function release_flag ($x, $t)
 {
 	$y = "";
-	if(preg_match('/(chinese|Mandarin|\bch\b|\bcn\b)/i', $x))
+	if(preg_match('/\bCzech\b/i', $x))
+		$y = "cz";
+	if(preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $x))
 		$y = "cn";
 	if(preg_match('/German(bed)?/i', $x))
 		$y = "de";
 	if(preg_match('/Danish/i', $x))
 		$y = "dk";
+	if(preg_match('/English|\ben\b/i', $x))
+		$y = "en";
 	if(preg_match('/Spanish/i', $x))
 		$y = "es";
+	if(preg_match('/Finnish/i', $x))
+		$y = "fi";
 	if(preg_match('/French|Vostfr/i', $x))
 		$y = "fr";
-	if(preg_match('/Italian| ita( |$)/i', $x))
+	if(preg_match('/\bGreek\b/i', $x))
+		$y = "gr";
+	if(preg_match('/Hungarian/i', $x))
+		$y = "hu";
+	if(preg_match('/Hebrew|Yiddish/i', $x))
+		$y = "il";
+	if(preg_match('/\bHindi\b/i', $x))
+		$y = "in";
+	if(preg_match('/Italian|\bita\b/i', $x))
 		$y = "it";
-	if(preg_match('/Flemish|Dutch| nl( |$)|NlSub/i', $x))
+	if(preg_match('/Japanese|\bjp\b/i', $x))
+		$y = "jp";
+	if(preg_match('/Korean|\bkr\b/i', $x))
+		$y = "kr";
+	if(preg_match('/Flemish|\b(Dutch|nl)\b|NlSub/i', $x))
 		$y = "nl";
+	if(preg_match('/Norwegian/i', $x))
+		$y = "no";
+	if(preg_match('/Tagalog|Filipino/i', $x))
+		$y = "ph";
+	if(preg_match('/Arabic/i', $x))
+		$y = "pk";
+	if(preg_match('/Polish/i', $x))
+		$y = "pl";
+	if(preg_match('/Portugese/i', $x))
+		$y = "pt";
+	if(preg_match('/Romanian/i', $x))
+		$y = "ro";
+	if(preg_match('/Russian/i', $x))
+		$y = "ru";
 	if(preg_match('/Swe(dish|sub)/i', $x))
 		$y = "se";
-	if(preg_match('/norwegian/i', $x))
-		$y = "no";
-	if(preg_match('/(japanese|jp)/i', $x))
-		$y = "jp";
-	if(preg_match('/(korean|kr\b)/i', $x))
-		$y = "kr";
-	if(preg_match('/(english|\ben\b)/i', $x))
-		$y = "en";
-	if(preg_match('/(russian)/i', $x))
-		$y = "ru";
-	if(preg_match('/(Arabic)/i', $x))
-		$y = "pk";
-	if(preg_match('/(hebrew|yiddish)/i', $x))
-		$y = "il";
-	if(preg_match('/(czech)/i', $x))
-		$y = "cz";
-	if(preg_match('/(turkish)/i', $x))
-		$y = "tr";
-	if(preg_match('/(greek)/i', $x))
-		$y = "gr";
-	if(preg_match('/(hindi)/i', $x))
-		$y = "in";
-	if(preg_match('/(polish)/i', $x))
-		$y = "pl";
-	if(preg_match('/(thai)/i', $x))
+	if(preg_match('/\bThai\b/i', $x))
 		$y = "th";
-	if(preg_match('/(portugese)/i', $x))
-		$y = "pt";
-	if(preg_match('/(romanian)/i', $x))
-		$y = "ro";
-	if(preg_match('/(tagalog|filipino)/i', $x))
-		$y = "ph";
-	if(preg_match('/(finnish)/i', $x))
-		$y = "fi";
-	if(preg_match('/(vietnamese)/i', $x))
-		$y = "vn";
-	if(preg_match('/(hungarian)/i', $x))
-		$y = "hu";
-	if(preg_match('/(Cantonese)/i', $x))
+	if(preg_match('/Turkish/i', $x))
+		$y = "tr";
+	if(preg_match('/Cantonese/i', $x))
 		$y = "tw";
+	if(preg_match('/Vietnamese/i', $x))
+		$y = "vn";
 	if ($y !== "" && $t == "browse")
 		return '<img src="./themes/Default/images/flags/'.$y.'.png" />';
-	else if ($t == "search")
-	{
-		if ($y == "")
-			return false;
-		else
-			return $y;
-	}
-}
-
-// Adds a small image to show the type, video audio etc..
-function release_fileicon ($x, $t)
-{
-	$y = "";
-	if(preg_match('/( |^)((480|720|1080)(i|p)|avc|divx|dvd(-?r(ip)?|\d)?|hd(rip|tv)|s\d{1,3}(d|e)\d{1,3}|(h|x)264|xvid)( |$)/i', $x))
-		$y = "video";
-	else if(preg_match('/ (mp3|flac)( |$)/i', $x))
-		$y = "audio";
-	if ($y !== "" && $t == "browse")
-		return '<img src="./themes/Default/images/multimedia/'.$y.'.png" />';
 	else if ($t == "search")
 	{
 		if ($y == "")
