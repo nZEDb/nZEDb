@@ -378,20 +378,21 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo FROM releases r inner join predb p ON r.ID = p.releaseID WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo, r.completion, r.guid, r.groupID FROM releases r inner join predb p ON r.ID = p.releaseID WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100"))
 		{
 			$nfo = new Nfo($this->echooutput);
+			$nzbcontents = new Nzbcontents($this->echooutput);
 			while ($row = mysqli_fetch_assoc($res))
 			{
 				$buffer = getUrl($row["nfo"]);
 				if ($buffer !== false && strlen($buffer))
 				{
-					$nfo->addReleaseNfo($row["ID"]);
-					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
-					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
-					if($this->echooutput)
-						echo ".";
-					$nfos++;
+					if($nfo->addAlternateNfo($db, $buffer, $row))
+					{
+						if($this->echooutput)
+							echo ".";
+						$nfos++;
+					}
 				}
 			}
 			return $nfos;
@@ -424,9 +425,9 @@ Class Predb
 			while($row = mysqli_fetch_assoc($res))
 			{
 				if (preg_match("/[a-f0-9]{32}/i", $row["name"], $matches))
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row);
+					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput);
 				else if (preg_match("/[a-f0-9]{32}/i", $row["filename"], $matches))
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row);
+					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput);
 			}
 		}
 		return $updated;
