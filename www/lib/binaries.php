@@ -95,7 +95,7 @@ class Binaries
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
+				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
 				$nntp->doQuit();
 				return;
 			}
@@ -324,15 +324,26 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['ID'], $nofiles);
 					
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex. */
+							
+							if (preg_match('/yEnc$/', $cleansubject))
+							{
+								$colnames[] = $cleansubject;
+								$orignames[] = $msg['Subject'];
+							}
+							/**/
+							
+							//If you uncommented the above, comment following line..
+							//$colnames[] = $cleansubject;
+							//$orignames[] = $msg['Subject'];
+							//Until previous line.
 						}
 					}
 
