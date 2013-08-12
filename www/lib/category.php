@@ -943,7 +943,7 @@ class Category
 
 	public function isPC($releasename)
 	{
-		if(!preg_match('/[-._ ](PDTV|PSP|UMD(RIP)?)[-._ ]|SWE6RUS|x264|[-._ ]XXX[-._ ]|Imageset/i', $releasename))
+		if(!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](PDTV|PSP|UMD(RIP)?)[-._ ]|SWE6RUS|x264|[-._ ]XXX[-._ ]|Imageset/i', $releasename))
 		{
 			if($this->isPhone($releasename)){ return true; }
 			if($this->isMac($releasename)){ return true; }
