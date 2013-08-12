@@ -24,9 +24,7 @@ Class NZBcontents
 			return false;
 	}
 
-	//
 	// Confirm that the .nfo file is not something else.
-	//
 	public function isNFO($possibleNFO)
 	{
 		$ok = false;
@@ -56,36 +54,39 @@ Class NZBcontents
 		return $ok;
 	}
 
-	//
-	// Look for an .nfo file in the nzb, return the nfo. Also gets the nzb completion.
-	//
-	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
+	// Returns a XML of the NZB file.
+	public function LoadNZB($guid)
 	{
-		$db = new DB();
-		$nfo = new NFO();
 		$nzb = new NZB();
-		$groups = new Groups();
 		// Fetch the NZB location using the GUID.
 		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
 		{
 			echo "\n".$guid." appears to be missing the nzb file, skipping.\n";
 			return false;
 		}
-		else
+		else if(!$nzbpath = 'compress.zlib://'.$nzbpath)
 		{
-			if(!$nzbpath = 'compress.zlib://'.$nzbpath)
-			{
-				echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
-				return false;
-			}
-			if(!$nzbfile = simplexml_load_file($nzbpath))
-			{
-				echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
-				return false;
-			}
-			$foundnfo = false;
+			echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
+			return false;
+		}
+		else if(!$nzbfile = simplexml_load_file($nzbpath))
+		{
+			echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
+			return false;
+		}
+		else
+			return $nzbfile;
+	}
+
+	// Gets the completion from the NZB, optionally looks if there is an NFO file.
+	public function NZBcompletion($guid, $relID, $groupID, $nfocheck=false)
+	{
+		$nzbfile = $this->LoadNZB($guid);
+		if ($nzbfile !== false)
+		{
+			$messageid = '';
 			$actualParts = $artificialParts = 0;
-			$messageid = "";
+			$foundnfo = false;
 
 			foreach ($nzbfile->file as $nzbcontents)
 			{
@@ -96,10 +97,10 @@ Class NZBcontents
 				}
 
 				$subject = $nzbcontents->attributes()->subject;
-				if(preg_match('/(\d{1,4})\)$/', $subject, $parts))
+				if(preg_match('/(\d+)\)$/', $subject, $parts))
 					$artificialParts = $artificialParts+$parts[1];
 
-				if ($foundnfo !== true)
+				if ($nfocheck !== false && $foundnfo !== true)
 				{
 					if (preg_match('/\.\b(nfo|inf|ofn)\b(?![ .-])/i', $subject))
 					{
@@ -108,6 +109,7 @@ Class NZBcontents
 					}
 				}
 			}
+		
 
 			if($artificialParts <= 0 || $actualParts <= 0)
 				$completion = 0;
@@ -118,20 +120,33 @@ Class NZBcontents
 				$completion = 100;
 
 			$this->updateCompletion($completion, $relID);
+			if ($nfocheck !== false)
+				return $messageid;
+			else
+				return true;
+		}
+	}
 
-			if ($foundnfo !== false && $messageid !== "")
+	//
+	// Look for an .nfo file in the nzb, return the nfo. Also gets the nzb completion.
+	//
+	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
+	{
+		$messageid = $this->NZBcompletion($guid, $relID, $groupID, true);
+		if ($messageid !== "")
+		{
+			$nfo = new NFO();
+			$nfo->addReleaseNfo($relID);
+			$groups = new Groups();
+			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
+			if ($this->isNFO($fetchedBinary) === true)
 			{
-				$nfo->addReleaseNfo($relID);
-				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-				if ($this->isNFO($fetchedBinary) === true)
-				{
-					if ($this->echooutput)
-						echo "+";
-					return $fetchedBinary;
-				}
-				else
-					return false;
+				if ($this->echooutput)
+					echo "+";
+				return $fetchedBinary;
 			}
+			else
+				return false;
 		}
 	}
 
@@ -140,34 +155,9 @@ Class NZBcontents
 	//
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$db = new DB();
-		$nfo = new NFO();
-		$nzb = new NZB();
-		$groups = new Groups();
-		// Fetch the NZB location using the GUID.
-		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+		$nzbfile = $this->LoadNZB($guid);
+		if ($nzbfile !== false)
 		{
-			echo "\n".$guid." appears to be missing the nzb file, skipping.\n";
-			$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
-			return false;
-		}
-		else
-		{
-			if(!$nzbpath = 'compress.zlib://'.$nzbpath)
-			{
-				echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
-				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
-				return false;
-			}
-			if(!$nzbfile = simplexml_load_file($nzbpath))
-			{
-				echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
-				$db->query(sprintf("update releases set nzbstatus = 2 where ID = %d", $relID));
-				return false;
-			}
-			$foundnfo = $failed = false;
-			$groupName = $groups->getByNameByID($groupID);
-
 			// Ignore common file extensions from the post
 			$ext = array();
 			foreach ($nzbfile->file as $nzbcontents)
@@ -203,6 +193,10 @@ Class NZBcontents
 				$notout = $notout."|".$ext;
 			$notout = $notout.")/i";
 
+			$db = new DB();
+			$groups = new Groups();
+			$groupName = $groups->getByNameByID($groupID);
+			$foundnfo = $failed = false;
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
@@ -222,15 +216,16 @@ Class NZBcontents
 						}
 						else
 						{
-								// NFO download failed, increment attempts.
-								$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
-								$failed = true;
+							// NFO download failed, increment attempts.
+							$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
+							$failed = true;
 						}
 					}
 				}
 			}
 			if ($foundnfo !== false && $failed == false)
 			{
+				$nfo = new NFO();
 				$nfo->addReleaseNfo($relID);
 				if ($this->echooutput)
 					echo "*";
@@ -251,6 +246,8 @@ Class NZBcontents
 				return false;
 			}
 		}
+		else
+			return false;
 	}
 
 	public function nzblist($guid='')

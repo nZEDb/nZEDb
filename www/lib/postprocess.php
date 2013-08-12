@@ -301,7 +301,7 @@ class PostProcess
 		//
 		if ($id != '')
 		{
-			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r left join category c on c.ID = r.categoryID where r.ID = %d", $id);
+			$query = sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus, r.completion from releases r left join category c on c.ID = r.categoryID where r.ID = %d", $id);
 			$result = $this->db->query($query);
 		}
 		else
@@ -312,7 +312,7 @@ class PostProcess
 				$result = 0;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus from releases r
+					$result = $this->db->query(sprintf("select r.ID, r.guid, r.name, c.disablepreview, r.size, r.groupID, r.nfostatus, r.completion from releases r
 						left join category c on c.ID = r.categoryID
 						where r.size < %s and r.passwordstatus between %d and -1 and (r.haspreview = -1 and c.disablepreview = 0) and nzbstatus = 1
 						order by r.postdate desc limit %d", $this->maxsize*1073741824, $i, $this->addqty));
@@ -388,7 +388,7 @@ class PostProcess
 				$this->password = $this->nonfo = $notmatched = $flood = $foundcontent = false;
 				
 				// Make sure we don't already have an nfo.
-				if ($rel['nfostatus'] === 0)
+				if ($rel['nfostatus'] !== 1)
 					$this->nonfo = true;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
@@ -569,7 +569,7 @@ class PostProcess
 								if ($this->echooutput)
 									echo "b";
 								$notinfinite++;
-								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel["ID"], $rel["nfostatus"], $rarFile["title"]);
+								$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile["title"]);
 								if ($this->password)
 									$passStatus[] = Releases::PASSWD_RAR;
 
@@ -621,7 +621,7 @@ class PostProcess
 
 												$r["range"] = $range;
 												if (!isset($r["error"]) && !preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $r["name"]))
-													$this->addfile($r, $rel["ID"], $rar);
+													$this->addfile($r, $rel, $rar);
 											}
 										}
 									}
@@ -918,7 +918,7 @@ class PostProcess
 	}
 	}
 
-	function addfile($v, $relid, $rar = false)
+	function addfile($v, $release, $rar = false)
 	{
 		// Only process if not a support file, or file segment.
 		if (!isset($v["error"]) && !preg_match($this->supportfiles.")$/i", $v["name"]))
@@ -935,15 +935,15 @@ class PostProcess
 
 			/*if (preg_match("/\.zip$/i", $v["name"]))
 			{
-				$files = $this->processReleaseZips($tmpdata, false, false, $relid);
+				$files = $this->processReleaseZips($tmpdata, false, false, $release["ID"]);
 				var_dump($files);
 			}*/
 
 			// Check if we already have the file or not.
-			if ($this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $relid, $v["name"], $v["size"])) === false)
+			if ($this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $release["ID"], $v["name"], $v["size"])) === false)
 			{
 				$rf = new ReleaseFiles();
-				if ($rf->add($relid, $v["name"], $v["size"], $v["date"], $v["pass"]))
+				if ($rf->add($release["ID"], $v["name"], $v["size"], $v["date"], $v["pass"]))
 				{
 					if ($this->echooutput)
 					{
@@ -962,12 +962,14 @@ class PostProcess
 					if ($nzbcontents->isNFO($tmpdata))
 					{
 						$nfo = new Nfo($this->echooutput);
-						$nfo->addReleaseNfo($relid);
-						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $relid));
-						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+						$nfo->addReleaseNfo($release["ID"]);
+						$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($tmpdata), $release["ID"]));
+						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
 						if ($this->echooutput)
 							echo "n";
 						$this->nonfo = false;
+						if ($release["completion"] == 0)
+							$nzbcontents->NZBcompletion($release["guid"], $release["ID"], $release["groupID"]);
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -985,7 +987,7 @@ class PostProcess
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open = false, $data = false, $relid = 0)
+	function processReleaseZips($fetchedBinary, $open = false, $data = false, $release)
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
@@ -1026,16 +1028,18 @@ class PostProcess
 					if ($file["compressed"] !== 1)
 					{
 						$nzbcontents = new NZBcontents($this->echooutput);
-						if ($nzbcontents->isNFO($thisdata) && $relid > 0)
+						if ($nzbcontents->isNFO($thisdata) && $release["ID"] > 0)
 						{
 							$this->debug("adding zip nfo");
 							$nfo = new Nfo($this->echooutput);
-							$nfo->addReleaseNfo($relid);
-							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
-							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+							$nfo->addReleaseNfo($release["ID"]);
+							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $release["ID"]));
+							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
 							if ($this->echooutput)
 								echo "n";
 							$this->nonfo = false;
+							if ($release["completion"] == 0)
+								$nzbcontents->NZBcompletion($release["guid"], $release["ID"], $release["groupID"]);
 						}
 					}
 					else if ($dezip !== false && $file["compressed"] === 1)
@@ -1050,11 +1054,13 @@ class PostProcess
 								$this->debug("adding compressed zip nfo");
 								$nfo = new Nfo($this->echooutput);
 								$nfo->addReleaseNfo($relid);
-								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $relid));
-								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
+								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $release["ID"]));
+								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
 								if ($this->echooutput)
 									echo "n";
 								$this->nonfo = false;
+								if ($release["completion"] == 0)
+									$nzbcontents->NZBcompletion($release["guid"], $release["ID"], $release["groupID"]);
 							}
 						}
 					}
@@ -1066,7 +1072,7 @@ class PostProcess
 					{
 						foreach ($tmpfiles as $f)
 						{
-							$ret = $this->addfile($f, $relid);
+							$ret = $this->addfile($f, $release);
 							$files[] = $f;
 						}
 					}
@@ -1149,7 +1155,7 @@ class PostProcess
 	}
 
 	// Open the rar, see if it has a password, attempt to get a file.
-	function processReleaseFiles($fetchedBinary, $relid, $nfostatus, $name)
+	function processReleaseFiles($fetchedBinary, $release, $name)
 	{
 		$retval = array();
 		$rar = new ArchiveInfo();
@@ -1218,7 +1224,7 @@ class PostProcess
 						if (preg_match('/\.zip$/i', $file["name"]))
 						{
 							$zipdata = $rar->getFileData($file["name"], $file["source"]);
-							$data = $this->processReleaseZips($zipdata, false, true , $relid);
+							$data = $this->processReleaseZips($zipdata, false, true , $release);
 
 							if ($data != false)
 							{
@@ -1286,7 +1292,7 @@ class PostProcess
 		else
 		{
 			// Not a rar file, try it as a ZIP file.
-			$files = $this->processReleaseZips($fetchedBinary, false, false , $relid);
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $release);
 			if ($files !== false)
 			{
 				if ($this->echooutput)
@@ -1330,7 +1336,7 @@ class PostProcess
 		foreach ($retval as $k => $v)
 		{
 			if (!preg_match($this->supportfiles."|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i", $v["name"]) && count($retval) > 0)
-				$this->addfile($v, $relid, $rar);
+				$this->addfile($v, $release, $rar);
 			else
 				unset($retval[$k]);
 		}

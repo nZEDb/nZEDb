@@ -378,9 +378,10 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo FROM releases r inner join predb p ON r.ID = p.releaseID WHERE p.nfo IS NOT NULL AND r.nfostatus = 0 LIMIT 100"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo, r.completion, r.guid, r.groupID FROM releases r inner join predb p ON r.ID = p.releaseID WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100"))
 		{
 			$nfo = new Nfo($this->echooutput);
+			$nzbcontents = new Nzbcontents($this->echooutput);
 			while ($row = mysqli_fetch_assoc($res))
 			{
 				$buffer = getUrl($row["nfo"]);
@@ -392,6 +393,8 @@ Class Predb
 					if($this->echooutput)
 						echo ".";
 					$nfos++;
+					if ($row["completion"] == 0)
+						$nzbcontents->NZBcompletion($row["guid"], $row["ID"], $row["groupID"]);
 				}
 			}
 			return $nfos;
