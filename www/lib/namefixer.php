@@ -207,7 +207,7 @@ class Namefixer
     }
 
 	// Match a MD5 from the predb to a release.
-	public function matchPredbMD5($md5, $release, $echo, $echooutput)
+	public function matchPredbMD5($md5, $release, $echo, $namestatus, $echooutput)
 	{
 		$db = new DB();
 		$matched = 0;
@@ -228,7 +228,7 @@ class Namefixer
 						else
 							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
 					}
-					if ($echooutpu)
+					if ($echooutput)
 					{
 						$groups = new Groups();
 						echo"New name: ".$row["title"]."\n".

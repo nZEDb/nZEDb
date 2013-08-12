@@ -424,9 +424,9 @@ Class Predb
 			while($row = mysqli_fetch_assoc($res))
 			{
 				if (preg_match("/[a-f0-9]{32}/i", $row["name"], $matches))
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $this->echooutput);
+					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput);
 				else if (preg_match("/[a-f0-9]{32}/i", $row["filename"], $matches))
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $this->echooutput);
+					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput);
 			}
 		}
 		return $updated;
