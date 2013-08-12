@@ -275,9 +275,7 @@
 
 			$xml_response = curl_exec($ch);
 
-			// If cURL doesn't work for you, then use the 'file_get_contents'.
-			function as given below.
-			*/
+			// If cURL doesn't work for you, then use the 'file_get_contents' as function as given below.
 			//$xml_response = file_get_contents($request);
 
 			if ($xml_response === False)
