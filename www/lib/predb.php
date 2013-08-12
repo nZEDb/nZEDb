@@ -348,6 +348,15 @@ Class Predb
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
 	public function matchPredb()
 	{
+		/*
+		 * For future reference, mysql 5.6 innodb has fulltext searching support.
+		 * INSERT INTO releases (name) VALUES ('[149787]-[FULL]-[#a.b.teevee]-[ The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F ]-[1/1] - "The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F.nzb" yEnc');
+		 * ALTER TABLE releases ADD FULLTEXT(name);
+		 * SELECT * FROM releases WHERE MATCH (name) AGAINST ('"The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F"' IN BOOLEAN MODE);
+		 * 
+		 * In myisam this is much faster than SELECT * FROM releases WHERE name LIKE '%The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F%';
+		 * So I'm guessing in innodb it will be the same.
+		 */
 		$db = new DB();
 		$updated = 0;
 		if($this->echooutput)
