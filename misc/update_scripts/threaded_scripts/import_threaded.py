@@ -77,7 +77,7 @@ def main(args):
 
 	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 		print("We will be using filename as searchname")
-	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas))))
+	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas[0]))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):

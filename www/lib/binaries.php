@@ -383,7 +383,7 @@ class Binaries
 				switch($type)
 				{
 					case 'backfill':
-						//don't add missing articles
+						// Don't add missing articles.
 						break;
 					case 'partrepair':
 					case 'update':

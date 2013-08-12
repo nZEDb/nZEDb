@@ -829,7 +829,7 @@ class nameCleaning
 			else if (preg_match('/^\(\d+(\/\d+\) ".+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d.+?B - (\d.+?B -)? yEnc$/', $subject, $match))
 				return $match[1];
 			//[01/42] - "King.And.Maxwell.S01E08.1080p.WEB-DL.DD5.1.H264-Abjex.par2" yEnc
-			else if (preg_match('/^\[\d+(\/\d+\] - "[A-Za-z0-9.-]+)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\[\d+(\/\d+\] - "[A-Za-z0-9.-]+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Divers (12/42) -"Juste.Pour.Rire.2013.Gala.JF.Mercier.FRENCH.720p.HDTV.x264-QuebecRules.part11.rar" yEnc
 			//Par le chapeau (06/43) - "8C7D59F472E03.part04.rar" yEnc
@@ -1806,7 +1806,7 @@ class nameCleaning
 			else if (preg_match('/^\(\d+\/\d+\) "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") - \d.+?B - (\d.+?B -)? yEnc$/', $subject, $match))
 				return $match[1];
 			//[01/42] - "King.And.Maxwell.S01E08.1080p.WEB-DL.DD5.1.H264-Abjex.par2" yEnc
-			else if (preg_match('/^\[\d+\/\d+\] - "([A-Za-z0-9.-]+)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\[\d+\/\d+\] - "([A-Za-z0-9.-]+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Divers (12/42) -"Juste.Pour.Rire.2013.Gala.JF.Mercier.FRENCH.720p.HDTV.x264-QuebecRules.part11.rar" yEnc
 			//Par le chapeau (06/43) - "8C7D59F472E03.part04.rar" yEnc
