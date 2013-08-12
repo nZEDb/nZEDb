@@ -274,10 +274,6 @@
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
 			$xml_response = curl_exec($ch);
-
-			// If cURL doesn't work for you, then use the 'file_get_contents' as function as given below.
-			//$xml_response = file_get_contents($request);
-
 			if ($xml_response === False)
 				return False;
 			else
