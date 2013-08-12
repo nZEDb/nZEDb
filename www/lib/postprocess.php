@@ -942,7 +942,7 @@ class PostProcess
 
 			// Check if we already have the file or not.
 			// Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
-			if ($this->filesadded < 11 && $this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $release["ID"], $v["name"], $v["size"])) === false)
+			if ($this->filesadded < 11 && $this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $release["ID"], $this->db->escapeString($v["name"]), $v["size"])) === false)
 			{
 				$rf = new ReleaseFiles();
 				if ($rf->add($release["ID"], $v["name"], $v["size"], $v["date"], $v["pass"]))
