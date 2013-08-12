@@ -398,7 +398,7 @@ class Movie
 		$ImdbID = str_replace('tt','',$tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
 		if (isset($tmdbLookup['vote_average'])) {$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];}
-		if (isset($tmdbLookup['tagline']))		{$ret['plot'] = $tmdbLookup['tagline'];}
+		if (isset($tmdbLookup['tagline']))		{$ret['plot'] = $tmdbLookup['overview'];}
 		if (isset($tmdbLookup['release_date'])) {$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));}
 		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0)
 		{
