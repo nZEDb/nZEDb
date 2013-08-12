@@ -8,17 +8,24 @@ require_once(WWW_DIR."/lib/predb.php");
 //
 class nameCleaning
 {
-	//
-	//	Cleans a usenet subject returning something that can tie many articles together.
-	//
-	//	$subject = The usenet subject, ending with yEnc (part count removed from the end).
-	//	$groupName = The name of the group for the article.
-	//	$nofiles = Wether the article has a filecount or not.
-	//
-	//	First, try against groups with strict regex.
-	//	If that fails, try against more generic regex.
-	//	$nofiles can help with bunched releases, by having its own set of regex.
-	//
+	/*
+		Cleans a usenet subject returning something that can tie many articles together.
+	
+		$subject = The usenet subject, ending with yEnc (part count removed from the end).
+		$groupName = The name of the group for the article.
+		$nofiles = Wether the article has a filecount or not.
+	
+		First, try against groups with strict regex.
+		If that fails, try against more generic regex.
+		$nofiles can help with bunched releases, by having its own set of regex.
+	
+		Example: Take the following subjects:
+		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[01/46] - "tranceb-xvid-sml.par2" yEnc
+		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[02/46] - "tranceb-xvid-sml.r00" yEnc
+		
+		Return something like this :
+		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml." yEnc
+	*/
 	public function collectionsCleaner($subject, $groupID="", $nofiles=false)
 	{
 		$groups = new Groups();
@@ -945,9 +952,14 @@ class nameCleaning
 	}
 
 
-	//
-	//	Cleans a usenet subject before inserting, used for searchname. Also used for imports.
-	//
+	/*
+		Cleans a usenet subject before inserting, used for searchname. Also used for imports.
+	
+		Example: Take the following subject:
+		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[02/46] - "tranceb-xvid-sml.r00" yEnc
+		
+		Return: Trance.2013.DVDRiP.XViD-SML
+	*/
 	public function releaseCleaner($subject, $groupID)
 	{
 		$groups = new Groups();
@@ -996,6 +1008,9 @@ class nameCleaning
 			//(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
 			else if (preg_match('/^\(\d+\/\d+\).+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+? "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[2];
+			//Overman King Gainer [Dual audio, EngSub] Exiled Destiny - [002/149] - "Overman King Gainer.part001.rar" yEnc
+			else if (preg_match('/^(.+? \[Dual [aA]udio, EngSub\] .+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
@@ -1653,11 +1668,14 @@ class nameCleaning
 		}
 		else if ($groupName === "alt.binaries.movies.divx")
 		{
+			//[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[1/2] - "tranceb-xvid-sml.jpg" yEnc
+			if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \]-\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
 			//(www.Thunder-News.org) >CD2< <Sponsored by Secretusenet> - "exvid-emma-cd2.par2" yEnc
-			if (preg_match('/^\(www\.Thunder-News\.org\) .+? - "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^\(www\.Thunder-News\.org\) .+? - "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Movieland Post Voor FTN - [01/43] - "movieland0560.par2" yEnc
-			if (preg_match('/^[a-zA-Z ]+Post Voor FTN - \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
+			else if (preg_match('/^[a-zA-Z ]+Post Voor FTN - \[\d+\/\d+\] - "(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return $match[1];
 			//Disney short films collection by mayhem masta"1923 - Alice's Wonderland.vol15+7.par2" yEnc
 			else if (preg_match('/.+?by mayhem masta"(.+?)(\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
