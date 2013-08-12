@@ -24,36 +24,6 @@ Class NZBcontents
 			return false;
 	}
 
-	// Confirm that the .nfo file is not something else.
-	public function isNFO($possibleNFO)
-	{
-		$ok = false;
-
-		if ($possibleNFO !== false)
-		{
-			if (!preg_match('/(<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
-			{
-				if (strlen($possibleNFO) < 45 * 1024)
-				{
-					// exif_imagetype needs a minimum size or else it doesn't work.
-					if (strlen($possibleNFO) > 15)
-					{
-						// Check if it's a picture - EXIF.
-						if (@exif_imagetype($possibleNFO) == false)
-						{
-							// Check if it's a picture - JFIF.
-							if ($this->check_JFIF($possibleNFO) == false)
-							{
-								$ok = true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return $ok;
-	}
-
 	// Returns a XML of the NZB file.
 	public function LoadNZB($guid)
 	{
@@ -139,7 +109,7 @@ Class NZBcontents
 			$nfo->addReleaseNfo($relID);
 			$groups = new Groups();
 			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-			if ($this->isNFO($fetchedBinary) === true)
+			if ($nfo->isNFO($fetchedBinary) === true)
 			{
 				if ($this->echooutput)
 					echo "+";
@@ -197,6 +167,7 @@ Class NZBcontents
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
 			$foundnfo = $failed = false;
+			$nfo = new NFO();
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
@@ -208,7 +179,7 @@ Class NZBcontents
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
 						if ($possibleNFO !== false)
 						{
-							if ($this->isNFO($possibleNFO) == true)
+							if ($nfo->isNFO($possibleNFO) == true)
 							{
 								$fetchedBinary = $possibleNFO;
 								$foundnfo = true;
@@ -225,7 +196,6 @@ Class NZBcontents
 			}
 			if ($foundnfo !== false && $failed == false)
 			{
-				$nfo = new NFO();
 				$nfo->addReleaseNfo($relID);
 				if ($this->echooutput)
 					echo "*";
@@ -283,30 +253,6 @@ Class NZBcontents
 		}
 		else
 			return false;
-	}
-
-	//
-	//	Check if the possible NFo is a JFIF.
-	//
-	function check_JFIF($filename)
-	{
-		$fp = @fopen($filename, 'r');
-		if ($fp)
-		{
-			// JFIF often (but not always) starts at offset 6.
-			if (fseek($fp, 6) == 0)
-			{
-				// JFIF header is 16 bytes.
-				if (($bytes = fread($fp, 16)) !== false)
-				{
-					// Make sure it is JFIF header.
-					if (substr($bytes, 0, 4) == "JFIF")
-						return true;
-					else
-						return false;
-				}
-			}
-		}
 	}
 
 	//
