@@ -387,14 +387,12 @@ Class Predb
 				$buffer = getUrl($row["nfo"]);
 				if ($buffer !== false && strlen($buffer))
 				{
-					$nfo->addReleaseNfo($row["ID"]);
-					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($buffer), $row["ID"]));
-					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $row["ID"]));
-					if($this->echooutput)
-						echo ".";
-					$nfos++;
-					if ($row["completion"] == 0)
-						$nzbcontents->NZBcompletion($row["guid"], $row["ID"], $row["groupID"]);
+					if($nfo->addAlternateNfo($db, $buffer, $row))
+					{
+						if($this->echooutput)
+							echo ".";
+						$nfos++;
+					}
 				}
 			}
 			return $nfos;

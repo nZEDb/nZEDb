@@ -55,6 +55,23 @@ class Nfo
 		return false;
 	}
 
+	// Adds an NFO found from predb, rar, zip etc...
+	public function addAlternateNfo($db, $nfo, $release)
+	{
+		$nzbcontents = new NZBcontents($this->echooutput);
+		if ($nzbcontents->isNFO($nfo) && $release["ID"] > 0)
+		{
+			$this->addReleaseNfo($release["ID"]);
+			$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfo), $release["ID"]));
+			$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
+			if ($release["completion"] == 0)
+				$nzbcontents->NZBcompletion($release["guid"], $release["ID"], $release["groupID"]);
+			return true;
+		}
+		else
+			return false;
+	}
+
 	// Loop through releases, look for NFO's in the NZB file.
 	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
 	{
