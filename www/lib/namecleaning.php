@@ -507,6 +507,14 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.console.ps3")
+		{
+			//[4062]-[ABGX.net] - "unlimited-skyrim.legendary.multi4.ps3.par2" - 17.10 GB - yEnc
+			if (preg_match('/^(\[\d+\]-\[ABGX\.net\] - ").+?(" - \d+[,.]\d+ [gG][bB] - )yEnc$/', $subject, $match))
+				return $match[1].$match[2];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.documentaries")
 		{
 			//#sterntuary - Alex Jones Radio Show - "05-03-2009_INFO_BAK_ALJ.nfo" yEnc
@@ -1457,7 +1465,8 @@ class nameCleaning
 		{
 			//Railfan_JPN_JB_PS3-Caravan [02/88] - "cvn-railfjb.par2" yEnc
 			//Madagascar.Kartz.German.JB.PS3-ATAX [01/40] - "atax-mkgjp.nfo"
-			if (preg_match('/^([\w.]+?PS3-[a-zA-Z0-9]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			//Saints_Row_The_Third_The_Full_Package_EUR-PS3-SPLiT [61/87] - "split-sr3fullpps3.r58" yEnc
+			if (preg_match('/^([\w.]+?-?PS3-[a-zA-Z0-9]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(4168) [00/24] - "Legend.Of.The.Guardians.Owls.GaHoole.USA.JB.PS3-PSFR33.nzb" yEnc
 			else if (preg_match('/^\(\d+\) \[\d+\/\d+\] - "([\w.]{10,}?PS3-[A-Za-z0-9]+?)\..+?" yEnc$/', $subject, $match))

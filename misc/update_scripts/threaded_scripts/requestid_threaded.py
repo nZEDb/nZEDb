@@ -74,7 +74,8 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
-		print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas[0]))))
+		#Does not work in some python versions (len(datas))		
+		#print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
 		time.sleep(2)
 
 		#spawn a pool of place worker threads

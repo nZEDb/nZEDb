@@ -115,7 +115,8 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads, "{:,}".format(len(datas[0])), sys.argv[1]))
+	#Does not work in some python versions (len(datas))	
+	#print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
