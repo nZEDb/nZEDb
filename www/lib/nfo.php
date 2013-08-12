@@ -146,7 +146,7 @@ class Nfo
 			}
 		}
 
-		//remove nfo that we cant fetch after 5 attempts
+		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
 			$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");

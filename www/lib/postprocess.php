@@ -32,7 +32,7 @@ class PostProcess
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
-		$this->password = $this->hasnfo = false;
+		$this->password = $this->nonfo = false;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
@@ -385,11 +385,11 @@ class PostProcess
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
 				$hasrar = $ignoredbooks = $failed = 0;
-				$this->password = $this->hasnfo = $notmatched = $flood = $foundcontent = false;
+				$this->password = $this->nonfo = $notmatched = $flood = $foundcontent = false;
 				
 				// Make sure we don't already have an nfo.
-				if ($rel['nfostatus'] === 1)
-					$this->hasnfo = true;
+				if ($rel['nfostatus'] === 0)
+					$this->nonfo = true;
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 
@@ -956,7 +956,7 @@ class PostProcess
 			if ($tmpdata !== false)
 			{
 				// Extract a NFO from the rar.
-				if ($this->hasnfo === false && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
+				if ($this->nonfo === true && $v["size"] > 100 && $v["size"] < 100000 && preg_match("/(\.(nfo|inf|ofn)|info.txt)$/i", $v["name"]))
 				{
 					$nzbcontents = new NZBcontents($this->echooutput);
 					if ($nzbcontents->isNFO($tmpdata))
@@ -967,7 +967,7 @@ class PostProcess
 						$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
 						if ($this->echooutput)
 							echo "n";
-						$this->hasnfo = true;
+						$this->nonfo = false;
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -1015,14 +1015,13 @@ class PostProcess
 		{
 			if ($this->echooutput)
 				echo "z";
-			$nfo = false;
 			foreach ($files as $file)
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
 				
 				//Extract a NFO from the zip.
-				if ($this->hasnfo === false && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
+				if ($this->nonfo === true && $nfo === false && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
 					if ($file["compressed"] !== 1)
 					{
@@ -1034,10 +1033,9 @@ class PostProcess
 							$nfo->addReleaseNfo($relid);
 							$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($thisdata), $relid));
 							$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-							$nfo = true;
 							if ($this->echooutput)
 								echo "n";
-							$this->hasnfo = true;
+							$this->nonfo = false;
 						}
 					}
 					else if ($dezip !== false && $file["compressed"] === 1)
@@ -1054,10 +1052,9 @@ class PostProcess
 								$nfo->addReleaseNfo($relid);
 								$this->db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $this->db->escapeString($zipdata), $relid));
 								$this->db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $relid));
-								$nfo = true;
 								if ($this->echooutput)
 									echo "n";
-								$this->hasnfo = true;
+								$this->nonfo = false;
 							}
 						}
 					}
