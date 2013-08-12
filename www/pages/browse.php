@@ -37,7 +37,7 @@ $page->smarty->assign('pagerquerysuffix', "#results");
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
-$section = '';
+$covgroup = '';
 if ($category == -1 && $grp == "")
 	$page->smarty->assign("catname","All");			
 elseif ($category != -1 && $grp == "")
@@ -48,13 +48,13 @@ elseif ($category != -1 && $grp == "")
 	if ($cdata) {
 		$page->smarty->assign('catname',$cdata["title"]);
 		if ($cdata['parentID'] == Category::CAT_PARENT_GAME || $cdata['ID'] == Category::CAT_PARENT_GAME)
-			$section = 'console';
+			$covgroup = 'console';
 		elseif ($cdata['parentID'] == Category::CAT_PARENT_MOVIE || $cdata['ID'] == Category::CAT_PARENT_MOVIE)
-			$section = 'movies';
+			$covgroup = 'movies';
 		elseif ($cdata['parentID'] == Category::CAT_PARENT_MUSIC || $cdata['ID'] == Category::CAT_PARENT_MUSIC)
-			$section = 'music';
+			$covgroup = 'music';
 		elseif ($cdata['parentID'] == Category::CAT_PARENT_BOOKS || $cdata['ID'] == Category::CAT_PARENT_BOOKS)
-			$section = 'books';
+			$covgroup = 'books';
 	} else {
 		$page->show404();
 	}
@@ -63,7 +63,7 @@ elseif ($grp != "")
 {
 	$page->smarty->assign('catname',$grp);			
 }
-$page->smarty->assign('section',$section);
+$page->smarty->assign('covgroup',$covgroup);
 
 foreach($ordering as $ordertype) 
 	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");	
