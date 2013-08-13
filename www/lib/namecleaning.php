@@ -8,6 +8,12 @@ require_once(WWW_DIR."/lib/predb.php");
 //
 class nameCleaning
 {
+	function nameCleaning()
+	{
+		// Extensions.
+		$this->ext = '([-_](proof|sample|thumbs?))*(\.part(\d+)?(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+	}
+
 	/*
 		Cleans a usenet subject returning something that can tie many articles together.
 	
@@ -26,12 +32,6 @@ class nameCleaning
 		Return something like this :
 		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml." yEnc
 	*/
-
-	function nameCleaning()
-	{
-		// Extensions.
-		$this->ext = '([-_](proof|sample|thumbs?))*(\.part(\d+)?(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-	}
 
 	public function collectionsCleaner($subject, $groupID="", $nofiles=false)
 	{
