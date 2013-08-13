@@ -24,7 +24,8 @@ $colors_end = $tmux->get()->COLORS_END;
 $colors_exc = $tmux->get()->COLORS_EXC;
 
 $s = new Sites();
-$alternate_nntp_provider = $s->get()->alternate_nntp;
+$site = $s->get();
+$alternate_nntp_provider = $site->alternate_nntp;
 
 //totals per category in db, results by parentID
 $qry = "SELECT
@@ -503,6 +504,21 @@ while( $i > 0 )
 	$releases_misc_diff = number_format( $releases_now - $releases_start );
 	$releases_since_start = number_format( $releases_now - $releases_start );
 	$work_misc_diff = $work_remaining_now - $work_remaining_start;
+
+	// Make sure thes types of post procs are on or off in the site first.
+	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
+	if ($site->lookuptvrage != 1)
+		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
+	if ($site->lookupmusic != 1)
+		$music_releases_proc = $music_releases_proc_start = 0;
+	if ($site->lookupimdb != 1)
+		$movie_releases_proc = $movie_releases_proc_start = 0;
+	if ($site->lookupgames != 1)
+		$console_releases_proc = $console_releases_proc_start = 0;
+	if ($site->lookupbooks != 1)
+		$book_releases_proc = $book_releases_proc_start = 0;
+	if ($site->lookupnfo != 1)
+		$nfo_remaining_now = $nfo_remaining_start = 0;
 
 	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now;
 	if ( $i == 1 ) { $total_work_start = $total_work_now; }

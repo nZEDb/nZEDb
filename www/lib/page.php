@@ -4,6 +4,7 @@ require_once(WWW_DIR."/lib/content.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/users.php");
 require_once(WWW_DIR."/lib/menu.php");
+require_once(WWW_DIR."/lib/logging.php");
 
 class Page extends BasePage
 {

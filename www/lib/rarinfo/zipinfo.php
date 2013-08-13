@@ -51,7 +51,7 @@ require_once dirname(__FILE__).'/pipereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.9
+ * @version    2.1
  */
 class ZipInfo extends ArchiveReader
 {
@@ -279,14 +279,10 @@ class ZipInfo extends ArchiveReader
 	 * limited) Local File record data. Valid file records include directory entries,
 	 * but these can be skipped.
 	 *
-	 * @return  array|boolean  list of file records, or false if none are available
+	 * @return  array  list of file records, empty if none are available
 	 */
 	public function getFileList($skipDirs=false, $central=false)
 	{
-		// Check that records are stored
-		if (empty($this->records)) {return false;}
-
-		// Build the file list
 		$ret = array();
 		foreach ($this->records as $record) {
 			if (($central && $record['type'] == self::RECORD_CENTRAL_FILE)
@@ -475,6 +471,9 @@ class ZipInfo extends ArchiveReader
 			$start = $this->start + $record['offset'] + 30 + $record['file_name_length'] + $record['extra_length'];
 			$end   = min($this->end, $start + $record['uncompressed_size'] - 1);
 			$ret['range'] = "{$start}-{$end}";
+		}
+		if (!empty($record['crc32'])) {
+			$ret['crc32'] = dechex($record['crc32']);
 		}
 
 		return $ret;

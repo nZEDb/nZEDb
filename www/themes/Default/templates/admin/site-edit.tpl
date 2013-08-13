@@ -117,6 +117,21 @@
 	</td>
 </tr>
 
+<tr>
+    <td><label for="loggingopt">Logging Option:</label></td>
+    <td>
+       {html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+        <div class="hint">Where you would like to log failed logins to the site.</div>
+    </td>
+</tr>
+<tr>
+    <td><label for="logfile">Logfile Location:</label></td>
+    <td>
+        <input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
+        <div class="hint">Location of log file (MUST be set if logging to file is set).</div>
+    </td>    
+</tr>
+
 </table>
 </fieldset>
 
@@ -294,6 +309,15 @@
 		<input id="tmpunrarpath" class="long" name="tmpunrarpath" type="text" value="{$fsite->tmpunrarpath}" />
 		<div class="hint">The path to where unrar puts files. WARNING: This directory will have its contents deleted.
 		<br/>Use forward slashes in windows <span style="font-family:courier;">c:/temp/path/stuff/will/be/unpacked/to</span></div>
+	</td>
+</tr>
+
+<tr>
+	<td style="width:160px;"><label for="zippath">7za Path:</label></td>
+	<td>
+		<input id="zippath" class="long" name="zippath" type="text" value="{$fsite->zippath}" />
+		<div class="hint">The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files.
+		<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/7z.exe</span></div>
 	</td>
 </tr>
 

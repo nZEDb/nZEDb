@@ -51,7 +51,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '99' )
+if ( $patch < '107' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
@@ -163,7 +163,7 @@ function window_optimize($tmux_session)
 	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
-function attach($DIR, $tmux_session, $limited)
+function attach($DIR, $tmux_session, $limited=false)
 {
 	if (command_exist("php5"))
 		$PHP = "php5";
@@ -196,7 +196,7 @@ if ( $seq == "TRUE" )
 	window_utilities($tmux_session);
 	window_post($tmux_session);
 	start_apps($tmux_session);
-	attach($DIR, $tmux_session);
+	attach($DIR, $tmux_session, $limited);
 }
 else
 {

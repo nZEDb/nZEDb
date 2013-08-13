@@ -246,7 +246,7 @@ else
 		}
 		if (!$importfailed)
 		{
-			$relguid = sha1(uniqid());
+			$relguid = sha1(uniqid().mt_rand());
 			$nzb = new NZB();
 			$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupID' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageID' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryID' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');

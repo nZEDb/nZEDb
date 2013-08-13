@@ -108,10 +108,28 @@ From a command line:
 
 	sudo apt-get install software-properties-common
 	sudo apt-get install unrar python-software-properties lame
+	
+	************Ubuntu 12.10***************************
 	sudo add-apt-repository ppa:jon-severinsson/ffmpeg
 	sudo add-apt-repository ppa:shiki/mediainfo
 	sudo apt-get update
 	sudo apt-get install mediainfo ffmpeg x264
+	***************************************************
+	
+	************Ubuntu 13.04***************************
+	Read the following to compile/install x264 and ffmpeg.
+	http://ffmpeg.org/trac/ffmpeg/wiki/UbuntuCompilationGuide
+	
+	For mediainfo:
+	sudo add-apt-repository ppa:shiki/mediainfo
+	
+	sudo nano /etc/apt/sources.list.d/shiki-mediainfo-raring.list
+	
+	Change the 2 raring words to quantal.
+	
+	sudo apt-get update
+	sudo apt-get install mediainfo
+	***************************************************
 
 6. Git clone the nZEDb source.
 

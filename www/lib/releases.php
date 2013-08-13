@@ -66,38 +66,11 @@ class Releases
 	{
 		$db = new DB();
 
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
+		$catsrch = $this->categorySQL($cat);
 
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
+		$maxagesql = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
+			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
 		$grpsql = "";
 		if ($grp != "")
@@ -107,7 +80,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and categoryID not in (".implode(",", $excludedcats).")";
 
-		$res = $db->queryOneRow(sprintf("select count(releases.ID) as num from releases left outer join groups on groups.ID = releases.groupID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxage, $exccatlist, $grpsql));
+		$res = $db->queryOneRow(sprintf("select count(releases.ID) as num from releases left outer join groups on groups.ID = releases.groupID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxagesql, $exccatlist, $grpsql));
 		return $res['num'];
 	}
 
@@ -120,33 +93,7 @@ class Releases
 		else
 			$limit = " LIMIT ".$start.",".$num;
 
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -317,22 +264,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usershows = $db->query(sprintf("select rageID, categoryID from userseries where userID = %d", $uid), true);
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($db->query(sprintf("select rageID, categoryID from userseries where userID = %d", $uid), true), 'rageID');
 
 		$airdate = ($airdate > -1) ? sprintf(" and releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
 
@@ -358,22 +290,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usermovies = $db->query(sprintf("select imdbID, categoryID from usermovies where userID = %d", $uid), true);
-		$usql = '(1=2 ';
-		foreach($usermovies as $umov)
-		{
-			$usql .= sprintf('or (releases.imdbID = %d', $umov['imdbID']);
-			if ($umov['categoryID'] != '')
-			{
-				$catsArr = explode('|', $umov['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($db->query(sprintf("select imdbID, categoryID from usermovies where userID = %d", $uid), true), 'imdbID');
 
 		$limit = " LIMIT 0,".($num > 100 ? 100 : $num);
 
@@ -403,21 +320,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($usershows, 'rageID');
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -436,21 +339,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($usershows, 'rageID');
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -481,30 +370,25 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			//
-			// delete from disk.
-			//
 			$rel = $this->getById($identifier);
 			$this->fastDelete($rel['ID'], $rel['guid'], $this->site);
 		}
 	}
 
+	// For most scripts needing to delete a release.
 	public function fastDelete($id, $guid, $site)
 	{
 		$db = new DB();
 		$nzb = new NZB();
 		$ri = new ReleaseImage();
 
-
-		//
-		// delete from disk.
-		//
+		// Delete from disk.
 		$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath, false, $site->nzbsplitlevel);
-
 		if (file_exists($nzbpath))
 			unlink($nzbpath);
 
-		$db->query(sprintf("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
+		// Delete from DB.
+		$db->query("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
 							from releases
 								LEFT OUTER JOIN releasenfo on releasenfo.releaseID = releases.ID
 								LEFT OUTER JOIN releasecomment on releasecomment.releaseID = releases.ID
@@ -514,9 +398,10 @@ class Releases
 								LEFT OUTER JOIN releasesubs on releasesubs.releaseID = releases.ID
 								LEFT OUTER JOIN releasevideo on releasevideo.releaseID = releases.ID
 								LEFT OUTER JOIN releaseextrafull on releaseextrafull.releaseID = releases.ID
-							where releases.ID = %d", $id));
+							where releases.ID = ".$id);
 
-		$ri->delete($guid); // This deletes a file so not in the query
+		// This deletes a file so not in the query.
+		$ri->delete($guid);
 	}
 
 	// For the site delete button.
@@ -527,9 +412,6 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			//
-			// delete from disk.
-			//
 			if ($isGuid !== false)
 				$rel = $this->getById($identifier);
 			else
@@ -561,15 +443,14 @@ class Releases
 
 		$db = new DB();
 		$updateSql = array();
-		foreach($update as $updk=>$updv) {
+		foreach($update as $updk=>$updv)
+		{
 			if ($updv != '')
 				$updateSql[] = sprintf($updk.'=%s', $db->escapeString($updv));
 		}
 
-		if (sizeof($updateSql) < 1) {
-			//echo 'no field set to be changed';
+		if (sizeof($updateSql) < 1)
 			return -1;
-		}
 
 		$updateGuids = array();
 		foreach($guids as $guid) {
@@ -580,103 +461,118 @@ class Releases
 		return $db->query($sql);
 	}
 
-	public function searchadv($searchname, $usenetname, $postername, $groupname, $cat, $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $excludedcats=array())
+	// Creates part of a query for some functions.
+	public function uSQL($userquery, $type)
+	{
+		$usql = '(1=2 ';
+		foreach($userquery as $u)
+		{
+			$usql .= sprintf('or (releases.%s = %d', $type, $u[$type]);
+			if ($u['categoryID'] != '')
+			{
+				$catsArr = explode('|', $u['categoryID']);
+				if (count($catsArr) > 1)
+					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
+				else
+					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
+			}
+			$usql .= ') ';
+		}
+		return $usql .= ') ';
+	}
+
+	// Creates part of a query for searches based on the type of search.
+	public function searchSQL($search, $db, $type)
+	{
+		// If the query starts with a ^ it indicates the search is looking for items which start with the term
+		// still do the fulltext match, but mandate that all items returned must start with the provided word.
+		$words = explode(" ", $search);
+		$searchsql = "";
+		$intwordcount = 0;
+		if (count($words) > 0)
+		{
+			foreach ($words as $word)
+			{
+			if ($word != "")
+				{
+					if ($intwordcount == 0 && (strpos($word, "^") === 0))
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString(substr($word, 1)."%"));
+					elseif (substr($word, 0, 2) == '--')
+						$searchsql = sprintf(" and releases.%s not like %s", $type, $db->escapeString("%".substr($word, 2)."%"));
+					else
+						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString("%".$word."%"));
+
+					$intwordcount++;
+				}
+			}
+		}
+		return $searchsql;
+	}
+
+	// Creates part of a query for searches requiring the categoryID's.
+	public function categorySQL($cat)
+	{
+		$catsrch = "";
+		if (count($cat) > 0 && $cat[0] != -1)
+		{
+			$categ = new Category();
+			$catsrch = " and (";
+			foreach ($cat as $category)
+			{
+				if ($category != -1)
+				{
+					if ($categ->isParent($category))
+					{
+						$children = $categ->getChildren($category);
+						$chlist = "-99";
+						foreach ($children as $child)
+							$chlist.=", ".$child['ID'];
+
+						if ($chlist != "-99")
+								$catsrch .= " releases.categoryID in (".$chlist.") or ";
+					}
+					else
+						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
+				}
+			}
+			$catsrch.= "1=2 )";
+		}
+		return $catsrch;
+	}
+
+	// Function for searching on the site (by subject, searchname or advanced).
+	public function search($searchname, $usenetname, $postername, $groupname, $cat=array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array(), $type="basic")
 	{
 		$db = new DB();
 		$groups = new Groups();
 
-		if ($cat == "-1"){$catsrch = ("");}
-		else{$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);}
-
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		if ($searchname == "-1"){$searchnamesql.= ("");}
+		if ($type !== "advanced")
+			$catsrch = $this->categorySQL($cat);
 		else
 		{
-			$words = explode(" ", $searchname);
+			if ($cat == "-1")
+				$catsrch = "";
+			else
+				$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);
+		}
+
+		if ($searchname == "-1")
 			$searchnamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$searchnamesql = sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$searcnamehsql = sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$searchnamesql = sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($usenetname == "-1"){$usenetnamesql.= ("");}
 		else
-		{
-			$words = explode(" ", $usenetname);
+			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
+
+		if ($usenetname == "-1")
 			$usenetnamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$usenetnamesql = sprintf(" and releases.name like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$usenetnamesql = sprintf(" and releases.name not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$usenetnamesql = sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
-
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($postername == "-1"){$posternamesql = ("");}
 		else
-		{
-			$words = explode(" ", $postername);
+			$searchnamesql = $this->searchSQL($usenetname, $db, "name");
+
+		if ($postername == "-1")
 			$posternamesql = "";
-			$intwordcount = 0;
-			if (count($words) > 0)
-			{
-				foreach ($words as $word)
-				{
-					if ($word != "")
-					{
-						//
-						// see if the first word had a caret, which indicates search must start with term
-						//
-						if ($intwordcount == 0 && (strpos($word, "^") === 0))
-							$posternamesql = sprintf(" and releases.fromname like %s", $db->escapeString(substr($word, 1)."%"));
-						elseif (substr($word, 0, 2) == '--')
-							$posternamesql = sprintf(" and releases.fromname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-						else
-							$posternamesql = sprintf(" and releases.fromname like %s", $db->escapeString("%".$word."%"));
+		else
+			$searchnamesql = $this->searchSQL($postername, $db, "fromname");
 
-						$intwordcount++;
-					}
-				}
-			}
-		}
-
-		if ($groupname == "-1"){$groupIDsql = ("");}
+		if ($groupname == "-1")
+			$groupIDsql = "";
 		else
 		{
 			$groupID = $groups->getIDByName($db->escapeString($groupname));
@@ -684,54 +580,68 @@ class Releases
 		}
 
 		if ($sizefrom == "-1"){$sizefromsql= ("");}
-		if ($sizefrom == "1"){$sizefromsql= (" and releases.size > 104857600 ");}
-		if ($sizefrom == "2"){$sizefromsql= (" and releases.size > 262144000 ");}
-		if ($sizefrom == "3"){$sizefromsql= (" and releases.size > 524288000 ");}
-		if ($sizefrom == "4"){$sizefromsql= (" and releases.size > 1073741824 ");}
-		if ($sizefrom == "5"){$sizefromsql= (" and releases.size > 2147483648 ");}
-		if ($sizefrom == "6"){$sizefromsql= (" and releases.size > 3221225472 ");}
-		if ($sizefrom == "7"){$sizefromsql= (" and releases.size > 4294967296 ");}
-		if ($sizefrom == "8"){$sizefromsql= (" and releases.size > 8589934592 ");}
-		if ($sizefrom == "9"){$sizefromsql= (" and releases.size > 17179869184 ");}
-		if ($sizefrom == "10"){$sizefromsql= (" and releases.size > 34359738368 ");}
-		if ($sizefrom == "11"){$sizefromsql= (" and releases.size > 68719476736 ");}
+		elseif ($sizefrom == "1"){$sizefromsql= (" and releases.size > 104857600 ");}
+		elseif ($sizefrom == "2"){$sizefromsql= (" and releases.size > 262144000 ");}
+		elseif ($sizefrom == "3"){$sizefromsql= (" and releases.size > 524288000 ");}
+		elseif ($sizefrom == "4"){$sizefromsql= (" and releases.size > 1073741824 ");}
+		elseif ($sizefrom == "5"){$sizefromsql= (" and releases.size > 2147483648 ");}
+		elseif ($sizefrom == "6"){$sizefromsql= (" and releases.size > 3221225472 ");}
+		elseif ($sizefrom == "7"){$sizefromsql= (" and releases.size > 4294967296 ");}
+		elseif ($sizefrom == "8"){$sizefromsql= (" and releases.size > 8589934592 ");}
+		elseif ($sizefrom == "9"){$sizefromsql= (" and releases.size > 17179869184 ");}
+		elseif ($sizefrom == "10"){$sizefromsql= (" and releases.size > 34359738368 ");}
+		elseif ($sizefrom == "11"){$sizefromsql= (" and releases.size > 68719476736 ");}
 
 		if ($sizeto == "-1"){$sizetosql= ("");}
-		if ($sizeto == "1"){$sizetosql= (" and releases.size < 104857600 ");}
-		if ($sizeto == "2"){$sizetosql= (" and releases.size < 262144000 ");}
-		if ($sizeto == "3"){$sizetosql= (" and releases.size < 524288000 ");}
-		if ($sizeto == "4"){$sizetosql= (" and releases.size < 1073741824 ");}
-		if ($sizeto == "5"){$sizetosql= (" and releases.size < 2147483648 ");}
-		if ($sizeto == "6"){$sizetosql= (" and releases.size < 3221225472 ");}
-		if ($sizeto == "7"){$sizetosql= (" and releases.size < 4294967296 ");}
-		if ($sizeto == "8"){$sizetosql= (" and releases.size < 8589934592 ");}
-		if ($sizeto == "9"){$sizetosql= (" and releases.size < 17179869184 ");}
-		if ($sizeto == "10"){$sizetosql= (" and releases.size < 34359738368 ");}
-		if ($sizeto == "11"){$sizetosql= (" and releases.size < 68719476736 ");}
+		elseif ($sizeto == "1"){$sizetosql= (" and releases.size < 104857600 ");}
+		elseif ($sizeto == "2"){$sizetosql= (" and releases.size < 262144000 ");}
+		elseif ($sizeto == "3"){$sizetosql= (" and releases.size < 524288000 ");}
+		elseif ($sizeto == "4"){$sizetosql= (" and releases.size < 1073741824 ");}
+		elseif ($sizeto == "5"){$sizetosql= (" and releases.size < 2147483648 ");}
+		elseif ($sizeto == "6"){$sizetosql= (" and releases.size < 3221225472 ");}
+		elseif ($sizeto == "7"){$sizetosql= (" and releases.size < 4294967296 ");}
+		elseif ($sizeto == "8"){$sizetosql= (" and releases.size < 8589934592 ");}
+		elseif ($sizeto == "9"){$sizetosql= (" and releases.size < 17179869184 ");}
+		elseif ($sizeto == "10"){$sizetosql= (" and releases.size < 34359738368 ");}
+		elseif ($sizeto == "11"){$sizetosql= (" and releases.size < 68719476736 ");}
 
-		if ($hasnfo == "0"){$hasnfosql= ("");}
-		else{$hasnfosql= (" and releases.nfostatus = 1 ");}
+		if ($hasnfo == "0")
+			$hasnfosql = "";
+		else
+			$hasnfosql= " and releases.nfostatus = 1 ";
 
-		if ($hascomments == "0"){$hascommentssql= ("");}
-		else{$hascommentssql= (" and releases.comments > 0 ");}
+		if ($hascomments == "0")
+			$hascommentssql = "";
+		else
+			$hascommentssql = " and releases.comments > 0 ";
 
-		if ($daysnew == "-1"){$daysnewsql= ("");}
-		else{$daysnewsql= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);}
+		if ($daysnew == "-1")
+			$daysnewsql= "";
+		else
+			$daysnewsql= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);
 
-		if ($daysold == "-1"){$daysoldsql= ("");}
-		else{$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);}
+		if ($daysold == "-1")
+			$daysoldsql= "";
+		else
+			$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
+		
+		$maxagesql = "";
+		if ($maxage > 0)
+			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
 		$exccatlist = "";
-		if (count($excludedcats) > 0){$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";}
+		if (count($excludedcats) > 0)
+			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
 		if ($orderby == "")
 		{
 			$order[0] = " postdate ";
 			$order[1] = " desc ";
 		}
-		else{$order = $this->getBrowseOrder($orderby);}
+		else
+			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $maxage, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -739,184 +649,6 @@ class Releases
 		$countres = $db->queryOneRow($sqlcount);
 		$res = $db->query($sql);
 		if (count($res) > 0){$res[0]['_totalrows'] = $countres['num'];}
-
-		return $res;
-	}
-
-	public function search($search, $cat=array(-1), $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
-	{
-		$db = new DB();
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $search);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
-
-		if ($orderby == "")
-		{
-			$order[0] = " postdate ";
-			$order[1] = " desc ";
-		}
-		else
-			$order = $this->getBrowseOrder($orderby);
-
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);
-		$orderpos = strpos($sql, "order by");
-		$wherepos = strpos($sql, "where");
-		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
-
-		$countres = $db->queryOneRow($sqlcount);
-		$res = $db->query($sql);
-		if (count($res) > 0)
-			$res[0]['_totalrows'] = $countres['num'];
-
-		return $res;
-	}
-
-	public function searchsubject($search, $cat=array(-1), $offset=0, $limit=1000, $orderby='', $maxage=-1, $excludedcats=array())
-	{
-		$db = new DB();
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $search);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.name like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.name not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.name like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
-
-		if ($orderby == "")
-		{
-			$order[0] = " postdate ";
-			$order[1] = " desc ";
-		}
-		else
-			$order = $this->getBrowseOrder($orderby);
-
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s limit %d, %d ", $searchsql, $catsrch, $maxage, $exccatlist, $order[0], $order[1], $offset, $limit);
-		$orderpos = strpos($sql, "order by");
-		$wherepos = strpos($sql, "where");
-		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
-
-		$countres = $db->queryOneRow($sqlcount);
-		$res = $db->query($sql);
-		if (count($res) > 0)
-			$res[0]['_totalrows'] = $countres['num'];
 
 		return $res;
 	}
@@ -932,14 +664,13 @@ class Releases
 
 		if ($series != "")
 		{
-			//
-			// Exclude four digit series, which will be the year 2010 etc
-			//
+			// Exclude four digit series, which will be the year 2010 etc.
 			if (is_numeric($series) && strlen($series) != 4)
 				$series = sprintf('S%02d', $series);
 
 			$series = sprintf(" and upper(releases.season) = upper(%s)", $db->escapeString($series));
 		}
+
 		if ($episode != "")
 		{
 			if (is_numeric($episode))
@@ -948,61 +679,8 @@ class Releases
 			$episode = sprintf(" and releases.episode like %s", $db->escapeString('%'.$episode.'%'));
 		}
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
 			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
@@ -1030,61 +708,8 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" AND releases.searchname LIKE '%s' ", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" AND releases.searchname NOT LIKE '%s' ", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" AND releases.searchname LIKE '%s' ", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		$maxage = ($maxage > 0) ? sprintf(" and postdate > now() - interval %d day ", $maxage) : '';
 
@@ -1112,70 +737,15 @@ class Releases
 
 		if ($imdbId != "-1" && is_numeric($imdbId))
 		{
-			//pad id with zeros just in case
+			// Pad ID with zeros just in case.
 			$imdbId = str_pad($imdbId, 7, "0",STR_PAD_LEFT);
 			$imdbId = sprintf(" and imdbID = %d ", $imdbId);
 		}
 		else
-		{
 			$imdbId = "";
-		}
 
-		//
-		// if the query starts with a ^ it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word
-		//
-		$words = explode(" ", $name);
-		$searchsql = "";
-		$intwordcount = 0;
-		if (count($words) > 0)
-		{
-			foreach ($words as $word)
-			{
-				if ($word != "")
-				{
-					//
-					// see if the first word had a caret, which indicates search must start with term
-					//
-					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString(substr($word, 1)."%"));
-					elseif (substr($word, 0, 2) == '--')
-						$searchsql.= sprintf(" and releases.searchname not like %s", $db->escapeString("%".substr($word, 2)."%"));
-					else
-						$searchsql.= sprintf(" and releases.searchname like %s", $db->escapeString("%".$word."%"));
-
-					$intwordcount++;
-				}
-			}
-		}
-
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$searchql = $this->searchSQL($name, $db, "searchname");
+		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
 			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
@@ -1202,9 +772,7 @@ class Releases
 		if (!$results)
 			return $results;
 
-		//
-		// Get the category for the parent of this release
-		//
+		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentid);
 		$cat = new Category();
 		$catrow = $cat->getById($currRow['categoryID']);
@@ -1241,9 +809,7 @@ class Releases
 		return (is_array($guid)) ? $db->query($sql) : $db->queryOneRow($sql);
 	}
 
-	//
-	// writes a zip file of an array of release guids directly to the stream
-	//
+	// Writes a zip file of an array of release guids directly to the stream.
 	public function getZipped($guids)
 	{
 		$nzb = new NZB();
@@ -1278,9 +844,7 @@ class Releases
 
 		if ($series != "")
 		{
-			//
-			// Exclude four digit series, which will be the year 2010 etc
-			//
+			// Exclude four digit series, which will be the year 2010 etc.
 			if (is_numeric($series) && strlen($series) != 4)
 				$series = sprintf('S%02d', $series);
 
@@ -1338,20 +902,16 @@ class Releases
 		}
 	}
 
-	//
 	// Sends releases back to other->misc.
-	//
 	public function resetCategorize($where="")
 	{
 		$db = new DB();
 		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
 	}
 
-	//
 	// Categorizes releases.
 	// $type = name or searchname
 	// Returns the quantity of categorized releases.
-	//
 	public function categorizeRelease($type, $where="", $echooutput=false)
 	{
 		$db = new DB();
@@ -1368,6 +928,8 @@ class Releases
 			if ($this->echooutput)
 				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
 		}
+		if ($this->echooutput !== false && $relcount > 0)
+			echo "\n";
 		return $relcount;
 	}
 
@@ -1375,10 +937,9 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 
 		if ($this->echooutput)
-			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m".$n;
+			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m\n";
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
@@ -1386,21 +947,21 @@ class Releases
 		$db->query("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID)
 						in (c.totalFiles, c.totalFiles + 1)) AND c.totalFiles > 0 AND c.filecheck = 0 ".$where);
 
-		// Set filecheck to 16 if theres a file that starts with 0.
+		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->query("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0 ".$where."
 						GROUP BY b.collectionID) AND c.totalFiles > 0 AND c.filecheck = 1");
 
-		// Set filecheck to 15 on everything left over.
+		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
 		$db->query("UPDATE collections set filecheck = 15 where filecheck = 1");
 
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
 		{
-			// If filecheck 15, check if we have all the files then set part check.
+			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts) AND b.partcheck = 0");
 
-			// If filecheck 16, check if we have all the files+1(because of the 0) then set part check.
+			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1) AND b.partcheck = 0");
 		}
@@ -1412,11 +973,11 @@ class Releases
 							c.groupID = ".$groupID." GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 ) AND b.partcheck = 0");
 		}
 
-		// Set file check to 2 if we have all the parts.
+		// Set filecheck to 2 if partcheck = 1.
 		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
-		// Set file check to 1 if we don't have all the parts.
+		// Set filecheck to 1 if we don't have all the parts.
 		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
@@ -1431,11 +992,10 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m".$n;
+			echo "\n\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), c.filecheck = 3 WHERE
@@ -1449,13 +1009,10 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
-		$minsizecounts = 0;
-		$maxsizecounts= 0;
-		$minfilecounts = 0;
+		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
+			echo "\n\033[1;33mStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
 		$stage3 = TIME();
 
 		if ($groupID == "")
@@ -1535,7 +1092,7 @@ class Releases
 
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
 		if ($this->echooutput && $delcount > 0)
-				echo "Deleted ".$delcount." collections smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." collections smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage3);
 	}
@@ -1543,25 +1100,25 @@ class Releases
 	public function processReleasesStage4($groupID, $echooutput=false)
 	{
 		$db = new DB();
-		$page = new Page();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$retcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
-		$namecleaning = new nameCleaning();
-		$predb = new  Predb();
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 4 -> Create releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
 		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
+			$namecleaning = new nameCleaning();
+			$predb = new  Predb();
+			$page = new Page();
+
 			while ($rowcol = $db->fetchAssoc($rescol))
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
-				$relguid = sha1(uniqid());
+				$relguid = sha1(uniqid().mt_rand());
 				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
 											$db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
@@ -1573,32 +1130,19 @@ class Releases
 					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
 					if ($this->echooutput)
-						echo "Added release ".$cleanRelName.$n;
+						echo "Added release ".$cleanRelName."\n";
 				}
 				else
 				{
 					if ($this->echooutput)
-						echo "\033[01;31mError Inserting Release: \033[0m" . $cleanerName . ": " . $db->Error() . $n;
+						echo "\033[01;31mError Inserting Release: \033[0m".$cleanerName.": ".$db->Error()."\n";
 				}
 			}
 		}
 
-		$timing = $consoletools->convertTime(TIME() - $stage4);
 		if ($this->echooutput)
-			echo $retcount . " Releases added in " . $timing . ".";
+			echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
 		return $retcount;
-	}
-
-	public function processReleasesStage4_loop($groupID, $echooutput=false)
-	{
-		$tot_retcount = 0;
-		do
-		{
-			$retcount = $this->processReleasesStage4($groupID);
-			$tot_retcount = $tot_retcount + $retcount;
-		} while ($retcount > 0);
-
-		return $tot_retcount;
 	}
 
 	/*
@@ -1608,20 +1152,16 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
-		$minsizecount = 0;
-		$maxsizecount = 0;
-		$minfilecount = 0;
-		$catminsizecount = 0;
+		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
 
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m".$n;
+			echo "\n\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
 		$stage4dot5 = TIME();
 
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
 
 		foreach ($catresrel as $catrowrel) {
-			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d and nzbstatus = 0", $catrowrel['ID'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1636,11 +1176,11 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				if ($resrel = $db->query("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+				if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
-							FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
+							FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1652,7 +1192,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1662,11 +1202,11 @@ class Releases
 					}
 				}
 
-				if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN
-							(SELECT g.ID, guid, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
+				if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+							(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
-							FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID['ID']))
+							FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1678,11 +1218,11 @@ class Releases
 		}
 		else
 		{
-			if ($resrel = $db->query("SELECT r.ID FROM releases r LEFT JOIN
-						(SELECT g.ID, guid, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
+			if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
+						(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
-						FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
+						FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1694,7 +1234,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0 ", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1704,11 +1244,11 @@ class Releases
 				}
 			}
 
-			if ($resrel = $db->query("SELECT r.ID, guid FROM releases r LEFT JOIN
+			if ($resrel = $db->query(sprintf("SELECT r.ID, r.guid FROM releases r LEFT JOIN
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
-						FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = r.groupID WHERE
-						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease and nzbstatus = 0 AND groupID = ".$groupID))
+						FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
+						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1720,7 +1260,7 @@ class Releases
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
 		if ($this->echooutput && $delcount > 0)
-				echo "Deleted ".$minsizecount+$maxsizecount+$minfilecount." releases smaller/larger than group/site settings.".$n;
+				echo "Deleted ".$delcount." releases smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}
@@ -1737,15 +1277,13 @@ class Releases
 		$nzbsplitlevel = $site->nzbsplitlevel;
 		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$nzbcount = 0;
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 
 		// Create NZB.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m".$n;
+			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$start_nzbcount = $nzbcount;
 		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT ".$this->stage5limit))
 		{
 			while ($rowrel = $db->fetchAssoc($resrel))
@@ -1764,52 +1302,37 @@ class Releases
 
 		$timing = $consoletools->convertTime(TIME() - $stage5);
 		if ($this->echooutput && $nzbcount > 0)
-			echo $n.$nzbcount." NZBs created in ". $timing.".";
-		else
-			if ($this->echooutput)
-				echo $nzbcount." NZBs created in ". $timing.".";
+			echo "\n".$nzbcount." NZBs created in ". $timing.".";
+		elseif ($this->echooutput)
+			echo $timing;
 		return $nzbcount;
-	}
-
-	public function processReleasesStage5_loop($groupID, $echooutput=false)
-	{
-		$tot_nzbcount = 0;
-		do
-		{
-			$nzbcount = $this->processReleasesStage5($groupID);
-			$tot_nzbcount = $tot_nzbcount + $nzbcount;
-		} while ($nzbcount > 0);
-
-		return $tot_nzbcount;
 	}
 
 	public function processReleasesStage5b($groupID, $echooutput=true)
 	{
-		$db = new DB();
 		$page = new Page();
-		$n = "\n";
-		$consoletools = new consoleTools();
-		$iFoundcnt = 0;
-
-		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
-
 		if ($page->site->lookup_reqids == 1)
 		{
+			$db = new DB();
+			$consoletools = new consoleTools();
+			$iFoundcnt = 0;
+			$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 			$stage8 = TIME();
-			if ($this->echooutput)
-				echo $n."\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
-			// Mark records that don't have regex titles
+			if ($this->echooutput)
+				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
+
+			// Mark records that don't have regex titles.
 			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
 
-			// look for records that potentially have regex titles
+			// Look for records that potentially have regex titles.
 			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
 										"WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
 
 			while ($rowrel = $db->fetchAssoc($resrel))
 			{
-				// Try to get reqid
+				// Try to get reqid.
 				$requestIDtmp = explode("]", substr($rowrel['name'], 1));
 				$bFound = false;
 				$newTitle = "";
@@ -1830,22 +1353,21 @@ class Releases
 
 				if ($bFound)
 				{
-					$db->query("UPDATE releases SET reqidstatus = 1, searchname = " . $db->escapeString($newTitle) . " WHERE ID = " . $rowrel['ID']);
+					$db->query("UPDATE releases SET reqidstatus = 1, searchname = ". $db->escapeString($newTitle)." WHERE ID = ". $rowrel['ID']);
 
 					if ($this->echooutput)
-						echo $n."Updated requestID " . $requestID . " to release name: ".$newTitle.$n;
+						echo "\nUpdated requestID " . $requestID . " to release name: ".$newTitle."\n";
 				}
 				else
 				{
 					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
-					//if ($this->echooutput)
+					if ($this->echooutput)
 						echo ".";
 				}
 			}
 
-			$timing = $consoletools->convertTime(TIME() - $stage8);
 			if ($this->echooutput)
-				echo $iFoundcnt . " Releases updated in " . $timing . ".";
+				echo $iFoundcnt." Releases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
 		}
 	}
 
@@ -1853,17 +1375,15 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$where = (!empty($groupID)) ? "WHERE relnamestatus = 0 AND groupID = " . $groupID : "WHERE relnamestatus = 0";
 
 		// Categorize releases.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 6 -> Categorize and post process releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 6 -> Categorize and post process releases.\033[0m\n";
 		$stage6 = TIME();
 		if ($categorize == 1)
-		{
 			$this->categorizeRelease("name", $where);
-		}
+
 		if ($postproc == 1)
 		{
 			$postprocess = new PostProcess(true);
@@ -1872,7 +1392,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo "Post-processing is done in post window.".$n;
+				echo "Post-processing is not running through releases.php, in tmux or screen it might be running through another script.\n";
 		}
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage6).".";
@@ -1903,7 +1423,7 @@ class Releases
 
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
-			}
+	}
 
 	public function processReleasesStage7b($groupID, $echooutput=false)
 	{
@@ -1912,14 +1432,13 @@ class Releases
 		$category = new Category();
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupID = " . $groupID : "";
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
-			echo $n."\033[1;33mStage 7b -> Delete old releases and passworded releases.\033[0m".$n;
+			echo "\n\033[1;33mStage 7b -> Delete old releases and passworded releases.\033[0m\n";
 		$stage7 = TIME();
 
 		// old collections that were missed somehow.
@@ -2027,7 +1546,7 @@ class Releases
 			}
 		}
 
-		// misc other
+		// Misc other.
 		if ($page->site->miscotherretentionhours > 0) {
 			$sql = sprintf("select ID, guid from releases where categoryID = %d AND adddate <= NOW() - INTERVAL %d HOUR", CATEGORY::CAT_MISC, $page->site->miscotherretentionhours);
 
@@ -2045,13 +1564,13 @@ class Releases
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
-			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.".$n;
+			echo ", ".number_format($completioncount)." under ".$this->completion."% completion. Removed ".number_format($reccount)." parts/binaries/collection rows.\n";
 		else
 			if ($this->echooutput)
-				echo ". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.".$n;
+				echo ". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.\n";
 
 		if ($this->echooutput)
-			echo $consoletools->convertTime(TIME() - $stage7).".".$n;
+			echo $consoletools->convertTime(TIME() - $stage7).".\n";
 	}
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
@@ -2062,9 +1581,7 @@ class Releases
 		else
 			$PYTHON = "python -OO";
 
-		$tot_retcount = 0;
-		$tot_nzbcount = 0;
-		$loops = 0;
+		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do
 		{
 			$retcount = $this->processReleasesStage4($groupID);
@@ -2072,9 +1589,7 @@ class Releases
 			$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == "1")
-			{
 				$this->processReleasesStage5b($groupID, $echooutput);
-			}
 			elseif ($this->requestids == "2")
 			{
 				$consoletools = new ConsoleTools();
@@ -2082,17 +1597,16 @@ class Releases
 				if ($this->echooutput)
 					echo "\n\033[1;33mStage 5b -> Request ID Threaded lookup.\033[0m\n";
 				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
-				$timing = $consoletools->convertTime(TIME() - $stage8);
 				if ($this->echooutput)
-					echo "\nReleases updated in " . $timing . ".";
-
+					echo "\nReleases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
 			}
+
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
 			$loops++;
-		//this loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
-		} while ($nzbcount > 0 || $retcount > 0 || $loops < 3);
+		// This loops as long as there were releases created or 1 loop, otherwise, you could loop indefinately
+		} while ($nzbcount > 0 || $retcount > 0 || $loops < 1);
 
 		return $tot_retcount;
 	}
@@ -2106,7 +1620,6 @@ class Releases
 		$groups = new Groups();
 		$page = new Page();
 		$consoletools = new ConsoleTools();
-		$n = "\n";
 		$groupID = "";
 
 		if (!empty($groupName))
@@ -2117,7 +1630,7 @@ class Releases
 
 		$this->processReleases = microtime(true);
 		if ($this->echooutput)
-			echo $n."Starting release update process (".date("Y-m-d H:i:s").")".$n;
+			echo "\nStarting release update process (".date("Y-m-d H:i:s").")\n";
 
 		if (!file_exists($page->site->nzbpath))
 		{
@@ -2129,21 +1642,14 @@ class Releases
 		$this->processReleasesStage1($groupID, $echooutput=false);
 		$this->processReleasesStage2($groupID, $echooutput=false);
 		$this->processReleasesStage3($groupID, $echooutput=false);
-		//$releasesAdded = $this->processReleasesStage4_loop($groupID, $echooutput=false);
-		//$this->processReleasesStage4dot5($groupID, $echooutput=false);
-		//$this->processReleasesStage5_loop($groupID, $echooutput=false);
-		//$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
-		//$deletedCount = $this->processReleasesStage7($groupID, $echooutput=false);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
-		//Print amount of added releases and time it took.
-		$timeUpdate = $consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2));
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
 
-		$cremain = $db->queryOneRow("select count(ID) from collections " . $where);
+		//Print amount of added releases and time it took.
 		if ($this->echooutput)
-			echo "Completed adding ".number_format($releasesAdded)." releases in ".$timeUpdate.". ".number_format(array_shift($cremain))." collections waiting to be created (still incomplete or in queue for creation).".$n;
+			echo "Completed adding ".number_format($releasesAdded)." releases in ".$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).". ".number_format(array_shift($db->queryOneRow("select count(ID) from collections " . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n";
 		return $releasesAdded;
 	}
 
@@ -2174,9 +1680,10 @@ class Releases
 					if(!$cres)
 					{
 						$cIDS[] = $row['ID'];
-						$csql = sprintf("INSERT IGNORE INTO collections (name, subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($namecleaner->releaseCleaner($row['bname'], $row['groupID'])), $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+						$csql = sprintf("INSERT IGNORE INTO collections (subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
 						$collectionID = $db->queryInsert($csql);
-						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
+						if ($this->echooutput)
+							$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 					}
 					else
 						$collectionID = $cres['ID'];
@@ -2191,7 +1698,8 @@ class Releases
 				{
 					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
 					$delcount++;
-					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+					if ($this->echooutput)
+						$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 				}
 				// Delete previous failed attempts.
 				$db->query('DELETE FROM collections where collectionhash = "0"');
@@ -2199,7 +1707,7 @@ class Releases
 				if ($this->hashcheck == 0)
 					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 				if ($this->echooutput)
-					echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart);
+					echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart)."\n";
 			}
 			else
 				$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');

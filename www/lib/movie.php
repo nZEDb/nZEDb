@@ -28,8 +28,7 @@ class Movie
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
-		$this->binglimit = 0;
-		$this->yahoolimit = 0;
+		$this->binglimit = $this->yahoolimit = 0;
 	}
 
 	public function getMovieInfo($imdbId)

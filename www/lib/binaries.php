@@ -42,8 +42,8 @@ class Binaries
 		{
 			echo "We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type yes, else type no to see how to run manually.\n";
 			if(trim(fgets(fopen("php://stdin","r"))) != 'yes')
-				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called resetCollections.php\n");
-			$relss = new Releases();
+				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n");
+			$relss = new Releases(true);
 			$relss->resetCollections();
 		}
 		$n = $this->n;
@@ -55,7 +55,7 @@ class Binaries
 		if ($res)
 		{
 			$alltime = microtime(true);
-			echo $n.'Updating: '.sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No').$n;
+			echo "\nUpdating: ".sizeof($res)." group(s) - Using compression? ".(($this->compressedHeaders)?'Yes':'No').$n;
 
 			foreach($res as $groupArr)
 			{
@@ -65,7 +65,7 @@ class Binaries
 				$counter++;
 			}
 
-			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2).' seconds'.$n;
+			echo 'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n";
 		}
 		else
 			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
@@ -85,30 +85,21 @@ class Binaries
 		// Select the group.
 		$data = $nntp->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($data))
+		if(PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
-				$nntp->doQuit();
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false)
 				return;
-			}
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
 		if ($this->DoPartRepair)
 		{
-			echo "Part Repair Enabled... Repairing...\n";
+			echo "Part repair enabled. Checking for missing parts.\n";
 			$this->partRepair($nntp, $groupArr);
 		}
 		elseif ($this->DoPartRepairMsg)
-			echo "Part Repair Disabled... Skipping...\n";
+			echo "Part repair disabled by user.\n";
 
 		// Get first and last part numbers from newsgroup.
 		$last = $grouplast = $data['last'];
@@ -148,8 +139,8 @@ class Binaries
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
 		{
-			echo "Group ".$data["group"]." has ".number_format($total)." new articles.\n";
-			echo "Server oldest: ".number_format($data['first'])." Server newest: ".number_format($data['last'])." Local newest: ".number_format($groupArr['last_record']).$n.$n;
+			echo "Group ".$data["group"]." has ".number_format($total)." new articles.\n"."Server oldest: ".number_format($data['first'])." Server newest: ".number_format($data['last'])." Local newest: ".number_format($groupArr['last_record']).$n.$n;
+
 			if ($groupArr['last_record'] == 0)
 				echo "New group starting with ".(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan." days" : $this->NewGroupMsgsToScan." messages")." worth.\n";
 
@@ -168,16 +159,15 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 
-				echo $n."Getting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue.\n";
+				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue.\n";
 				flush();
 
 				// Get article headers from newsgroup.
 				$lastId = $this->scan($nntp, $groupArr, $first, $last);
+				// Scan failed - skip group.
 				if ($lastId === false)
-				{
-					// Scan failed - skip group.
 					return;
-				}
+
 				$db->query(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($lastId), $groupArr['ID']));
 
 				if ($last == $grouplast)
@@ -188,8 +178,11 @@ class Binaries
 					$first = $last + 1;
 				}
 			}
-
+			// Refresh the connection, it sometimes dies here.
+			$nntp->doQuit();
+			$nntp->doConnect();
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
+			$nntp->doQuit();
 			// Set group's last postdate.
 			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
@@ -223,20 +216,11 @@ class Binaries
 		// Select the group.
 		$data = $nntp->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
-		if (PEAR::isError($data))
+		if(PEAR::isError($data))
 		{
-			echo "\n\nError {$data->code}: {$data->message}\nAttempting to reconnect to usenet.\n";
-			$nntp->doQuit();
-			unset($nntp);
-			$nntp = new Nntp;
-			$nntp->doConnect();
-			$data = $nntp->selectGroup($groupArr['name']);
-			if (PEAR::isError($data))
-			{
-				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
-				$nntp->doQuit();
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false)
 				return;
-			}
 		}
 		
 		// Download the headers.
@@ -246,10 +230,7 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				// This is usually a compression error, so lets try disabling compression.
-				echo "\n\nThe server has not returned any data, we will try disabling compression temporarily and retry.\n";
 				$nntp->doQuit();
-				unset($nntp, $msgs);
-				$nntp = new Nntp;
 				$nntp->doConnectNC();
 				$data = $nntp->selectGroup($groupArr['name']);
 				if (PEAR::isError($data))
@@ -278,9 +259,10 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		if (is_array($msgs))
 		{
-			// For looking at the difference between $subject and $cleansubject.
+			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
 			if ($this->debug)
-				$colnames = $orignames = array();
+				$colnames = $orignames = $notyenc = array();
+
 			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
@@ -295,8 +277,15 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/i', $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/yEnc \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
+					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
+					/*if ($this->debug)
+					{
+						preg_match('/(.+)\(\d+\/\d+\)$/i', $msg['Subject'], $ny);
+						if(!in_array($ny[1], $notyenc))
+							$notyenc[] = $ny[1];
+					}*/
 					$msgsignored[] = $msg['Number'];
 					continue;
 				}
@@ -324,13 +313,23 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['ID'], $nofiles);
 					
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
+							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							
+							if (preg_match('/yEnc$/', $cleansubject))
+							{
+								$colnames[] = $cleansubject;
+								$orignames[] = $msg['Subject'];
+							}
+							*/
+							
+							/*If you uncommented the above, comment following 2 lines..*/
 							$colnames[] = $cleansubject;
 							$orignames[] = $msg['Subject'];
 						}
@@ -342,7 +341,7 @@ class Binaries
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int)$matches[2];
 						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
-						// Ties articles together when forming the release/nzb.
+						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
@@ -360,6 +359,9 @@ class Binaries
 				}
 			}
 
+			// Uncomment this to see which articles are not yEnc.
+			/*if ($this->debug && count($notyenc) > 1)
+				print_r($notyenc);*/
 			// For looking at the difference between $subject and $cleansubject.
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
@@ -368,6 +370,7 @@ class Binaries
 				print_r($arr);
 			}
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
+
 			unset($msg,$msgs);
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
@@ -380,7 +383,7 @@ class Binaries
 				switch($type)
 				{
 					case 'backfill':
-						//don't add missing articles
+						// Don't add missing articles.
 						break;
 					case 'partrepair':
 					case 'update':
@@ -402,7 +405,7 @@ class Binaries
 				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryID, number, messageID, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
 					$insPartsStmt->bind_param('dssss', $pBinaryID, $pNumber, $pMessageID, $pPartNumber, $pSize);
 				else
-					exit("Couldn't prepare parts insert statement!");
+					exit("Couldn't prepare parts insert statement!\n");
 
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
@@ -431,7 +434,7 @@ class Binaries
 							else
 							{
 								$collectionID = $cres["ID"];
-								//Update the collection table with the last seen date for the collection.
+								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 								$cusql = sprintf("UPDATE collections set dateadded = now() WHERE ID = %s", $collectionID);
 								$db ->queryDirect($cusql);
 							}
@@ -475,7 +478,7 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0)
 				{
-					echo 'WARNING: '.sizeof($msgsnotinserted).' parts failed to insert'.$n;
+					echo 'WARNING: '.sizeof($msgsnotinserted)." parts failed to insert.\n";
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
 				}
@@ -486,9 +489,8 @@ class Binaries
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
 
 			if ($type != 'partrepair')
-			{
 				echo $timeHeaders."s to download articles, ".$timeCleaning."s to process articles, ".$timeUpdate."s to insert articles, ".$timeLoop."s total.\n";
-			}
+
 			unset($this->message, $data);
 			return $maxnum;
 		}
@@ -496,8 +498,8 @@ class Binaries
 		{
 			if ($type != 'partrepair')
 			{
-				echo "Error: Can't get parts from server (msgs not array)".$n;
-				echo "Skipping group: ${groupArr['name']}".$n;
+				echo "Error: Can't get parts from server (msgs not array).\n";
+				echo "Skipping group: ${groupArr['name']}\n";
 				return false;
 			}
 		}
@@ -522,7 +524,7 @@ class Binaries
 		if (sizeof($missingParts) > 0)
 		{
 			if ($partID=='')
-				echo "Attempting to repair ".sizeof($missingParts)." parts...".$n;
+				echo "Attempting to repair ".sizeof($missingParts)." parts.\n";
 
 			// Loop through each part to group into ranges.
 			$ranges = array();
@@ -584,7 +586,7 @@ class Binaries
 
 			if ($partID=='')
 				echo $n;
-			echo $partsRepaired.' parts repaired.'.$n;
+			echo $partsRepaired." parts repaired.\n";
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
