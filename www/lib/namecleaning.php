@@ -531,6 +531,40 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.country.mp3")
+		{
+			//Attn: wulf109 - Jim Reeves - There's Someone Who Loves You - 01 - Anna Marie.mp3 yEnc
+			//Attn: wulf109 - Jim Reeves - There's Someone Who Loves You - Front.jpg yEnc
+			if (preg_match('/^(Attn: .+? - .+? - .+? - )(\d+ - )?.+?\.[A-Za-z0-9]{2,4} yEnc$/', $subject, $match))
+				return $match[1];
+			//Jo Dee Messina - A Joyful Noise    "01 - Winter Wonderland.mp3" yEnc
+			//Karen Lynne - 2000 - Six Days in December   "Pat Drummond and Karen Lynne - 01 - The Rush.mp3" yEnc
+			else if (preg_match('/^([A-Z0-9].{3,} -( (19|20)\d\d - )?[A-Z0-9].{3,}\s+")[A-Z0-9].{3,} - \d+ - [A-Z0-9].+?\.[A-Za-z0-9]{2,4}" yEnc$/', $subject, $match))
+				return $match[1];
+			//"Heather Myles - Highways and Honky Tonks - 05 - True Love.mp3" yEnc
+			//"Reba McEntire - The Secret Of Giving - A Christmas Collection - 09 - This Christmas.mp3" yEnc
+			//]"Heather Myles - Highways and Honky Tonks - 05 - True Love.mp3" yEnc
+			//"Reba McEntire - Moments & Memories - The Best Of Reba - Australian-back.jpg" yEnc
+			//"Reba McEntire - The Secret Of Giving - A Christmas Collection - 01 - This Is My Prayer For You.mp3" yEnc
+			//"Reba McEntire - American Legends-Best Of The Early Years - 02 - You Really Better Love Me After This.Mp3" yEnc
+			else if (preg_match('/^((\]?"[A-Z0-9].{3,} - )+?([A-Z0-9].{3,}? - )+?)(\d\d - )?[a-zA-Z0-9].+?\.[A-Za-z0-9]{2,4}" yEnc$/', $subject, $match))
+				return $match[1];
+			//"Reba McEntire - Duets.m3u" yEnc
+			//"Reba McEntire - Greatest Hits Volume Two - back.jpg" yEnc
+			//"Reba McEntire - American Legends-Best Of The Early Years.m3u" yEnc
+			//"Jason Allen - 00 - nfo.txt" yEnc
+			//"Sean Ofarrell-Life Is A Teacher -  07 - Here Again.MP3" yEnc
+			else if (preg_match('/^("[A-Z0-9].{3,}? - )(([A-Z0-9][^-]{3,}?|\s*\d\d) - )?[a-zA-Z0-9].{2,}?\.[A-Za-z0-9]{2,4}?" yEnc$/', $subject, $match))
+				return $match[1];
+			//]"Heather_Myles_-_Highways_And_Honky_Tonks-back.jpg" yEnc
+			else if (preg_match('/^(\]"[\w-]{10,}?)-[a-zA-Z0-9]+\.[a-zA-Z0-9]{2,4}" yEnc$/', $subject, $match))
+				return $match[1].' - ';
+			//Merv & Maria - Chasing Rainbows  Merv & Maria - 01 - Sowin' Love.mp3" yEnc
+			else if (preg_match('/^([A-Z0-9].{3,}? - [A-Z0-9].{3,}? - )\d\d - [a-zA-Z0-9].{2,}?\.[A-Za-z0-9]{2,4}?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.documentaries")
 		{
 			//#sterntuary - Alex Jones Radio Show - "05-03-2009_INFO_BAK_ALJ.nfo" yEnc
@@ -954,30 +988,61 @@ class nameCleaning
 		// Music groups.
 		else
 		{
-			// Parts/files
-			$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
-			// Anything between the quotes. Too much variance within the quotes, so remove it completely.
-			$cleansubject = preg_replace('/".+"/i', ' ', $cleansubject);
-			// File extensions - If it was not in quotes.
-			$cleansubject = preg_replace('/(-? [a-z0-9]+-?|\(?\d{4}\)?(_|-)[a-z0-9]+)\.jpg"?| [a-z0-9]+\.mu3"?|((\d{1,3})?\.part(\d{1,5})?|\d{1,5} ?|sample|- Partie \d+)?\.(7z|\d{3}(?=(\s|"))|avi|diz|docx?|epub|idx|iso|jpg|m3u|m4a|mds|mkv|mobi|mp4|nfo|nzb|par(\s?2|")|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|xls|zip|z{2,3})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', ' ', $cleansubject);
-			// File Sizes - Non unique ones.
-			$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d+KB\s(yENC)?|"?\s\d+\sbytes?|[- ]?\d+[.,]?\d+\s(g|k|m)?B\s-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}|yEnc \d+ |\(\d+ ?(k|m|g)?b(ytes)?\) yEnc/i', ' ', $cleansubject);
-			// Random stuff.
-			$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
-			// Multi spaces.
-			$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
-
-			// If the subject is too similar to another because it is so short, try to extract non letters/numbers.
-			if (strlen($cleansubject) <= 10 || preg_match('/^[-a-z0-9$ ]{1,7}yEnc$/i', $cleansubject))
-			{
-				$newname = preg_replace('/[a-z0-9]|(\.part(\d+)?|\.rar)?(\.vol.+?"|\.[a-z0-9]{2,4}"|")/i', '', $subject);
-				return $cleansubject.$newname;
-			}
+			// Try some music group regexes.
+			$musicsubject = $this->musicSubject($subject);
+			if ($musicsubject !== false)
+				return $musicsubject;
 			else
-				return $cleansubject;
+			{
+				// Parts/files
+				$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
+				// Anything between the quotes. Too much variance within the quotes, so remove it completely.
+				$cleansubject = preg_replace('/".+"/i', ' ', $cleansubject);
+				// File extensions - If it was not in quotes.
+				$cleansubject = preg_replace('/(-? [a-z0-9]+-?|\(?\d{4}\)?(_|-)[a-z0-9]+)\.jpg"?| [a-z0-9]+\.mu3"?|((\d{1,3})?\.part(\d{1,5})?|\d{1,5} ?|sample|- Partie \d+)?\.(7z|\d{3}(?=(\s|"))|avi|diz|docx?|epub|idx|iso|jpg|m3u|m4a|mds|mkv|mobi|mp4|nfo|nzb|par(\s?2|")|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|xls|zip|z{2,3})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', ' ', $cleansubject);
+				// File Sizes - Non unique ones.
+				$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d+KB\s(yENC)?|"?\s\d+\sbytes?|[- ]?\d+[.,]?\d+\s(g|k|m)?B\s-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}|yEnc \d+ |\(\d+ ?(k|m|g)?b(ytes)?\) yEnc/i', ' ', $cleansubject);
+				// Random stuff.
+				$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
+				// Multi spaces.
+				$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
+
+				// If the subject is too similar to another because it is so short, try to extract info from the subject.
+				if (strlen($cleansubject) <= 10 || preg_match('/^[-a-z0-9$ ]{1,7}yEnc$/i', $cleansubject))
+				{
+					$x = '';
+					if (preg_match('/.*("[A-Z0-9]+).*?"/i', $subject, $match))
+						$x = $match[1];
+					if (preg_match_all('/[^A-Z0-9]/i', $subject, $match1))
+					{
+						$start = 0;
+						foreach ($match1[0] as $add)
+						{
+							if ($start > 2)
+								break;
+							$x .= $add;
+							$start++;
+						}
+					}
+					$newname = preg_replace('/".+?"/', '', $subject);
+					$newname = preg_replace('/[a-z0-9]|'.$this->ext.'/i', '', $newname);
+					return $cleansubject.$newname.$x;
+				}
+				else
+					return $cleansubject;
+			}
 		}
 	}
 
+	// Regexes for music groups.
+	public function musicSubject($subject)
+	{
+		//Broderick_Smith-Unknown_Country-2009-404 "00-broderick_smith-unknown_country-2009.sfv" yEnc
+		if (preg_match('/^(\w{10,}-[a-zA-Z0-9]+ ")\d\d-.+?" yEnc$/', $subject, $match))
+			return $match[1];
+		else
+			return false;
+	}
 
 	/*
 		Cleans a usenet subject before inserting, used for searchname. Also used for imports.
