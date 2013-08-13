@@ -33,6 +33,7 @@ class PostProcess
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = $this->nonfo = false;
+		$this->filesadded = 0;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
@@ -384,7 +385,7 @@ class PostProcess
 
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = "";
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
-				$hasrar = $ignoredbooks = $failed = 0;
+				$hasrar = $ignoredbooks = $failed = $this->filesadded = 0;
 				$this->password = $this->nonfo = $notmatched = $flood = $foundcontent = false;
 				
 				// Make sure we don't already have an nfo.
@@ -940,13 +941,15 @@ class PostProcess
 			}*/
 
 			// Check if we already have the file or not.
-			if ($this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $release["ID"], $v["name"], $v["size"])) === false)
+			// Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
+			if ($this->filesadded < 11 && $this->db->queryOneRow(sprintf("SELECT ID FROM `releasefiles` WHERE `releaseID` = %d AND `name` = %s AND `size` = %d", $release["ID"], $this->db->escapeString($v["name"]), $v["size"])) === false)
 			{
 				$rf = new ReleaseFiles();
 				if ($rf->add($release["ID"], $v["name"], $v["size"], $v["date"], $v["pass"]))
 				{
 					if ($this->echooutput)
 					{
+						$this->filesadded++;
 						$this->newfiles = true;
 						echo "^";
 					}
