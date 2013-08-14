@@ -24,7 +24,7 @@
 {if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
 <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
 <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.qtip.css" rel="stylesheet" media="screen">
-
+{*
 <!-- Manual Adjustment for Search input fields on browse pages. -->
 <style>
 .panel .list-group { margin-top: -1px; }
@@ -32,6 +32,52 @@ fieldset.adbanner {
     border: 1px groove #ddd !important;
     padding: 4px 15px 15px;
 }
+
+.dropdown-menu { border: 0; }
+.grey-box .row { margin-left:0;margin-right:0; }
+.div-center { float:none;margin-left:auto;margin-right:auto; }
+.rarfilelist img { display:inline;opacity:1;position:relative; }
+.label { font-size:100%;padding:.04em .3em; }
+hr { margin-top:5px;margin-bottom:5px; }
+.row { margin-left:0;margin-right:0; }
+</style> *}
+
+<style type="text/css">
+
+  /* Sticky footer styles
+  -------------------------------------------------- */
+
+  html,
+  body {
+    height: 100%;
+    /* The html and body elements cannot have any padding or margin. */
+  }
+
+  /* Wrapper for page content to push down footer */
+  #wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by its height */
+    margin: 0 auto -60px;
+    /* Pad bottom by footer height */
+    padding: 0 0 60px;
+  }
+
+  /* Set the fixed height of the footer here */
+  footer {
+    height: 60px;
+  }
+
+  /* Lastly, apply responsive CSS fixes as necessary */
+  @media (max-width: 767px) {
+    footer {
+      margin-left: -20px;
+      margin-right: -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
 legend.adbanner {
     font-size: 11px !important;
     font-weight: bold !important;
@@ -41,13 +87,21 @@ legend.adbanner {
     margin: 0 15px;
     border: 1px groove #ddd !important;
 }
+/* Custon styles */
+.footer-links {
+  margin: 10px 0;
+  padding-left: 0;
+}
+.footer-links li {
+  display: inline;
+  padding: 0 2px;
+}
+.footer-links li:first-child {
+  padding-left: 0;
+}
+nav>.navbar .nav>li>a { padding: 5px 15px; }
 .dropdown-menu { border: 0; }
-.grey-box .row { margin-left:0;margin-right:0; }
-.div-center { float:none;margin-left:auto;margin-right:auto; }
-.rarfilelist img { display:inline;opacity:1;position:relative; }
-.label { font-size:100%;padding:.04em .3em; }
-hr { margin-top:5px;margin-bottom:5px; }
-.row { margin-left:0;margin-right:0; }
+.dropdown-menu .divider { height:2px;margin:0; }
 </style>
 
 <!-- Favicons WWWIIIPPP Larger Icons-->
@@ -77,8 +131,45 @@ hr { margin-top:5px;margin-bottom:5px; }
 
 </head>
 <body {$page->body}>
+<div id="wrap">
 <!-- Status and Top Menu Area
 ================================================== -->
+<nav>
+  <div class="navbar navbar-inverse navbar-static-top" style="min-height:30px;height:30px;background:none;margin-bottom:0;">
+        <div class="container">
+          {*<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>*}
+          {*<a class="navbar-brand" href="#">Title</a>*}
+          {*<div class="nav-collapse collapse navbar-responsive-collapse">*}
+            {if $site->menuposition == 2}{include file='topmenu.tpl'}{/if}
+            <ul class="nav navbar-nav pull-right">
+                {if $loggedin=="true"}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> Profile <b class="caret"></b></a>
+                <ul class="dropdown-menu pull-right" style="margin-top:2.5px !important;">
+                  <li><a href="{$smarty.const.WWW_TOP}/profile"><i class="icon-home"></i> My Profile</a></li>
+                  {if $isadmin}<li><a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-gears"></i> Admin Panel</a></li>{/if}
+                  <li class="divider"></li>
+                  <li><a href="{$smarty.const.WWW_TOP}/mymovies"><i class="icon-ticket"></i> My Movies</a></li>
+                  <li><a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i> My Shows</a></li>
+                  <li class="divider"></li>                
+                  <li><a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart"></i> My Cart</a></li>
+                  <li><a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i> My Queue</a></li>
+                </ul>
+              </li>
+              {else}
+              <li><a href="{$smarty.const.WWW_TOP}/login"><i class="icon-signin"></i> Login</a></li>{/if}
+              <li>{if $loggedin=="true"}<a href="{$smarty.const.WWW_TOP}/logout"><i class="icon-signout"></i> Logout</a>{else}<a href="{$smarty.const.WWW_TOP}/register"><i class="icon-sign-edit"></i> Register</a>{/if}</li>
+            </ul>
+          {*</div>*}<!-- /.nav-collapse -->
+        </div><!-- /.container -->
+  </div><!-- /.navbar -->
+</nav>
+{*
+
 <div class="row">
 <div class="container" style="height:25px;margin-top:5px">
 {if $site->menuposition == 2}<div class="pull-left">{$main_menu}</div><!-- SITE TOP MENU -->{/if}
@@ -90,13 +181,13 @@ hr { margin-top:5px;margin-bottom:5px; }
 {/if}
 </div><!--/.pull-right -->
 </div><!--/.container -->
-</div><!-- end -->
+</div><!-- end -->*}
 <!-- Header area containing top menu, status menu, logo, ad header
 ================================================== -->
-<div id="header-wrapper" class="row">
-<div class="container" style="min-height: 65px;">
+<header class="masthead">
+<div class="container">
 <div class="row">
-<div class="col-7 col-sm-7 col-lg-7">
+<div class="col-7">
 <div class="media">
 <a class="pull-left logo" style="padding: 2px 10px;" title="{$site->title}" href="{$smarty.const.WWW_TOP}{$site->home_link}">
 <img class="media-object" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes/alpha/images/clearlogo.png"><!-- SITE LOGO -->
@@ -107,18 +198,18 @@ hr { margin-top:5px;margin-bottom:5px; }
 </div>
 </div>
 </div><!--/.col-lg- -->
-<div class="col-4 col-sm-4 col-lg-4">
+<div class="col-4">
 {$site->adheader}<!-- SITE AD BANNER -->
 </div><!--/.col-lg- -->
 </div><!--/.row -->
 </div><!-- end header-wrapper -->
-</div>
+</header>
 
 
 <!-- Navigation Menu containing HeaderMenu and HeaderSearch
 ================================================== -->
 <div class="navbar navbar-inverse navbar-static-top">
-<div class="container">
+<div class="container" style="min-width:1200px;">
 {if $loggedin=="true"}{$header_menu}{/if}<!-- SITE NAVIGATION -->
 </div><!--/.navbar -->
 </div><!-- end Navigation -->
@@ -126,20 +217,20 @@ hr { margin-top:5px;margin-bottom:5px; }
 
 <!-- Content Area containing Side Menu and Main Content Panel
 ================================================== -->
-<div class="row">
 <div class="container">
-{if $site->menuposition == 1 or $site->menuposition == 0}<!-- Side Menu Framework -->
-<div class="col-2 col-sm-2 col-lg-2{if $site->menuposition == 0} col-lg-push-10{/if}">
+<div class="row">
+{if $site->menuposition == 1}<!-- Side Menu Framework -->
+<div class="col-2">
 {$main_menu}<!-- SIDE MENU -->
 {$article_menu}<!-- SIDE ARTICLES -->
 {$useful_menu}<!-- SIDE USEFUL -->
 </div><!--/.col-2 -->
 {/if}
 <!--Start Main Content - Tables, Detailed Views-->
-<div class="{if $site->menuposition == 1 or $site->menuposition == 0}col-10 col-sm-10 col-lg-10{else}col-12 col-sm-12 col-lg-12{/if}">
+<div class="{if $site->menuposition == 1 or $site->menuposition == 0}col-10{else}col-12{/if}">
 <div class="panel">
 <div class="panel-heading">
-<h3 class="panel-title">{$page->meta_title|regex_replace:'/Nzbs/i':$catname|escape:"htmlall"}</h3>
+<h4 class="panel-heading-title">{$page->meta_title|regex_replace:'/Nzbs/i':$catname|escape:"htmlall"}</h4>
 </div><!--/.panel-heading -->
 <div class="grey-frame">
 <div class="grey-box">
@@ -154,16 +245,26 @@ hr { margin-top:5px;margin-bottom:5px; }
 </div><!--/.grey-frame -->
 </div><!--/.panel- -->
 </div><!--/.col-10 -->
+{if $site->menuposition == 1}<!-- Side Menu Framework -->
+<div class="col-2">
+{$main_menu}<!-- SIDE MENU -->
+{$article_menu}<!-- SIDE ARTICLES -->
+{$useful_menu}<!-- SIDE USEFUL -->
+</div><!--/.col-2 -->
+{/if}
 </div><!--/.container -->
 </div><!--/.row -->
-
+</div>
 
 <!-- Footer Area containing Footer contents
 ================================================== -->
 <footer>
+    <div class="container">
+        <div class="row text-center">
 <p><i class="icon-certificate icon-2x" style="color:yellow;"></i>  <i class="icon-quote-left qoute"></i> {$site->footer} <i class="icon-quote-right qoute"></i></p>
 <p>Copyright &copy; <a href="{$smarty.const.WWW_TOP}{$site->home_link}">nZEDb</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
-<ul><li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
+
+<ul class="footer-links"><li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
 <li class="muted"> | </li>
 <li><a href="{$smarty.const.WWW_TOP}/contact-us">Contact Us</a></li>
 <li class="muted"> | </li>
@@ -173,6 +274,8 @@ hr { margin-top:5px;margin-bottom:5px; }
 <li class="muted"> | </li>
 <li><a href="{$smarty.const.WWW_TOP}/login">Login</a></li>
 </ul>
+</div>
+</div>
 </footer>
 
 <!-- JS and analytics only. -->

@@ -1,10 +1,9 @@
 {if {$site->adbrowse} != ''}
-<div class="row">
-    <div class="container" style="width:500px;">
+<div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
-</fieldset></div></div>
+</fieldset></div>
 <br>
 {/if}
 
@@ -53,21 +52,21 @@
 {if $results|@count > 0}
 
 <form id="nzb_multi_operations_form" action="get">
-<div class="nzb_multi_operations">
-<div class="row" style="text-align:right;margin-bottom:5px;">
+
+<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 View:
 <span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 <a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
 {if $isadmin || $ismod}
 &nbsp;&nbsp;
-Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" value="Edit">
-<input type="button" class="btn btn-danger nzb_multi_operations_delete" value="Delete">
+Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">Edit</button>
+<button type="button" class="btn btn-danger nzb_multi_operations_delete">Delete</button>
 {/if}
 </div>
 {include file='multi-operations.tpl'}
-</div>
 
-<table class="table table-condensed data highlight icons" id="coverstable">
+
+<table class="table table-striped table-condensed data" id="coverstable">
 <thead>
 <tr>
 <th><input type="checkbox" class="nzb_check_all"></th>
@@ -91,7 +90,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
 <span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
 <span class="label"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
-<span class="label"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>
+{*<span class="label"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>*}
 </div>
 </div>
 </td>
@@ -108,7 +107,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {if $result.actors != ''}<b>Starring:</b> {$result.actors}<br>{/if}
 <br>
 <div class="relextra">
-<table class="table table-condensed table-hover">
+<table class="table table-condensed table-hover data">
 {assign var="msplits" value=","|explode:$result.grp_release_id}
 {assign var="mguid" value=","|explode:$result.grp_release_guid}
 {assign var="mnfo" value=","|explode:$result.grp_release_nfoID}
@@ -131,7 +130,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <td class="name">
 <a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><b>{$mname[$m@index]|escape:"htmlall"}</b></a><br>
 <div class="container">
-<div class="pull-left">Posted {$mpostdate[$m@index]|timeago},  {$msize[$m@index]|fsize_format:"MB"},  <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a>,  <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a>, {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
+<div class="pull-left"><i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a> | <i class="icon-comments"></i> <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 </div>
 <div class="pull-right">
 {if $mnfo[$m@index] > 0}<span class="label"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span> {/if}

@@ -1,10 +1,9 @@
 {if {$site->adbrowse} != ''}
-<div class="row">
     <div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
-</fieldset></div></div>
+</fieldset></div>
 <br>
 {/if}
 
@@ -40,8 +39,7 @@
 {if $results|@count > 0}
 
 <form id="nzb_multi_operations_form" action="get">
-<div class="nzb_multi_operations">
-<div class="row" style="text-align:right;margin-bottom:5px;">
+<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 View:
 <span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 <a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
@@ -52,7 +50,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {/if}
 </div>
 {include file='multi-operations.tpl'}
-</div>
+
 
 <table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 <thead>

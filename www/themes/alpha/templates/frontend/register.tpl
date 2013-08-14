@@ -4,6 +4,9 @@
 
 {if $showregister != "0"}
 <div class="container">
+  <div class="row">
+    <div class="col-lg-4 col-lg-offset-4">
+<div class="well">
       <form class="form-signin" action="register?action=submit" method="post">
         <h2 class="form-signin-heading">Please Register</h2>
         <div class="form-group">
@@ -26,6 +29,8 @@
         <input type="hidden" class="form-control" id="invitecode" name="invitecode" value="{$invitecode|escape:html_all}">
         <button class="btn btn-default" type="submit" value="Register">Register</button>
       </form>
+</div></div>
+</div>      
 </div>{/if}
 
 {*
