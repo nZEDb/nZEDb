@@ -1,3 +1,5 @@
+08122013 -> bodrick  -> Fixed bug with namefixer, if print changes only, status was still being set to updated.
+08122013 -> kevin    -> Catgorize S01E01E02 / S01E01A properly, clean up more files.
 08112013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
 08102013 -> kevin    -> Clean up postprocess.php
 08092013 -> kevin    -> More regex in namecleaning.

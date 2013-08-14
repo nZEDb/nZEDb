@@ -348,6 +348,15 @@ Class Predb
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
 	public function matchPredb()
 	{
+		/*
+		 * For future reference, mysql 5.6 innodb has fulltext searching support.
+		 * INSERT INTO releases (name) VALUES ('[149787]-[FULL]-[#a.b.teevee]-[ The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F ]-[1/1] - "The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F.nzb" yEnc');
+		 * ALTER TABLE releases ADD FULLTEXT(name);
+		 * SELECT * FROM releases WHERE MATCH (name) AGAINST ('"The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F"' IN BOOLEAN MODE);
+		 * 
+		 * In myisam this is much faster than SELECT * FROM releases WHERE name LIKE '%The.Amazing.World.of.Gumball.S01E28.The.Club.720p.HDTV.x264-W4F%';
+		 * So I'm guessing in innodb it will be the same.
+		 */
 		$db = new DB();
 		$updated = 0;
 		if($this->echooutput)
@@ -420,7 +429,7 @@ Class Predb
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb md5.\n";
 		}
-		if ($res = $db->queryDirect("select r.ID, r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010 and passwordstatus >= 0 ORDER BY rf.releaseID, rf.size DESC ".$tq))
+		if ($res = $db->queryDirect("select r.ID, r.name, r.searchname, r.categoryID, r.groupID, rf.name as filename from releases r left join releasefiles rf on r.ID = rf.releaseID  where (r.name REGEXP'[a-fA-F0-9]{32}' or rf.name REGEXP'[a-fA-F0-9]{32}') and r.relnamestatus = 1 and r.categoryID = 7010 and passwordstatus >= -1 ORDER BY rf.releaseID, rf.size DESC ".$tq))
 		{
 			while($row = mysqli_fetch_assoc($res))
 			{

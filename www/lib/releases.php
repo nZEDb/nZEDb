@@ -66,38 +66,11 @@ class Releases
 	{
 		$db = new DB();
 
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
+		$catsrch = $this->categorySQL($cat);
 
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
-
+		$maxagesql = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
+			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
 		$grpsql = "";
 		if ($grp != "")
@@ -107,7 +80,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and categoryID not in (".implode(",", $excludedcats).")";
 
-		$res = $db->queryOneRow(sprintf("select count(releases.ID) as num from releases left outer join groups on groups.ID = releases.groupID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxage, $exccatlist, $grpsql));
+		$res = $db->queryOneRow(sprintf("select count(releases.ID) as num from releases left outer join groups on groups.ID = releases.groupID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxagesql, $exccatlist, $grpsql));
 		return $res['num'];
 	}
 
@@ -120,33 +93,7 @@ class Releases
 		else
 			$limit = " LIMIT ".$start.",".$num;
 
-		$catsrch = "";
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
-			$catsrch = " and (";
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
-					$categ = new Category();
-					if ($categ->isParent($category))
-					{
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child)
-							$chlist.=", ".$child['ID'];
-
-						if ($chlist != "-99")
-								$catsrch .= " releases.categoryID in (".$chlist.") or ";
-					}
-					else
-					{
-						$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-					}
-				}
-			}
-			$catsrch.= "1=2 )";
-		}
+		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -317,22 +264,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usershows = $db->query(sprintf("select rageID, categoryID from userseries where userID = %d", $uid), true);
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($db->query(sprintf("select rageID, categoryID from userseries where userID = %d", $uid), true), 'rageID');
 
 		$airdate = ($airdate > -1) ? sprintf(" and releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
 
@@ -358,22 +290,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usermovies = $db->query(sprintf("select imdbID, categoryID from usermovies where userID = %d", $uid), true);
-		$usql = '(1=2 ';
-		foreach($usermovies as $umov)
-		{
-			$usql .= sprintf('or (releases.imdbID = %d', $umov['imdbID']);
-			if ($umov['categoryID'] != '')
-			{
-				$catsArr = explode('|', $umov['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($db->query(sprintf("select imdbID, categoryID from usermovies where userID = %d", $uid), true), 'imdbID');
 
 		$limit = " LIMIT 0,".($num > 100 ? 100 : $num);
 
@@ -403,21 +320,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($usershows, 'rageID');
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -436,21 +339,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
-		$usql = '(1=2 ';
-		foreach($usershows as $ushow)
-		{
-			$usql .= sprintf('or (releases.rageID = %d', $ushow['rageID']);
-			if ($ushow['categoryID'] != '')
-			{
-				$catsArr = explode('|', $ushow['categoryID']);
-				if (count($catsArr) > 1)
-					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
-				else
-					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
-			}
-			$usql .= ') ';
-		}
-		$usql .= ') ';
+		$usql = $this->uSQL($usershows, 'rageID');
 
 		$maxagesql = "";
 		if ($maxage > 0)
@@ -481,30 +370,25 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			//
-			// delete from disk.
-			//
 			$rel = $this->getById($identifier);
 			$this->fastDelete($rel['ID'], $rel['guid'], $this->site);
 		}
 	}
 
+	// For most scripts needing to delete a release.
 	public function fastDelete($id, $guid, $site)
 	{
 		$db = new DB();
 		$nzb = new NZB();
 		$ri = new ReleaseImage();
 
-
-		//
-		// delete from disk.
-		//
+		// Delete from disk.
 		$nzbpath = $nzb->getNZBPath($guid, $site->nzbpath, false, $site->nzbsplitlevel);
-
 		if (file_exists($nzbpath))
 			unlink($nzbpath);
 
-		$db->query(sprintf("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
+		// Delete from DB.
+		$db->query("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
 							from releases
 								LEFT OUTER JOIN releasenfo on releasenfo.releaseID = releases.ID
 								LEFT OUTER JOIN releasecomment on releasecomment.releaseID = releases.ID
@@ -514,9 +398,10 @@ class Releases
 								LEFT OUTER JOIN releasesubs on releasesubs.releaseID = releases.ID
 								LEFT OUTER JOIN releasevideo on releasevideo.releaseID = releases.ID
 								LEFT OUTER JOIN releaseextrafull on releaseextrafull.releaseID = releases.ID
-							where releases.ID = %d", $id));
+							where releases.ID = ".$id);
 
-		$ri->delete($guid); // This deletes a file so not in the query
+		// This deletes a file so not in the query.
+		$ri->delete($guid);
 	}
 
 	// For the site delete button.
@@ -527,9 +412,6 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			//
-			// delete from disk.
-			//
 			if ($isGuid !== false)
 				$rel = $this->getById($identifier);
 			else
@@ -561,15 +443,14 @@ class Releases
 
 		$db = new DB();
 		$updateSql = array();
-		foreach($update as $updk=>$updv) {
+		foreach($update as $updk=>$updv)
+		{
 			if ($updv != '')
 				$updateSql[] = sprintf($updk.'=%s', $db->escapeString($updv));
 		}
 
-		if (sizeof($updateSql) < 1) {
-			//echo 'no field set to be changed';
+		if (sizeof($updateSql) < 1)
 			return -1;
-		}
 
 		$updateGuids = array();
 		foreach($guids as $guid) {
@@ -578,6 +459,26 @@ class Releases
 
 		$sql = sprintf('update releases set '.implode(', ', $updateSql).' where guid in (%s)', implode(', ', $updateGuids));
 		return $db->query($sql);
+	}
+
+	// Creates part of a query for some functions.
+	public function uSQL($userquery, $type)
+	{
+		$usql = '(1=2 ';
+		foreach($userquery as $u)
+		{
+			$usql .= sprintf('or (releases.%s = %d', $type, $u[$type]);
+			if ($u['categoryID'] != '')
+			{
+				$catsArr = explode('|', $u['categoryID']);
+				if (count($catsArr) > 1)
+					$usql .= sprintf(' and releases.categoryID in (%s)', implode(',',$catsArr));
+				else
+					$usql .= sprintf(' and releases.categoryID = %d', $catsArr[0]);
+			}
+			$usql .= ') ';
+		}
+		return $usql .= ') ';
 	}
 
 	// Creates part of a query for searches based on the type of search.
@@ -724,10 +625,9 @@ class Releases
 		else
 			$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
 		
+		$maxagesql = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
+			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -741,7 +641,7 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $maxage, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
@@ -764,14 +664,13 @@ class Releases
 
 		if ($series != "")
 		{
-			//
-			// Exclude four digit series, which will be the year 2010 etc
-			//
+			// Exclude four digit series, which will be the year 2010 etc.
 			if (is_numeric($series) && strlen($series) != 4)
 				$series = sprintf('S%02d', $series);
 
 			$series = sprintf(" and upper(releases.season) = upper(%s)", $db->escapeString($series));
 		}
+
 		if ($episode != "")
 		{
 			if (is_numeric($episode))
@@ -838,14 +737,12 @@ class Releases
 
 		if ($imdbId != "-1" && is_numeric($imdbId))
 		{
-			//pad id with zeros just in case
+			// Pad ID with zeros just in case.
 			$imdbId = str_pad($imdbId, 7, "0",STR_PAD_LEFT);
 			$imdbId = sprintf(" and imdbID = %d ", $imdbId);
 		}
 		else
-		{
 			$imdbId = "";
-		}
 
 		$searchql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
@@ -875,9 +772,7 @@ class Releases
 		if (!$results)
 			return $results;
 
-		//
-		// Get the category for the parent of this release
-		//
+		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentid);
 		$cat = new Category();
 		$catrow = $cat->getById($currRow['categoryID']);
@@ -914,9 +809,7 @@ class Releases
 		return (is_array($guid)) ? $db->query($sql) : $db->queryOneRow($sql);
 	}
 
-	//
-	// writes a zip file of an array of release guids directly to the stream
-	//
+	// Writes a zip file of an array of release guids directly to the stream.
 	public function getZipped($guids)
 	{
 		$nzb = new NZB();
@@ -951,9 +844,7 @@ class Releases
 
 		if ($series != "")
 		{
-			//
-			// Exclude four digit series, which will be the year 2010 etc
-			//
+			// Exclude four digit series, which will be the year 2010 etc.
 			if (is_numeric($series) && strlen($series) != 4)
 				$series = sprintf('S%02d', $series);
 
