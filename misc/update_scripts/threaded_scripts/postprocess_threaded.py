@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys, os, time
 import threading
 try:
@@ -115,8 +116,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	#Does not work in some python versions (len(datas))	
-	#print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+	print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):

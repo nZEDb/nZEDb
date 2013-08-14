@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys, os, time
 import threading
 try:
@@ -74,8 +75,7 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
-		#Does not work in some python versions (len(datas))		
-		#print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
+		print("We will be using a max of %s threads, a queue of %s items" % (threads, "{:,}".format(len(datas))))
 		time.sleep(2)
 
 		#spawn a pool of place worker threads

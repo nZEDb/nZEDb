@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys, os, time
 import threading
 try:
@@ -78,8 +79,7 @@ def main(args):
 	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 		print("We will be using filename as searchname")
 
-	#Does not work in some python versions (len(datas))
-	#print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas[0]))))
+	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas[0]))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):

@@ -273,11 +273,11 @@ function release_flag ($x, $t)
 		$y = "cz";
 	if(preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $x))
 		$y = "cn";
-	if(preg_match('/German(bed)?/i', $x))
+	if(preg_match('/German(bed)?|\bger\b/i', $x))
 		$y = "de";
 	if(preg_match('/Danish/i', $x))
 		$y = "dk";
-	if(preg_match('/English|\ben\b/i', $x))
+	if(preg_match('/English|\beng?\b/i', $x))
 		$y = "en";
 	if(preg_match('/Spanish/i', $x))
 		$y = "es";
@@ -287,7 +287,7 @@ function release_flag ($x, $t)
 		$y = "fr";
 	if(preg_match('/\bGreek\b/i', $x))
 		$y = "gr";
-	if(preg_match('/Hungarian/i', $x))
+	if(preg_match('/Hungarian|\bhun\b/i', $x))
 		$y = "hu";
 	if(preg_match('/Hebrew|Yiddish/i', $x))
 		$y = "il";
