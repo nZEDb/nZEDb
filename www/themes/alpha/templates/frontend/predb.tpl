@@ -1,7 +1,6 @@
 <h4>{$page->title}</h4>
-<div class="row">
+<div class="container">
 {$pager}
-</div>
 <table style="margin-bottom:10px; margin-top:5px;" class="table table-condensed table-highlight table-striped data Sortable">
 <thead>
 	<tr>
@@ -101,6 +100,5 @@
 	{/foreach}
 </tbody>
 </table>
-<div class="row">
 {$pager}
 </div>

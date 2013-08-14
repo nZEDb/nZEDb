@@ -1,26 +1,27 @@
- 
-<h1>{$page->title}</h1>
-
 {if $error != ''}
-	<div class="error">{$error}</div>
+	<div class="alert alert-danger">{$error}</div>
 {/if}
 
 {if $confirmed == '' && $sent == ''}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4 col-lg-offset-4">
+<div class="well">
+      <form class="form-signin" action="forgottenpassword?action=submit" method="post">
+        <h2 class="form-signin-heading">Please Sign In</h2>
 	<p>
 		Please enter the email address you used to register and we will send an email to reset your password. If you cannot remember your email, or no longer have access to it, please <a href="{$smarty.const.WWW_TOP}/contact-us">contact us</a>.
 	</p>
-
-	<form method="post" action="forgottenpassword?action=submit">
-
-		<table class="data">
-			<tr><th><label for="email">Email:</label> <em>*</em></th>
-				<td>
-					<input id="email" autocomplete="off" name="email" value="{$email}" type="email"/>
-				</td>
-			</tr>
-			<tr><th></th><td><input type="submit" value="Request Password Reset" /><div style="float:right;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
-		</table>
+        <div class="form-group">
+        <input type="email" class="form-control" placeholder="E-mail Address" id="email" value="{$email}" name="email">
+        </div>
+<button class="btn btn-success" type="submit" value="Request Password Reset">Request Password Reset</button>
 	</form>
+	</div>
+	</div>
+	</div>
+	</div>
 {elseif $sent != ''}
 	<p>
 		A password reset request has been sent to your email.
