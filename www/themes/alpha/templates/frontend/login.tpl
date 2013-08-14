@@ -1,8 +1,10 @@
 {if $error != ''}
 	<div class="alert alert-danger">{$error}</div>
 {/if}
-
 <div class="container">
+  <div class="row">
+    <div class="col-lg-4 col-lg-offset-4">
+<div class="well">
       <form class="form-signin" action="login" method="post">
       	<input type="hidden" name="redirect" value="{$redirect|escape:"htmlall"}">
         <h2 class="form-signin-heading">Please Sign In</h2>
@@ -17,9 +19,12 @@
           <input type="checkbox" id="rememberme" {if $rememberme == 1}checked="checked" {/if}name="rememberme"> Remember me
         </label>
         </div>
-        <button class="btn btn-default" type="submit" value="Login">Login</button>
+        <button class="btn btn-success" type="submit" value="Login">Login</button>
         <button class="btn btn-link" type="button"><a class="text-right" href="{$smarty.const.WWW_TOP}/forgottenpassword">Forgotten your password?</a></button>
       </form>
+    </div>
+  </div>
+        </div>
 </div>
 
 {*
