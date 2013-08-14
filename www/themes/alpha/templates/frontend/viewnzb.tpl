@@ -1,6 +1,6 @@
 {if {$site->addetail} != ''}
+<div class="container" style="width:500px;">
 <div class="row">
-    <div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->addetail}
@@ -171,7 +171,7 @@
 </div>
 <br>        <br>
 
-<table class="table data">
+<table class="table table-condensed table-striped data">
 <tr>
 <th style="vertical-align:top">Name:</th>
 <td>{$release.name|escape:"htmlall"}</td>
@@ -471,8 +471,8 @@
 
 <table class="table table-striped table-condensed data Sortable">
 <colgroup>
-<col class="col-lg-1">
-<col class="col-lg-7">
+<col class="col-1">
+<col class="col-7">
 </colgroup>
 <thead>
 <tr>
@@ -498,7 +498,7 @@
 <label for="txtAddComment">Add Comment:</label>
 <textarea id="txtAddComment" name="txtAddComment" class="form-control" rows="3"></textarea>
 </div>
-<input class="btn btn-default" type="submit" value="Submit">
+<button class="btn btn-default" type="submit">Submit</button>
 </fieldset>
 </form>
 </div>
