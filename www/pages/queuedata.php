@@ -29,7 +29,7 @@ if ($json !== false)
 	$space1 = $obj->{'diskspace1'};
 	$space2 = $obj->{'diskspace2'};
 
-	$output .= "<div class='container text-center'><div class='col-2'><b>Download speed:</b><br> ".$speed."B/s </div><div class='col-2'><b>Queued:</b><br> ".$queued." </div><div class='col-2'><b>Status:</b><br> ".$status." </div><div class='col-2'><b>Server stats:</b><br> ".$load." </div><div class='col-2'><b>Space left download dir:</b><br> ".round($space1)."GB </div><div class='col-2'><b>Complete dir:</b><br> ".round($space2)."GB</p></div></div>";
+	$output .= "<div class='container text-center' style='display:block;'><div style='width:16.66%;float:left;'><b>Download speed:</b><br> ".$speed."B/s </div><div style='width:16.66%;float:left;'><b>Queued:</b><br> ".$queued." </div><div style='width:16.66%;float:left;'><b>Status:</b><br> ".$status." </div><div style='width:16.66%;float:left;'><b>Server stats:</b><br> ".$load." </div><div style='width:16.66%;float:left;'><b>Space left download dir:</b><br> ".round($space1)."GB </div><div style='width:16.66%;float:left;'><b>Complete dir:</b><br> ".round($space2)."GB</p></div></div>";
 	if (count($queue) > 0)
 	{
 		$output.="<table class=\"table table-striped table-condensed table-highlight data\">";
