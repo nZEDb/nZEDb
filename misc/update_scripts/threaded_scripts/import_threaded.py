@@ -37,6 +37,8 @@ run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
 bulk = dbgrab[0][2]
 
+if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
+	print("We will be using filename as searchname")
 print("Sorting Folders in %s, be patient." % (nzbs))
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
 
@@ -75,8 +77,6 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
-		print("We will be using filename as searchname")
 	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
@@ -97,7 +97,7 @@ def main(args):
 		if int(use_true[0]) == 1:
 			for gnames in datas:
 				my_queue.put(os.path.join(nzbs,gnames))
-		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
+		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
 				my_queue.put('%s %s' % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:

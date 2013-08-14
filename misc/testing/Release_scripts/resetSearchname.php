@@ -101,7 +101,7 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
         {
             $nc = new nameCleaning();
             $newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-            $db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+            $db->query(sprintf("UPDATE releases SET searchname = %s relnamestatus = 0 where ID = %d", $db->escapeString($newname), $row['ID']));
             $done++;
             $consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
         }
