@@ -29,11 +29,11 @@ if ($json !== false)
 	$space1 = $obj->{'diskspace1'};
 	$space2 = $obj->{'diskspace2'};
 
-	$output .= "<p><b>Download speed:</b> ".$speed."B/s - <b>Queued:</b> ".$queued." - <b>Status:</b> ".$status." - <b>Server stats:</b> ".$load." - <b>Space left download dir:</b> ".round($space1)."GB - <b>Complete dir:</b> ".round($space2)."GB</p>";
+	$output .= "<div class='container text-center' style='display:block;'><div style='width:16.66%;float:left;'><b>Download speed:</b><br> ".$speed."B/s </div><div style='width:16.66%;float:left;'><b>Queued:</b><br> ".$queued." </div><div style='width:16.66%;float:left;'><b>Status:</b><br> ".$status." </div><div style='width:16.66%;float:left;'><b>Server stats:</b><br> ".$load." </div><div style='width:16.66%;float:left;'><b>Space left download dir:</b><br> ".round($space1)."GB </div><div style='width:16.66%;float:left;'><b>Complete dir:</b><br> ".round($space2)."GB</p></div></div>";
 	if (count($queue) > 0)
 	{
-		$output.="<table class=\"data highlight\">";
-		$output.="<tr>
+		$output.="<table class=\"table table-striped table-condensed table-highlight data\">";
+		$output.="<tr><thead>
 		<th></th>
 		<th>Name</th>
 		<th style='width:80px;text-align:center;'>size</th>
@@ -42,7 +42,7 @@ if ($json !== false)
 		<th style='text-align:center;'>time left</th>
 		<th style='text-align:center;'>Delete</th>";
 		$output.="<th style='text-align:center;'><a href='?pall'>Pause all</a></th>";
-		$output.="<th style='text-align:center;'><a href='?rall'>Resume all</a></th></tr>";
+		$output.="<th style='text-align:center;'><a href='?rall'>Resume all</a></th></tr></thead><tbody>";
 		foreach ($queue as $item)
 		{
 			if (strpos($item->{'filename'}, "fetch NZB") > 0)
@@ -64,7 +64,7 @@ if ($json !== false)
 				$count++;
 			}
 		}
-		$output.="</table>";
+		$output.="</tbody></table>";
 	}
 	else
 	{
