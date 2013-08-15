@@ -979,6 +979,14 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.tun")
+		{
+			//[PRiVATE] UmVndWxhci5TaG93LlMwMkUyOC4xMDgwcC5CbHVSYXkueDI2NC1ERWlNT1M= [06/32] - "89769f0736162e1cb113655cb10e42ff.part02.rar" yEnc
+			if (preg_match('/^(\[PRiVATE\] [a-z0-9A-Z]+=+ \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.tv")
 		{
 			//Borgen.2x02.A.Bruxelles.Non.Ti.Sentono.Urlare.ITA.BDMux.x264-NovaRip [02/22] - "borgen.2x02.ita.bdmux.x264-novarip.par2" yEnc
