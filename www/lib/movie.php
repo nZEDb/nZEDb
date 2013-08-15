@@ -297,8 +297,8 @@ class Movie
 		if (isset($imdb['tagline']) && $imdb['tagline'] != '') {
 			$mov['tagline'] = html_entity_decode($imdb['tagline'], ENT_QUOTES, 'UTF-8');
 		} elseif (isset($tmdb['tagline']) && $tmdb['tagline'] != '') {
-            $mov['tagline'] = $tmdb['tagline'];
-        }
+			$mov['tagline'] = $tmdb['tagline'];
+		}
 
 		$mov['plot'] = '';
 		if (isset($imdb['plot']) && $imdb['plot'] != '') {
