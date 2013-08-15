@@ -28,8 +28,7 @@ class Movie
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
-		$this->binglimit = 0;
-		$this->yahoolimit = 0;
+		$this->binglimit = $this->yahoolimit = 0;
 	}
 
 	public function getMovieInfo($imdbId)
@@ -399,9 +398,9 @@ class Movie
 		$ret['tmdb_id'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt','',$tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
-		if (isset($tmdbLookup['vote_average'])) {$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];}
+		if (isset($tmdbLookup['vote_average']))	{$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];}
 		if (isset($tmdbLookup['overview']))		{$ret['plot'] = $tmdbLookup['overview'];}
-        if (isset($tmdbLookup['tagline']))     {$ret['tagline'] = $tmdbLookup['tagline'];}
+		if (isset($tmdbLookup['tagline']))		{$ret['tagline'] = $tmdbLookup['tagline'];}
 		if (isset($tmdbLookup['release_date'])) {$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));}
 		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0)
 		{
@@ -428,7 +427,7 @@ class Movie
 		$imdb_regex = array(
 			'title'	=> '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline'  => '/taglines:<\/h4>\s([^<]+)/i',
-			'plot'	 => '/<p\sitemprop="description">([^<]+)/i',
+			'plot'	 => '/<p itemprop="description">\s*?(.*?)\s*?<\/p>/i',
 			'rating'   => '/"ratingValue">([\d.]+)<\/span>/i',
 			'year'	 => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
 			'cover'	=> '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
