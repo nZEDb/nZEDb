@@ -22,12 +22,14 @@ require_once(WWW_DIR."lib/predb.php");
 
 class Releases
 {
-	//
-	// passworded indicator
-	//
+	/* RAR/ZIP Passworded indicator. */
+	// No password.
 	const PASSWD_NONE = 0;
+	// Might have a password.
 	const PASSWD_POTENTIAL = 1;
+	// Possibly broken RAR/ZIP.
 	const BAD_FILE = 2;
+	// Definately passworded.
 	const PASSWD_RAR = 10;
 
 	function Releases($echooutput=false)

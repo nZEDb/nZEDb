@@ -1,50 +1,35 @@
-			<h2>Getting in touch</h2>
-
-			<p>Please send any questions or comments you have in an email to {mailto address=$site->email text=$site->title}.</p>
-
-			{$msg}
-
-			{if $msg == ""}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4 col-lg-offset-4">
+<div class="well">
+      <form class="form-signin" action="contact-us" method="post">
+        <h2 class="form-signin-heading">Getting in touch</h2>
+      <p>Please send any questions or comments you have in an email to {mailto address=$site->email text=$site->title}.</p>
+      {$msg}
+      {if $msg == ""}
 <p>Alternatively use our contact form to get in touch.</p>
 
-
-<div class="container">
-<form class="form-horizontal form-signin" method="post" action="contact-us">
 <fieldset>
-<!-- Text input-->
-<div class="control-group" style="margin-bottom:0">
-  <label class="control-label" for="username">Your Name</label>
-  <div class="controls">
-    <input id="username" name="username" placeholder="" class="input-large" type="text">
-  </div>
+<div class="form-group">
+<label for="username">Your Name</label>
+<input id="username" name="username" placeholder="" class="form-control" type="text">
 </div>
-<!-- Text input-->
-<div class="control-group" style="margin-bottom:0">
-  <label class="control-label" for="useremail">Email Address</label>
-  <div class="controls">
-    <input id="useremail" name="useremail" placeholder="" class="input-large" type="text" value="">
+<div class="form-group">
+<label for="useremail">Email Address</label>
+<input id="useremail" name="useremail" placeholder="" class="form-control" type="email" value="">
   </div>
+<div class="form-group">
+<label for="comment">Comment or Review</label>
+<textarea rows="3" id="comment" class="form-control" name="comment" value=""></textarea>
 </div>
-<!-- Textarea -->
-<div class="control-group">
-  <label class="control-label" for="comment">Comment or Review</label>
-  <div class="controls">
-    <textarea rows="3" id="comment" name="comment" value=""></textarea>
-  </div>
+<div class="form-group">
+<button id="submit" name="submit" class="btn btn-success">Submit</button>
 </div>
-<!-- Button -->
-<div class="control-group">
-  <label class="control-label" for="submit"></label>
-  <div class="controls">
-    <button id="submit" name="submit" class="btn btn-default">Submit</button>
-  </div>
-</div>
+
 </fieldset>
 </form>
+</div>
+</div>
+</div>
 </div><!-- container -->
-
-
-
-
-
-			{/if}
+{/if}

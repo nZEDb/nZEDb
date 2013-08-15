@@ -120,18 +120,13 @@
 			<td class="item">
 			<label for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
 
-				{if $result.passwordstatus == 1}
-					<img title="Probably Passworded" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="Probably Passworded" />
-				{elseif $result.passwordstatus == 2}
-					<img title="Broken post" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/broken.png" alt="Broken post" />
-				{elseif $result.passwordstatus == 10}
-					<img title="Passworded archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded archive" />
-				{/if}
-
 				<div class="resextra">
 				<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
 					<div class="btns" style="float:right">
 						{release_flag($result.searchname, browse)}
+						{if $result.passwordstatus == 1}<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded." />
+						{elseif $result.passwordstatus == 2}<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged." />
+						{elseif $result.passwordstatus == 10}<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="RAR/ZIP is Passworded." />{/if}
 						{if $result.videostatus == 1}<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev rndbtn" rel="preview"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" /></a>{/if}
 						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
 						{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb rndbtn" rel="movie" >Cover</a>{/if}
