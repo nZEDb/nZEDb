@@ -904,7 +904,7 @@ class PostProcess
 				echo "\n";
 		}
 		if ($gui)
-			$this->db->queryDirect(sprintf("UPDATE `nZEDb`.`site` SET `value` = %d WHERE `setting` LIKE 'currentppticket1'", $ticket + 1));
+			$this->db->queryDirect(sprintf("UPDATE `site` SET `value` = %d WHERE `setting` LIKE 'currentppticket1'", $ticket + 1));
 
 		$nntp->doQuit();
 		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
