@@ -60,7 +60,7 @@ class Nfo
 		return false;
 	}
 
-// Confirm that the .nfo file is not something else.
+	// Confirm that the .nfo file is not something else.
 	public function isNFO($possibleNFO)
 	{
 		$r = false;
