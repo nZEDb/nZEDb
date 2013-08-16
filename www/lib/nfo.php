@@ -1,12 +1,16 @@
 <?php
 require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."/lib/movie.php");
+require_once(WWW_DIR."/lib/nntp.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
 require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."lib/rarinfo/par2info.php");
+require_once(WWW_DIR."lib/rarinfo/rarinfo.php");
+require_once(WWW_DIR."lib/rarinfo/sfvinfo.php");
+require_once(WWW_DIR."lib/rarinfo/srrinfo.php");
+require_once(WWW_DIR."lib/rarinfo/zipinfo.php");
 
 /*
  * Class for handling fetching/storing of NFO files.
@@ -56,44 +60,58 @@ class Nfo
 		return false;
 	}
 
-	// Confirm that the .nfo file is not something else.
+// Confirm that the .nfo file is not something else.
 	public function isNFO($possibleNFO)
 	{
-		$ok = false;
-		if ($possibleNFO !== false)
+		$r = false;
+		if ($possibleNFO === false)
+			return $r;
+		if (preg_match('/(<?xml|;\s*Generated\sby.+SF\w|^\s*PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
+			return $r;
+		// Make sure it's not too big, also exif_imagetype needs a minimum size or else it doesn't work.
+		if (strlen($possibleNFO) < 45 * 1024 && strlen($possibleNFO) > 15)
 		{
-			if (!preg_match('/(<?xml|;\s*Generated\sby.+SF\w|^\s*PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
+			// Check if it's a EXIF/JFIF picture.
+			if (@exif_imagetype($possibleNFO) == false && $this->check_JFIF($possibleNFO) == false)
 			{
-				if (strlen($possibleNFO) < 45 * 1024)
+				// Check if it's a par2.
+				$par2info = new Par2Info();
+				$par2info->setData($possibleNFO);
+				if ($par2info->error)
 				{
-					// exif_imagetype needs a minimum size or else it doesn't work.
-					if (strlen($possibleNFO) > 15)
+					// Check if it's a rar.
+					$rar = new RarInfo;
+					$rar->setData($possibleNFO);
+					if ($rar->error)
 					{
-						// Check if it's a picture - EXIF.
-						if (@exif_imagetype($possibleNFO) == false)
+						// Check if it's a zip.
+						$zip = new ZipInfo;
+						$zip->setData($possibleNFO);
+						if ($zip->error)
 						{
-							// Check if it's a picture - JFIF.
-							if ($this->check_JFIF($possibleNFO) == false)
+							// Check if it's a SRR.
+							$srr = new SrrInfo;
+							$srr->setData($possibleNFO);
+							if ($srr->error)
 							{
-								// Check if it's a par2.
-								$par2info = new Par2Info();
-								$par2info->setData($possibleNFO);
-								if ($par2info->error)
-								{
-									$ok = true;
-								}
+								// Check if it's an SFV.
+								$sfv = new SfvInfo;
+								$sfv->setData($possibleNFO);
+								if ($sfv->error)
+									return true;
 							}
 						}
 					}
 				}
 			}
 		}
-		return $ok;
+		return $r;
 	}
 
 	//	Check if the possible NFO is a JFIF.
 	function check_JFIF($filename)
 	{
+		$r = false;
 		$fp = @fopen($filename, 'r');
 		if ($fp)
 		{
@@ -106,11 +124,10 @@ class Nfo
 					// Make sure it is JFIF header.
 					if (substr($bytes, 0, 4) == "JFIF")
 						return true;
-					else
-						return false;
 				}
 			}
 		}
+		return $r;
 	}
 
 	// Adds an NFO found from predb, rar, zip etc...
