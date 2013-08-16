@@ -950,22 +950,21 @@ class PostProcess
 	{
 		if (@file_put_contents($file, $data) !== false)
 		{
-		@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
-		if (is_array($xmlarray))
-		{
-			$xmlarray = implode("\n",$xmlarray);
-			$xmlObj = @simplexml_load_string($xmlarray);
-			$arrXml = objectsIntoArray($xmlObj);
-			if (!isset($arrXml["File"]["track"][0]))
-				unlink($file);
+			@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
+			if (is_array($xmlarray))
+			{
+				$xmlarray = implode("\n",$xmlarray);
+				$xmlObj = @simplexml_load_string($xmlarray);
+				$arrXml = objectsIntoArray($xmlObj);
+				if (!isset($arrXml["File"]["track"][0]))
+					unlink($file);
+			}
 		}
 	}
-	}
 
-	function addfile($v, $release, $rar = false)
+	function addfile($v, $release, $rar=false)
 	{
-		// Only process if not a support file, or file segment.
-		if (!isset($v["error"]) && !preg_match($this->supportfiles.")$/i", $v["name"]))
+		if (!isset($v["error"]))
 		{
 			if ($rar !== false && preg_match("/\.zip$/", $v["source"]))
 			{
@@ -976,12 +975,6 @@ class PostProcess
 				$tmpdata = $rar->getFileData($v["name"], $v["source"]);
 			else
 				$tmpdata = false;
-
-			/*if (preg_match("/\.zip$/i", $v["name"]))
-			{
-				$files = $this->processReleaseZips($tmpdata, false, false, $release["ID"]);
-				var_dump($files);
-			}*/
 
 			// Check if we already have the file or not.
 			// Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
@@ -994,7 +987,8 @@ class PostProcess
 					{
 						$this->filesadded++;
 						$this->newfiles = true;
-						echo "^";
+						if ($this->echooutput)
+							echo "^";
 					}
 				}
 			}
@@ -1009,10 +1003,8 @@ class PostProcess
 					{
 						$this->debug("added rar nfo");
 						if ($this->echooutput)
-						{
 							echo "n";
-							$this->nonfo = false;
-						}
+						$this->nonfo = false;
 					}
 				}
 				// Extract a video file from the compressed file.
@@ -1021,8 +1013,7 @@ class PostProcess
 				// Extract an audio file from the compressed file.
 				elseif ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v["name"], $ext))
 					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
-				else
-					if (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
+				elseif (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
 						$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
 			}
 			unset($tmpdata, $rf);
@@ -1034,8 +1025,6 @@ class PostProcess
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
-		$dezip = ($this->site->zippath != '') ? true : false;
-
 		if ($open)
 			$zip->open($fetchedBinary, true);
 		else
@@ -1058,6 +1047,7 @@ class PostProcess
 		$dataarray = array();
 		if ($files !== false)
 		{
+			$dezip = ($this->site->zippath != '') ? true : false;
 			if ($this->echooutput)
 				echo "z";
 			if ($this->nonfo === true)
@@ -1124,32 +1114,31 @@ class PostProcess
 	function getRar($fetchedBinary)
 	{
 		$rar = new ArchiveInfo();
-		$files = false;
+		$files = $retval = false;
 		if ($rar->setData($fetchedBinary, true))
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
 			$this->debug("\nError: {$rar->error}.");
-			return false;
+			return $retval;
 		}
-
 		if ($rar->isEncrypted)
 		{
 			$this->debug("Archive is password encrypted.");
 			$this->password = true;
-			return false;
+			return $retval;
 		}
 		$tmp = $rar->getSummary(true, false);
 		if (isset($tmp["is_encrypted"]) && $tmp["is_encrypted"] != 0)
 		{
 			$this->debug("Archive is password encrypted.");
 			$this->password = true;
-			return false;
+			return $retval;
 		}
 		$files = $rar->getArchiveFileList();
-		$retval = array();
 		if ($files !== false)
 		{
+			$retval = array();
 			if ($this->echooutput !== false)
 				echo "r";
 			foreach ($files as $file)
