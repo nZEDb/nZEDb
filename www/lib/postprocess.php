@@ -540,7 +540,7 @@ class PostProcess
 
 							if (!preg_match("/\.\b(part\d+|part00\.rar|part01\.rar|rar|r00|r01|zipr\d{2,3}|zip|zipx)($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $rarFile["title"]))
 							{
-								$this->debug("Skipping ".$rarFile["title"]." it is not a zip/rar.");
+								//$this->debug("Skipping ".$rarFile["title"]." it is not a zip/rar.");
 								continue;
 							}
 
