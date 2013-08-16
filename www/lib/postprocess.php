@@ -1,6 +1,5 @@
 <?php
 require_once(WWW_DIR."lib/anidb.php");
-require_once(WWW_DIR."lib/rarinfo/archiveinfo.php");
 require_once(WWW_DIR."lib/books.php");
 require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/console.php");
@@ -20,6 +19,8 @@ require_once(WWW_DIR."lib/releaseimage.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/tvrage.php");
 require_once(WWW_DIR."lib/util.php");
+require_once(WWW_DIR."lib/rarinfo/archiveinfo.php");
+require_once(WWW_DIR."lib/rarinfo/par2info.php");
 require_once(WWW_DIR."lib/rarinfo/zipinfo.php");
 
 class PostProcess
@@ -242,6 +243,48 @@ class PostProcess
 	}
 
 	//
+	// Attempt to get a better name from a par2 file and categorize the release.
+	//
+	public function parsePAR2($messageID, $relID, $groupID)
+	{
+		$db = new DB();
+		$category = new Category();
+
+		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, ID as releaseID  FROM releases WHERE ID = {$relID}");
+		if ($quer["relnamestatus"] !== 1 && $quer["categoryID"] != Category::CAT_MISC)
+			return false;
+
+		$nntp = new NNTP();
+		$nntp->doConnect();
+		$groups = new Groups();
+		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
+		$nntp->doQuit();
+		if ($par2 === false)
+			return false;
+
+		$par2info = new Par2Info();
+		$par2info->setData($par2);
+		if ($par2info->error)
+			return false;
+
+		$files = $par2info->getFileList();
+		if (count($files) > 0)
+		{
+			$namefixer = new Namefixer($this->echooutput);
+			foreach ($files as $fileID => $file)
+			{
+				$quer["textstring"] = $file["name"];
+				$namefixer->checkName($quer, 1, "PAR2, ", 1);
+				$stat = $db->queryOneRow("SELECT relnamestatus as a FROM releases WHERE ID = {$relID}");
+				if ($stat["a"] !== 1)
+					break;
+			}
+		}
+		else
+			return false;
+	}
+
+	//
 	// Check for passworded releases, RAR contents and Sample/Media info.
 	//
 	public function processAdditional($releaseToWork = '', $id = '', $gui = false)
@@ -365,16 +408,11 @@ class PostProcess
 				// Only attempt sample if not disabled.
 				$blnTookSample =  ($rel["disablepreview"] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
-				if ($processSample === false)
-					$blnTookSample = true;
-				if ($processVideo === false)
-					$blnTookVideo = true;
-				if ($processMediainfo === false)
-					$blnTookMediainfo = true;
-				if ($processAudioinfo === false)
-					$blnTookAudioinfo = true;
-				if ($processJPGSample === false)
-					$blnTookJPG = true;
+				if ($processSample === false)		$blnTookSample = true;
+				if ($processVideo === false)		$blnTookVideo = true;
+				if ($processMediainfo === false)	$blnTookMediainfo = true;
+				if ($processAudioinfo === false)	$blnTookAudioinfo = true;
+				if ($processJPGSample === false)	$blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
 
 				// Go through the nzb for this release looking for a rar, a sample, and a mediafile.

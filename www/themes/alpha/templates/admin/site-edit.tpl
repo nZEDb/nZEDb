@@ -499,6 +499,14 @@
 </tr>
 
 <tr>
+	<td><label for="lookuppar2">Lookup PAR2:</label></td>
+	<td>
+		{html_radios id="lookuppar2" name='lookuppar2' values=$yesno_ids output=$yesno_names selected=$fsite->lookuppar2 separator='<br />'}
+		<div class="hint">Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/><strong>NOTE: this can be slow depending on the group!</strong></div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="lookuptvrage">Lookup TV Rage:</label></td>
 	<td>
 		{html_radios id="lookuptvrage" name='lookuptvrage' values=$yesno_ids output=$yesno_names selected=$fsite->lookuptvrage separator='<br />'}

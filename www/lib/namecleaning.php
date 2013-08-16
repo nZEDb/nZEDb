@@ -2159,13 +2159,11 @@ class nameCleaning
 	public function fixerCleaner($name)
 	{
 		//Extensions.
-		$cleanerName = preg_replace('/ [a-z0-9]+\.jpg|((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par(\s?2|")|zip|z{2})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', ' ', $name);
-		//Replaces some characters with 1 space.
-		$cleanerName = str_replace(array(".", "_", '-', "|", "<", ">", '"', "=", '[', "]", "(", ")", "{", "}", "*", ";", ":", ",", "'", "~", "/", "&", "+"), " ", $cleanerName);
+		$cleanerName = preg_replace('/([-_](proof|sample|thumbs?))*(\.part(\d+)?(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}$|$)/i', ' ', $name);
+		//Remove stuff from the start.
+		$cleanerName = preg_replace('/^(Release Name|sample-)/i', ' ', $cleanerName);
 		//Replace multiple spaces with 1 space
 		$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
-		//Remove Release Name
-		$cleanerName = preg_replace('/^Release Name/i', ' ', $cleanerName);
 		//Remove invalid characters.
 		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/','', $cleanerName)));
 

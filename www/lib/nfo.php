@@ -6,6 +6,7 @@ require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/nzbcontents.php");
 require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR."lib/rarinfo/par2info.php");
 
 /*
  * Class for handling fetching/storing of NFO files.
@@ -59,10 +60,9 @@ class Nfo
 	public function isNFO($possibleNFO)
 	{
 		$ok = false;
-
 		if ($possibleNFO !== false)
 		{
-			if (!preg_match('/(<?xml|;\sGenerated\sby.+SF\w|^PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
+			if (!preg_match('/(<?xml|;\s*Generated\sby.+SF\w|^\s*PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
 			{
 				if (strlen($possibleNFO) < 45 * 1024)
 				{
@@ -75,7 +75,13 @@ class Nfo
 							// Check if it's a picture - JFIF.
 							if ($this->check_JFIF($possibleNFO) == false)
 							{
-								$ok = true;
+								// Check if it's a par2.
+								$par2info = new Par2Info();
+								$par2info->setData($possibleNFO);
+								if ($par2info->error)
+								{
+									$ok = true;
+								}
 							}
 						}
 					}
