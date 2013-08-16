@@ -583,6 +583,14 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.downunder")
+		{
+			//RWlgVffClWxD0vXT1peIwb9DubTLMiYm3nvD1aMMDe[04/16] - "A9jFik7Fk4hCG4GWuxAg.r02" yEnc
+			if (preg_match('/^([a-zA-Z0-9]{5,}\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.dvd")
 		{
 			//thnx to original poster [00/98] - "2669DFKKFD2008.nzb ` 2669DFKKFD2008 " yEnc
@@ -625,6 +633,14 @@ class nameCleaning
 		{
 			//7000999555666777123754 - [334/389] - "The Secret of Bible & Jesus. Beyond The Da Vinci Code - YouTube.3gp" yEnc
 			if (preg_match('/^(\d+ - \[)\d+\/\d+\] - ".+?'.$this->e1, $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
+		else if ($groupName === "alt.binaries.font")
+		{
+			//RWlgVffClWxD0vXT1peIwb9DubTLMiYm3nvD1aMMDe[04/16] - "A9jFik7Fk4hCG4GWuxAg.r02" yEnc
+			if (preg_match('/^([a-zA-Z0-9]{5,}\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -716,10 +732,23 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.milo")
+		{
+			//RWlgVffClWxD0vXT1peIwb9DubTLMiYm3nvD1aMMDe[04/16] - "A9jFik7Fk4hCG4GWuxAg.r02" yEnc
+			//H8XxBd44qXBGk [05/15] - "H8XxBd44qXBGk.part5.rar" yEnc
+			if (preg_match('/^([a-zA-Z0-9]{5,} ?\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.mojo")
 		{
 			//[17/61] - "www.realmom.info - xvid - xf-devilstomb.r14" - 773,11 MB - yEnc
 			if (preg_match('/^\[\d+(\/\d+\] - ".+?)'.$this->e0.' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
+				return $match[1];
+			//RWlgVffClWxD0vXT1peIwb9DubTLMiYm3nvD1aMMDe[04/16] - "A9jFik7Fk4hCG4GWuxAg.r02" yEnc
+			//3JgtmNAbZbJ6Q [14/21] - "parfile.par2" yEnc
+			else if (preg_match('/^([a-zA-Z0-9]{5,} ?\[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -946,6 +975,14 @@ class nameCleaning
 		{
 			//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [05/87] - "Deep.Black.Ass.5.XXX.1080p.WEBRip.x264-TBP.part03.rar" - 7,87 GB yEnc
 			if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
+		else if ($groupName === "alt.binaries.tun")
+		{
+			//[PRiVATE] UmVndWxhci5TaG93LlMwMkUyOC4xMDgwcC5CbHVSYXkueDI2NC1ERWlNT1M= [06/32] - "89769f0736162e1cb113655cb10e42ff.part02.rar" yEnc
+			if (preg_match('/^(\[PRiVATE\] [a-z0-9A-Z]+=+ \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -2013,6 +2050,9 @@ class nameCleaning
 			//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
 			else if (preg_match('/^\(\d+\/\d+\) "(.+?)'.$this->e0.' - \d.+?B - (\d.+?B -)? yEnc$/', $subject, $match))
 				return $match[1];
+			//(01/28) - Continuum.S02E13.Second.Time.1080p.WEB-DL.AAC2.0.H264 - "Continuum.S02E13.Second.Time.1080p.WEB-DL.AAC2.0.H264.par2" - 1.75 GB - yEnc
+			else if (preg_match('/^\(\d+\/\d+\) - ([\w.-]{5,}) - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
+				return $match[1];
 			//[01/42] - "King.And.Maxwell.S01E08.1080p.WEB-DL.DD5.1.H264-Abjex.par2" yEnc
 			else if (preg_match('/^\[\d+\/\d+\] - "([A-Za-z0-9.-]+?)'.$this->e1, $subject, $match))
 				return $match[1];
@@ -2082,38 +2122,8 @@ class nameCleaning
 	
 	public function releaseCleanerHelper($subject)
 	{
-		/*//File and part count.
-		$cleanerName = preg_replace('/(File ?)?(\(|\[|\s|Part)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
-		//Size.
-		$cleanerName = preg_replace('/\d+[.,]\d+ [KMG]B|\d+[KMG]B|\d+ bytes?|[- ]?\d+[.,]?\d+ [KMG]?B -( yEnc)?| \(\d+[.,]\d+ [KMG]B\) |\(\d+K\) yEnc|yEnc \d+k$/i', ' ', $cleanerName);
-		//Extensions.
-		$cleanerName = preg_replace('/(\.avi|\.part(\d+)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")/', '"', $cleanerName);
-		$cleanerName = preg_replace('/ [a-z0-9]+\.jpg |\.avi\.\d+ |((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=")|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par\s?2|zip|z{2}) |(\s|(\d{2,3})?-)\d{2,3}\.mp3 |\d{2,3}\.pdf |\.part\d{1,4}\./i', ' ', $cleanerName);
-		//Remove multiple chars.
-		$cleanerName = preg_replace('/-{2,}|~{2,}|`{2,}|!{2,}|@{2,}|#{2,}|\${2,}|%{2,}|\^{2,}|&{2,}|\*{2,}|\({2,}|\){2,}|_{2,}|\+{2,}|={2,}|\{{2,}|\}{2,}|\[{2,}|\]{2,}|\|{2,}|\\{2,}|:{2,}|;{2,}|"{2,}|\'{2,}|<{2,}|>{2,}|,{2,}|\.{2,}|\?{2,}|\/{2,}/i', ' ', $cleanerName);
-		//Remove some starting stuff.
-		$cleanerName = preg_replace('/^(ATTN:|Re: ?|(As ?)?Req?(:| ?-)?)|^[^a-z0-9]+/i', ' ', $cleanerName);
-		//Multiple spaces.*/
 		$cleanerName = preg_replace('/(- )?yEnc$/', '', $subject);
-		$cleanerName = trim(preg_replace('/\s\s+/', ' ', $cleanerName));
-		
-		/*//Extensions.
-		$cleanerName = preg_replace('/ [a-z0-9]+\.jpg|((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par(\s?2|")|zip|z{2})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', ' ', $cleanerName);
-		//Books + Music.
-		$cleanerName = preg_replace('/((\d{1,2}-\d{1-2})?-[a-z0-9]+)?\.scr|Ebook-[a-z0-9]+|\((\d+ )ebooks\)|\(ebooks[-._ ](collection|\d+)\)|\([a-z]{3,9} \d{1,2},? 20\d\d\)|\(\d{1,2} [a-z]{3,9} 20\d\d|\[ATTN:.+?\]|ATTN: [a-z]{3,13} |ATTN:(macserv 100|Test)|ATTN: .+? - ("|:)|ATTN .+?:|\((bad conversion|Day\d+\/\?|djvu|fixed|pdb|tif)\)|by [a-z0-9]{3,15}$|^Dutch(:| )|enjoy!|(\*| )enjoy(\*| )|^ePub |\(EPUB\+MOBI\)|(Flood )?Please - All I have|isbn\d+|New Ebooks \d{1,2} [a-z]{3,9} (19|20)\d\d( part \d)?|\[(MF|Ssc)\]|^New Version( - .+? - )?|^NEW( [a-z]+( Paranormal Romance|( [a-z]+)?:|,| ))?(?![-._ ]York)|[-._ ]NMR \d{2,3}|( |\[)NMR( |\])|\[op.+?\d\]|\[Orion_Me\]|\[ORLY\]|Please\.\.\.|R4 - Book of the Week|Re: |READNFO|Req: |Req\.|!<-- REQ:|^Request|Requesting|Should I continue posting these collections\?|\[Team [a-z0-9]+\]|[-._ ](Thanks|TIA!)[-._ ]|\(v\.?\d+\.\d+[a-z]?\)|par2 set|\.(j|f|m|a|s|o|n|d)[a-z]{2,8}\.20\d\d/i', ' ', $cleanerName);
-		//Unwanted stuff.
-		$cleanerName = preg_replace('/sample[ "]?$|"sample|\(\?{4}\)|\[AoU\]|AsianDVDClub\.org|AutoRarPar\d{1,5}|brothers-of-usenet\.(info|net)(\/\.net)?|~bY ([a-z]{3,15}|c-w)|By request|DVD-Freak|Ew-Free-Usenet-\d{1,5}|for\.usenet4ever\.info|ghost-of-usenet.org<<|GOU<<|(http:\/\/www\.)?friends-4u\.nl|\[\d+\]-\[abgxEFNET\]-|\[[a-z\d]+\]-\[[a-z\d]+\]-\[FULL\]-|\[\d{3,}\]-\[FULL\]-\[(a\.b| abgx).+?\]|\[\d+\]|-\[FULL\].+?#a\.b[\w.#!@$%^&*(){}|\\:"\';<>,?~` ]+\]|Lords-of-Usenet(\] <> presents)?|nzbcave\.co\.uk( VIP)?|(Partner (of|von) )?SSL-News\.info>> presents|\/ post: |powere?d by (4ux(\.n\)?l)?|the usenet)|(www\.)?ssl-news(\.info)?|SSL - News\.Info|usenet-piraten\.info|-\s\[.+?\]\s<>\spresents|<.+?https:\/\/secretusenet\.com>|SECTIONED brings you|team-hush\.org\/| TiMnZb |<TOWN>|www\.binnfo\.in|www\.dreameplace\.biz|wwwworld\.me|www\.town\.ag|(Draak48|Egbert47|jipenjans|Taima) post voor u op|Dik Trom post voor|Sponsored\.by\.SecretUsenet\.com|(::::)?UR-powered by SecretUsenet.com(::::)?|usenet4ever\.info|(www\.)?usenet-4all\.info|www\.torentz\.3xforum\.ro|usenet-space-cowboys\.info|> USC <|SecretUsenet\.com|Thanks to OP|\] und \[|www\.michael-kramer\.com|(http:\\\\\\\\)?www(\.| )[a-z0-9]+(\.| )(co(\.| )cc|com|info|net|org)|zoekt nog posters\/spotters|>> presents|Z\[?NZB\]?(\.|_)wz(\.|_)cz|partner[-._ ]of([-._ ]www)?/i', ' ', $cleanerName);
-		//Change [pw] to passworded.
-		$cleanerName = str_replace(array('[pw]', '[PW]', ' PW ', '(Password)'), ' PASSWORDED ', $cleanerName);
-		//Replaces some characters with 1 space.
-		$cleanerName = str_replace(array(".", "_", '-', "|", "<", ">", '"', "=", '[', "]", "(", ")", "{", "}", "*", ";", ":", ",", "'", "~", "/", "&", "+"), " ", $cleanerName);
-		//Replace multiple chars with 1 space
-		$cleanerName = trim(preg_replace('/\s\s+/i', ' ', $cleanerName));
-		//Remove the double name.
-		$cleanerName = implode(' ', array_intersect_key(explode(' ', $cleanerName), array_unique(array_map('strtolower', explode(' ', $cleanerName)))));*/
-
-		if (empty($cleanerName)) {return $subject;}
-		else {return $cleanerName;}
+		return trim(preg_replace('/\s\s+/', ' ', $cleanerName));
 	}
 
 	//
@@ -2122,13 +2132,11 @@ class nameCleaning
 	public function fixerCleaner($name)
 	{
 		//Extensions.
-		$cleanerName = preg_replace('/ [a-z0-9]+\.jpg|((\d{1,3})?\.part(\d{1,5})?|\d{1,5}|sample)?\.(7z|\d{3}(?=(\s|"))|avi|epub|idx|iso|jpg|m4a|mds|mkv|mobi|mp4|nfo|nzb|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|par(\s?2|")|zip|z{2})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|yEnc|\.part\d{1,4}\./i', ' ', $name);
-		//Replaces some characters with 1 space.
-		$cleanerName = str_replace(array(".", "_", '-', "|", "<", ">", '"', "=", '[', "]", "(", ")", "{", "}", "*", ";", ":", ",", "'", "~", "/", "&", "+"), " ", $cleanerName);
+		$cleanerName = preg_replace('/([-_](proof|sample|thumbs?))*(\.part(\d+)?(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}$|$)/i', ' ', $name);
+		//Remove stuff from the start.
+		$cleanerName = preg_replace('/^(Release Name|sample-)/i', ' ', $cleanerName);
 		//Replace multiple spaces with 1 space
 		$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
-		//Remove Release Name
-		$cleanerName = preg_replace('/^Release Name/i', ' ', $cleanerName);
 		//Remove invalid characters.
 		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/','', $cleanerName)));
 

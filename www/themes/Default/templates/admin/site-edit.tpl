@@ -509,7 +509,15 @@
 	<td><label for="lookupnfo">Lookup NFO:</label></td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
-		<div class="hint">Whether to attempt to retrieve the an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
+		<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="lookuppar2">Lookup PAR2:</label></td>
+	<td>
+		{html_radios id="lookuppar2" name='lookuppar2' values=$yesno_ids output=$yesno_names selected=$fsite->lookuppar2 separator='<br />'}
+		<div class="hint">Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/><strong>NOTE: this can be slow depending on the group!</strong></div>
 	</td>
 </tr>
 
