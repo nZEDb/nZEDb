@@ -121,6 +121,8 @@ class Nfo
 			$this->addReleaseNfo($release["ID"]);
 			$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfo), $release["ID"]));
 			$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
+			if (!isset($release["completion"]))
+				$release["completion"] = 0;
 			if ($release["completion"] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
