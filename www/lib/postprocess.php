@@ -379,7 +379,7 @@ class PostProcess
 			$processJPGSample = ($this->site->processjpg == "0") ? false : true;
 			$processPasswords = ($this->site->unrarpath != '') ? true : false;
 			$tmpPath = $this->tmpPath;
-			
+
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
@@ -1049,7 +1049,7 @@ class PostProcess
 			{
 				$thisdata = $zip->getFileData($file["name"]);
 				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
-				
+
 				//Extract a NFO from the zip.
 				if ($this->nonfo === true && $file["size"] < 100000 && preg_match("/\.(nfo|inf|ofn)$/i", $file["name"]))
 				{
@@ -1515,14 +1515,14 @@ class PostProcess
 
 					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
 					//$output = runCmd($cmd);
-					
+
 					$sample_duration = exec($ffmpeginfo." -i ".$samplefile." 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
 					if ($sample_duration > 100 || $sample_duration==0 || $sample_duration=="")
 						$sample_duration=2;
 					$output_file=$ramdrive."zzzz".mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).".jpg";
 					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 250 -y ".$output_file);
 					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 1 -ss ".$sample_duration." -y ".$output_file);
-					
+
 					if (is_dir($ramdrive))
 					{
 						@$all_files = scandir($ramdrive,1);

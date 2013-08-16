@@ -90,7 +90,7 @@ Class NZBcontents
 					}
 				}
 			}
-		
+
 
 			if($artificialParts <= 0 || $actualParts <= 0)
 				$completion = 0;

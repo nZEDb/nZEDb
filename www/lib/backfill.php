@@ -65,7 +65,7 @@ class Backfill
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		
+
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
@@ -77,7 +77,7 @@ class Backfill
 			$nntpc = new Nntp;
 			$nntpc->doConnect();
 		}
-		
+
 		// Select the group.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
@@ -237,7 +237,7 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		echo 'Processing '.$groupArr['name'].$n;
-		
+
 		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
