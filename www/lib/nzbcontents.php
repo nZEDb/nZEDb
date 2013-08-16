@@ -118,6 +118,19 @@ Class NZBcontents
 			$nfo->addReleaseNfo($relID);
 			$groups = new Groups();
 			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
+			if (PEAR::isError($fetchedBinary))
+			{
+				$nntp->doQuit();
+				$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
+				if (PEAR::isError($fetchedBinary))
+				{
+					$nntp->doQuit();
+					if ($this->echooutput)
+						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
+					$fetchedBinary = false;
+				}
+			}
 			if ($nfo->isNFO($fetchedBinary) === true)
 			{
 				if ($this->echooutput)
@@ -141,7 +154,7 @@ Class NZBcontents
 			$groups = new Groups();
 			$groupName = $groups->getByNameByID($groupID);
 			$foundnfo = $failed = false;
-			$nfo = new NFO();
+			$nfo = new NFO($this->echooutput);
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
@@ -152,6 +165,19 @@ Class NZBcontents
 					if ($messageid !== false)
 					{
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
+						if (PEAR::isError($possibleNFO))
+						{
+							$nntp->doQuit();
+							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+							$possibleNFO = $nntp->getMessage($groupName, $messageid);
+							if (PEAR::isError($possibleNFO))
+							{
+								$nntp->doQuit();
+								if ($this->echooutput)
+									echo "\n\nError {$possibleNFO->code}: {$possibleNFO->message}\n\n";
+								$possibleNFO = false;
+							}
+						}
 						if ($possibleNFO !== false)
 						{
 							if ($nfo->isNFO($possibleNFO) == true)
