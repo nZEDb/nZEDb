@@ -155,12 +155,6 @@ class Nfo
 	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
 	{
 		$db = new DB();
-		$s = new Sites();
-		$site = $s->get();
-		$nntp = new Nntp();
-		$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
-		$groups = new Groups();
-		$nzbcontents = new NZBcontents($this->echooutput);
 		$nfocount = $ret = 0;
 
 		if ($releaseToWork == '')
@@ -183,36 +177,27 @@ class Nfo
 
 		if ($nfocount > 0)
 		{
-			if ($this->echooutput)
-				if ($releaseToWork == '')
-					echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+			if ($this->echooutput && $releaseToWork == '')
+				echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
+			$s = new Sites();
+			$site = $s->get();
+			$nntp = new Nntp();
+			$groups = new Groups();
+			$nzbcontents = new NZBcontents($this->echooutput);
 			$movie = new Movie($this->echooutput);
+
 			foreach ($res as $arr)
 			{
 				$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['ID'], $arr['groupID'], $nntp);
-				if (PEAR::isError($fetchedBinary))
-				{
-					$groupName = $groups->getByNameByID($arr['groupID']);
-					$nntp = new Nntp;
-					$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
-					$data = $nntp->selectGroup($groupName);
-					$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['ID'], $arr['groupID'], $nntp);
-					if (PEAR::isError($fetchedBinary))
-					{
-						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
-						return;
-					}
-				}
-
 				if ($fetchedBinary !== false)
 				{
 					//insert nfo into database
+					$this->addReleaseNfo($arr["ID"]);
 					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
 					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
-
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
 					// If set scan for tvrage info.
@@ -253,9 +238,9 @@ class Nfo
 
 			if ($this->echooutput)
 			{
-				if ($nfocount > 0 && $releaseToWork == '')
+				if ($this->echooutput && $nfocount > 0 && $releaseToWork == '')
 					echo "\n";
-				if ($ret > 0 && $releaseToWork == '')
+				if ($this->echooutput && $ret > 0 && $releaseToWork == '')
 					echo $ret." NFO file(s) found/processed.\n";
 			}
 			return $ret;
