@@ -1,3 +1,7 @@
+08162013 -> kevin    -> Fix more issues in postprocess.php
+08152013 -> kevin    -> 08 13 to 08 15 : Clean up files in www/lib, add fetching names from PAR2 files.
+08152013 -> ThePeePs -> Site stats for alpha theme.
+08152013 -> Josh     -> Update themes.
 08122013 -> bodrick  -> Fixed bug with namefixer, if print changes only, status was still being set to updated.
 08122013 -> kevin    -> Catgorize S01E01E02 / S01E01A properly, clean up more files.
 08112013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib

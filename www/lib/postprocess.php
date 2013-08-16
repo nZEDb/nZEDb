@@ -27,39 +27,35 @@ class PostProcess
 {
 	function PostProcess($echooutput=false)
 	{
-		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
+		$this->audSavePath = WWW_DIR.'covers/audiosample/';
+		$this->consoleTools = new ConsoleTools();
+		$this->db = new DB();
+		$this->DEBUG_ECHO = ($this->site->debuginfo == "0") ? false : true;
+		if (defined("DEBUG_ECHO") && DEBUG_ECHO == true)
+			$this->DEBUG_ECHO = true;
+		$this->echooutput = $echooutput;
+		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? $this->site->ffmpeg_duration : 5;
+		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
+		$this->filesadded = 0;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
 		$this->password = $this->nonfo = false;
-		$this->filesadded = 0;
-		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->processAudioSample = ($this->site->processaudiosample == "0") ? false : true;
-		$this->audSavePath = WWW_DIR.'covers/audiosample/';
-		$this->tmpPath = $this->site->tmpunrarpath;
-		$this->db = new DB();
-		$this->consoleTools = new ConsoleTools();
 		$this->segmentstodownload = (!empty($this->site->segmentstodownload)) ? $this->site->segmentstodownload : 2;
-		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? $this->site->ffmpeg_duration : 5;
-		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
 
-		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
-		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
 		$this->ignorebookregex = "/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i";
+		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
+		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 
-		$sigs = array(array('00', '00', '01', 'BA'),
-					array('00', '00', '01', 'B3'),
-					array('00', '00', '01', 'B7'),
-					array('1A', '45', 'DF', 'A3'),
-					array('01', '00', '09', '00'),
-					array('30', '26', 'B2', '75'),
-					array('A6', 'D9', '00', 'AA'));
+		$sigs = array(array('00', '00', '01', 'BA'), array('00', '00', '01', 'B3'), array('00', '00', '01', 'B7'), array('1A', '45', 'DF', 'A3'), array('01', '00', '09', '00'), array('30', '26', 'B2', '75'), array('A6', 'D9', '00', 'AA'));
 		$sigstr = '';
 		foreach($sigs as $sig)
 		{
@@ -72,9 +68,6 @@ class PostProcess
 		}
 		$sigstr = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr;
-		$this->DEBUG_ECHO = ($this->site->debuginfo == "0") ? false : true;
-		if (defined("DEBUG_ECHO") && DEBUG_ECHO == true)
-			$this->DEBUG_ECHO = true;
 	}
 
 	public function processAll($releaseToWork='', $threads=1)
@@ -91,25 +84,39 @@ class PostProcess
 	}
 
 	//
-	// Fetch titles from predb sites.
+	// Lookup anidb if enabled - always run before tvrage.
 	//
-	public function processPredb()
+	public function processAnime($threads=1)
 	{
-		$predb = new Predb($this->echooutput);
-		$titles = $predb->combinePre();
-		if ($titles > 0)
-			$this->doecho("Fetched ".$titles." new title(s) from predb sources.");
+		if ($this->site->lookupanidb == 1)
+		{
+			$anidb = new AniDB($this->echooutput);
+			$anidb->animetitlesUpdate($threads);
+			$anidb->processAnimeReleases($threads);
+		}
 	}
 
 	//
-	// Process nfo files.
+	// Process books using amazon.com.
 	//
-	public function processNfos($releaseToWork='')
+	public function processBooks($threads=1)
 	{
-		if ($this->site->lookupnfo == 1)
+		if ($this->site->lookupbooks == 1)
 		{
-			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage);
+			$books = new Books($this->echooutput);
+			$books->processBookReleases($threads);
+		}
+	}
+
+	//
+	// Lookup games if enabled.
+	//
+	public function processGames($threads=1)
+	{
+		if ($this->site->lookupgames == 1)
+		{
+			$console = new Console($this->echooutput);
+			$console->processConsoleReleases($threads);
 		}
 	}
 
@@ -138,28 +145,26 @@ class PostProcess
 	}
 
 	//
-	// Lookup games if enabled.
+	// Process nfo files.
 	//
-	public function processGames($threads=1)
+	public function processNfos($releaseToWork='')
 	{
-		if ($this->site->lookupgames == 1)
+		if ($this->site->lookupnfo == 1)
 		{
-			$console = new Console($this->echooutput);
-			$console->processConsoleReleases($threads);
+			$nfo = new Nfo($this->echooutput);
+			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage);
 		}
 	}
 
 	//
-	// Lookup anidb if enabled - always run before tvrage.
+	// Fetch titles from predb sites.
 	//
-	public function processAnime($threads=1)
+	public function processPredb()
 	{
-		if ($this->site->lookupanidb == 1)
-		{
-			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate($threads);
-			$anidb->processAnimeReleases($threads);
-		}
+		$predb = new Predb($this->echooutput);
+		$titles = $predb->combinePre();
+		if ($titles > 0)
+			$this->doecho("Fetched ".$titles." new title(s) from predb sources.");
 	}
 
 	//
@@ -172,77 +177,6 @@ class PostProcess
 			$tvrage = new TVRage($this->echooutput);
 			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage==1);
 		}
-	}
-
-	//
-	// Process books using amazon.com.
-	//
-	public function processBooks($threads=1)
-	{
-		if ($this->site->lookupbooks == 1)
-		{
-			$books = new Books($this->echooutput);
-			$books->processBookReleases($threads);
-		}
-	}
-
-	//
-	// Sort a multidimensional array using one subkey.
-	//
-	function subval_sort($a,$subkey)
-	{
-		foreach($a as $k=>$v)
-			$b[$k] = strtolower($v[$subkey]);
-
-		natcasesort($b);
-
-		foreach($b as $k=>$v)
-			$c[] = $a[$k];
-
-		return $c;
-	}
-
-	//
-	// Comparison function for usort, for sorting nzb file content.
-	//
-	function sortrar($a, $b)
-	{
-		$pos = 0;
-		$af = $bf = false;
-		$a = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $a["title"]);
-		$b = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $b["title"]);
-
-		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $a))
-			$af = true;
-		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $b))
-			$bf = true;
-
-		if (!$af && preg_match("/\.(rar)($|[ \")\]-])/i", $a))
-		{
-			$a = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $a);
-			$af = true;
-		}
-		if (!$bf && preg_match("/\.(rar)($|[ \")\]-])/i", $b))
-		{
-			$b = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $b);
-			$bf = true;
-		}
-
-		if (!$af && !$bf )
-			return strnatcasecmp($a,$b);
-		elseif (!$bf)
-			return -1;
-		elseif (!$af)
-			return 1;
-
-		if ($af && $bf)
-			$pos = strnatcasecmp($a,$b);
-		elseif ($af)
-			$pos = -1;
-		elseif ($bf)
-			$pos = 1;
-
-		return $pos;
 	}
 
 	//
@@ -296,6 +230,65 @@ class PostProcess
 		}
 		else
 			return false;
+	}
+
+	//
+	// Comparison function for usort, for sorting nzb file content.
+	//
+	function sortrar($a, $b)
+	{
+		$pos = 0;
+		$af = $bf = false;
+		$a = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $a["title"]);
+		$b = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $b["title"]);
+
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $a))
+			$af = true;
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $b))
+			$bf = true;
+
+		if (!$af && preg_match("/\.(rar)($|[ \")\]-])/i", $a))
+		{
+			$a = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $a);
+			$af = true;
+		}
+		if (!$bf && preg_match("/\.(rar)($|[ \")\]-])/i", $b))
+		{
+			$b = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $b);
+			$bf = true;
+		}
+
+		if (!$af && !$bf )
+			return strnatcasecmp($a,$b);
+		elseif (!$bf)
+			return -1;
+		elseif (!$af)
+			return 1;
+
+		if ($af && $bf)
+			$pos = strnatcasecmp($a,$b);
+		elseif ($af)
+			$pos = -1;
+		elseif ($bf)
+			$pos = 1;
+
+		return $pos;
+	}
+
+	//
+	// Sort a multidimensional array using one subkey.
+	//
+	function subval_sort($a,$subkey)
+	{
+		foreach($a as $k=>$v)
+			$b[$k] = strtolower($v[$subkey]);
+
+		natcasesort($b);
+
+		foreach($b as $k=>$v)
+			$c[] = $a[$k];
+
+		return $c;
 	}
 
 	//
