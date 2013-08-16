@@ -867,13 +867,14 @@ class PostProcess
 
 				// If samples exist from previous runs, set flags.
 				if(file_exists($ri->imgSavePath.$rel["guid"]."_thumb.jpg"))
-					$isql = ", SET haspreview = 1";
+					$isql = ", haspreview = 1";
 				if(file_exists($ri->vidSavePath.$rel["guid"].".ogv"))
-					$vsql = ", SET videostatus = 1";
+					$vsql = ", videostatus = 1";
 				if(file_exists($ri->jpgSavePath.$rel["guid"]."_thumb.jpg"))
-					$jsql = ", SET jpgstatus = 1";
+					$jsql = ", jpgstatus = 1";
 
 				$size = $this->db->queryOneRow("SELECT COUNT(releasefiles.`releaseID`) AS count, SUM(releasefiles.`size`) AS size FROM `releasefiles` WHERE `releaseID` = ".$rel["ID"]);
+				print_r($size);
 				if (max($passStatus) > 0)
 					$sql = sprintf("update releases set passwordstatus = %d, rarinnerfilecount = %d %s %s %s %s where ID = %d", max($passStatus), $size["count"], $isql, $vsql, $jsql, $hpsql, $rel["ID"]);
 				elseif ($hasrar && ((isset($size["size"]) && (is_null($size["size"]) || $size["size"] == 0)) || !isset($size["size"])))
