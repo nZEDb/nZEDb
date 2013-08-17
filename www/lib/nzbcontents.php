@@ -59,6 +59,8 @@ Class NZBcontents
 			$messageid = '';
 			$actualParts = $artificialParts = 0;
 			$foundnfo = $foundpar2 = false;
+			if ($this->site->lookuppar2 == 1)
+				$pp = new Postprocess($this->echooutput);
 
 			foreach ($nzbfile->file as $nzbcontents)
 			{
@@ -82,9 +84,8 @@ Class NZBcontents
 
 				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
 				{
-					if (preg_match('/yEnc\s\(1\/1\)|\(1\/1\)$/i', $subject))
+					if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $subject))
 					{
-						$pp = new Postprocess($this->echooutput);
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID) === true)
 							$foundpar2 = true;
 					}
@@ -118,16 +119,14 @@ Class NZBcontents
 			$nfo->addReleaseNfo($relID);
 			$groups = new Groups();
 			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-			if (PEAR::isError($fetchedBinary))
+			if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 			{
 				$nntp->doQuit();
 				$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-				if (PEAR::isError($fetchedBinary))
+				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 				{
 					$nntp->doQuit();
-					if ($this->echooutput)
-						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
 					$fetchedBinary = false;
 				}
 			}
@@ -165,16 +164,14 @@ Class NZBcontents
 					if ($messageid !== false)
 					{
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if (PEAR::isError($possibleNFO))
+						if ($possibleNFO === false || PEAR::isError($possibleNFO))
 						{
 							$nntp->doQuit();
 							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if (PEAR::isError($possibleNFO))
+							if ($possibleNFO === false || PEAR::isError($possibleNFO))
 							{
 								$nntp->doQuit();
-								if ($this->echooutput)
-									echo "\n\nError {$possibleNFO->code}: {$possibleNFO->message}\n\n";
 								$possibleNFO = false;
 							}
 						}
