@@ -219,6 +219,7 @@ class PostProcess
 			$namefixer = new Namefixer($this->echooutput);
 			$rf = new ReleaseFiles();
 			$relfiles = 0;
+			$foundname = false;
 			foreach ($files as $fileID => $file)
 			{
 				// Add to releasefiles.
@@ -232,7 +233,7 @@ class PostProcess
 				$stat = $db->queryOneRow("SELECT relnamestatus AS a FROM releases WHERE ID = {$relID}");
 				if ($stat["a"] != 1)
 				{
-					return true;
+					$foundname = true;
 					break;
 				}
 			}
@@ -245,6 +246,10 @@ class PostProcess
 					$count = $relfiles + $cnt["count"];
 				$db->query(sprintf("UPDATE releases SET rarinnerfilecount = %d where ID = %d", $count, $relID));
 			}
+			if ($foundname === true)
+				return true;
+			else
+				return false;
 		}
 		else
 			return false;
