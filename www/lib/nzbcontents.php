@@ -118,16 +118,14 @@ Class NZBcontents
 			$nfo->addReleaseNfo($relID);
 			$groups = new Groups();
 			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-			if (PEAR::isError($fetchedBinary))
+			if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 			{
 				$nntp->doQuit();
 				$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
-				if (PEAR::isError($fetchedBinary))
+				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 				{
 					$nntp->doQuit();
-					if ($this->echooutput)
-						echo "\n\nError {$fetchedBinary->code}: {$fetchedBinary->message}\n\n";
 					$fetchedBinary = false;
 				}
 			}
@@ -165,16 +163,14 @@ Class NZBcontents
 					if ($messageid !== false)
 					{
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if (PEAR::isError($possibleNFO))
+						if ($possibleNFO === false || PEAR::isError($possibleNFO))
 						{
 							$nntp->doQuit();
 							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if (PEAR::isError($possibleNFO))
+							if ($possibleNFO === false || PEAR::isError($possibleNFO))
 							{
 								$nntp->doQuit();
-								if ($this->echooutput)
-									echo "\n\nError {$possibleNFO->code}: {$possibleNFO->message}\n\n";
 								$possibleNFO = false;
 							}
 						}

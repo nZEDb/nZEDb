@@ -219,26 +219,18 @@ class Binaries
 
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
-		if ($type != 'partrepair')
+		if($type != 'partrepair' && PEAR::isError($msgs))
 		{
+			// This is usually a compression error, so lets try disabling compression.
+			$nntp->doQuit();
+			$nntp->doConnectNC();
+			$nntp->selectGroup($groupArr['name']);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				// This is usually a compression error, so lets try disabling compression.
 				$nntp->doQuit();
-				$nntp->doConnectNC();
-				$data = $nntp->dataError($nntp, $groupArr['name']);
-				if ($data === false)
-					return;
-				else
-				{
-					$msgs = $nntp->getOverview($first."-".$last, true, false);
-					if(PEAR::isError($msgs))
-					{
-						$nntp->doQuit();
-						echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
-						return;
-					}
-				}
+				echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
+				return;
 			}
 		}
 		$nntp->doQuit();

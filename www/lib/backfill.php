@@ -92,7 +92,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
-			$data = $nntp->dataError($nntp, $groupArr['name'], false);
+			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false)
 				return;
 		}
@@ -242,7 +242,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
-			$data = $nntp->dataError($nntp, $groupArr['name'], false);
+			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false)
 				return;
 		}
@@ -350,15 +350,15 @@ class Backfill
 					return;
 			}
 
-			$msgs = $nntp->getOverview($post."-".$post,true,true);
+			$msgs = $nntp->getOverview($post."-".$post,true,false);
 			if(PEAR::isError($msgs))
 			{
 				$nntp->doQuit();
 				$nntp->doConnectNC();
-				$data = $nntp->selectGroup($group);
+				$nntp->selectGroup($group);
 				// Try to get different article.
 				$post = $post - 10;
-				$msgs = $nntp->getOverview($post."-".$post,true,true);
+				$msgs = $nntp->getOverview($post."-".$post,true,false);
 				if(PEAR::isError($msgs))
 				{
 					echo "Error {$msgs->code}: {$msgs->message}.\nReturning from postdate.\n";
