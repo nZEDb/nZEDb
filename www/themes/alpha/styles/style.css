@@ -61,7 +61,7 @@ footer { text-align: center; padding: 10px; }
 footer li { display:inline; }
 footer ul { padding-left: 0; }
 
-#header-wrapper{
+header{
     background: none repeat scroll 0 0 rgb(0, 0, 0);
     border-top: 2px solid rgb(51, 51, 51);
     border-bottom: 2px solid rgb(51, 51, 51);

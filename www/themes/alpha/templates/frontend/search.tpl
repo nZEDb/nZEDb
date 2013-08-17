@@ -1,10 +1,9 @@
 {if {$site->adbrowse} != ''}
-<div class="row">
-    <div class="container" style="width:500px;">
+<div class="container" style="width:500px;">
 <fieldset class="adbanner div-center">
 <legend class="adbanner">Advertisement</legend>
 {$site->adbrowse}
-</fieldset></div></div>
+</fieldset></div>
 <br>
 {/if}
 
@@ -14,9 +13,9 @@
 <p class="text-center"><b>Include ^ to indicate search must start with term, -- to exclude words.</b></p>
 <br>
 
-<div class="row" id="sbasic"{if $sadvanced} style="display:none;"{/if}>
+<div class="container" id="sbasic"{if $sadvanced} style="display:none;"{/if}>
 <form method="get" action="{$smarty.const.WWW_TOP}/search" id="custom-search-form" class="form-search">
-<div class="col-6 col-lg-6">
+<div class="col-6">
 <div class="input-group">
 <input type="text" class="form-control" placeholder="Name" id="search" name="search" value="{$search|escape:'html'}">
 <span class="input-group-btn">
@@ -24,7 +23,7 @@
 </span>
 </div><!-- /input-group -->
 </div><!-- /.col-lg-6 -->
-<div class="col-6 col-lg-6">
+<div class="col-6">
 <div class="input-group">
 <input type="text" class="form-control" placeholder="Subject" id="subject" name="subject" value="{$subject|escape:'html'}">
 <span class="input-group-btn">
@@ -37,14 +36,14 @@
 </form>
 </div>
 
-<div class="row" id="sbasic"{if not $sadvanced} style="display:none;"{/if}>
+<div class="container" id="sbasic"{if not $sadvanced} style="display:none;"{/if}>
 <form class="form-horizontal" method="get" action="{$smarty.const.WWW_TOP}/search">
 <div class="container form-group">
-<div class="row">
-<div class="col-4 col-lg-4">
+<div class="container">
+<div class="col-4">
 <input type="text" class="searchadv form-control" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" placeholder="Release Name">
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 <div class="col-6">
 <input type="text" class="searchdaysinput form-control" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" placeholder="Minimum Days">
 </div>
@@ -52,7 +51,7 @@
 <input type="text" class="searchdaysinput form-control" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" placeholder="Maximum Days">
 </div>
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 <div class="col-6">
 {html_options id="searchadvsizefrom" class="form-control" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom}
 </div>
@@ -61,14 +60,14 @@
 </div>
 </div>
 </div>
-<div class="row">
-<div class="col-4 col-lg-4">
+<div class="container">
+<div class="col-4">
 <input type="text" class="searchadv form-control" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" placeholder="Usenet Name">
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 {html_options class="searchadvbtns form-control col-12" id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 <div class="col-6">
 <input type="hidden" id="inlineCheckbox1" name="searchadvhasnfo" value="0">
 &nbsp;<input type="checkbox" id="inlineCheckbox1" name="searchadvhascomments" value="1"> Has Info
@@ -79,14 +78,14 @@
 </div>
 </div>
 </div>
-<div class="row">
-<div class="col-4 col-lg-4">
+<div class="container">
+<div class="col-4">
 <input type="text" class="searchadv form-control" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" placeholder="Poster">
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 {html_options class="searchadvbtns form-control col-12" id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}
 </div>
-<div class="col-4 col-lg-4">
+<div class="col-4">
 <input type="hidden" name="search_type" value="adv" id="search_type">
 <input class="btn btn-default btn-block" id="search_adv_button" type="submit" value="search">
 </div>
@@ -116,8 +115,7 @@ Suggestions:
 
 {if $results|@count > 0}
 <form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
-<div class="nzb_multi_operations">
-<div class="row">
+<div class="container nzb_multi_operations">
 <div class="col-12" style="text-align: right; padding-bottom: 4px;">
 View:
 <a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
@@ -130,10 +128,8 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 </div>
 </div>
 {include file='multi-operations.tpl'}
-</div>
 
-
-<table class="table table-collapsed table-striped table-bordered table-hover data highlight icons" id="browsetable">
+<table class="table table-collapsed table-striped table-bordered table-hover data" id="browsetable">
 <thead>
 <tr>
 <th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"></th>
@@ -187,7 +183,7 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 {if $result.rarinnerfilecount > 0}
 <div class="rarfilelist">
-<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}" class="tooltip">
+<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/magnifier.png" alt="{$result.guid}">
 </div>
 {/if}
 </td>

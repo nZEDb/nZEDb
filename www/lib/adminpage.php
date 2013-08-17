@@ -20,7 +20,7 @@ class AdminPage extends BasePage
 		if (!$users->isLoggedIn() || !isset($this->userdata["role"]))
 			$this->show403(true);
 
-		// if the user isn't an admin or mod then access is denied, OR if they're a mod and mods aren't allowed then access is denied
+		// If the user isn't an admin or mod then access is denied, OR if they're a mod and mods aren't allowed then access is denied.
 		if (($this->userdata["role"] != Users::ROLE_ADMIN && $this->userdata["role"] != Users::ROLE_MODERATOR) || ($this->userdata["role"] == Users::ROLE_MODERATOR && $allowmod === false))
 			$this->show403(true);
 
