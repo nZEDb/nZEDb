@@ -231,7 +231,10 @@ class PostProcess
 				$namefixer->checkName($quer, 1, "PAR2, ", 1);
 				$stat = $db->queryOneRow("SELECT relnamestatus AS a FROM releases WHERE ID = {$relID}");
 				if ($stat["a"] != 1)
+				{
+					return true;
 					break;
+				}
 			}
 			if ($relfiles > 0)
 			{
