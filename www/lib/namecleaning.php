@@ -17,19 +17,19 @@ class nameCleaning
 
 	/*
 		Cleans a usenet subject returning something that can tie many articles together.
-	
+
 		$subject = The usenet subject, ending with yEnc (part count removed from the end).
 		$groupName = The name of the group for the article.
 		$nofiles = Wether the article has a filecount or not.
-	
+
 		First, try against groups with strict regex.
 		If that fails, try against more generic regex.
 		$nofiles can help with bunched releases, by having its own set of regex.
-	
+
 		Example: Take the following subjects:
 		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[01/46] - "tranceb-xvid-sml.par2" yEnc
 		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[02/46] - "tranceb-xvid-sml.r00" yEnc
-		
+
 		Return something like this :
 		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml." yEnc
 	*/
@@ -1093,10 +1093,10 @@ class nameCleaning
 
 	/*
 		Cleans a usenet subject before inserting, used for searchname. Also used for imports.
-	
+
 		Example: Take the following subject:
 		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[02/46] - "tranceb-xvid-sml.r00" yEnc
-		
+
 		Return: Trance.2013.DVDRiP.XViD-SML
 	*/
 	public function releaseCleaner($subject, $groupID)
@@ -2119,7 +2119,7 @@ class nameCleaning
 		else
 			return $this->releaseCleanerHelper($subject);
 	}
-	
+
 	public function releaseCleanerHelper($subject)
 	{
 		$cleanerName = preg_replace('/(- )?yEnc$/', '', $subject);

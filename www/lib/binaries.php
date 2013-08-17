@@ -216,29 +216,21 @@ class Binaries
 			if ($data === false)
 				return;
 		}
-		
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
-		if ($type != 'partrepair')
+		if($type != 'partrepair' && PEAR::isError($msgs))
 		{
+			// This is usually a compression error, so lets try disabling compression.
+			$nntp->doQuit();
+			$nntp->doConnectNC();
+			$nntp->selectGroup($groupArr['name']);
+			$msgs = $nntp->getOverview($first."-".$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				// This is usually a compression error, so lets try disabling compression.
 				$nntp->doQuit();
-				$nntp->doConnectNC();
-				$data = $nntp->dataError($nntp, $groupArr['name']);
-				if ($data === false)
-					return;
-				else
-				{
-					$msgs = $nntp->getOverview($first."-".$last, true, false);
-					if(PEAR::isError($msgs))
-					{
-						$nntp->doQuit();
-						echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
-						return;
-					}
-				}
+				echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
+				return;
 			}
 		}
 		$nntp->doQuit();
@@ -305,21 +297,21 @@ class Binaries
 
 					// Used for the sha1 hash (see below).
 					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['ID'], $nofiles);
-					
+
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
 							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
-							
+
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
 							}
 							*/
-							
+
 							/*If you uncommented the above, comment following 2 lines..*/
 							$colnames[] = $cleansubject;
 							$orignames[] = $msg['Subject'];
@@ -336,7 +328,7 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
-						
+
 					}
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))

@@ -268,7 +268,7 @@ class Category
 		if($this->isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
-		if($this->isBook($releasename)){ return $this->tmpCat; }	
+		if($this->isBook($releasename)){ return $this->tmpCat; }
 	}
 
 	//	Groups.
@@ -2569,7 +2569,7 @@ class CategoryGerman extends Category
 		if(Category::isMusic($releasename)){ return $this->tmpCat; }
 		if(Category::isBook($releasename)){ return $this->tmpCat; }
 	}
-	
+
 	public function byGroup($releasename, $groupID)
 	{
 		$groups = new Groups();
