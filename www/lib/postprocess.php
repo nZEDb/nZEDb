@@ -217,11 +217,15 @@ class PostProcess
 		if (count($files) > 0)
 		{
 			$namefixer = new Namefixer($this->echooutput);
+			$rf = new ReleaseFiles();
 			foreach ($files as $fileID => $file)
 			{
+				// Add to releasefiles.
+				if ($db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($v["name"]))) === false)
+					$rf->add($release["ID"], $file["name"], $file["size"], time(), 0);
 				$quer["textstring"] = $file["name"];
 				$namefixer->checkName($quer, 1, "PAR2, ", 1);
-				$stat = $db->queryOneRow("SELECT relnamestatus as a FROM releases WHERE ID = {$relID}");
+				$stat = $db->queryOneRow("SELECT relnamestatus AS a FROM releases WHERE ID = {$relID}");
 				if ($stat["a"] != 1)
 					break;
 			}
@@ -964,13 +968,10 @@ class PostProcess
 				$rf = new ReleaseFiles();
 				if ($rf->add($release["ID"], $v["name"], $v["size"], $v["date"], $v["pass"]))
 				{
+					$this->filesadded++;
+					$this->newfiles = true;
 					if ($this->echooutput)
-					{
-						$this->filesadded++;
-						$this->newfiles = true;
-						if ($this->echooutput)
-							echo "^";
-					}
+						echo "^";
 				}
 			}
 
