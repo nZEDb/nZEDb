@@ -221,8 +221,8 @@ class PostProcess
 			foreach ($files as $fileID => $file)
 			{
 				// Add to releasefiles.
-				if ($db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($v["name"]))) === false)
-					$rf->add($release["ID"], $file["name"], $file["size"], time(), 0);
+				if ($db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
+					$rf->add($relID, $file["name"], $file["size"], time(), 0);
 				$quer["textstring"] = $file["name"];
 				$namefixer->checkName($quer, 1, "PAR2, ", 1);
 				$stat = $db->queryOneRow("SELECT relnamestatus AS a FROM releases WHERE ID = {$relID}");
