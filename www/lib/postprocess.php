@@ -222,7 +222,7 @@ class PostProcess
 				$quer["textstring"] = $file["name"];
 				$namefixer->checkName($quer, 1, "PAR2, ", 1);
 				$stat = $db->queryOneRow("SELECT relnamestatus as a FROM releases WHERE ID = {$relID}");
-				if ($stat["a"] !== 1)
+				if ($stat["a"] != 1)
 					break;
 			}
 		}
@@ -575,7 +575,7 @@ class PostProcess
 
 									if ($relFiles === false)
 									{
-										$this->debug("Error processing files {$rel['ID']}, {$rarFile['title']}");
+										$this->debug("Error processing files {$rarFile['title']}");
 										continue;
 									}
 									// Flag to indicate the archive has content.
@@ -989,20 +989,20 @@ class PostProcess
 					}
 				}
 				// Extract a video file from the compressed file.
-				elseif ($this->site->processvideos == "1" && preg_match('/'.$this->videofileregex.'$/i', $v["name"]))
+				elseif ($this->site->mediainfopath != '' && $this->site->processvideos == "1" && preg_match('/'.$this->videofileregex.'$/i', $v["name"]))
 					$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).".avi", $tmpdata);
 				// Extract an audio file from the compressed file.
 				elseif ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v["name"], $ext))
 					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
-				elseif (preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
-						$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
+				elseif ($this->site->mediainfopath != '' && preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v["name"], $name))
+					$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
 			}
 			unset($tmpdata, $rf);
 		}
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open = false, $data = false, $release)
+	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release)
 	{
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
@@ -1013,7 +1013,7 @@ class PostProcess
 
 		if ($zip->error)
 		{
-		  $this->debug("\nError: {$zip->error}.");
+		  $this->debug("Error: {$zip->error}.");
 		  return false;
 		}
 
@@ -1028,7 +1028,6 @@ class PostProcess
 		$dataarray = array();
 		if ($files !== false)
 		{
-			$dezip = ($this->site->zippath != '') ? true : false;
 			if ($this->echooutput)
 				echo "z";
 			if ($this->nonfo === true)
@@ -1051,7 +1050,7 @@ class PostProcess
 							$this->nonfo = false;
 						}
 					}
-					else if ($dezip !== false && $file["compressed"] === 1)
+					else if ($this->site->zippath != '' && $file["compressed"] === 1)
 					{
 						$zip->setExternalClient($this->site->zippath);
 						$zipdata = $zip->extractFile($file["name"]);
@@ -1067,13 +1066,17 @@ class PostProcess
 						}
 					}
 				}
+				// Process RARs inside the ZIP.
 				elseif (preg_match("/\.(r\d+|part\d+|rar)$/i", $file["name"]))
 				{
 					$tmpfiles = $this->getRar($thisdata);
 					if ($tmpfiles != false)
 					{
+						$limit = 0;
 						foreach ($tmpfiles as $f)
 						{
+							if ($limit++ > 11)
+								break;
 							$ret = $this->addfile($f, $release);
 							$files[] = $f;
 						}
@@ -1100,7 +1103,7 @@ class PostProcess
 			$files = $rar->getArchiveFileList();
 		if ($rar->error)
 		{
-			$this->debug("\nError: {$rar->error}.");
+			$this->debug("Error: {$rar->error}.");
 			return $retval;
 		}
 		if ($rar->isEncrypted)
@@ -1295,8 +1298,6 @@ class PostProcess
 			$files = $this->processReleaseZips($fetchedBinary, false, false , $release);
 			if ($files !== false)
 			{
-				if ($this->echooutput)
-					echo "z";
 				$this->name = $files[0]["name"];
 				$this->size = $files[0]["size"] * 0.95;
 				$this->sum = $this->adj =  0;
@@ -1325,7 +1326,6 @@ class PostProcess
 
 				if ($this->adj < .7)
 					$this->adj = 1;
-
 			}
 			// Not a compressed file, but segmented.
 			else
@@ -1348,11 +1348,10 @@ class PostProcess
 	}
 
 	// Attempt to get mediafio xml from a video file.
-	public function getMediainfo($ramdrive,$mediainfo,$releaseID)
+	public function getMediainfo($ramdrive, $mediainfo, $releaseID)
 	{
 		$retval = false;
-		$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
-		if (!($processMediainfo && is_dir($ramdrive) && ($releaseID > 0)))
+		if ($mediainfo == '' && !is_dir($ramdrive) && $releaseID <= 0)
 			return $retval;
 
 		$mediafiles = glob($ramdrive.'*.*');
@@ -1360,7 +1359,7 @@ class PostProcess
 		{
 			foreach($mediafiles as $mediafile)
 			{
-				if (is_file($mediafile) && filesize($mediafile) > 15 &&preg_match("/".$this->videofileregex."$/i",$mediafile))
+				if (is_file($mediafile) && filesize($mediafile) > 15 && preg_match("/".$this->videofileregex."$/i", $mediafile))
 				{
 					@$xmlarray = runCmd('"'.$mediainfo.'" --Output=XML "'.$mediafile.'"');
 					if (is_array($xmlarray))
@@ -1370,26 +1369,26 @@ class PostProcess
 						$re->addFull($releaseID,$xmlarray);
 						$re->addFromXml($releaseID,$xmlarray);
 						$retval = true;
+						if ($this->echooutput)
+							echo "m";
 						break;
 					}
 				}
 			}
 		}
-		if ($this->echooutput && $retval !== false)
-			echo "m";
 		return $retval;
 	}
 
 	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive,$ffmpeginfo,$audioinfo,$releaseguid,$releaseID)
+	public function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
 	{
 		$retval = $audval = false;
-		if (!(is_dir($ramdrive) && ($releaseID > 0)))
+		if (!is_dir($ramdrive) && $releaseID <= 0)
 			return $retval;
 
 		// Make sure the category is music or other->misc.
-		$catID = $this->db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $catID["ID"]))
+		$rquer = $this->db->queryOneRow(sprintf("SELECT categoryID as ID, relnamestatus, groupID FROM releases WHERE ID = %d", $releaseID));
+		if (!preg_match('/^3\d{3}|7010/', $rquer["ID"]))
 			return $retval;
 
 		$audiofiles = glob($ramdrive.'*.*');
@@ -1405,28 +1404,27 @@ class PostProcess
 						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
 						if (is_array($xmlarray))
 						{
-							$xmlarray = implode("\n",$xmlarray);
-							$xmlObj = @simplexml_load_string($xmlarray);
-							$arrXml = objectsIntoArray($xmlObj);
+							$arrXml = objectsIntoArray(@simplexml_load_string(implode("\n",$xmlarray)));
 							if (isset($arrXml["File"]["track"]))
 							{
 								foreach ($arrXml["File"]["track"] as $track)
 								{
 									if (isset($track["Album"]) && isset($track["Performer"]))
 									{
-										if (!empty($track["Recorded_date"]) && preg_match('/(?:19|20)\d{2}/', $track["Recorded_date"], $Year))
-											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".strtoupper($ext[1]);
+										$ext = strtoupper($ext[1]);
+										if (!empty($track["Recorded_date"]) && preg_match('/(?:19|20)\d\d/', $track["Recorded_date"], $Year))
+											$newname = $track["Performer"]." - ".$track["Album"]." (".$Year[0].") ".$ext;
 										else
-											$newname = $track["Performer"]." - ".$track["Album"]." ".strtoupper($ext[1]);
-										if ($catID["relnamestatus"] != "3")
+											$newname = $track["Performer"]." - ".$track["Album"]." ".$ext;
+										if ($rquer["relnamestatus"] != "3")
 										{
 											$category = new Category();
-											if (strtoupper($ext[1]) == "MP3")
+											if ($ext == "MP3")
 												$newcat = Category::CAT_MUSIC_MP3;
-											else if (strtoupper($ext[1]) == "FLAC")
+											else if ($ext == "FLAC")
 												$newcat = Category::CAT_MUSIC_LOSSLESS;
 											else
-												$newcat = $category->determineCategory($newname, $catID["groupID"]);
+												$newcat = $category->determineCategory($newname, $rquer["groupID"]);
 											$this->db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 WHERE ID = %d", $this->db->escapeString($newname), $newcat, $releaseID));
 										}
 										$re = new ReleaseExtra();
@@ -1458,7 +1456,7 @@ class PostProcess
 									if(@file_exists($this->audSavePath.$releaseguid.".ogg"))
 									{
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
-										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d",$releaseID));
+										$this->db->query(sprintf("UPDATE releases SET audiostatus = 1 WHERE ID = %d", $releaseID));
 										$audval = true;
 										if ($this->echooutput)
 											echo "A";
@@ -1485,8 +1483,7 @@ class PostProcess
 	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
 	{
 		$retval = false;
-		$processSample = ($this->site->ffmpegpath != '') ? true : false;
-		if (!($processSample && is_dir($ramdrive) && (strlen($releaseguid) > 0)))
+		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0)
 			return $retval;
 
 		$ri = new ReleaseImage();
@@ -1505,8 +1502,8 @@ class PostProcess
 					//$output = runCmd($cmd);
 
 					$sample_duration = exec($ffmpeginfo." -i ".$samplefile." 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
-					if ($sample_duration > 100 || $sample_duration==0 || $sample_duration=="")
-						$sample_duration=2;
+					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == "")
+						$sample_duration = 2;
 					$output_file=$ramdrive."zzzz".mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).".jpg";
 					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 250 -y ".$output_file);
 					$output = exec($ffmpeginfo." -i ".$samplefile." -loglevel quiet -vframes 1 -ss ".$sample_duration." -y ".$output_file);
@@ -1516,17 +1513,19 @@ class PostProcess
 						@$all_files = scandir($ramdrive,1);
 						foreach ($all_files as $file)
 						{
-							if(preg_match("/zzzz\d{3}\.jpg/", $file) && !$retval)
+							if(preg_match("/zzzz\d{3}\.jpg/", $file) && $retval === false)
 							{
 								if (filesize($ramdrive.$file) < 15)
 									continue;
-								if (exif_imagetype( $ramdrive.$file) === false)
+								if (exif_imagetype($ramdrive.$file) === false)
 									continue;
 
 								$ri->saveImage($releaseguid.'_thumb', $ramdrive.$file, $ri->imgSavePath, 800, 600);
 								if(file_exists($ri->imgSavePath.$releaseguid."_thumb.jpg"))
 								{
 									$retval = true;
+									if ($this->echooutput)
+										echo "s";
 									break;
 								}
 							}
@@ -1543,8 +1542,6 @@ class PostProcess
 				}
 			}
 		}
-		if ($this->echooutput && $retval !== false)
-			echo "s";
 		// If an image was made, return true, else return false.
 		return $retval;
 	}
@@ -1552,8 +1549,7 @@ class PostProcess
 	public function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
 	{
 		$retval = false;
-		$processSample = ($this->site->ffmpegpath != '') ? true : false;
-		if (!($processSample && is_dir($ramdrive) && (strlen($releaseguid) > 0)))
+		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0)
 			return $retval;
 
 		$ri = new ReleaseImage();
@@ -1562,13 +1558,13 @@ class PostProcess
 		{
 			foreach($samplefiles as $samplefile)
 			{
-				if (is_file($samplefile) && preg_match("/".$this->videofileregex."$/i",$samplefile))
+				if (is_file($samplefile) && preg_match("/".$this->videofileregex."$/i", $samplefile))
 				{
 					@$filecont = file_get_contents($samplefile, true, null, 0, 40);
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t ' . $this->ffmpeg_duration . ' -acodec libvorbis -loglevel quiet -y "'.$ramdrive."zzzz".$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t '.$this->ffmpeg_duration.' -acodec libvorbis -loglevel quiet -y "'.$ramdrive."zzzz".$releaseguid.'.ogv"');
 
 					if (is_dir($ramdrive))
 					{
@@ -1583,8 +1579,10 @@ class PostProcess
 									if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
 									{
 										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
-										$this->db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s",$releaseguid));
+										$this->db->query(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s", $this->db->escapeString($releaseguid)));
 										$retval = true;
+										if ($this->echooutput)
+											echo "v";
 										break;
 									}
 								}
@@ -1601,14 +1599,12 @@ class PostProcess
 				}
 			}
 		}
-		if ($this->echooutput && $retval !== false)
-			echo "v";
 		// If an video was made, return true, else return false.
 		return $retval;
 	}
 
 	public function updateReleaseHasPreview($guid)
 	{
-		$this->db->queryOneRow(sprintf("update releases set haspreview = 1 where guid = %s", $this->db->escapeString($guid)));
+		$this->db->queryOneRow(sprintf("UPDATE releases SET haspreview = 1 WHERE guid = %s", $this->db->escapeString($guid)));
 	}
 }

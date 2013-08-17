@@ -59,6 +59,8 @@ Class NZBcontents
 			$messageid = '';
 			$actualParts = $artificialParts = 0;
 			$foundnfo = $foundpar2 = false;
+			if ($this->site->lookuppar2 == 1)
+				$pp = new Postprocess($this->echooutput);
 
 			foreach ($nzbfile->file as $nzbcontents)
 			{
@@ -82,9 +84,8 @@ Class NZBcontents
 
 				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
 				{
-					if (preg_match('/yEnc\s\(1\/1\)|\(1\/1\)$/i', $subject))
+					if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $subject))
 					{
-						$pp = new Postprocess($this->echooutput);
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID) === true)
 							$foundpar2 = true;
 					}
