@@ -626,7 +626,7 @@ class Releases
 			$daysoldsql= "";
 		else
 			$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
-		
+
 		$maxagesql = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);

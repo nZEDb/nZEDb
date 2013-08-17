@@ -1,20 +1,25 @@
+08162013 -> kevin    -> Fix more issues in postprocess.php
+                        More checks on hidden nfos to see if it's an NFO or not.
+08152013 -> kevin    -> 08 13 to 08 15 : Clean up files in www/lib, add fetching names from PAR2 files.
+08152013 -> ThePeePs -> Site stats for alpha theme.
+08152013 -> Josh     -> Update themes.
 08122013 -> bodrick  -> Fixed bug with namefixer, if print changes only, status was still being set to updated.
 08122013 -> kevin    -> Catgorize S01E01E02 / S01E01A properly, clean up more files.
 08112013 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
 08102013 -> kevin    -> Clean up postprocess.php
 08092013 -> kevin    -> More regex in namecleaning.
 08082013 -> kevin    -> Fix a bug in releases.php where releases under minimum file/size setting were not deleted.
-						Add more regex for matching/name cleaning.
+                        Add more regex for matching/name cleaning.
 08072013 -> kevin    -> 7zip to decompress nfos froms zips during post process (/usr/bin/7za on ubuntu, 7z command line windows(untested on windows)).
-						Fix many bugs in post proc.
+                        Fix many bugs in post proc.
 08062013 -> sinfulj  -> Add a new theme (currently in alpha testing).
 08052013 -> kevin    -> Clean up postprocess.php, make sure there are no duplicate names for releaseID's in the releasefiles table, more regex in namecleaning.
 08052013 -> wtf911   -> Attempt to fix duplicate tvrage entries when running threaded.
-08042013 -> sinfulj  -> Fix up some theme issues.	
-08042013 -> kevin    ->	Add more regex, fix up a few issues, reset collection hash again with these changes.
-08032013 -> kevin    ->	Update namecleaning, requires a reset of the collection hash.
+08042013 -> sinfulj  -> Fix up some theme issues.   
+08042013 -> kevin    -> Add more regex, fix up a few issues, reset collection hash again with these changes.
+08032013 -> kevin    -> Update namecleaning, requires a reset of the collection hash.
 08022013 -> kevin    -> When many releases are added at the same time the hash for the guid can be the same, so add mt_rand while hashing.
-						Clean up postprocess.php a bit.
+                        Clean up postprocess.php a bit.
 08012013 -> ThePeePs -> Add logging of failed site login attempts.
 08012013 -> kevin    -> Add more regex to namecleaning.
 07302013 -> kevin    -> Clean up binaries.php and backfill.php and attempting to fix the connection errors.
@@ -22,180 +27,180 @@
                         Modify namecleaning collectionsCleaner to be notified if there are files or not.
                         Drop the name column on the collections table since it is useless now.
 07202013 -> jonnyboy -> added release name to output of decrypt_hashes.php
-						added release count per group to active_groups.php
-						fixed bug in predb with zenet
-						added 5 indexes to releases to improve postprocess queries
-						improved query time in monitor
+                        added release count per group to active_groups.php
+                        fixed bug in predb with zenet
+                        added 5 indexes to releases to improve postprocess queries
+                        improved query time in monitor
 07192013 -> jonnyboy -> fixed bug in postprocess(windows)
-						fixed bug in safe backfill, was adding parts to partrepair, you many need to run: truncate table partrepair;
-						fixed bug in predb, you will need to run this query: update predb set title = replace (title, '  - omgwtfnzbs.org', '');
+                        fixed bug in safe backfill, was adding parts to partrepair, you many need to run: truncate table partrepair;
+                        fixed bug in predb, you will need to run this query: update predb set title = replace (title, '  - omgwtfnzbs.org', '');
 07182013 -> jonnyboy -> added alternate nntp to install
-						fixed bug in orlydb
-						fixed bug in threaded postprocess
-						attempt to fix sab view queue
+                        fixed bug in orlydb
+                        fixed bug in threaded postprocess
+                        attempt to fix sab view queue
 07162013 -> jonnyboy -> changed output for nzb errors during nfo processing
-						fixed bug in threaded import using tmux
-						fixed pass by reference error
-						added group check in binaries scan
-						typo in postprocess.php
-						fixed bug in grabnzbs
-						fixed bug in nfo nntp connection
-						added option to import gzipped nzbs, not working in www/admin/nzb-import.php
-						changed import copy file to save stream, increased import speed
-						fixed typo in namecleaning.php
+                        fixed bug in threaded import using tmux
+                        fixed pass by reference error
+                        added group check in binaries scan
+                        typo in postprocess.php
+                        fixed bug in grabnzbs
+                        fixed bug in nfo nntp connection
+                        added option to import gzipped nzbs, not working in www/admin/nzb-import.php
+                        changed import copy file to save stream, increased import speed
+                        fixed typo in namecleaning.php
 07152013 -> jonnyboy -> replaced external decrypt hashes script with internal one
-						added preg_replace to grabnzbs and nzb-import to remove part number from end of subject
+                        added preg_replace to grabnzbs and nzb-import to remove part number from end of subject
 07152013 -> kevin    -> update namecleaning     Added some regex to name cleaning.
-						Make sure that yEnc is before part count in binaries.php (some High Compressed virus posts were getting through).
+                        Make sure that yEnc is before part count in binaries.php (some High Compressed virus posts were getting through).
 07142013 -> jonnyboy -> reverted last
-						changed default user view to list view
-						updated rarinfo libs
-						added additional monitor paths in tmux - request
-						added limit to requestID per run
-						added powerline segment for NNTP connections - ThePeePs
-						added lines to monitor to show NNTP connections - Mike1
+                        changed default user view to list view
+                        updated rarinfo libs
+                        added additional monitor paths in tmux - request
+                        added limit to requestID per run
+                        added powerline segment for NNTP connections - ThePeePs
+                        added lines to monitor to show NNTP connections - Mike1
 07132013 -> jonnyboy -> gave GrabNZBs its own thread count
-						fixed type errors
-						typos
-						cleanup backfill.php
+                        fixed type errors
+                        typos
+                        cleanup backfill.php
 07132013 -> Junkman690 -> readd RSS namespace to make the rss feeds work again. Make it point to nZEDb install for info
 07122013 -> jonnyboy -> added NNTP error checking in postprocess and nfo
-						nzb-import and grabNZBs now use site edit Crosspost time
-						fixed a bug when switch nntp provider and groups not available or invalid first_post
+                        nzb-import and grabNZBs now use site edit Crosspost time
+                        fixed a bug when switch nntp provider and groups not available or invalid first_post
 07112013 -> jonnyboy -> tmux -added option to use removecrapreleases all or just 1 setting
-						fixed bug in postprocess_threaded.py
+                        fixed bug in postprocess_threaded.py
 07112013 -> jonnyboy -> added 3 loop limit to releases stage4567
-						updated nntplib.py, fixed a bug when switch nntp provider and groups not available
-						fixed bug in tmux-seq when not running any backfill
-						fixed bug in postback, when reconnecting to nntp, need to set group name first
+                        updated nntplib.py, fixed a bug when switch nntp provider and groups not available
+                        fixed bug in tmux-seq when not running any backfill
+                        fixed bug in postback, when reconnecting to nntp, need to set group name first
 07112013 -> kevin    -> added the new regexes to namecleaning releaseCleaner, removed the "universal" one from the groups.
-						changed the group regexes in releaseCleaner to make sure they don't match on other groups.
-						make sure exe doesn't get into tv.
-						Added alt.binaries.multimedia.anime to releaseCleaner.
-						Changed collectionsCleaner so in the future it can do groups.
+                        changed the group regexes in releaseCleaner to make sure they don't match on other groups.
+                        make sure exe doesn't get into tv.
+                        Added alt.binaries.multimedia.anime to releaseCleaner.
+                        Changed collectionsCleaner so in the future it can do groups.
 07112013 -> jonnyboy -> added 'trim' to releases name in nzb-import and grabNZBs
-						fixed bug in postprocess.php
-						beginning the move of pre/requestID matching to release creation, instead of separate process later
+                        fixed bug in postprocess.php
+                        beginning the move of pre/requestID matching to release creation, instead of separate process later
 07102013 -> jonnyboy -> fixed bug in backfill causing some issue with nntp stall
-						moved python lib files
+                        moved python lib files
 07092013 -> jonnyboy -> added limit clause when running populate gids from tmux
-						added query to grabnzbs that appear incomplete but are older than 2 hours
-						fixed bug in grabznbs creating gid at same time as update_releases
-						changed poster to fromname delete_releases.php
-						added nzbstatus check for gid creation
-						added db connect string to start of loop in monitor.php, should help the with disabled by running issues
-						updated start.php to latest patch
+                        added query to grabnzbs that appear incomplete but are older than 2 hours
+                        fixed bug in grabznbs creating gid at same time as update_releases
+                        changed poster to fromname delete_releases.php
+                        added nzbstatus check for gid creation
+                        added db connect string to start of loop in monitor.php, should help the with disabled by running issues
+                        updated start.php to latest patch
 07072013 -> jonnyboy -> added update_relases run when have exceeded limits in seq
-						updated all python scripts, put closing stuffin in main(), removed thread deamon's was causing shutdown issues with 2.*
-						added gid to grabzbs and import threaded scripts, still need to add to non threaded
-						updated monitor predb to match the other totals, fixed typo in populate_nzb_guid.php
-						tmux - removed unneeded/unused timers
+                        updated all python scripts, put closing stuffin in main(), removed thread deamon's was causing shutdown issues with 2.*
+                        added gid to grabzbs and import threaded scripts, still need to add to non threaded
+                        updated monitor predb to match the other totals, fixed typo in populate_nzb_guid.php
+                        tmux - removed unneeded/unused timers
 07072013 -> Miatrix  -> Added populate_nzb_guid.php in the misc/testing/DB_scripts folder to update existing releases with the guid
 07072013 -> Miatrix  -> updated the creation of releases to populate the nzg_guid column with a md5 hash based on the 1st post.  This will allow possible spotnab integration at a later date.
 07072013 -> jonnyboy -> updated monitor pane for requestID
-						integrated threaded requestID into releases.php, no need to run separate python script
-						fixed testing/nzb-import.php not deleting the nzbs
-						fixed skipping releases when importing by filename
-						added more rss feeds for predb.me
+                        integrated threaded requestID into releases.php, no need to run separate python script
+                        fixed testing/nzb-import.php not deleting the nzbs
+                        fixed skipping releases when importing by filename
+                        added more rss feeds for predb.me
 07062013 -> jonnyboy -> fixed patch
-						Added threaded requestID for initial pull
+                        Added threaded requestID for initial pull
 07062013 -> Miatrix  -> Added Request ID Lookup.  This looks up requests from the URL we provide to fix naming where possible.
-						This is very usefull for pron, but helps sometimes on tv/movies/console releases.
+                        This is very usefull for pron, but helps sometimes on tv/movies/console releases.
 07062013 -> jonnyboy -> removed remove stale folders from threaded pp additional, wrong place
 07052013 -> jonnyboy -> fixed bug in tmux-edit and monitor
-						fixed bug in postprocess
-						a little cleanup, removed optimize/patch from tmux-edit
-						added formatting to numbers in safe backfill
-						tmux - split pp addtional and pp nfo
-						added partrepair threaded
-						added remove stale folders from threaded pp additional
+                        fixed bug in postprocess
+                        a little cleanup, removed optimize/patch from tmux-edit
+                        added formatting to numbers in safe backfill
+                        tmux - split pp addtional and pp nfo
+                        added partrepair threaded
+                        added remove stale folders from threaded pp additional
 07052013 -> jonnyboy -> really fixed it, updated tmux-edit with an example of the formula used
-						fixed issue with safe backfill threaded, not using the correct number of threads
-						fixed issue with postprocess threaded nfo
+                        fixed issue with safe backfill threaded, not using the correct number of threads
+                        fixed issue with postprocess threaded nfo
 07052013 -> Miatrix  -> Added 2 options to control the video sample to the site edit screen.
-						One is segments to download.  If you find your samples arn't long enough you can increase this though it will mean that you
-						download more from your usenet provider.
-						The other option is the max length (in seconds) for the preview.
-						Added 1 option to control the sample image.  When in seconds to try to grab the image.
-						Fixed an issue where the same files were listed multiple times in the releasefiles table. This
-						was due to the code processing the 1st and last rar file of the archive.
+                        One is segments to download.  If you find your samples arn't long enough you can increase this though it will mean that you
+                        download more from your usenet provider.
+                        The other option is the max length (in seconds) for the preview.
+                        Added 1 option to control the sample image.  When in seconds to try to grab the image.
+                        Fixed an issue where the same files were listed multiple times in the releasefiles table. This
+                        was due to the code processing the 1st and last rar file of the archive.
 07052013 -> jonnyboy -> updated schema for missing patches
 07042013 -> kevin    -> Update the FAQ.
 07042013 -> devmem   -> Reverted changes in categorisation and added HD movie check to a.b.movee
-						Altered ordering of if() in namefixer to improve efficiency
+                        Altered ordering of if() in namefixer to improve efficiency
 07042013 -> jonnyboy -> removed nntp lib from pp python script
-						removed optimize and patchdb from tmux scripts
-						cymysql has been updated to use sockets, python scripts also, you will need to:
-						please run everything, not just the next line
-						run sudo pip install --upgrade cymysql -or-
-						run sudo easy_install --upgrade cymysql
-						run sudo pip-3.2 install --upgrade cymysql
-						run sudo pip-3.3 install --upgrade cymysql
-						to use sockets, add (be sure the path is correct)
-						define('DB_SOCKET', '/var/run/mysqld/mysqld.sock'); to you www/config.php
-						or, not use sockets, add
-						define('DB_SOCKET', ''); to you www/config.php
+                        removed optimize and patchdb from tmux scripts
+                        cymysql has been updated to use sockets, python scripts also, you will need to:
+                        please run everything, not just the next line
+                        run sudo pip install --upgrade cymysql -or-
+                        run sudo easy_install --upgrade cymysql
+                        run sudo pip-3.2 install --upgrade cymysql
+                        run sudo pip-3.3 install --upgrade cymysql
+                        to use sockets, add (be sure the path is correct)
+                        define('DB_SOCKET', '/var/run/mysqld/mysqld.sock'); to you www/config.php
+                        or, not use sockets, add
+                        define('DB_SOCKET', ''); to you www/config.php
 07032013 -> jonnyboy -> fixed imported nzbs not pp
-						fixed usefilename to use filename instead of clean name
-						fixed bug in omport threadd when path has no subfolders
-						fixed bug in import true
-						added patch to update for new setting
-						added option to use filenames with nzb-import - tmux
-						added option to use alternate nntp provider for grabnzbs
-						updated python nnpt lib
-						added new connection, if error
-						removed if connected when definately not connected
+                        fixed usefilename to use filename instead of clean name
+                        fixed bug in omport threadd when path has no subfolders
+                        fixed bug in import true
+                        added patch to update for new setting
+                        added option to use filenames with nzb-import - tmux
+                        added option to use alternate nntp provider for grabnzbs
+                        updated python nnpt lib
+                        added new connection, if error
+                        removed if connected when definately not connected
 07022013 -> jonnyboy -> added small delay around python connection
-						removed nntp connect where not needed, removed delay between doQuit and doConnect
-						added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
+                        removed nntp connect where not needed, removed delay between doQuit and doConnect
+                        added a small delay between doQuit and doConnect, in a attempt to allow the connection to terminate before trying a new connection.
 07012013 -> jonnyboy -> added variable timeout to nntp.php
 06302013 -> jonnyboy -> changed nzb retention for GrabNZBs to partretentionhours
-						added script to show sleeptime using Consoletools
-						added dateadded column to nzbs table, added code to delete incomplete nzbs older than 4 hours
-						added nzbs to monitor, total(distinct), pending
-						started adding code to install scripts for socket and alternate nntp
-06292013 -> ugo		 -> added language flags to movie page
-						updateded test_misc_sorter.php
-06292013 -> jonnyboy ->	added script to create a ramdisk and move mysql tables to it
-						modified file to delete releases based on poster, searchname, name or guid, using = or like
-						added simple script to run all threaded scripts sequentially
-						removed hard coded db name from clean_nzb, added safety argv
-						made tmux colors array user defineable
-						changed query for music to process
-						added output to start of threaded scripts
-						separated decrypt hashes and predb
-						fixed grabnzbs not setting haspreview = -1
-						fixed backfill safe loop over completed groups
-						changed progessive sleep time to use min sleep timer if timer would be less than that
-						renamed patch
-						added blank line to robot.txt
-						replaced && with ; because python scripts exit  and sleeps were not working
-						changed echo output in postprocess doecho and/or debug
-						changed patch numbers
-						added cats to predb
-						removed hard coded db name from patch
-06282013 -> ugo		 ->	added code to check by the user for broken releases
-						added robot.txt files to deny all indexers by default
-						some minor changes to other parts
+                        added script to show sleeptime using Consoletools
+                        added dateadded column to nzbs table, added code to delete incomplete nzbs older than 4 hours
+                        added nzbs to monitor, total(distinct), pending
+                        started adding code to install scripts for socket and alternate nntp
+06292013 -> ugo      -> added language flags to movie page
+                        updateded test_misc_sorter.php
+06292013 -> jonnyboy -> added script to create a ramdisk and move mysql tables to it
+                        modified file to delete releases based on poster, searchname, name or guid, using = or like
+                        added simple script to run all threaded scripts sequentially
+                        removed hard coded db name from clean_nzb, added safety argv
+                        made tmux colors array user defineable
+                        changed query for music to process
+                        added output to start of threaded scripts
+                        separated decrypt hashes and predb
+                        fixed grabnzbs not setting haspreview = -1
+                        fixed backfill safe loop over completed groups
+                        changed progessive sleep time to use min sleep timer if timer would be less than that
+                        renamed patch
+                        added blank line to robot.txt
+                        replaced && with ; because python scripts exit  and sleeps were not working
+                        changed echo output in postprocess doecho and/or debug
+                        changed patch numbers
+                        added cats to predb
+                        removed hard coded db name from patch
+06282013 -> ugo      -> added code to check by the user for broken releases
+                        added robot.txt files to deny all indexers by default
+                        some minor changes to other parts
 06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
 06282013 -> devmem   -> Fixed removeCrapReleases to also process when argv[1] is false
 06282013 -> devmem   -> Added extra column 'relstatus' to table 'releases' to enable bitwise ops on releases
-						Edited lib/framework/db.php to start adding constants for relstatus
-						Updated namefixer to only process releases not processed before
-						Corrected jonnyboys dates (he was 1 month ahead - it's still June)
+                        Edited lib/framework/db.php to start adding constants for relstatus
+                        Updated namefixer to only process releases not processed before
+                        Corrected jonnyboys dates (he was 1 month ahead - it's still June)
 06282013 -> jonnyboy -> backfill safe will loop to next group, if available posts is less than 10000
-						oops, removed sys.exit from safe backfill
-						added back changes to site-edit
-						rewrote all python scripts
-						added back changes to releases.php
-						added output back to postprocess
-						reverted some changes looking for nntp hang bug
-06272013 -> jonnyboy ->	may have fixed some connection issues
-						added legend to output in postprocess
-						removed second rm -rf, bad placement
-						changed fixreleasenames to use inner join insteaqd of left join
-						changed tmpunrar folder creation to chmod 0777 from 0764, just in case
-						moved delete stale tmpunrar from threaded script to monitor
+                        oops, removed sys.exit from safe backfill
+                        added back changes to site-edit
+                        rewrote all python scripts
+                        added back changes to releases.php
+                        added output back to postprocess
+                        reverted some changes looking for nntp hang bug
+06272013 -> jonnyboy -> may have fixed some connection issues
+                        added legend to output in postprocess
+                        removed second rm -rf, bad placement
+                        changed fixreleasenames to use inner join insteaqd of left join
+                        changed tmpunrar folder creation to chmod 0777 from 0764, just in case
+                        moved delete stale tmpunrar from threaded script to monitor
 
 * Note *
 No future pull requests will be accepted without this file being updated to reflect what you changed and when.

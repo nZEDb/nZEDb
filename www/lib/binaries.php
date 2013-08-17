@@ -73,16 +73,13 @@ class Binaries
 
 	function updateGroup($groupArr)
 	{
-		$db = new DB();
-		$backfill = new Backfill();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		$nntp = new Nntp();
-		$nntp->doConnect();
-
 		echo 'Processing '.$groupArr['name'].$n;
 
 		// Select the group.
+		$nntp = new Nntp();
+		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
 		if(PEAR::isError($data))
@@ -104,6 +101,8 @@ class Binaries
 		// Get first and last part numbers from newsgroup.
 		$last = $grouplast = $data['last'];
 
+		$backfill = new Backfill();
+		$db = new DB();
 		// For new newsgroups - determine here how far you want to go back.
 		if ($groupArr['last_record'] == 0)
 		{
@@ -137,6 +136,7 @@ class Binaries
 		$total = $grouplast - $first + 1;
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
+		$nntp->doQuit();
 		if($total > 0)
 		{
 			echo "Group ".$data["group"]." has ".number_format($total)." new articles.\n"."Server oldest: ".number_format($data['first'])." Server newest: ".number_format($data['last'])." Local newest: ".number_format($groupArr['last_record']).$n.$n;
@@ -178,8 +178,6 @@ class Binaries
 					$first = $last + 1;
 				}
 			}
-			// Refresh the connection, it sometimes dies here.
-			$nntp->doQuit();
 			$nntp->doConnect();
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
 			$nntp->doQuit();
@@ -194,7 +192,6 @@ class Binaries
 
 	function scan($nntp, $groupArr, $first, $last, $type='update')
 	{
-		$db = new Db();
 		$namecleaning = new nameCleaning();
 		$s = new Sites;
 		$site = $s->get();
@@ -204,16 +201,13 @@ class Binaries
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			$nntp->doConnect();
-		}
-
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
 
 		// Select the group.
+		if (!isset($nntp))
+			$nntp = new Nntp();
+		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
 		if(PEAR::isError($data))
@@ -222,7 +216,7 @@ class Binaries
 			if ($data === false)
 				return;
 		}
-		
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		if ($type != 'partrepair')
@@ -232,13 +226,9 @@ class Binaries
 				// This is usually a compression error, so lets try disabling compression.
 				$nntp->doQuit();
 				$nntp->doConnectNC();
-				$data = $nntp->selectGroup($groupArr['name']);
-				if (PEAR::isError($data))
-				{
-					$nntp->doQuit();
-					echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
+				$data = $nntp->dataError($nntp, $groupArr['name']);
+				if ($data === false)
 					return;
-				}
 				else
 				{
 					$msgs = $nntp->getOverview($first."-".$last, true, false);
@@ -251,12 +241,13 @@ class Binaries
 				}
 			}
 		}
-
+		$nntp->doQuit();
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
-		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
 
 		$this->startCleaning = microtime(true);
+		$rangerequested = range($first, $last);
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
+		$db = new Db();
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
@@ -314,21 +305,21 @@ class Binaries
 
 					// Used for the sha1 hash (see below).
 					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['ID'], $nofiles);
-					
+
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
 							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
-							
+
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
 							}
 							*/
-							
+
 							/*If you uncommented the above, comment following 2 lines..*/
 							$colnames[] = $cleansubject;
 							$orignames[] = $msg['Subject'];
@@ -345,7 +336,7 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['ID'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
-						
+
 					}
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))

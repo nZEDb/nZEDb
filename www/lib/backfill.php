@@ -65,7 +65,7 @@ class Backfill
 		$binaries = new Binaries();
 		$n = $this->n;
 		$this->startGroup = microtime(true);
-		
+
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
@@ -77,7 +77,7 @@ class Backfill
 			$nntpc = new Nntp;
 			$nntpc->doConnect();
 		}
-		
+
 		// Select the group.
 		$datac = $nntpc->selectGroup($groupArr['name']);
 		// Attempt to reconnect if there is an error.
@@ -128,6 +128,7 @@ class Backfill
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				" days).  Backfill target of ".$groupArr['backfill_target']." days is post $targetpost\n";
 
+		$nntp->doQuit();
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -161,8 +162,6 @@ class Backfill
 			}
 		}
 
-		//Refresh the connection, sometimes it times out at this point.
-		$nntp->doQuit();
 		$nntp->doConnect();
 		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
 		$nntp->doQuit();
@@ -238,7 +237,7 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		echo 'Processing '.$groupArr['name'].$n;
-		
+
 		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
@@ -282,6 +281,7 @@ class Backfill
 				" days old). Our backfill target is article ".number_format($targetpost)." which is (".((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).$n.
 				" days old).\n";
 
+		$nntp->doQuit();
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -315,7 +315,7 @@ class Backfill
 
 			}
 		}
-		$nntp->doQuit();
+
 		$nntp->doConnect();
 		$first_record_postdate = $this->postdate($nntp,$first,false,$groupArr['name']);
 		$nntp->doQuit();

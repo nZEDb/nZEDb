@@ -63,7 +63,7 @@ class Namefixer
 			while ($relrow = $db->fetchArray($relres))
 			{
 				echo "Reading NFO => ".$relrow['searchname']."\n";
-				$this->checkName($relrow, $echo, $type, $namestatus);                
+				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
 				if ($this->checked % 500 == 0)
 					echo $this->checked." NFOs processed.\n\n";

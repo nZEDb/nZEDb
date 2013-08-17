@@ -443,10 +443,10 @@ class Users
 	public function setCookies($uid)
 	{
 		if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
-            $secure_cookie = "1";
-        else
-            $secure_cookie = "0";
-        $u = $this->getById($uid);
+			$secure_cookie = "1";
+		else
+			$secure_cookie = "0";
+		$u = $this->getById($uid);
 		$idh = $this->hashSHA1($u["userseed"].$uid);
 		setcookie('uid', $uid, (time()+2592000), '/', '', $secure_cookie, 'true');
 		setcookie('idh', $idh, (time()+2592000), '/', '', $secure_cookie, 'true');
