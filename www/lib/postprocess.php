@@ -187,7 +187,7 @@ class PostProcess
 		$db = new DB();
 		$category = new Category();
 
-		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, ID as releaseID  FROM releases WHERE ID = {$relID}");
+		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, UNIX_TIMESTAMP(postdate) as postdate, ID as releaseID  FROM releases WHERE ID = {$relID}");
 		if ($quer["relnamestatus"] !== 1 && $quer["categoryID"] != Category::CAT_MISC)
 			return false;
 
@@ -224,7 +224,7 @@ class PostProcess
 				// Add to releasefiles.
 				if ($db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
 				{
-					if ($rf->add($relID, $file["name"], $file["size"], time(), 0))
+					if ($rf->add($relID, $file["name"], $file["size"], $quer["postdate"], 0))
 						$relfiles++;
 				}
 				$quer["textstring"] = $file["name"];
