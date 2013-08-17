@@ -236,7 +236,7 @@ class PostProcess
 			if ($files > 0)
 			{
 				
-				$cnt = $db->queryOneRow("SELECT COUNT(releaseID) AS count FROM  releasefiles WHERE ID = {$relID}");
+				$cnt = $db->queryOneRow("SELECT COUNT(releaseID) AS count FROM releasefiles WHERE releaseID = {$relID}");
 				$count = $files;
 				if ($cnt !== false && $cnt["count"] > 0)
 					$count = $files + $cnt["count"];
