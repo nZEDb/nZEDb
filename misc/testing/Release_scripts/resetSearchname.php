@@ -89,7 +89,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
     $db = new DB();
-    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
+    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases");
 
     if (sizeof($res) > 0)
     {
