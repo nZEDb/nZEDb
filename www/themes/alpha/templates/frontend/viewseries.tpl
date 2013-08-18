@@ -17,14 +17,14 @@
 
 </h1>
 <div class="tvseriesheading">
-<div class="col-9">
+<div class="col-xs-9">
 <p>
 {if $seriesgenre != ''}<b>{$seriesgenre}</b><br>{/if}
 <span class="descinitial">{$seriesdescription|escape:"htmlall"|nl2br|magicurl|truncate:"1500":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>   {if $seriesdescription|strlen > 1500}<span class="descfull">{$seriesdescription|escape:"htmlall"|nl2br|magicurl}</span>{/if}
 </p>
 
 </div>
-<div class="col-3" style="text-align:center">
+<div class="col-xs-3" style="text-align:center">
 {if $rage[0].imgdata != ""}<img class="shadow img-thumbnail" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].ID}">{/if}
 </div>
 <b>My Shows</b>:
@@ -37,9 +37,7 @@
 {/if}
 
 <form id="nzb_multi_operations_form" action="get">
-<div class="nzb_multi_operations">
-<div class="row">
-<div class="col-12" style="text-align: right; padding-bottom: 4px;">
+<div class="container nzb_multi_operations text-right" style="padding-bottom: 4px;">
 View:
 <span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 <a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
@@ -49,77 +47,62 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 <button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
 {/if}
 </div>
-</div>
+
 {include file='multi-operations.tpl'}
-</div>
-{*
-<div class="nzb_multi_operations">
-<div style="padding-bottom:10px;" >
-<a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$rage[0].rageID}" title="View in TvRage">View in Tv Rage</a> |
-<a href="{$smarty.const.WWW_TOP}/rss?rage={$rage[0].rageID}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">Rss Feed for this Series</a>
-</div>
-<small>With Selected:</small>
-<input type="button" class="nzb_multi_operations_download" value="Download NZBs">
-<input type="button" class="nzb_multi_operations_cart" value="Add to Cart">
-{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB">{/if}
-{if $isadmin || $ismod}
-&nbsp;&nbsp;
-<input type="button" class="nzb_multi_operations_edit" value="Edit">
-<input type="button" class="nzb_multi_operations_delete" value="Del">
-{/if} *}
-
-
 
 </div>
 
 <a id="latest"></a>
-<table class="table table-hover table-condensed table-highlight data highlight icons" id="browsetable">
+<table class="table table-hover table-condensed table-highlight data" id="browsetable">
 {foreach $seasons as $seasonnum => $season}
+<thead>
 <tr>
-<td style="padding-top:15px;" colspan="10"><h2>Season {$seasonnum}</h2></td>
+<th colspan="10"><h2>Season {$seasonnum}</h2></th>
 </tr>
 <tr>
 <th>Ep</th>
 <th>Name</th>
-<th><input id="chkSelectAll{$seasonnum}" type="checkbox" name="{$seasonnum}" class="nzb_check_all_season"><label for="chkSelectAll{$seasonnum}" style="display:none;">Select All</label></th>
-<th>Category</th>
-<th style="text-align:center;">Posted</th>
-<th>Size</th>
-<th>Files</th>
-<th>Stats</th>
-<th></th>
+<th style="width:16px"><input id="chkSelectAll{$seasonnum}" type="checkbox" name="{$seasonnum}" class="nzb_check_all_season"><label for="chkSelectAll{$seasonnum}" style="display:none;">Select All</label></th>
+<th style="width:60px;">Category</th>
+<th style="width:60px;text-align:center;">Posted</th>
+<th style="width:80px;text-align:center;">Size</th>
+<th style="width:50px;text-align:center;">Files</th>
+<th style="width:60px;text-align:center;">Stats</th>
+<th style="width:80px;"></th>
 </tr>
+</thead>
+<tbody>
 {foreach $season as $episodes}
 {foreach $episodes as $result}
-<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
+<tr id="guid{$result.guid}">
 {if $result@total>1 && $result@index == 0}
-<td width="20" rowspan="{$result@total}" class="static">{$episodes@key}</td>
+<td rowspan="{$result@total}">{$episodes@key}</td>
 {else if $result@total == 1}
-<td width="20" class="static">{$episodes@key}</td>
+<td>{$episodes@key}</td>
 {/if}
 <td>
 <a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 
 <div class="resextra">
-<div class="btns">
-{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
-{if $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtn" rel="preview">Preview</a>{/if}
-{if $result.tvairdate != ""}<span class="rndbtn" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
-{if $result.reID > 0}<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>{/if}
+<div class="btns pull-left">
+{if $result.nfoID > 0}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo " rel="nfo">Nfo</a></span> {/if}
+{if $result.haspreview == 1 && $userdata.canpreview == 1}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev " rel="preview">Preview</a></span> {/if}
+{if $result.tvairdate != ""}<span class="label label-default" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
+{if $result.reID > 0}<span class="mediainfo label label-default" title="{$result.guid}">Media</span>{/if}
 </div>
 
 {if $isadmin || $ismod}
-<div class="admin">
-<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
+<div class="admin pull-right">
+<span class="label label-warning"><a class="" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a></span> <span class="label label-danger"><a class=" confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a></span> 
 </div>
 {/if}
 </div>
 </td>
 <td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}"></td>
-<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}?t={$result.categoryID}">{$result.category_name}</a></td>
-<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
-<td width="40" class="less right">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
-<td class="less mid">
+<td style="text-align:center;"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}?t={$result.categoryID}">{$result.category_name}</a></td>
+<td style="text-align:center;" title="{$result.postdate}">{$result.postdate|timeago}</td>
+<td style="text-align:center;">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
+<td style="text-align:center;">
 <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 {if $result.rarinnerfilecount > 0}
 <div class="rarfilelist">
@@ -127,8 +110,8 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 </div>
 {/if}
 </td>
-<td width="40" class="less" nowrap="nowrap"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
-<td class="icons">
+<td style="text-align:center;"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
+<td class="icons" style="text-align:center;">
 <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 <div class="icon icon_cart" title="Add to Cart"></div>
@@ -137,6 +120,7 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 {/foreach}
 {/foreach}
 {/foreach}
+</tbody>
 </table>
 
 </form>

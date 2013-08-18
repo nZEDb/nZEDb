@@ -26,7 +26,7 @@
 {assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
 
 <td><img title=".{$file.ext}" alt="{$file.ext}" src="{$smarty.const.WWW_TOP}/themes/alpha/images/fileicons/{$icon}.png"></td>
-<td><span class="label {if $completion < 100}label-warning{else}label{/if}">{$completion}%</span></td>
+<td><span class="label {if $completion < 100}label-danger{else}label-success{/if}">{$completion}%</span></td>
 <td>{if $file.size < 100000}{$file.size|fsize_format:"KB"}{else}{$file.size|fsize_format:"MB"}{/if}</td>
 </tr>
 {/foreach}
