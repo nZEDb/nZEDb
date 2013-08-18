@@ -4,7 +4,7 @@
 
 {$pager}
 
-<div class="text-right"  tyle="margin-bottom:5px;"><a class="btn btn-success" href="#new">New Post</a></div>
+<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-success" href="#new">New Post</a></div>
 
 <a id="top"></a>
 
@@ -39,7 +39,7 @@
 </tbody>
 </table>
 
-<div class="text-right" style="margin-top:5px;"><a class="btn btn-info btn-small" href="#top">Top</a></div>
+<div class="text-right" style="margin-top:5px;"><a class="btn btn-info btn-sm" href="#top">Top</a></div>
 
 <br>
 
@@ -47,9 +47,8 @@
 
 {/if}
 
-<div class="row" style="margin-top:10px;">
 <a id="new"></a>
-<form action="" method="post">
+<form action="" method="post" style="margin-top:10px;">
   <fieldset>
     <legend>Add New Post</legend>
     <div class="form-group">
@@ -60,9 +59,6 @@
       <label for="addMessage">Message:</label>
       <textarea class="form-control" maxlength="5000" id="addMessage" name="addMessage" rows="3" placeholder=""></textarea>
     </div>
-    <input class="btn btn-default forumpostsubmit" type="submit" value="submit">
+    <button class="btn btn-default forumpostsubmit" type="submit" value="submit">Submit</button>
   </fieldset>
 </form>
-</div>
-
-
