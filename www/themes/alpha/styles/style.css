@@ -25,7 +25,8 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 
 
 /* Custom adjustments for Conent Panels */
-.panel-heading {
+.nzedb-panel-heading {
+    nzedb-panel-
     background-color: #555555;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#666666)); /* Chrome, Safari 4+ */
     background-image: -webkit-linear-gradient(top, #555555, #666666); /* Chrome 10-25, iOS 5+, Safari 5.1+ */
@@ -33,17 +34,16 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
     background-image:      -o-linear-gradient(top, #555555, #666666); /* Opera 11.10-12.00 */
     background-image:         linear-gradient(to bottom, #555555, #666666); /* Chrome 26, Firefox 16+, IE 10+, Opera 12.10+ */
 }
-.panel-heading { margin-bottom: -1px; }
-.panel { border-radius: 4px 4px 0 0; border: 0 ; -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; }
+.nzedb-panel-heading { margin-bottom: -1px; }
+.nzedb-panel { border-radius: 4px 4px 0 0; border: 0 ; -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; }
 .list-group { margin-top: -1px; }
 a.list-group-item { padding: 5px 15px; }
 a.list-group-item:hover { background-color: 221, 221, 221; }
-.list-group-item-heading { color: #428bca !important; }
-.list-group-item-heading:hover { color: #2a6496 !important; }
-
+.list-group-item-heading,a.list-group-item { color: #428bca !important; }
+.list-group-item-heading:hover,a.list-group-item:hover { color: #2a6496 !important; }
+.list-group-item-text { color: #555; }
 
 /* Grey Box Pattern */
-.grey-frame { margin: 0 -15px -15px -15px; }
 .grey-frame {
     background: none repeat scroll 0 0 rgb(208, 208, 208);
     color: rgb(80, 80, 80);
@@ -75,7 +75,6 @@ table.table { margin-top: 10px; margin-bottom: 10px; }
 .table .table { background-color: transparent; }
 
 .navbar-inverse { background: url(../images/nav-tile.png) repeat-x; }
-.navbar .nav>li>a{ padding: 13px 15px 13px; }
 .nav-header {
     color: #fff;
     text-shadow: rgb(11, 11, 11) 0 -1px 1px !important;
@@ -97,9 +96,10 @@ table.table { margin-top: 10px; margin-bottom: 10px; }
 }
 .dropdown-toggle{ background-color: transparent !important; background-image: none; }
 .dropdown-menu {
-    margin-top: 3.5px !important;
+    margin-top: 1px !important;
     padding: 0;
-    width: 120px;
+    
+    min-width:120px;
     overflow: hidden;
     background: #ff9d0b;
     background-repeat: no-repeat;
@@ -132,7 +132,7 @@ table.table { margin-top: 10px; margin-bottom: 10px; }
     font-weight: bold;
     line-height: 24px;
     min-height: 24px;
-    padding: 6px 0 6px 20px;
+    padding: 6px 0 6px 10px;
 
     background: none;
     text-align: left;
@@ -152,23 +152,6 @@ table.table { margin-top: 10px; margin-bottom: 10px; }
     text-shadow: rgba(255,255,255,.5) 0 1px 10px;
 }
 
-
-/*.form-signin {
-    max-width: 500px;
-    padding: 19px 29px 29px;
-    margin: 0 auto 20px;
-    background-color: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 5px;
-
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-            box-shadow: 0 1px 2px rgba(0,0,0,.05);
-    -moz-background-clip: padding-box;
-    -webkit-background-clip: padding-box;
-            background-clip: padding-box;
-}
-*/
 /*.mmenu>a { margin-right: 16px; }*/
 a.descmore {display:block; margin-top:10px;}
 span.descfull {display:none;}

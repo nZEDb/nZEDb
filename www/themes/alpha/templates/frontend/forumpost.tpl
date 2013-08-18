@@ -1,28 +1,29 @@
-
-<h1><a href="{$smarty.const.WWW_TOP}/forum">Forum</a></h1>
+<h3><a href="{$smarty.const.WWW_TOP}/forum">Forum</a></h3>
 
 {if $results|@count > 0}
 
 <h2>{$results[0].subject|escape:"htmlall"}</h2>
 
-<div style="float:right;margin-bottom:5px;"><a href="#reply">Reply</a></div>
+<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-info btn-sm" href="#reply">Reply</a></div>
 
 <a id="top"></a>
-<table style="width:100%;" class="data highlight" id="forumtable">
+
+<table class="table table-highlight data" id="forumtable">
+	<thead>
 	<tr>
 		<th>By</th>
 		<th>Message</th>
 	</tr>
-
+	</thead>
+	<tbody>
 	{foreach from=$results item=result name=result}
-		<tr class="{cycle values=",alt"}">
-			<td width="15%;">
-				<a {if $smarty.foreach.result.last}id="last"{/if} title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a>
-				<br/>
-				on <span title="{$result.createddate}">{$result.createddate|date_format}</span> <div class="hint">({$result.createddate|timeago})</div>
-				{if $userdata.role==2}
+		<tr>
+			<td>
+				<a {if $smarty.foreach.result.last}id="last"{/if} title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a> on<br>
+				<span title="{$result.createddate}">{$result.createddate|date_format}</span> ({$result.createddate|timeago})
+				{if $isadmin || $ismod}
 				<div>
-					<a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
+					<a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
 				</div>
 				{/if}
 				
@@ -30,21 +31,24 @@
 			<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
 		</tr>
 	{/foreach}
-	
+	</tbody>
 </table>
 
-<div style="float:right;margin-top:5px;"><a href="#">Top</a></div>
+<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-info btn-sm" href="#">Top</a></div>
 
 
-<div style="margin-top:10px;">
-<h3>Add Reply</h3>
+
 <a id="reply"></a>
 <form action="" method="post">
-	<label for="addReply">Message:</label><br/>
-	<textarea maxlength="5000" id="addReply" name="addReply" rows="6" cols="60"></textarea>
-	<br/>
-	<input class="forumreplysubmit" type="submit" value="submit"/>
+	<fieldset>
+		<h3>Add Reply</h3>
+	<div class="form-group">
+	<label for="addReply">Message:</label>
+	<textarea class="form-control" maxlength="5000" id="addReply" name="addReply" rows="6"></textarea>
+	</div>
+	<button class="btn btn-success forumreplysubmit" type="submit" value="submit">Submit</button>
+</fieldset>
 </form>
-</div>
+
 
 {/if}
