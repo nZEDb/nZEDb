@@ -73,8 +73,13 @@
 </li>
 </ul>
 
-<form class="navbar-form pull-right" id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
-<input type="text" class="form-control" style="width: 200px;" id="headsearch" name="search" value="{if $header_menu_search == ""}{else}{$header_menu_search|escape:"htmlall"}{/if}" placeholder="Keyword">
+<form class="navbar-form navbar-right" id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
+<div class="form-group">
+<label class="sr-only" for="headsearch">Keyword</label>
+<input type="text" class="form-control" style="width: 160px;" id="headsearch" name="search" value="{if $header_menu_search == ""}{else}{$header_menu_search|escape:"htmlall"}{/if}" placeholder="Keyword">
+</div>
+<div class="form-group">
+<label class="sr-only" for="headcat">Category</label>
 <select class="form-control" style="width: auto;" id="headcat" name="t">
 <option class="grouping" value="-1">All</option>
 {foreach from=$parentcatlist item=parentcat}
@@ -84,5 +89,6 @@
 {/foreach}
 {/foreach}
 </select>
+</div>
 <button type="submit" id="headsearch_go" class="btn btn-default">Search</button>
 </form>
