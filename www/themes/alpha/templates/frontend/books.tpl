@@ -7,19 +7,17 @@
 <br>
 {/if}
 
-<div class="accordion" id="searchtoggle">
-<div class="accordion-group">
-<div class="accordion-heading">
-<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchtoggle" href="#searchfilter"><i class="icon-search"></i> Search Filter</a>
+<div class="panel">
+<div class="panel-heading">
+<h4 class="panel-title">
+<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#searchtoggle">
+<i class="icon-search"></i> Search Filter</a>
+</a>
+</h4>
 </div>
-<div id="searchfilter" class="accordion-body collapse">
-<div class="accordion-inner">
-<form class="form-inline" name="browseby" action="books" style="margin:0;">
-<input class="form-control" style="width: 150px;" id="author" type="text" name="author" value="{$author}" placeholder="Author">
-<input class="form-control" style="width: 150px;" id="title" type="text" name="title" value="{$title}" placeholder="Title">
-<input class="btn btn-success" type="submit" value="Go">
-</form>
-</div>
+<div id="searchtoggle" class="panel-collapse collapse">
+<div class="panel-body">
+{include file='search-filter.tpl'}
 </div>
 </div>
 </div>
@@ -41,7 +39,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 
 
 
-<table class="table table-condensed table-striped data highlight icons" id="coverstable">
+<table class="table table-condensed table-striped data" id="coverstable">
 <thead>
 <tr>
 <th><input type="checkbox" class="nzb_check_all"></th>
@@ -80,12 +78,12 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
 {/if}
 <br>
-<b>Info:</b> {$result.postdate|timeago},  {$result.size|fsize_format:"MB"},  <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart} files</a>,  <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a>, {$result.grabs} grab{if $result.grabs != 1}s{/if}
-<br>
 <div class="icon"><input type="checkbox" class="nzb_check" value="{$result.guid}"></div>
 <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
 <div class="icon icon_cart" title="Add to Cart"></div>
 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+&nbsp;&nbsp;&nbsp;&nbsp;
+<i class="icon-calendar"></i> Posted {$result.postdate|timeago} | <i class="icon-hdd"></i> {$result.size|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart} files</a> | <i class="icon-comments"></i> <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a> | <i class="icon-download"></i> {$result.grabs} grab{if $result.grabs != 1}s{/if}
 </div>
 </td>
 </tr>

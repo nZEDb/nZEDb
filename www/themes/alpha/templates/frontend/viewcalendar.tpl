@@ -1,10 +1,9 @@
-<div class="row" style="text-align:center;margin:0 0 10px">
+<div class="container" style="text-align:center;margin:0 0 10px">
 {foreach $cal as $c}
 <small>&nbsp;<b><a href="{$smarty.const.WWW_TOP}/calendar?date={$c}">{$c}</a></b>&nbsp;</small>
 {/foreach}
-</div>
-<div class="row" style="text-align:center;margin:0">
-<div class="col-4">
+
+<div class="col-xs-4">
 <table class="table table-condensed table-striped data" id="browsetable">
 <thead>
 <tr>
@@ -24,7 +23,7 @@
 </tbody>
 </table>
 </div>
-<div class="col-4">
+<div class="col-xs-4">
 <table class="table table-condensed table-striped data" id="browsetable">
 <thead>
 <tr>
@@ -45,7 +44,7 @@
 </tbody>
 </table>
 </div>
-<div class="col-4">
+<div class="col-xs-4">
 <table class="table table-condensed table-striped data" id="browsetable">
 <thead>
 <tr>
