@@ -10,85 +10,64 @@
 
 <p class="text-center"><b>Include ^ to indicate search must start with term, -- to exclude words.</b></p>
 <br>
-<div class="container">
-	{if not $sadvanced}
-<form role="form" class="form-inline col-lg-6 col-lg-offset-3" method="get" action="{$smarty.const.WWW_TOP}/search">
-<div class="input-group" id="sbasic">
-<input type="text" class="form-control" placeholder="Name" id="search" name="search" value="{$search|escape:'html'}">
-<span class="input-group-btn"><button id="search_search_button" class="btn btn-default" type="submit"><i class="icon-search"></i></button></span>
-</div><!-- /input-group --><br>
-<div class="input-group">
-<input type="text" class="form-control" placeholder="Subject" id="subject" name="subject" value="{$subject|escape:'html'}">
-<span class="input-group-btn"><button  id="subject_search_button" class="btn btn-default" type="submit"><i class="icon-search"></i></button></span>
-</div><!-- /input-group -->
-<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat">
-<input type="hidden" name="search_type" value="basic" id="search_type">
-</form>
-{else}
-<form role="form"class="form-horizontal" method="get" action="{$smarty.const.WWW_TOP}/search">
-<div class="form-group" id="sadvanced" >
-<label class="sr-only" for="searchavdr">Release Name</label>
-<div class="col-xs-4">
-<input type="text" class="searchadv form-control" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" placeholder="Release Name">
-</div>
-<label class="sr-only" for="searchavdr">Usenet Name</label>
-<div class="col-xs-4">
-<input type="text" class="searchadv form-control" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" placeholder="Usenet Name">
-</div>
-<label class="sr-only" for="searchavdr">Poster</label>
-<div class="col-xs-4">
-<input type="text" class="searchadv form-control" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" placeholder="Poster">
-</div>
-</div>
-<div class="form-group">
-<label class="sr-only" for="searchavdr">Minimum Days</label>
-<div class="col-xs-2">
-<input type="text" class="searchdaysinput form-control" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" placeholder="Minimum Days">
-</div>
-<label class="sr-only" for="searchavdr">Maximum Days</label>
-<div class="col-xs-2">
-<input type="text" class="searchdaysinput form-control" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" placeholder="Maximum Days">
-</div>
-<label class="sr-only" for="searchavdr">Usenet Group</label>
-<div class="col-xs-4">
-{html_options class="searchadvbtns form-control" id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}
-</div>
-<div class="col-xs-2">
-<div class="checkbox">
-<label>
-<input type="hidden" id="inlineCheckbox1" name="searchadvhasnfo" value="0">
-<input type="checkbox" id="inlineCheckbox1" name="searchadvhasnfo" value="1"> Has Info
-</label>
-</div></div>
-<div class="col-xs-2">
-<div class="checkbox">
-<label>
-<input type="hidden" id="searchadvhascomments" name="searchadvhascomments" value="0">
-<input type="checkbox" id="searchadvhascomments" name="searchadvhascomments" value="1"> Has Comment
-</label>
-</div></div>
-</div>
-<div class="form-group">
-<label class="sr-only" for="searchavdr">Minimum Size</label>
-<div class="col-xs-2">
-{html_options id="searchadvsizefrom" class="form-control" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom|replace:'Select':'Min Size'}
-</div>
-<label class="sr-only" for="searchavdr">Maximum Size</label>
-<div class="col-xs-2">
-{html_options id="searchadvsizeto" class="form-control" name="searchadvsizeto" options=$sizelist selected=$selectedsizeto}
-</div>
-<div class="col-xs-4">
-{html_options class="searchadvbtns form-control" id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}
-</div>
-<div class="col-xs-4">
-<input type="hidden" name="search_type" value="adv" id="search_type">
-<button class="btn btn-default" id="search_adv_button" type="submit" value="search">Search</button>
-</div>
-</div>
-</form>
-{/if}
-</div>
 
+<form method="get" action="{$smarty.const.WWW_TOP}/search">
+	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
+		<label for="search" style="display:none;">Search</label>
+		<input id="search" name="search" value="{$search|escape:'html'}" type="text"/>
+		<input id="search_search_button" type="submit" value="Name" />&nbsp;&nbsp;&nbsp;
+		<label for="subject" style="display:none;">Subject</label>
+		<input id="subject" name="subject" value="{$subject|escape:'html'}" type="text"/>
+		<input id="subject_search_button" type="submit" value="Subject" /><br/>
+		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
+		<input type="hidden" name="search_type" value="basic" id="search_type" />
+	</div>
+</form>
+
+<form method="get" action="{$smarty.const.WWW_TOP}/search">
+	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
+		<center>
+		<table class="data">
+			<tr>
+				<th><label for="searchadvr">Release Name:</label></th>
+				<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvsubject">Usenet Name:</label></th>
+				<td><input class="searchadv" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvposter">Poster:</label></th>
+				<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvdaysnew">Min/Max days:</label></th>
+				<td><input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/> <input class="searchdaysinput" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/> </td>
+			</tr>
+			<tr>
+				<th><label for="searchadvgroups">Group:</label></th>
+				<td>{html_options class="searchadvbtns" id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvcat">Category:</label></th>
+				<td>{html_options class="searchadvbtns" id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvsizefrom">Min/Max Size:</label></th>
+				<td>
+					{html_options id="searchadvsizefrom" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom}
+					{html_options id="searchadvsizeto" name="searchadvsizeto" options=$sizelist selected=$selectedsizeto}
+				</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvhasnfo">NFO/Comments:</label></th>
+				<td><input type="hidden" name="searchadvhasnfo" value="0" /> <input type="checkbox" name="searchadvhasnfo" value="1" />
+				<input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input id="search_adv_button" type="submit" value="search" /></div> </td>
+			</tr>
+		</table>
+		</center>
+	</div>
+</form>
 <br>
 <br>
 
