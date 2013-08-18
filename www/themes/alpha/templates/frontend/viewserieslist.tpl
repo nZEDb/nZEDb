@@ -36,7 +36,7 @@
 
 {if $serieslist|@count > 0}
 
-<table style="padding:0;"  class="table table-condensed data  icons" id="browsetable">
+<table style="padding:0;"  class="table table-striped table-condensed data " id="browsetable">
 {foreach $serieslist as $sletter => $series}
 <thead>
 <tr>
@@ -52,20 +52,20 @@
 </thead>
 <tbody>
 {foreach $series as $s}
-<tr class="{cycle values=",alt"}">
-<td><div class="text-left"><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageID}">{$s.releasetitle|escape:"htmlall"}</a>{if $s.prevdate != ''}<br><span class="label">Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}</span>{/if}</div></td>
+<tr>
+<td><div class="text-left"><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageID}">{$s.releasetitle|escape:"htmlall"}</a>{if $s.prevdate != ''}<br><span class="label label-default">Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}</span>{/if}</div></td>
 <td><div class="text-center">{$s.country|escape:"htmlall"}</div></td>
 <td><div class="text-center">{$s.genre|truncate:40:"...":true|escape:"htmlall"|replace:'|':', '}</div></td>
 <td><div class="text-center">
 {if $s.userseriesID != ''}
-<a class="label label-warning" href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$s.rageID}" title="Edit">Edit</a>&nbsp;&nbsp;<a class="label label-danger" href="{$smarty.const.WWW_TOP}/myshows/delete/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$s.rageID}" title="Remove from My Shows">Remove</a>
+<span class="label label-warning"><a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$s.rageID}" title="Edit">Edit</a></span>&nbsp;&nbsp;<span class="label label-danger"><a href="{$smarty.const.WWW_TOP}/myshows/delete/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$s.rageID}" title="Remove from My Shows">Remove</a></span>
 {else}
-<a class="label label-success" href="{$smarty.const.WWW_TOP}/myshows/add/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$s.rageID}" title="Add to My Shows">Add</a>
+<span class="label label-success"><a href="{$smarty.const.WWW_TOP}/myshows/add/{$s.rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$s.rageID}" title="Add to My Shows">Add</a></span>
 {/if}
 </div></td>
 <td>
     <div class="text-center">
-        <a class="label label-info" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageID}">Series</a> {if $s.rageID > 0}<a class="label label-important" title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.rageID}">TVRage</a> <a class="label label-warning" title="RSS Feed for {$s.releasetitle|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?rage={$s.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">Rss</a>{/if}</div></td>
+        <span class="label label-info"><a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageID}">Series</a></span> {if $s.rageID > 0}<span class="label label-danger"><a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.rageID}">TVRage</a></span> <span class="label label-warning"><a title="RSS Feed for {$s.releasetitle|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?rage={$s.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">RSS</a></span>{/if}</div></td>
 </tr>
 {/foreach}
 </tbody>

@@ -14,8 +14,8 @@
 {/if}
 
 {if $site->menuposition == 1 or $site->menuposition == 0}<!--Side Menu Framework-->
-<div class="panel">
-<div class="panel-heading">
+<div class="panel nzedb-panel">
+<div class="panel-heading nzedb-panel-heading">
 <h3 class="panel-title">Menu</h3>
 </div>
 <ul class="list-group">

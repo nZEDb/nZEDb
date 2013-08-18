@@ -80,7 +80,14 @@ class SABnzbd
 		return getUrl($queueUrl);
 	}
 
-	public function delFromQueue($id)
+	public function getAdvQueue()
+	{
+		$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
+		//$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
+		return getUrl($queueUrl);
+	}
+
+	public function delFromQueue($id) 
 	{
 		$delUrl = $this->url."api?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
 		return getUrl($delUrl);
