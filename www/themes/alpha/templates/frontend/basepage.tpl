@@ -80,7 +80,7 @@ nav>.container>.navbar-nav>li>a,nav>.container>.navbar-header>a { padding-top: 5
 <nav class="navbar navbar-inverse navbar-static-top" role="navigation" style="min-height:30px;height:30px;min-width:1120px;background:none;margin-bottom:0;">
 <div class="container">
 <div class="navbar-header">
-<a class="navbar-brand" href="#">ಠ_ಠ</a>
+<a class="navbar-brand" href="/">{$site->title|default:'ಠ_ಠ'}</a>
 </div>
 {if $site->menuposition == 2}{include file='topmenu.tpl'}{/if}
 <ul class="nav navbar-nav navbar-right">
@@ -165,7 +165,7 @@ nav>.container>.navbar-nav>li>a,nav>.container>.navbar-header>a { padding-top: 5
 </div><!--/.grey-frame -->
 </div><!--/.panel- -->
 </div><!--/.col-xs-10 -->
-{if $site->menuposition == 1}<!-- Side Menu Framework -->
+{if $site->menuposition == 0}<!-- Side Menu Framework -->
 <div class="col-xs-2">
 {$main_menu}<!-- SIDE MENU -->
 {$article_menu}<!-- SIDE ARTICLES -->

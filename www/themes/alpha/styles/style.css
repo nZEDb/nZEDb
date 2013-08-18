@@ -39,9 +39,9 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .list-group { margin-top: -1px; }
 a.list-group-item { padding: 5px 15px; }
 a.list-group-item:hover { background-color: 221, 221, 221; }
-.list-group-item-heading { color: #428bca !important; }
-.list-group-item-heading:hover { color: #2a6496 !important; }
-
+.list-group-item-heading,a.list-group-item { color: #428bca !important; }
+.list-group-item-heading:hover,a.list-group-item:hover { color: #2a6496 !important; }
+.list-group-item-text { color: #555; }
 
 /* Grey Box Pattern */
 .grey-frame {
