@@ -10,9 +10,9 @@
 <div>
 <br>
 <p style="font-size:16px">
-<b>Jump to</b>:&nbsp;&nbsp;[ {if $animeletter == '0-9'}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/0-9">0-9</a>{if $animeletter == '0-9'}</u></b>{/if}&nbsp;
+<b>Jump to</b>:&nbsp;&nbsp;[ {if $animeletter == '0-9'}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/anime/0-9">0-9</a>{if $animeletter == '0-9'}</u></b>{/if}&nbsp;
 {foreach $animerange as $range}
-&nbsp;{if $range == $animeletter}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/{$range}">{$range}</a>{if $range == $animeletter}</u></b>{/if}&nbsp;
+&nbsp;{if $range == $animeletter}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/anime/{$range}">{$range}</a>{if $range == $animeletter}</u></b>{/if}&nbsp;
 {/foreach} ]
 </p>
 </div>
@@ -30,7 +30,7 @@
 
 {if $animelist|@count > 0}
 
-<table class="table table-highlight table-condensed table-striped data icons" id="browsetable">
+<table class="table table-highlight table-condensed table-striped data" id="browsetable">
 	{foreach $animelist as $aletter => $anime}
 		<tr>
 			<td style="padding-top:15px;" colspan="10"><a href="#top" class="top_link">Top</a><h2>{$animeletter}...</h2></td>

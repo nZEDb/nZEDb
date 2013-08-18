@@ -1,9 +1,10 @@
 {if $site->menuposition == 1 or $site->menuposition == 0}
 {if $articlecontentlist|@count > 0}
-<div class="panel">
-  <div class="panel-heading">
+<div class="panel nzedb-panel">
+  <div class="panel-heading nzedb-panel-heading">
     <h3 class="panel-title">Useful Links</h3>
   </div>
+
   <ul class="list-group list-group-flush">
 <a class="list-group-item" title="Contact Us" href="{$smarty.const.WWW_TOP}/contact-us" style="font-weight:bold">Contact Us</a>
 <a class="list-group-item" title="Site Map" href="{$smarty.const.WWW_TOP}/sitemap" style="font-weight:bold">Site Map</a>

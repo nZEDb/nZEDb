@@ -8,37 +8,17 @@
 <br>
 {/if}
 
-<div class="accordion" id="searchtoggle">
-<div class="accordion-group">
-<div class="accordion-heading">
-<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchtoggle" href="#searchfilter"><i class="icon-search"></i> Search Filter</a>
+<div class="panel">
+<div class="panel-heading">
+<h4 class="panel-title">
+<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#searchtoggle">
+<i class="icon-search"></i> Search Filter</a>
+</a>
+</h4>
 </div>
-<div id="searchfilter" class="accordion-body collapse">
-<div class="accordion-inner">
-<form class="form-inline" name="browseby" action="music" style="margin:0;">
-<input class="form-control" style="width: 150px;" id="musicartist" type="text" name="artist" value="{$artist}" placeholder="Artist">
-<input class="form-control" style="width: 150px;" id="musictitle" type="text" name="title" value="{$title}" placeholder="Title">
-<select class="form-control" style="width: auto;" id="genre" name="genre">
-<option class="grouping" value="">Genre... </option>
-{foreach from=$genres item=gen}
-<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title|escape:"htmlall"}</option>
-{/foreach}
-</select>
-<select class="form-control" style="width: auto;" id="year" name="year">
-<option class="grouping" value="">Year... </option>
-{foreach from=$years item=yr}
-<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-{/foreach}
-</select>
-<select class="form-control" style="width: auto;" id="category" name="t">
-<option class="grouping" value="3000">Category... </option>
-{foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
-{/foreach}
-</select>
-<input class="btn btn-success" type="submit" value="Go">
-</form>
-</div>
+<div id="searchtoggle" class="panel-collapse collapse">
+<div class="panel-body">
+{include file='search-filter.tpl'}
 </div>
 </div>
 </div>
@@ -95,7 +75,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {if $result.genre != ""}<b>Genre:</b> <a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreID}">{$result.genre|escape:"htmlall"}</a><br>{/if}
 {if $result.publisher != ""}<b>Publisher:</b> {$result.publisher|escape:"htmlall"}<br>{/if}
 {if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br>{/if}
-{if $result.haspreview == 2 && $userdata.canpreview == 1}<b>Preview:</b> <a href="#" name="audio{$result.guid}" title="Listen to {$result.searchname|escape:"htmlall"}" class="audioprev rndbtn" rel="audio">Listen</a><audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>{/if}
+{if $result.haspreview == 2 && $userdata.canpreview == 1}<b>Preview:</b> <a href="#" name="audio{$result.guid}" title="Listen to {$result.searchname|escape:"htmlall"}" class="audioprev" rel="audio">Listen</a><audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>{/if}
 <div class="container">
 <a class="label label-info" href="{$smarty.const.WWW_TOP}/music?artist={$result.artist|escape:"url"}" title="View similar nzbs">Similar</a>
 {if $isadmin || $ismod}
@@ -112,7 +92,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 <div class="icon icon_cart" title="Add to Cart"></div>
 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 &nbsp;&nbsp;&nbsp;&nbsp;
-Posted {$result.postdate|timeago}, {$result.size|fsize_format:"MB"}, <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="icon-file"></i>, <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments}</a> <i class="icon-comments-alt"></i>, {$result.grabs} <i class="icon-download-alt"></i>
+<i class="icon-calendar"></i> Posted {$result.postdate|timeago} | <i class="icon-hdd"></i> {$result.size|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart} files</a> | <i class="icon-comments"></i> <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments} cmts</a> | <i class="icon-download"></i> {$result.grabs} grabs 
 </div>
 </div>
 </td>

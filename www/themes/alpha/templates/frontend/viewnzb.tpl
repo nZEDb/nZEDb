@@ -9,17 +9,16 @@
 {/if}
 
 <h2>{$release.searchname|escape:"htmlall"}</h2>
-<span class="label">{$release.category_name}</span> <span class="label">{$release.group_name}</span>
-<br>
 <div class="container">
-<div class="col-8">
+<div class="col-xs-8">
+<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
 <br>
-<table class="data" id="detailstable" >
+<table class="table table-condensed data" id="detailstable" >
 
 {if $isadmin || $ismod}
 <tr>
 <th style="vertical-align:top">Admin:</th>
-<td><a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a> <a class="label label-important" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td>
+<td><a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a> <a class="label label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td>
 </tr>
 {/if}
 
@@ -39,9 +38,9 @@
 {if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br>{/if}
 {if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
 <div style="margin-top:10px;">
-<a class="label" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageID}">All Episodes</a>
-<a class="label" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageID}" title="View at TV Rage">TV Rage</a>
-<a class="label" href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
+<span class"label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageID}">All Episodes</a></span>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageID}" title="View at TV Rage">TV Rage</a></span>
+<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 </div>
 </td>
 </tr>
@@ -57,9 +56,9 @@
 <strong>Genre:</strong> {$movie.genre}
 <br><strong>Starring:</strong> {$movie.actors}
 <div style="margin-top:10px;">
-<a class="label" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbID}/" title="View at IMDB">IMDB</a>
-{if $movie.tmdbID != ''}<a class="label" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbID}" title="View at TMDb">TMDb</a>{/if}
-<a class="label" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbID}&title={$movie.title}" name="CP{$release.imdbID}" title="Add to CouchPotato">CouchPotato</a>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbID}/" title="View at IMDB">IMDB</a></span>
+{if $movie.tmdbID != ''}<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbID}" title="View at TMDb">TMDb</a></span>{/if}
+<span class"label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbID}&title={$movie.title}" name="CP{$release.imdbID}" title="Add to CouchPotato">CouchPotato</a></span>
 </div>
 </td>
 </tr>
@@ -73,9 +72,9 @@
 {if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br>{/if}
 {if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
 <div style="margin-top:10px;">
-<a class="label" title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbID}">All Episodes</a>
-<a class="label" target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbID}" title="View at AniDB">AniDB</a>
-<a class="label" href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS feed for this anime">Anime RSS Feed</a>
+<span class"label label-default"><a title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbID}">All Episodes</a></span>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbID}" title="View at AniDB">AniDB</a></span>
+<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS feed for this anime">Anime RSS Feed</a></span>
 </div>
 </td>
 </tr>
@@ -92,7 +91,7 @@
 {if $con.platform != ""}<strong>Platform:</strong> {$con.platform|escape:"htmlall"}<br>{/if}
 {if $con.releasedate != ""}<strong>Released:</strong> {$con.releasedate|date_format}{/if}
 <div style="margin-top:10px;">
-<a class="label" target="_blank" href="{$site->dereferrer_link}{$con.url}/" title="View game at Amazon">Amazon</a>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}{$con.url}/" title="View game at Amazon">Amazon</a></span>
 </div>
 </td>
 </tr>
@@ -113,7 +112,7 @@
 {if $boo.ean != ""}<strong>EAN:</strong> {$boo.ean|escape:"htmlall"}<br>{/if}
 {if $boo.overview != "null"}<strong>Overview:</strong> {$boo.overview|escape:"htmlall"}{/if}
 <div style="margin-top:10px;">
-<a class="label" target="_blank" href="{$site->dereferrer_link}{$boo.url}/" title="View book at Amazon">Amazon</a>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}{$boo.url}/" title="View book at Amazon">Amazon</a></span>
 </div>
 </td>
 </tr>
@@ -128,7 +127,7 @@
 {if $music.publisher != ""}<strong>Publisher:</strong> {$music.publisher|escape:"htmlall"}<br>{/if}
 {if $music.releasedate != ""}<strong>Released:</strong> {$music.releasedate|date_format}<br>{/if}
 <div style="margin-top:10px;">
-<a class="label" target="_blank" href="{$site->dereferrer_link}{$music.url}/" title="View record at Amazon">Amazon</a>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}{$music.url}/" title="View record at Amazon">Amazon</a></span>
 </div>
 </td>
 </tr>
@@ -147,7 +146,7 @@
 {/if}
 </table>
 </div>
-<div class="col-4" style="text-align:center" >
+<div class="col-xs-4" style="text-align:center" >
 {if $rage && $release.rageID > 0 && $rage.imgdata != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
 {*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
 

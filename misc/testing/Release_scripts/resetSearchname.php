@@ -42,7 +42,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 		
 		$namefixer = new Namefixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
-		$namefixer->fixNamesWithFiles(2,1,1,1);
+		//$namefixer->fixNamesWithFiles(2,1,1,1);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal.".\n";
 	}

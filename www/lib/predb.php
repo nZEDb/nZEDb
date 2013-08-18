@@ -41,12 +41,13 @@ Class Predb
 			if ($newnames == 0)
 				$db->query(sprintf("UPDATE predb SET adddate = now() where ID = %d", $newestrel["ID"]));
 		}
-		$matched = $this->matchPredb();
+		/*$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
 			echo "\nMatched ".$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
 			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
+*/
 		return $newnames;
 	}
 
