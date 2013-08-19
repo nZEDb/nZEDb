@@ -772,7 +772,8 @@ class nameCleaning
 			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
 			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
 			//[134212]-[FULL]-[#a.b.moovee]-[ Monsters.Inc.2001.1080p.BluRay.x264-CiNEFiLE ] [80/83] - "monsters.inc.2001.1080p.bluray.x264-cinefile.vol015+16.par2" yEnc
-			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \](-| ))\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
+			//[134912]-[FULL]-[#a.b.moovee]-[ Epic.2013.DVDRip.X264-SPARKS ]-[01/70]- "epic.2013.dvdrip.x264-sparks.nfo" yEnc
+			if (preg_match('/(\[\d+\]-\[.+?\]-\[.+?\]-\[ .+? \](-| ))\[\d+\/\d+\][ -]* ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]- ").+?'.$this->e1, $subject, $match))
@@ -794,6 +795,11 @@ class nameCleaning
 			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
 			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
 				return $match[1];
+			//-[004/115] - "134218-0.par2" yEnc
+			//[134824]-[001/117] - "134824-0.0" yEnc
+			//[134510]-[REPOST]-[001/110] - "134510-rp-0.0" yEnc
+			else if (preg_match('/^((\[\d+\])?-(\[REPOST\])?\[)\d+(\/\d+\] - "\d+-)\d\..+?" yEnc$/', $subject, $match))
+				return $match[1].$match[4];
 			//[134517]-[01/76] - "Lara Croft Tomb Raider 2001 720p BluRay DTS x264-RightSiZE.nfo" yEnc
 			else if (preg_match('/^\[\d+\]-\[\d+(\/\d+\] - ".+?)'.$this->e1, $subject, $match))
 				return $match[1];
@@ -802,6 +808,9 @@ class nameCleaning
 				return $match[1];
 			//(Classic Surf) Morning.Of.The.Earth.1971 [03/29] - "Morning.Of.The.Earth.1971.part02.rar" yEnc
 			else if (preg_match('/^(\([a-zA-Z0-9].+?\) [a-zA-Z0-9.-]+ \[)\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			
+			else if (preg_match('/^(\[\d+\]-\[.+?\]-\[)\d+\/\d+\] - "\d+-.+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
@@ -1870,7 +1879,8 @@ class nameCleaning
 			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
 			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
 			//[134212]-[FULL]-[#a.b.moovee]-[ Monsters.Inc.2001.1080p.BluRay.x264-CiNEFiLE ] [80/83] - "monsters.inc.2001.1080p.bluray.x264-cinefile.vol015+16.par2" yEnc
-			if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \](-| )\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
+			//[135106]-[FULL]-[a.b.mooveeEFNet]-[ Bottle.Rocket.1996.720p.BluRay.DTS.x264-DON ]- [001/105] - "Bottle.Rocket.1996.720p.BluRay.DTS.x264-DON.nfo" yEnc
+			if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]+\[\d+\/\d+\]( -)? ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
 			else if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)'.$this->e1, $subject, $match))
@@ -2108,6 +2118,19 @@ class nameCleaning
 			else
 				return $this->releaseCleanerHelper($subject);
 		}
+		/*else if ($groupName === "alt.binaries.tun")
+		{
+			* Leaving here to show that you can get the names from these. 
+			* Useless since all these are passworded and if there is a backlog in post proc, sickbeard will pull these and they will fail since they are passworded.
+			//[ nEwZ[NZB].iNFO - [ QmlnTW91dGhmdWxzLjEzLjA3LjA4LkNocmlzc3kuR3JlZW5lLlhYWC43MjBwLk1QNC1LVFI= ] - File [06/48]: "b582519da4d849df003559fc4ae45219.nfo" yEnc
+			if (preg_match('/^\[ nEwZ\[NZB\]\.iNFO - \[ ([a-z0-9A-Z]{3,}=) \] - File \[\d+\/\d+\]: ".+?" yEnc$/', $subject, $match))
+				return base64_decode($match[1]);
+			//[PRiVATE] VHdpc3R5cy5jb21fMTMuMDguMDkuQWlkZW4uQXNobGV5LkVsbGUuQWxleGFuZHJhLldoYXQuWW91ci5GdXR1cmUuSG9sZHMuWFhYLklNQUdFU0VULUZ1R0xp [06/10] - "89857cebff1efd7927ebddf30281b0e4.part2.rar" yEnc
+			else if (preg_match('/^\[PRiVATE\] ([a-z0-9A-Z]{4,}=*) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return base64_decode($match[1]);
+			else
+				return $this->releaseCleanerHelper($subject);
+		}*/
 		else if ($groupName === "alt.binaries.tv")
 		{
 			//Borgen.2x02.A.Bruxelles.Non.Ti.Sentono.Urlare.ITA.BDMux.x264-NovaRip [02/22] - "borgen.2x02.ita.bdmux.x264-novarip.par2" yEnc

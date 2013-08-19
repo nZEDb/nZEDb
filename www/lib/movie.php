@@ -23,12 +23,13 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
-		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
-		$this->service = "";
+		$this->binglimit = $this->yahoolimit = 0;
+		$this->debug = ($site->debuginfo == "0") ? false : true;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		$this->imgSavePath = WWW_DIR.'covers/movies/';
-		$this->binglimit = $this->yahoolimit = 0;
+		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
+		$this->service = "";
 	}
 
 	public function getMovieInfo($imdbId)
@@ -784,17 +785,20 @@ class Movie
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename))
 		{
-			preg_match('/^(?P<name>.*)[\.\-_\( ](?P<year>19\d{2}|20\d{2})/i', $releasename, $matches);
+			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d{2})/i', $releasename, $matches);
 			if (!isset($matches['year']))
-			{
-				preg_match('/^(?P<name>.*)[\.\-_ ](?:dvdrip|bdrip|brrip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?fix|sub\.?pack|ac3d|unrated|1080i|1080p|720p)/i', $releasename, $matches);
-			}
+				preg_match('/^(?P<name>[\w. -]+[-._ ]((bd|br|dvd)rip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?(fix|pack)|ac3d|unrated|1080[ip]|720p))/i', $releasename, $matches);
 
 			if (isset($matches['name']))
 			{
-				$name = preg_replace('/\(.*?\)|\.|_/i', ' ', $matches['name']);
+				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $matches['name']);
 				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-				return trim($name).$year;
+				if (strlen($name) > 6 && !preg_match('/^\d+$/', $name))
+				{
+					if ($this->debug)
+						echo "\nDB name: ".$releasename."\nParsed Name: ".trim($name).$year."\n\n";
+					return trim($name).$year;
+				}
 			}
 		}
 		return false;
