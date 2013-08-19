@@ -223,7 +223,7 @@ class PostProcess
 			foreach ($files as $fileID => $file)
 			{
 				// Add to releasefiles.
-				if ($db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
+				if ($relfiles < 11 && $db->queryOneRow(sprintf("SELECT ID FROM releasefiles WHERE releaseID = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
 				{
 					if ($rf->add($relID, $file["name"], $file["size"], $quer["postdate"], 0))
 						$relfiles++;
@@ -239,7 +239,7 @@ class PostProcess
 			}
 			if ($relfiles > 0)
 			{
-				
+				$this->debug("Added {$relfiles} releasefiles from PAR2 for {$quer['searchname']}.");
 				$cnt = $db->queryOneRow("SELECT COUNT(releaseID) AS count FROM releasefiles WHERE releaseID = {$relID}");
 				$count = $relfiles;
 				if ($cnt !== false && $cnt["count"] > 0)
