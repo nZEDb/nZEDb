@@ -795,7 +795,7 @@ class Movie
 				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name))
 				{
-					if ($this->debug)
+					if ($this->debug && $this->echooutput)
 						echo "DB name: {$releasename}\n";
 					return trim($name).$year;
 				}
