@@ -785,7 +785,7 @@ class Movie
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename))
 		{
-			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d{2})/i', $releasename, $matches);
+			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches);
 			if (!isset($matches['year']))
 				preg_match('/^(?P<name>[\w. -]+[-._ ]((bd|br|dvd)rip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?(fix|pack)|ac3d|unrated|1080[ip]|720p))/i', $releasename, $matches);
 
@@ -793,10 +793,10 @@ class Movie
 			{
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $matches['name']);
 				$year = (isset($matches['year'])) ? ' ('.$matches['year'].')' : '';
-				if (strlen($name) > 6 && !preg_match('/^\d+$/', $name))
+				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name))
 				{
 					if ($this->debug)
-						echo "\nDB name: ".$releasename."\nParsed Name: ".trim($name).$year."\n\n";
+						echo "DB name: {$releasename}\n";
 					return trim($name).$year;
 				}
 			}
