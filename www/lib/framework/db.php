@@ -37,6 +37,12 @@ class DB
 		}
 	}
 
+	// Returns the MYSQL version.
+	public function mysqlversion()
+	{
+		return substr(DB::$mysqli->client_info, 0, 3);
+	}
+
 	// Checks whether the connection to the server is working. Optionally kills connection.
 	public function ping($kill=false)
 	{
