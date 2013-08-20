@@ -221,6 +221,9 @@ class Releases
 			{
 				$cartsrch = sprintf(" inner join usercart on usercart.userID = %d and usercart.releaseID = releases.ID ", $uid);
 			}
+			elseif ($cat[0] == -1)
+			{
+			}
 			else
 			{
 				$catsrch = " and (";
