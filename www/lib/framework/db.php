@@ -44,7 +44,9 @@ class DB
 		{
 			printf ("Error: %s\n", DB::$mysqli->error());
 			DB::$mysqli->close();
+			return false;
 		}
+		return true;
 	}
 
 	//This function is used to ask the server to kill a MySQL thread specified by the processid parameter. This value must be retrieved by calling the mysqli_thread_id() function. 
