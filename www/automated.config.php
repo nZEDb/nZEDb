@@ -33,3 +33,4 @@ define('THEMES_DIR', WWW_TOP.'themes');
 // number of results per page
 //
 define("ITEMS_PER_PAGE", "50");
+define("ITEMS_PER_COVER_PAGE", "20");
