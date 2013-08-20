@@ -37,8 +37,8 @@ class DB
 		}
 	}
 
-	// Checks whether the connection to the server is working.
-	public function ping()
+	// Checks whether the connection to the server is working. Optionally kills connection.
+	public function ping($kill=false)
 	{
 		if (DB::$mysqli->ping() === false)
 		{
@@ -46,6 +46,8 @@ class DB
 			DB::$mysqli->close();
 			return false;
 		}
+		if ($kill === true)
+			$this->kill();
 		return true;
 	}
 
