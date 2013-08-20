@@ -33,7 +33,7 @@ $ordering = $console->getConsoleOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $consoles = array();
-$results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
 foreach($results as $result) {	
@@ -66,7 +66,7 @@ $browseby_link = '&amp;title='.$title.'&amp;platform='.$platform;
 
 $page->smarty->assign('pagertotalitems',$browsecount);
 $page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
+$page->smarty->assign('pageritemsperpage',ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/console?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 

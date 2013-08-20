@@ -33,7 +33,7 @@ $ordering = $music->getMusicOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $musics = array();
-$results = $music->getMusicRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $music->getMusicRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 foreach($results as $result) {
 	//$result['genre'] = $music->makeFieldLinks($result, 'genre');
 	
@@ -65,7 +65,7 @@ $browseby_link = '&amp;title='.$title.'&amp;artist='.$artist.'&amp;genre='.$genr
 
 $page->smarty->assign('pagertotalitems',$browsecount);
 $page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
+$page->smarty->assign('pageritemsperpage',ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/music?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 

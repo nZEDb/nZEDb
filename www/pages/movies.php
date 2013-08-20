@@ -31,7 +31,7 @@ $ordering = $movie->getMovieOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $movies = array();
-$results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 foreach($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
@@ -70,7 +70,7 @@ $browseby_link = '&amp;title='.$title.'&amp;actors='.$actors.'&amp;director='.$d
 
 $page->smarty->assign('pagertotalitems',$browsecount);
 $page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
+$page->smarty->assign('pageritemsperpage',ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP."/movies?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
