@@ -1,3 +1,4 @@
+08202013 -> kevin    -> 08 17 to 08 20 : More clean up, convert the simple theme, more regex for matching etc.., fix queries for poster/subject searching, change movie.php to catch movies better.
 08162013 -> kevin    -> Fix more issues in postprocess.php
                         More checks on hidden nfos to see if it's an NFO or not.
 08152013 -> kevin    -> 08 13 to 08 15 : Clean up files in www/lib, add fetching names from PAR2 files.
