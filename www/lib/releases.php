@@ -1394,7 +1394,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo "Post-processing is not running through releases.php, in tmux or screen it might be running through another script.\n";
+				echo "Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.\n";
 		}
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage6).".";
