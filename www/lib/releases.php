@@ -70,15 +70,13 @@ class Releases
 
 		$catsrch = $this->categorySQL($cat);
 
-		$maxagesql = "";
+		$maxagesql = $exccatlist = $grpsql = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
-		$grpsql = "";
 		if ($grp != "")
 			$grpsql = sprintf(" and groups.name = %s ", $db->escapeString($grp));
 
-		$exccatlist = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and categoryID not in (".implode(",", $excludedcats).")";
 
@@ -97,15 +95,13 @@ class Releases
 
 		$catsrch = $this->categorySQL($cat);
 
-		$maxagesql = "";
+		$maxagesql = $grpsql = $exccatlist = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
-		$grpsql = "";
 		if ($grp != "")
 			$grpsql = sprintf(" and groups.name = %s ", $db->escapeString($grp));
 
-		$exccatlist = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
@@ -211,17 +207,12 @@ class Releases
 
 		$limit = " LIMIT 0,".($num > 100 ? 100 : $num);
 
-		$catsrch = "";
-		$cartsrch = "";
-
-		$catsrch = "";
+		$catsrch = $cartsrch = "";
 		if (count($cat) > 0)
 		{
 			if ($cat[0] == -2)
-			{
 				$cartsrch = sprintf(" inner join usercart on usercart.userID = %d and usercart.releaseID = releases.ID ", $uid);
-			}
-			else
+			elseif ($cat[0] != -1)
 			{
 				$catsrch = " and (";
 				foreach ($cat as $category)
@@ -237,12 +228,10 @@ class Releases
 								$chlist.=", ".$child['ID'];
 
 							if ($chlist != "-99")
-									$catsrch .= " releases.categoryID in (".$chlist.") or ";
+								$catsrch .= " releases.categoryID in (".$chlist.") or ";
 						}
 						else
-						{
 							$catsrch .= sprintf(" releases.categoryID = %d or ", $category);
-						}
 					}
 				}
 				$catsrch.= "1=2 )";
@@ -318,13 +307,12 @@ class Releases
 		else
 			$limit = " LIMIT ".$start.",".$num;
 
-		$exccatlist = "";
+		$exccatlist = $maxagesql = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
 		$usql = $this->uSQL($usershows, 'rageID');
 
-		$maxagesql = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and releases.postdate > now() - interval %d day ", $maxage);
 
@@ -337,13 +325,12 @@ class Releases
 	{
 		$db = new DB();
 
-		$exccatlist = "";
+		$exccatlist = $maxagesql = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
 		$usql = $this->uSQL($usershows, 'rageID');
 
-		$maxagesql = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and releases.postdate > now() - interval %d day ", $maxage);
 
@@ -552,30 +539,23 @@ class Releases
 			$catsrch = $this->categorySQL($cat);
 		else
 		{
-			if ($cat == "-1")
-				$catsrch = "";
-			else
+			$catsrch = "";
+			if ($cat != "-1")
 				$catsrch = sprintf(" and (releases.categoryID = %d) ", $cat);
 		}
 
-		if ($searchname == "-1")
-			$searchnamesql = "";
-		else
+		$hasnfosql = $hascommentssql = $daysnewsql = $daysoldsql = $maxagesql = $exccatlist = $searchnamesql = $usenetnamesql = $posternamesql = $groupIDsql = "";
+
+		if ($searchname != "-1")
 			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
 
-		if ($usenetname == "-1")
-			$usenetnamesql = "";
-		else
-			$searchnamesql = $this->searchSQL($usenetname, $db, "name");
+		if ($usenetname != "-1")
+			$usenetnamesql = $this->searchSQL($usenetname, $db, "name");
 
-		if ($postername == "-1")
-			$posternamesql = "";
-		else
-			$searchnamesql = $this->searchSQL($postername, $db, "fromname");
+		if ($postername != "-1")
+			$posternamesql = $this->searchSQL($postername, $db, "fromname");
 
-		if ($groupname == "-1")
-			$groupIDsql = "";
-		else
+		if ($groupname != "-1")
 		{
 			$groupID = $groups->getIDByName($db->escapeString($groupname));
 			$groupIDsql = sprintf(" and releases.groupID = %d ", $groupID);
@@ -607,31 +587,21 @@ class Releases
 		elseif ($sizeto == "10"){$sizetosql= (" and releases.size < 34359738368 ");}
 		elseif ($sizeto == "11"){$sizetosql= (" and releases.size < 68719476736 ");}
 
-		if ($hasnfo == "0")
-			$hasnfosql = "";
-		else
+		if ($hasnfo != "0")
 			$hasnfosql= " and releases.nfostatus = 1 ";
 
-		if ($hascomments == "0")
-			$hascommentssql = "";
-		else
+		if ($hascomments != "0")
 			$hascommentssql = " and releases.comments > 0 ";
 
-		if ($daysnew == "-1")
-			$daysnewsql= "";
-		else
+		if ($daysnew != "-1")
 			$daysnewsql= sprintf(" and releases.postdate < now() - interval %d day ", $daysnew);
 
-		if ($daysold == "-1")
-			$daysoldsql= "";
-		else
+		if ($daysold != "-1")
 			$daysoldsql= sprintf(" and releases.postdate > now() - interval %d day ", $daysold);
 
-		$maxagesql = "";
 		if ($maxage > 0)
 			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
-		$exccatlist = "";
 		if (count($excludedcats) > 0)
 			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
 
@@ -659,10 +629,10 @@ class Releases
 	{
 		$db = new DB();
 
+		$rageIdsql = $maxagesql = "";
+
 		if ($rageId != "-1")
-			$rageId = sprintf(" and rageID = %d ", $rageId);
-		else
-			$rageId = "";
+			$rageIdsql = sprintf(" and rageID = %d ", $rageId);
 
 		if ($series != "")
 		{
@@ -685,11 +655,9 @@ class Releases
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
-		else
-			$maxage = "";
+			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join category c on c.ID = releases.categoryID left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s order by postdate desc limit %d, %d ", $rageId, $series, $episode, $searchsql, $catsrch, $maxage, $offset, $limit);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join category c on c.ID = releases.categoryID left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s order by postdate desc limit %d, %d ", $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);
