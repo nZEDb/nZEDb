@@ -712,18 +712,16 @@ while( $i > 0 )
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\"; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all no $log; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true all no $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all yes $log; \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		elseif ( $fix_names == "TRUE" )
 		{
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			$log = writelog($panes1[0]);
 			shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\"; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all no $log; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log; \
-					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true all no $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all yes $log; \
+					$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 		}
 		else
 		{
