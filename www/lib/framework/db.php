@@ -35,6 +35,9 @@ class DB
 
 			DB::$initialized = true;
 		}
+		$this->memcached = false;
+		if (defined("MEMCACHE_ENABLED"))
+			$this->memcached = MEMCACHE_ENABLED;
 	}
 
 	// Returns the MYSQL version.
@@ -110,10 +113,21 @@ class DB
 		return ($rows) ? $rows[0] : $rows;
 	}
 
-	public function query($query)
+	public function query($query, $memcache=false)
 	{
 		if ($query=="")
 			return false;
+
+		if ($this->memcached === true && $memcache === true)
+		{
+			$memcached = new Memcached();
+			if ($memcached !== false)
+			{
+				$crows = $memcached->get($query);
+				if ($crows !== false)
+					return $crows;
+			}
+		}
 
 		$result = DB::$mysqli->query($query);
 
@@ -130,6 +144,9 @@ class DB
 		$error = $this->Error();
 		if ($error != '')
 			echo "MySql error: $error\n";
+
+		if ($this->memcached === true && $memcache === true)
+			$memcached->add($query, $rows);
 
 		return $rows;
 	}
@@ -194,5 +211,73 @@ class DB
 	public function Rollback()
 	{
 		return DB::$mysqli->rollback();
+	}
+}
+
+// Class for caching queries into RAM using memcache.
+class Memcached
+{
+	// Make a connection to memcached server.
+	function Memcached()
+	{
+		if (!defined("MEMCACHE_HOST"))
+			define('MEMCACHE_HOST', '127.0.0.1');
+		if (!defined("MEMCACHE_PORT"))
+			define('MEMCACHE_PORT', '11211');
+		if (extension_loaded('memcache'))
+		{
+			$this->m = new Memcache();
+			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false)
+				return false;
+		}
+		else
+			return false;
+
+		// Amount of time for the query to expire from memcached server.
+		$this->expiry = 900;
+		if (defined("MEMCACHE_EXPIRY"))
+			$this->expiry = MEMCACHE_EXPIRY;
+
+		// Uses more CPU but less RAM.
+		$this->compression = "MEMCACHE_COMPRESSED";
+		if (defined("MEMCACHE_COMPRESSION"))
+			if (MEMCACHE_COMPRESSION === false)
+				$this->compression = false;
+	}
+
+	// Return a SHA1 hash of the query, used for the key.
+	function key($query)
+	{
+		return sha1($query);
+	}
+
+	// Return some stats on the server.
+	public function Server_Stats()
+	{
+		return $this->m->getExtendedStats();
+	}
+
+	// Flush all the data on the server.
+	public function Flush()
+	{
+		return $this->m->flush();
+	}
+
+	// Add a query to memcached server.
+	public function add($query, $result)
+	{
+		return $this->m->add($this->key($query), $result, $this->compression, $this->expiry);
+	}
+
+	// Delete a query on the memcached server.
+	public function delete($query)
+	{
+		return $this->m->delete($this->key($query));
+	}
+
+	// Retrieve a query from the memcached server. Stores the query if not found.
+	public function get($query)
+	{
+		return $this->m->get($this->key($query));
 	}
 }
