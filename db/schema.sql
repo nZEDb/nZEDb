@@ -1056,7 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','108');
+	('sqlpatch','109');
 
 
 DROP TABLE IF EXISTS `logging`;
@@ -1324,7 +1324,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('IMPORT','0'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
-	('SEQUENTIAL','FALSE'),
+	('SEQUENTIAL','0'),
 	('NFOS','FALSE'),
 	('POST','0'),
 	('RELEASES','FALSE'),

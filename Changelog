@@ -1,3 +1,5 @@
+08212013 -> jonnyboy -> possible fix for db lose connection in tmux when db is not local
+                        added option for alternate sequential run in tmux
 08212013 -> kevin    -> Add memcache support. Add the following under define('NNTP_SSLENABLED_A', false); in your config.php. Set to true to enable. (for ubuntu -> sudo apt-get install memcached php5-memcache)
 
                         // Wether to use memcached or not.
