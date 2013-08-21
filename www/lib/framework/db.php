@@ -239,7 +239,7 @@ class Memcached
 			$this->expiry = MEMCACHE_EXPIRY;
 
 		// Uses more CPU but less RAM.
-		$this->compression = "MEMCACHE_COMPRESSED";
+		$this->compression = MEMCACHE_COMPRESSED;
 		if (defined("MEMCACHE_COMPRESSION"))
 			if (MEMCACHE_COMPRESSION === false)
 				$this->compression = false;
