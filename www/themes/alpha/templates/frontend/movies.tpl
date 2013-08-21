@@ -7,47 +7,21 @@
 <br>
 {/if}
 
-<div class="accordion" id="searchtoggle">
-<div class="accordion-group">
-<div class="accordion-heading">
-<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchtoggle" href="#searchfilter"><i class="icon-search"></i> Search Filter</a>
+<div class="panel">
+<div class="panel-heading">
+<h4 class="panel-title">
+<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#searchtoggle">
+<i class="icon-search"></i> Search Filter</a>
+</a>
+</h4>
 </div>
-<div id="searchfilter" class="accordion-body collapse">
-<div class="accordion-inner">
-<form class="form-inline" name="browseby" action="movies">
-<input class="form-control" style="width: 150px;" id="movietitle" type="text" name="title" value="{$title}" placeholder="Title">
-<input class="form-control" style="width: 150px;" id="movieactors" type="text" name="actors" value="{$actors}" placeholder="Actor">
-<input class="form-control" style="width: 150px;" id="moviedirector" type="text" name="director" value="{$director}"  placeholder="Director">
-<select class="form-control" style="width: auto;" id="rating" name="rating">
-<option class="grouping" value="">Rating... </option>
-{foreach from=$ratings item=rate}
-<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
-{/foreach}
-</select>
-<select class="form-control" style="width: auto;" id="genre" name="genre" placeholder="Genre">
-<option class="grouping" value="">Genre... </option>
-{foreach from=$genres item=gen}
-<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
-{/foreach}
-</select>
-<select class="form-control" style="width: auto;" id="year" name="year">
-<option class="grouping" value="">Year... </option>
-{foreach from=$years item=yr}
-<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-{/foreach}
-</select>
-<select class="form-control" style="width: auto;" id="category" name="t">
-<option class="grouping" value="2000">Category... </option>
-{foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
-{/foreach}
-</select>
-<input class="btn btn-success" type="submit" value="Go">
-</form>
+<div id="searchtoggle" class="panel-collapse collapse">
+<div class="panel-body">
+{include file='search-filter.tpl'}
 </div>
 </div>
 </div>
-</div>
+
 
 {if $results|@count > 0}
 
@@ -87,10 +61,10 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
 </a>
 <div class="relextra" style="margin-top:5px;">
-<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
-<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
-<span class="label"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
-{*<span class="label"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>*}
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
+{*<span class="label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>*}
 </div>
 </div>
 </td>
@@ -133,18 +107,22 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <div class="pull-left"><i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a> | <i class="icon-comments"></i> <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 </div>
 <div class="pull-right">
-{if $mnfo[$m@index] > 0}<span class="label"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span> {/if}
-{if $mpass[$m@index] == 1}<span class="label">Passworded</span>{elseif $mpass[$m@index] == 2}<span class="label">Potential Password</span> {/if}
-<span class="label"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span> 
-{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<span class="label"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a></span> {/if}
-{if $minnerfiles[$m@index] > 0}<span class="label"><a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a></span> {/if}
+{if $mnfo[$m@index] > 0}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span> {/if}
+{if $mpass[$m@index] == 1}<span class="label label-default">Passworded</span>{elseif $mpass[$m@index] == 2}<span class="label label-default">Potential Password</span> {/if}
+<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span> 
+{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a></span> {/if}
+{if $minnerfiles[$m@index] > 0}<span class="label label-default"><a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a></span> {/if}
 </div>
 </div>
 </td>
-<td class="icons" style="width:80px;">
-<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"></a></div>
-{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
-<div class="icon icon_cart" title="Add to Cart"></div>
+<td class="icons" style="width:90px;">
+<div class="icon icon_nzb float-right"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"></a></div>
+{if $sabintegrated}<div class="icon icon_sab float-right" title="Send to my Sabnzbd"></div>{/if}
+<div class="icon icon_cart float-right" title="Add to Cart"></div><br>
+{*s{if $isadmin || $ismod}
+<a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+<a class="label confirm_action label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+{/if}*}
 </td>
 </tr>
 {if $m@index == 1 && $m@total > 2}
