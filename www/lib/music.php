@@ -415,7 +415,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d",
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus != 0 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d",
                 floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
 		if ($db->getNumRows($res) > 0)
 		{
