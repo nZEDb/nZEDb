@@ -448,6 +448,13 @@ Class Predb
 		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p left join releases r on p.releaseID = r.ID ORDER BY p.adddate DESC limit %d,%d", $offset, $offset2));
 	}
 
+	// Returns a single row for a release.
+	public function getForRelease($releaseID)
+	{
+		$db = new DB();
+		return $db->query(sprintf("SELECT * FROM predb WHERE releaseID = %d", $releaseID));
+	}
+
 	public function getCount()
 	{
 		$db = new DB();
