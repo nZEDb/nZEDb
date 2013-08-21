@@ -8,6 +8,12 @@ textarea { height:100px; width:300px;}
 h1 { font-size: 44px; padding-bottom:10px;}
 h2 { padding-bottom:5px; font-size: 1.6em; }
 h3 { padding:10px 0 5px 0;}
+h4
+{
+	margin: 0;
+	font-weight: normal; 
+	color: #fff; 
+}
 p, ul, ol { margin-top: 0; line-height: 240%;	text-align: justify; }
 ul, ol { }
 blockquote { }
