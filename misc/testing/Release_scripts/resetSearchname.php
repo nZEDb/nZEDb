@@ -89,7 +89,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
     $db = new DB();
-    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases");
+    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
 
     if (sizeof($res) > 0)
     {
@@ -101,7 +101,7 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
         {
             $nc = new nameCleaning();
             $newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-            $db->query(sprintf("UPDATE releases SET searchname = %s relnamestatus = 0 where ID = %d", $db->escapeString($newname), $row['ID']));
+            $db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
             $done++;
             $consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
         }
