@@ -21,8 +21,19 @@ if ($content == null)
 	$page->show404();
 
 $page->smarty->assign('content',$content);
-$page->meta_title = $content->title;
-$page->meta_keywords = $content->metakeywords;
-$page->meta_description = $content->metadescription;
+if ($contentid == 0)
+{
+	$index = $contents->getIndex();
+	$page->meta_title = $index->title;
+	$page->meta_keywords = $index->metakeywords;
+	$page->meta_description = $index->metadescription;
+}
+else
+{
+	$page->meta_title = $content->title;
+	$page->meta_keywords = $content->metakeywords;
+	$page->meta_description = $content->metadescription;
+}
+
 $page->content = $page->smarty->fetch('content.tpl');
 $page->render();
