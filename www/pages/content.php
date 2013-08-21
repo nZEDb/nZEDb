@@ -13,14 +13,14 @@ if (isset($_GET["id"]))
 	$contentid = $_GET["id"];
 
 if ($contentid == 0)
-	$content = $contents->getIndex();
+	$content = $contents->getFrontPage();
 else
 	$content = $contents->getByID($contentid, $role);
 
 if ($content == null)
 	$page->show404();
-	
-$page->smarty->assign('content',$content);	
+
+$page->smarty->assign('content',$content);
 $page->meta_title = $content->title;
 $page->meta_keywords = $content->metakeywords;
 $page->meta_description = $content->metadescription;
