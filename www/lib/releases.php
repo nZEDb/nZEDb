@@ -80,7 +80,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = " and categoryID not in (".implode(",", $excludedcats).")";
 
-		$res = $db->queryOneRow(sprintf("select count(releases.ID) as num from releases left outer join groups on groups.ID = releases.groupID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxagesql, $exccatlist, $grpsql));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(releases.ID) AS num FROM releases LEFT OUTER JOIN groups ON groups.ID = releases.groupID WHERE releases.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') %s %s %s %s", $catsrch, $maxagesql, $exccatlist, $grpsql));
 		return $res['num'];
 	}
 
@@ -97,16 +97,16 @@ class Releases
 
 		$maxagesql = $grpsql = $exccatlist = "";
 		if ($maxage > 0)
-			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
+			$maxagesql = sprintf(" AND postdate > NOW() - INTERVAL %d DAY ", $maxage);
 
 		if ($grp != "")
-			$grpsql = sprintf(" and groups.name = %s ", $db->escapeString($grp));
+			$grpsql = sprintf(" AND groups.name = %s ", $db->escapeString($grp));
 
 		if (count($excludedcats) > 0)
-			$exccatlist = " and releases.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND releases.categoryID NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getBrowseOrder($orderby);
-		return $db->query(sprintf(" SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s order by %s %s".$limit, $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) as category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID, re.releaseID AS reID FROM releases LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN releasevideo re ON re.releaseID = releases.ID LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE releases.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') %s %s %s %s ORDER BY %s %s".$limit, $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1]));
 	}
 
 	public function getBrowseOrder($orderby)
@@ -738,7 +738,7 @@ class Releases
 	public function searchSimilar($currentid, $name, $limit=6, $excludedcats=array())
 	{
 		$name = $this->getSimilarName($name);
-		$results = $this->search($name, array(-1), 0, $limit, '', -1, $excludedcats);
+		$results = $this->search($name, -1, -1, -1, array(-1), -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedcats);
 		if (!$results)
 			return $results;
 
