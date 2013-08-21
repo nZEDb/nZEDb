@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This script resets the relnamestatus to 1 on every release that has relnamestatus 2, so you can rerun fixReleaseNames.php
+ * This script resets the relnamestatus to 1 on every release that has been modified and marked as modified, so you can rerun fixReleaseNames.php
  */
 
 define('FS_ROOT', realpath(dirname(__FILE__)));

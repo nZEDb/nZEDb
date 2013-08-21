@@ -232,7 +232,7 @@ require_once(WWW_DIR."/lib/site.php");
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 and relnamestatus not in (0, 1) order by postdate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
+		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 order by postdate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
 		if ($db->getNumRows($res) > 0)
 		{
 			if ($this->echooutput)

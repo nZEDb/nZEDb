@@ -1056,7 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','108');
+	('sqlpatch','109');
 
 
 DROP TABLE IF EXISTS `logging`;
