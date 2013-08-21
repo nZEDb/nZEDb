@@ -26,25 +26,30 @@ class BasePage
 
 	function BasePage()
 	{
+		if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
+			$secure_cookie = "1";
+		else
+			$secure_cookie = "0";
+		session_set_cookie_params(0,'/','',$secure_cookie,'true');
+
 		@session_start();
 
 		if((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || ini_get('magic_quotes_sybase'))
 		{
-            foreach($_GET as $k => $v) $_GET[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
-            foreach($_POST as $k => $v) $_POST[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
-            foreach($_REQUEST as $k => $v) $_REQUEST[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
-            foreach($_COOKIE as $k => $v) $_COOKIE[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
-        }
+			foreach($_GET as $k => $v) $_GET[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
+			foreach($_POST as $k => $v) $_POST[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
+			foreach($_REQUEST as $k => $v) $_REQUEST[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
+			foreach($_COOKIE as $k => $v) $_COOKIE[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
+		}
 
-        // set site variable
+		// set site variable
 		$s = new Sites();
 		$this->site = $s->get();
 
-
 		$this->smarty = new Smarty();
 		$this->smarty->setTemplateDir(array(
-		    'user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend',
-		    'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+			'user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend',
+			'frontend' => WWW_DIR.'themes/Default/templates/frontend',
 		));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');

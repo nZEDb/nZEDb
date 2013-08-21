@@ -45,9 +45,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
 		$page->smarty->assign('search', $searchStr);
-
-		$results = $releases->search($searchStr, $categoryId, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
-
+		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 	}
 	
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
@@ -90,10 +88,9 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
 		$page->smarty->assign('subject', $searchStr);
-
-		$results = $releases->searchsubject($searchStr, $categoryId, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
-
+		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 	}
+
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
 	if (sizeof($results) > 0)
 		$totalRows = $results[0]['_totalrows'];
@@ -159,8 +156,9 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 			$searchdaysold = -1;
 		if ($_REQUEST["searchadvcat"] == "")
 			$searchCat = -1;
-		$results = $releases->searchadv($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
+		$results = $releases->search($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], "advanced");
 	}
+
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
 	if (sizeof($results) > 0)
 		$totalRows = $results[0]['_totalrows'];
@@ -188,7 +186,7 @@ $sizelist = array( -1 => '--Select--',
 					3 => '500MB',
 					4 => '1GB',
 					5 => '2GB', 
-					6 => '3GB',			
+					6 => '3GB',	
 					7 => '4GB',	
 					8 => '8GB',
 					9 => '16GB',

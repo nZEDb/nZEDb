@@ -13,6 +13,7 @@ class Nntp extends Net_NNTP_Client
 		$this->timeout = 15;
 	}
 
+	// Make a NNTP connection.
 	function doConnect()
 	{
 		if ($this->_isConnected())
@@ -56,6 +57,7 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
+	// Make a nntp connection (alternate server).
 	function doConnect_A()
 	{
 		if ($this->_isConnected())
@@ -99,9 +101,7 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
-	//
-	//	No compression.
-	//
+	// Make a nntp connection (no XFeature GZip compression).
 	function doConnectNC()
 	{
 		if ($this->_isConnected())
@@ -127,11 +127,13 @@ class Nntp extends Net_NNTP_Client
 		}
 	}
 
+	// Quit the nntp connection.
 	function doQuit()
 	{
 		$this->quit();
 	}
 
+	// Get only the body of an article (no header).
 	function getMessage($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -160,6 +162,23 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Get multiple article bodies (string them together).
+	function getMessages($groupname, $msgIds)
+	{
+		$body = '';
+
+		foreach ($msgIds as $m)
+		{
+			$message = $this->getMessage($groupname, $m);
+			if ($message !== false)
+				$body = $body . $message;
+			else
+				return false;
+		}
+		return $body;
+	}
+
+	// Get a full article (body + header).
 	function get_Article($groupname, $partMsgId)
 	{
 		$summary = $this->selectGroup($groupname);
@@ -188,6 +207,7 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Get multiple articles (string them together).
 	function getArticles($groupname, $msgIds)
 	{
 		$body = '';
@@ -195,22 +215,6 @@ class Nntp extends Net_NNTP_Client
 		foreach ($msgIds as $m)
 		{
 			$message = $this->get_Article($groupname, $m);
-			if ($message !== false)
-				$body = $body . $message;
-			else
-				return false;
-		}
-		return $body;
-	}
-
-
-	function getMessages($groupname, $msgIds)
-	{
-		$body = '';
-
-		foreach ($msgIds as $m)
-		{
-			$message = $this->getMessage($groupname, $m);
 			if ($message !== false)
 				$body = $body . $message;
 			else
@@ -266,6 +270,7 @@ class Nntp extends Net_NNTP_Client
 		return $message;
 	}
 
+	// Decode a Yenc encoded article body.
 	function decodeYenc($yencodedvar)
 	{
 		$input = array();
@@ -376,7 +381,8 @@ class Nntp extends Net_NNTP_Client
 					}
 					else
 					{
-						echo "\n";
+						if ($totalbytesreceived > 10240)
+							echo "\n";
 						$completed = true;
 					}
 				}
@@ -423,5 +429,25 @@ class Nntp extends Net_NNTP_Client
 			return "\nError: unexpected fgets() fail.\n";
 		}
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
+	}
+
+	// If there is an error with selectGroup(), try to restart the connection, else show the error.
+	// Send a 3rd argument, false, for a connection with no compression.
+	public function dataError($nntp, $group, $comp=true)
+	{
+		$nntp->doQuit();
+		if ($comp === false)
+			$nntp->doConnectNC();
+		else
+			$nntp->doConnect();
+		$data = $nntp->selectGroup($group);
+		if (PEAR::isError($data))
+		{
+			echo "Error {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+			$nntp->doQuit();
+			return false;
+		}
+		else
+			return $data;
 	}
 }

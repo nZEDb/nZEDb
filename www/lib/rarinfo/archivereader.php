@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.7
+ * @version    2.8
  */
 abstract class ArchiveReader
 {
@@ -371,7 +371,7 @@ abstract class ArchiveReader
 	 * Parses the stored archive info and returns a list of records for each of the
 	 * files in the archive.
 	 *
-	 * @return  array|boolean  list of file records, or false if none are available
+	 * @return  array  list of file records, empty if none are available
 	 */
 	abstract public function getFileList();
 

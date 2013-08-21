@@ -50,6 +50,19 @@ class Contents
 		return $arr;
 	}
 
+	public function getFrontPage()
+	{
+		$arr = array();
+		$rows = $this->data_getFrontPage();
+		if ($rows === false)
+			return false;
+
+		foreach($rows as $row)
+			$arr[] = $this->row2Object($row);
+
+		return $arr;
+	}
+
 	public function getForMenuByTypeAndRole($id, $role)
 	{
 
@@ -172,6 +185,12 @@ class Contents
 			$role = sprintf("and (role=%d or role=0)", $role);
 
 		return $db->queryOneRow(sprintf("select * from content where id = %d %s", $id, $role));
+	}
+
+	public function data_getFrontPage()
+	{
+		$db = new DB();
+		return $db->query(sprintf("select * from content where status = 1 and contenttype = %d order by ordinal asc, coalesce(ordinal, 1000000)", Contents::TYPEINDEX));
 	}
 
 	public function data_getIndex()

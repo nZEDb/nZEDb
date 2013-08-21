@@ -117,6 +117,21 @@
 	</td>
 </tr>
 
+<tr>
+    <td><label for="loggingopt">Logging Option:</label></td>
+    <td>
+       {html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+        <div class="hint">Where you would like to log failed logins to the site.</div>
+    </td>
+</tr>
+<tr>
+    <td><label for="logfile">Logfile Location:</label></td>
+    <td>
+        <input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
+        <div class="hint">Location of log file (MUST be set if logging to file is set).</div>
+    </td>    
+</tr>
+
 </table>
 </fieldset>
 
@@ -294,6 +309,15 @@
 		<input id="tmpunrarpath" class="long" name="tmpunrarpath" type="text" value="{$fsite->tmpunrarpath}" />
 		<div class="hint">The path to where unrar puts files. WARNING: This directory will have its contents deleted.
 		<br/>Use forward slashes in windows <span style="font-family:courier;">c:/temp/path/stuff/will/be/unpacked/to</span></div>
+	</td>
+</tr>
+
+<tr>
+	<td style="width:160px;"><label for="zippath">7za Path:</label></td>
+	<td>
+		<input id="zippath" class="long" name="zippath" type="text" value="{$fsite->zippath}" />
+		<div class="hint">The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files.
+		<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/7z.exe</span></div>
 	</td>
 </tr>
 
@@ -485,7 +509,15 @@
 	<td><label for="lookupnfo">Lookup NFO:</label></td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
-		<div class="hint">Whether to attempt to retrieve the an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
+		<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="lookuppar2">Lookup PAR2:</label></td>
+	<td>
+		{html_radios id="lookuppar2" name='lookuppar2' values=$yesno_ids output=$yesno_names selected=$fsite->lookuppar2 separator='<br />'}
+		<div class="hint">Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/><strong>NOTE: this can be slow depending on the group!</strong></div>
 	</td>
 </tr>
 

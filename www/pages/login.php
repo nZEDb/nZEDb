@@ -8,6 +8,7 @@ if ($page->isPostBack())
 	{
 		$page->smarty->assign('username', $_POST["username"]);
 		$users = new Users();
+        $logging = new Logging();
 		$res = $users->getByUsername($_POST["username"]);
 		$dis = $users->isDisabled($_POST["username"]);
 		
@@ -34,11 +35,13 @@ if ($page->isPostBack())
 			else
 			{
 				$page->smarty->assign('error', "Incorrect username or password.");
+                $logging->LogBadPasswd($_POST["username"], $_SERVER['REMOTE_ADDR']);
 			}
 		}
 		else
 		{
 			$page->smarty->assign('error', "Incorrect username or password.");
+            $logging->LogBadPasswd($_POST["username"], $_SERVER['REMOTE_ADDR']);
 		}
 	}
 }

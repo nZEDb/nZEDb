@@ -42,7 +42,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 		
 		$namefixer = new Namefixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
-		$namefixer->fixNamesWithFiles(2,1,1,1);
+		//$namefixer->fixNamesWithFiles(2,1,1,1);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished recreating search names / recategorizing / refixing names in ".$timetotal.".\n";
 	}
@@ -52,7 +52,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus in (0, 1)");
+	$res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus in (0, 1)");
 	
 	if (sizeof($res) > 0)
 	{
@@ -89,7 +89,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
     $db = new DB();
-    $res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
+    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases");
 
     if (sizeof($res) > 0)
     {
@@ -101,7 +101,7 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
         {
             $nc = new nameCleaning();
             $newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-            $db->query(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+            $db->query(sprintf("UPDATE releases SET searchname = %s relnamestatus = 0 where ID = %d", $db->escapeString($newname), $row['ID']));
             $done++;
             $consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
         }
