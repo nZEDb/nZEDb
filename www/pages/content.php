@@ -13,7 +13,7 @@ if (isset($_GET["id"]))
 	$contentid = $_GET["id"];
 
 if ($contentid == 0)
-	$content = $contents->getIndex();
+	$content = $contents->getFrontPage();
 else
 	$content = $contents->getByID($contentid, $role);
 
