@@ -187,7 +187,7 @@ if ( $powerline == "TRUE" )
 else
 	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
 
-if ( $seq == "TRUE" )
+if ( $seq == "1" )
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
@@ -195,6 +195,15 @@ if ( $seq == "TRUE" )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	start_apps($tmux_session);
+	attach($DIR, $tmux_session, $limited);
+}
+elseif ( $seq == "2" )
+{
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
