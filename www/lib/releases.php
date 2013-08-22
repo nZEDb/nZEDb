@@ -1575,8 +1575,8 @@ class Releases
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
 			$loops++;
-		// This loops as long as there were releases created or 1 loop, otherwise, you could loop indefinately
-		} while ($nzbcount > 0 || $retcount > 0 || $loops < 1);
+		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
+		} while ($nzbcount > 0 && $retcount > 0 && $loops < 3);
 
 		return $tot_retcount;
 	}
