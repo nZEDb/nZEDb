@@ -147,6 +147,7 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 {if $result.anidbID > 0}<a class="label label-default" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a> {/if}
 {if $result.tvairdate != ""}<span class="seriesinfo label label-default" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
 {if $result.reID > 0}<span class="mediainfo label label-default" title="{$result.guid}">Media</span> {/if}
+{if $result.preID > 0}<span class="label label-default preinfo rndbtn" title="{$result.preID}">PreDB</span> {/if}
 {if $result.group_name != ""}<a class="label label-default" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a> {/if}
 </div>
 </td>
