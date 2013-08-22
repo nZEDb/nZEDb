@@ -87,7 +87,7 @@
 			<tr>
 				<td><label for="SEQUENTIAL">Run Sequential:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="SEQUENTIAL" name='SEQUENTIAL' values=$sequential_ids output=$sequential_names selected=$ftmux->SEQUENTIAL};
+					{html_options class="siteeditstyle" id="SEQUENTIAL" name='SEQUENTIAL' values=$sequential_ids output=$sequential_names selected=$ftmux->SEQUENTIAL}
 					<div class="hint">Basic Sequential runs update_binaries, backfill and update releases_sequentially.<br />Complete Sequential runs threaded.sh(copied to user_threaded.sh), this still runs import in its own pane. This will alow you to reoder the script in any order you like. The idea is to get each individual script to run at or near your desired load level.<br />Changing requires restart.</div>
 				</td>
 			</tr>
