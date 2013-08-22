@@ -1131,7 +1131,7 @@ class Releases
 		$catresrel = $db->query("select c.ID as ID, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END as minsize from category c left outer join category cp on cp.ID = c.parentID where c.parentID is not null");
 
 		foreach ($catresrel as $catrowrel) {
-			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d and r.nzbstatus = 0", $catrowrel['ID'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.ID, r.guid from releases r where r.categoryID = %d AND r.size < %d", $catrowrel['ID'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['ID'], $rowrel['guid'], $this->site);
@@ -1150,7 +1150,7 @@ class Releases
 							(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 							as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 							FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
-							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s and r.nzbstatus = 0", $groupID['ID'], $groupID['ID'])))
+							g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1162,7 +1162,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID['ID'], $maxfilesizeres['value'])))
+					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID['ID'], $maxfilesizeres['value'])))
 					{
 						foreach ($resrel as $rowrel)
 						{
@@ -1176,7 +1176,7 @@ class Releases
 							(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 							as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 							FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
-							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s and r.nzbstatus = 0", $groupID['ID'], $groupID['ID'])))
+							g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID['ID'], $groupID['ID'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1192,7 +1192,7 @@ class Releases
 						(SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease)
 						as minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease
 						FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
-						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s and r.nzbstatus = 0", $groupID, $groupID)))
+						g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1204,7 +1204,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d and nzbstatus = 0", $groupID, $maxfilesizeres['value'])))
+				if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID, $maxfilesizeres['value'])))
 				{
 					foreach ($resrel as $rowrel)
 					{
@@ -1218,7 +1218,7 @@ class Releases
 						(SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease)
 						as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease
 						FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.ID = %s ) g ON g.ID = r.groupID WHERE
-						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s and r.nzbstatus = 0", $groupID, $groupID)))
+						g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupID = %s", $groupID, $groupID)))
 			{
 				foreach ($resrel as $rowrel)
 				{
@@ -1556,7 +1556,7 @@ class Releases
 		{
 			$retcount = $this->processReleasesStage4($groupID);
 			$tot_retcount = $tot_retcount + $retcount;
-			$this->processReleasesStage4dot5($groupID, $echooutput=false);
+			//$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == "1")
 				$this->processReleasesStage5b($groupID, $echooutput);
@@ -1576,7 +1576,7 @@ class Releases
 			$this->processReleasesStage7a($groupID, $echooutput=false);
 			$loops++;
 		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
-		} while ($nzbcount > 0 && $retcount > 0 && $loops < 3);
+		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
 
 		return $tot_retcount;
 	}
@@ -1613,6 +1613,7 @@ class Releases
 		$this->processReleasesStage2($groupID, $echooutput=false);
 		$this->processReleasesStage3($groupID, $echooutput=false);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
+		$this->processReleasesStage4dot5($groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
