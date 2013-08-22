@@ -659,6 +659,14 @@
 </tr>
 
 <tr>
+	<td><label for="delaytime">Delay Time Check:</label></td>
+	<td>
+		<input class="tiny" id="delaytime" name="delaytime" type="text" value="{$fsite->delaytime}" />
+		<div class="hint">The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="crossposttime">Crossposted Time Check:</label></td>
 	<td>
 		<input class="tiny" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
