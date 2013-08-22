@@ -362,14 +362,11 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb titles with release search names.\n";
 
-		if($res = $db->queryDirect("SELECT p.ID as preID, p.category, r.ID AS releaseID FROM predb p inner join releases r ON p.title = r.searchname WHERE r.preID IS NULL"))
+		if($res = $db->queryDirect("SELECT p.ID as preID, r.ID AS releaseID FROM predb p inner join releases r ON p.title = r.searchname WHERE r.preID IS NULL"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
-				$catsql = '';
-				if($catID = $db->queryOneRow(sprintf("SELECT ID FROM category WHERE title = %s", $db->escapeString(str_replace(array("TV-", "TV: "), '', $row["category"])))) !== false)
-					$catsql = sprintf(", categoryID = %d",$catID["ID"]);
-				$db->query(sprintf("UPDATE releases SET preID = %d, relnamestatus = 6 %s WHERE ID = %d", $row["preID"], $catsql, $row["releaseID"]));
+				$db->query(sprintf("UPDATE releases SET preID = %d, relnamestatus = 6 WHERE ID = %d", $row["preID"], $row["releaseID"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;
@@ -459,5 +456,11 @@ Class Predb
 	{
 		$db = new DB();
 		return $db->query(sprintf("SELECT * FROM predb WHERE ID = %d", $preID));
+	}
+
+	public function getOne($preID)
+	{
+		$db = new DB();
+		return $db->queryOneRow(sprintf("SELECT * FROM predb WHERE ID = %d", $preID));
 	}
 }

@@ -59,6 +59,7 @@ switch($page->page) {
 	case 'ajax_rarfilelist':
 	case 'ajax_tvinfo':
 	case 'ajax_mediainfo':
+	case 'ajax_preinfo':
 	case 'ajax_mymovies':
 	case 'calendar':
 	case 'upcoming':
