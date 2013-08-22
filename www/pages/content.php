@@ -37,5 +37,3 @@ else
 
 $page->content = $page->smarty->fetch('content.tpl');
 $page->render();
-
-?>

@@ -133,6 +133,20 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		}
 	}
 }
+elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
+{
+	$db = new DB();
+	$tables = array('predb');
+	foreach($tables as $row)
+	{
+		$tbl = $row['Tables_in_'.DB_NAME];
+		$filename = $argv[3]."/".$tbl."_clean.sql";
+		printf("Dumping $tbl\n");
+		if (file_exists($filename))
+			newname($filename);
+		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
+    }
+}
 else
 {
 	passthru("clear");
@@ -149,5 +163,6 @@ else
 	."**Individal Files - OUTFILE/INFILE - No schema\n"
 	."To dump all tables, using OUTFILE run: php mysqldump_tables.php all outfile /path/to/save/to\n"
 	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m";
+	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n"
 }
 ?>
