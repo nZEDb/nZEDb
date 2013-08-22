@@ -1,4 +1,5 @@
-08222013 -> jonnyboy -> added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created
+08222013 -> jonnyboy -> updated missing items from alhpa theme site-edit/tmux-edit
+						added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created
                         added option to site-edit to allow user control of of delay time
                         updated predb matched to get from releases table
 08212013 -> jonnyboy -> added color to h4 tag

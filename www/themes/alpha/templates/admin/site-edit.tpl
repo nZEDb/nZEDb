@@ -117,6 +117,21 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="loggingopt">Logging Option:</label></td>
+	<td>
+		{html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+		<div class="hint">Where you would like to log failed logins to the site.</div>
+	</td>
+</tr>
+<tr>
+	<td><label for="logfile">Logfile Location:</label></td>
+	<td>
+		<input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
+		<div class="hint">Location of log file (MUST be set if logging to file is set).</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 
@@ -494,7 +509,7 @@
 	<td><label for="lookupnfo">Lookup NFO:</label></td>
 	<td>
 		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
-		<div class="hint">Whether to attempt to retrieve the an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
+		<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
 	</td>
 </tr>
 
@@ -574,7 +589,8 @@
 	<td><label for="compressedheaders">Use Compressed Headers:</label></td>
 	<td>
 		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
-		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.</div>
+		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.<br />
+		If you notice that update binaries or backfill seems to hang, look in htop and see if a group is being processed. If so, first try disabling compressed headers and let run until it processes the group at least once, then you can re-enable compressed headers.</div>
 	</td>
 </tr>
 
@@ -639,6 +655,14 @@
 	<td>
 		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
 		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="delaytime">Delay Time Check:</label></td>
+	<td>
+		<input class="tiny" id="delaytime" name="delaytime" type="text" value="{$fsite->delaytime}" />
+		<div class="hint">The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..</div>
 	</td>
 </tr>
 

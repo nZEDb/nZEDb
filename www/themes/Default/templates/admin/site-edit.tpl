@@ -118,18 +118,18 @@
 </tr>
 
 <tr>
-    <td><label for="loggingopt">Logging Option:</label></td>
-    <td>
-       {html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
-        <div class="hint">Where you would like to log failed logins to the site.</div>
-    </td>
+	<td><label for="loggingopt">Logging Option:</label></td>
+	<td>
+		{html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+		<div class="hint">Where you would like to log failed logins to the site.</div>
+	</td>
 </tr>
 <tr>
-    <td><label for="logfile">Logfile Location:</label></td>
-    <td>
-        <input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
-        <div class="hint">Location of log file (MUST be set if logging to file is set).</div>
-    </td>    
+	<td><label for="logfile">Logfile Location:</label></td>
+	<td>
+		<input id="logfile" class="long" name="logfile" type="text" value="{$fsite->logfile}" />
+		<div class="hint">Location of log file (MUST be set if logging to file is set).</div>
+	</td>
 </tr>
 
 </table>
@@ -212,7 +212,7 @@
 <tr>
 	<td><label for="adheader">Advert Space in Banner:</label></td>
 	<td>
-		<textarea id="adheader" name="adheader">{$fsite->adheader}</textarea>
+		<textarea rows="3" placeholder="Place your ad banner code here." id="adheader" name="adheader">{$fsite->adheader}</textarea>
 		<div class="hint">The banner slot in the header.</div>
 	</td>
 </tr>
@@ -220,7 +220,7 @@
 <tr>
 	<td><label for="adbrowse">Advert Space in Browse List:</label></td>
 	<td>
-		<textarea id="adbrowse" name="adbrowse">{$fsite->adbrowse}</textarea>
+		<textarea rows="3" placeholder="Place your ad banner code here." id="adbrowse" name="adbrowse">{$fsite->adbrowse}</textarea>
 		<div class="hint">The banner slot in the header.</div>
 	</td>
 </tr>
@@ -228,7 +228,7 @@
 <tr>
 	<td><label for="addetail">Advert Space in Detail View:</label></td>
 	<td>
-		<textarea id="addetail" name="addetail">{$fsite->addetail}</textarea>
+		<textarea rows="3" placeholder="Place your ad banner code here." id="addetail" name="addetail">{$fsite->addetail}</textarea>
 		<div class="hint">The banner slot in the release details view.</div>
 	</td>
 </tr>
