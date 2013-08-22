@@ -67,6 +67,7 @@ CREATE TABLE `releases`
 `consoleinfoID` INT NULL,
 `bookinfoID` INT NULL,
 `anidbID` INT NULL,
+`preID` INT NULL,
 `grabs` INT UNSIGNED NOT NULL DEFAULT '0',
 `comments` INT NOT NULL DEFAULT 0,
 `passwordstatus` TINYINT NOT NULL DEFAULT 0,
@@ -90,6 +91,7 @@ CREATE INDEX ix_releases_postdate ON releases (`postdate`);
 CREATE INDEX ix_releases_categoryID ON releases (`categoryID`);
 CREATE INDEX ix_releases_rageID ON releases (`rageID`);
 CREATE INDEX ix_releases_imdbID ON releases (`imdbID`);
+CREATE INDEX ix_releases_preID ON releases (`preID`);
 CREATE INDEX ix_releases_guid ON releases (`guid`);
 CREATE INDEX ix_releases_nzbstatus ON releases(`nzbstatus`);
 CREATE INDEX ix_release_name ON releases(`name`);
@@ -200,7 +202,6 @@ CREATE TABLE `predb`
 `adddate` DATETIME DEFAULT NULL,
 `source` VARCHAR(50) NOT NULL DEFAULT '',
 `md5` VARCHAR(255) NOT NULL DEFAULT '0',
-`releaseID` INT NULL,
 PRIMARY KEY  (`ID`)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -210,7 +211,6 @@ CREATE INDEX ix_predb_predate ON predb(`predate`);
 CREATE INDEX ix_predb_adddate ON predb(`adddate`);
 CREATE INDEX ix_predb_source ON predb(`source`);
 CREATE INDEX ix_predb_md5 ON predb(`md5`);
-CREATE INDEX ix_predb_releaseID ON predb(`releaseID`);
 
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu`
@@ -1056,7 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','109');
+	('sqlpatch','110');
 
 
 DROP TABLE IF EXISTS `logging`;

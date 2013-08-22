@@ -120,7 +120,7 @@ class DB
 
 		if ($this->memcached === true && $memcache === true)
 		{
-			$memcached = new Memcached();
+			$memcached = new Mcached();
 			if ($memcached !== false)
 			{
 				$crows = $memcached->get($query);
@@ -215,10 +215,10 @@ class DB
 }
 
 // Class for caching queries into RAM using memcache.
-class Memcached
+class Mcached
 {
 	// Make a connection to memcached server.
-	function Memcached()
+	function Mcached()
 	{
 		if (!defined("MEMCACHE_HOST"))
 			define('MEMCACHE_HOST', '127.0.0.1');
