@@ -1,3 +1,4 @@
+08222013 -> jonnyboy -> updated predb matched to get from releases table
 08212013 -> jonnyboy -> added color to h4 tag
                         possible fix for db lose connection in tmux when db is not local
                         added option for alternate sequential run in tmux

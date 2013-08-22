@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3221";
+$version="0.1r3231";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -50,7 +50,7 @@ $proc_work = "SELECT
 $proc_work2 = "SELECT
 	( SELECT COUNT( * ) FROM releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
 	( SELECT COUNT( * ) FROM releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( * ) FROM predb where releaseID IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT( * ) FROM releases where preID IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT( * ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( * ) FROM binaries WHERE collectionID IS NOT NULL ) AS binaries_table,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
