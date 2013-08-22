@@ -341,8 +341,8 @@ Class Predb
 	public function matchPre($cleanerName, $releaseID)
 	{
 		$db = new DB();
-		if($db->query(sprintf("UPDATE predb SET releaseID = %d WHERE name = %s AND releaseID = NULL", $releaseID, $db->escapeString($cleanerName))))
-			$db->query(sprintf("UPDATE releases SET relnamestatus = 6 WHERE ID = %d", $releaseID));
+		if($x = $db->queryOneRow(sprintf("SELECT ID FROM predb WHERE title = %s", $db->escapeString($cleanerName))) !== false)
+			$db->query(sprintf("UPDATE releases SET relnamestatus = 6, preID = %d WHERE ID = %d", $x["ID"], $releaseID));
 	}
 
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
@@ -362,15 +362,14 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb titles with release search names.\n";
 
-		if($res = $db->queryDirect("SELECT p.ID, p.category, r.ID AS releaseID FROM predb p inner join releases r ON p.title = r.searchname WHERE p.releaseID IS NULL"))
+		if($res = $db->queryDirect("SELECT p.ID as preID, p.category, r.ID AS releaseID FROM predb p inner join releases r ON p.title = r.searchname WHERE r.preID IS NULL"))
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
-				$db->query(sprintf("UPDATE predb SET releaseID = %d WHERE ID = %d", $row["releaseID"], $row["ID"]));
-				$catName=str_replace(array("TV-", "TV: "), '', $row["category"]);
-				if($catID = $db->queryOneRow(sprintf("SELECT ID FROM category WHERE title = %s", $db->escapeString($catName))))
-					$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", $db->escapeString($catID["ID"]), $db->escapeString($row["releaseID"])));
-				$db->query(sprintf("UPDATE releases SET relnamestatus = 6 WHERE ID = %d", $row["releaseID"]));
+				$catsql = '';
+				if($catID = $db->queryOneRow(sprintf("SELECT ID FROM category WHERE title = %s", $db->escapeString(str_replace(array("TV-", "TV: "), '', $row["category"])))) !== false)
+					$catsql = sprintf(", categoryID = %d",$catID["ID"]);
+				$db->query(sprintf("UPDATE releases SET preID = %d, relnamestatus = 6 %s WHERE ID = %d", $row["preID"], $catsql, $row["releaseID"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;
@@ -387,7 +386,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		if($res = $db->queryDirect("SELECT r.ID, p.nfo, r.completion, r.guid, r.groupID FROM releases r inner join predb p ON r.ID = p.releaseID WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100"))
+		if($res = $db->queryDirect("SELECT r.ID, p.nfo, r.completion, r.guid, r.groupID FROM releases r inner join predb p ON r.preID = p.ID WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100"))
 		{
 			$nfo = new Nfo($this->echooutput);
 			$nzbcontents = new Nzbcontents($this->echooutput);
@@ -445,20 +444,20 @@ Class Predb
 	public function getAll($offset, $offset2)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p left join releases r on p.releaseID = r.ID ORDER BY p.adddate DESC limit %d,%d", $offset, $offset2));
-	}
-
-	// Returns a single row for a release.
-	public function getForRelease($releaseID)
-	{
-		$db = new DB();
-		return $db->query(sprintf("SELECT * FROM predb WHERE releaseID = %d", $releaseID));
+		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.ID = r.preID ORDER BY p.adddate DESC LIMIT %d,%d", $offset, $offset2));
 	}
 
 	public function getCount()
 	{
 		$db = new DB();
-		$count = $db->queryOneRow("SELECT count(*) as cnt from predb");
+		$count = $db->queryOneRow("SELECT COUNT(*) AS cnt FROM predb");
 		return $count["cnt"];
+	}
+
+	// Returns a single row for a release.
+	public function getForRelease($preID)
+	{
+		$db = new DB();
+		return $db->query(sprintf("SELECT * FROM predb WHERE ID = %d", $preID));
 	}
 }
