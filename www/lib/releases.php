@@ -616,10 +616,8 @@ class Releases
 			$order = $this->getBrowseOrder($orderby);
 
 		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID, re.releaseID AS reID, cp.ID AS categoryParentID FROM releases LEFT OUTER JOIN releasevideo re ON re.releaseID = releases.ID LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE releases.passwordstatus <= (SELECT VALUE FROM site WHERE setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s ORDER BY %s %s LIMIT %d, %d ", $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
-		$orderpos = strpos($sql, "ORDER BY");
 		$wherepos = strpos($sql, "WHERE");
-
-		$countres = $db->queryOneRow("SELECT COUNT(releases.ID) AS num FROM releases ".substr($sql, $wherepos,$orderpos-$wherepos));
+		$countres = $db->queryOneRow("SELECT COUNT(releases.ID) AS num FROM releases ".substr($sql, $wherepos, strpos($sql, "ORDER BY")-$wherepos));
 		$res = $db->query($sql);
 		if (count($res) > 0){$res[0]['_totalrows'] = $countres['num'];}
 
