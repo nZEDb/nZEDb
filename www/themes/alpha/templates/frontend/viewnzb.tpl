@@ -435,7 +435,7 @@
 						<td>{$pd.title}</td>
 						<td class="mid">{$pd.predate|date_format}</td>
 						<td class="mid">{$pd.source}</td>
-						{if $pd.size > 0}<td class="right">{$pd.size}</td>{/if}
+						{if isset($pd.size)}{if $pd.size > 0}<td class="right">{$pd.size}</td>{/if}{/if}
 					</tr>
 				{/foreach}
 			</table>

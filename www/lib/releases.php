@@ -774,10 +774,10 @@ class Releases
 			foreach($guid as $g)
 				$tmpguids[] = $db->escapeString($g);
 			$gsql = sprintf('guid in (%s)', implode(',',$tmpguids));
-		} else {
-			$gsql = sprintf('guid = %s', $db->escapeString($guid));
 		}
-		$sql = sprintf("select releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name from releases left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where %s ", $gsql);
+		else
+			$gsql = sprintf('guid = %s', $db->escapeString($guid));
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) as category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name FROM releases LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE %s ", $gsql);
 		return (is_array($guid)) ? $db->query($sql) : $db->queryOneRow($sql);
 	}
 
