@@ -112,7 +112,7 @@ if (isset($_GET["id"]))
 
 	require_once(WWW_DIR."/lib/predb.php");
 	$predb = new Predb();
-	$pre = $predb->getForRelease($data['ID']);
+	$pre = $predb->getForRelease($data['preID']);
 
 	$page->smarty->assign('releasefiles',$releasefiles);
 	$page->smarty->assign('release',$data);
