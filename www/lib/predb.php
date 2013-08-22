@@ -366,7 +366,7 @@ Class Predb
 		{
 			while ($row = mysqli_fetch_assoc($res))
 			{
-				$db->query(sprintf("UPDATE releases SET preID = %d, relnamestatus = 6 %s WHERE ID = %d", $row["preID"], $row["releaseID"]));
+				$db->query(sprintf("UPDATE releases SET preID = %d, relnamestatus = 6 WHERE ID = %d", $row["preID"], $row["releaseID"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;
