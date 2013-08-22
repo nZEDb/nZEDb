@@ -72,7 +72,7 @@
 					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br />
 					The 'In Database' Misc means the number of releases that have not been categorized in any other category.<br />
 					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br />
-					The 'In Process' predb is the total predb and inside the parenthesis is number changed since the script started. The 'In Database' is the total matched predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br />
+					The 'In Process' predb is the total unmatched predb and inside the parenthesis is number changed since the script started. The 'In Database' is the total matched predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br />
 					The 'In Process' NZBs are total nzbs, inside the parenthesis is distinct nzbs and 'In Database' are nzbs that have all parts available and will be processed on next run.<br />
 					The 'In Process' requestID is the number waiting to be processed and inside the parenthesis is the number changed since the script started. The 'In Database' is the total matches of releases to requestIDs and inside the parenthesis is percentage of total releases that you have matched to a requestID.
 									</div>
@@ -87,8 +87,8 @@
 			<tr>
 				<td><label for="SEQUENTIAL">Run Sequential:</label></td>
 				<td>
-					{html_radios id="SEQUENTIAL" name='SEQUENTIAL' values=$truefalse_names output=$truefalse_names selected=$ftmux->SEQUENTIAL separator='<br />'}
-					<div class="hint">Choose to run update_binaries, backfill and update releases_sequentially. Changing requires restart. true/false</div>
+					{html_options class="siteeditstyle" id="SEQUENTIAL" name='SEQUENTIAL' values=$sequential_ids output=$sequential_names selected=$ftmux->SEQUENTIAL}
+					<div class="hint">Basic Sequential runs update_binaries, backfill and update releases_sequentially.<br />Complete Sequential runs threaded.sh(copied to user_threaded.sh), this still runs import in its own pane. This will alow you to reoder the script in any order you like. The idea is to get each individual script to run at or near your desired load level.<br />Changing requires restart.</div>
 				</td>
 			</tr>
 
@@ -402,7 +402,7 @@
 			<tr>
 				<td><label for="explain">Information:</label></td>
 				<td>
-					<div class="explanation">Decrypt hashes only works on a.b.inner-sanctum and only works form releases posted buy doggo. If you do not index that group, there is no need to enable this.<br />
+					<div class="explanation">Decrypt hashes works by matching a hashed release to the md5 of a release in the predb.<br />
 					Included in the same pane is Update Predb. This scrapes several predb sites and then tries to match against releases.</div>
 				</td>
 			</tr>

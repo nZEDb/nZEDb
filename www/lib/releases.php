@@ -43,6 +43,7 @@ class Releases
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 		$this->requestids = $this->site->lookup_reqids;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
+		$this->delaytimet = (!empty($this->site->delaytime)) ? $this->site->delaytime : 2;
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
 
@@ -950,8 +951,8 @@ class Releases
 		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval 2 hour) AND c.filecheck
-						in (0, 1, 10) ".$where);
+		$db->query(sprintf("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval %d hour) AND c.filecheck
+						in (0, 1, 10) ".$where, $this->delaytimet));
 
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage1);
@@ -1555,7 +1556,7 @@ class Releases
 		{
 			$retcount = $this->processReleasesStage4($groupID);
 			$tot_retcount = $tot_retcount + $retcount;
-			$this->processReleasesStage4dot5($groupID, $echooutput=false);
+			//$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == "1")
 				$this->processReleasesStage5b($groupID, $echooutput);
@@ -1574,8 +1575,8 @@ class Releases
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
 			$this->processReleasesStage7a($groupID, $echooutput=false);
 			$loops++;
-		// This loops as long as there were releases created or 1 loop, otherwise, you could loop indefinately
-		} while ($nzbcount > 0 || $retcount > 0 || $loops < 1);
+		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
+		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
 
 		return $tot_retcount;
 	}
@@ -1612,6 +1613,7 @@ class Releases
 		$this->processReleasesStage2($groupID, $echooutput=false);
 		$this->processReleasesStage3($groupID, $echooutput=false);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
+		$this->processReleasesStage4dot5($groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
