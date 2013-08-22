@@ -921,14 +921,14 @@ CREATE TABLE content
 `role` INT NOT NULL DEFAULT 0
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-INSERT INTO content (title, body, contenttype, STATUS, metadescription, metakeywords, showinmenu)
-VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with nzbdrone, sickbeard, couchpotato, etc...</p>', 3, 1, '','', 0);
+INSERT INTO content (title, body, contenttype, STATUS, metadescription, metakeywords, showinmenu, ordinal)
+VALUES ('Welcome to nZEDb.','<p>Since nZEDb is a fork of newznab, the API is compatible with nzbdrone, sickbeard, couchpotato, etc...</p>', 3, 1, '', '', 0, 0);
 
-INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
-VALUES ('example content','/great/seo/content/page/','<p>this is an example content page</p>', 2, 1, 1, '','');
+INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords, ordinal)
+VALUES ('example content','/great/seo/content/page/','<p>this is an example content page</p>', 2, 1, 1, '', '', 1);
 
-INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords)
-VALUES ('another example','/another/great/seo/content/page/','<p>this is another example content page</p>', 2, 1, 1, '','');
+INSERT INTO content (title, url, body, contenttype, STATUS, showinmenu, metadescription, metakeywords, ordinal)
+VALUES ('another example','/another/great/seo/content/page/','<p>this is another example content page</p>', 2, 1, 1, '', '', 0);
 
 DROP TABLE IF EXISTS `site`;
 CREATE TABLE `site` (
@@ -1056,7 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','108');
+	('sqlpatch','109');
 
 
 DROP TABLE IF EXISTS `logging`;
@@ -1324,7 +1324,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 	('IMPORT','0'),
 	('NZBS','/path/to/nzbs'),
 	('RUNNING','FALSE'),
-	('SEQUENTIAL','FALSE'),
+	('SEQUENTIAL','0'),
 	('NFOS','FALSE'),
 	('POST','0'),
 	('RELEASES','FALSE'),

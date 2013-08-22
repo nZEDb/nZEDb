@@ -64,6 +64,7 @@ class Releases
 		return $db->query(" SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name from releases left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID order by postdate desc".$limit);
 	}
 
+	// Used for paginator.
 	public function getBrowseCount($cat, $maxage=-1, $excludedcats=array(), $grp = "")
 	{
 		$db = new DB();
@@ -84,6 +85,7 @@ class Releases
 		return $res['num'];
 	}
 
+	// Used for browse results.
 	public function getBrowseRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array(), $grp="")
 	{
 		$db = new DB();
@@ -106,7 +108,7 @@ class Releases
 			$exccatlist = " AND releases.categoryID NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getBrowseOrder($orderby);
-		return $db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) as category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID, re.releaseID AS reID FROM releases LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN releasevideo re ON re.releaseID = releases.ID LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE releases.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') %s %s %s %s ORDER BY %s %s".$limit, $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) as category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID, re.releaseID AS reID FROM releases LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN releasevideo re ON re.releaseID = releases.ID LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE releases.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') %s %s %s %s ORDER BY %s %s".$limit, $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1]), true);
 	}
 
 	public function getBrowseOrder($orderby)
@@ -613,7 +615,7 @@ class Releases
 		else
 			$order = $this->getBrowseOrder($orderby);
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID, cp.ID as categoryParentID from releases left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID left outer join groups on groups.ID = releases.groupID left outer join category c on c.ID = releases.categoryID left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s order by %s %s limit %d, %d ", $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID, re.releaseID AS reID, cp.ID AS categoryParentID FROM releases LEFT OUTER JOIN releasevideo re ON re.releaseID = releases.ID LEFT OUTER JOIN releasenfo rn ON rn.releaseID = releases.ID LEFT OUTER JOIN groups ON groups.ID = releases.groupID LEFT OUTER JOIN category c ON c.ID = releases.categoryID LEFT OUTER JOIN category cp ON cp.ID = c.parentID WHERE releases.passwordstatus <= (SELECT VALUE FROM site WHERE setting='showpasswordedrelease') %s %s %s %s %s %s %s %s %s %s %s %s %s ORDER BY %s %s LIMIT %d, %d ", $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql, $sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0], $order[1], $offset, $limit);
 		$orderpos = strpos($sql, "order by");
 		$wherepos = strpos($sql, "where");
 		$sqlcount = "select count(releases.ID) as num from releases ".substr($sql, $wherepos,$orderpos-$wherepos);

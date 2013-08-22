@@ -38,11 +38,18 @@ body
 	box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.2);
 }
 
-h1, h2, h3 
+h1, h2, h3
 {
 	margin: 0;
 	font-weight: normal; 
 	color: #485459; 
+}
+
+h4
+{
+	margin: 0;
+	font-weight: normal; 
+	color: #fff; 
 }
 
 input, select, textarea { font-family: Calibri, Arial, Helvetica, sans-serif;}

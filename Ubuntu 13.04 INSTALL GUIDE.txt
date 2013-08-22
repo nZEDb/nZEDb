@@ -131,7 +131,20 @@ From a command line:
 	sudo apt-get install mediainfo
 	***************************************************
 
-6. Git clone the nZEDb source.
+6. Install memcache / apc.
+	APC
+		sudo apt-get install php-apc
+		sudo service apache2 restart
+		sudo cp /usr/share/doc/php-apc/apc.php /var/www/nZEDb/www/admin
+		In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+
+	Memcache
+		sudo apt-get install memcached php5-memcache
+		sudo nano /etc/php5/apache2/php.ini    -> add    extension=memcache.so    in the dynamic extensions section
+		sudo service apache2 restart
+		sudo nano /var/www/nZEDb/www/config.php    -> change MEMCACHE_ENABLED to true
+
+7. Git clone the nZEDb source.
 
 	(if the folder doesn't exist, make it)
 	cd /var/www/
@@ -149,18 +162,18 @@ From a command line:
 	sudo chmod 777 /var/www/nZEDb/www/install
 	sudo chmod -R 777 /var/www/nZEDb/nzbfiles
 
-7. Run the installer.
+8. Run the installer.
 
 	(change localhost for the server's IP if you are browsing on another computer)
 	http://localhost/install
 
-8. Configure the site.
+9. Configure the site.
 
 	Enable some groups in view groups.
 	
 	Change settings in edit site (set api keys, set paths to unrar etc..)
 
-9. Start indexing groups.
+10. Start indexing groups.
 
 	Use scripts in misc/update_scripts (update_binaries to get articles, update_releases to create releases).
 
