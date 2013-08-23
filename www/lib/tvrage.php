@@ -352,7 +352,7 @@ class TvRage
 		$db = new DB();
 
 		if ($this->echooutput)
-			echo "TV series: ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'').".\n";
+			echo "TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
 
 		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "null";
 
@@ -639,10 +639,6 @@ class TvRage
 				krsort($titleMatches);
 				krsort($urlMatches);
 				krsort($akaMatches);
-
-				//print_r($titleMatches);
-				//print_r($urlMatches);
-				//print_r($akaMatches)
 
 				// look for 100% title matches first
 				if (isset($titleMatches[100]))

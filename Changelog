@@ -4,6 +4,7 @@
                         added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created
                         added option to site-edit to allow user control of of delay time
                         updated predb matched to get from releases table
+08212013 -> kevin    -> Predb changes, not the release holds the preid, the nzb details page has pre info and the browse/search pages have pre info.
 08212013 -> jonnyboy -> added color to h4 tag
                         possible fix for db lose connection in tmux when db is not local
                         added option for alternate sequential run in tmux
