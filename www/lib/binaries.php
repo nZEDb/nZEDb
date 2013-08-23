@@ -383,10 +383,16 @@ class Binaries
 			if(isset($this->message) && count($this->message))
 			{
 				$maxnum = $first;
-
+				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
 				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryID, number, messageID, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
-					$insPartsStmt->bind_param('dssss', $pBinaryID, $pNumber, $pMessageID, $pPartNumber, $pSize);
+				{
+					$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
+					$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
+					$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
+					$insPartsStmt->bindParam(4, $pPartNumber, PDO::PARAM_INT);
+					$insPartsStmt->bindParam(5, $pSize, PDO::PARAM_INT);
+				}
 				else
 					exit("Couldn't prepare parts insert statement!\n");
 
