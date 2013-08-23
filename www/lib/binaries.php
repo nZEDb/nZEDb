@@ -95,7 +95,7 @@ class Binaries
 			$data = $nntp->selectGroup($groupArr['name']);
 			if (PEAR::isError($data))
 			{
-				echo "Error {$datac->code}: {$datac->message}\nSkipping group: {$groupArr['name']}\n";
+				echo "Error {$data->code}: {$data->message}\nSkipping group: {$groupArr['name']}\n";
 				$nntp->doQuit();
 				return;
 			}
