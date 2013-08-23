@@ -14,54 +14,74 @@ require_once(FS_ROOT."/../../../www/lib/site.php");
 //
 function SplitSQL($file, $delimiter = ';')
 {
-    set_time_limit(0);
+	set_time_limit(0);
 
-    if (is_file($file) === true)
-    {
-        $file = fopen($file, 'r');
+	if (is_file($file) === true)
+	{
+		$file = fopen($file, 'r');
 
-        if (is_resource($file) === true)
-        {
-            $query = array();
+		if (is_resource($file) === true)
+		{
+			$query = array();
 			$db = new DB();
-			
-            while (feof($file) === false)
-            {
-                $query[] = fgets($file);
 
-                if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1)
-                {
-                    $query = trim(implode('', $query));
+			while (feof($file) === false)
+			{
+				$query[] = fgets($file);
 
-                    if ($db->query($query) === false)
-                    {
-                        echo 'ERROR: ' . $query . "\n";
-                    }
+				if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1)
+				{
+					$query = trim(implode('', $query));
 
-                    else
-                    {
-                        echo 'SUCCESS: ' . $query . "\n";
-                    }
+					if (preg_match('/UPDATE/i', $query))
+					{
+						if ($db->queryUpdate($query) === false)
+							echo 'ERROR: ' . $query . "\n";
+						else
+							echo 'SUCCESS: ' . $query . "\n";
+					}
+					else if (preg_match('/DELETE/i', $query))
+					{
+						if ($db->queryDelete($query) === false)
+							echo 'ERROR: ' . $query . "\n";
+						else
+							echo 'SUCCESS: ' . $query . "\n";
+					}
+					else if (preg_match('/INSERT/i', $query))
+					{
+						if ($db->queryInsert($query) === false)
+							echo 'ERROR: ' . $query . "\n";
+						else
+							echo 'SUCCESS: ' . $query . "\n";
+					}
+					else
+					{
+						print_r($query);
+						if ($db->query($query) === false)
+							echo 'ERROR: ' . $query . "\n";
+						else
+							echo 'SUCCESS: ' . $query . "\n";
+					}
 
-                    while (ob_get_level() > 0)
-                    {
-                        ob_end_flush();
-                    }
+					while (ob_get_level() > 0)
+					{
+						ob_end_flush();
+					}
 
-                    flush();
-                }
+					flush();
+				}
 
-                if (is_string($query) === true)
-                {
-                    $query = array();
-                }
-            }
+				if (is_string($query) === true)
+				{
+					$query = array();
+				}
+			}
 
-            return fclose($file);
-        }
-    }
+			return fclose($file);
+		}
+	}
 
-    return false;
+	return false;
 }
 
 $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
@@ -75,9 +95,9 @@ if (isset($os) && $os == "unix")
 	$patches = array();
 
 	// Open the patch folder.
-	if ($handle = @opendir(FS_ROOT.'/../../../db/patches')) 
+	if ($handle = @opendir(FS_ROOT.'/../../../db/patches'))
 	{
-		while (false !== ($patch = readdir($handle))) 
+		while (false !== ($patch = readdir($handle)))
 		{
 			$patches[] = $patch;
 		}
@@ -117,9 +137,9 @@ else if (isset($os) && $os == "windows")
 	// Open the patch folder.
 	if (!isset($argv[1]))
 		exit("You must suply the directory to the patches.\n");
-	if ($handle = @opendir($argv[1])) 
+	if ($handle = @opendir($argv[1]))
 	{
-		while (false !== ($patch = readdir($handle))) 
+		while (false !== ($patch = readdir($handle)))
 		{
 			$patches[] = $patch;
 		}
