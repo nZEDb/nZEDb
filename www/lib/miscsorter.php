@@ -819,9 +819,10 @@ echo "asin ".$set[1]."\n";
 					releases.searchname, groups.`name` AS gname, releases.groupID, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseID =
 					releases.ID INNER JOIN groups ON releases.groupID = groups.ID WHERE releases.ID in ($this->idarr) order by RAND()";
 
-		$res = $this->db->queryDirect($query);
-		if (strlen($this->idarr) > 0)
-			while ($row =  $this->db->fetchAssoc($res))
+		$res = $this->db->query($query);
+		if (strlen($this->idarr) > 0 && count($res) > 0)
+		{
+			foreach($res as $row)
 			{
 				$hash = $this->getHash($row['name']);
 				if ($hash !== false)
@@ -874,6 +875,7 @@ echo "asin ".$set[1]."\n";
 					}
 				}
 			}
+		}
 	}
 
 	function musicnzb($category = Category::CAT_PARENT_MISC, $id = 0)
@@ -892,40 +894,41 @@ echo "asin ".$set[1]."\n";
 			$query = "SELECT releases.*, g.`name` AS gname FROM releases INNER JOIN groups g ON releases.groupID = g.ID where categoryID in (".$category.")  and nfostatus >= 0 AND passwordstatus >= 0 AND not (`imdbID` is not null OR `rageID` > 0 OR `consoleinfoID` is not null OR `bookinfoID` is not null)";
 		}
 
-		$res = $this->db->queryDirect($query);
-//echo "$query\n";
-		echo "doing nzb music files match\n";
-		while ($row =  $this->db->fetchAssoc($res))
+		$res = $this->db->query($query);
+		if (count($res) > 0)
 		{
-			$hash = $this->getHash($row['name']);
-			if ($hash !== false)
-				$row['searchname'] = $hash;
+//echo "$query\n";
+			echo "doing nzb music files match\n";
+			foreach ($res as $row)
+			{
+				$hash = $this->getHash($row['name']);
+				if ($hash !== false)
+					$row['searchname'] = $hash;
 
-			$frommail = $row['fromname'];
+				$frommail = $row['fromname'];
 
-		//	trigger_error("doing part 2".$row['ID']);
-			$query = "SELECT releasevideo.releaseID FROM releasevideo WHERE releasevideo.releaseID = ".$row['ID'];
-			$rel = $this->db->queryOneRow($query);
+			//	trigger_error("doing part 2".$row['ID']);
+				$query = "SELECT releasevideo.releaseID FROM releasevideo WHERE releasevideo.releaseID = ".$row['ID'];
+				$rel = $this->db->queryOneRow($query);
 
-			if ($rel !== false)
-				continue;
+				if ($rel !== false)
+					continue;
 
-//			echo "\n".$row['guid']."\n";
+//				echo "\n".$row['guid']."\n";
 
-			$query = 'SELECT releasenfo.releaseID, uncompress(releasenfo.nfo) AS nfo FROM releasenfo WHERE releasenfo.releaseID = '.$row['ID'];
-			$rel = $this->db->queryOneRow($query);
+				$query = 'SELECT releasenfo.releaseID, uncompress(releasenfo.nfo) AS nfo FROM releasenfo WHERE releasenfo.releaseID = '.$row['ID'];
+				$rel = $this->db->queryOneRow($query);
 
-			$nfo = '';
-			if ($rel !== false)
-				if ($rel['releaseID'] == $row['ID'])
-					$nfo = $rel['nfo'];
+				$nfo = '';
+				if ($rel !== false)
+					if ($rel['releaseID'] == $row['ID'])
+						$nfo = $rel['nfo'];
 
-			$name = $this->domusicfiles($row);
-			if ($name !=' ' && $name !='')
-				$ok = $this->dodbupdate($row['ID'], Category::CAT_MUSIC_MP3, $row["relnamestatus"], $name);
-
+				$name = $this->domusicfiles($row);
+				if ($name !=' ' && $name !='')
+					$ok = $this->dodbupdate($row['ID'], Category::CAT_MUSIC_MP3, $row["relnamestatus"], $name);
+			}
 		}
-
 	}
 }
 

@@ -21,7 +21,7 @@ class Tmux
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$db->query(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$db->queryUpdate(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
@@ -61,6 +61,6 @@ class Tmux
 	{
 		$db = new DB();
 		$sql = sprintf("update tmux set value = %s where setting = %s", $db->escapeString($value), $db->escapeString($setting));
-		return $db->query($sql);
+		return $db->queryUpdate($sql);
 	}
 }

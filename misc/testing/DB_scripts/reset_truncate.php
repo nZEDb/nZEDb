@@ -11,7 +11,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	$db = new DB();
 
-	$rel = $db->query("update groups set first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null");
+	$rel = $db->queryUpdate("update groups set first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null");
 	printf("Reseting all groups completed.\n");
 
 	$arr = array("parts", "partrepair", "binaries", "collections", "nzbs");
@@ -21,8 +21,8 @@ if(isset($argv[1]) && $argv[1] == "true")
 	}
 	unset($value);
 
-	$db->query("delete from releases where nzbstatus = 0");
-	echo $db->getAffectedRows()." releases had no nzb, deleted.";
+	$delcount = $db->queryDelete("delete from releases where nzbstatus = 0");
+	echo $delcount." releases had no nzb, deleted.";
 }
 else
 {

@@ -12,11 +12,11 @@ class Import
 	{
 		$db = new DB();
 		$cat = new Category();
-		$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
-		while ($relrow = $db->fetchAssoc($relres))
+		$relres = $db->query("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+		foreach ($relres as $relrow)
 		{
 			$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
-			$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
+			$db->queryUpdate(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
 		}
 	}
 
@@ -31,13 +31,13 @@ class Import
 
 		if ($hash == '')
 		{
-			if ($hashes = $db->queryDirect("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts"))
+			if ($hashes = $db->query("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts"))
 			{
-				if (mysqli_num_rows($hashes) > 0)
+				if (count($hashes) > 0)
 				{
-					while ($hash = $db->fetchAssoc($hashes))
+					foreach ($hashes as $hash)
 					{
-						$rel = $db->queryDirect(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash['collectionhash']));
+						$rel = $db->query(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash['collectionhash']));
 						$arr = '';
 						foreach ($rel as $nzb)
    						{
@@ -54,7 +54,7 @@ class Import
 		}
 		else
 		{
-			$rel = $db->queryDirect(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash));
+			$rel = $db->query(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash));
 			$arr = '';
 			foreach ($rel as $nzb)
 			{
@@ -80,7 +80,7 @@ class Import
 			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
-				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+				$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 		}
 		else
 			return;
@@ -113,7 +113,7 @@ class Import
 		if (!$xml)
 		{
 			//echo "*";
-			$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+			$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 		}
 		else
 		{
@@ -216,17 +216,17 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $relID));
-							$db->queryDirect(sprintf("DELETE collections, binaries, parts
+							$db->queryUpdate(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $relID));
+							$db->queryDelete(sprintf("DELETE collections, binaries, parts
 								FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
 								WHERE collections.collectionhash = %s", $db->escapeString($hash)));
-							$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+							$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();
 							echo "+";
 						}
 						else
 						{
-							$db->queryDirect(sprintf("delete from releases where ID = %d", $relID));
+							$db->queryDelete(sprintf("delete from releases where ID = %d", $relID));
 							$importfailed = true;
 							echo "-";
 						}
@@ -235,7 +235,7 @@ class Import
 			}
 			else
 			{
-				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+				$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 				//echo "!";
 			}
 		}

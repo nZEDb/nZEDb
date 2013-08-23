@@ -16,7 +16,7 @@ function getForeignMovies()
 function updateRelease($id, $cat)
 {
 	$db = new DB();
-	$db->query(sprintf("UPDATE releases SET categoryid = %s WHERE ID = %d",  $cat,  $id));
+	$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %s WHERE ID = %d",  $cat,  $id));
 }
 
 function determineMovieCategory($name)

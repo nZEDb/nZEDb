@@ -231,7 +231,7 @@ class Console
 	{
 		$db = new DB();
 
-		$db->query(sprintf("UPDATE consoleinfo SET title=%s, asin=%s, url=%s, salesrank=%s, platform=%s, publisher=%s, releasedate='%s', esrb=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
+		$db->queryUpdate(sprintf("UPDATE consoleinfo SET title=%s, asin=%s, url=%s, salesrank=%s, platform=%s, publisher=%s, releasedate='%s', esrb=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
 		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($platform), $db->escapeString($publisher), $releasedate, $db->escapeString($esrb), $cover, $genreID, $id));
 	}
 
@@ -497,9 +497,9 @@ class Console
 		$threads--;
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)
@@ -507,12 +507,12 @@ class Console
 		$ret = 0;
 		$db = new DB();
 
-		if ($db->getNumRows($res) > 0)
+		if (count($res) > 0)
 		{
 			if ($this->echooutput)
-				echo "\nProcessing ".$db->getNumRows($res)." console releases\n";
+				echo "\nProcessing ".count($res)." console releases\n";
 
-			while ($arr = $db->fetchAssoc($res))
+			foreach ($res as $arr)
 			{
 				$gameInfo = $this->parseTitle($arr['searchname']);
 				if ($gameInfo !== false)
@@ -541,16 +541,16 @@ class Console
 					}
 
 					//update release
-					$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", $gameId, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", $gameId, $arr["ID"]));
 
 				}
 				else
 				{
 					//could not parse release title
 					if($type == 1)
-						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 					if($type == 2)
-						$db->query(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
+						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
 				}
 				usleep($this->sleeptime*1000);
 			}

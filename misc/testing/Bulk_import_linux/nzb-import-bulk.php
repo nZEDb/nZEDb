@@ -48,11 +48,11 @@ function categorize()
 {
 	$db = new DB();
 	$cat = new Category();
-	$relres = $db->queryDirect("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
-	while ($relrow = $db->fetchAssoc($relres))
+	$relres = $db->query("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+	foreach ($relres as $relrow)
 	{
 		$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
-		$db->queryDirect(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
+		$db->queryUpdate(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
 	}
 }
 
@@ -256,7 +256,7 @@ else
 				{
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
 					{
-						if (false === (mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'queryDirect'), 'error_handler' => array($db, 'Error')))))
+						if (false === (mysqlBulk($data, 'releases', 'loaddata', array('query_handler' => array($db, 'query'), 'error_handler' => array($db, 'Error')))))
 						{
 							trigger_error('mysqlBulk failed!', E_USER_ERROR);
 						}
@@ -288,7 +288,7 @@ else
 			}
 			else
 			{
-				$db->queryOneRow(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				$db->queryDelete(sprintf("delete from releases where postdate = %s and size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
 				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m".$n;
 				$importfailed = true;
 			}

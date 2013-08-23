@@ -1,8 +1,10 @@
 <?php
 
+/* Testing PDO, which will allow us to use other databases than Mysql */
+
 class DB
 {
-	//
+/* Need to see if we can replace this with relnamestatus since they seem to do the same thing */
 	// the element relstatus of table releases is used to hold the status of the release
 	// The variable is a bitwise AND of status
 	// List of processed constants - used in releases table. Constants need to be powers of 2: 1, 2, 4, 8, 16 etc...
@@ -10,28 +12,35 @@ class DB
 	const PREDB_PROCESSED_NAMEFIXER   = 2;  // We have processed the release against a predb name
 
 	private static $initialized = false;
-	private static $mysqli = null;
+	private static $pdo = null;
 
 	function DB()
 	{
+		// Type can be added later on in config.php
+		$this->dbtype = 'mysql';
+		// Not sure if pdo is case sensitive, just in case.
+		$this->dbtype = strtolower($this->dbtype);
 		if (DB::$initialized === false)
 		{
-			// initialize db connection
+			$charset = '';
+			if ($this->dbtype == 'mysql')
+				$charset = ';charset=utf8';
 			if (defined("DB_PORT"))
-				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
+				$pdos = $this->dbtype.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
 			else
-				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+				$pdos = $this->dbtype.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
 
-			if (DB::$mysqli->connect_errno) 
+			// Initialize DB connection.
+			try
 			{
-				printf("Failed to connect to MySQL: (" . DB::$mysqli->connect_errno . ") " . DB::$mysqli->connect_error);
+				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
+				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			}
+			catch (PDOException $e)
+			{
+				printf("Connection failed: (".$e->getMessage().")");
 				exit();
 			}
-
-			if (!DB::$mysqli->set_charset('utf8'))
-				printf(DB::$mysqli->error);
-			else
-				DB::$mysqli->character_set_name();
 
 			DB::$initialized = true;
 		}
@@ -40,12 +49,161 @@ class DB
 			$this->memcached = MEMCACHE_ENABLED;
 	}
 
-	// Returns the MYSQL version.
-	public function mysqlversion()
+/* Tested. Works the same. ** */
+	// Returns a string, escaped with single quotes.
+	public function escapeString($str)
 	{
-		return substr(DB::$mysqli->client_info, 0, 3);
+		if (is_null($str))
+			return "NULL";
+		else 
+			return DB::$pdo->quote($str);
 	}
 
+/* Tested. Works the same. ** */
+	// For inserting a row.
+	public function queryInsert($query, $returnlastid=true)
+	{
+		if ($query=="")
+			return false;
+
+		$result = DB::$pdo->query($query);
+		return ($returnlastid) ? DB::$pdo->lastInsertId() : $result;
+	}
+
+/* Tested. In PDO you must use exec to delete, it returns the affected row count. ** */
+	// For deleting rows.
+	public function queryDelete($query)
+	{
+		if ($query == "")
+			return false;
+
+		return DB::$pdo->exec($query);
+	}
+
+/* Tested. In PDO you must use exec or prepared statement to update. */
+	// For updating rows.
+	public function queryUpdate($query)
+	{
+		if ($query == "")
+			return false;
+
+		return DB::$pdo->exec($query);
+	}
+
+/* Tested. Return 2 keys; numeric value and name value, vs just name on mysqli, there is no free_result on pdo, not sure if that will impact anything */
+	// Return an array of rows, an empty array if no results.
+	// Optional: Pass true to cache the result with memcache.
+	public function query($query, $memcache=false)
+	{
+		if ($query == "")
+			return false;
+
+		if ($this->memcached === true && $memcache === true)
+		{
+			$memcached = new Mcached();
+			if ($memcached !== false)
+			{
+				$crows = $memcached->get($query);
+				if ($crows !== false)
+					return $crows;
+			}
+		}
+
+		$result = DB::$pdo->query($query);
+		if ($result === false)
+			return array();
+
+		$rows = array();
+		foreach ($result as $row)
+		{
+			$rows[] = $row;
+		}
+
+		if ($this->memcached === true && $memcache === true)
+			$memcached->add($query, $rows);
+
+		return $rows;
+	}
+
+/* Tested. Works the same. */
+	// Returns the first row of the query.
+	public function queryOneRow($query)
+	{
+		$rows = $this->query($query);
+
+		if (!$rows)
+			return false;
+
+		return ($rows) ? $rows[0] : $rows;
+	}
+
+/* Tested. Works the same. Untested in anything other than mysql. */
+	// Optimises/repairs tables.
+	public function optimise()
+	{
+		$alltables = $this->query("show table status where Data_free > 0");
+		$tablecnt = count($alltables);
+
+		foreach ($alltables as $tablename)
+		{
+			$ret[] = $tablename['Name'];
+			echo "Optimizing table: ".$tablename['Name'].".\n";
+			if (strtolower($tablename['Engine']) == "myisam")
+				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
+			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
+		}
+		$this->queryDirect("FLUSH TABLES");
+		return $tablecnt;
+	}
+
+	public function queryDirect($query)
+	{
+		return ($query=="") ? false : DB::$pdo->query($query);
+	}
+
+
+/* Only needed for prepared statements. */
+	public function getInsertID()
+	{
+		return DB::$pdo->lastInsertId;
+	}
+
+/* Untested */ 
+	public function Prepare($query)
+	{
+		return DB::$pdo->prepare($query);
+	}
+
+/* Untested ;Anything using this might need to be modified.
+ * mysqli error returns a string, while this is an array, so we convert it to string
+ * Retrieves only errors on the database handle : http://www.php.net/manual/en/pdo.errorinfo.php*/
+	public function Error()
+	{
+		$e = DB::$pdo->errorInfo();
+		return "SQL Error: ".$e[0]." ".$e[2];
+	}
+
+/* Untested ;Could cause issues with myisam, see : http://php.net/manual/en/pdo.transactions.php
+ * If so we might have to put an option to turn on / off transactions */
+	public function setAutoCommit($enabled)
+	{
+		return DB::$pdo->beginTransaction();
+	}
+
+/* Untested */
+	public function Commit()
+	{
+		return DB::$pdo->commit();
+	}
+
+/* Untested */
+	public function Rollback()
+	{
+		return DB::$pdo->rollBack();
+	}
+
+
+/*No replacements in PDO. Used in tmux monitor.php, possible solution here? http://terenceyim.wordpress.com/2009/01/09/adding-ping-function-to-pdo/
 	// Checks whether the connection to the server is working. Optionally kills connection.
 	public function ping($kill=false)
 	{
@@ -66,152 +224,9 @@ class DB
 		DB::$mysqli->kill(DB::$mysqli->thread_id);
 		DB::$mysqli->close();
 	}
+*/
 
-	public function escapeString($str)
-	{
-		if (is_null($str)){
-			return "NULL";
-		} else {
-			return "'".DB::$mysqli->real_escape_string($str)."'";
-		}
-	}
 
-	public function makeLookupTable($rows, $keycol)
-	{
-		$arr = array();
-		foreach($rows as $row)
-			$arr[$row[$keycol]] = $row;
-		return $arr;
-	}
-
-	public function queryInsert($query, $returnlastid=true)
-	{
-		if ($query=="")
-			return false;
-
-		$result = DB::$mysqli->query($query);
-		return ($returnlastid) ? DB::$mysqli->insert_id : $result;
-	}
-
-	public function getInsertID()
-	{
-		return DB::$mysqli->insert_id;
-	}
-
-	public function getAffectedRows()
-	{
-		return DB::$mysqli->affected_rows;
-	}
-
-	public function queryOneRow($query)
-	{
-		$rows = $this->query($query);
-
-		if (!$rows)
-			return false;
-
-		return ($rows) ? $rows[0] : $rows;
-	}
-
-	public function query($query, $memcache=false)
-	{
-		if ($query=="")
-			return false;
-
-		if ($this->memcached === true && $memcache === true)
-		{
-			$memcached = new Mcached();
-			if ($memcached !== false)
-			{
-				$crows = $memcached->get($query);
-				if ($crows !== false)
-					return $crows;
-			}
-		}
-
-		$result = DB::$mysqli->query($query);
-
-		if ($result === false || $result === true)
-			return array();
-
-		$rows = array();
-
-		while ($row = $this->fetchAssoc($result))
-			$rows[] = $row;
-
-		$result->free_result();
-
-		$error = $this->Error();
-		if ($error != '')
-			echo "MySql error: $error\n";
-
-		if ($this->memcached === true && $memcache === true)
-			$memcached->add($query, $rows);
-
-		return $rows;
-	}
-
-	public function queryDirect($query)
-	{
-		return ($query=="") ? false : DB::$mysqli->query($query);
-	}
-
-	public function fetchAssoc($result)
-	{
-		return (is_null($result) ? null : $result->fetch_assoc());
-	}
-
-	public function fetchArray($result)
-	{
-		return (is_null($result) ? null : $result->fetch_array());
-	}
-
-	public function optimise()
-	{
-		$alltables = $this->query("show table status where Data_free > 0");
-		$tablecnt = sizeof($alltables);
-
-		foreach ($alltables as $tablename)
-		{
-			$ret[] = $tablename['Name'];
-			echo "Optimizing table: ".$tablename['Name'].".\n";
-			if (strtolower($tablename['Engine']) == "myisam")
-				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
-			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
-		}
-		$this->queryDirect("FLUSH TABLES");
-		return $tablecnt;
-	}
-
-	public function getNumRows($result)
-	{
-		return (!isset($result->num_rows)) ? 0 : $result->num_rows;
-	}
-
-	public function Prepare($query)
-	{
-		return DB::$mysqli->prepare($query);
-	}
-
-	public function Error()
-	{
-		return DB::$mysqli->error;
-	}
-
-	public function setAutoCommit($enabled)
-	{
-		return DB::$mysqli->autocommit($enabled);
-	}
-
-	public function Commit()
-	{
-		return DB::$mysqli->commit();
-	}
-
-	public function Rollback()
-	{
-		return DB::$mysqli->rollback();
-	}
 }
 
 // Class for caching queries into RAM using memcache.

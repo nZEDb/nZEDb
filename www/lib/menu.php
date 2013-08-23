@@ -50,7 +50,7 @@ class Menu
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from menu where ID = %d", $id));
+		return $db->queryDelete(sprintf("delete from menu where ID = %d", $id));
 	}
 
 	public function add($menu)
@@ -63,6 +63,6 @@ class Menu
 	public function update($menu)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update menu set href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow=%d where ID = %d	", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"] , $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]  ));
+		return $db->queryUpdate(sprintf("update menu set href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow=%d where ID = %d	", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"] , $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]  ));
 	}
 }

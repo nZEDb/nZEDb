@@ -18,7 +18,7 @@ class ReleaseFiles
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from releasefiles where releaseID = %d", $id));
+		return $db->queryDelete(sprintf("delete from releasefiles where releaseID = %d", $id));
 	}
 
 	public function add($id, $name, $size, $createddate, $passworded)

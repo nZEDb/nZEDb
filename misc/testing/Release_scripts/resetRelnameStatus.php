@@ -10,7 +10,7 @@ require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 
 $db = new DB();
 
-$res = $db->queryDirect("update releases set relnamestatus = 1 where relnamestatus = 2");
+$res = $db->queryUpdate("update releases set relnamestatus = 1 where relnamestatus = 2");
 
 echo "Succesfully reset the relnamestatus of the releases to 1.\n";
 

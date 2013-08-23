@@ -123,14 +123,14 @@ class Binaries
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
 			$first_record_postdate = $backfill->postdate($nntp, $first, false, $groupArr['name']);
-			$db->query(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = FROM_UNIXTIME(".$first_record_postdate.") WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
+			$db->queryUpdate(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = FROM_UNIXTIME(".$first_record_postdate.") WHERE ID = %d", $db->escapeString($first), $groupArr['ID']));
 		}
 		else
 			$first = $groupArr['last_record'] + 1;
 
 		// Generate postdates for first and last records, for those that upgraded.
 		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
-			 $db->query(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'])."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']).") WHERE ID = %d", $groupArr['ID']));
+			 $db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'])."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']).") WHERE ID = %d", $groupArr['ID']));
 
 		// Calculate total number of parts.
 		$total = $grouplast - $first + 1;
@@ -168,7 +168,7 @@ class Binaries
 				if ($lastId === false)
 					return;
 
-				$db->query(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($lastId), $groupArr['ID']));
+				$db->queryUpdate(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE ID = %d", $db->escapeString($lastId), $groupArr['ID']));
 
 				if ($last == $grouplast)
 					$done = true;
@@ -182,7 +182,7 @@ class Binaries
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
 			$nntp->doQuit();
 			// Set group's last postdate.
-			$db->query(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
+			$db->queryUpdate(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE ID = %d", $groupArr['ID']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $data['group']." processed in ".$timeGroup." seconds.\n\n";
 		}
@@ -333,8 +333,8 @@ class Binaries
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-							$db->queryDirect(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->escapeString($this->message[$subject]['Date'])));
-							$db->queryDirect(sprintf("UPDATE `nzbs` SET `dateadded` = NOW() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
+						$db->queryInsert(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->escapeString($this->message[$subject]['Date'])));
+						$db->queryUpdate(sprintf("UPDATE `nzbs` SET `dateadded` = NOW() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
 					}
 
 					if((int)$matches[1] > 0)
@@ -419,7 +419,7 @@ class Binaries
 								$collectionID = $cres["ID"];
 								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 								$cusql = sprintf("UPDATE collections set dateadded = now() WHERE ID = %s", $collectionID);
-								$db ->queryDirect($cusql);
+								$db->queryUpdate($cusql);
 							}
 
 							$lastCollectionID = $collectionID;
@@ -547,22 +547,22 @@ class Binaries
 				$articles = implode(',', range($partfrom, $partto));
 				$sql = sprintf("SELECT pr.ID, pr.numberID, p.number from partrepair pr LEFT JOIN parts p ON p.number = pr.numberID WHERE pr.groupID=%d AND pr.numberID IN (%s) ORDER BY pr.numberID ASC", $groupArr['ID'], $articles);
 
-				$result = $db->queryDirect($sql);
-				while ($r = $db->fetchAssoc($result))
+				$result = $db->query($sql);
+				foreach ($result as $r)
 				{
 					if (isset($r['number']) && $r['number'] == $r['numberID'])
 					{
 						$partsRepaired++;
 
 						// Article was added, delete from partrepair.
-						$db->query(sprintf("DELETE FROM partrepair WHERE ID=%d", $r['ID']));
+						$db->queryDelete(sprintf("DELETE FROM partrepair WHERE ID=%d", $r['ID']));
 					}
 					else
 					{
 						$partsFailed++;
 
 						// Article was not added, increment attempts.
-						$db->query(sprintf("UPDATE partrepair SET attempts=attempts+1 WHERE ID=%d", $r['ID']));
+						$db->queryUpdate(sprintf("UPDATE partrepair SET attempts=attempts+1 WHERE ID=%d", $r['ID']));
 					}
 				}
 			}
@@ -573,7 +573,7 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$db->query(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupID = %d", $groupArr['ID']));
+		$db->queryDelete(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupID = %d", $groupArr['ID']));
 
 	}
 
@@ -718,7 +718,7 @@ class Binaries
 	public function deleteBlacklist($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("DELETE FROM binaryblacklist WHERE ID = %d", $id));
+		return $db->queryDelete(sprintf("DELETE FROM binaryblacklist WHERE ID = %d", $id));
 	}
 
 	public function updateBlacklist($regex)
@@ -734,7 +734,7 @@ class Binaries
 			$groupname = sprintf("%s", $db->escapeString($groupname));
 		}
 
-		$db->query(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d WHERE ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));
+		$db->queryUpdate(sprintf("update binaryblacklist set groupname=%s, regex=%s, status=%d, description=%s, optype=%d, msgcol=%d WHERE ID = %d ", $groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"], $regex["id"]));
 	}
 
 	public function addBlacklist($regex)
@@ -759,8 +759,8 @@ class Binaries
 		$db = new DB();
 		$bins = $db->query(sprintf("select ID from binaries WHERE collectionID = %d", $id));
 		foreach ($bins as $bin)
-			$db->query(sprintf("DELETE FROM parts WHERE binaryID = %d", $bin["ID"]));
-		$db->query(sprintf("DELETE FROM binaries WHERE collectionID = %d", $id));
-		$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $id));
+			$db->queryDelete(sprintf("DELETE FROM parts WHERE binaryID = %d", $bin["ID"]));
+		$db->queryDelete(sprintf("DELETE FROM binaries WHERE collectionID = %d", $id));
+		$db->queryDelete(sprintf("DELETE FROM collections WHERE ID = %d", $id));
 	}
 }

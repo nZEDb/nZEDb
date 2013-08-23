@@ -380,7 +380,7 @@ class Releases
 			unlink($nzbpath);
 
 		// Delete from DB.
-		$db->query("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
+		$db->queryDelete("delete releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull
 							from releases
 								LEFT OUTER JOIN releasenfo on releasenfo.releaseID = releases.ID
 								LEFT OUTER JOIN releasecomment on releasecomment.releaseID = releases.ID
@@ -416,7 +416,7 @@ class Releases
 	{
 		$db = new DB();
 
-		$db->query(sprintf("update releases set name=%s, searchname=%s, fromname=%s, categoryID=%d, totalpart=%d, grabs=%d, size=%s, postdate=%s, adddate=%s, rageID=%d, seriesfull=%s, season=%s, episode=%s, imdbID=%d, anidbID=%d where id = %d",
+		$db->queryUpdate(sprintf("update releases set name=%s, searchname=%s, fromname=%s, categoryID=%d, totalpart=%d, grabs=%d, size=%s, postdate=%s, adddate=%s, rageID=%d, seriesfull=%s, season=%s, episode=%s, imdbID=%d, anidbID=%d where id = %d",
 			$db->escapeString($name), $db->escapeString($searchname), $db->escapeString($fromname), $category, $parts, $grabs, $db->escapeString($size), $db->escapeString($posteddate), $db->escapeString($addeddate), $rageid, $db->escapeString($seriesfull), $db->escapeString($season), $db->escapeString($episode), $imdbid, $anidbid, $id));
 	}
 
@@ -837,7 +837,7 @@ class Releases
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf("select count(ID) as num from releases where rageID = %d", $rageid));
 		$ret = $res['num'];
-		$res = $db->query(sprintf("update releases set rageID = -1, seriesfull = null, season = null, episode = null where rageID = %d", $rageid));
+		$res = $db->queryUpdate(sprintf("update releases set rageID = -1, seriesfull = null, season = null, episode = null where rageID = %d", $rageid));
 		return $ret;
 	}
 
@@ -846,7 +846,7 @@ class Releases
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf("SELECT count(ID) AS num FROM releases WHERE anidbID = %d", $anidbID));
 		$ret = $res['num'];
-		$res = $db->query(sprintf("UPDATE releases SET anidbID = -1, episode = null, tvtitle = null, tvairdate = null where anidbID = %d", $anidbID));
+		$res = $db->queryUpdate(sprintf("UPDATE releases SET anidbID = -1, episode = null, tvtitle = null, tvairdate = null where anidbID = %d", $anidbID));
 		return $ret;
 	}
 
@@ -868,7 +868,7 @@ class Releases
 		if ($this->updategrabs)
 		{
 			$db = new DB();
-			$db->queryOneRow(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));
+			$db->queryUpdate(sprintf("update releases set grabs = grabs + 1 where guid = %s", $db->escapeString($guid)));
 		}
 	}
 
@@ -876,7 +876,7 @@ class Releases
 	public function resetCategorize($where="")
 	{
 		$db = new DB();
-		$db->queryDirect("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
+		$db->queryUpdate("UPDATE releases set categoryID = 7010, relnamestatus = 0 ".$where);
 	}
 
 	// Categorizes releases.
@@ -889,14 +889,17 @@ class Releases
 		$consoletools = new consoleTools();
 		$relcount = 0;
 
-		$resrel = $db->queryDirect("SELECT ID, ".$type.", groupID FROM releases ".$where);
-		while ($rowrel = $db->fetchAssoc($resrel))
+		$resrel = $db->query("SELECT ID, ".$type.", groupID FROM releases ".$where);
+		if (count($resrel) > 0)
 		{
-			$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupID']);
-			$db->queryDirect(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
-			$relcount ++;
-			if ($this->echooutput)
-				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
+			foreach ($resrel as $rowrel)
+			{
+				$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupID']);
+				$db->queryUpdate(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
+				$relcount ++;
+				if ($this->echooutput)
+					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
+			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
 			echo "\n";
@@ -914,44 +917,44 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupID = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->query("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID)
+		$db->queryUpdate("UPDATE collections c SET c.filecheck = 1 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID GROUP BY b.collectionID, c.totalFiles HAVING count(b.ID)
 						in (c.totalFiles, c.totalFiles + 1)) AND c.totalFiles > 0 AND c.filecheck = 0 ".$where);
 
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$db->query("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0 ".$where."
+		$db->queryUpdate("UPDATE collections c SET filecheck = 16 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE b.collectionID = c.ID AND b.filenumber = 0 ".$where."
 						GROUP BY b.collectionID) AND c.totalFiles > 0 AND c.filecheck = 1");
 
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$db->query("UPDATE collections set filecheck = 15 where filecheck = 1");
+		$db->queryUpdate("UPDATE collections set filecheck = 15 where filecheck = 1");
 
 		// If we have all the parts set partcheck to 1.
 		if (empty($groupID))
 		{
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID
+			$db->queryUpdate("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts) AND b.partcheck = 0");
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID
+			$db->queryUpdate("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p, collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID
 							GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1) AND b.partcheck = 0");
 		}
 		else
 		{
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID and
+			$db->queryUpdate("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 15 AND c.id = b.collectionID and
 							c.groupID = ".$groupID." GROUP BY p.binaryID HAVING count(p.ID) = b.totalParts ) AND b.partcheck = 0");
-			$db->query("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID and
+			$db->queryUpdate("UPDATE binaries b SET partcheck = 1 WHERE b.ID IN (SELECT p.binaryID FROM parts p ,collections c WHERE p.binaryID = b.ID AND c.filecheck = 16 AND c.id = b.collectionID and
 							c.groupID = ".$groupID." GROUP BY p.binaryID HAVING count(p.ID) >= b.totalParts+1 ) AND b.partcheck = 0");
 		}
 
 		// Set filecheck to 2 if partcheck = 1.
-		$db->query("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
+		$db->queryUpdate("UPDATE collections c SET filecheck = 2 WHERE c.ID IN (SELECT b.collectionID FROM binaries b WHERE c.ID = b.collectionID AND b.partcheck = 1 GROUP BY b.collectionID
 						HAVING count(b.ID) >= c.totalFiles) AND c.filecheck in (15, 16) ".$where);
 
 		// Set filecheck to 1 if we don't have all the parts.
-		$db->query("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
+		$db->queryUpdate("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
-		$db->query(sprintf("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval %d hour) AND c.filecheck
+		$db->queryUpdate(sprintf("UPDATE collections c SET filecheck = 2, totalFiles = (SELECT COUNT(b.ID) FROM binaries b WHERE b.collectionID = c.ID) WHERE c.dateadded < (now() - interval %d hour) AND c.filecheck
 						in (0, 1, 10) ".$where, $this->delaytimet));
 
 		if ($this->echooutput)
@@ -968,7 +971,7 @@ class Releases
 			echo "\n\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$db->query("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), c.filecheck = 3 WHERE
+		$db->queryUpdate("UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryID = b.ID WHERE b.collectionID = c.ID), c.filecheck = 3 WHERE
 						c.filecheck = 2 AND c.filesize = 0 ".$where);
 
 		if ($this->echooutput)
@@ -992,13 +995,13 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				if($db->queryDirect("SELECT ID from collections where filecheck = 3 and filesize > 0"))
+				$res = $db->query("SELECT ID from collections where filecheck = 3 and filesize > 0");
+				if (count($res) > 0)
 				{
-					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN
+					$minsizecount = $db->queryUpdate("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN
 									( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0
 									AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID['ID']);
 
-					$minsizecount = $db->getAffectedRows();
 					if ($minsizecount < 0)
 						$minsizecount = 0;
 					$minsizecounts = $minsizecount+$minsizecounts;
@@ -1006,19 +1009,17 @@ class Releases
 					$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
 					if ($maxfilesizeres['value'] != 0)
 					{
-						$db->query(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND groupID = %d AND filesize > %d ", $groupID['ID'], $maxfilesizeres['value']));
+						$maxsizecount = $db->queryUpdate(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND groupID = %d AND filesize > %d ", $groupID['ID'], $maxfilesizeres['value']));
 
-						$maxsizecount = $db->getAffectedRows();
 						if ($maxsizecount < 0)
 							$maxsizecount = 0;
 						$maxsizecounts = $maxsizecount+$maxsizecounts;
 					}
 
-					$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN
+					$minfilecount = $db->queryUpdate("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN
 									( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5
 									WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID['ID']);
 
-					$minfilecount = $db->getAffectedRows();
 					if ($minfilecount < 0)
 						$minfilecount = 0;
 					$minfilecounts = $minfilecount+$minfilecounts;
@@ -1027,13 +1028,13 @@ class Releases
 		}
 		else
 		{
-			if($db->queryDirect("SELECT ID from collections where filecheck = 3 and filesize > 0"))
+			$res = $db->query("SELECT ID from collections where filecheck = 3 and filesize > 0");
+			if(count($res) > 0)
 			{
-				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN
+				$minsizecount = $db->queryUpdate("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) as minsizetoformrelease FROM groups g INNER JOIN
 								( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5
 								WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease and c.filesize > 0 AND groupID = ".$groupID);
 
-				$minsizecount = $db->getAffectedRows();
 				if ($minsizecount < 0)
 					$minsizecount = 0;
 				$minsizecounts = $minsizecount+$minsizecounts;
@@ -1041,19 +1042,17 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					$db->query(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d " . $where, $maxfilesizeres['value']));
+					$maxsizecount = $db->queryUpdate(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d " . $where, $maxfilesizeres['value']));
 
-					$maxsizecount = $db->getAffectedRows();
 					if ($maxsizecount < 0)
 						$maxsizecount = 0;
 					$maxsizecounts = $maxsizecount+$maxsizecounts;
 				}
 
-				$db->query("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN
+				$minfilecount = $db->queryUpdate("UPDATE collections c LEFT JOIN (SELECT g.ID, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN
 								( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.ID = c.groupID SET c.filecheck = 5
 								WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupID = ".$groupID);
 
-				$minfilecount = $db->getAffectedRows();
 				if ($minfilecount < 0)
 					$minfilecount = 0;
 				$minfilecounts = $minfilecount+$minfilecounts;
@@ -1077,27 +1076,27 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		if($rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit))
+		$rescol = $db->query("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 " . $where . " LIMIT ".$this->stage5limit);
+		if(count($rescol) > 0)
 		{
 			$namecleaning = new nameCleaning();
 			$predb = new  Predb();
 			$page = new Page();
 
-			while ($rowcol = $db->fetchAssoc($rescol))
+			foreach ($rescol as $rowcol)
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
 				$relguid = sha1(uniqid().mt_rand());
-				if($db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
+				if($relid = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
 											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
 											$db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
 											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
 				{
-					$relid = $db->getInsertID();
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
-					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
+					$db->queryUpdate(sprintf("UPDATE collections SET filecheck = 4, releaseID = %d WHERE ID = %d", $relid, $rowcol['ID']));
 					$retcount ++;
 					if ($this->echooutput)
 						echo "Added release ".$cleanRelName."\n";
@@ -1254,15 +1253,16 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		if($resrel = $db->queryDirect("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT ".$this->stage5limit))
+		$resrel = $db->query("SELECT ID, guid, name, categoryID FROM releases WHERE nzbstatus = 0 " . $where . " LIMIT ".$this->stage5limit);
+		if (count($resrel) > 0)
 		{
-			while ($rowrel = $db->fetchAssoc($resrel))
+			foreach ($resrel as $rowrel)
 			{
 				$nzb_guid = $nzb->writeNZBforReleaseId($rowrel['ID'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryID'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat);
 				if($nzb_guid != false)
 				{
-					$db->queryDirect(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE ID = %d", $db->escapestring(md5($nzb_guid)), $rowrel['ID']));
-					$db->queryDirect(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
+					$db->queryUpdate(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE ID = %d", $db->escapestring(md5($nzb_guid)), $rowrel['ID']));
+					$db->queryUpdate(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					$nzbcount++;
 					if ($this->echooutput)
 						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,mysqli_num_rows($resrel)));
@@ -1296,43 +1296,46 @@ class Releases
 			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->queryDirect( "SELECT r.ID, r.name, g.name groupName " .
+			$resrel = $db->query( "SELECT r.ID, r.name, g.name groupName " .
 										"FROM releases r LEFT JOIN groups g ON r.groupID = g.ID " .
 										"WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
 
-			while ($rowrel = $db->fetchAssoc($resrel))
+			if (count($resrel) > 0)
 			{
-				// Try to get reqid.
-				$requestIDtmp = explode("]", substr($rowrel['name'], 1));
-				$bFound = false;
-				$newTitle = "";
-
-				if (count($requestIDtmp) >= 1)
+				foreach ($resrel as $rowrel)
 				{
-					$requestID = (int) $requestIDtmp[0];
-					if ($requestID != 0)
+					// Try to get reqid.
+					$requestIDtmp = explode("]", substr($rowrel['name'], 1));
+					$bFound = false;
+					$newTitle = "";
+
+					if (count($requestIDtmp) >= 1)
 					{
-						$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupName']);
-						if ($newTitle != false && $newTitle != "")
+						$requestID = (int) $requestIDtmp[0];
+						if ($requestID != 0)
 						{
-							$bFound = true;
-							$iFoundcnt++;
+							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupName']);
+							if ($newTitle != false && $newTitle != "")
+							{
+								$bFound = true;
+								$iFoundcnt++;
+							}
 						}
 					}
-				}
 
-				if ($bFound)
-				{
-					$db->query("UPDATE releases SET reqidstatus = 1, searchname = ". $db->escapeString($newTitle)." WHERE ID = ". $rowrel['ID']);
+					if ($bFound)
+					{
+						$db->queryUpdate("UPDATE releases SET reqidstatus = 1, searchname = ". $db->escapeString($newTitle)." WHERE ID = ". $rowrel['ID']);
 
-					if ($this->echooutput)
-						echo "\nUpdated requestID " . $requestID . " to release name: ".$newTitle."\n";
-				}
-				else
-				{
-					$db->query("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
-					if ($this->echooutput)
-						echo ".";
+						if ($this->echooutput)
+							echo "\nUpdated requestID " . $requestID . " to release name: ".$newTitle."\n";
+					}
+					else
+					{
+						$db->queryUpdate("UPDATE releases SET reqidstatus = -2 WHERE ID = " . $rowrel['ID']);
+						if ($this->echooutput)
+							echo ".";
+					}
 				}
 			}
 
@@ -1386,10 +1389,9 @@ class Releases
 		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
-		$db->queryDirect(sprintf("DELETE collections, binaries, parts
+		$reccount = $db->queryDelete(sprintf("DELETE collections, binaries, parts
 						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.filecheck = 5 " . $where));
-		$reccount = $db->getAffectedRows();
 
 		if ($this->echooutput)
 				echo "Removed ".number_format($reccount)." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
@@ -1412,22 +1414,21 @@ class Releases
 		$stage7 = TIME();
 
 		// old collections that were missed somehow.
-		$db->queryDirect(sprintf("DELETE collections, binaries, parts
+		$reccount = $db->queryDelete(sprintf("DELETE collections, binaries, parts
 						  FROM collections INNER JOIN binaries ON collections.ID = binaries.collectionID INNER JOIN parts on binaries.ID = parts.binaryID
 						  WHERE collections.dateadded < (now() - interval %d hour) " . $where, $page->site->partretentionhours));
-		$reccount = $db->getAffectedRows();
 
 		// Binaries/parts that somehow have no collection.
-		$db->queryDirect("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
+		$db->queryDelete("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.ID = parts.binaryID WHERE binaries.collectionID = 0 " . $where);
 
 		// Parts that somehow have no binaries.
-		$db->queryDirect("DELETE FROM parts WHERE `binaryID` NOT IN (SELECT b.id FROM binaries b) " . $where);
+		$db->queryDelete("DELETE FROM parts WHERE `binaryID` NOT IN (SELECT b.id FROM binaries b) " . $where);
 
 		// Binaries that somehow have no collection.
-		$db->queryDirect("DELETE FROM `binaries` WHERE `collectionID` NOT IN (SELECT c.`ID` FROM `collections` c) " . $where);
+		$db->queryDelete("DELETE FROM `binaries` WHERE `collectionID` NOT IN (SELECT c.`ID` FROM `collections` c) " . $where);
 
 		// Collections that somehow have no binaries.
-		$db->queryDirect("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
+		$db->queryDelete("DELETE FROM collections WHERE collections.ID NOT IN ( SELECT binaries.collectionID FROM binaries) " . $where);
 
 		$where = (!empty($groupID)) ? " AND groupID = " . $groupID : "";
 		// Releases past retention.
@@ -1530,7 +1531,7 @@ class Releases
 
 		}
 
-		$db->queryDirect(sprintf("DELETE nzbs WHERE dateadded < (now() - interval %d hour)", $page->site->partretentionhours));
+		$db->queryDelete(sprintf("DELETE nzbs WHERE dateadded < (now() - interval %d hour)", $page->site->partretentionhours));
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
@@ -1630,59 +1631,57 @@ class Releases
 		$db = new DB();
 		$namecleaner = new nameCleaning();
 		$consoletools = new ConsoleTools();
-		if($res = $db->queryDirect("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID"))
+		$res = $db->query("SELECT b.ID as bID, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionID = c.ID");
+		if(count($res) > 0)
 		{
-			if (mysqli_num_rows($res) > 0)
+			$timestart = TIME();
+			if ($this->echooutput)
+				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
+			// Reset the collectionhash.
+			$db->queryUpdate("UPDATE collections SET collectionhash = 0");
+			$delcount = 0;
+			$cIDS = array();
+			foreach ($res as $row)
 			{
-				$timestart = TIME();
-				if ($this->echooutput)
-					echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
-				// Reset the collectionhash.
-				$db->query("UPDATE collections SET collectionhash = 0");
-				$delcount = 0;
-				$cIDS = array();
-				while ($row = mysqli_fetch_assoc($res))
+				$nofiles = true;
+				if ($row['totalFiles'] > 0)
+					$nofiles = false;
+				$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $row['groupID'], $nofiles).$row['fromname'].$row['groupID'].$row['totalFiles']);
+				$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
+				if(!$cres)
 				{
-					$nofiles = true;
-					if ($row['totalFiles'] > 0)
-						$nofiles = false;
-					$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $row['groupID'], $nofiles).$row['fromname'].$row['groupID'].$row['totalFiles']);
-					$cres = $db->queryOneRow(sprintf("SELECT ID FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
-					if(!$cres)
-					{
-						$cIDS[] = $row['ID'];
-						$csql = sprintf("INSERT IGNORE INTO collections (subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
-						$collectionID = $db->queryInsert($csql);
-						if ($this->echooutput)
-							$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
-					}
-					else
-						$collectionID = $cres['ID'];
-					//Update the binaries with the new info.
-					$db->query(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row['bID']));
-				}
-				//Remove the old collections.
-				$delstart = TIME();
-				if ($this->echooutput)
-					echo "\n";
-				foreach ($cIDS as $cID)
-				{
-					$db->query(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
-					$delcount++;
+					$cIDS[] = $row['ID'];
+					$csql = sprintf("INSERT IGNORE INTO collections (subject, fromname, date, xref, groupID, totalFiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, now())", $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupID'], $db->escapeString($row['totalFiles']), $db->escapeString($newSHA1));
+					$collectionID = $db->queryInsert($csql);
 					if ($this->echooutput)
-						$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+						$consoletools->overWrite("Recreated: ".count($cIDS)." collections. Time:".$consoletools->convertTimer(TIME() - $timestart));
 				}
-				// Delete previous failed attempts.
-				$db->query('DELETE FROM collections where collectionhash = "0"');
-
-				if ($this->hashcheck == 0)
-					$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
-				if ($this->echooutput)
-					echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart)."\n";
+				else
+					$collectionID = $cres['ID'];
+				//Update the binaries with the new info.
+				$db->queryUpdate(sprintf("UPDATE binaries SET collectionID = %d where ID = %d", $collectionID, $row['bID']));
 			}
-			else
+			//Remove the old collections.
+			$delstart = TIME();
+			if ($this->echooutput)
+				echo "\n";
+			foreach ($cIDS as $cID)
+			{
+				$db->queryDelete(sprintf("DELETE FROM collections WHERE ID = %d", $cID));
+				$delcount++;
+				if ($this->echooutput)
+					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+			}
+			// Delete previous failed attempts.
+			$db->queryDelete('DELETE FROM collections where collectionhash = "0"');
+
+			if ($this->hashcheck == 0)
 				$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
+			if ($this->echooutput)
+				echo "\nRemade ".count($cIDS)." collections in ".$consoletools->convertTime(TIME() - $timestart)."\n";
 		}
+		else
+			$db->query('UPDATE site SET value = "1" where setting = "hashcheck"');
 	}
 
 	public function getTopDownloads()

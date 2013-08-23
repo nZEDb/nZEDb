@@ -18,7 +18,8 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$dirItr    = new RecursiveDirectoryIterator($site->nzbpath);
 	//$filterItr = new MyRecursiveFilterIterator($dirItr);
 	$itr       = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
-	foreach ($itr as $filePath) {
+	foreach ($itr as $filePath)
+	{
 		if (is_file($filePath))
 		{
 			$file = stristr($filePath->getFilename(), '.nzb.gz', true);
@@ -34,15 +35,14 @@ if (isset($argv[1]) && $argv[1] === "true")
 		}
 	}
 
-
-	$res = $db->queryDirect('SELECT ID, guid FROM `releases`');
-	while ($row =  $db->fetchAssoc($res))
+	$res = $db->query('SELECT ID, guid FROM `releases`');
+	foreach ($res as $row)
 	{
 		$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
 		if (!file_exists($nzbpath))
 		{
 			echo "deleting ".$row['guid']."\n";
-			$db->query(sprintf("DELETE FROM `releases` WHERE `releases`.`ID` = %s", $row['ID']));
+			$db->queryDelete(sprintf("DELETE FROM `releases` WHERE `releases`.`ID` = %s", $row['ID']));
 		}
 
 	}

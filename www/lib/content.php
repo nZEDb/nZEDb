@@ -120,7 +120,7 @@ class Contents
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from content where id=%d", $id));
+		return $db->queryDelete(sprintf("delete from content where id=%d", $id));
 	}
 
 	public function update($form)
@@ -155,7 +155,7 @@ class Contents
 	public function data_update($content)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update content set	role=%d, title = %s , 	url = %s , 	body = %s , 	metadescription = %s , 	metakeywords = %s , 	contenttype = %d , 	showinmenu = %d , 	status = %d , 	ordinal = %d	where	id = %d ", $content->role, $db->escapeString($content->title), $db->escapeString($content->url), $db->escapeString($content->body), $db->escapeString($content->metadescription), $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id ));
+		return $db->queryUpdate(sprintf("update content set	role=%d, title = %s , 	url = %s , 	body = %s , 	metadescription = %s , 	metakeywords = %s , 	contenttype = %d , 	showinmenu = %d , 	status = %d , 	ordinal = %d	where	id = %d ", $content->role, $db->escapeString($content->title), $db->escapeString($content->url), $db->escapeString($content->body), $db->escapeString($content->metadescription), $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id ));
 	}
 
 	public function data_add($content)

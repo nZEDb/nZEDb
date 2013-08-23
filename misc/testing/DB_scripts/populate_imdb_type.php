@@ -10,9 +10,9 @@ $movie = new Movie(true);
 $db = new DB();
 
 $query = "SELECT * FROM movieinfo";
-$res = $db->queryDirect($query);
+$res = $db->query($query);
 
-while ($rel =  $db->fetchAssoc($res))
+foreach ($res as $rel)
 {
 	$movie->updateMovieInfo($rel['imdbID']);
 }

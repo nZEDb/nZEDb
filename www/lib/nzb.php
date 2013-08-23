@@ -40,11 +40,11 @@ class NZB
 			gzwrite($fp, "</head>\n\n");
 			$nzb_guid = "";
 
-			$result = $db->queryDirect(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
-			while ($binrow = $db->fetchAssoc($result))
+			$result = $db->query(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
+			foreach ($result as $binrow)
 			{
-				$result2 = $db->queryDirect(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d order by name", $binrow["ID"]));
-				while ($binrow2 = $db->fetchAssoc($result2))
+				$result2 = $db->query(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d order by name", $binrow["ID"]));
+				foreach ($result2 as $binrow2)
 				{
 					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$binrow["unixdate"]."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalParts"].")\">\n");
 					gzwrite($fp, " <groups>\n");
@@ -52,8 +52,8 @@ class NZB
 					gzwrite($fp, " </groups>\n");
 					gzwrite($fp, " <segments>\n");
 
-					$resparts = $db->queryDirect(sprintf("SELECT DISTINCT(messageID), size, partnumber FROM parts WHERE binaryID = %d ORDER BY partnumber", $binrow2["ID"]));
-					while ($partsrow = $db->fetchAssoc($resparts))
+					$resparts = $db->query(sprintf("SELECT DISTINCT(messageID), size, partnumber FROM parts WHERE binaryID = %d ORDER BY partnumber", $binrow2["ID"]));
+					foreach ($resparts as $partsrow)
 					{
 						if ($nzb_guid == "")
 							$nzb_guid = $partsrow["messageID"];

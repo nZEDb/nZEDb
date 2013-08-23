@@ -48,21 +48,20 @@ class Namefixer
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
-			$relres = $db->queryDirect($query.$this->timeother);
+			$relres = $db->query($query.$this->timeother);
 		//24 hours, all cats
 		else if ($time == 1 && $cats == 2)
-			$relres = $db->queryDirect($query.$this->timeall);
+			$relres = $db->query($query.$this->timeall);
 		//other cats
 		else if ($time == 2 && $cats == 1)
-			$relres = $db->queryDirect($query.$this->fullother);
+			$relres = $db->query($query.$this->fullother);
 		//all cats
 		if ($time == 2 && $cats == 2)
-			$relres = $db->queryDirect($query.$this->fullall);
+			$relres = $db->query($query.$this->fullall);
 
-		$rowcount = $db->getAffectedRows();
-		if ($rowcount > 0)
+		if (count($relres) > 0)
 		{
-			while ($relrow = $db->fetchArray($relres))
+			foreach ($relres as $relrow)
 			{
 				$this->done = false;
 				$this->checkName($relrow, $echo, $type, $namestatus);
@@ -95,21 +94,20 @@ class Namefixer
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
-			$relres = $db->queryDirect($query.$this->timeother);
+			$relres = $db->query($query.$this->timeother);
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2)
-			$relres = $db->queryDirect($query.$this->timeall);
+			$relres = $db->query($query.$this->timeall);
 		//other cats
 		if ($time == 2 && $cats == 1)
-			$relres = $db->queryDirect($query.$this->fullother);
+			$relres = $db->query($query.$this->fullother);
 		//all cats
 		if ($time == 2 && $cats == 2)
-			$relres = $db->queryDirect($query.$this->fullall);
+			$relres = $db->query($query.$this->fullall);
 
-		$rowcount = $db->getAffectedRows();
-		if ($rowcount > 0)
+		if (count($relres) > 0)
 		{
-			while ($relrow = $db->fetchArray($relres))
+			foreach ($relres as $relrow)
 			{
 				$this->done = false;
 				$this->checkName($relrow, $echo, $type, $namestatus);
@@ -175,10 +173,10 @@ class Namefixer
 						$status = 2;
 						if ($type == "PAR2, ")
 							$status = 7;
-						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, relnamestatus = %d, categoryID = %d where ID = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseID"]));
+						$db->queryUpdate(sprintf("UPDATE releases set searchname = %s, relnamestatus = %d, categoryID = %d where ID = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseID"]));
 					}
 					else
-						$db->queryDirect(sprintf("UPDATE releases set searchname = %s, categoryID = %d where ID = %d", $db->escapeString($newname), $determinedcat, $release["releaseID"]));
+						$db->queryUpdate(sprintf("UPDATE releases set searchname = %s, categoryID = %d where ID = %d", $db->escapeString($newname), $determinedcat, $release["releaseID"]));
 				}
 			}
 		}
@@ -203,9 +201,9 @@ class Namefixer
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryID = %d, relnamestatus = 3 where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
 						else
-							$db->query(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryID = %d where ID = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
 					}
 					if ($echooutput)
 					{

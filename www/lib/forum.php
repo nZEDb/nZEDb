@@ -17,7 +17,7 @@ class Forum
 				if ($par == false)
 					return -1;
 
-				$db->query(sprintf("update forumpost set replies = replies + 1, updateddate = now() where ID = %d", $parentid));
+				$db->queryUpdate(sprintf("update forumpost set replies = replies + 1, updateddate = now() where ID = %d", $parentid));
 			}
 
 			$db->queryInsert(sprintf("INSERT INTO `forumpost`
@@ -67,13 +67,13 @@ class Forum
 			else
 				$limit = " LIMIT ".$start.",".$num;
 
-			return $db->query(sprintf(" SELECT forumpost.*, users.username from forumpost left outer join users on users.ID = forumpost.userID where parentID = 0 order by updateddate desc".$limit ));
+			return $db->query("SELECT forumpost.*, users.username from forumpost left outer join users on users.ID = forumpost.userID where parentID = 0 order by updateddate desc".$limit);
 		}
 
 		public function deleteParent($parent)
 		{
 			$db = new DB();
-			$db->query(sprintf("delete from forumpost where ID = %d or parentID = %d", $parent, $parent));
+			$db->queryDelete(sprintf("delete from forumpost where ID = %d or parentID = %d", $parent, $parent));
 		}
 
 		public function deletePost($id)
@@ -85,14 +85,14 @@ class Forum
 				if ($post["parentID"] == "0")
 					$this->deleteParent($id);
 				else
-					$db->query(sprintf("delete from forumpost where ID = %d", $id));
+					$db->queryDelete(sprintf("delete from forumpost where ID = %d", $id));
 			}
 		}
 
 		public function deleteUser($id)
 		{
 			$db = new DB();
-			$db->query(sprintf("delete from forumpost where userID = %d", $id));
+			$db->queryDelete(sprintf("delete from forumpost where userID = %d", $id));
 		}
 
 		public function getCountForUser($uid)
@@ -111,7 +111,7 @@ class Forum
 			else
 				$limit = " LIMIT ".$start.",".$num;
 
-			return $db->query(sprintf(" SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.ID = forumpost.userID where userID = %d order by forumpost.createddate desc ".$limit, $uid));
+			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.ID = forumpost.userID where userID = %d order by forumpost.createddate desc ".$limit, $uid));
 		}
 
 }

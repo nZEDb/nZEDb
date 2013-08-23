@@ -186,7 +186,7 @@ Class NZBcontents
 						else
 						{
 							// NFO download failed, increment attempts.
-							$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
+							$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
 							$failed = true;
 						}
 					}
@@ -204,7 +204,7 @@ Class NZBcontents
 				// No NFO file in the NZB.
 				if ($this->echooutput)
 					echo "-";
-				$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+				$db->queryUpdate(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
 				return false;
 			}
 			if ($failed == true)
@@ -257,6 +257,6 @@ Class NZBcontents
 	function updateCompletion($completion, $relID)
 	{
 		$db = new DB();
-		$db->queryDirect(sprintf("update releases set completion = %d where ID = %d", $completion, $relID));
+		$db->queryUpdate(sprintf("update releases set completion = %d where ID = %d", $completion, $relID));
 	}
 }

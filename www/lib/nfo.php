@@ -35,7 +35,7 @@ class Nfo
 	public function deleteReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from releasenfo where releaseID = %d", $relid));
+		return $db->queryDelete(sprintf("delete from releasenfo where releaseID = %d", $relid));
 	}
 
 	// Find an IMDB ID in a NFO file.
@@ -136,8 +136,8 @@ class Nfo
 		if ($this->isNFO($nfo) && $release["ID"] > 0)
 		{
 			$this->addReleaseNfo($release["ID"]);
-			$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfo), $release["ID"]));
-			$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
+			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfo), $release["ID"]));
+			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
 			if (!isset($release["completion"]))
 				$release["completion"] = 0;
 			if ($release["completion"] == 0)
@@ -195,8 +195,8 @@ class Nfo
 				{
 					//insert nfo into database
 					$this->addReleaseNfo($arr["ID"]);
-					$db->query(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
-					$db->query(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
 					$ret++;
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
 
@@ -230,10 +230,10 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->queryDirect("Select ID from releases where nfostatus <= -6");
-			while ($relrow = $db->fetchAssoc($relres))
+			$relres = $db->query("Select ID from releases where nfostatus <= -6");
+			foreach ($relres as $relrow)
 			{
-				$db->query(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
+				$db->queryDelete(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
 			}
 
 			if ($this->echooutput)

@@ -15,10 +15,10 @@ function preName()
 	$counter = 0;
 	$loops = 1;
 	$reset = 0;
-	//$db->queryDirect("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
+	//$db->queryUpdate("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
 
-	$db->query("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
-	if($res = $db->queryDirect("select ID, searchname from releases where dehashstatus between -6 and -1 and searchname REGEXP '[a-fA-F0-9]{32}'"))
+	$db->queryUpdate("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
+	if($res = $db->query("select ID, searchname from releases where dehashstatus between -6 and -1 and searchname REGEXP '[a-fA-F0-9]{32}'"))
 	{
 		foreach ($res as $row)
 		{
@@ -27,8 +27,8 @@ function preName()
 			{
 				if($res1 = $db->queryOneRow(sprintf("select title from predb where md5 = %s", $db->escapeString($match[1]))))
 				{
-					$db->query(sprintf("update releases set dehashstatus = 1, relnamestatus = 6, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
-					if ($db->getAffectedRows() >= 1)
+					$result = $db->queryUpdate(sprintf("update releases set dehashstatus = 1, relnamestatus = 6, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
+					if (count($result) >= 1)
 					{
 						echo "Renamed hashed release: ".$res1['title']."\n";
 						$success = true;
@@ -37,8 +37,8 @@ function preName()
 				}
 			}
 			if ($success == false)
-				$db->query(sprintf("update releases set dehashstatus = dehashstatus - 1 where ID = %d", $row['ID']));
-			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,mysqli_num_rows($res)));
+				$db->queryUpdate(sprintf("update releases set dehashstatus = dehashstatus - 1 where ID = %d", $row['ID']));
+			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,count($res)));
 		}
 	}
 	echo "\n".$counter. " release(s) names changed.\n";

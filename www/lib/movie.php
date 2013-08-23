@@ -238,7 +238,7 @@ class Movie
 	{
 		$db = new DB();
 
-		$db->query(sprintf("UPDATE movieinfo SET title=%s, tagline=%s, plot=%s, year=%s, rating=%s, genre=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW() WHERE imdbID = %d",
+		$db->queryUpdate(sprintf("UPDATE movieinfo SET title=%s, tagline=%s, plot=%s, year=%s, rating=%s, genre=%s, director=%s, actors=%s, language=%s, cover=%d, backdrop=%d, updateddate=NOW() WHERE imdbID = %d",
 			$db->escapeString($title), $db->escapeString($tagline), $db->escapeString($plot), $db->escapeString($year), $db->escapeString($rating), $db->escapeString($genre), $db->escapeString($director), $db->escapeString($actors), $db->escapeString($language), $cover, $backdrop, $id));
 	}
 
@@ -503,7 +503,7 @@ class Movie
 			if ($this->echooutput && $this->service == "")
 				echo $service." found IMDBid: tt".$imdbId."\n";
 
-			$db->query(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $id));
+			$db->queryUpdate(sprintf("UPDATE releases SET imdbID = %s WHERE ID = %d", $db->escapeString($imdbId), $id));
 
 			//if set scan for imdb info
 			if ($processImdb == 1)
@@ -530,8 +530,8 @@ class Movie
 
 		if ($releaseToWork == '')
 		{
-			$res = $db->queryDirect(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
-			$moviecount = $db->getNumRows($res);
+			$res = $db->query(sprintf("SELECT searchname as name, ID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) order by postdate desc limit %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+			$moviecount = count($res);
 		}
 		else
 		{
@@ -581,7 +581,7 @@ class Movie
 											if ($imdbId === false)
 											{
 												//no imdb id found, set to all zeros so we dont process again
-												$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
+												$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 											}
 											else
 												continue;
@@ -636,7 +636,7 @@ class Movie
 				}
 				else
 				{
-					$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $arr["ID"]));
 					continue;
 				}
 			}
@@ -666,7 +666,7 @@ class Movie
 								$imdbId = $this->domovieupdate($buffer, 'Bing2',  $relID, $db);
 								if ($imdbId === false)
 								{
-									$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+									$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 									return true;
 								}
 								else
@@ -690,7 +690,7 @@ class Movie
 						$imdbId = $this->domovieupdate($buffer, 'Bing2',  $relID, $db);
 						if ($imdbId === false)
 						{
-							$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+							$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 							return true;
 						}
 						else
@@ -702,7 +702,7 @@ class Movie
 			}
 			else
 			{
-				$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+				$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 				return true;
 			}
 		}
@@ -733,7 +733,7 @@ class Movie
 								$imdbId = $this->domovieupdate($buffer, 'Yahoo2',  $relID, $db);
 								if ($imdbId === false)
 								{
-									$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+									$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 									return true;
 								}
 								else
@@ -758,7 +758,7 @@ class Movie
 						$imdbId = $this->domovieupdate($buffer, 'Yahoo2',  $relID, $db);
 						if ($imdbId === false)
 						{
-							$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+							$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 							return true;
 						}
 						else
@@ -770,7 +770,7 @@ class Movie
 			}
 			else
 			{
-				$db->query(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
+				$db->queryUpdate(sprintf("UPDATE releases SET imdbID = 0000000 WHERE ID = %d", $relID));
 				return true;
 			}
 		}
@@ -850,7 +850,7 @@ class Movie
 		$db = new DB();
 		$sql = sprintf("INSERT IGNORE INTO upcoming (source,typeID,info,updateddate) VALUES (%s, %d, %s, null)
 				ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
-		$db->query($sql);
+		$db->queryInsert($sql);
 	}
 
 

@@ -29,7 +29,7 @@ class ReleaseComments
 		$res = $this->getCommentById($id);
 		if ($res)
 		{
-			$db->query(sprintf("delete from releasecomment where ID = %d", $id));
+			$db->queryDelete(sprintf("delete from releasecomment where ID = %d", $id));
 			$this->updateReleaseCommentCount($res["releaseID"]);
 		}
 	}
@@ -37,7 +37,7 @@ class ReleaseComments
 	public function deleteCommentsForRelease($id)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from releasecomment where releaseID = %d", $id));
+		$db->queryDelete(sprintf("delete from releasecomment where releaseID = %d", $id));
 		$this->updateReleaseCommentCount($id);
 	}
 
@@ -87,7 +87,7 @@ class ReleaseComments
 	public function updateReleaseCommentCount($relid)
 	{
 		$db = new DB();
-		$db->query(sprintf("update releases
+		$db->queryUpdate(sprintf("update releases
 				set comments = (select count(ID) from releasecomment where releasecomment.releaseID = %d)
 				where releases.ID = %d", $relid, $relid ));
 	}

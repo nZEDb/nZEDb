@@ -23,7 +23,7 @@ class UserMovies
 	public function delMovie($uid, $imdbid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from usermovies where userID = %d and imdbID = %d ", $uid, $imdbid));
+		$db->queryDelete(sprintf("delete from usermovies where userID = %d and imdbID = %d ", $uid, $imdbid));
 	}
 
 	public function getMovie($uid, $imdbid)
@@ -36,7 +36,7 @@ class UserMovies
 	public function delMovieForUser($uid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from usermovies where userID = %d", $uid));
+		$db->queryDelete(sprintf("delete from usermovies where userID = %d", $uid));
 	}
 
 	public function updateMovie($uid, $imdbid, $catid=array())
@@ -46,6 +46,6 @@ class UserMovies
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "null";
 
 		$sql = sprintf("update usermovies set categoryID = %s where userID = %d and imdbID = %d", $catid, $uid, $imdbid);
-		$db->query($sql);
+		$db->queryUpdate($sql);
 	}
 }

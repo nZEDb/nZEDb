@@ -24,7 +24,7 @@ class UserSeries
 	public function delShow($uid, $rageid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userseries where userID = %d and rageID = %d ", $uid, $rageid));
+		$db->queryDelete(sprintf("delete from userseries where userID = %d and rageID = %d ", $uid, $rageid));
 	}
 
 	public function getShow($uid, $rageid)
@@ -37,13 +37,13 @@ class UserSeries
 	public function delShowForUser($uid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userseries where userID = %d", $uid));
+		$db->queryDelete(sprintf("delete from userseries where userID = %d", $uid));
 	}
 
 	public function delShowForSeries($sid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userseries where rageID = %d", $rid));
+		$db->queryDelete(sprintf("delete from userseries where rageID = %d", $rid));
 	}
 
 	public function updateShow($uid, $rageid, $catid=array())
@@ -53,6 +53,6 @@ class UserSeries
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "null";
 
 		$sql = sprintf("update userseries set categoryID = %s where userID = %d and rageID = %d", $catid, $uid, $rageid);
-		$db->query($sql);
+		$db->queryUpdate($sql);
 	}
 }

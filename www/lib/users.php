@@ -54,7 +54,7 @@ class Users
 		$forum = new Forum();
 		$forum->deleteUser($id);
 
-		$db->query(sprintf("delete from users where ID = %d", $id));
+		$db->queryDelete(sprintf("delete from users where ID = %d", $id));
 	}
 
 	public function getRange($start, $num, $orderby, $username='', $email='', $host='', $role='')
@@ -191,7 +191,7 @@ class Users
 		if ($sabapikeytype !== false)
 			$sql[] = sprintf('sabapikeytype = %d', $sabapikeytype);
 
-		$db->query(sprintf("update users set %s where id = %d", implode(', ', $sql), $id));
+		$db->queryUpdate(sprintf("update users set %s where id = %d", implode(', ', $sql), $id));
 
 		return Users::SUCCESS;
 	}
@@ -199,21 +199,21 @@ class Users
 	public function updateRssKey($uid)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update users set rsstoken = md5(%s) where id = %d",
+		return $db->queryUpdate(sprintf("update users set rsstoken = md5(%s) where id = %d",
 			$db->escapeString(uniqid()), $uid));
 	}
 
 	public function updatePassResetGuid($id, $guid)
 	{
 		$db = new DB();
-		$db->query(sprintf("update users set resetguid = %s where id = %d", $db->escapeString($guid), $id));
+		$db->queryUpdate(sprintf("update users set resetguid = %s where id = %d", $db->escapeString($guid), $id));
 		return Users::SUCCESS;
 	}
 
 	public function updatePassword($id, $password)
 	{
 		$db = new DB();
-		$db->query(sprintf("update users set password = %s, userseed=md5(uuid()) where id = %d", $db->escapeString($this->hashPassword($password)), $id));
+		$db->queryUpdate(sprintf("update users set password = %s, userseed=md5(uuid()) where id = %d", $db->escapeString($this->hashPassword($password)), $id));
 		return Users::SUCCESS;
 	}
 
@@ -238,7 +238,7 @@ class Users
 	public function incrementGrabs($id, $num=1)
 	{
 		$db = new DB();
-		$db->query(sprintf("update users set grabs = grabs + %d where id = %d ", $num, $id));
+		$db->queryUpdate(sprintf("update users set grabs = grabs + %d where id = %d ", $num, $id));
 	}
 
 	public function getById($id)
@@ -431,13 +431,13 @@ class Users
 		if ($host != '')
 			$hostSql = sprintf(', host = %s', $db->escapeString($host));
 
-		$db->query(sprintf("update users set lastlogin = now() %s where ID = %d ", $hostSql, $uid));
+		$db->queryUpdate(sprintf("update users set lastlogin = now() %s where ID = %d ", $hostSql, $uid));
 	}
 
 	public function updateApiAccessed($uid)
 	{
 		$db = new DB();
-		$db->query(sprintf("update users set apiaccess = now() where id = %d ", $uid));
+		$db->queryUpdate(sprintf("update users set apiaccess = now() where id = %d ", $uid));
 	}
 
 	public function setCookies($uid)
@@ -478,7 +478,7 @@ class Users
 		}
 		$db = new DB();
 		$sql = sprintf("delete from usercart where ID IN (%s) and userID = %d", implode(',',$del), $uid);
-		$db->query($sql);
+		$db->queryDelete($sql);
 	}
 
 	public function delCartByUserAndRelease($guid, $uid)
@@ -486,19 +486,19 @@ class Users
 		$db = new DB();
 		$rel = $db->queryOneRow(sprintf("select ID from releases where guid = %s", $db->escapeString($guid)));
 		if ($rel)
-			$db->query(sprintf("DELETE FROM usercart WHERE userID = %d AND releaseID = %d", $uid, $rel["ID"]));
+			$db->queryDelete(sprintf("DELETE FROM usercart WHERE userID = %d AND releaseID = %d", $uid, $rel["ID"]));
 	}
 
 	public function delCartForUser($uid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from usercart where userID = %d", $uid));
+		$db->queryDelete(sprintf("delete from usercart where userID = %d", $uid));
 	}
 
 	public function delCartForRelease($rid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from usercart where releaseID = %d", $rid));
+		$db->queryDelete(sprintf("delete from usercart where releaseID = %d", $rid));
 	}
 
 	public function addCategoryExclusions($uid, $catids)
@@ -541,13 +541,13 @@ class Users
 	public function delCategoryExclusion($uid, $catid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userexcat where userID = %d and categoryID = %d", $uid, $catid));
+		$db->queryDelete(sprintf("delete from userexcat where userID = %d and categoryID = %d", $uid, $catid));
 	}
 
 	public function delUserCategoryExclusions($uid)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userexcat where userID = %d", $uid));
+		$db->queryDelete(sprintf("delete from userexcat where userID = %d", $uid));
 	}
 
 	public function sendInvite($sitetitle, $siteemail, $serverurl, $uid, $emailto)
@@ -571,7 +571,7 @@ class Users
 		//
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
 		//
-		$db->query(sprintf("delete from userinvite where createddate < now() - interval %d day", Users::DEFAULT_INVITE_EXPIRY_DAYS));
+		$db->queryDelete(sprintf("delete from userinvite where createddate < now() - interval %d day", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 
 		return $db->queryOneRow(sprintf("select * from userinvite where guid = %s", $db->escapeString($inviteToken)));
 	}
@@ -585,7 +585,7 @@ class Users
 	public function deleteInvite($inviteToken)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from userinvite where guid = %s ", $db->escapeString($inviteToken)));
+		$db->queryDelete(sprintf("delete from userinvite where guid = %s ", $db->escapeString($inviteToken)));
 	}
 
 	public function checkAndUseInvite($invitecode)
@@ -595,7 +595,7 @@ class Users
 			return -1;
 
 		$db = new DB();
-		$db->query(sprintf("update users set invites = invites-1 where id = %d ", $invite["userID"]));
+		$db->queryUpdate(sprintf("update users set invites = invites-1 where id = %d ", $invite["userID"]));
 		$this->deleteInvite($invitecode);
 		return $invite["userID"];
 	}
@@ -639,9 +639,9 @@ class Users
 	{
 		$db = new DB();
 		if ($isdefault == 1)
-			$db->query("update userroles set isdefault=0");
+			$db->queryUpdate("update userroles set isdefault=0");
 
-		return $db->query(sprintf("update userroles set name=%s, apirequests=%d, downloadrequests=%d, defaultinvites=%d, isdefault=%d, canpreview=%d WHERE ID=%d", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
+		return $db->queryUpdate(sprintf("update userroles set name=%s, apirequests=%d, downloadrequests=%d, defaultinvites=%d, isdefault=%d, canpreview=%d WHERE ID=%d", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
 	}
 
 	public function deleteRole($id)
@@ -655,16 +655,16 @@ class Users
 				$userids[] = $user['ID'];
 
 			$defaultrole = $this->getDefaultRole();
-			$db->query(sprintf("update users set role=%d where ID IN (%s)", $defaultrole['ID'], implode(',', $userids)));
+			$db->queryUpdate(sprintf("update users set role=%d where ID IN (%s)", $defaultrole['ID'], implode(',', $userids)));
 		}
-		return $db->query(sprintf("delete from userroles WHERE ID=%d", $id));
+		return $db->queryDelete(sprintf("delete from userroles WHERE ID=%d", $id));
 	}
 
 	public function getApiRequests($userid)
 	{
 		$db = new DB();
 		//clear old requests
-		$db->query(sprintf("delete FROM userrequests WHERE userID = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		$db->queryDelete(sprintf("delete FROM userrequests WHERE userID = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 
 		$sql = sprintf("select COUNT(ID) as num FROM userrequests WHERE userID = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid);
 		return $db->queryOneRow($sql);
@@ -681,7 +681,7 @@ class Users
 	{
 		$db = new DB();
 		//clear old requests
-		$db->query(sprintf("delete FROM userdownloads WHERE userID = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		$db->queryDelete(sprintf("delete FROM userdownloads WHERE userID = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 
 		$sql = sprintf("select COUNT(ID) as num FROM userdownloads WHERE userID = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid);
 		return $db->queryOneRow($sql);

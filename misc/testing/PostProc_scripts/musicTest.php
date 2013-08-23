@@ -12,21 +12,27 @@ $limit = 10;
 $testSpecificRel = 'Joy - Touch By Touch 2011-CDM-2010-RQS'; //make this string empty to check last $limit releases
 
 
-if (empty($testSpecificRel)) {
-	$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, $limit));
-	foreach ($res as $album) {
+if (empty($testSpecificRel))
+{
+	$res = $db->query(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC LIMIT %d", Category::CAT_PARENT_MUSIC, $limit));
+	foreach ($res as $album)
+	{
 		$artist = $music->parseArtist($album);
 		doTest($artist);
 	}
-} else {
+}
+else
+{
 	$artist = $music->parseArtist($testSpecificRel);
 	doTest($artist);
 }
 
-function doTest($relInfo) {
+function doTest($relInfo)
+{
 	echo $relInfo['releasename'].'<br />';
 	$result = updateMusicInfo($relInfo['artist'], $relInfo['album'], $relInfo['year']);
-	if ($result !== false) {
+	if ($result !== false)
+	{
 		echo '<pre>';
 		print_r($result);
 		echo '</pre><br /><br />';

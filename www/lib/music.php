@@ -232,7 +232,7 @@ class Music
 	{
 		$db = new DB();
 
-		$db->query(sprintf("UPDATE musicinfo SET title=%s, asin=%s, url=%s, salesrank=%s, artist=%s, publisher=%s, releasedate='%s', year=%s, tracks=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
+		$db->queryUpdate(sprintf("UPDATE musicinfo SET title=%s, asin=%s, url=%s, salesrank=%s, artist=%s, publisher=%s, releasedate='%s', year=%s, tracks=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
 		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $releasedate, $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));
 	}
 
@@ -415,13 +415,13 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus != 0 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
-		if ($db->getNumRows($res) > 0)
+		$res = $db->query(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus != 0 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
+		if (count($res) > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." music release(s).\n";
+				echo "Processing ".count($res)." music release(s).\n";
 
-			while ($arr = $db->fetchAssoc($res))
+			foreach ($res as $arr)
 			{
 				$album = $this->parseArtist($arr['searchname']);
 				if ($album !== false)
@@ -438,13 +438,13 @@ class Music
 					}
 
 					// Update release.
-					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
 
 				}
 				else
 				{
 					// No album found.
-					$db->query(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 				}
 				usleep($this->sleeptime*1000);
 			}

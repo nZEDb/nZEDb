@@ -59,9 +59,9 @@ class ReleaseExtra
 	public function delete($id)
 	{
 		$db = new DB();
-		$db->query(sprintf("delete from releaseaudio where releaseID = %d", $id));
-		$db->query(sprintf("delete from releasesubs where releaseID = %d", $id));
-		return $db->query(sprintf("delete from releasevideo where releaseID = %d", $id));
+		$db->queryDelete(sprintf("delete from releaseaudio where releaseID = %d", $id));
+		$db->queryDelete(sprintf("delete from releasesubs where releaseID = %d", $id));
+		return $db->queryDelete(sprintf("delete from releasevideo where releaseID = %d", $id));
 	}
 
 	public function addFromXml($releaseID, $xml)
@@ -197,7 +197,7 @@ class ReleaseExtra
 	public function deleteFull($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from releaseextrafull where releaseID = %d", $id));
+		return $db->queryDelete(sprintf("delete from releaseextrafull where releaseID = %d", $id));
 	}
 
 	public function addFull($id, $xml)

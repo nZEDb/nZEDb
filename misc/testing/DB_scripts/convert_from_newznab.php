@@ -17,6 +17,19 @@ function runQuery($db, $sql, $runQueries)
 	}
 }
 
+function runQueryupdate($db, $sql, $runQueries)
+{
+	if ($runQueries)
+	{
+		return $db->queryUpdate($sql);
+	}
+	else
+	{
+		echo $sql . ";\n";
+		return true;
+	}
+}
+
 function convertTable($db, $nZEDbschema, $tableName, $sql, $runQueries)
 {
 	if ($runQueries)
@@ -193,7 +206,7 @@ function truncateTable($db, $tableName, $runQueries)
 	echo "Skipping rolexcat table: Not in nZEDb\n";
 
 	echo "Skipping sites table: You must manually update your site settings (siteseed will be copied)\n";
-	runQuery($db, "UPDATE " . $nZEDB_schema . ".site set value = (select value from " . $nn_schema . ".site where setting = `siteseed`) where setting = `siteseed`", $runQueries);
+	runQueryupdate($db, "UPDATE " . $nZEDB_schema . ".site set value = (select value from " . $nn_schema . ".site where setting = `siteseed`) where setting = `siteseed`", $runQueries);
 
 	echo "Skipping sphinx table: Not in nZEDb\n";
 

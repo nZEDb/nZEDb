@@ -26,7 +26,7 @@ else
     echo "Copying covers from ".$from."/../www/covers\n";
 	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
 	echo "Setting nzbstatus for all releases\n";
-	$db->query("update releases set nzbstatus = 1");
+	$db->queryUpdate("update releases set nzbstatus = 1");
 	system("php ".$misc."testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
 }
 ?>

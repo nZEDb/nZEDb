@@ -232,13 +232,13 @@ require_once(WWW_DIR."/lib/site.php");
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 order by postdate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
-		if ($db->getNumRows($res) > 0)
+		$res = $db->query(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 order by postdate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
+		if (count($res) > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." book releases.\n";
+				echo "Processing ".count($res)." book releases.\n";
 
-			while ($arr = $db->fetchAssoc($res))
+			foreach ($res as $arr)
 			{
 				$bookInfo = $this->parseTitle($arr['searchname'], $arr['ID']);
 				if ($bookInfo !== false)
@@ -253,13 +253,13 @@ require_once(WWW_DIR."/lib/site.php");
 					}
 
 					// Update release.
-					$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", $bookId, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", $bookId, $arr["ID"]));
 
 				}
 				else
 				{
 					// Could not parse release title.
-					$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
 				}
 				usleep($this->sleeptime*1000);
 			}
@@ -276,14 +276,14 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			echo "Changing category to misc books: ".$releasename."\n";
 			$db = new DB();
-			$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
+			$db->queryUpdate(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
 			return false;
 		}
 		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 		{
 			echo "Changing category to magazines: ".$releasename."\n";
 			$db = new DB();
-			$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
+			$db->queryUpdate(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
 			return false;
 		}
 		else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
