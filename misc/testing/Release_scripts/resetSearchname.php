@@ -52,7 +52,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus in (0, 1)");
+	$res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus in (0, 1)");
 	
 	if (sizeof($res) > 0)
 	{
@@ -89,7 +89,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
     $db = new DB();
-    $res = $db->queryDirect("SELECT ID, name FROM releases where relnamestatus != 3");
+    $res = $db->queryDirect("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
 
     if (sizeof($res) > 0)
     {

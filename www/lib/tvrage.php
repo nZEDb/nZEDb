@@ -39,7 +39,7 @@ class TvRage
 
 	public function getByTitle($title)
 	{
-		// check if we already have an entry for this show
+		// Check if we already have an entry for this show.
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf("SELECT rageID from tvrage where lower(releasetitle) = lower(%s)", $db->escapeString($title)));
 		if ($res)
@@ -130,9 +130,7 @@ class TvRage
 		}
 		$tsql = '';
 		if ($ragename != '')
-		{
 			$tsql .= sprintf("and tvrage.releasetitle like %s", $db->escapeString("%".$ragename."%"));
-		}
 
 		$sql = sprintf(" SELECT tvrage.ID, tvrage.rageID, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.ID as userseriesID from tvrage left outer join userseries on userseries.userID = %d and userseries.rageID = tvrage.rageID where tvrage.rageID in (select rageid from releases) and tvrage.rageID > 0 %s %s group by tvrage.rageID order by tvrage.releasetitle asc", $uid, $rsql, $tsql);
 		return $db->query($sql);
@@ -354,7 +352,7 @@ class TvRage
 		$db = new DB();
 
 		if ($this->echooutput)
-			echo "TV series: ".$show['name']."-".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'').".\n";
+			echo "TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
 
 		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "null";
 
@@ -641,10 +639,6 @@ class TvRage
 				krsort($titleMatches);
 				krsort($urlMatches);
 				krsort($akaMatches);
-
-				//print_r($titleMatches);
-				//print_r($urlMatches);
-				//print_r($akaMatches)
 
 				// look for 100% title matches first
 				if (isset($titleMatches[100]))
@@ -1000,5 +994,4 @@ class TvRage
 			'Wildlife'
 		);
 	}
-
 }

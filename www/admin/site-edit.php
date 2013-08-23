@@ -101,6 +101,9 @@ $page->smarty->assign('partrepair_names', array( 'Disabled', 'Part Repair', 'Par
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array( 'Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
 
+$page->smarty->assign('loggingopt_ids', array(0,1,2,3));
+$page->smarty->assign('loggingopt_names', array ( 'Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file'));
+
 $themelist = array();
 $themes = scandir(WWW_DIR."/themes");
 foreach ($themes as $theme)

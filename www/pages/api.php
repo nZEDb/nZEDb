@@ -148,7 +148,7 @@ switch ($function)
 			$offset = $_GET["offset"];
 
 		if (isset($_GET["q"]))
-			$reldata = $releases->search($_GET["q"], $categoryId, $offset, $limit, "", $maxage, $catexclusions);
+			$reldata = $releases->search($_GET["q"], -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, $limit, "", $maxage, $catexclusions);
 		else
 		{
 			$orderby = array();

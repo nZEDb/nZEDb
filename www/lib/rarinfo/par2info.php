@@ -39,7 +39,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    1.6
+ * @version    1.7
  */
 class Par2Info extends ArchiveReader
 {
@@ -192,14 +192,10 @@ class Par2Info extends ArchiveReader
 	 * Parses the stored packets and returns a list of records for each of the
 	 * files in the recovery set.
 	 *
-	 * @return  array|boolean  list of file records, or false if none are available
+	 * @return  array  list of file records, empty if none are available
 	 */
 	public function getFileList()
 	{
-		// Check that packets are stored
-		if (empty($this->packets) || empty($this->fileIDs)) {return false;}
-
-		// Build the file list
 		$ret = array();
 		foreach ($this->packets as $packet) {
 			if ($packet['head_type'] == self::PACKET_FILEDESC && !isset($ret[$packet['file_id']])) {

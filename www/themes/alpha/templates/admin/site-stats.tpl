@@ -42,6 +42,66 @@
 
 <br/><br/>
 
+{if $isadmin}
+<h2>Top Failed Logins and IP's</h2>
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr>
+        <td width="50%">
+        <!-- left table -->
+        <table style="width:100%;margin-top:10px;" class="data highlight">
+            <tr>
+                <th colspan="4">
+                    <h3<br>Top Login Falures by Username and IP</h3>
+                </th>
+            </tr>
+        <tr>
+            <th>Last Attempt</th>
+            <th>Username</th>
+            <th>IP Address</th>
+            <th>Count</th>
+        </tr>
+
+        {foreach from=$toplogincombined item=result}
+            <tr class="{cycle values=",alt"}">
+                <td>{$result.time}</td>
+                <td>{$result.username}</td>
+                <td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
+                <td>{$result.count}</td>
+            </tr>
+        {/foreach}
+    </table>
+
+        </td>
+        <td width="50%">
+
+        <!-- right table -->
+        <table style="width:100%;margin-top:10px;" class="data highlight">
+            <tr>
+                <th colspan="3">
+                    <h3<br>Top Login Falures by IP</h3>
+                </th>
+            </tr>
+            <tr>
+                <th>Last Attempt</th>
+                <th>IP Address</th>
+                <th>Count</th>
+            </tr>
+
+            {foreach from=$toploginips item=result}
+                <tr class="{cycle values=",alt"}">
+                    <td>{$result.time}</td>
+                    <td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
+                    <td>{$result.count}</td>
+                </tr>
+            {/foreach}
+        </table>
+        </td>
+    </tr>
+</table>
+<br><br>
+{/if}
+
+
 <h2>Releases Added In Last 7 Days</h2>
 
 <table style="width:100%;margin-top:10px;" class="data highlight">

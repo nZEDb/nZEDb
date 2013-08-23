@@ -44,7 +44,7 @@ require_once dirname(__FILE__).'/rarinfo.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.2
+ * @version    2.3
  */
 class SrrInfo extends RarInfo
 {
@@ -139,7 +139,7 @@ class SrrInfo extends RarInfo
 			$summary['oso_info'] = $osoInfo;
 		}
 		$fileList = $this->getFileList($skipDirs);
-		$summary['file_count'] = $fileList ? count($fileList) : 0;
+		$summary['file_count'] = count($fileList);
 		if ($full) {
 			$summary['file_list'] = $fileList;
 		}
@@ -212,7 +212,6 @@ class SrrInfo extends RarInfo
 	 */
 	public function getFileList($skipDirs=false)
 	{
-		if (empty($this->blocks)) {return false;}
 		$list = array();
 		$i = -1;
 
