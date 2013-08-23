@@ -31,9 +31,10 @@
 -------------------------------------------------- */
 html, body { height: 100%; }    /* The html and body elements cannot have any padding or margin. */
 /* Wrapper for page content to push down footer */
-#wrap { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -60px; padding: 0 0 60px; } /* Negative indent footer by its height */ /* Pad bottom by footer height */
+#wrap { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -100px; padding: 0 0 100px; } /* Negative indent footer by its height */ /* Pad bottom by footer 
+height */
 /* Set the fixed height of the footer here */
-footer { height: 90px; }
+footer { height: 100px; }
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) { footer { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }}
 
@@ -44,9 +45,9 @@ legend.adbanner { font-size: 11px !important; font-weight: bold !important; text
 .footer-links li:first-child { padding-left: 0; }
 .dropdown-menu { border: 0; }
 .dropdown-menu .divider { height:2px;margin:0; }
-.container { max-width: 1140px; }
 nav>.container,nav>.container>.navbar-header,nav>.container>.navbar-nav { height:30px;min-height: 30px; }
 nav>.container>.navbar-nav>li>a,nav>.container>.navbar-header>a { padding-top: 5px;height:30px;min-height: 30px; }
+nav.navbar.navbar-inverse { z-index:99999; }
 </style>
 
 <!-- Favicons WWWIIIPPP Larger Icons-->
@@ -108,7 +109,7 @@ nav>.container>.navbar-nav>li>a,nav>.container>.navbar-header>a { padding-top: 5
 <!-- Header area containing top menu, status menu, logo, ad header
 ================================================== -->
 <header class="masthead">
-<div class="container">
+<div class="container" style="min-width:1120px;">
 <div class="col-xs-7">
 <div class="media">
 <a class="pull-left logo" style="padding: 2px 10px;" title="{$site->title}" href="{$smarty.const.WWW_TOP}{$site->home_link}">
@@ -130,7 +131,7 @@ nav>.container>.navbar-nav>li>a,nav>.container>.navbar-header>a { padding-top: 5
 <!-- Navigation Menu containing HeaderMenu and HeaderSearch
 ================================================== -->
 <div class="navbar navbar-inverse navbar-static-top">
-<div class="container">
+<div class="container" style="min-width:1120px;">
 {if $loggedin=="true"}{$header_menu}{/if}<!-- SITE NAVIGATION -->
 </div><!--/.navbar -->
 </div><!-- end Navigation -->
