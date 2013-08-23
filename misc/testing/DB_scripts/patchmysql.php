@@ -56,7 +56,6 @@ function SplitSQL($file, $delimiter = ';')
 					}
 					else
 					{
-						print_r($query);
 						if ($db->query($query) === false)
 							echo 'ERROR: ' . $query . "\n";
 						else
