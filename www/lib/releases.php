@@ -898,7 +898,7 @@ class Releases
 				$db->queryUpdate(sprintf("UPDATE releases SET categoryID = %d, relnamestatus = 1 WHERE ID = %d", $catId, $rowrel['ID']));
 				$relcount ++;
 				if ($this->echooutput)
-					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,mysqli_num_rows($resrel)));
+					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,count($resrel)));
 			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
@@ -1006,7 +1006,7 @@ class Releases
 						$minsizecount = 0;
 					$minsizecounts = $minsizecount+$minsizecounts;
 
-					$maxfilesizeres = $db->queryOneRow("select value from site where setting = maxsizetoformrelease");
+					$maxfilesizeres = $db->queryOneRow("select value from site where setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0)
 					{
 						$maxsizecount = $db->queryUpdate(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND groupID = %d AND filesize > %d ", $groupID['ID'], $maxfilesizeres['value']));
@@ -1265,7 +1265,7 @@ class Releases
 					$db->queryUpdate(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseID = %s", $rowrel['ID']));
 					$nzbcount++;
 					if ($this->echooutput)
-						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,mysqli_num_rows($resrel)));
+						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,count($resrel)));
 				}
 			}
 		}
@@ -1293,7 +1293,7 @@ class Releases
 				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
 			// Mark records that don't have regex titles.
-			$db->query( "UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
+			$db->queryUpdate("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 " . $where);
 
 			// Look for records that potentially have regex titles.
 			$resrel = $db->query( "SELECT r.ID, r.name, g.name groupName " .

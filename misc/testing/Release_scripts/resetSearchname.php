@@ -29,7 +29,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
 			$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
-			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
+			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
@@ -66,7 +66,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
 			$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
-			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
+			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
@@ -103,7 +103,7 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
 			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
 			$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
 			$done++;
-			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,mysqli_num_rows($res)));
+			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n".$done." releases renamed in ".$timenc.".\n";
