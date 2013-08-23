@@ -16,7 +16,7 @@ if (isset($_REQUEST["g"]))
 	$grp = $_REQUEST["g"];
 
 $catarray = array();
-$catarray[] = $category;	
+$catarray[] = $category;
 
 $page->smarty->assign('category', $category);
 $browsecount = $releases->getBrowseCount($catarray, -1, $page->userdata["categoryexclusions"], $grp);
@@ -39,7 +39,7 @@ $page->smarty->assign('pager', $pager);
 
 $covgroup = '';
 if ($category == -1 && $grp == "")
-	$page->smarty->assign("catname","All");			
+	$page->smarty->assign("catname","All");	
 elseif ($category != -1 && $grp == "")
 {
 	$cat = new Category();
@@ -61,16 +61,16 @@ elseif ($category != -1 && $grp == "")
 }
 elseif ($grp != "")
 {
-	$page->smarty->assign('catname',$grp);			
+	$page->smarty->assign('catname',$grp);
 }
 $page->smarty->assign('covgroup',$covgroup);
 
 foreach($ordering as $ordertype) 
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");	
+	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");
 
 $page->smarty->assign('lastvisit',$page->userdata['lastlogin']);
 
-$page->smarty->assign('results',$results);		
+$page->smarty->assign('results',$results);
 
 $page->meta_title = "Browse Nzbs";
 $page->meta_keywords = "browse,nzb,description,details";

@@ -93,7 +93,7 @@
 
 <div id="page">
     <div id="content">
-        {$page->content}
+       {$page->content}
     </div>
 </div>
 

@@ -12,15 +12,13 @@ class NZB
 	function writeNZBforReleaseId($relid, $relguid, $name, $catId, $path, $echooutput=false, $version=null, $cat=null)
 	{
 		if ($relid == "" || $relguid == "" || $path == "")
-		{
 			return false;
-		}
+
 		$db = new DB();
 		$binaries = array();
 		if (!isset($cat))
-		{
 			$cat = new Category();
-		}
+
 		$catrow = $cat->getById($catId);
 		if (!isset($version))
 		{
@@ -74,14 +72,12 @@ class NZB
 			}
 			else
 			{
-				echo $path." does not exist.\n";
+				echo "ERROR: ".$path." does not exist.\n";
 				return false;
 			}
 		}
 		else
-		{
 			return false;
-		}
 	}
 
 	//
@@ -112,7 +108,6 @@ class NZB
 		{
 			$s = new Sites();
 			$site = $s->get();
-			//echo "create site #2\n";
 			$sitenzbpath = $site->nzbpath;
 			if (substr($sitenzbpath, strlen($sitenzbpath) - 1) != '/')
 				$sitenzbpath = $sitenzbpath."/";
@@ -133,7 +128,7 @@ class NZB
 	}
 
 	//
-	// builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
+	// Builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
 	//
 	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
 	{
@@ -163,8 +158,7 @@ class NZB
 		$i=0;
 		foreach($xml->file as $file)
 		{
-			//subject
-			//var_dump($file);
+			// Subject.
 			$title = $file->attributes()->subject;
 			if (preg_match('/\.par2/i', $title))
 				$num_pars++;
@@ -183,7 +177,7 @@ class NZB
 				$result[$i]['ext'] = "";
 			}
 
-			//filesize
+			// File size.
 			$filesize = $numsegs = 0;
 			foreach($file->segments->segment as $segment)
 			{
@@ -192,7 +186,7 @@ class NZB
 			}
 			$result[$i]['size'] = $filesize;
 
-			//file completion
+			// File completion.
 			preg_match('/\((\d{1,4})\/(?P<total>\d{1,4})\)$/', $title, $parts);
 			$result[$i]['partstotal'] = $parts['total'];
 			$result[$i]['partsactual'] = $numsegs;
@@ -211,7 +205,7 @@ class NZB
 			{
 				array_push($result[$i]['segments'], (string)$s);
 			}
-			//var_dump($result);
+
 			unset($result[$i]['segments']['@attributes']);
 			$i++;
 		}

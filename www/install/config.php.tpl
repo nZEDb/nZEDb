@@ -24,4 +24,13 @@ define('NNTP_SERVER_A', '%%NNTP_SERVER_A%%');
 define('NNTP_PORT_A', '%%NNTP_PORT_A%%');
 define('NNTP_SSLENABLED_A', %%NNTP_SSLENABLED_A%%);
 
+// Wether to use memcached or not.
+define('MEMCACHE_ENABLED', false);
+define('MEMCACHE_HOST', '127.0.0.1');
+define('MEMCACHE_PORT', '11211');
+// Amount of time to keep a query in ram in seconds.
+define('MEMCACHE_EXPIRY', '900');
+// To compress the queries using zlib or not (more cpu usage and less ram usage if set to true, inverse for false);
+define('MEMCACHE_COMPRESSION', true);
+
 require("automated.config.php");

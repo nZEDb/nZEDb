@@ -1,3 +1,6 @@
- {*			<h1>{$content->title}</h1>*}
-
-			{$content->body}
+{if $loggedin=="true"}
+	{foreach from=$content item=c}
+			{*<h1>{$c->title}</h1>*}
+			{$c->body}
+	{/foreach}
+{/if}

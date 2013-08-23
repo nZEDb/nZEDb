@@ -56,9 +56,9 @@
 				<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
 					<div class="btns" style="float:right">
 						{release_flag($result.searchname, browse)}
-						{if $result.passwordstatus == 1}<img title="Probably Passworded" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="Probably Passworded" />
-						{elseif $result.passwordstatus == 2}<img title="Broken post" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/broken.png" alt="Broken post" />
-						{elseif $result.passwordstatus == 10}<img title="Passworded archive" src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="Passworded archive" />{/if}
+						{if $result.passwordstatus == 1}<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded." />
+						{elseif $result.passwordstatus == 2}<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged." />
+						{elseif $result.passwordstatus == 10}<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock.gif" alt="RAR/ZIP is Passworded." />{/if}
 						{if $result.videostatus == 1}<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev rndbtn" rel="preview"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/multimedia/video.png" /></a>{/if}
 						{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
 						{if $result.imdbID > 0}<a href="#" name="name{$result.imdbID}" title="View movie info" class="modal_imdb rndbtn" rel="movie" >Cover</a>{/if}
@@ -70,6 +70,7 @@
 						{if $result.anidbID > 0}<a class="rndbtn" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a>{/if}
 						{if $result.tvairdate != ""}<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
 						{if $result.reID > 0}<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>{/if}
+						{if $result.preID > 0}<span class="preinfo rndbtn" title="{$result.preID}">PreDB</span>{/if}
                         {if $result.group_name != ""}<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>{/if}
 					</div>
 				</div>

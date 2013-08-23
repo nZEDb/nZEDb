@@ -65,6 +65,18 @@ A: https://github.com/nZEDb/pre-info
 Q: Can I have some information on collections/binaries/parts?
 A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
 
+Q: I'm missing the memcache stuff in my config.php file.
+A: Add the following under define('NNTP_SSLENABLED_A', false);
+
+	 // Wether to use memcached or not.
+     define('MEMCACHE_ENABLED', false);
+     define('MEMCACHE_HOST', '127.0.0.1');
+     define('MEMCACHE_PORT', '11211');
+     // Amount of time to keep a query in ram in seconds.
+     define('MEMCACHE_EXPIRY', '900');
+     // To compress the queries using zlib or not (more cpu usage and less ram usage if set to true, inverse for false);
+     define('MEMCACHE_COMPRESSION', true); // Wether to use memcached or not.
+
 Please do not open issues on github if the question is already asked. Take a few minutes to look at the titles of other issues.
 Do not expect us to implement requested features in a short amount of time.
 Some requested features we will not implement, you are free to clone the git.

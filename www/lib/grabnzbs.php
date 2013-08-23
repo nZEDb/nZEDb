@@ -61,30 +61,26 @@ class Import
 				$arr[] = $nzb['message_id'];
 			}
 		}
-		//var_dump($nzb);
-		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 		if($nzb && array_key_exists('group', $nzb))
 		{
+			$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 			$article = $nntp->getArticles($nzb['group'], $arr);
-			if (PEAR::isError($article))
+			if ($article === false || PEAR::isError($article))
 			{
-				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
 				$nntp->doQuit();
 				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
-				$nntp->selectGroup($groupArr['name']);
-				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
-				if (PEAR::isError($article))
+				if ($article === false || PEAR::isError($article))
 				{
-					echo $n.$n."Error {$data->code}: {$data->message}".$n;
-					return;
+					$nntp->doQuit();
+					$article = false;
 				}
 			}
-			if($article)
+			$nntp->doQuit();
+			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
 				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
-			$nntp->doQuit();
 		}
 		else
 			return;
@@ -145,7 +141,6 @@ class Import
 				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
-				$cleanerName = $namecleaning->releaseCleaner($subject);
 
 
 				// make a fake message object to use to check the blacklist
@@ -206,8 +201,9 @@ class Import
 			}
 			if (!$importfailed)
 			{
-				$relguid = sha1(uniqid());
+				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
+				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 
 				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
