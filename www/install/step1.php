@@ -99,7 +99,9 @@ $cfg->pearCheck = @include('System.php');
 $cfg->pearCheck = class_exists('System');
 if (!$cfg->pearCheck) { $cfg->error = true; }
 
-$cfg->schemaCheck = is_readable($cfg->DB_DIR.'/schema.sql');
+$cfg->schemaCheck = false;
+if (is_readable($cfg->DB_DIR.'/schema.mysql') && is_readable($cfg->DB_DIR.'/schema.pgsql'))
+	$cfg->schemaCheck = true;
 if ($cfg->schemaCheck === false) { $cfg->error = true; }
 
 // Dont set error = true for these as we only want to display a warning

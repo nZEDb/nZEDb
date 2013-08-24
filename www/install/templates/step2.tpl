@@ -10,7 +10,7 @@
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
-			<td><label for="host">Database System (postgresql or mysql):</label></td>
+			<td><label for="host">Database System (pgsql or mysql):</label></td>
 			<td><input type="text" name="db_system" id="db_system" value="{$cfg->DB_SYSTEM}" /></td>
 		</tr>
 		<tr class="alt">

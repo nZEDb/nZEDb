@@ -76,7 +76,7 @@
 		<td>{if $cfg->lockCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking for schema.sql file:{if !$cfg->schemaCheck}<br /><span class="error">The schema.sql file is missing, please make sure it is placed in: {$cfg->DB_DIR}/schema.sql</span>{/if}</td>
+		<td>Checking for schema files:{if !$cfg->schemaCheck}<br /><span class="error">One or all of the schema files are missing, please make sure they are placed placed in: {$cfg->DB_DIR}/</span>{/if}</td>
 		<td>{if $cfg->schemaCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">

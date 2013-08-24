@@ -51,10 +51,12 @@ From a command line:
 
 	Press control+x when you are done.
 
-3. Install MYSQL.
+3. Install MYSQL OR PostgreSQL.
 
 	sudo apt-get install mysql-server mysql-client libmysqlclient-dev
-
+	or
+	sudo apt-get install postgresql php5-pgsql
+	
 4. Install and configure Apache
 
 	Install apache:

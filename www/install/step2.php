@@ -12,13 +12,18 @@ if (!$cfg->isInitialized()) {
 	die();
 }
 
-function tablecheck($dbname, $pdo)
+function tablecheck($dbname, $dbtype, $pdo)
 {
-	$stmt = $pdo->prepare('SHOW DATABASES');
+	$a = false;
+	if ($dbtype == "mysql")
+		$stmt = $pdo->prepare('SHOW DATABASES');
+	else if ($dbtype == "pgsql")
+		$stmt = $pdo->prepare('SELECT datname AS Database FROM pg_database');
+	else
+		return $a;
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$stmt->execute();
 	$tables = $stmt->fetchAll();
-	$a = false;
 	$tablearr = array();
 	foreach ($tables as $table)
 	{
@@ -26,7 +31,7 @@ function tablecheck($dbname, $pdo)
 	}
 	foreach ($tablearr as $tab)
 	{
-		if($tab["Database"] == $dbname)
+		if($tab["Database"] == $dbname || $tab["database"] == $dbname)
 		{
 			$a = true;
 			break;
@@ -48,9 +53,7 @@ if  ($page->isPostBack())
 	$cfg->DB_NAME = trim($_POST['db']);
 	$cfg->DB_SYSTEM = trim($_POST['db_system']);
 
-	// todo: set db type in config.
 	$dbtype = $cfg->DB_SYSTEM;
-	$charset = '';
 	if (strtolower($dbtype) == 'mysql')
 		$charset = ';charset=utf8';
 
@@ -60,27 +63,30 @@ if  ($page->isPostBack())
 		$pdos = $dbtype.':host='.$cfg->DB_HOST.$charset;
 
 	$cfg->dbConnCheck = true;
-	try
-	{
+	try {
 		$pdo = new PDO($pdos, $cfg->DB_USER, $cfg->DB_PASSWORD);
 		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	}
-	catch (PDOException $e)
-	{
+	} catch (PDOException $e) {
 		printf("Connection failed: (".$e->getMessage().")");
 		$cfg->error = true;
 		$cfg->dbConnCheck = false;
 	}
 
-	if (!$cfg->error)
+	if ($dbtype == "pgsql")
+		$cfg->dbNameCheck = true;
+
+	if (!$cfg->error && $dbtype != "pgsql")
 	{
-		if (tablecheck($cfg->DB_NAME, $pdo) === false)
+		if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
 			$cfg->dbNameCheck = false;
 
+		$charsql = '';
+		if ($dbtype == "mysql")
+			$charsql = " DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 		if ($cfg->dbNameCheck === false)
 		{
-			$pdo->query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-			if (tablecheck($cfg->DB_NAME, $pdo) === false)
+			$pdo->query("CREATE DATABASE ".$cfg->DB_NAME.$charsql);
+			if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
 			{
 				$cfg->dbNameCheck = false;
 				$cfg->error = true;
@@ -90,9 +96,13 @@ if  ($page->isPostBack())
 		}
 		else
 		{
-			$pdo->query("DROP DATABASE ".$cfg->DB_NAME);
-			$pdo->query("CREATE DATABASE ".$cfg->DB_NAME." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-			if (tablecheck($cfg->DB_NAME, $pdo) === false)
+			try {
+				$pdo->query("DROP DATABASE ".$cfg->DB_NAME);
+			} catch (PDOException $e) {
+				printf($e);
+			}
+			$pdo->query("CREATE DATABASE ".$cfg->DB_NAME.$charsql);
+			if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
 			{
 				$cfg->dbNameCheck = false;
 				$cfg->error = true;
@@ -106,41 +116,45 @@ if  ($page->isPostBack())
 		$cfg->setSession();
 
 		//Load schema.sql
-		if (file_exists($cfg->DB_DIR.'/schema.sql'))
+		if (file_exists($cfg->DB_DIR.'/schema.mysql') && file_exists($cfg->DB_DIR.'/schema.pgsql'))
 		{
-			$dbData = file_get_contents($cfg->DB_DIR.'/schema.sql');
+			if ($dbtype == "mysql")
+				$dbData = file_get_contents($cfg->DB_DIR.'/schema.mysql');
+			if ($dbtype == "pgsql")
+				$dbData = file_get_contents($cfg->DB_DIR.'/schema.pgsql');
 			//fix to remove BOM in UTF8 files
 			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 			if (0 == strncmp($dbData, $bom, 3))
 				$dbData = substr($dbData, 3);
 
 			// Select DB.
-			$pdo->query("USE ".$cfg->DB_NAME);
+			if ($dbtype == "mysql")
+				$pdo->query("USE ".$cfg->DB_NAME);
 
 			$queries = explode(";", $dbData);
 			$queries = array_map("trim", $queries);
+			$lastid = '';
 			foreach($queries as $q)
 			{
-				if (preg_match('/DELETE|DROP|UPDATE/i', $q))
+				if (strlen($q) > 0)
 				{
-					try
+					if (preg_match('/CREATE|DELETE|DROP|UPDATE/i', $q))
 					{
-						$pdo->exec($q);
+						try {
+							$pdo->exec($q);
+						} catch (PDOException $err){
+							printf("Error inserting: (".$err->getMessage().")");
+							exit();
+						}
 					}
-					catch (PDOException $err)
+					else
 					{
-						printf("Error inserting: (".$err->getMessage().")");
-					}
-				}
-				else
-				{
-					try
-					{
-						$pdo->query($q);
-					}
-					catch (PDOException $err)
-					{
-						printf("Error inserting: (".$err->getMessage().")");
+						try {
+							$pdo->query($q);
+						} catch (PDOException $err) {
+							printf("Error inserting: (".$err->getMessage().")");
+							exit();
+						}
 					}
 				}
 			}
