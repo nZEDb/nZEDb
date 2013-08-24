@@ -1158,7 +1158,7 @@ class Releases
 					}
 				}
 
-				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
+				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
 					if ($resrel = $db->query(sprintf("SELECT ID, guid from releases where groupID = %d AND filesize > %d", $groupID['ID'], $maxfilesizeres['value'])))
@@ -1490,7 +1490,7 @@ class Releases
 		// Disabled categories.
 		if ($catlist = $category->getDisabledIDs())
 		{
-			while ($cat = mysqli_fetch_assoc($catlist))
+			foreach ($catlist as $cat)
 			{
 				if ($rels = $db->query(sprintf("select ID, guid from releases where categoryID = %d", $cat['ID'])))
 				{
@@ -1531,7 +1531,7 @@ class Releases
 
 		}
 
-		$db->queryDelete(sprintf("DELETE nzbs WHERE dateadded < (now() - interval %d hour)", $page->site->partretentionhours));
+		$db->queryDelete(sprintf("DELETE FROM nzbs WHERE dateadded < (now() - interval %d hour)", $page->site->partretentionhours));
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
