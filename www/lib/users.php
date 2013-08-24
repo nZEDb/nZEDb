@@ -1,5 +1,4 @@
 <?php
-require_once("/var/www/nZEDb/www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/releases.php");

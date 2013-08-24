@@ -26,13 +26,13 @@ class Console
 	public function getConsoleInfo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT consoleinfo.*, genres.title as genres FROM consoleinfo left outer join genres on genres.ID = consoleinfo.genreID where consoleinfo.ID = %d ", $id));
+		return $db->queryOneRow(sprintf("SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genreid WHERE consoleinfo.id = %d ", $id));
 	}
 
 	public function getConsoleInfoByName($title, $platform)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo where title like %s and platform like %s", $db->escapeString("%".$title."%"),  $db->escapeString("%".$platform."%")));
+		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE title LIKE %s AND platform LIKE %s", $db->escapeString("%".$title."%"),  $db->escapeString("%".$platform."%")));
 	}
 
 	public function getRange($start, $num)
@@ -50,7 +50,7 @@ class Console
 	public function getCount()
 	{
 		$db = new DB();
-		$res = $db->queryOneRow("select count(ID) as num from consoleinfo");
+		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM consoleinfo");
 		return $res["num"];
 	}
 
@@ -74,14 +74,14 @@ class Console
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-								$catsrch .= " r.categoryID in (".$chlist.") or ";
+								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
 					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 					}
 				}
 			}
@@ -89,15 +89,15 @@ class Console
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 		else
 			$maxage = "";
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$sql = sprintf("select count(r.ID) as num from releases r inner join consoleinfo c on c.ID = r.consoleinfoID and c.title != '' where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN consoleinfo c ON c.id = r.consoleinfoid AND c.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -127,14 +127,14 @@ class Console
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-							$catsrch .= " r.categoryID in (".$chlist.") or ";
+							$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
 					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 					}
 				}
 			}
@@ -143,14 +143,14 @@ class Console
 
 		$maxage = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getConsoleOrder($orderby);
-		$sql = sprintf(" SELECT r.*, r.ID as releaseID, con.*, g.title as genre, groups.name as group_name, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, rn.ID as nfoID from releases r left outer join groups on groups.ID = r.groupID inner join consoleinfo con on con.ID = r.consoleinfoID left outer join releasenfo rn on rn.releaseID = r.ID and rn.nfo is not null left outer join category c on c.ID = r.categoryID left outer join category cp on cp.ID = c.parentID left outer join genres g on g.ID = con.genreID where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s order by %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+		$sql = sprintf(" SELECT r.*, r.ID AS releaseid, con.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN consoleinfo con ON con.id = r.consoleinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = con.genreid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		return $db->query($sql);
 	}
 
@@ -231,7 +231,7 @@ class Console
 	{
 		$db = new DB();
 
-		$db->queryUpdate(sprintf("UPDATE consoleinfo SET title=%s, asin=%s, url=%s, salesrank=%s, platform=%s, publisher=%s, releasedate='%s', esrb=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
+		$db->queryUpdate(sprintf("UPDATE consoleinfo SET title=%s, asin=%s, url=%s, salesrank=%s, platform=%s, publisher=%s, releasedate='%s', esrb=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE id = %d",
 		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($platform), $db->escapeString($publisher), $releasedate, $db->escapeString($esrb), $cover, $genreID, $id));
 	}
 
@@ -250,7 +250,7 @@ class Console
 		$defaultGenres = $gen->getGenres(Genres::CONSOLE_TYPE);
 		$genreassoc = array();
 		foreach($defaultGenres as $dg) {
-			$genreassoc[$dg['ID']] = strtolower($dg['title']);
+			$genreassoc[$dg['id']] = strtolower($dg['title']);
 		}
 
 		//
@@ -450,9 +450,9 @@ class Console
 		$con['consolegenreID'] = $genreKey;
 
 		$query = sprintf("
-		INSERT IGNORE INTO consoleinfo  (`title`, `asin`, `url`, `salesrank`, `platform`, `publisher`, `genreID`, `esrb`, `releasedate`, `review`, `cover`, `createddate`, `updateddate`)
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())
-			ON DUPLICATE KEY UPDATE  `title` = %s,  `asin` = %s,  `url` = %s,  `salesrank` = %s,  `platform` = %s,  `publisher` = %s,  `genreID` = %s,  `esrb` = %s,  `releasedate` = %s,  `review` = %s, `cover` = %d,  createddate = now(),  updateddate = now()",
+		INSERT IGNORE INTO consoleinfo  (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())
+			ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreID = %s, esrb = %s, releasedate = %s, review = %s, cover = %d, createddate = NOW(), updateddate = NOW()",
 		$db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']),
 		$con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']),
 		$con['releasedate'], $db->escapeString($con['review']), $con['cover'],
@@ -497,9 +497,9 @@ class Console
 		$threads--;
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, ID from releases where consoleinfoID = -2 and relnamestatus = 2 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus = 2 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)
@@ -541,16 +541,16 @@ class Console
 					}
 
 					//update release
-					$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", $gameId, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", $gameId, $arr["id"]));
 
 				}
 				else
 				{
 					//could not parse release title
 					if($type == 1)
-						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -2, $arr["id"]));
 					if($type == 2)
-						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoID = %d WHERE ID = %d", -3, $arr["ID"]));
+						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -3, $arr["id"]));
 				}
 				usleep($this->sleeptime*1000);
 			}

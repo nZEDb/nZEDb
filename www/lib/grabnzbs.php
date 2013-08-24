@@ -12,11 +12,11 @@ class Import
 	{
 		$db = new DB();
 		$cat = new Category();
-		$relres = $db->query("SELECT name, ID, groupID from releases where categoryID = 7010 and relnamestatus = 0");
+		$relres = $db->query("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
 		foreach ($relres as $relrow)
 		{
-			$catID = $cat->determineCategory($relrow['name'], $relrow['groupID']);
-			$db->queryUpdate(sprintf("UPDATE releases set categoryID = %d, relnamestatus = 1 where ID = %d", $catID, $relrow['ID']));
+			$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
+			$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
 		}
 	}
 
@@ -31,13 +31,13 @@ class Import
 
 		if ($hash == '')
 		{
-			if ($hashes = $db->query("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts"))
+			if ($hashes = $db->query("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts"))
 			{
 				if (count($hashes) > 0)
 				{
 					foreach ($hashes as $hash)
 					{
-						$rel = $db->query(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash['collectionhash']));
+						$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapeString($hash['collectionhash'])));
 						$arr = '';
 						foreach ($rel as $nzb)
    						{
@@ -46,15 +46,12 @@ class Import
 					}
 				}
 				else
-				{
-					echo "No NZBs to grab\n";
-					exit();
-				}
+					exit("No NZBs to grab\n");
 			}
 		}
 		else
 		{
-			$rel = $db->query(sprintf("select * from nzbs where collectionhash = '%s' order by partnumber", $hash));
+			$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapestring($hash)));
 			$arr = '';
 			foreach ($rel as $nzb)
 			{
@@ -80,7 +77,7 @@ class Import
 			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
-				$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+				$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 		else
 			return;
@@ -103,28 +100,19 @@ class Import
 		$version = $site->version;
 		$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 
-		$groups = $db->query("SELECT ID, name FROM groups");
+		$groups = $db->query("SELECT id, name FROM groups");
 		foreach ($groups as $group)
-			$siteGroups[$group["name"]] = $group["ID"];
+			$siteGroups[$group["name"]] = $group["id"];
 
-		$isBlackListed = FALSE;
-		$importfailed = false;
+		$importfailed = $isBlackListed = false;
 		$xml = @simplexml_load_string($article);
 		if (!$xml)
-		{
-			//echo "*";
-			$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
-		}
+			$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		else
 		{
-			//echo ",";
 			$skipCheck = false;
-			$i=0;
-			$firstname = array();
-			$postername = array();
-			$postdate = array();
-			$totalFiles = 0;
-			$totalsize = 0;
+			$i = $totalFiles = $totalsize = 0;
+			$firstname = $postername = $postdate = array();
 
 			foreach($xml->file as $file)
 			{
@@ -142,7 +130,6 @@ class Import
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 
-
 				// make a fake message object to use to check the blacklist
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
@@ -150,7 +137,7 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d hour <= %s AND postdate + interval %d hour > %s",
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d HOUR <= %s AND postdate + interval %d HOUR > %s",
 						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
@@ -172,15 +159,11 @@ class Import
 				{
 					$group = (string)$group;
 					if (array_key_exists($group, $siteGroups))
-					{
 						$groupID = $siteGroups[$group];
-					}
 					$groupArr[] = $group;
 
 					if ($binaries->isBlacklisted($msg, $group))
-					{
 						$isBlackListed = TRUE;
-					}
 				}
 				if ($groupID != -1 && !$isBlackListed)
 				{
@@ -205,7 +188,7 @@ class Import
 				$nzb = new NZB();
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 
-				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) values (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
@@ -216,17 +199,15 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryUpdate(sprintf("UPDATE releases SET nzbstatus = 1 WHERE ID = %d", $relID));
-							$db->queryDelete(sprintf("DELETE collections, binaries, parts
-								FROM collections LEFT JOIN binaries ON collections.ID = binaries.collectionID LEFT JOIN parts on binaries.ID = parts.binaryID
-								WHERE collections.collectionhash = %s", $db->escapeString($hash)));
+							$db->queryUpdate(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
+							$db->queryDelete(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts on binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();
 							echo "+";
 						}
 						else
 						{
-							$db->queryDelete(sprintf("delete from releases where ID = %d", $relID));
+							$db->queryDelete(sprintf("DELETE FROM releases WHERE id = %d", $relID));
 							$importfailed = true;
 							echo "-";
 						}
@@ -234,10 +215,7 @@ class Import
 				}
 			}
 			else
-			{
-				$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
-				//echo "!";
-			}
+				$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 	}
 }

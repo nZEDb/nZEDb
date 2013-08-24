@@ -17,18 +17,10 @@ class Forum
 				if ($par == false)
 					return -1;
 
-				$db->queryUpdate(sprintf("update forumpost set replies = replies + 1, updateddate = now() where ID = %d", $parentid));
+				$db->queryUpdate(sprintf("UPDATE forumpost SET replies = replies + 1, updateddate = NOW() WHERE id = %d", $parentid));
 			}
 
-			$db->queryInsert(sprintf("INSERT INTO `forumpost`
-			(			 `forumID`,
-			 `parentID`,			 `userID`,
-			 `subject`,			 `message`,
-			 `locked`,			 `sticky`,
-			 `replies`,			 `createddate`,
-			 `updateddate`) VALUES (
-		1,		%d,		%d,		%s,		%s,		%d,		%d,		%d,
-		NOW(),		NOW())", $parentid, $userid, $db->escapeString($subject)
+			$db->queryInsert(sprintf("INSERT INTO forumpost (forumID, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate) VALUES (1, %d, %d, %s, %s, %d, %d, %d, NOW(), NOW())", $parentid, $userid, $db->escapeString($subject)
 		, $db->escapeString($message), $locked, $sticky, $replies));
 
 		}
@@ -36,25 +28,25 @@ class Forum
 		public function getParent($parent)
 		{
 			$db = new DB();
-			return $db->queryOneRow(sprintf(" SELECT forumpost.*, users.username from forumpost left outer join users on users.ID = forumpost.userID where forumpost.ID = %d ", $parent));
+			return $db->queryOneRow(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE forumpost.id = %d", $parent));
 		}
 
 		public function getPosts($parent)
 		{
 			$db = new DB();
-			return $db->query(sprintf(" SELECT forumpost.*, users.username from forumpost left outer join users on users.ID = forumpost.userID where forumpost.ID = %d or parentID = %d order by createddate asc limit 250", $parent, $parent));
+			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE forumpost.id = %d OR parentid = %d ORDER BY createddate ASC LIMIT 250", $parent, $parent));
 		}
 
 		public function getPost($id)
 		{
 			$db = new DB();
-			return $db->queryOneRow(sprintf(" SELECT * from forumpost where ID = %d", $id));
+			return $db->queryOneRow(sprintf("SELECT * FROM forumpost WHERE id = %d", $id));
 		}
 
 		public function getBrowseCount()
 		{
 			$db = new DB();
-			$res = $db->queryOneRow(sprintf("select count(ID) as num from forumpost where parentID = 0"));
+			$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM forumpost WHERE parentid = 0"));
 			return $res["num"];
 		}
 
@@ -67,13 +59,13 @@ class Forum
 			else
 				$limit = " LIMIT ".$start.",".$num;
 
-			return $db->query("SELECT forumpost.*, users.username from forumpost left outer join users on users.ID = forumpost.userID where parentID = 0 order by updateddate desc".$limit);
+			return $db->query("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE parentid = 0 ORDER BY updateddate DESC".$limit);
 		}
 
 		public function deleteParent($parent)
 		{
 			$db = new DB();
-			$db->queryDelete(sprintf("delete from forumpost where ID = %d or parentID = %d", $parent, $parent));
+			$db->queryDelete(sprintf("DELETE FROM forumpost WHERE id = %d OR parentid = %d", $parent, $parent));
 		}
 
 		public function deletePost($id)
@@ -82,23 +74,23 @@ class Forum
 			$post = $this->getPost($id);
 			if ($post)
 			{
-				if ($post["parentID"] == "0")
+				if ($post["parentid"] == "0")
 					$this->deleteParent($id);
 				else
-					$db->queryDelete(sprintf("delete from forumpost where ID = %d", $id));
+					$db->queryDelete(sprintf("DELETE FROM forumpost WHERE id = %d", $id));
 			}
 		}
 
 		public function deleteUser($id)
 		{
 			$db = new DB();
-			$db->queryDelete(sprintf("delete from forumpost where userID = %d", $id));
+			$db->queryDelete(sprintf("DELETE FROM forumpost WHERE userid = %d", $id));
 		}
 
 		public function getCountForUser($uid)
 		{
 			$db = new DB();
-			$res = $db->queryOneRow(sprintf("select count(ID) as num from forumpost where userID = %d", $uid));
+			$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM forumpost WHERE userid = %d", $uid));
 			return $res["num"];
 		}
 
@@ -111,7 +103,7 @@ class Forum
 			else
 				$limit = " LIMIT ".$start.",".$num;
 
-			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.ID = forumpost.userID where userID = %d order by forumpost.createddate desc ".$limit, $uid));
+			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE userid = %d ORDER BY forumpost.createddate DESC ".$limit, $uid));
 		}
 
 }
