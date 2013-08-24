@@ -123,14 +123,14 @@ class Binaries
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
 			$first_record_postdate = $backfill->postdate($nntp, $first, false, $groupArr['name']);
-			$db->queryUpdate(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = FROM_UNIXTIME(".$first_record_postdate.") WHERE id = %d", $db->escapeString($first), $groupArr['id']));
+			$db->queryUpdate(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d", $db->escapeString($first), $db->escapeString($this->from_unixtime($first_record_postdate)), $groupArr['id']));
 		}
 		else
 			$first = $groupArr['last_record'] + 1;
 
 		// Generate postdates for first and last records, for those that upgraded.
 		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
-			 $db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'])."), last_record_postdate = FROM_UNIXTIME(".$backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']).") WHERE id = %d", $groupArr['id']));
+			 $db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d", $db->escapeString($this->from_unixtime($backfill->postdate($nntp,$groupArr['first_record'],false,$groupArr['name']))), $db->escapeString($this->from_unixtime($backfill->postdate($nntp,$groupArr['last_record'],false,$groupArr['name']))), $groupArr['id']));
 
 		// Calculate total number of parts.
 		$total = $grouplast - $first + 1;
@@ -168,7 +168,7 @@ class Binaries
 				if ($lastId === false)
 					return;
 
-				$db->queryUpdate(sprintf("UPDATE groups SET last_record = %s, last_updated = now() WHERE id = %d", $db->escapeString($lastId), $groupArr['id']));
+				$db->queryUpdate(sprintf("UPDATE groups SET last_record = %s, last_updated = NOW() WHERE id = %d", $db->escapeString($lastId), $groupArr['id']));
 
 				if ($last == $grouplast)
 					$done = true;
@@ -182,7 +182,7 @@ class Binaries
 			$last_record_postdate = $backfill->postdate($nntp,$last,false,$groupArr['name']);
 			$nntp->doQuit();
 			// Set group's last postdate.
-			$db->queryUpdate(sprintf("UPDATE groups SET last_record_postdate = FROM_UNIXTIME(".$last_record_postdate."), last_updated = now() WHERE id = %d", $groupArr['id']));
+			$db->queryUpdate(sprintf("UPDATE groups SET last_record_postdate = %s, last_updated = now() WHERE id = %d", $db->escapeString($this->from_unixtime($last_record_postdate)), $groupArr['id']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $data['group']." processed in ".$timeGroup." seconds.\n\n";
 		}
@@ -333,8 +333,8 @@ class Binaries
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-						$db->queryInsert(sprintf("INSERT IGNORE INTO `nzbs` (`message_id`, `group`, `article-number`, `subject`, `collectionhash`, `filesize`, `partnumber`, `totalparts`, `postdate`, `dateadded`) values (%s, %s, %s, %s, %s, %d, %d, %d, FROM_UNIXTIME(%s), now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->escapeString($this->message[$subject]['Date'])));
-						$db->queryUpdate(sprintf("UPDATE `nzbs` SET `dateadded` = NOW() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
+						$db->queryInsert(sprintf("INSERT INTO nzbs (message_id, group, article-number, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) values (%s, %s, %s, %s, %s, %d, %d, %d, %s, now())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString($msg['Number']), $db->escapeString($subject), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->escapeString($this->from_unixtime($this->message[$subject]['Date']))));
+						$db->queryUpdate(sprintf("UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
 					}
 
 					if((int)$matches[1] > 0)
@@ -385,7 +385,7 @@ class Binaries
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				if ($insPartsStmt = $db->Prepare("INSERT IGNORE INTO parts (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
+				if ($insPartsStmt = $db->Prepare("INSERT INTO parts (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)"))
 				{
 					$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 					$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
@@ -415,7 +415,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$csql = sprintf("INSERT IGNORE INTO collections (subject, fromname, date, xref, groupid, totalFiles, collectionhash, dateadded) VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %s, %s, now())", $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($data['Date']), $db->escapeString($data['Xref']), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$csql = sprintf("INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, now())", $db->escapeString($subject), $db->escapeString($data['From']), $db->escapeString($this->from_unixtime($data['Date'])), $db->escapeString($data['Xref']), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
@@ -439,7 +439,7 @@ class Binaries
 							$bres = $db->queryOneRow(sprintf("SELECT id FROM binaries WHERE binaryhash = %s", $db->escapeString($binaryHash)));
 							if(!$bres)
 							{
-								$bsql = sprintf("INSERT IGNORE INTO binaries (binaryhash, name, collectionid, totalParts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+								$bsql = sprintf("INSERT INTO binaries (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 								$binaryID = $db->queryInsert($bsql);
 							}
 							else
@@ -584,7 +584,7 @@ class Binaries
 	private function addMissingParts($numbers, $groupID)
 	{
 		$db = new DB();
-		$insertStr = "INSERT IGNORE INTO partrepair (numberid, groupid) VALUES ";
+		$insertStr = "INSERT INTO partrepair (numberid, groupid) VALUES ";
 		foreach($numbers as $number)
 		{
 			$insertStr .= sprintf("(%d, %d), ", $number, $groupID);
@@ -754,7 +754,7 @@ class Binaries
 			$groupname = sprintf("%s", $db->escapeString($groupname));
 		}
 
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ",
+		return $db->queryInsert(sprintf("INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) values (%s, %s, %d, %s, %d, %d) ",
 			$groupname, $db->escapeString($regex["regex"]), $regex["status"], $db->escapeString($regex["description"]), $regex["optype"], $regex["msgcol"]));
 	}
 
@@ -766,5 +766,11 @@ class Binaries
 			$db->queryDelete(sprintf("DELETE FROM parts WHERE binaryid = %d", $bin["ID"]));
 		$db->queryDelete(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id));
 		$db->queryDelete(sprintf("DELETE FROM collections WHERE id = %d", $id));
+	}
+
+	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00
+	public function from_unixtime($utime)
+	{
+		return date('Y-m-d h:i:s', $utime);
 	}
 }

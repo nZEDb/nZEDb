@@ -55,7 +55,7 @@ CREATE TABLE "binaries" (
   "name" character varying(255) DEFAULT ''::character varying NOT NULL,
   "collectionid" bigint DEFAULT 0 NOT NULL,
   "filenumber" bigint DEFAULT 0 NOT NULL,
-  "totalParts" bigint DEFAULT 0 NOT NULL,
+  "totalparts" bigint DEFAULT 0 NOT NULL,
   "binaryhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "partcheck" bigint DEFAULT 0 NOT NULL,
   "partsize" numeric(20, 0) DEFAULT 0 NOT NULL
@@ -138,7 +138,7 @@ CREATE TABLE "collections" (
   "fromname" character varying(255) DEFAULT ''::character varying NOT NULL,
   "date" timestamp without time zone,
   "xref" character varying(255) DEFAULT ''::character varying NOT NULL,
-  "totalFiles" bigint DEFAULT 0 NOT NULL,
+  "totalfiles" bigint DEFAULT 0 NOT NULL,
   "groupid" bigint DEFAULT 0 NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "dateadded" timestamp without time zone,
