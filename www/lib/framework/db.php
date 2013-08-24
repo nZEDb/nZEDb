@@ -38,6 +38,8 @@ class DB
 			{
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
 				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				if ($this->dbsystem == "pgsql")
+					DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			}
 			catch (PDOException $e)
 			{
