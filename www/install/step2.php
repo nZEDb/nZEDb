@@ -54,6 +54,7 @@ if  ($page->isPostBack())
 	$cfg->DB_SYSTEM = trim($_POST['db_system']);
 
 	$dbtype = $cfg->DB_SYSTEM;
+	$charset = '';
 	if (strtolower($dbtype) == 'mysql')
 		$charset = ';charset=utf8';
 
@@ -72,10 +73,7 @@ if  ($page->isPostBack())
 		$cfg->dbConnCheck = false;
 	}
 
-	if ($dbtype == "pgsql")
-		$cfg->dbNameCheck = true;
-
-	if (!$cfg->error && $dbtype != "pgsql")
+	if (!$cfg->error && $dbtype == "mysql")
 	{
 		if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
 			$cfg->dbNameCheck = false;
@@ -111,6 +109,17 @@ if  ($page->isPostBack())
 				$cfg->dbNameCheck = true;
 		}
 	}
+	elseif (!$cfg->error && $dbtype == "pgsql")
+	{
+		if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
+		{
+			$cfg->dbNameCheck = false;
+			$cfg->error = true;
+		}
+		else
+			$cfg->dbNameCheck = true;
+	}
+
 	if (!$cfg->error)
 	{
 		$cfg->setSession();
@@ -133,7 +142,6 @@ if  ($page->isPostBack())
 
 			$queries = explode(";", $dbData);
 			$queries = array_map("trim", $queries);
-			$lastid = '';
 			foreach($queries as $q)
 			{
 				if (strlen($q) > 0)
