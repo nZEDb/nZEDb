@@ -1,4 +1,5 @@
 <?php
+require_once("/var/www/nZEDb/www/config.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/releases.php");
@@ -143,10 +144,8 @@ class Users
 		if ($invitedby == 0)
 			$invitedby = "null";
 
-		$rand = md5($this->uuid());
-
-		return $db->queryInsert(sprintf("insert into users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed) values (%s, %s, lower(%s), %d, now(), %s, md5(%s), %d, %s, $s)",
-			$db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($rand)));
+		return $db->queryInsert(sprintf("insert into users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed) values (%s, %s, lower(%s), %d, now(), %s, md5(%s), %d, %s, md5(%s))", 
+			$db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($this->uuid())));
 	}
 
 	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)

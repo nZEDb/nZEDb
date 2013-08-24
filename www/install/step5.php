@@ -24,36 +24,46 @@ if  ($page->isPostBack()) {
 	
 	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
 		$cfg->error = true;
-	} else {
+	}
+	else
+	{
 		require_once($cfg->WWW_DIR.'/lib/users.php');
 		
 		$user = new Users();
-		if (!$user->isValidUsername($cfg->ADMIN_USER)) {
+		if (!$user->isValidUsername($cfg->ADMIN_USER))
+		{
 			$cfg->error = true;
 			$cfg->ADMIN_USER = '';
-		} else {
+		}
+		else
+		{
 			$usrCheck = $user->getByUsername($cfg->ADMIN_USER);
-			if ($usrCheck) {
+			if ($usrCheck)
+			{
 				$cfg->error = true;
 				$cfg->ADMIN_USER = '';
 			}
 		}
-		if (!$user->isValidEmail($cfg->ADMIN_EMAIL)) {
+		if (!$user->isValidEmail($cfg->ADMIN_EMAIL))
+		{
 			$cfg->error = true;
 			$cfg->ADMIN_EMAIL = '';
 		}
 		
-		if (!$cfg->error) {
+		if (!$cfg->error)
+		{
 			$cfg->adminCheck = $user->add($cfg->ADMIN_USER, $cfg->ADMIN_PASS, $cfg->ADMIN_EMAIL, 2, '');
-			if (!is_numeric($cfg->adminCheck)) {
+			if (!is_numeric($cfg->adminCheck))
+			{
 				$cfg->error = true;
-			} else {
-				$user->login($cfg->adminCheck, "", 1);
 			}
+			else
+				$user->login($cfg->adminCheck, "", 1);
 		}
 	}
 	
-	if (!$cfg->error) {
+	if (!$cfg->error)
+	{
 		$cfg->setSession();
 		header("Location: ?success");
 		die();

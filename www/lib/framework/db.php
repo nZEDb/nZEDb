@@ -75,8 +75,7 @@ class DB
 		if ($query=="")
 			return false;
 
-		$result = DB::$pdo->query($query);
-		return ($returnlastid) ? DB::$pdo->lastInsertId() : $result;
+		return DB::$pdo->exec($query);
 	}
 
 /* Tested. In PDO you must use exec to delete, it returns the affected row count. ** */
