@@ -143,8 +143,10 @@ class Users
 		if ($invitedby == 0)
 			$invitedby = "null";
 
-		return $db->queryInsert(sprintf("insert into users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed) values (%s, %s, lower(%s), %d, now(), %s, md5(%s), %d, %s, md5(uuid()))",
-			$db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby));
+		$rand = md5($this->uuid());
+
+		return $db->queryInsert(sprintf("insert into users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed) values (%s, %s, lower(%s), %d, now(), %s, md5(%s), %d, %s, $s)",
+			$db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($rand)));
 	}
 
 	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
@@ -692,5 +694,11 @@ class Users
 		$db = new DB();
 		$sql = sprintf("insert into userdownloads (userID, timestamp) VALUES (%d, now())", $userid);
 		return $db->queryInsert($sql);
+	}
+
+	// Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959
+	public function uuid()
+	{
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 }

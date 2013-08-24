@@ -111,13 +111,14 @@ if  ($page->isPostBack())
 	}
 	elseif (!$cfg->error && $dbtype == "pgsql")
 	{
+		$cfg->dbNameCheck = true;
 		if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
 		{
-			$cfg->dbNameCheck = false;
+			$cfg->pgNameCheck = false;
 			$cfg->error = true;
 		}
 		else
-			$cfg->dbNameCheck = true;
+			$cfg->pgNameCheck = true;
 	}
 
 	if (!$cfg->error)

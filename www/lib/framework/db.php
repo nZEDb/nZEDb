@@ -17,7 +17,7 @@ class DB
 	function DB()
 	{
 		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
-			$dbsystem = strtolower(DB_SYSTEM);
+			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 		{
 			printf("ERROR: config.php is missing DB_SYSTEM\n");
@@ -26,12 +26,12 @@ class DB
 		if (DB::$initialized === false)
 		{
 			$charset = '';
-			if ($dbsystem == 'mysql')
+			if ($this->dbsystem == 'mysql')
 				$charset = ';charset=utf8';
 			if (defined("DB_PORT"))
-				$pdos = $dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
+				$pdos = $this->dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
 			else
-				$pdos = $dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
+				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
 
 			// Initialize DB connection.
 			try
@@ -50,6 +50,12 @@ class DB
 		$this->memcached = false;
 		if (defined("MEMCACHE_ENABLED"))
 			$this->memcached = MEMCACHE_ENABLED;
+	}
+
+
+	public function dbSystem()
+	{
+		return $this->dbsystem;
 	}
 
 /* Tested. Works the same. ** */

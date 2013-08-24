@@ -1,8 +1,9 @@
 <?php
 class Install {
+	public $DB_SYSTEM;
 	public $DB_TYPE;
 	public $DB_HOST = "127.0.0.1";
-	public $DB_PORT = "3306";
+	public $DB_PORT;
 	public $DB_SOCKET;
 	public $DB_USER;
 	public $DB_PASSWORD;
@@ -37,13 +38,20 @@ class Install {
 	public $doCheck = false;
 
 	public $sha1Check;
-	public $mysqlCheck;
+	public $PDOCheck;
 	public $gdCheck;
 	public $curlCheck;
 	public $cacheCheck;
-	public $movieCoversCheck;
 	public $animeCoversCheck;
+	public $audioCoversCheck;
+	public $audiosampleCoversCheck;
+	public $bookCoversCheck;
+	public $consoleCoversCheck;
+	public $movieCoversCheck;
 	public $musicCoversCheck;
+	public $previewCoversCheck;
+	public $sampleCoversCheck;
+	public $videoCoversCheck;
 	public $configCheck;
 	public $lockCheck;
 	public $pearCheck;
@@ -53,10 +61,12 @@ class Install {
 	public $memlimitCheck;
 	public $rewriteCheck;
 	public $opensslCheck;
+	public $exifCheck;
 	public $timezoneCheck;
 
 	public $dbConnCheck;
 	public $dbNameCheck;
+	public $pgNameCheck;
 	public $dbCreateCheck;
 
 	public $nntpCheck;
@@ -111,6 +121,7 @@ class Install {
 	public function saveConfig()
 	{
 		$tmpCfg = file_get_contents($this->INSTALL_DIR.'/config.php.tpl');
+		$tmpCfg = str_replace('%%DB_SYSTEM%%', $this->DB_SYSTEM, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_HOST%%', $this->DB_HOST, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PORT%%', $this->DB_PORT, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_SOCKET%%', $this->DB_SOCKET, $tmpCfg);

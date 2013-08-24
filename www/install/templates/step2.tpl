@@ -6,7 +6,8 @@
 {else}
 
 <p>We need some information about your database, please provide the following information</p>
-<p>Note: If your database already exists, <u>it will be overwritten</u> with this version. If not it will be created.</p>
+<p>(mysql) Note: If your database already exists, <u>it will be overwritten</u> with this version. If not it will be created. For the database system, use mysql, default port is 3306.</p>
+<p>(postgresql) You will need to manually create an empty database, see install.txt for instructions. For the database system, use pgsql, default port is 5432.</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
@@ -34,7 +35,7 @@
 			<td><input type="text" name="pass" id="pass" value="{$cfg->DB_PASSWORD}" /></td>
 		</tr>
 		<tr class="">
-			<td><label for="db">Database:</label></td>
+			<td><label for="db">Database (to connect to):</label></td>
 			<td><input type="text" name="db" id="db" value="{$cfg->DB_NAME}" /></td>
 		</tr>
 	</table>
@@ -45,6 +46,7 @@
 				The following error(s) were encountered:<br />
 				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database</span><br />{/if}
 				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database</span><br />{/if}
+				{if $cfg->pgNameCheck === false}<span class="error">&bull; Unable to determine if you have created the database for postgresql. See install.txt for instructions.</span><br />{/if}
 				{if $cfg->dbCreateCheck === false}<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />{/if}
 				<br />
 			</div>
