@@ -8,7 +8,15 @@ function runQuery($db, $sql, $runQueries)
 {
 	if ($runQueries)
 	{
-		return $db->queryDirect($sql);
+		try {
+			$db->queryDirect($sql);
+		} catch (PDOException $err) {
+			$error = $err;
+		}
+		if (isset($error))
+			return $error;
+		else
+			return true;
 	}
 	else
 	{
@@ -21,7 +29,15 @@ function runQueryupdate($db, $sql, $runQueries)
 {
 	if ($runQueries)
 	{
-		return $db->queryUpdate($sql);
+		try {
+			$db->queryUpdate($sql);
+		} catch (PDOException $err) {
+			$error = $err;
+		}
+		if (isset($error))
+			return $error;
+		else
+			return true;
 	}
 	else
 	{

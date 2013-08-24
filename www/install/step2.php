@@ -46,9 +46,10 @@ if  ($page->isPostBack())
 	$cfg->DB_USER = trim($_POST['user']);
 	$cfg->DB_PASSWORD = trim($_POST['pass']);
 	$cfg->DB_NAME = trim($_POST['db']);
+	$cfg->DB_SYSTEM = trim($_POST['db_system']);
 
 	// todo: set db type in config.
-	$dbtype = 'mysql';
+	$dbtype = $cfg->DB_SYSTEM;
 	$charset = '';
 	if (strtolower($dbtype) == 'mysql')
 		$charset = ';charset=utf8';

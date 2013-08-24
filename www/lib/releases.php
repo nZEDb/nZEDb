@@ -1089,10 +1089,13 @@ class Releases
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupID']);
 				$relguid = sha1(uniqid().mt_rand());
-				if($relid = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus)
-											VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)",
-											$db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid),
-											$db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0))))
+				try {
+					$relid = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupID, adddate, guid, rageID, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus) VALUES (%s, %s, %d, %d, now(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalFiles'], $rowcol['groupID'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				} catch (PDOException $err) {
+					if ($this->echooutput)
+						echo "\033[01;31m.".$err."\n";
+				}
+				if (!isset($error))
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1100,11 +1103,6 @@ class Releases
 					$retcount ++;
 					if ($this->echooutput)
 						echo "Added release ".$cleanRelName."\n";
-				}
-				else
-				{
-					if ($this->echooutput)
-						echo "\033[01;31mError Inserting Release: \033[0m".$cleanerName.": ".$db->Error()."\n";
 				}
 			}
 		}

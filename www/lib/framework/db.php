@@ -16,19 +16,22 @@ class DB
 
 	function DB()
 	{
-		// Type can be added later on in config.php
-		$this->dbtype = 'mysql';
-		// Not sure if pdo is case sensitive, just in case.
-		$this->dbtype = strtolower($this->dbtype);
+		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
+			$dbsystem = strtolower(DB_SYSTEM);
+		else
+		{
+			printf("ERROR: config.php is missing DB_SYSTEM\n");
+			exit();
+		}
 		if (DB::$initialized === false)
 		{
 			$charset = '';
-			if ($this->dbtype == 'mysql')
+			if ($dbsystem == 'mysql')
 				$charset = ';charset=utf8';
 			if (defined("DB_PORT"))
-				$pdos = $this->dbtype.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
+				$pdos = $dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
 			else
-				$pdos = $this->dbtype.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
+				$pdos = $dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
 
 			// Initialize DB connection.
 			try
@@ -161,14 +164,7 @@ class DB
 		return ($query=="") ? false : DB::$pdo->query($query);
 	}
 
-
-/* Only needed for prepared statements. */
-	public function getInsertID()
-	{
-		return DB::$pdo->lastInsertId;
-	}
-
-/* Untested */ 
+/* Tested ,works. */ 
 	public function Prepare($query)
 	{
 		return DB::$pdo->prepare($query);
@@ -185,7 +181,7 @@ class DB
 
 /* Untested ;Could cause issues with myisam, see : http://php.net/manual/en/pdo.transactions.php
  * If so we might have to put an option to turn on / off transactions */
-	public function setAutoCommit($enabled)
+	public function beginTransaction()
 	{
 		return DB::$pdo->beginTransaction();
 	}

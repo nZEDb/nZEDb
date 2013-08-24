@@ -239,7 +239,7 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
-		$db = new Db();
+		$db = new DB();
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
@@ -399,8 +399,6 @@ class Binaries
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
-				$db->setAutoCommit(false);
-
 				foreach($this->message AS $subject => $data)
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
@@ -471,8 +469,8 @@ class Binaries
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['ID']);
 				}
+				$db->beginTransaction();
 				$db->Commit();
-				$db->setAutoCommit(true);
 			}
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
