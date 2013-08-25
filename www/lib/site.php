@@ -64,7 +64,7 @@ class Sites
 	public function get()
 	{
 		$db = new DB();
-		$rows = $db->query("select * from site");
+		$rows = $db->query("SELECT * FROM site");
 
 		if ($rows === false)
 			return false;

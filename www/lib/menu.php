@@ -10,14 +10,12 @@ class Menu
 
 		$guest = "";
 		if ($role != Users::ROLE_GUEST)
-			$guest = sprintf(" and role != %d ", Users::ROLE_GUEST);
+			$guest = sprintf(" AND role != %d ", Users::ROLE_GUEST);
 
 		if ($role != Users::ROLE_ADMIN)
-			$guest .= sprintf(" and role != %d ", Users::ROLE_ADMIN);
+			$guest .= sprintf(" AND role != %d ", Users::ROLE_ADMIN);
 
-		$sql = sprintf("select * from menu where role <= %d %s order by ordinal", $role, $guest);
-
-		$data = $db->query($sql);
+		$data = $db->query(sprintf("SELECT * FROM menu WHERE role <= %d %s ORDER BY ordinal", $role, $guest));
 
 		$ret = array();
 		foreach ($data as $d)
@@ -28,9 +26,7 @@ class Menu
 				$ret[] = $d;
 			}
 			else
-			{
 				$ret[] = $d;
-			}
 		}
 		return $ret;
 	}
@@ -38,31 +34,30 @@ class Menu
 	public function getAll()
 	{
 		$db = new DB();
-		return $db->query(sprintf("select * from menu order by role, ordinal"));
+		return $db->query("SELECT * FROM menu ORDER BY role, ordinal");
 	}
 
 	public function getById($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from menu where ID = %d", $id));
+		return $db->queryOneRow(sprintf("SELECT * FROM menu WHERE id = %d", $id));
 	}
 
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("delete from menu where ID = %d", $id));
+		return $db->queryDelete(sprintf("DELETE FROM menu WHERE id = %d", $id));
 	}
 
 	public function add($menu)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO menu (href, title, tooltip, role, ordinal, menueval, newwindow )
-			VALUES (%s, %s,  %s, %d, %d, %s, %d) ", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"] , $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"] ));
+		return $db->queryInsert(sprintf("INSERT INTO menu (href, title, tooltip, role, ordinal, menueval, newwindow ) VALUES (%s, %s,  %s, %d, %d, %s, %d)", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"], $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"]));
 	}
 
 	public function update($menu)
 	{
 		$db = new DB();
-		return $db->queryUpdate(sprintf("update menu set href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow=%d where ID = %d	", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"] , $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]  ));
+		return $db->queryUpdate(sprintf("UPDATE menu SET href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow = %d WHERE id = %d", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"], $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]));
 	}
 }

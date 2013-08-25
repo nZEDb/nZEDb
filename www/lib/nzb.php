@@ -5,10 +5,7 @@ require_once(WWW_DIR."/lib/category.php");
 
 class NZB
 {
-	//
-	// Writes out the nzb when processing releases. Moved out of smarty due to memory issues
-	// of holding all parts in an array.
-	//
+	// Writes out the nzb when processing releases. Moved out of smarty due to memory issue of holding all parts in an array.
 	function writeNZBforReleaseId($relid, $relguid, $name, $catId, $path, $echooutput=false, $version=null, $cat=null)
 	{
 		if ($relid == "" || $relguid == "" || $path == "")
@@ -40,25 +37,26 @@ class NZB
 			gzwrite($fp, "</head>\n\n");
 			$nzb_guid = "";
 
-			$result = $db->query(sprintf("SELECT collections.*, UNIX_TIMESTAMP(date) AS unixdate, groups.name as groupname FROM collections inner join groups on collections.groupID = groups.ID WHERE collections.releaseID = %d", $relid));
+			$result = $db->query(sprintf("SELECT collections.*, collections.date AS udate, groups.name AS groupname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE collections.releaseid = %d", $relid));
 			foreach ($result as $binrow)
 			{
-				$result2 = $db->query(sprintf("SELECT ID, name, totalParts from binaries where collectionID = %d order by name", $binrow["ID"]));
+				$unixdate = strtotime($binrows["udate"]);
+				$result2 = $db->query(sprintf("SELECT id, name, totalparts from binaries where collectionid = %d order by name", $binrow["id"]));
 				foreach ($result2 as $binrow2)
 				{
-					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$binrow["unixdate"]."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalParts"].")\">\n");
+					gzwrite($fp, "<file poster=\"".htmlspecialchars($binrow["fromname"], ENT_QUOTES, 'utf-8')."\" date=\"".$unixdate."\" subject=\"".htmlspecialchars($binrow2["name"], ENT_QUOTES, 'utf-8')." (1/".$binrow2["totalparts"].")\">\n");
 					gzwrite($fp, " <groups>\n");
 					gzwrite($fp, "  <group>".$binrow["groupname"]."</group>\n");
 					gzwrite($fp, " </groups>\n");
 					gzwrite($fp, " <segments>\n");
 
-					$resparts = $db->query(sprintf("SELECT DISTINCT(messageID), size, partnumber FROM parts WHERE binaryID = %d ORDER BY partnumber", $binrow2["ID"]));
+					$resparts = $db->query(sprintf("SELECT DISTINCT(messageid), size, partnumber FROM parts WHERE binaryid = %d ORDER BY partnumber", $binrow2["id"]));
 					foreach ($resparts as $partsrow)
 					{
 						if ($nzb_guid == "")
-							$nzb_guid = $partsrow["messageID"];
+							$nzb_guid = $partsrow["messageid"];
 
-						gzwrite($fp, "  <segment bytes=\"".$partsrow["size"]."\" number=\"".$partsrow["partnumber"]."\">".htmlspecialchars($partsrow["messageID"], ENT_QUOTES, 'utf-8')."</segment>\n");
+						gzwrite($fp, "  <segment bytes=\"".$partsrow["size"]."\" number=\"".$partsrow["partnumber"]."\">".htmlspecialchars($partsrow["messageid"], ENT_QUOTES, 'utf-8')."</segment>\n");
 					}
 					gzwrite($fp, " </segments>\n</file>\n");
 				}
@@ -80,9 +78,7 @@ class NZB
 			return false;
 	}
 
-	//
 	// Compress a imported NZB and put it in the nzbfiles folder.
-	//
 	function copyNZBforImport($relguid, $nzb, $echooutput=false)
 	{
 		$page = new Page();
@@ -127,18 +123,14 @@ class NZB
 		return $nzbpath;
 	}
 
-	//
 	// Builds a full path to the nzb file on disk. nzbs are stored in a subdir of their first char.
-	//
 	function getNZBPath($releaseGuid, $sitenzbpath = "", $createIfDoesntExist = false, $levelsToSplit = 1)
 	{
 		$nzbpath = $this->buildNZBPath($releaseGuid, $sitenzbpath, $createIfDoesntExist, $levelsToSplit);
 		return $nzbpath.$releaseGuid.".nzb.gz";
 	}
 
-	//
 	// Check if the NZB is there, returns path, else false.
-	//
 	function NZBPath($releaseGuid, $sitenzbpath = "", $levelsToSplit = 1)
 	{
 		$nzbfile = $this->getNZBPath($releaseGuid, $sitenzbpath, false, $levelsToSplit);
@@ -211,5 +203,4 @@ class NZB
 		}
 		return $result;
 	}
-
 }

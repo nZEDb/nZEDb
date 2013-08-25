@@ -205,6 +205,19 @@ class DB
 		return DB::$pdo->rollBack();
 	}
 
+	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00, also escapes it, pass false as 2nd arg to not escape.
+	// (substitute for mysql from_unixtime function).
+	public function from_unixtime($utime, $escape=true)
+	{
+		return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
+	}
+
+	// Convert unixtime to a date, no time then back to unix time.
+	// (substitute for mysql's DATE() function).
+	public function unixtime_date($utime)
+	{
+		return strtotime(date('Y-m-d', $utime));
+	}
 
 /*No replacements in PDO. Used in tmux monitor.php, possible solution here? http://terenceyim.wordpress.com/2009/01/09/adding-ping-function-to-pdo/
 	// Checks whether the connection to the server is working. Optionally kills connection.

@@ -29,13 +29,13 @@ class Nfo
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO releasenfo (releaseID) VALUE (%d)", $relid));
+		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseid) VALUE (%d)", $relid));
 	}
 
 	public function deleteReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("delete from releasenfo where releaseID = %d", $relid));
+		return $db->queryDelete(sprintf("DELETE FROM releasenfo WHERE releaseid = %d", $relid));
 	}
 
 	// Find an IMDB ID in a NFO file.
@@ -133,17 +133,17 @@ class Nfo
 	// Adds an NFO found from predb, rar, zip etc...
 	public function addAlternateNfo($db, $nfo, $release)
 	{
-		if ($this->isNFO($nfo) && $release["ID"] > 0)
+		if ($this->isNFO($nfo) && $release["id"] > 0)
 		{
 			$this->addReleaseNfo($release["ID"]);
-			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($nfo), $release["ID"]));
-			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $release["ID"]));
+			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = COMPRESS(%s) WHERE releaseid = %d", $db->escapeString($nfo), $release["id"]));
+			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
 			if (!isset($release["completion"]))
 				$release["completion"] = 0;
 			if ($release["completion"] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
-				$nzbcontents->NZBcompletion($release["guid"], $release["ID"], $release["groupID"]);
+				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"]);
 			}
 			return true;
 		}
@@ -162,7 +162,7 @@ class Nfo
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf("SELECT ID, guid, groupID, name FROM releases WHERE nfostatus between %d and -1 and nzbstatus = 1 and size < %s order by postdate desc limit %d", $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf("SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s ORDER BY postdate DESC LIMIT %d", $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
@@ -171,7 +171,7 @@ class Nfo
 		{
 			$res = 0;
 			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('ID' => $pieces[0], 'guid' => $pieces[1], 'groupID' => $pieces[2], 'name' => $pieces[3]));
+			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
 			$nfocount = 1;
 		}
 
@@ -190,15 +190,15 @@ class Nfo
 			foreach ($res as $arr)
 			{
 				$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
-				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['ID'], $arr['groupID'], $nntp);
+				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp);
 				if ($fetchedBinary !== false)
 				{
 					//insert nfo into database
-					$this->addReleaseNfo($arr["ID"]);
-					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = compress(%s) WHERE releaseID = %d", $db->escapeString($fetchedBinary), $arr["ID"]));
-					$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE ID = %d", $arr["ID"]));
+					$this->addReleaseNfo($arr["id"]);
+					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = COMPRESS(%s) WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
 					$ret++;
-					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["ID"], $db, $processImdb);
+					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["id"], $db, $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1)
@@ -211,13 +211,13 @@ class Nfo
 							if (is_array($show) && $show['name'] != '')
 							{
 								// update release with season, ep, and airdate info (if available) from releasetitle
-								$tvrage->updateEpInfo($show, $arr['ID']);
+								$tvrage->updateEpInfo($show, $arr['id']);
 
 								$rid = $tvrage->getByRageID($rageId);
 								if (!$rid)
 								{
 									$tvrShow = $tvrage->getRageInfoFromService($rageId);
-									$tvrage->updateRageInfo($rageId, $show, $tvrShow, $arr['ID']);
+									$tvrage->updateRageInfo($rageId, $show, $tvrShow, $arr['id']);
 								}
 							}
 						}
@@ -230,10 +230,10 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->query("Select ID from releases where nfostatus <= -6");
+			$relres = $db->query("SELECT id FROM releases WHERE nfostatus <= -6");
 			foreach ($relres as $relrow)
 			{
-				$db->queryDelete(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseID = %d", $relrow['ID']));
+				$db->queryDelete(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d", $relrow['id']));
 			}
 
 			if ($this->echooutput)

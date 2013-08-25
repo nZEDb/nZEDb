@@ -26,13 +26,13 @@ class Music
 	public function getMusicInfo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT musicinfo.*, genres.title as genres FROM musicinfo left outer join genres on genres.ID = musicinfo.genreID where musicinfo.ID = %d ", $id));
+		return $db->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genreid WHERE musicinfo.id = %d ", $id));
 	}
 
 	public function getMusicInfoByName($artist, $album)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo where title like %s and artist like %s", $db->escapeString("%".$artist."%"),  $db->escapeString("%".$album."%")));
+		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist LIKE %s", $db->escapeString("%".$artist."%"),  $db->escapeString("%".$album."%")));
 	}
 
 	public function getRange($start, $num)
@@ -50,7 +50,7 @@ class Music
 	public function getCount()
 	{
 		$db = new DB();
-		$res = $db->queryOneRow("select count(ID) as num from musicinfo");
+		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM musicinfo");
 		return $res["num"];
 	}
 
@@ -74,14 +74,14 @@ class Music
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-								$catsrch .= " r.categoryID in (".$chlist.") or ";
+								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
 					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 					}
 				}
 			}
@@ -89,15 +89,15 @@ class Music
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 		else
 			$maxage = "";
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$sql = sprintf("select count(r.ID) as num from releases r inner join musicinfo m on m.ID = r.musicinfoID and m.title != '' where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -127,14 +127,14 @@ class Music
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-								$catsrch .= " r.categoryID in (".$chlist.") or ";
+								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
 					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 					}
 				}
 			}
@@ -143,14 +143,14 @@ class Music
 
 		$maxage = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getMusicOrder($orderby);
-		$sql = sprintf(" SELECT r.*, r.ID as releaseID, m.*, g.title as genre, groups.name as group_name, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, rn.ID as nfoID from releases r left outer join groups on groups.ID = r.groupID inner join musicinfo m on m.ID = r.musicinfoID and m.title != '' left outer join releasenfo rn on rn.releaseID = r.ID and rn.nfo is not null left outer join category c on c.ID = r.categoryID left outer join category cp on cp.ID = c.parentID left outer join genres g on g.ID = m.genreID where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s order by %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+		$sql = sprintf(" SELECT r.*, r.id AS releaseid, m.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = m.genreid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		return $db->query($sql);
 	}
 
@@ -231,9 +231,8 @@ class Music
 	public function update($id, $title, $asin, $url, $salesrank, $artist, $publisher, $releasedate, $year, $tracks, $cover, $genreID)
 	{
 		$db = new DB();
-
-		$db->queryUpdate(sprintf("UPDATE musicinfo SET title=%s, asin=%s, url=%s, salesrank=%s, artist=%s, publisher=%s, releasedate='%s', year=%s, tracks=%s, cover=%d, genreID=%d, updateddate=NOW() WHERE ID = %d",
-		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $releasedate, $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));
+		$db->queryUpdate(sprintf("UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, year = %s, tracks = %s, cover = %d, genreID = %d, updateddate = NOW() WHERE id = %d",
+		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));
 	}
 
 	public function updateMusicInfo($title, $year, $amazdata = null)
@@ -257,10 +256,7 @@ class Music
 			$genreassoc[$dg['ID']] = strtolower($dg['title']);
 		}
 
-		//
 		// Get album properties.
-		//
-
 		$mus['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
 		if ($mus['coverurl'] != "")
 			$mus['cover'] = 1;
@@ -339,25 +335,13 @@ class Music
 			if (in_array(strtolower($genreName), $genreassoc)) {
 				$genreKey = array_search(strtolower($genreName), $genreassoc);
 			} else {
-				$genreKey = $db->queryInsert(sprintf("INSERT IGNORE INTO genres (`title`, `type`) VALUES (%s, %d)", $db->escapeString($genreName), Genres::MUSIC_TYPE));
+				$genreKey = $db->queryInsert(sprintf("INSERT INTO genres (title, type) VALUES (%s, %d)", $db->escapeString($genreName), Genres::MUSIC_TYPE));
 			}
 		}
 		$mus['musicgenre'] = $genreName;
 		$mus['musicgenreID'] = $genreKey;
 
-		$query = sprintf("
-		INSERT IGNORE INTO musicinfo  (`title`, `asin`, `url`, `salesrank`,  `artist`, `publisher`, `releasedate`, `review`, `year`, `genreID`, `tracks`, `cover`, `createddate`, `updateddate`)
-		VALUES (%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%s,		%d,		now(),		now())
-			ON DUPLICATE KEY UPDATE  `title` = %s,  `asin` = %s,  `url` = %s,  `salesrank` = %s,  `artist` = %s,  `publisher` = %s,  `releasedate` = %s,  `review` = %s,  `year` = %s,  `genreID` = %s,  `tracks` = %s,  `cover` = %d,  createddate = now(),  updateddate = now()",
-		$db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']),
-		$mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']),
-		$mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']),
-		($mus['musicgenreID']==-1?"null":$mus['musicgenreID']), $db->escapeString($mus['tracks']), $mus['cover'],
-		$db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']),
-		$mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']),
-		$mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']),
-		($mus['musicgenreID']==-1?"null":$mus['musicgenreID']), $db->escapeString($mus['tracks']), $mus['cover'] );
-
+		$query = sprintf("INSERT INTO musicinfo (title, asin, url, salesrank,  artist, publisher, releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, review = %s, year = %s, genreID = %s, tracks = %s, cover = %d, createddate = now(), updateddate = now()", $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreID']==-1?"null":$mus['musicgenreID']), $db->escapeString($mus['tracks']), $mus['cover'], $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreID']==-1?"null":$mus['musicgenreID']), $db->escapeString($mus['tracks']), $mus['cover'] );
 		$musicId = $db->queryInsert($query);
 
 		if ($musicId)
@@ -415,7 +399,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->query(sprintf("SELECT searchname, ID from releases where musicinfoID IS NULL and nzbstatus = 1 and relnamestatus != 0 and categoryID in (3010, 3040, 3050) ORDER BY postdate desc LIMIT %d,%d", floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
+		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d,%d", floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
@@ -438,13 +422,13 @@ class Music
 					}
 
 					// Update release.
-					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", $albumId, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", $albumId, $arr["id"]));
 
 				}
 				else
 				{
 					// No album found.
-					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", -2, $arr["id"]));
 				}
 				usleep($this->sleeptime*1000);
 			}
@@ -482,9 +466,9 @@ class Music
 	{
 		$db = new DB();
 		if ($activeOnly)
-			return $db->query("SELECT musicgenre.* FROM musicgenre INNER JOIN (SELECT DISTINCT musicgenreID FROM musicinfo) X ON X.musicgenreID = musicgenre.ID ORDER BY title");
+			return $db->query("SELECT musicgenre.* FROM musicgenre INNER JOIN (SELECT DISTINCT musicgenreid FROM musicinfo) x ON x.musicgenreid = musicgenre.id ORDER BY title");
 		else
-			return $db->query("select * from musicgenre order by title");
+			return $db->query("SELECT * FROM musicgenre ORDER BY title");
 	}
 
 	public function matchBrowseNode($nodeId)

@@ -7,19 +7,19 @@ class ReleaseComments
 	public function getCommentById($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * from releasecomment where ID = %d", $id));
+		return $db->queryOneRow(sprintf("SELECT * FROM releasecomment WHERE id = %d", $id));
 	}
 
 	public function getComments($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.ID = releasecomment.userID where releaseID = %d", $id));
+		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid WHERE releaseid = %d", $id));
 	}
 
 	public function getCommentCount()
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from releasecomment"));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM releasecomment"));
 		return $res["num"];
 	}
 
@@ -29,7 +29,7 @@ class ReleaseComments
 		$res = $this->getCommentById($id);
 		if ($res)
 		{
-			$db->queryDelete(sprintf("delete from releasecomment where ID = %d", $id));
+			$db->queryDelete(sprintf("DELETE FROM releasecomment WHERE id = %d", $id));
 			$this->updateReleaseCommentCount($res["releaseID"]);
 		}
 	}
@@ -37,7 +37,7 @@ class ReleaseComments
 	public function deleteCommentsForRelease($id)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("delete from releasecomment where releaseID = %d", $id));
+		$db->queryDelete(sprintf("DELETE FROM releasecomment WHERE releaseid = %d", $id));
 		$this->updateReleaseCommentCount($id);
 	}
 
@@ -51,8 +51,8 @@ class ReleaseComments
 			$comments = $this->getCommentsForUserRange($id, 0, $numcomments);
 			foreach ($comments as $comment)
 			{
-				$this->deleteComment($comment["ID"]);
-				$this->updateReleaseCommentCount($comment["releaseID"]);
+				$this->deleteComment($comment["id"]);
+				$this->updateReleaseCommentCount($comment["releaseid"]);
 			}
 		}
 	}
@@ -66,8 +66,7 @@ class ReleaseComments
 		if ($s->storeuserips != "1")
 			$host = "";
 
-		$comid = $db->queryInsert(sprintf("INSERT IGNORE INTO releasecomment (`releaseID`, 	`text`, 	`userID`, 	`createddate`, 	`host`	)
-						VALUES (%d, 	%s, 	%d, 	now(), 	%s	)", $id, $db->escapeString($text), $userid, $db->escapeString($host) ));
+		$comid = $db->queryInsert(sprintf("INSERT INTO releasecomment (releaseid, text, userID, createddate, host) VALUES (%d, %s, %d, NOW(), %s)", $id, $db->escapeString($text), $userid, $db->escapeString($host)));
 		$this->updateReleaseCommentCount($id);
 		return $comid;
 	}
@@ -81,21 +80,19 @@ class ReleaseComments
 		else
 			$limit = " LIMIT ".$start.",".$num;
 
-		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.ID = releasecomment.userID inner join releases on releases.ID = releasecomment.releaseID order by releasecomment.createddate desc ".$limit);
+		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid INNER JOIN releases on releases.id = releasecomment.releaseid ORDER BY releasecomment.createddate DESC ".$limit);
 	}
 
 	public function updateReleaseCommentCount($relid)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("update releases
-				set comments = (select count(ID) from releasecomment where releasecomment.releaseID = %d)
-				where releases.ID = %d", $relid, $relid ));
+		$db->queryUpdate(sprintf("UPDATE releases SET comments = (SELECT COUNT(id) from releasecomment WHERE releasecomment.releaseid = %d) WHERE releases.id = %d", $relid, $relid));
 	}
 
 	public function getCommentCountForUser($uid)
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from releasecomment where userID = %d", $uid));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM releasecomment WHERE userid = %d", $uid));
 		return $res["num"];
 	}
 
@@ -108,6 +105,6 @@ class ReleaseComments
 		else
 			$limit = " LIMIT ".$start.",".$num;
 
-		return $db->query(sprintf(" SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.ID = releasecomment.userID where userID = %d order by releasecomment.createddate desc ".$limit, $uid));
+		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid WHERE userid = %d ORDER BY releasecomment.createddate DESC ".$limit, $uid));
 	}
 }
