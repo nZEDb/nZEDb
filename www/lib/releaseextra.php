@@ -171,7 +171,7 @@ class ReleaseExtra
 	public function addSubs($releaseID, $subsID, $subslanguage)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT IGNORE INTO releasesubs (releaseid, subsid, subslanguage) VALUES (%d, %d, %s)", $releaseID, $subsID, $db->escapeString($subslanguage)));
+		return $db->queryInsert(sprintf("INSERT INTO releasesubs (releaseid, subsid, subslanguage) VALUES (%d, %d, %s)", $releaseID, $subsID, $db->escapeString($subslanguage)));
 	}
 
 	public function getFull($id)

@@ -42,7 +42,7 @@ class AniDB
 		$db->queryDelete("DELETE FROM animetitles WHERE anidbid IS NOT NULL");
 
 		for($i = 0; $i < count($animetitles[1]); $i++) {
-			$db->queryInsert(sprintf("INSERT IGNORE INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)",
+			$db->queryInsert(sprintf("INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)",
 			$animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i], ENT_QUOTES, 'UTF-8')), time()));
 		}
 
@@ -57,24 +57,13 @@ class AniDB
 	public function addTitle($AniDBAPIArray)
 	{
 		$db = new DB();
-
-		$db->queryInsert(sprintf("INSERT IGNORE INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)",
-		$AniDBAPIArray['anidbID'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']),
-		$db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']),
-		$db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']),
-		$db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']),
-		$db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
+		$db->queryInsert(sprintf("INSERT INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbID'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']), $db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
 	}
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
 	{
 		$db = new DB();
-
-		$db->queryUpdate(sprintf("UPDATE anidb
-		SET title=%s, type=%s, startdate=%s, enddate=%s, related=%s, creators=%s, description=%s, rating=%s, categories=%s, characters=%s, epnos=%s, airdates=%s, episodetitles=%s, unixtime=%d
-		WHERE anidbid = %d", $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related),
-		$db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters),
-		$db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
+		$db->queryUpdate(sprintf("UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d", $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
 	}
 
 	public function deleteTitle($anidbID)
@@ -87,10 +76,8 @@ class AniDB
 	public function getanidbID($title)
 	{
 		$db = new DB();
-
 		$anidbID = $db->queryOneRow(sprintf("SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1", $db->escapeString('^'.$title.'$')));
-
-		return $anidbID['anidbID'];
+		return $anidbID['anidbid'];
 	}
 
 	public function getAnimeList($letter='', $animetitle='')
@@ -108,14 +95,9 @@ class AniDB
 
 		$tsql = '';
 		if ($animetitle != '')
-		{
 			$tsql .= sprintf("AND anidb.title LIKE %s", $db->escapeString("%".$animetitle."%"));
-		}
 
-		$sql = sprintf(" SELECT anidb.id, anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate
-			FROM anidb WHERE anidb.anidbID > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC", $rsql, $tsql);
-
-		return $db->query($sql);
+		return $db->query(sprintf("SELECT anidb.id, anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbID > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC", $rsql, $tsql));
 	}
 
 	public function getAnimeRange($start, $num, $animetitle='')
@@ -203,12 +185,12 @@ class AniDB
 		$ri = new ReleaseImage();
 		$site = new Sites();
 		$threads--;
-		$results = $db->query(sprintf("SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE categoryid = %d order by postdate desc limit %d,%d )", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));
+		$results = $db->query(sprintf("SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));
 
 		if (count($results) > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".count($results)." anime releases\n";
+				echo "Processing ".count($results)." anime releases.\n";
 
 			foreach ($results as $arr)
 			{
@@ -234,12 +216,7 @@ class AniDB
 					if(! $lastUpdate)
 						$this->addTitle($AniDBAPIArray);
 					else
-					{
-						$this->updateTitle($AniDBAPIArray['anidbID'], $AniDBAPIArray['title'], $AniDBAPIArray['type'], $AniDBAPIArray['startdate'],
-							$AniDBAPIArray['enddate'], $AniDBAPIArray['related'], $AniDBAPIArray['creators'], $AniDBAPIArray['description'],
-							$AniDBAPIArray['rating'], $AniDBAPIArray['categories'], $AniDBAPIArray['characters'], $AniDBAPIArray['epnos'],
-							$AniDBAPIArray['airdates'], $AniDBAPIArray['episodetitles']);
-					}
+						$this->updateTitle($AniDBAPIArray['anidbID'], $AniDBAPIArray['title'], $AniDBAPIArray['type'], $AniDBAPIArray['startdate'], $AniDBAPIArray['enddate'], $AniDBAPIArray['related'], $AniDBAPIArray['creators'], $AniDBAPIArray['description'], $AniDBAPIArray['rating'], $AniDBAPIArray['categories'], $AniDBAPIArray['characters'], $AniDBAPIArray['epnos'], $AniDBAPIArray['airdates'], $AniDBAPIArray['episodetitles']);
 
 					if($AniDBAPIArray['picture'])
 						$ri->saveImage($AniDBAPIArray['anidbID'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
@@ -258,7 +235,8 @@ class AniDB
 							$offset = $i;
 							break;
 						}
-						else $offset = -1;
+						else
+							$offset = -1;
 					}
 
 					$airdate = isset($airdate[$offset]) ? $airdate[$offset] : $AniDBAPIArray['startdate'];
@@ -268,8 +246,7 @@ class AniDB
 					if ($this->echooutput)
 						echo '- found '.$AniDBAPIArray['anidbID']."\n";
 
-					$db->queryUpdate(sprintf("UPDATE releases SET episode=%s, tvtitle=%s, tvairdate=%s, anidbid=%d, rageid=%d WHERE id = %d",
-					$db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbID'], -2, $arr["id"]));
+					$db->queryUpdate(sprintf("UPDATE releases SET episode=%s, tvtitle=%s, tvairdate=%s, anidbid=%d, rageid=%d WHERE id = %d", $db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbID'], -2, $arr["id"]));
 				}
 			}
 

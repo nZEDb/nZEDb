@@ -27,7 +27,7 @@ require_once(WWW_DIR."/lib/site.php");
 	public function getBookInfo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d ", $id));
+		return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d", $id));
 	}
 
 	public function getBookInfoByName($author, $title)
@@ -81,9 +81,7 @@ require_once(WWW_DIR."/lib/site.php");
 								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
-					{
 						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
-					}
 				}
 			}
 			$catsrch.= "1=2 )";
@@ -98,8 +96,7 @@ require_once(WWW_DIR."/lib/site.php");
 		if (count($excludedcats) > 0)
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo b ON b.id = r.bookinfoid AND b.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
-		$res = $db->queryOneRow($sql);
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo b ON b.id = r.bookinfoid AND b.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res["num"];
 	}
 
@@ -134,9 +131,7 @@ require_once(WWW_DIR."/lib/site.php");
 							$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
-					{
 						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
-					}
 				}
 			}
 			$catsrch.= "1=2 )";
@@ -151,8 +146,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getBookOrder($orderby);
-		$sql = sprintf(" SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AMD rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
-		return $db->query($sql);
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AMD rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
@@ -248,19 +242,15 @@ require_once(WWW_DIR."/lib/site.php");
 
 					$bookId = $this->updateBookInfo($bookInfo);
 					if ($bookId === false)
-					{
 						$bookId = -2;
-					}
 
 					// Update release.
 					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", $bookId, $arr["id"]));
-
 				}
+				// Could not parse release title.
 				else
-				{
-					// Could not parse release title.
 					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", -2, $arr["id"]));
-				}
+				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);
 			}
 		}
@@ -364,7 +354,7 @@ require_once(WWW_DIR."/lib/site.php");
 		else
 			$book['cover'] = 0;
 
-		$query = sprintf("INSERT IGNORE INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover`, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
+		$query = sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover`, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
 
 		$bookId = $db->queryInsert($query);
 

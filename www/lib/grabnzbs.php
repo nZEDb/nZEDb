@@ -88,7 +88,6 @@ class Import
 	{
 		if(!$article)
 			return;
-		//echo "Downloaded article for $hash\n";
 		$db = new DB();
 		$binaries = new Binaries();
 		$page = new Page();
@@ -116,7 +115,7 @@ class Import
 
 			foreach($xml->file as $file)
 			{
-				//file info
+				// File info.
 				$groupID = -1;
 				$name = (string)$file->attributes()->subject;
 				$firstname[] = $name;
@@ -130,21 +129,21 @@ class Import
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 
-				// make a fake message object to use to check the blacklist
+				// Make a fake message object to use to check the blacklist.
 				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
 
-				// if the release is in our DB already then don't bother importing it
+				// If the release is in our DB already then don't bother importing it.
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - interval %d HOUR <= %s AND postdate + interval %d HOUR > %s",
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s",
 						$db->escapeString($firstname['0']), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
-					// only check one binary per nzb, they should all be in the same release anyway
+					// Only check one binary per nzb, they should all be in the same release anyway.
 					$skipCheck = true;
 
-					// if the release is in the DB already then just skip this whole procedure
+					// If the release is in the DB already then just skip this whole procedure.
 					if ($res !== false)
 					{
 						flush();
@@ -153,7 +152,7 @@ class Import
 					}
 				}
 
-				//groups
+				// Groups.
 				$groupArr = array();
 				foreach($file->groups->group as $group)
 				{
@@ -188,7 +187,7 @@ class Import
 				$nzb = new NZB();
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 
-				if($relID = $db->queryInsert(sprintf("INSERT IGNORE INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');

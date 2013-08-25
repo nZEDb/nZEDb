@@ -24,13 +24,8 @@ class ReleaseFiles
 	public function add($id, $name, $size, $createddate, $passworded)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT INTO releasefiles (releaseid, name, size, createddate, passworded) VALUES (%d, %s, %s, %s, %d)", $id, $db->escapeString($name), $db->escapeString($size), $db->escapeString($this->from_unixtime($createddate)), $passworded );
+		$sql = sprintf("INSERT INTO releasefiles (releaseid, name, size, createddate, passworded) VALUES (%d, %s, %s, %s, %d)", $id, $db->escapeString($name), $db->escapeString($size), $db->from_unixtime($createddate), $passworded );
 		return $db->queryInsert($sql);
 	}
 
-	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00
-	public function from_unixtime($utime)
-	{
-		return date('Y-m-d h:i:s', $utime);
-	}
 }
