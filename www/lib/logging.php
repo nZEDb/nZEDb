@@ -24,13 +24,13 @@ class Logging
 		else if ($s->loggingopt == "2")
 		{
 			$db->queryInsert(sprintf("insert into logging (time, username, host) values (now(), %s, %s)", $db->escapeString($username), $db->escapeString($host)));
-			$logdata = date('D d H:i:s ')."Login Failed for ".$username." from ".$host.".\n";
+			$logdata = date('M d H:i:s ')."Login Failed for ".$username." from ".$host.".\n";
 			if (isset($s->logfile) && $s->logfile != "")
 				file_put_contents($s->logfile, $logdata, FILE_APPEND);
 		}
 		else if ($s->loggingopt == "3")
 		{
-			$logdata = date('D d H:i:s ')."Login Failed for ".$username." from ".$host.".\n";
+			$logdata = date('M d H:i:s ')."Login Failed for ".$username." from ".$host.".\n";
 			if (isset($s->logfile) && $s->logfile != "")
 				file_put_contents($s->logfile, $logdata, FILE_APPEND);
 		}

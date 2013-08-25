@@ -32,7 +32,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->query("update releases set musicinfoID = NULL where musicinfoID in (-2, 0)");
 		$affected = $db->getAffectedRows();
 		echo $affected." musicinfoID's reset.\n";
-		$db->query("update releases set rageID = -1 where rageID <= 0 or rageID IS NULL");
+		$db->query("update releases set rageID = -1 where rageID != -1 or rageID is NULL");
 		$affected = $db->getAffectedRows();
 		echo $affected." rageID's reset.\n";
 		$db->query("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
@@ -114,9 +114,9 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 	}
 	else
 	{
-		$where = " where rageID in (-2, 0) and categoryID BETWEEN 5000 AND 5999";
+		$where = " where rageID in (-2, 0) or rageID is NULL and categoryID BETWEEN 5000 AND 5999";
 	}
-	$db->query("update releases set rageID = NULL".$where);
+	$db->query("update releases set rageID = -1".$where);
 	$affected = $db->getAffectedRows();
 	echo $affected." rageID's reset.\n";
 }

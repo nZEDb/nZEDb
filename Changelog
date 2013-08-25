@@ -1,9 +1,13 @@
+08252013 -> jonnyboy -> added regex to releaseCleaner that gets most predb style names
+						changed remove creap releases password to all negative search items and not remove releases that are applications/misc
+						added code to renumber content if new content ordinal is 1
 08222013 -> jonnyboy -> removed "added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created" and moved stage 4.5 out of the loop
                         updated stage4567 to run max 3 loops, would run indefinately before
                         updated missing items from alhpa theme site-edit/tmux-edit
                         added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created
                         added option to site-edit to allow user control of of delay time
                         updated predb matched to get from releases table
+08212013 -> kevin    -> Predb changes, not the release holds the preid, the nzb details page has pre info and the browse/search pages have pre info.
 08212013 -> jonnyboy -> added color to h4 tag
                         possible fix for db lose connection in tmux when db is not local
                         added option for alternate sequential run in tmux
