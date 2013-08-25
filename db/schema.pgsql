@@ -52,7 +52,7 @@ SELECT pg_catalog.setval('binaries_id_seq', 1, true);
 DROP TABLE IF EXISTS "binaries" CASCADE;
 CREATE TABLE "binaries" (
   "id" numeric(20, 0) DEFAULT nextval('binaries_id_seq'::regclass) NOT NULL,
-  "name" character varying(255) DEFAULT ''::character varying NOT NULL,
+  "name" character varying(1000) DEFAULT ''::character varying NOT NULL,
   "collectionid" bigint DEFAULT 0 NOT NULL,
   "filenumber" bigint DEFAULT 0 NOT NULL,
   "totalparts" bigint DEFAULT 0 NOT NULL,
@@ -134,7 +134,7 @@ SELECT pg_catalog.setval('collections_id_seq', 1, true);
 DROP TABLE IF EXISTS "collections" CASCADE;
 CREATE TABLE "collections" (
   "id" bigint DEFAULT nextval('collections_id_seq'::regclass) NOT NULL,
-  "subject" character varying(255) DEFAULT ''::character varying NOT NULL,
+  "subject" character varying(1000) DEFAULT ''::character varying NOT NULL,
   "fromname" character varying(255) DEFAULT ''::character varying NOT NULL,
   "date" timestamp without time zone,
   "xref" character varying(255) DEFAULT ''::character varying NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE "nzbs" (
   "message_id" character varying(255) DEFAULT ''::character varying NOT NULL,
   "group" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "article-number" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "subject" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "subject" character varying(1000) DEFAULT '0'::character varying NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "filesize" numeric(20, 0) DEFAULT 0 NOT NULL,
   "partnumber" bigint DEFAULT 0 NOT NULL,
@@ -494,8 +494,8 @@ SELECT pg_catalog.setval('releases_id_seq', 1, true);
 DROP TABLE IF EXISTS "releases" CASCADE;
 CREATE TABLE "releases" (
   "id" bigint DEFAULT nextval('releases_id_seq'::regclass) NOT NULL,
-  "name" character varying(255) DEFAULT ''::character varying NOT NULL,
-  "searchname" character varying(255) DEFAULT ''::character varying NOT NULL,
+  "name" character varying(1000) DEFAULT ''::character varying NOT NULL,
+  "searchname" character varying(1000) DEFAULT ''::character varying NOT NULL,
   "totalpart" integer DEFAULT 0,
   "groupid" bigint DEFAULT 0 NOT NULL,
   "size" numeric(20, 0) DEFAULT 0 NOT NULL,

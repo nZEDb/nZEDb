@@ -1,8 +1,5 @@
 <?php
-
-//
-//	This script removes all releases, nzb files, truncates all article tables, resets groups.
-//
+// This script removes all releases, nzb files, truncates all article tables, resets groups.
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
@@ -20,25 +17,23 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$relcount = 0;
 
 	echo "Truncating tables.\n";
-	$db->query("truncate table collections");
-	$db->query("truncate table binaries");
-	$db->query("truncate table parts");
-	$db->query("truncate table partrepair");
-	$db->query("truncate table releasenfo");
-	$db->query("truncate table nzbs");
+	$db->query("TRUNCATE TABLE collections");
+	$db->query("TRUNCATE TABLE binaries");
+	$db->query("TRUNCATE TABLE parts");
+	$db->query("TRUNCATE TABLE partrepair");
+	$db->query("TRUNCATE TABLE releasenfo");
+	$db->query("TRUNCATE TABLE nzbs");
 
 	echo "Resetting groups.\n";
-	$db->queryUpdate("UPDATE groups SET first_record=0, first_record_postdate=NULL, last_record=0, last_record_postdate=NULL");
-	echo "Set releaseID's in predb to null.\n";
-	$db->queryUpdate("UPDATE predb SET releaseID=NULL where releaseID is not NULL");
+	$db->queryUpdate("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
 
-	$relids = $db->query(sprintf("SELECT ID, guid FROM releases"));
+	$relids = $db->query(sprintf("SELECT id, guid FROM releases"));
 	echo "Deleting ".sizeof($relids)." releases, NZB's, previews and samples.\n";
 	$releases = new Releases();
 
 	foreach ($relids as $relid)
 	{
-		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
+		$releases->fastDelete($relid['id'], $relid['guid'], $site);
 		$relcount++;
 		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 	}
@@ -50,7 +45,5 @@ if (isset($argv[1]) && $argv[1] === "true")
 	echo ".\n";
 }
 else
-{
 	exit("This script removes all releases, nzb files, truncates all article tables, resets groups.\nIf you are sure you want to run it, type php resetdb.php true\n");
-}
 ?>

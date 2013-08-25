@@ -1324,7 +1324,10 @@ class Releases
 		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
-		$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.filecheck = 5 ".$where));
+		// DELETE FROM parts WHERE parts.binaryid IN (SELECT binaries.id FROM binaries INNER JOIN collections ON binaries.collectionid = collections.id WHERE collections.filecheck = 5)
+		// DELETE FROM binaries WHERE binaries.collectionid IN (SELECT id FROM collections WHERE collections.filecheck = 5)
+		// DELETE FROM collections WHERE filecheck = 5
+		$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.filecheck = 5".$where));
 		$delq->execute();
 		if ($this->echooutput)
 				echo "Removed ".$delq->rowCount()." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";

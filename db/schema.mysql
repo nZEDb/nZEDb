@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `collections`;
 CREATE TABLE `collections` (
 		`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-		`subject` VARCHAR(255) NOT NULL DEFAULT '',
+		`subject` VARCHAR(1000) NOT NULL DEFAULT '',
 		`fromname` VARCHAR(255) NOT NULL DEFAULT '',
 		`date` DATETIME DEFAULT NULL,
 		`xref` VARCHAR(255) NOT NULL DEFAULT '',
@@ -26,7 +26,7 @@ CREATE INDEX ix_collection_releaseid ON collections (`releaseid`);
 DROP TABLE IF EXISTS `binaries`;
 CREATE TABLE `binaries` (
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		`name` VARCHAR(255) NOT NULL DEFAULT '',
+		`name` VARCHAR(1000) NOT NULL DEFAULT '',
 		`collectionid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
 		`filenumber` INT UNSIGNED NOT NULL DEFAULT '0',
 		`totalparts` INT(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -44,8 +44,8 @@ DROP TABLE IF EXISTS `releases`;
 CREATE TABLE `releases`
 (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(255) NOT NULL DEFAULT '',
-`searchname` VARCHAR(255) NOT NULL DEFAULT '',
+`name` VARCHAR(1000) NOT NULL DEFAULT '',
+`searchname` VARCHAR(1000) NOT NULL DEFAULT '',
 `totalpart` INT DEFAULT 0,
 `groupid` INT UNSIGNED NOT NULL DEFAULT '0',
 `size` BIGINT UNSIGNED NOT NULL DEFAULT '0',
@@ -1385,7 +1385,7 @@ CREATE TABLE `nzbs` (
   `message_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `article-number` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-  `subject` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `subject` varchar(1000) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `collectionhash` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `filesize` bigint(20) unsigned NOT NULL DEFAULT '0',
   `partnumber` int(10) unsigned NOT NULL DEFAULT '0',
