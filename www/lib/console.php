@@ -453,7 +453,7 @@ class Console
 		// Non-fixed release names.
 		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus = 2 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus = 2 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)

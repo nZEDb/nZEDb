@@ -444,7 +444,7 @@ Class Predb
 	public function getAll($offset, $offset2)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d,%d", $offset, $offset2));
+		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d", $offset2, $offset));
 	}
 
 	public function getCount()
