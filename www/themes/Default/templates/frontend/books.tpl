@@ -87,9 +87,9 @@
 					<br />
 					<div class="icon"><input type="checkbox" class="nzb_check" value="{$result.guid}" /></div>
 					<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
-					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 					<div class="icon icon_cart" title="Add to Cart"></div>
-				</div>
+					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+					</div>
 			</td>
 		</tr>
 	{/foreach}

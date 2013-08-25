@@ -117,8 +117,13 @@ class Contents
 		if ($content->ordinal == 1)
 		{
 			$db = new DB();
+<<<<<<< HEAD
 			$db->query("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
+		} 
+=======
+			$db->query("update content set ordinal = ordinal + 1 where ordinal > 0");
 		}
+>>>>>>> dev
 		return $this->data_add($content);
 	}
 

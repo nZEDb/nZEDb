@@ -28,8 +28,12 @@ if (isset($argv[1]) && $argv[1] === "all")
 		echo $affected." imdbID's reset.\n";
 		$affected = $db->queryUpdate("update releases set musicinfoID = NULL where musicinfoID in (-2, 0)");
 		echo $affected." musicinfoID's reset.\n";
-
-		$affected = $db->queryUpdate("update releases set rageID = -1 where rageID != 1 or rageID IS NULL");
+<<<<<<< HEAD
+		$affected = $db->queryUpdate("update releases set rageID = -1 where rageID <= 0 or rageID IS NULL");
+=======
+		$db->query("update releases set rageID = -1 where rageID != -1 or rageID is NULL");
+		$affected = $db->getAffectedRows();
+>>>>>>> dev
 		echo $affected." rageID's reset.\n";
 		$affected = $db->queryUpdate("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
 		echo $affected." bookinfoID's reset.\n";

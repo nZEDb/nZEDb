@@ -134,8 +134,8 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 {/if}
 </form>
 {else}
-<div class="alert alert-link" style="vertical-align:middle;">
+<div class="alert alert-warning" style="vertical-align:middle;">
 <button type="button" class="close" data-dismiss="alert">&times;</button>
-<div class="pull-left" style="margin-right: 15px;"><h2 style="margin-top: 7px;"> ಠ_ಠ </h2></div><p>There doesn't seem to be any releases found.</p>
+<strong> ಠ_ಠ </strong>There doesn't seem to be any releases found. 
 </div>
 {/if}

@@ -56,11 +56,11 @@ if (isset($argv[1]) && $argv[1] == "true")
 {
 	function deleteReleases($sql, $type)
 	{
-	        global $delete;
+		global $delete;
 		$releases = new Releases();
 		$s = new Sites();
 		$site = $s->get();
-		
+
 		$delcount = 0;
 		foreach ($sql as $rel)
 		{
@@ -87,7 +87,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// 25 or more letters/numbers, probably hashed.
 	function deleteHashed($and)
 	{
@@ -97,7 +97,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// 5 or less letters/numbers.
 	function deleteShort($and)
 	{
@@ -107,7 +107,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Anything with an exe not in other misc or pc apps/games.
 	function deleteExecutable($and)
 	{
@@ -117,7 +117,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Anything with an install.bin file.
 	function deleteInstallBin($and)
 	{
@@ -127,7 +127,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Anything with a password.url file.
 	function deletePasswordURL($and)
 	{
@@ -137,17 +137,17 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Password in the searchname
 	function deletePassworded($and)
 	{
 		$type = "Passworded";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '/passworded|password protect|password/i' and nzbstatus in (1, 2)".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where ( searchname like '%passworded%' or searchname like '%password protect%' or searchname like '%password%' or searchname like '%passwort%' ) and searchname NOT like '%no password%' and searchname NOT like '%not passworded%' and searchname NOT like '%unlocker%' and searchname NOT like '%reset%' and searchname NOT like '%recovery%' and searchname NOT like '%keygen%' and searchname NOT like '%advanced%' and nzbstatus in (1, 2) and categoryID not in (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Anything that is 1 part and smaller than 1MB and not in MP3/books.
 	function deleteSize($and)
 	{
@@ -157,7 +157,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// More than 1 part, less than 40MB, sample in name. TV/Movie sections.
 	function deleteSample($and)
 	{
@@ -167,7 +167,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
-	
+
 	// Anything with a scr file in the filename/subject.
 	function deleteScr($and)
 	{
@@ -197,7 +197,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	}
 
 	$totalDeleted = $gibberishDeleted = $hashedDeleted = $shortDeleted = $executableDeleted = $installBinDeleted = $PURLDeleted = $PassDeleted = $sizeDeleted = $sampleDeleted = $scrDeleted = $blacklistDeleted = 0;
-	
+
 	if (isset($argv[3]))
 	{
 		if (isset($argv[3]) && $argv[3] == "gibberish")
@@ -239,7 +239,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	}
 
 	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$executableDeleted+$installBinDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted+$scrDeleted+$blacklistDeleted;
-	
+
 	if ($totalDeleted > 0)
 	{
 		echo "Total Removed: ".$totalDeleted."\n";
