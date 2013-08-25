@@ -13,6 +13,4 @@ if (isset($_GET['action']) && $_GET['action'] == "1" && isset($_GET['emailto']))
 		print "Invite sent. Alternatively paste them following link to register - ".$ret;
 }
 else
-{
 	print "Invite not sent.";
-}

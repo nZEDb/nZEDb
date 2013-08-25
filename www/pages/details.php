@@ -1,11 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/releases.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
 if (isset($_GET["id"]))
 {
+	require_once(WWW_DIR."/lib/releases.php");
 	$releases = new Releases;
 	$data = $releases->getByGuid($_GET["id"]);
 
@@ -15,23 +14,23 @@ if (isset($_GET["id"]))
 	require_once(WWW_DIR."/lib/releasecomments.php");
 	$rc = new ReleaseComments;
 	if ($page->isPostBack())
-			$rc->addComment($data["ID"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
+			$rc->addComment($data["id"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 
-	$nfo = $releases->getReleaseNfo($data["ID"], false);
+	$nfo = $releases->getReleaseNfo($data["id"], false);
 	require_once(WWW_DIR."/lib/releaseextra.php");
 	$re = new ReleaseExtra;
-	$reVideo = $re->getVideo($data["ID"]);
-	$reAudio = $re->getAudio($data["ID"]);
-	$reSubs = $re->getSubs($data["ID"]);
-	$comments = $rc->getComments($data["ID"]);
-	$similars = $releases->searchSimilar($data["ID"], $data["searchname"], 6, $page->userdata["categoryexclusions"]);
+	$reVideo = $re->getVideo($data["id"]);
+	$reAudio = $re->getAudio($data["id"]);
+	$reSubs = $re->getSubs($data["id"]);
+	$comments = $rc->getComments($data["id"]);
+	$similars = $releases->searchSimilar($data["id"], $data["searchname"], 6, $page->userdata["categoryexclusions"]);
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
-	if ($data["rageID"] != '')
+	if ($data["rageid"] != '')
 	{
 		require_once(WWW_DIR."/lib/tvrage.php");
 		$tvrage = new TvRage;
-		$rageinfo = $tvrage->getByRageID($data["rageID"]);
+		$rageinfo = $tvrage->getByRageID($data["rageid"]);
 		if (count($rageinfo) > 0)
 		{
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();
@@ -50,7 +49,7 @@ if (isset($_GET["id"]))
 				if (!empty($r['imgdata']))
 				{
 					$seriesimg[] = $r['imgdata'];
-					$seriesid[] = $r['ID'];
+					$seriesid[] = $r['id'];
 				}
 			}
 			$rage = array('releasetitle' => array_shift($seriesnames),
@@ -58,23 +57,23 @@ if (isset($_GET["id"]))
 						'country' => array_shift($seriescountry),
 						'genre' => array_shift($seriesgenre),
 						'imgdata' => array_shift($seriesimg),
-						'ID'=>array_shift($seriesid)
+						'id'=>array_shift($seriesid)
 						);
 		}
 	}
 
-	if ($data["anidbID"] > 0)
+	if ($data["anidbid"] > 0)
 	{
 		require_once(WWW_DIR."/lib/anidb.php");
 		$AniDB = new AniDB;
-		$ani = $AniDB->getAnimeInfo($data["anidbID"]);
+		$ani = $AniDB->getAnimeInfo($data["anidbid"]);
 	}
 
 	if ($data['imdbID'] != '')
 	{
 		require_once(WWW_DIR."/lib/movie.php");
 		$movie = new Movie();
-		$mov = $movie->getMovieInfo($data['imdbID']);
+		$mov = $movie->getMovieInfo($data['imdbid']);
 
 		if ($mov)
 		{
@@ -85,34 +84,34 @@ if (isset($_GET["id"]))
 		}
 	}
 
-	if ($data['musicinfoID'] != '')
+	if ($data['musicinfoid'] != '')
 	{
 		require_once(WWW_DIR."/lib/music.php");
 		$music = new Music();
-		$mus = $music->getMusicInfo($data['musicinfoID']);
+		$mus = $music->getMusicInfo($data['musicinfoid']);
 	}
 
-	if ($data['consoleinfoID'] != '')
+	if ($data['consoleinfoid'] != '')
 	{
 		require_once(WWW_DIR."/lib/console.php");
 		$c = new Console();
-		$con = $c->getConsoleInfo($data['consoleinfoID']);
+		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
-	if ($data['bookinfoID'] != '')
+	if ($data['bookinfoid'] != '')
 	{
 		require_once(WWW_DIR."/lib/books.php");
 		$b = new Books();
-		$boo = $b->getBookInfo($data['bookinfoID']);
+		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
 	require_once(WWW_DIR."/lib/releasefiles.php");
 	$rf = new ReleaseFiles;
-	$releasefiles = $rf->get($data["ID"]);
+	$releasefiles = $rf->get($data["id"]);
 
 	require_once(WWW_DIR."/lib/predb.php");
 	$predb = new Predb();
-	$pre = $predb->getForRelease($data['preID']);
+	$pre = $predb->getForRelease($data['preid']);
 
 	$page->smarty->assign('releasefiles',$releasefiles);
 	$page->smarty->assign('release',$data);

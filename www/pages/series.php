@@ -1,4 +1,7 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 require_once(WWW_DIR."/lib/category.php");
@@ -9,9 +12,6 @@ $tvrage = new TvRage;
 $cat = new Category;
 $us = new UserSeries();
 
-if (!$users->isLoggedIn())
-	$page->show403();
-	
 if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 {
 	$category = -1;
@@ -25,18 +25,14 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 	$rage = $tvrage->getByRageID($_GET['id']);
 	
 	if (!$rage)
-	{
 		$page->smarty->assign("nodata","No tvrage information for this series.");
-	}
 	elseif (!$rel)
-	{
 		$page->smarty->assign("nodata","No releases for this series.");
-	}
 	else
 	{
-		$myshows = $us->getShow($users->currentUserId(), $rage[0]['rageID']);
+		$myshows = $us->getShow($users->currentUserId(), $rage[0]['rageid']);
 		
-		//sort releases by season, episode, date posted
+		// Sort releases by season, episode, date posted.
 		$season = $episode = $posted = array();
 		foreach($rel as $rlk=>$rlv)
 		{
@@ -83,7 +79,9 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 		{
 			$cdata = $cat->getById($category);
 			$catid = $category;
-		} else {
+		}
+		else
+		{
 			$cdata = array('title'=>'');
 			$catid = '';
 		}
@@ -112,9 +110,10 @@ else
 	$serieslist = array();
 	foreach ($masterserieslist as $s)
 	{
-		if (preg_match('/^[0-9]/', $s['releasetitle'])) {
+		if (preg_match('/^[0-9]/', $s['releasetitle']))
 			$thisrange = '0-9';
-		} else {
+		else 
+		{
 		 	preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
 		 	$thisrange = strtoupper($matches[1]);
 		}

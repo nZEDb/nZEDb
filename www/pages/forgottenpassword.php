@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR."/lib/util.php");
-
 if ($users->isLoggedIn())
 	$page->show404();
+
+require_once(WWW_DIR."/lib/util.php");
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
@@ -23,12 +23,10 @@ switch($action)
 		}
 		else
 		{
-			//
-			// reset the password, inform the user, send out the email
-			//
-			$users->updatePassResetGuid($ret["ID"], "");
+			// Reset the password, inform the user, send out the email.
+			$users->updatePassResetGuid($ret["id"], "");
 			$newpass = $users->generatePassword();
-			$users->updatePassword($ret["ID"], $newpass);
+			$users->updatePassword($ret["id"], $newpass);
 
 			$to = $ret["email"];
 			$subject = $page->site->title." Password Reset";
@@ -46,14 +44,10 @@ switch($action)
 		$page->smarty->assign('email', $_POST['email']);
 
 		if ($_POST['email'] =="")
-		{
 			$page->smarty->assign('error', "Missing Email");
-		}
 		else
 		{
-			//
-			// Check users exists and send an email
-			//
+			// Check users exists and send an email.
 			$ret = $users->getByEmail($_POST['email']);
 			if (!$ret)
 			{
@@ -62,15 +56,11 @@ switch($action)
 			}
 			else
 			{
-				//
-				// Generate a forgottenpassword guid, store it in the user table
-				//
+				// Generate a forgottenpassword guid, store it in the user table.
 				$guid = md5(uniqid());
-				$users->updatePassResetGuid($ret["ID"], $guid);
+				$users->updatePassResetGuid($ret["id"], $guid);
 
-				//
 				// Send the email
-				//
 				$to = $ret["email"];
 				$subject = $page->site->title." Forgotten Password Request";
 				$contents = "Someone has requested a password reset for this email address. To reset the password use the following link.\n\n ".$page->serverurl."forgottenpassword?action=reset&guid=".$guid;

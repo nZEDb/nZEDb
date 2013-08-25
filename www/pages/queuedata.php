@@ -1,9 +1,8 @@
 <?php
-require_once(WWW_DIR."lib/sabnzbd.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
+require_once(WWW_DIR."lib/sabnzbd.php");
 $sab = new SABnzbd($page);
 
 if (empty($sab->url))
@@ -47,8 +46,6 @@ if ($json !== false)
 		foreach ($queue as $item)
 		{
 			if (strpos($item->{'filename'}, "fetch NZB") > 0)
-			{
-			}
 			else
 			{
 				$output.="<tr>";
@@ -69,14 +66,9 @@ if ($json !== false)
 		$output.="</tbody></table>";
 	}
 	else
-	{
 		$output.="<p>The queue is currently empty.</p>";
-	}
 }
 else
-{
 	$output.="<p>Error retreiving queue.</p>";
-}
 
 print $output;
-
