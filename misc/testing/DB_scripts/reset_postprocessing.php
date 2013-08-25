@@ -105,12 +105,7 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 	{
 		$where = " where rageID in (-2, 0) or rageID is NULL and categoryID BETWEEN 5000 AND 5999";
 	}
-<<<<<<< HEAD
 	$affected = $db->queryUpdate("update releases set rageID = NULL".$where);
-=======
-	$db->query("update releases set rageID = -1".$where);
-	$affected = $db->getAffectedRows();
->>>>>>> dev
 	echo $affected." rageID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "books")

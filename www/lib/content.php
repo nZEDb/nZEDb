@@ -195,11 +195,7 @@ class Contents
 	public function data_getFrontPage()
 	{
 		$db = new DB();
-<<<<<<< HEAD
 		return $db->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", Contents::TYPEINDEX));
-=======
-		return $db->query(sprintf("select * from content where status = 1 and contenttype = %d order by ordinal asc, coalesce(ordinal, 1000000), ID", Contents::TYPEINDEX));
->>>>>>> dev
 	}
 
 	public function data_getIndex()
