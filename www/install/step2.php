@@ -32,7 +32,7 @@ function tablecheck($dbname, $dbtype, $pdo)
 	}
 	foreach ($tablearr as $tab)
 	{
-		if (isset($tab["Database") || isset($tab["database"]))
+		if (isset($tab["Database"]) || isset($tab["database"]))
 		{
 			if($tab["Database"] == $dbname || $tab["database"] == $dbname)
 			{

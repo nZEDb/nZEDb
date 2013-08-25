@@ -1,5 +1,5 @@
 <?php
-$www_top = str_replace("\\","/",dirname( $_SERVER['PHP_SELF'] ));
+$www_top = str_replace("\\","/",dirname($_SERVER['PHP_SELF']));
 if(strlen($www_top) == 1)
 	$www_top = "";
 
