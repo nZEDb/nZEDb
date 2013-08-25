@@ -7,7 +7,8 @@ $page->title = "Database Setup";
 
 $cfg = new Install();
 
-if (!$cfg->isInitialized()) {
+if (!$cfg->isInitialized())
+{
 	header("Location: index.php");
 	die();
 }
@@ -125,14 +126,14 @@ if  ($page->isPostBack())
 	{
 		$cfg->setSession();
 
-		//Load schema.sql
+		// Load schema.sql.
 		if (file_exists($cfg->DB_DIR.'/schema.mysql') && file_exists($cfg->DB_DIR.'/schema.pgsql'))
 		{
 			if ($dbtype == "mysql")
 				$dbData = file_get_contents($cfg->DB_DIR.'/schema.mysql');
 			if ($dbtype == "pgsql")
 				$dbData = file_get_contents($cfg->DB_DIR.'/schema.pgsql');
-			//fix to remove BOM in UTF8 files
+			// Fix to remove BOM in UTF8 files.
 			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 			if (0 == strncmp($dbData, $bom, 3))
 				$dbData = substr($dbData, 3);
@@ -168,9 +169,9 @@ if  ($page->isPostBack())
 				}
 			}
 
-			//check one of the standard tables was created and has data
+			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("select count(*) as num from category");
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM category");
 			if ($reschk === false)
 			{
 				$cfg->dbCreateCheck = false;
