@@ -1,8 +1,0 @@
-.DS_Store
-config.php
-error_log
-failed-login.log
-
-# Editor temp files
-*#
-*~

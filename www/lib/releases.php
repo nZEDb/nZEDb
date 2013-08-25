@@ -1614,13 +1614,13 @@ class Releases
 		$this->processReleasesStage3($groupID, $echooutput=false);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
 		$this->processReleasesStage4dot5($groupID, $echooutput=false);
-		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
+		//$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
 		$where = (!empty($groupID)) ? " WHERE groupID = " . $groupID : "";
 
 		//Print amount of added releases and time it took.
-		if ($this->echooutput)
-			echo "Completed adding ".number_format($releasesAdded)." releases in ".$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).". ".number_format(array_shift($db->queryOneRow("select count(ID) from collections " . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n";
+		//if ($this->echooutput)
+		//	echo "Completed adding ".number_format($releasesAdded)." releases in ".$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).". ".number_format(array_shift($db->queryOneRow("select count(ID) from collections " . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n";
 		return $releasesAdded;
 	}
 
