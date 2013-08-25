@@ -6,46 +6,38 @@ class UserMovies
 	public function addMovie($uid, $imdbid, $catid=array())
 	{
 		$db = new DB();
-
-		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "null";
-
-		$sql = sprintf("INSERT IGNORE INTO usermovies (userID, imdbID, categoryID, createddate) values (%d, %d, %s, now())", $uid, $imdbid, $catid);
-		return $db->queryInsert($sql);
+		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "NULL";
+		return $db->queryInsert(sprintf("INSERT INTO usermovies (userid, imdbid, categoryid, createddate) VALUES (%d, %d, %s, NOW())", $uid, $imdbid, $catid));
 	}
 
 	public function getMovies($uid)
 	{
 		$db = new DB();
-		$sql = sprintf("select usermovies.*, movieinfo.year, movieinfo.plot, movieinfo.cover, movieinfo.title from usermovies left outer join movieinfo on movieinfo.imdbID = usermovies.imdbID where userID = %d order by movieinfo.title asc", $uid);
-		return $db->query($sql);
+		return $db->query(sprintf("SELECT usermovies.*, movieinfo.year, movieinfo.plot, movieinfo.cover, movieinfo.title FROM usermovies LEFT OUTER JOIN movieinfo ON movieinfo.imdbid = usermovies.imdbid WHERE userid = %d ORDER BY movieinfo.title ASC", $uid));
 	}
 
 	public function delMovie($uid, $imdbid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("delete from usermovies where userID = %d and imdbID = %d ", $uid, $imdbid));
+		$db->queryDelete(sprintf("DELETE FROM usermovies WHERE userid = %d AND imdbid = %d ", $uid, $imdbid));
 	}
 
 	public function getMovie($uid, $imdbid)
 	{
 		$db = new DB();
-		$sql = sprintf("select usermovies.*, movieinfo.title from usermovies left outer join movieinfo on movieinfo.imdbID = usermovie.imdbID where usermovies.userID = %d and usermovies.imdbID = %d ", $uid, $imdbid);
-		return $db->queryOneRow($sql);
+		return $db->queryOneRow(sprintf("SELECT usermovies.*, movieinfo.title FROM usermovies LEFT OUTER JOIN movieinfo ON movieinfo.imdbid = usermovie.imdbid WHERE usermovies.userid = %d AND usermovies.imdbid = %d", $uid, $imdbid));
 	}
 
 	public function delMovieForUser($uid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("delete from usermovies where userID = %d", $uid));
+		$db->queryDelete(sprintf("DELETE FROM usermovies WHERE userid = %d", $uid));
 	}
 
 	public function updateMovie($uid, $imdbid, $catid=array())
 	{
 		$db = new DB();
-
-		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "null";
-
-		$sql = sprintf("update usermovies set categoryID = %s where userID = %d and imdbID = %d", $catid, $uid, $imdbid);
-		$db->queryUpdate($sql);
+		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "NULL";
+		$db->queryUpdate(sprintf("UPDATE usermovies SET categoryid = %s WHERE userid = %d AND imdbid = %d", $catid, $uid, $imdbid));
 	}
 }

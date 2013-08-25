@@ -5,7 +5,10 @@
 	</div>
 {else}
 
-<p>You must setup an admin user. Please provide the following information:</p>
+<p>You must setup an admin user.</p>
+<p>The username must start with a letter followed by a letter or number. The password must be at least 6 characters long.</p>
+<p>The password must be at least 6 characters long.</p>
+<p>Please provide the following information:</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="alt">

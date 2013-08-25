@@ -417,19 +417,15 @@ class Music
 
 					$albumId = $this->updateMusicInfo($album["name"], $album['year']);
 					if ($albumId === false)
-					{
 						$albumId = -2;
-					}
 
 					// Update release.
 					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", $albumId, $arr["id"]));
-
 				}
+				// No album found.
 				else
-				{
-					// No album found.
 					$db->queryUpdate(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", -2, $arr["id"]));
-				}
+				// For not flooding amazon with requests.
 				usleep($this->sleeptime*1000);
 			}
 		}
