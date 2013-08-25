@@ -128,7 +128,7 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")
@@ -145,7 +145,7 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")
@@ -162,7 +162,7 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")

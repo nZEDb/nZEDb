@@ -78,9 +78,9 @@ class ReleaseComments
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
-		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid INNER JOIN releases on releases.id = releasecomment.releaseid ORDER BY releasecomment.createddate DESC ".$limit);
+		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid INNER JOIN releases on releases.id = releasecomment.releaseid ORDER BY releasecomment.createddate DESC".$limit);
 	}
 
 	public function updateReleaseCommentCount($relid)
@@ -103,8 +103,8 @@ class ReleaseComments
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
-		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid WHERE userid = %d ORDER BY releasecomment.createddate DESC ".$limit, $uid));
+		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid WHERE userid = %d ORDER BY releasecomment.createddate DESC".$limit, $uid));
 	}
 }

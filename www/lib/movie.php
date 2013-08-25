@@ -53,7 +53,7 @@ class Movie
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		return $db->query(" SELECT * FROM movieinfo ORDER BY createddate DESC".$limit);
 	}
@@ -122,7 +122,7 @@ class Movie
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1)

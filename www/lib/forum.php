@@ -57,7 +57,7 @@ class Forum
 			if ($start === false)
 				$limit = "";
 			else
-				$limit = " LIMIT ".$start.",".$num;
+				$limit = " LIMIT ".$num." OFFSET ".$start;
 
 			return $db->query("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE parentid = 0 ORDER BY updateddate DESC".$limit);
 		}
@@ -101,9 +101,9 @@ class Forum
 			if ($start === false)
 				$limit = "";
 			else
-				$limit = " LIMIT ".$start.",".$num;
+				$limit = " LIMIT ".$num." OFFSET ".$start;
 
-			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE userid = %d ORDER BY forumpost.createddate DESC ".$limit, $uid));
+			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE userid = %d ORDER BY forumpost.createddate DESC".$limit, $uid));
 		}
 
 }

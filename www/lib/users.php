@@ -64,7 +64,7 @@ class Users
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$usql = $esql = $hsql = $rsql = '';
 		if ($username != '')

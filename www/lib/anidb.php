@@ -107,11 +107,11 @@ class AniDB
 		if ($start === false)
 			$limit = '';
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$rsql = '';
 		if ($animetitle != '')
-			$rsql .= sprintf("AND anidb.title LIKE %s ", $db->escapeString("%".$animetitle."%"));
+			$rsql = sprintf("AND anidb.title LIKE %s", $db->escapeString("%".$animetitle."%"));
 
 		return $db->query(sprintf(" SELECT id, anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC".$limit, $rsql));
 	}
@@ -185,7 +185,7 @@ class AniDB
 		$ri = new ReleaseImage();
 		$site = new Sites();
 		$threads--;
-		$results = $db->query(sprintf("SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_TV_ANIME, floor(($this->aniqty) * ($threads * 1.5)), $this->aniqty));
+		$results = $db->query(sprintf("SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
 
 		if (count($results) > 0)
 		{

@@ -84,7 +84,7 @@ class TvRage
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$rsql = '';
 		if ($ragename != "")

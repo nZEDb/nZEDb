@@ -42,7 +42,7 @@ class Console
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		return $db->query("SELECT * FROM consoleinfo ORDER BY createddate DESC".$limit);
 	}
@@ -108,7 +108,7 @@ class Console
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1)
@@ -451,9 +451,9 @@ class Console
 		$threads--;
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus = 2 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, floor(($this->gameqty) * ($threads * 1.5)), $this->gameqty)), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus = 2 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d,%d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)

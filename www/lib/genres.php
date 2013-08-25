@@ -35,10 +35,7 @@ class Genres
 	{
 		$db = new DB();
 		$sql = $this->getListQuery($type, $activeonly);
-
-		$limit = " LIMIT ".$start.",".$num;
-		$sql = $sql.$limit;
-
+		$sql .= " LIMIT ".$num." OFFSET ".$start;
 		return $db->query($sql);
 
 	}

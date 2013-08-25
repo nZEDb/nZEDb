@@ -43,7 +43,7 @@ require_once(WWW_DIR."/lib/site.php");
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		return $db->query(" SELECT * FROM bookinfo ORDER BY createddate DESC".$limit);
 	}
@@ -109,7 +109,7 @@ require_once(WWW_DIR."/lib/site.php");
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1)
@@ -226,7 +226,7 @@ require_once(WWW_DIR."/lib/site.php");
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
+		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d", $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)

@@ -42,7 +42,7 @@ class Music
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		return $db->query(" SELECT * FROM musicinfo ORDER BY createddate DESC".$limit);
 	}
@@ -111,7 +111,7 @@ class Music
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1)
@@ -399,7 +399,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = new DB();
-		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d,%d", floor(max(0, $this->musicqty * $threads * 1.5)), $this->musicqty));
+		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->musicqty, floor(max(0, $this->musicqty * $threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
