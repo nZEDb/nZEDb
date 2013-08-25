@@ -15,17 +15,17 @@
 
         {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">{/if}
 
-        <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.0 - plugins master style.css -->
+        <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.1 - plugins master style.css -->
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
         <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/jquery.qtip.css" rel="stylesheet" media="screen">
         <!-- <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/subnav.css" rel="stylesheet" media="screen"> -->
         <link href="{$smarty.const.WWW_TOP}/themes/Simple/styles/style.css" rel="stylesheet" media="screen">
 
         <!-- Manual Adjustment for Search input fields on browse pages. -->
         <style>
-            select { min-width: 120px ; width: auto; }
-           input { width: 180px; }
+        select { min-width: 120px ; width: auto; }
+        input { width: 180px; }
         </style>
 
         <!-- Site Icon files -->
@@ -54,6 +54,9 @@
             <!-- Status bar along the very top showing login / logout links -->
             {strip}
             <div id="statusbar">
+                <!-- Main Menu at top of page -->
+                <ul>{$main_menu}</ul>
+
                 {if $loggedin=="true"}
                 <a href="{$smarty.const.WWW_TOP}/profile">Profile</a> | <a href="{$smarty.const.WWW_TOP}/logout">Logout</a>
                 {else}
@@ -65,9 +68,6 @@
             <!-- Header Logo Area Including Main Menu -->
             <div id="logo">
                 <a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes/Default/images/clearlogo.png" /></a>
-
-                <!-- Main Menu at top of page -->
-                <ul>{$main_menu}</ul>
 
                 <h1><a href="{$smarty.const.WWW_TOP}{$site->home_link}">{$site->title}</a></h1>
 
