@@ -1,4 +1,5 @@
-08252013 -> jonnyboy -> added code to renumber content if new content ordinal is 1
+08252013 -> jonnyboy -> changed remove creap releases password to all negative search items and not remove releases that are applications/misc
+						added code to renumber content if new content ordinal is 1
 08222013 -> jonnyboy -> removed "added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created" and moved stage 4.5 out of the loop
                         updated stage4567 to run max 3 loops, would run indefinately before
                         updated missing items from alhpa theme site-edit/tmux-edit
