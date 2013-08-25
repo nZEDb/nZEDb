@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/releasecomments.php");
 
 $page = new AdminPage();
-
 $releases = new ReleaseComments();
 
 $page->title = "Comments List";
@@ -20,7 +18,7 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $commentslist = $releases->getCommentsRange($offset, ITEMS_PER_PAGE);
-$page->smarty->assign('commentslist',$commentslist);	
+$page->smarty->assign('commentslist',$commentslist);
 
 $page->content = $page->smarty->fetch('comments-list.tpl');
 $page->render();
