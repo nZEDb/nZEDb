@@ -114,6 +114,11 @@ class Contents
 	{
 		$content = $this->row2Object($form);
 		$content = $this->validate($content);
+		if ($content->ordinal == 1)
+		{
+			$db = new DB();
+			$db->query("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
+		} 
 		return $this->data_add($content);
 	}
 
@@ -190,7 +195,7 @@ class Contents
 	public function data_getFrontPage()
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000)", Contents::TYPEINDEX));
+		return $db->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", Contents::TYPEINDEX));
 	}
 
 	public function data_getIndex()
