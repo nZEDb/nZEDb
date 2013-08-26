@@ -53,7 +53,7 @@ switch($action)
 					fclose($fp);
 				}
 			}
-			$tvrage->update($_POST["id"], $_POST["rageID"], $_POST["releasetitle"], $_POST["description"], $_POST["genre"], $_POST['country'], $imgbytes);
+			$tvrage->update($_POST["id"], $_POST["rageid"], $_POST["releasetitle"], $_POST["description"], $_POST["genre"], $_POST['country'], $imgbytes);
 		}
 
 		if(isset($_POST['from']) && !empty($_POST['from']))

@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/nzb.php");
 function getAudioReleases($rID)
 {
 	$db = new DB();
-	return $db->query("select * from releaseaudio where releaseID = ".$rID);
+	return $db->query("SELECT * FROM releaseaudio WHERE releaseid = ".$rID);
 }
 
 $releases = new Releases;
@@ -346,7 +346,7 @@ switch ($function)
 
 		// Check email isnt taken.
 		$ret = $users->getByEmail($_GET["email"]);
-		if (isset($ret["ID"]))
+		if (isset($ret["id"]))
 			showApiError(105);
 
 		// Create uname/pass and register.
@@ -355,7 +355,7 @@ switch ($function)
 
 		// Register.
 		$userdefault = $users->getDefaultRole();
-		$uid = $users->signup($username, $password, $_GET["email"], $_SERVER['REMOTE_ADDR'], $userdefault['ID'], $userdefault['defaultinvites']);
+		$uid = $users->signup($username, $password, $_GET["email"], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites']);
 		$userdata = $users->getById($uid);
 		if (!$userdata)
 			showApiError(107);

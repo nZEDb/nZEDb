@@ -14,7 +14,7 @@ $userroles = $users->getRoles();
 $roles = array();
 foreach ($userroles as $r)
 {
-	$roles[$r['ID']] = $r['name'];
+	$roles[$r['id']] = $r['name'];
 }
 
 // set the current action

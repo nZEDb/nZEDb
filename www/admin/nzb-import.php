@@ -63,9 +63,9 @@ if (!empty($argc) || $page->isPostBack() )
 	if (substr($path, strlen($path) - 1) != '/')
 		$path = $path."/";
 
-	$groups = $db->query("SELECT ID, name FROM groups");
+	$groups = $db->query("SELECT id, name FROM groups");
 	foreach ($groups as $group)
-		$siteGroups[$group["name"]] = $group["ID"];
+		$siteGroups[$group["name"]] = $group["id"];
 
 	if (!isset($groups) || count($groups) == 0)
 	{
@@ -218,7 +218,7 @@ if (!empty($argc) || $page->isPostBack() )
 				$partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
 				$subject = utf8_encode(trim($partless));
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
-				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryID, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
 				{
 					if($nzb->copyNZBforImport($relguid, $nzba))
 					{

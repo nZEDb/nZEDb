@@ -7,12 +7,8 @@ require_once(WWW_DIR."/lib/namecleaning.php");
 require_once(WWW_DIR."/lib/books.php");
 require_once(WWW_DIR."/lib/predb.php");
 
-
-
 class MiscSorter
 {
-
-	// **********************************************************************
 	function __construct($echooutput=false)
 	{
 		$this->qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
@@ -91,10 +87,10 @@ class MiscSorter
 		if (count($res) == 0)
 			return false;
 
-		$this->idarr = $res[0]['ID'];
+		$this->idarr = $res[0]['id'];
 		unset($res[0]);
 		foreach($res as $r)
-			$this->idarr = $this->idarr.", ".$r['ID'];
+			$this->idarr = $this->idarr.", ".$r['id'];
 
 		if ($this->idarr == '')
 			return false;
@@ -441,7 +437,7 @@ class MiscSorter
 					unset($music);
 				}
 				else
-					$musicId = $rel[0]['ID'];
+					$musicId = $rel[0]['id'];
 
 //				$ok = $this->dodbupdate($id, 3010, $row["relnamestatus"], $name, $musicId, 'music');
 				break;
@@ -706,14 +702,14 @@ class MiscSorter
 					$pos = $this->nfopos($nfo, $matches[1]." - ".$matches[2]);
 					if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48)
 						if (!preg_match('/title/i', $matches[1]) && !preg_match('/title/i', $matches[2]))
-							$ok = $this->dodbupdate($row['ID'], Category::CAT_MUSIC_AUDIOBOOK, $row["relnamestatus"], $this->cleanname($matches[1]." - ".$matches[2]));
+							$ok = $this->dodbupdate($row['id'], Category::CAT_MUSIC_AUDIOBOOK, $row["relnamestatus"], $this->cleanname($matches[1]." - ".$matches[2]));
 				}
 
 				break;
 
 			case 'comicbook':
 			case 'comix':
-				$ok = $this->dodbupdate($row['ID'], Category::CAT_BOOKS_COMICS, $row["relnamestatus"], '');
+				$ok = $this->dodbupdate($row['id'], Category::CAT_BOOKS_COMICS, $row["relnamestatus"], '');
 				break;
 
 			case 'avi':
@@ -886,7 +882,7 @@ echo "asin ".$set[1]."\n";
 
 				$frommail = $row['fromname'];
 
-				//trigger_error("doing part 2".$row['ID']);
+				//trigger_error("doing part 2".$row['id']);
 				$query = "SELECT releasevideo.releaseid FROM releasevideo WHERE releasevideo.releaseid = ".$row['id'];
 				$rel = $this->db->queryOneRow($query);
 

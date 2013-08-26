@@ -69,7 +69,7 @@ if (isset($_GET["id"]))
 		$ani = $AniDB->getAnimeInfo($data["anidbid"]);
 	}
 
-	if ($data['imdbID'] != '')
+	if ($data['imdbid'] != '')
 	{
 		require_once(WWW_DIR."/lib/movie.php");
 		$movie = new Movie();

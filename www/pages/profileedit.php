@@ -44,7 +44,7 @@ switch($action)
 				else
 				{
 					$res = $users->getByEmail($_POST['email']);
-					if ($res && $res["ID"] != $userid)
+					if ($res && $res["id"] != $userid)
 						$errorStr = "Sorry, the email is already in use.";
 					else
 					{

@@ -302,7 +302,7 @@ class Backfill
 
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
-			$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = now() WHERE ID = %d", $db->from_unixtime($this->postdate($nntp,$first,false,$groupArr['name'])), $db->escapeString($first), $groupArr['ID']));
+			$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = now() WHERE id = %d", $db->from_unixtime($this->postdate($nntp,$first,false,$groupArr['name'])), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else

@@ -95,7 +95,7 @@ switch($action) {
 			$page->smarty->assign('type', 'edit');
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
-			$page->smarty->assign('cat_selected', explode('|', $show['categoryID']));
+			$page->smarty->assign('cat_selected', explode('|', $show['categoryid']));
 			$page->smarty->assign('rid', $rid);
 			$page->smarty->assign('show', $show);
 			if (isset($_REQUEST['from']))

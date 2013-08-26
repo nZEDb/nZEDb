@@ -23,10 +23,10 @@ class Namefixer
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->timeother = " and rel.adddate > (now() - interval 6 hour) and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc";
-		$this->timeall = " and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc";
-		$this->fullother = " and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc";
-		$this->fullall = " order by postdate desc";
+		$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+		$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 hour) GROUP BY rel.id ORDER BY postdate DESC";
+		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+		$this->fullall = " ORDER BY postdate DESC";
 		$this->done = false;
 	}
 
@@ -205,9 +205,9 @@ class Namefixer
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 						else
-							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["ID"]));
+							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 					}
 					if ($echooutput)
 					{

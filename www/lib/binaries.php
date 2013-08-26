@@ -763,7 +763,7 @@ class Binaries
 		$db = new DB();
 		$bins = $db->query(sprintf("select id from binaries WHERE collectionid = %d", $id));
 		foreach ($bins as $bin)
-			$db->queryDelete(sprintf("DELETE FROM parts WHERE binaryid = %d", $bin["ID"]));
+			$db->queryDelete(sprintf("DELETE FROM parts WHERE binaryid = %d", $bin["id"]));
 		$db->queryDelete(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id));
 		$db->queryDelete(sprintf("DELETE FROM collections WHERE id = %d", $id));
 	}
