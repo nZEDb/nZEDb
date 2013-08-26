@@ -135,7 +135,7 @@ class Nfo
 	{
 		if ($this->isNFO($nfo) && $release["id"] > 0)
 		{
-			$this->addReleaseNfo($release["ID"]);
+			$this->addReleaseNfo($release["id"]);
 			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = COMPRESS(%s) WHERE releaseid = %d", $db->escapeString($nfo), $release["id"]));
 			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
 			if (!isset($release["completion"]))
