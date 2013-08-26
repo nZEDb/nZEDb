@@ -24,7 +24,7 @@
 <select class="form-control" style="width: 150px;" id="category" name="t">
 <option class="grouping" value="2000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
@@ -46,7 +46,7 @@
 <select class="form-control" style="width: 150px;" id="genre" name="genre">
 <option class="grouping" value="">Genre... </option>
 {foreach from=$genres item=gen}
-<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title|escape:"htmlall"}</option>
+<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
 {/foreach}
 </select>
 <select class="form-control" style="width: 150px;" id="year" name="year">
@@ -58,7 +58,7 @@
 <select class="form-control" style="width: 150px;" id="category" name="t">
 <option class="grouping" value="3000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
@@ -72,13 +72,13 @@
 <select class="form-control" style="width: 150px;" id="genre" name="genre">
 <option class="grouping" value="">Genre... </option>
 {foreach from=$genres item=gen}
-<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title}</option>
+<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 {/foreach}
 </select>
 <select class="form-control" style="width: 150px;" id="category" name="t">
 <option class="grouping" value="1000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
@@ -93,13 +93,13 @@
 <select class="form-control" style="width: auto;" id="genre" name="genre">
 <option class="grouping" value="">Genre... </option>
 {foreach from=$genres item=gen}
-<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title}</option>
+<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 {/foreach}
 </select>
 <select class="form-control" style="width: auto;" id="category" name="t">
 <option class="grouping" value="1000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
@@ -140,7 +140,7 @@
 <select class="form-control" style="width: auto;" id="category" name="t">
 <option class="grouping" value="2000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
@@ -154,7 +154,7 @@
 <select class="form-control" style="width: auto;" id="genre" name="genre">
 <option class="grouping" value="">Genre... </option>
 {foreach from=$genres item=gen}
-<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title|escape:"htmlall"}</option>
+<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
 {/foreach}
 </select>
 <select class="form-control" style="width: auto;" id="year" name="year">
@@ -166,7 +166,7 @@
 <select class="form-control" style="width: auto;" id="category" name="t">
 <option class="grouping" value="3000">Category... </option>
 {foreach from=$catlist item=ct}
-<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 {/foreach}
 </select>
 <input class="btn btn-success" type="submit" value="Go">
