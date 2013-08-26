@@ -963,7 +963,7 @@ class Releases
 						$s = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = ".$groupID['id']);
 						if ($s["size"] > 0)
 						{
-							$mscq = $db->prepare("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID['id'], $s["size"]);
+							$mscq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID['id'], $s["size"]));
 							$mscq->execute();
 							$minsizecount = $mscq->rowCount();
 						}
@@ -983,9 +983,23 @@ class Releases
 						$maxsizecounts = $maxsizecount+$maxsizecounts;
 					}
 
-					$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupid = ".$groupID['id']);
-					$mifcq->execute();
-					$minfilecount = $mifcq->rowCount();
+					$minfilecount = 0;
+					if ($db->dbSystem() == "mysql")
+					{
+						$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupid = ".$groupID['id']);
+						$mifcq->execute();
+						$minfilecount = $mifcq->rowCount();
+					}
+					else if ($db->dbSystem() == "pgsql")
+					{
+						$f = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = ".$groupID['id']);
+						if ($f["files"] > 0)
+						{
+							$mifcq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID['id'], $s["size"]));
+							$mifcq->execute();
+							$minfilecount = $mifcq->rowCount();
+						}
+					}
 					if ($minfilecount < 1)
 						$minfilecount = 0;
 					$minfilecounts = $minfilecount+$minfilecounts;
@@ -1009,7 +1023,7 @@ class Releases
 					$s = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = ".$groupID);
 					if ($s["size"] > 0)
 					{
-						$mscq = $db->prepare("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID, $s["size"]);
+						$mscq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID, $s["size"]));
 						$mscq->execute();
 						$minsizecount = $mscq->rowCount();
 					}
@@ -1029,9 +1043,23 @@ class Releases
 					$maxsizecounts = $maxsizecount+$maxsizecounts;
 				}
 
-				$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupid = ".$groupID);
-				$mifcq->execute();
-				$minfilecount = $mifcq->rowCount();
+				$minfilecount = 0;
+				if ($db->dbSystem() == "mysql")
+				{
+					$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalFiles < g.minfilestoformrelease AND groupid = ".$groupID);
+					$mifcq->execute();
+					$minfilecount = $mifcq->rowCount();
+				}
+				else if ($db->dbSystem() == "pgsql")
+				{
+					$f = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = ".$groupID);
+					if ($f["files"] > 0)
+					{
+						$mifcq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ".$groupID, $s["size"]));
+						$mifcq->execute();
+						$minfilecount = $mifcq->rowCount();
+					}
+				}
 				if ($minfilecount < 0)
 					$minfilecount = 0;
 				$minfilecounts = $minfilecount+$minfilecounts;
