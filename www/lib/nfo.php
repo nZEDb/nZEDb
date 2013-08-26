@@ -29,7 +29,7 @@ class Nfo
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseid) VALUE (%d)", $relid));
+		return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseid) VALUES (%d)", $relid));
 	}
 
 	public function deleteReleaseNfo($relid)
@@ -136,7 +136,17 @@ class Nfo
 		if ($this->isNFO($nfo) && $release["id"] > 0)
 		{
 			$this->addReleaseNfo($release["id"]);
-			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = COMPRESS(%s) WHERE releaseid = %d", $db->escapeString($nfo), $release["id"]));
+			if ($db->dbSystem() == "mysql")
+			{
+				$compress = "compress(%s)";
+				$nc = $db->escapeString($nfo);
+			}
+			else if ($db->dbSystem() == "pgsql")
+			{
+				$compress = "%s";
+				$nc = $db->escapeString(utf8_encode($nfo));
+			}
+			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = ".$compress." WHERE releaseid = %d", $nc, $release["id"]));
 			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
 			if (!isset($release["completion"]))
 				$release["completion"] = 0;

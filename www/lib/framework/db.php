@@ -26,14 +26,13 @@ class DB
 		}
 		if (DB::$initialized === false)
 		{
-			$charset = '';
-			if ($this->dbsystem == 'mysql')
-				$charset = ';charset=utf8';
 			if (defined("DB_PORT"))
 				$pdos = $this->dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
 			else
 				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
 
+			if ($this->dbsystem == 'mysql')
+				$pdos .= ';charset=utf-8';
 			try {
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
 				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -258,7 +257,7 @@ class DB
 	}
 
 	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00, also escapes it, pass false as 2nd arg to not escape.
-	// (substitute for mysql from_unixtime function)
+	// (substitute for mysql FROM_UNIXTIME function)
 	public function from_unixtime($utime, $escape=true)
 	{
 		return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
@@ -269,6 +268,13 @@ class DB
 	public function unixtime_date($utime)
 	{
 		return strtotime(date('Y-m-d', $utime));
+	}
+
+	// Date to unix time.
+	// (substitute for mysql's UNIX_TIMESTAMP() function)
+	public function unix_timestamp($date)
+	{
+		return strtotime($date);
 	}
 
 	// Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959

@@ -83,9 +83,7 @@ class PostProcess
 		$this->processBooks($threads);
 	}
 
-	//
 	// Lookup anidb if enabled - always run before tvrage.
-	//
 	public function processAnime($threads=1)
 	{
 		if ($this->site->lookupanidb == 1)
@@ -96,9 +94,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Process books using amazon.com.
-	//
 	public function processBooks($threads=1)
 	{
 		if ($this->site->lookupbooks == 1)
@@ -108,9 +104,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Lookup games if enabled.
-	//
 	public function processGames($threads=1)
 	{
 		if ($this->site->lookupgames == 1)
@@ -120,9 +114,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Lookup imdb if enabled.
-	//
 	public function processMovies($releaseToWork='')
 	{
 		if ($this->site->lookupimdb == 1)
@@ -132,9 +124,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Lookup music if enabled.
-	//
 	public function processMusic($threads=1)
 	{
 		if ($this->site->lookupmusic == 1)
@@ -144,9 +134,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Process nfo files.
-	//
 	public function processNfos($releaseToWork='')
 	{
 		if ($this->site->lookupnfo == 1)
@@ -156,9 +144,7 @@ class PostProcess
 		}
 	}
 
-	//
 	// Fetch titles from predb sites.
-	//
 	public function processPredb()
 	{
 		$predb = new Predb($this->echooutput);
@@ -167,9 +153,7 @@ class PostProcess
 			$this->doecho("Fetched ".$titles." new title(s) from predb sources.");
 	}
 
-	//
 	// Process all TV related releases which will assign their series/episode/rage data.
-	//
 	public function processTv($releaseToWork='')
 	{
 		if ($this->site->lookuptvrage == 1)
@@ -179,15 +163,16 @@ class PostProcess
 		}
 	}
 
-	//
 	// Attempt to get a better name from a par2 file and categorize the release.
-	//
 	public function parsePAR2($messageID, $relID, $groupID)
 	{
 		$db = new DB();
 		$category = new Category();
-
-		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, UNIX_TIMESTAMP(postdate) as postdate, ID as releaseID  FROM releases WHERE ID = {$relID}");
+		if ($db->dbSystem() == "mysql")
+			$t = "UNIX_TIMESTAMP(postdate)";
+		elseif ($db->dbSystem() == "pgsql")
+			$t = "extract(epoch FROM postdate)";
+		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, ".$t." as postdate, ID as releaseID  FROM releases WHERE ID = {$relID}");
 		if ($quer["relnamestatus"] !== 1 && $quer["categoryID"] != Category::CAT_MISC)
 			return false;
 
