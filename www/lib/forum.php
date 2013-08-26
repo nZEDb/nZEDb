@@ -20,7 +20,7 @@ class Forum
 				$db->queryUpdate(sprintf("UPDATE forumpost SET replies = replies + 1, updateddate = NOW() WHERE id = %d", $parentid));
 			}
 
-			$db->queryInsert(sprintf("INSERT INTO forumpost (forumID, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate) VALUES (1, %d, %d, %s, %s, %d, %d, %d, NOW(), NOW())", $parentid, $userid, $db->escapeString($subject)
+			$db->queryInsert(sprintf("INSERT INTO forumpost (forumid, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate) VALUES (1, %d, %d, %s, %s, %d, %d, %d, NOW(), NOW())", $parentid, $userid, $db->escapeString($subject)
 		, $db->escapeString($message), $locked, $sticky, $replies));
 
 		}

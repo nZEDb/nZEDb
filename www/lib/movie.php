@@ -85,7 +85,7 @@ class Movie
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
 								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
@@ -208,7 +208,7 @@ class Movie
 				$bbv = stripslashes($_REQUEST[$bb]);
 				if ($bb == 'rating') { $bbv .= '.'; }
 				if ($bb == 'imdb') {
-					$browseby .= "m.{$bb}ID = $bbv AND ";
+					$browseby .= "m.{$bb}id = $bbv AND ";
 				} else {
 					$browseby .= "m.$bb LIKE(".$db->escapeString('%'.$bbv.'%').") AND ";
 				}
@@ -354,7 +354,7 @@ class Movie
 
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
-		$query = sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbID = %d, tmdbID = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+		$query = sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
 		$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']);
 
@@ -515,7 +515,7 @@ class Movie
 
 		if ($releaseToWork == '')
 		{
-			$res = $db->query(sprintf("SELECT searchname as name, id FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT ID FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+			$res = $db->query(sprintf("SELECT searchname as name, id FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 			$moviecount = count($res);
 		}
 		else
@@ -566,7 +566,7 @@ class Movie
 											if ($imdbId === false)
 											{
 												//no imdb id found, set to all zeros so we dont process again
-												$db->queryUpdate(sprintf("UPDATE releases SET imdbid = 0000000 WHERE ID = %d", $arr["id"]));
+												$db->queryUpdate(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 											}
 											else
 												continue;

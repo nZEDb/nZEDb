@@ -130,7 +130,7 @@ class TvRage
 		if ($ragename != '')
 			$tsql .= sprintf("AND tvrage.releasetitle LIKE %s", $db->escapeString("%".$ragename."%"));
 
-		$sql = sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageID FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql);
+		$sql = sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql);
 		return $db->query($sql);
 	}
 
@@ -398,7 +398,7 @@ class TvRage
 		{
 			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
 			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
-			$db->queryUpdate(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d where ID = %d", $db->escapeString(trim($tvtitle)),  $db->escapeString($tvairdate), $traktArray['show']['tvrage_id'], $relid));
+			$db->queryUpdate(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)),  $db->escapeString($tvairdate), $traktArray['show']['tvrage_id'], $relid));
 		}
 		else
 			$db->queryUpdate(sprintf("UPDATE releases SET rageid = %d where id = %d", $traktArray['show']['tvrage_id'], $relid));

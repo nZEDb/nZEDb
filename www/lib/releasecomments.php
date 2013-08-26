@@ -30,7 +30,7 @@ class ReleaseComments
 		if ($res)
 		{
 			$db->queryDelete(sprintf("DELETE FROM releasecomment WHERE id = %d", $id));
-			$this->updateReleaseCommentCount($res["releaseID"]);
+			$this->updateReleaseCommentCount($res["releaseid"]);
 		}
 	}
 
@@ -66,7 +66,7 @@ class ReleaseComments
 		if ($s->storeuserips != "1")
 			$host = "";
 
-		$comid = $db->queryInsert(sprintf("INSERT INTO releasecomment (releaseid, text, userID, createddate, host) VALUES (%d, %s, %d, NOW(), %s)", $id, $db->escapeString($text), $userid, $db->escapeString($host)));
+		$comid = $db->queryInsert(sprintf("INSERT INTO releasecomment (releaseid, text, userid, createddate, host) VALUES (%d, %s, %d, NOW(), %s)", $id, $db->escapeString($text), $userid, $db->escapeString($host)));
 		$this->updateReleaseCommentCount($id);
 		return $comid;
 	}
