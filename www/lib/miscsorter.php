@@ -797,7 +797,11 @@ echo "asin ".$set[1]."\n";
 			unset($pb);
 		}
 
-		$res = $this->db->query(sprintf("SELECT UNCOMPRESS(releasenfo.nfo) AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id in (%s) ORDER BY RAND()", $this->idarr));
+		if ($this->db->dbSystem() == "mysql")
+			$uc = "UNCOMPRESS(releasenfo.nfo)";
+		else if ($this->db->dbSystem() == "pgsql")
+			$uc = "releasenfo.nfo";
+		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id in (%s) ORDER BY RAND()", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0)
 		{
 			foreach($res as $row)
@@ -891,7 +895,11 @@ echo "asin ".$set[1]."\n";
 
 //echo "\n".$row['guid']."\n";
 
-				$query = 'SELECT releasenfo.releaseid, UNCOMPRESS(releasenfo.nfo) AS nfo FROM releasenfo WHERE releasenfo.releaseid = '.$row['id'];
+				if ($this->db->dbSystem() == "mysql")
+					$uc = "UNCOMPRESS(releasenfo.nfo)";
+				else if ($this->db->dbSystem() == "pgsql")
+					$uc = "releasenfo.nfo";
+				$query = "SELECT releasenfo.releaseid, {$uc} AS nfo FROM releasenfo WHERE releasenfo.releaseid = ".$row['id'];
 				$rel = $this->db->queryOneRow($query);
 
 				$nfo = '';

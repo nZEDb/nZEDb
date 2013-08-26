@@ -44,7 +44,11 @@ class Namefixer
 		$db = new DB();
 		$type = "NFO, ";
 		// Only select releases we haven't checked here before
-		$query = "SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, UNCOMPRESS(nfo) AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus = 1";
+		if ($db->dbSystem() == "mysql")
+			$uc = "UNCOMPRESS(nfo)";
+		else if ($db->dbSystem() == "pgsql")
+			$uc = "nfo";
+		$query = "SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, {$uc} AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus = 1";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)

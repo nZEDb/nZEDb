@@ -205,7 +205,11 @@ class Nfo
 				{
 					//insert nfo into database
 					$this->addReleaseNfo($arr["id"]);
-					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = COMPRESS(%s) WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
+					if ($db->dbSystem() == "mysql")
+						$cp = "COMPRESS(%s)";
+					else if ($db->dbSystem() == "pgsql")
+						$cp = "%s";
+					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
 					$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
 					$ret++;
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["id"], $db, $processImdb);

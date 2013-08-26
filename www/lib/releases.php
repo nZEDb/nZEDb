@@ -825,7 +825,11 @@ class Releases
 	public function getReleaseNfo($id, $incnfo=true)
 	{
 		$db = new DB();
-		$selnfo = ($incnfo) ? ', UNCOMPRESS(nfo) AS nfo' : '';
+		if ($db->dbSystem() == "mysql")
+			$uc = "UNCOMPRESS(nfo)";
+		else if ($db->dbSystem() == "mysql")
+			$uc = "nfo";
+		$selnfo = ($incnfo) ? ", {$uc} AS nfo" : '';
 		return $db->queryOneRow(sprintf("SELECT id, releaseid".$selnfo." FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL", $id));
 	}
 

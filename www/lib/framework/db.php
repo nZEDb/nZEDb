@@ -27,9 +27,9 @@ class DB
 		if (DB::$initialized === false)
 		{
 			if (defined("DB_PORT"))
-				$pdos = $this->dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.$charset;
+				$pdos = $this->dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME;
 			else
-				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
+				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			if ($this->dbsystem == 'mysql')
 				$pdos .= ';charset=utf-8';
