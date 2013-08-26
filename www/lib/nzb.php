@@ -40,7 +40,7 @@ class NZB
 			$result = $db->query(sprintf("SELECT collections.*, collections.date AS udate, groups.name AS groupname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE collections.releaseid = %d", $relid));
 			foreach ($result as $binrow)
 			{
-				$unixdate = strtotime($binrows["udate"]);
+				$unixdate = strtotime($binrow["udate"]);
 				$result2 = $db->query(sprintf("SELECT id, name, totalparts from binaries where collectionid = %d order by name", $binrow["id"]));
 				foreach ($result2 as $binrow2)
 				{
