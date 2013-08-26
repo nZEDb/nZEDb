@@ -481,7 +481,7 @@ DROP TABLE IF EXISTS "releasenfo" CASCADE;
 CREATE TABLE "releasenfo" (
   "id" bigint DEFAULT nextval('releasenfo_id_seq'::regclass) NOT NULL,
   "releaseid" bigint NOT NULL,
-  "nfo" bytea
+  "nfo" text
 )
 WITHOUT OIDS;
 

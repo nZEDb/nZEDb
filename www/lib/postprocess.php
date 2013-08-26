@@ -172,8 +172,8 @@ class PostProcess
 			$t = "UNIX_TIMESTAMP(postdate)";
 		elseif ($db->dbSystem() == "pgsql")
 			$t = "extract(epoch FROM postdate)";
-		$quer = $db->queryOneRow("SELECT groupID, categoryID, relnamestatus, searchname, ".$t." as postdate, ID as releaseID  FROM releases WHERE ID = {$relID}");
-		if ($quer["relnamestatus"] !== 1 && $quer["categoryID"] != Category::CAT_MISC)
+		$quer = $db->queryOneRow("SELECT groupid, categoryid, relnamestatus, searchname, ".$t." as postdate, id as releaseID  FROM releases WHERE id = {$relID}");
+		if ($quer["relnamestatus"] !== 1 && $quer["categoryid"] != Category::CAT_MISC)
 			return false;
 
 		$nntp = new NNTP();
