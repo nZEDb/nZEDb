@@ -20,10 +20,7 @@ class DB
 		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
-		{
-			printf("ERROR: config.php is missing DB_SYSTEM\n");
-			exit();
-		}
+			exit("ERROR: config.php is missing the DB_SYSTEM setting.\n");
 		if (DB::$initialized === false)
 		{
 			if (defined("DB_PORT"))
@@ -33,12 +30,14 @@ class DB
 
 			if ($this->dbsystem == 'mysql')
 				$pdos .= ';charset=utf-8';
+
 			try {
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
 				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				// For backwards compatibility, no need for a patch.
+				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER); 
 			} catch (PDOException $e) {
-				printf("Connection failed: (".$e->getMessage().")");
-				exit();
+				exit("Connection to the SQL server failed, error follows: (".$e->getMessage().")");
 			}
 
 			DB::$initialized = true;
@@ -48,7 +47,7 @@ class DB
 			$this->memcached = MEMCACHE_ENABLED;
 	}
 
-	// Return if mysql or pgsql.
+	// Return string; mysql or pgsql.
 	public function dbSystem()
 	{
 		return $this->dbsystem;
@@ -63,7 +62,7 @@ class DB
 		return DB::$pdo->quote($str);
 	}
 
-	// For inserting a row, returns the last insert ID.
+	// For inserting a row. Returns last insert ID.
 	public function queryInsert($query)
 	{
 		if ($query=="")
@@ -89,7 +88,7 @@ class DB
 		}
 	}
 
-	// For deleting rows, returns the affected rows.
+	// For deleting rows. Returns row count.
 	public function queryDelete($query)
 	{
 		if ($query == "")
@@ -103,8 +102,7 @@ class DB
 		}
 	}
 
-/* Tested. In PDO you must use exec or prepared statement to update. */
-	// For updating rows.
+	// For updating rows. Returns row count.
 	public function queryUpdate($query)
 	{
 		if ($query == "")
@@ -118,7 +116,6 @@ class DB
 		}
 	}
 
-/* Tested. Return 2 keys; numeric value and name value, vs just name on mysqli, there is no free_result on pdo, not sure if that will impact anything */
 	// Return an array of rows, an empty array if no results.
 	// Optional: Pass true to cache the result with memcache.
 	public function query($query, $memcache=false)
@@ -159,19 +156,18 @@ class DB
 		return $rows;
 	}
 
-/* Tested. Works the same. */
 	// Returns the first row of the query.
 	public function queryOneRow($query)
 	{
 		$rows = $this->query($query);
 
-		if (!$rows)
+		if (!$rows || count($rows) == 0)
 			return false;
 
 		return ($rows) ? $rows[0] : $rows;
 	}
 
-	// Optimises/repairs tables on mysql. Vacuum on postgresql.
+	// Optimises/repairs tables on mysql. Vacuum / analyze on postgresql.
 	public function optimise()
 	{
 		$tablecnt = 0;
@@ -188,8 +184,7 @@ class DB
 			}
 			$this->queryDirect("FLUSH TABLES");
 		}
-
-		if ($this->dbsystem == "pgsql")
+		else if ($this->dbsystem == "pgsql")
 		{
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
@@ -229,15 +224,6 @@ class DB
 		return $stat;
 	}
 
-/* Untested ;Anything using this might need to be modified.
- * mysqli error returns a string, while this is an array, so we convert it to string
- * Retrieves only errors on the database handle : http://www.php.net/manual/en/pdo.errorinfo.php*/
-	public function Error()
-	{
-		$e = DB::$pdo->errorInfo();
-		return "SQL Error: ".$e[0]." ".$e[2];
-	}
-
 	// Turns off autocommit until commit() is ran.
 	public function beginTransaction()
 	{
@@ -251,6 +237,7 @@ class DB
 	}
 
 /* Untested */
+	// Undo transcations.
 	public function Rollback()
 	{
 		return DB::$pdo->rollBack();
@@ -291,13 +278,22 @@ class DB
 		try {
 			return (bool) DB::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
-			return false;
 			if ($restart = true)
 			{
 				DB::$initialized = false;
 				$this->DB();
 			}
+			return false;
 		}
+	}
+
+/* Untested ;Anything using this might need to be modified.
+ * mysqli error returns a string, while this is an array, so we convert it to string
+ * Retrieves only errors on the database handle : http://www.php.net/manual/en/pdo.errorinfo.php*/
+	public function Error()
+	{
+		$e = DB::$pdo->errorInfo();
+		return "SQL Error: ".$e[0]." ".$e[2];
 	}
 
 /*No replacements in PDO. Used in tmux monitor.php, possible solution here? http://terenceyim.wordpress.com/2009/01/09/adding-ping-function-to-pdo/
