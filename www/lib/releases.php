@@ -883,8 +883,8 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupid = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		//$db->queryUpdate("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
-		$db->queryUpdate("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid  FROM  binaries b, collections c WHERE  b.collectionid  = c.id  GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
+		$db->queryUpdate("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
+		//$db->queryUpdate("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid  FROM  binaries b, collections c WHERE  b.collectionid  = c.id  GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryUpdate("UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id AND b.filenumber = 0 ".$where." GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1");
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
