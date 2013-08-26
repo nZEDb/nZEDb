@@ -14,6 +14,7 @@ class DB
 	private static $initialized = false;
 	private static $pdo = null;
 
+	// Start a connection to the DB.
 	function DB()
 	{
 		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
@@ -33,16 +34,10 @@ class DB
 			else
 				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME.$charset;
 
-			// Initialize DB connection.
-			try
-			{
+			try {
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
 				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				if ($this->dbsystem == "pgsql")
-					DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-			}
-			catch (PDOException $e)
-			{
+			} catch (PDOException $e) {
 				printf("Connection failed: (".$e->getMessage().")");
 				exit();
 			}
@@ -54,40 +49,59 @@ class DB
 			$this->memcached = MEMCACHE_ENABLED;
 	}
 
-
+	// Return if mysql or pgsql.
 	public function dbSystem()
 	{
 		return $this->dbsystem;
 	}
 
-/* Tested. Works the same. ** */
-	// Returns a string, escaped with single quotes.
+	// Returns a string, escaped with single quotes, false on failure.
 	public function escapeString($str)
 	{
 		if (is_null($str))
 			return "NULL";
-		else 
-			return DB::$pdo->quote($str);
+
+		return DB::$pdo->quote($str);
 	}
 
-/* Tested. Works the same. ** */
-	// For inserting a row.
-	public function queryInsert($query, $returnlastid=true)
+	// For inserting a row, returns the last insert ID.
+	public function queryInsert($query)
 	{
 		if ($query=="")
 			return false;
 
-		return DB::$pdo->exec($query);
+		try
+		{
+			if ($this->dbsystem() == "mysql")
+			{
+				$ins = DB::$pdo->exec($query);
+				return DB::$pdo->lastInsertId();
+			}
+			else
+			{
+				$p = DB::$pdo->prepare($query." RETURNING id");
+				$p->execute();
+				$r = $p->fetch(PDO::FETCH_ASSOC);
+				return $r['id'];
+			}
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
 	}
 
-/* Tested. In PDO you must use exec to delete, it returns the affected row count. ** */
-	// For deleting rows.
+	// For deleting rows, returns the affected rows.
 	public function queryDelete($query)
 	{
 		if ($query == "")
 			return false;
 
-		return DB::$pdo->exec($query);
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
 	}
 
 /* Tested. In PDO you must use exec or prepared statement to update. */
@@ -97,7 +111,12 @@ class DB
 		if ($query == "")
 			return false;
 
-		return DB::$pdo->exec($query);
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
 	}
 
 /* Tested. Return 2 keys; numeric value and name value, vs just name on mysqli, there is no free_result on pdo, not sure if that will impact anything */
@@ -119,7 +138,13 @@ class DB
 			}
 		}
 
-		$result = DB::$pdo->query($query);
+		try {
+			$result = DB::$pdo->query($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$result = false;
+		}
+
 		if ($result === false)
 			return array();
 
@@ -147,34 +172,57 @@ class DB
 		return ($rows) ? $rows[0] : $rows;
 	}
 
-/* Tested. Works the same. Untested in anything other than mysql. */
-	// Optimises/repairs tables.
+	// Optimises/repairs tables on mysql. Vacuum on postgresql.
 	public function optimise()
 	{
-		$alltables = $this->query("show table status where Data_free > 0");
-		$tablecnt = count($alltables);
-
-		foreach ($alltables as $tablename)
+		if ($this->dbtype == "mysql")
 		{
-			$ret[] = $tablename['Name'];
-			echo "Optimizing table: ".$tablename['Name'].".\n";
-			if (strtolower($tablename['Engine']) == "myisam")
-				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
-			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
+			$alltables = $this->query("show table status where Data_free > 0");
+			$tablecnt = count($alltables);
+
+			foreach ($alltables as $tablename)
+			{
+				$ret[] = $tablename['Name'];
+				echo "Optimizing table: ".$tablename['Name'].".\n";
+				if (strtolower($tablename['Engine']) == "myisam")
+					$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
+				$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
+			}
+			$this->queryDirect("FLUSH TABLES");
+			return $tablecnt;
 		}
-		$this->queryDirect("FLUSH TABLES");
-		return $tablecnt;
+
+		if ($this->dbtype == "pgres")
+		{
+			// something something vacuum
+		}
 	}
 
+	// Query without returning an empty array like our function query().
 	public function queryDirect($query)
 	{
-		return ($query=="") ? false : DB::$pdo->query($query);
+		if ($query == "")
+			return false;
+
+		try {
+			$result = DB::$pdo->query($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$result = false;
+		}
+		return $result;
 	}
 
-/* Tested ,works. */ 
+	// Prepares a statement, to run use exexute().
 	public function Prepare($query)
 	{
-		return DB::$pdo->prepare($query);
+		try {
+			$stat = DB::$pdo->prepare($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$stat = false;
+		}
+		return $stat;
 	}
 
 /* Untested ;Anything using this might need to be modified.
@@ -186,14 +234,13 @@ class DB
 		return "SQL Error: ".$e[0]." ".$e[2];
 	}
 
-/* Untested ;Could cause issues with myisam, see : http://php.net/manual/en/pdo.transactions.php
- * If so we might have to put an option to turn on / off transactions */
+	// Turns off autocommit until commit() is ran.
 	public function beginTransaction()
 	{
 		return DB::$pdo->beginTransaction();
 	}
 
-/* Untested */
+	// Commits a transaction.
 	public function Commit()
 	{
 		return DB::$pdo->commit();
@@ -226,6 +273,22 @@ class DB
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
+/* Replacement for ping() */
+	// Checks whether the connection to the server is working. Optionally start a new connection.
+	public function ping($restart = false)
+	{
+		try {
+			return (bool) DB::$pdo->query('SELECT 1+1');
+		} catch (PDOException $e) {
+			return false;
+			if ($restart = true)
+			{
+				DB::$initialized = false;
+				$this->DB();
+			}
+		}
+	}
+
 /*No replacements in PDO. Used in tmux monitor.php, possible solution here? http://terenceyim.wordpress.com/2009/01/09/adding-ping-function-to-pdo/
 	// Checks whether the connection to the server is working. Optionally kills connection.
 	public function ping($kill=false)
@@ -241,7 +304,7 @@ class DB
 		return true;
 	}
 
-	//This function is used to ask the server to kill a MySQL thread specified by the processid parameter. This value must be retrieved by calling the mysqli_thread_id() function. 
+	//This function is used to ask the server to kill a MySQL thread specified by the processid parameter. This value must be retrieved by calling the mysqli_thread_id() function.
 	public function kill()
 	{
 		DB::$mysqli->kill(DB::$mysqli->thread_id);

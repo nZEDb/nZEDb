@@ -591,7 +591,7 @@ class Binaries
 		}
 		$insertStr = substr($insertStr, 0, -2);
 		$insertStr .= " ON DUPLICATE KEY UPDATE attempts=attempts+1";
-		return $db->queryInsert($insertStr, false);
+		return $db->queryInsert($insertStr);
 	}
 
 	public function retrieveBlackList()
