@@ -55,7 +55,7 @@ if (isset($argv[1]) && isset($argv[2]))
 }
 else
 {
-		exit("ERROR: You must supply arguments.\n\n".
+		exit("ERROR: You must supply arguments.\n\n"
 			."php update_releases.php 1 true			...: Creates releases and attempts to categorize new releases\n"
 			."php update_releases.php 2 true			...: Creates releases and leaves new releases in other -> misc\n"
 			."\nYou must pass a second argument whether to post process or not, true or false\n"

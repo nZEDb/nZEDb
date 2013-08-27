@@ -1382,11 +1382,28 @@ class Releases
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $n."\033[1;33mStage 7a -> Delete finished collections.\033[0m".$n;
-		$stage7 = TIME();
+		$stage7 = TIME();;
 
 		// Completed releases and old collections that were missed somehow.
-		$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.filecheck = 5".$where));
-		$delq->execute();
+		if ($db->dbSystem() == "mysql")
+		{
+			$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.filecheck = 5".$where));
+			$delq->execute();
+			$reccount = $delq->rowCount();
+		}
+		else if ($db->dbSystem() == "pgsql")
+		{
+			$idr = $db->query("SELECT id FROM collections WHERE filecheck = 5 ".$where);
+			if (count($idr) > 0)
+			{
+				foreach ($idr as $id)
+				{
+					$reccount = $db->queryExec("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]);
+					$reccount += $db->queryExec("DELETE FROM binaries WHERE collectionid = %d",  $id["id"]);
+				}
+				$reccount += $db->queryExec("DELETE FROM collections WHERE filecheck = 5 ".$where);
+			}
+		}
 		if ($this->echooutput)
 				echo "Removed ".$delq->rowCount()." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
 	}
@@ -1408,18 +1425,40 @@ class Releases
 		$stage7 = TIME();
 
 		// Old collections that were missed somehow.
-		$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.dateadded < (NOW() - INTERVAL %d HOUR) " . $where, $page->site->partretentionhours));
-		$delq->execute();
-		$reccount = $delq->rowCount();
+		if ($db->dbSystem() == "mysql")
+		{
+			$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.dateadded < (NOW() - INTERVAL %d HOUR) ".$where, $page->site->partretentionhours));
+			$delq->execute();
+			$reccount = $delq->rowCount();
+		}
+		else if ($db->dbSystem() == "pgsql")
+		{
+			$idr = $db->query(sprintf("SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL %d HOUR) ".$where, $page->site->partretentionhours));
+			if (count($idr) > 0)
+			{
+				foreach ($idr as $id)
+				{
+					$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+					$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+				}
+			}
+			$reccount += $db->queryExec(sprintf("DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR".$where, $page->site->partretentionhours));
+		}
 
 		// Binaries/parts that somehow have no collection.
-		$db->queryExec("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.id = parts.binaryid WHERE binaries.collectionid = 0 ".$where);
+		if ($db->dbSystem() == "mysql")
+			$db->queryExec("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.id = parts.binaryid WHERE binaries.collectionid = 0 ");
+		else if ($db->dbSystem() == "pgsql")
+		{
+			$db->queryExec("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = 0)");
+			$db->queryExec("DELETE FROM binaries WHERE collectionid = 0");
+		}
 		// Parts that somehow have no binaries.
-		$db->queryExec("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b) ".$where);
+		$db->queryExec("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)");
 		// Binaries that somehow have no collection.
-		$db->queryExec("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c) ".$where);
+		$db->queryExec("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c)");
 		// Collections that somehow have no binaries.
-		$db->queryExec("DELETE FROM collections WHERE collections.id NOT IN ( SELECT binaries.collectionid FROM binaries) ".$where);
+		$db->queryExec("DELETE FROM collections WHERE collections.id NOT IN (SELECT binaries.collectionid FROM binaries) ".$where);
 
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
