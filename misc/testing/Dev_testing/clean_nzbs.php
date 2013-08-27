@@ -23,33 +23,40 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$checked = 0;
 	foreach ($itr as $filePath)
 	{
-		if (is_file($filePath))
+		if (substr($filePath, -2) == "gz")
 		{
-			$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
-			if ($res === false)
+			if (is_file($filePath))
 			{
-				$releases->fastDelete($res['id'], $res['guid'], $site);
-				echo "Deleted NZB: ".$filePath."\n";
+				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
+				if ($res === false)
+				{
+					$releases->fastDelete($res['id'], $res['guid'], $site);
+					echo "Deleted NZB: ".$filePath."\n";
+				}
 			}
+			$time = $consoletools->convertTime(TIME() - $timestart);
+			$consoletools->overWrite("Checking NZBs: ".$checked++." exists in db,  Running time: ".$time);
 		}
-		$time = $consoletools->convertTime(TIME() - $timestart);
-		$consoletools->overWrite("\nChecking NZBs: ".$checked++." exists in db,  Running time: ".$time);
 	}
 
 	$timestart = TIME();
 	$checked = 0;
 	$res = $db->query('SELECT id, guid FROM releases');
-	foreach ($res as $row)
+	if (count($res) > 0)
 	{
-		$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
-		if (!file_exists($nzbpath))
+		foreach ($res as $row)
 		{
-			echo "Deleting ".$row['guid']."\n";
-			$releases->fastDelete($row['id'], $row['guid'], $site); 
+			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
+			if (!file_exists($nzbpath))
+			{
+				echo "Deleting ".$row['guid']."\n";
+				$releases->fastDelete($row['id'], $row['guid'], $site); 
+			}
+			$time = $consoletools->convertTime(TIME() - $timestart);
+			$consoletools->overWrite("Checking Releases: ".$checked++." have an nzb, Running time: ".$time);
 		}
-		$time = $consoletools->convertTime(TIME() - $timestart);
-		$consoletools->overWrite("Checking Releases: ".$checked++." have an nzb, Running time: ".$time);
 	}
+	echo "\n";
 }
 else
 	exit("This script removes all nzbs not found in the db.\nIf you are sure you want to run it, type php clean_nzbs.php true\n");
