@@ -175,8 +175,7 @@ class Namefixer
 					if ($namestatus == 1)
 					{
 						if ($type == "NFO, ")
-							$status = 8
-						$status = 2;
+							$status = 8;
 						else if ($type == "PAR2, ")
 							$status = 7;
 						else if ($type == "Filenames, ")

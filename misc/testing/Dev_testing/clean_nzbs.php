@@ -1,5 +1,5 @@
 <?php
-// This script removes all nzbs not found in the db.
+// This script removes all NZB's not found in the DB and all releases with no NZB.
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
@@ -7,28 +7,37 @@ if (isset($argv[1]) && $argv[1] === "true")
 	require_once(FS_ROOT."/../../../www/config.php");
 	require_once(WWW_DIR."lib/site.php");
 	require_once(WWW_DIR."lib/nzb.php");
+	require_once(WWW_DIR."lib/releases.php");
+	require_once(WWW_DIR."lib/consoletools.php");
 
 	$s = new Sites();
 	$site = $s->get();
 	$db = new DB();
+	$releases = new Releases();
+	$consoletools = new ConsoleTools();
 	$nzb = new NZB(true);
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+
+	$timestart = TIME();
+	$checked = 0;
 	foreach ($itr as $filePath)
 	{
 		if (is_file($filePath))
 		{
-			$file = stristr($filePath->getFilename(), '.nzb.gz', true);
-			$res = $db->query(sprintf("SELECT * FROM releases WHERE guid = %s", $db->escapeString($file)));
-
+			$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 			if ($res === false)
 			{
-				echo "$filePath\n";
-				echo $filePath->getFilename().PHP_EOL;
+				$releases->fastDelete($res['id'], $res['guid'], $site);
+				echo "Deleted NZB: ".$filePath."\n";
 			}
 		}
+		$time = $consoletools->convertTime(TIME() - $timestart);
+		$consoletools->overWrite("\nChecking NZBs: ".$checked++." exists in db,  Running time: ".$time);
 	}
 
+	$timestart = TIME();
+	$checked = 0;
 	$res = $db->query('SELECT id, guid FROM releases');
 	foreach ($res as $row)
 	{
@@ -36,9 +45,10 @@ if (isset($argv[1]) && $argv[1] === "true")
 		if (!file_exists($nzbpath))
 		{
 			echo "Deleting ".$row['guid']."\n";
-			$db->queryExec(sprintf("DELETE FROM releases WHERE id = %s", $row['id']));
+			$releases->fastDelete($row['id'], $row['guid'], $site); 
 		}
-
+		$time = $consoletools->convertTime(TIME() - $timestart);
+		$consoletools->overWrite("Checking Releases: ".$checked++." have an nzb, Running time: ".$time);
 	}
 }
 else
