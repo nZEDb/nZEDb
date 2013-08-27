@@ -8,9 +8,10 @@ $releases = new Releases();
 
 $db = new Db();
 
-$shows = $db->query("select name from releases where categoryID IN (select ID from category where parentID = 5000) limit 0, 50");
+$shows = $db->query("SELECT name FROM releases WHERE categoryid IN (SELECT id FROM category WHERE parentid = 5000) LIMIT 50 OFFSET 0");
 			
-foreach ($shows as $show) {
+foreach ($shows as $show)
+{
 	$res = $releases->parseNameEpSeason($show['name']);
 	$res['release'] = $show['name'];
 	

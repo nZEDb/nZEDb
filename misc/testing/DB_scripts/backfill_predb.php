@@ -62,7 +62,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 						if (file_exists($file))
 						{
 							chmod($file, 0777);
-							$ins = $db->queryInsert(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+							$ins = $db->queryExec(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
 							unlink($file);
 							if ($ins === false)
 								exit();

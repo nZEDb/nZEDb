@@ -21,4 +21,6 @@ if (isset($site->rottentomatokey))
 	//print_r(json_decode($rt->getCast("770805418")));
 	print_r(json_decode($rt->searchMovie("inception")));
 }
+else
+	exit("No rotten tomato key.\n");
 ?>

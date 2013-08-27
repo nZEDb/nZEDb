@@ -1,15 +1,14 @@
 <?php
-/*
- * Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php
- */
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/site.php");
+/* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
+	require(dirname(__FILE__)."/../../../www/config.php");
+	require_once(WWW_DIR."/lib/framework/db.php");
+	require_once(WWW_DIR."/lib/category.php");
+	require_once(WWW_DIR."/lib/releases.php");
+	require_once(WWW_DIR."/lib/site.php");
+
 	$timestart = TIME();
 	$s = new Sites();
 	$db = new DB();
@@ -19,14 +18,17 @@ if(isset($argv[1]) && $argv[1] == "true")
 	if ($catlist = $category->getDisabledIDs())
 	{
 		$relsdeleted = 0;
-		while ($cat = mysqli_fetch_assoc($catlist))
+		if ($catlist > 0)
 		{
-			if ($rels = $db->query(sprintf("select ID, guid from releases where categoryID = %d", $cat['ID'])))
+			foreach ($catlist as $cat)
 			{
-				foreach ($rels as $rel)
+				if ($rels = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id'])))
 				{
-					$relsdeleted++;
-					$releases->fastDelete($rel['ID'], $rel['guid'], $site);
+					foreach ($rels as $rel)
+					{
+						$relsdeleted++;
+						$releases->fastDelete($rel['id'], $rel['guid'], $site);
+					}
 				}
 			}
 		}

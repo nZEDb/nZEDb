@@ -1,5 +1,5 @@
 <?php
-//This script will update all records in the musicinfo table
+// This script only tests against the results below. Querying the DB for releases in the music categories would be needed to update them.
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
@@ -7,26 +7,28 @@ require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/music.php");
 
 $music = new Music(true);
-
 $db = new Db();
 
 $albums = results();
 shuffle($albums);
 
-foreach ($albums as $album) {
+foreach ($albums as $album)
+{
 	$artist = $music->parseArtist($album);
 	echo $artist['releasename'].'<br />';
 	$result = $music->updateMusicInfo($artist['artist'], $artist['album'], $artist['year']);
-	if ($result !== false) {
+	if ($result !== false)
+	{
 		echo '<pre>';
 		print_r($result);
 		echo '</pre><br /><br />';
 	}
-	die;
+	exit();
 }
 
 
-function results() {
+function results()
+{
 	$str = 'Processing 260 music releases
 Looking up: Disintegration [The Cure-Disintegration-3CD-Deluxe Edition-2010-EOS]
 Looking up: Build And Destroy Euro Retail 2CD [Royce Da 59-Build And Destroy Euro Retail 2CD-2003-FTD]

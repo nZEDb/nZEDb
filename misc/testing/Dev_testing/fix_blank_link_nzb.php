@@ -1,22 +1,17 @@
 <?php
-
-/*
- * Fixes NZB files with a blank first line.
- */
-
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/nzb.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+/* Fixes NZB files with a blank first line. */
 
 if (isset($argv[1]) && $argv[1] == "true")
 {
+	require(dirname(__FILE__)."/../../../www/config.php");
+	require_once(WWW_DIR."/lib/nzb.php");
+	require_once(WWW_DIR."/lib/framework/db.php");
 	$timestart = TIME();
-	$nzbcount = 0;
-	$brokencount = 0;
+	$nzbcount = $brokencount = 0;
 	$db = new DB();
 
-	$guids = $db->query("select guid from releases where nzbstatus = 1 order by postdate DESC");
-	echo "Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are ".sizeof($guids)." NZB files to scan.\n";
+	$guids = $db->query("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
+	echo "Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are ".count($guids)." NZB files to scan.\n";
 
 	foreach ($guids as $guid)
 	{
@@ -44,22 +39,14 @@ if (isset($argv[1]) && $argv[1] == "true")
 				}
 			}
 			if ($nzbcount % 10 == 0)
-			{
 				echo ".";
-			}
 			if ($nzbcount % 1000 == 0)
-			{
 				echo "\n";
-			}
 			if ($nzbcount % 5000 == 0)
-			{
 				echo $nzbcount." NZBs scanned. ".$brokencount." NZBs fixed. ".(TIME() - $timestart)." seconds.\n";
-			}
 		}
 		else
-		{
 			echo "ERROR: wrong permissions on NZB file, or it does not exist.\n";
-		}
 		unset($guid);
 	}
 	echo "\n".$nzbcount." NZB files scanned. in ";
@@ -67,8 +54,6 @@ if (isset($argv[1]) && $argv[1] == "true")
 	echo " seconds. ".$brokencount." NZB files were fixed.\n";
 }
 else
-{
 	exit("This script can be dangerous, if you are sure you want to run this, STOP ALL OTHER NZEDB SCRIPTS, type php fix_blank_line_nzb.php true ; be patient, this can take a long time.\n");
-}
 
 ?>

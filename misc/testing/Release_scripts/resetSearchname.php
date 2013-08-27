@@ -86,7 +86,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groupID FROM releases where relnamestatus NOT IN (3, 7)");
+	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{

@@ -21,7 +21,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 	$update = ($argv[2] == "true") ? 1 : 2;
 	$other = ($argv[3] == "other") ? 1 : 2;
 	$setStatus = ($argv[4] == "yes") ? 1 : 2;
-				
+
 	switch ($argv[1])
 	{
 		case 1:
@@ -44,7 +44,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			break;
 		default :
 			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
-			break;			
+			break;
 	}
 }
 else

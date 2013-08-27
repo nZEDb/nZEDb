@@ -4,6 +4,10 @@ require_once(WWW_DIR."lib/framework/db.php");
 
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
 
+$db = new DB();
+if ($db->dbSystem() == "pgsql")
+	exit("This script is only for mysql.\n");
+
 function newname($filename)
 {
 	rename($filename, dirname($filename)."/".basename($filename,".gz")."_".date("Y_m_d_His", filemtime($filename)).".gz");
@@ -37,7 +41,6 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -53,7 +56,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -69,7 +71,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -83,7 +84,6 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -99,7 +99,6 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -114,7 +113,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -123,13 +121,12 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$db->query(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
+			$db->queryExec(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
 		}
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$tables = array('predb');
 	foreach($tables as $row)
 	{
