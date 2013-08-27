@@ -669,12 +669,12 @@ while( $i > 0 )
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
 
 	//get list of panes by name
-	$panes_win_1 = shell_exec("echo tmux list-panes -t $tmux_session:0 -F '#{pane_title}'");
+	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	if ( $seq != 2 )
 	{
-		$panes_win_2 = shell_exec("echo tmux list-panes -t $tmux_session:1 -F '#{pane_title}'");
-		$panes_win_3 = shell_exec("echo tmux list-panes -t $tmux_session:2 -F '#{pane_title}'");
+		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
+		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 	}
@@ -813,7 +813,7 @@ while( $i > 0 )
 			if ( $post == 1 && $work_remaining_now > 0 )
 			{
 				//run postprocess_releases additional
-				$history = str_replace( " ", '', tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}' );
+				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
 				if ( $last_history != $history )
 				{
 					$last_history = $history;
@@ -824,12 +824,12 @@ while( $i > 0 )
 					if ( TIME() - $time2 >= $post_kill_timer )
 					{
 						shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
-						$wipe = tmux clearhist -t${tmux_session}:2.0;
+						$wipe = `tmux clearhist -t${tmux_session}:2.0`;
 						$color = get_color($colors_start, $colors_end, $colors_exc);
 						$time2 = TIME();
 					}
 				}
-				$dead1 = str_replace( " ", '', tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l );
+				$dead1 = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l` );
 				if ( $dead1 == 1 )
 					$time2 = TIME();
 				$log = writelog($panes2[0]);
@@ -848,7 +848,7 @@ while( $i > 0 )
 			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
 			{
 				//run postprocess_releases additional
-				$history = str_replace( " ", '', tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}' );
+				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
 				if ( $last_history != $history )
 				{
 					$last_history = $history;
@@ -859,12 +859,12 @@ while( $i > 0 )
 					if ( TIME() - $time2 >= $post_kill_timer )
 					{
 						shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
-						$wipe = tmux clearhist -t${tmux_session}:2.0;
+						$wipe = `tmux clearhist -t${tmux_session}:2.0`;
 						$color = get_color($colors_start, $colors_end, $colors_exc);
 						$time2 = TIME();
 					}
 				}
-				$dead1 = str_replace( " ", '', tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l );
+				$dead1 = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l` );
 				if ( $dead1 == 1 )
 					$time2 = TIME();
 				$log = writelog($panes2[0]);
