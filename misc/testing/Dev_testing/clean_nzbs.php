@@ -23,17 +23,20 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$checked = 0;
 	foreach ($itr as $filePath)
 	{
-		if (is_file($filePath) && substr($filePath, -2) == "gz")
+		if (is_file($filePath))
 		{
-			$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
-			if ($res === false)
+			if (substr($filePath, -2) == "gz")
 			{
-				$releases->fastDelete($res['id'], $res['guid'], $site);
-				echo "Deleted NZB: ".$filePath."\n";
+				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
+				if ($res === false)
+				{
+					$releases->fastDelete($res['id'], $res['guid'], $site);
+					echo "Deleted NZB: ".$filePath."\n";
+				}
+				$time = $consoletools->convertTime(TIME() - $timestart);
+				$consoletools->overWrite("Checking NZBs: ".$checked++." exists in db,  Running time: ".$time);
 			}
-		}	
-		$time = $consoletools->convertTime(TIME() - $timestart);
-		$consoletools->overWrite("Checking NZBs: ".$checked++." exists in db,  Running time: ".$time);
+		}
 	}
 
 	if ($checked > 0)
