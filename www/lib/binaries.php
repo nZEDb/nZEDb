@@ -590,7 +590,7 @@ class Binaries
 						$partsRepaired++;
 
 						// Article was added, delete from partrepair.
-						$db->queryDelete(sprintf("DELETE FROM partrepair WHERE id=%d", $r['id']));
+						$db->queryExec(sprintf("DELETE FROM partrepair WHERE id=%d", $r['id']));
 					}
 					else
 					{
@@ -608,7 +608,7 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$db->queryDelete(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupid = %d", $groupArr['id']));
+		$db->queryExec(sprintf("DELETE FROM partrepair WHERE attempts >= 5 AND groupid = %d", $groupArr['id']));
 
 	}
 
@@ -753,7 +753,7 @@ class Binaries
 	public function deleteBlacklist($id)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("DELETE FROM binaryblacklist WHERE id = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM binaryblacklist WHERE id = %d", $id));
 	}
 
 	public function updateBlacklist($regex)
@@ -794,8 +794,8 @@ class Binaries
 		$db = new DB();
 		$bins = $db->query(sprintf("SELECT id FROM binaries WHERE collectionid = %d", $id));
 		foreach ($bins as $bin)
-			$db->queryDelete(sprintf("DELETE FROM parts WHERE binaryid = %d", $bin["id"]));
-		$db->queryDelete(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id));
-		$db->queryDelete(sprintf("DELETE FROM collections WHERE id = %d", $id));
+			$db->queryExec(sprintf("DELETE FROM parts WHERE binaryid = %d", $bin["id"]));
+		$db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id));
+		$db->queryExec(sprintf("DELETE FROM collections WHERE id = %d", $id));
 	}
 }

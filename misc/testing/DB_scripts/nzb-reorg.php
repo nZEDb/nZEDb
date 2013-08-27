@@ -49,7 +49,7 @@ foreach($objects as $filestoprocess => $nzbFile)
 	$consoleTools->overWrite("Reorganized ".$iFilesProcessed."/".$iFilesCounted."(".$perc."%) - est. ".$est." minutes  ");
 }
 
-$db->queryUpdate(sprintf("UPDATE site SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
+$db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
 exit("Processed ".$iFilesProcessed." nzbs in ".relativeTime($time)."\n");
 
 function relativeTime($_time)

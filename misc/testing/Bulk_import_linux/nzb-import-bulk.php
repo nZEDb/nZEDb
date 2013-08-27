@@ -52,7 +52,7 @@ function categorize()
 	foreach ($relres as $relrow)
 	{
 		$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-		$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
+		$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
 	}
 }
 
@@ -258,7 +258,7 @@ else
 			}
 			else
 			{
-				$db->queryDelete(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
 				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
 				$importfailed = true;
 			}

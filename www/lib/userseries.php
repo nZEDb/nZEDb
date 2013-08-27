@@ -20,7 +20,7 @@ class UserSeries
 	public function delShow($uid, $rageid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM userseries WHERE userid = %d AND rageid = %d", $uid, $rageid));
+		$db->queryExec(sprintf("DELETE FROM userseries WHERE userid = %d AND rageid = %d", $uid, $rageid));
 	}
 
 	public function getShow($uid, $rageid)
@@ -32,13 +32,13 @@ class UserSeries
 	public function delShowForUser($uid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM userseries WHERE userid = %d", $uid));
+		$db->queryExec(sprintf("DELETE FROM userseries WHERE userid = %d", $uid));
 	}
 
 	public function delShowForSeries($sid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM userseries WHERE rageid = %d", $rid));
+		$db->queryExec(sprintf("DELETE FROM userseries WHERE rageid = %d", $rid));
 	}
 
 	public function updateShow($uid, $rageid, $catid=array())

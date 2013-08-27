@@ -35,7 +35,7 @@ class Nfo
 	public function deleteReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("DELETE FROM releasenfo WHERE releaseid = %d", $relid));
+		return $db->queryExec(sprintf("DELETE FROM releasenfo WHERE releaseid = %d", $relid));
 	}
 
 	// Find an IMDB ID in a NFO file.
@@ -247,7 +247,7 @@ class Nfo
 			$relres = $db->query("SELECT id FROM releases WHERE nfostatus <= -6");
 			foreach ($relres as $relrow)
 			{
-				$db->queryDelete(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d", $relrow['id']));
+				$db->queryExec(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d", $relrow['id']));
 			}
 
 			if ($this->echooutput)

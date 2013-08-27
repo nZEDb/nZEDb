@@ -59,7 +59,7 @@ function create_guids($live)
 						$segment = $file->segments->segment;
 						$nzb_guid = md5($segment);
 
-						$db->queryUpdate("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
+						$db->queryExec("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
 						$relcount++;
 						$consoletools->overWrite("Updating:".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;

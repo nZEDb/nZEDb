@@ -74,7 +74,7 @@ class TvRage
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("DELETE FROM tvrage WHERE id = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM tvrage WHERE id = %d", $id));
 	}
 
 	public function getRange($start, $num, $ragename="")

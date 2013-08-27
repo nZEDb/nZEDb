@@ -45,7 +45,7 @@ if  ($page->isPostBack())
 			$db = new DB();
 			$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
 			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->NZB_PATH."tmpunrar"));
-			if ($db->queryUpdate($sql1) === false || $db->queryUpdate($sql2) === false)
+			if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false)
 				$cfg->error = true;
 		}
 	}

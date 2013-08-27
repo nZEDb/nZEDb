@@ -65,7 +65,7 @@ class Forum
 		public function deleteParent($parent)
 		{
 			$db = new DB();
-			$db->queryDelete(sprintf("DELETE FROM forumpost WHERE id = %d OR parentid = %d", $parent, $parent));
+			$db->queryExec(sprintf("DELETE FROM forumpost WHERE id = %d OR parentid = %d", $parent, $parent));
 		}
 
 		public function deletePost($id)
@@ -77,14 +77,14 @@ class Forum
 				if ($post["parentid"] == "0")
 					$this->deleteParent($id);
 				else
-					$db->queryDelete(sprintf("DELETE FROM forumpost WHERE id = %d", $id));
+					$db->queryExec(sprintf("DELETE FROM forumpost WHERE id = %d", $id));
 			}
 		}
 
 		public function deleteUser($id)
 		{
 			$db = new DB();
-			$db->queryDelete(sprintf("DELETE FROM forumpost WHERE userid = %d", $id));
+			$db->queryExec(sprintf("DELETE FROM forumpost WHERE userid = %d", $id));
 		}
 
 		public function getCountForUser($uid)

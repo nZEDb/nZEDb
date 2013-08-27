@@ -42,7 +42,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 		if (!file_exists($nzbpath))
 		{
 			echo "deleting ".$row['guid']."\n";
-			$db->queryDelete(sprintf("DELETE FROM `releases` WHERE `releases`.`ID` = %s", $row['ID']));
+			$db->queryExec(sprintf("DELETE FROM `releases` WHERE `releases`.`ID` = %s", $row['ID']));
 		}
 
 	}

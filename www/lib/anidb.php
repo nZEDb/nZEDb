@@ -39,7 +39,7 @@ class AniDB
 		if ($this->echooutput)
 			echo ".";
 
-		$db->queryDelete("DELETE FROM animetitles WHERE anidbid IS NOT NULL");
+		$db->queryExec("DELETE FROM animetitles WHERE anidbid IS NOT NULL");
 
 		for($i = 0; $i < count($animetitles[1]); $i++) {
 			$db->queryInsert(sprintf("INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)",
@@ -70,7 +70,7 @@ class AniDB
 	{
 		$db = new DB();
 
-		$db->queryDelete(sprintf("DELETE FROM anidb WHERE anidbid = %d", $anidbID));
+		$db->queryExec(sprintf("DELETE FROM anidb WHERE anidbid = %d", $anidbID));
 	}
 
 	public function getanidbID($title)

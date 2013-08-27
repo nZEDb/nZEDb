@@ -125,7 +125,7 @@ class Contents
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("DELETE FROM content WHERE id = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM content WHERE id = %d", $id));
 	}
 
 	public function update($form)

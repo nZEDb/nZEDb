@@ -54,7 +54,7 @@ class Users
 		$forum = new Forum();
 		$forum->deleteUser($id);
 
-		$db->queryDelete(sprintf("DELETE FROM users WHERE id = %d", $id));
+		$db->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
 	}
 
 	public function getRange($start, $num, $orderby, $username='', $email='', $host='', $role='')
@@ -466,7 +466,7 @@ class Users
 		}
 		$db = new DB();
 		$sql = sprintf("DELETE FROM usercart WHERE id IN (%s) AND userid = %d", implode(',',$del), $uid);
-		$db->queryDelete($sql);
+		$db->queryExec($sql);
 	}
 
 	public function delCartByUserAndRelease($guid, $uid)
@@ -474,19 +474,19 @@ class Users
 		$db = new DB();
 		$rel = $db->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $db->escapeString($guid)));
 		if ($rel)
-			$db->queryDelete(sprintf("DELETE FROM usercart WHERE userid = %d AND releaseid = %d", $uid, $rel["id"]));
+			$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d AND releaseid = %d", $uid, $rel["id"]));
 	}
 
 	public function delCartForUser($uid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM usercart WHERE userid = %d", $uid));
+		$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d", $uid));
 	}
 
 	public function delCartForRelease($rid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM usercart WHERE releaseid = %d", $rid));
+		$db->queryExec(sprintf("DELETE FROM usercart WHERE releaseid = %d", $rid));
 	}
 
 	public function addCategoryExclusions($uid, $catids)
@@ -529,13 +529,13 @@ class Users
 	public function delCategoryExclusion($uid, $catid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE userexcat WHERE userid = %d AND categoryid = %d", $uid, $catid));
+		$db->queryExec(sprintf("DELETE userexcat WHERE userid = %d AND categoryid = %d", $uid, $catid));
 	}
 
 	public function delUserCategoryExclusions($uid)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM userexcat WHERE userid = %d", $uid));
+		$db->queryExec(sprintf("DELETE FROM userexcat WHERE userid = %d", $uid));
 	}
 
 	public function sendInvite($sitetitle, $siteemail, $serverurl, $uid, $emailto)
@@ -556,7 +556,7 @@ class Users
 	{
 		$db = new DB();
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
-		$db->queryDelete(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
+		$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 
 		return $db->queryOneRow(sprintf("SELECT * FROM userinvite WHERE guid = %s", $db->escapeString($inviteToken)));
 	}
@@ -570,7 +570,7 @@ class Users
 	public function deleteInvite($inviteToken)
 	{
 		$db = new DB();
-		$db->queryDelete(sprintf("DELETE FROM userinvite WHERE guid = %s ", $db->escapeString($inviteToken)));
+		$db->queryExec(sprintf("DELETE FROM userinvite WHERE guid = %s ", $db->escapeString($inviteToken)));
 	}
 
 	public function checkAndUseInvite($invitecode)
@@ -637,14 +637,14 @@ class Users
 			$defaultrole = $this->getDefaultRole();
 			$db->queryExec(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
 		}
-		return $db->queryDelete(sprintf("DELETE FROM userroles WHERE id = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM userroles WHERE id = %d", $id));
 	}
 
 	public function getApiRequests($userid)
 	{
 		$db = new DB();
 		// Clear old requests.
-		$db->queryDelete(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		$db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 
 		return $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 	}
@@ -659,7 +659,7 @@ class Users
 	{
 		$db = new DB();
 		// Clear old requests.
-		$db->queryDelete(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		$db->queryExec(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 
 		return $db->queryOneRow(sprintf("select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
 	}

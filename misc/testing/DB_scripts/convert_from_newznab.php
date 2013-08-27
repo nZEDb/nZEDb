@@ -26,7 +26,7 @@ function runQueryupdate($db, $sql, $runQueries)
 {
 	if ($runQueries)
 	{
-		$db->queryUpdate($sql);
+		$db->queryExec($sql);
 		return true;
 	}
 	else

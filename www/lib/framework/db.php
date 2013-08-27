@@ -88,37 +88,8 @@ class DB
 		}
 	}
 
-// Todo : replace queryDelete and queryUpdate with this.
 	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count.
 	public function queryExec($query)
-	{
-		if ($query == "")
-			return false;
-
-		try {
-			return DB::$pdo->exec($query);
-		} catch (PDOException $e) {
-			printf($e);
-			return false;
-		}
-	}
-
-	// For deleting rows. Returns row count.
-	public function queryDelete($query)
-	{
-		if ($query == "")
-			return false;
-
-		try {
-			return DB::$pdo->exec($query);
-		} catch (PDOException $e) {
-			printf($e);
-			return false;
-		}
-	}
-
-	// For updating rows. Returns row count.
-	public function queryUpdate($query)
 	{
 		if ($query == "")
 			return false;

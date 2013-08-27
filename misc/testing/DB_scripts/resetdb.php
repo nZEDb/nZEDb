@@ -25,7 +25,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$db->query("TRUNCATE TABLE nzbs");
 
 	echo "Resetting groups.\n";
-	$db->queryUpdate("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
+	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
 
 	$relids = $db->query(sprintf("SELECT id, guid FROM releases"));
 	if (count($relids) > 0)

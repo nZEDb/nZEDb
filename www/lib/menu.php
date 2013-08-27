@@ -46,7 +46,7 @@ class Menu
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->queryDelete(sprintf("DELETE FROM menu WHERE id = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM menu WHERE id = %d", $id));
 	}
 
 	public function add($menu)

@@ -77,7 +77,7 @@ class Import
 			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
-				$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 		else
 			return;
@@ -106,7 +106,7 @@ class Import
 		$importfailed = $isBlackListed = false;
 		$xml = @simplexml_load_string($article);
 		if (!$xml)
-			$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+			$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		else
 		{
 			$skipCheck = false;
@@ -199,14 +199,14 @@ class Import
 						{
 							chmod($path, 0777);
 							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
-							$db->queryDelete(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts on binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
-							$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+							$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts on binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
+							$db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();
 							echo "+";
 						}
 						else
 						{
-							$db->queryDelete(sprintf("DELETE FROM releases WHERE id = %d", $relID));
+							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relID));
 							$importfailed = true;
 							echo "-";
 						}
@@ -214,7 +214,7 @@ class Import
 				}
 			}
 			else
-				$db->queryDelete(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 	}
 }

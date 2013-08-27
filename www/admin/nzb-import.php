@@ -234,7 +234,7 @@ if (!empty($argc) || $page->isPostBack() )
 					}
 					else
 					{
-						$db->queryDelete(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+						$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
 						echo "Failed copying NZB, deleting release from DB.\n";
 						$importfailed = true;
 					}

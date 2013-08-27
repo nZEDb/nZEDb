@@ -369,7 +369,7 @@ class Releases
 			unlink($nzbpath);
 
 		// Delete from DB.
-		$db->queryDelete("DELETE releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull from releases LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id WHERE releases.id = ".$id);
+		$db->queryExec("DELETE releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull from releases LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id WHERE releases.id = ".$id);
 
 		// This deletes a file so not in the query.
 		$ri->delete($guid);
@@ -1413,13 +1413,13 @@ class Releases
 		$reccount = $delq->rowCount();
 
 		// Binaries/parts that somehow have no collection.
-		$db->queryDelete("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.id = parts.binaryid WHERE binaries.collectionid = 0 ".$where);
+		$db->queryExec("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.id = parts.binaryid WHERE binaries.collectionid = 0 ".$where);
 		// Parts that somehow have no binaries.
-		$db->queryDelete("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b) ".$where);
+		$db->queryExec("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b) ".$where);
 		// Binaries that somehow have no collection.
-		$db->queryDelete("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c) ".$where);
+		$db->queryExec("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c) ".$where);
 		// Collections that somehow have no binaries.
-		$db->queryDelete("DELETE FROM collections WHERE collections.id NOT IN ( SELECT binaries.collectionid FROM binaries) ".$where);
+		$db->queryExec("DELETE FROM collections WHERE collections.id NOT IN ( SELECT binaries.collectionid FROM binaries) ".$where);
 
 		// Releases past retention.
 		if($page->site->releaseretentiondays != 0)
@@ -1533,7 +1533,7 @@ class Releases
 			}
 		}
 
-		$db->queryDelete(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)", $page->site->partretentionhours));
+		$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)", $page->site->partretentionhours));
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
@@ -1669,13 +1669,13 @@ class Releases
 				echo "\n";
 			foreach ($cIDS as $cID)
 			{
-				$db->queryDelete(sprintf("DELETE FROM collections WHERE id = %d", $cID));
+				$db->queryExec(sprintf("DELETE FROM collections WHERE id = %d", $cID));
 				$delcount++;
 				if ($this->echooutput)
 					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
 			}
 			// Delete previous failed attempts.
-			$db->queryDelete('DELETE FROM collections WHERE collectionhash = "0"');
+			$db->queryExec('DELETE FROM collections WHERE collectionhash = "0"');
 
 			if ($this->hashcheck == 0)
 				$db->query("UPDATE site SET value = '1' WHERE setting = 'hashcheck'");

@@ -6,7 +6,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 if(isset($argv[1]) && $argv[1] == "true")
 {
 	$db = new DB();
-	$db->queryUpdate("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
+	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 	printf("Reseting all groups completed.\n");
 
 	$arr = array("parts", "partrepair", "binaries", "collections", "nzbs");

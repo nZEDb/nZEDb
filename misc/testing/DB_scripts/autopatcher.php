@@ -23,7 +23,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	if ( $running == "TRUE" )
 	{
-		$db->queryUpdate("UPDATE tmux SET value = 'FALSE' WHERE setting = 'RUNNING'");
+		$db->queryExec("UPDATE tmux SET value = 'FALSE' WHERE setting = 'RUNNING'");
 		$sleep = $delay;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
 		sleep($sleep);
@@ -51,7 +51,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	if ( $restart == "true" )
 	{
 		echo "Starting tmux scripts\n";
-		$db->queryUpdate("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+		$db->queryExec("update tmux set value = 'TRUE' where setting = 'RUNNING'");
 	}
 }
 else
