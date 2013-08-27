@@ -255,7 +255,10 @@ class Namefixer
 		}
 		// The release didn't match so set relnamestatus to 20 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false)
-			$db->queryExec("UPDATE releases SET relnamestatus = 20 WHERE id = ".$release['id']);
+		{
+			$db = new Db;
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['id']));
+		}
 	}
 
 	//  Look for a TV name.
