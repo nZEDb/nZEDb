@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This script attemps to clean release names using the NFO, file name and release name.
  * A good way to use this script is to use it in this order: php fixReleaseNames.php 3 true other yes
@@ -7,7 +6,6 @@
  * If you used the 4th argument yes, but you want to reset the status,
  * there is another script called resetRelnameStatus.php
  */
-
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");

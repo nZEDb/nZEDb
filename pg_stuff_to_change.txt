@@ -13,3 +13,7 @@ COMPRESS() and DECOMPRESS()
 Possible things to change:
 $row = $db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
 $airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
+
+
+Patch to remove releaseID from predb.
+Patch to remove relstatus from releases.

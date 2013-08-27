@@ -12,7 +12,7 @@ require_once(FS_ROOT."/../../../www/lib/site.php");
 
 if (!isset($argv[1]) && !isset($argv[2]))
 {
-	exit("Run fixReleaseNames.php first to attempt to fix release names.\n"
+	exit("Run fixReleaseNames.php first to attempt to fix release names. This will miss some releases if you have not set fixReleaseNames to set the release as checked.\n"
 		."To see an explanation of what this script does, type php removeCrapReleases.php false\n"
 		."If you are sure you want to run this script, type php removeCrapReleases.php true full\n"
 		."The second mandatory argument is the time in hours(ex: 12) to go back, or you can type full.\n"
@@ -83,7 +83,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Gibberish";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus > 1 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -93,7 +93,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Hashed";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus > 1 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}
@@ -103,7 +103,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	{
 		$type = "Short";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
+		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus > 1 and rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, $type);
 		return $delcount;
 	}

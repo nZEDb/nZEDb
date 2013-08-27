@@ -1,16 +1,10 @@
 <?php
 
-/* Testing PDO, which will allow us to use other databases than Mysql */
+/* Class for handling connection to SQL database, querying etc using PDO.
+ * Exceptions are caught and displayed to the user. */
 
 class DB
 {
-/* Need to see if we can replace this with relnamestatus since they seem to do the same thing */
-	// the element relstatus of table releases is used to hold the status of the release
-	// The variable is a bitwise AND of status
-	// List of processed constants - used in releases table. Constants need to be powers of 2: 1, 2, 4, 8, 16 etc...
-	const NFO_PROCESSED_NAMEFIXER     = 1;  // We have processed the release against its .nfo file in the namefixer
-	const PREDB_PROCESSED_NAMEFIXER   = 2;  // We have processed the release against a predb name
-
 	private static $initialized = false;
 	private static $pdo = null;
 
@@ -53,7 +47,7 @@ class DB
 		return $this->dbsystem;
 	}
 
-	// Returns a string, escaped with single quotes, false on failure.
+	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
 	public function escapeString($str)
 	{
 		if (is_null($str))
@@ -88,7 +82,7 @@ class DB
 		}
 	}
 
-	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count.
+	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	public function queryExec($query)
 	{
 		if ($query == "")
@@ -153,7 +147,7 @@ class DB
 		return ($rows) ? $rows[0] : $rows;
 	}
 
-	// Optimises/repairs tables on mysql. Vacuum / analyze on postgresql.
+	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	public function optimise()
 	{
 		$tablecnt = 0;
@@ -183,7 +177,7 @@ class DB
 		return $tablecnt;
 	}
 
-	// Query without returning an empty array like our function query().
+	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	public function queryDirect($query)
 	{
 		if ($query == "")
@@ -198,7 +192,7 @@ class DB
 		return $result;
 	}
 
-	// Prepares a statement, to run use exexute().
+	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{
 		try {
@@ -210,20 +204,19 @@ class DB
 		return $stat;
 	}
 
-	// Turns off autocommit until commit() is ran.
+	// Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	public function beginTransaction()
 	{
 		return DB::$pdo->beginTransaction();
 	}
 
-	// Commits a transaction.
+	// Commits a transaction. http://www.php.net/manual/en/pdo.commit.php
 	public function Commit()
 	{
 		return DB::$pdo->commit();
 	}
 
-/* Untested */
-	// Undo transcations.
+	// Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php
 	public function Rollback()
 	{
 		return DB::$pdo->rollBack();
@@ -272,17 +265,7 @@ class DB
 			return false;
 		}
 	}
-
-/* Untested ;Anything using this might need to be modified.
- * mysqli error returns a string, while this is an array, so we convert it to string
- * Retrieves only errors on the database handle : http://www.php.net/manual/en/pdo.errorinfo.php*/
-	public function Error()
-	{
-		$e = DB::$pdo->errorInfo();
-		return "SQL Error: ".$e[0]." ".$e[2];
-	}
-
-/*No replacements in PDO. Used in tmux monitor.php, possible solution here? http://terenceyim.wordpress.com/2009/01/09/adding-ping-function-to-pdo/
+/* See the above, Tmux possibly needs to be changed to work with the above.
 	// Checks whether the connection to the server is working. Optionally kills connection.
 	public function ping($kill=false)
 	{
@@ -304,7 +287,6 @@ class DB
 		DB::$mysqli->close();
 	}
 */
-
 
 }
 
