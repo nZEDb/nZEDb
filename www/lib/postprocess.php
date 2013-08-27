@@ -173,7 +173,7 @@ class PostProcess
 		elseif ($db->dbSystem() == "pgsql")
 			$t = "extract(epoch FROM postdate)";
 		$quer = $db->queryOneRow("SELECT groupid, categoryid, relnamestatus, searchname, ".$t." as postdate, id as releaseid  FROM releases WHERE id = {$relID}");
-		if ($quer["relnamestatus"] !== 1 && $quer["categoryid"] != Category::CAT_MISC)
+		if (!in_array($quer["relnamestatus"], array(0, 1, 6, 20)) && $quer["relnamestatus"] === 7 && $quer["categoryid"] != Category::CAT_MISC)
 			return false;
 
 		$nntp = new NNTP();
@@ -216,7 +216,7 @@ class PostProcess
 				$quer["textstring"] = $file["name"];
 				$namefixer->checkName($quer, 1, "PAR2, ", 1);
 				$stat = $db->queryOneRow("SELECT relnamestatus AS a FROM releases WHERE id = {$relID}");
-				if ($stat["a"] != 1)
+				if ($stat["a"] === 7)
 				{
 					$foundname = true;
 					break;

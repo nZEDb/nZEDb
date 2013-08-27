@@ -1,9 +1,6 @@
 <?php
-
-/*
- * This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
- * Type php resetSearchname.php to see detailed info.
- */
+/* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
+ * Type php resetSearchname.php to see detailed info. */
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
@@ -15,7 +12,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]) && $argv[1] == "full")
 {
 	$db = new DB();
-	$res = $db->query("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
+	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
@@ -26,8 +23,8 @@ if (isset($argv[1]) && $argv[1] == "full")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}
@@ -52,7 +49,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->query("SELECT ID, name, groupID FROM releases where relnamestatus in (0, 1)");
+	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus IN (0, 1, 20)");
 
 	if (count($res) > 0)
 	{
@@ -63,8 +60,8 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}
@@ -72,8 +69,8 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 
 		$releases = new Releases();
-		$releases->resetCategorize("WHERE relnamestatus != 2");
-		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus in (0, 1)", true);
+		$releases->resetCategorize("WHERE relnamestatus IN (0, 1, 20)");
+		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus IN (0, 1, 20)", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 
@@ -89,7 +86,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
 	$db = new DB();
-	$res = $db->query("SELECT ID, name, groupID FROM releases where relnamestatus != 3");
+	$res = $db->query("SELECT id, name, groupID FROM releases where relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
@@ -100,8 +97,8 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupID']);
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where ID = %d", $db->escapeString($newname), $row['ID']));
+			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
 		}

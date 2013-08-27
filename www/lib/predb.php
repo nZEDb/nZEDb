@@ -342,7 +342,7 @@ Class Predb
 	{
 		$db = new DB();
 		if($x = $db->queryOneRow(sprintf("SELECT id FROM predb WHERE title = %s", $db->escapeString($cleanerName))) !== false)
-			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 6, preid = %d WHERE id = %d", $x["id"], $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d", $x["id"], $releaseID));
 	}
 
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
@@ -367,7 +367,7 @@ Class Predb
 		{
 			foreach ($res as $row)
 			{
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 6 WHERE id = %d", $row["preid"], $row["releaseid"]));
+				$db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;
@@ -427,7 +427,7 @@ Class Predb
 				$te = " in the past 3 hours";
 			echo "Fixing search names".$te." using the predb md5.\n";
 		}
-		$res = $db->query("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE (r.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND r.relnamestatus = 1 AND r.categoryid = 7010 AND passwordstatus >= -1 ORDER BY rf.releaseid, rf.size DESC ".$tq);
+		$res = $db->query("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE (r.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND r.relnamestatus IN (0, 1, 20) AND r.categoryid = 7010 AND passwordstatus >= -1 ORDER BY rf.releaseid, rf.size DESC ".$tq);
 		if (count($res) > 0)
 		{
 			foreach ($res as $row)

@@ -797,7 +797,7 @@ echo "asin ".$set[1]."\n";
 			$uc = "UNCOMPRESS(releasenfo.nfo)";
 		else if ($this->db->dbSystem() == "pgsql")
 			$uc = "releasenfo.nfo";
-		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id in (%s) ORDER BY RAND()", $this->idarr));
+		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id in (%s) AND relnamestatus NOT IN (3, 7) ORDER BY RAND()", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0)
 		{
 			foreach($res as $row)

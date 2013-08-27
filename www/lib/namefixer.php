@@ -17,6 +17,7 @@ require_once(WWW_DIR."/lib/namecleaning.php");
  * 8  : Fixed with namefixer NFO.
  * 9  : Fixed with namefixer Files.
  * 10 : Fixed with namefixer preDB.
+ * 11 : Fixed with predb.php
  * 20 : The release was checked by namefixer but no name was found.
  */
 
@@ -256,7 +257,6 @@ class Namefixer
 		// The release didn't match so set relnamestatus to 20 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false)
 			$db->queryExec("UPDATE releases SET relnamestatus = 20 WHERE id = ".$release['id']);
-		
 	}
 
 	//  Look for a TV name.

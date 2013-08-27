@@ -27,7 +27,7 @@ function preName()
 			{
 				if($res1 = $db->queryOneRow(sprintf("select title from predb where md5 = %s", $db->escapeString($match[1]))))
 				{
-					$result = $db->queryExec(sprintf("update releases set dehashstatus = 1, relnamestatus = 6, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
+					$result = $db->queryExec(sprintf("update releases set dehashstatus = 1, relnamestatus = 5, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
 					if (count($result) >= 1)
 					{
 						echo "Renamed hashed release: ".$res1['title']."\n";

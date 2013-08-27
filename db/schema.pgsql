@@ -530,7 +530,6 @@ CREATE TABLE "releases" (
   "videostatus" smallint DEFAULT 0 NOT NULL,
   "audiostatus" smallint DEFAULT 0 NOT NULL,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
-  "relstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
   "nzb_guid" character varying(50)
 )
