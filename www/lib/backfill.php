@@ -356,8 +356,6 @@ class Backfill
 				$nntp->doQuit();
 				$nntp->doConnectNC();
 				$nntp->selectGroup($group);
-				// Try to get different article.
-				$post = $post - 10;
 				$msgs = $nntp->getOverview($post."-".$post,true,false);
 				if(PEAR::isError($msgs))
 				{
