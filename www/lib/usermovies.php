@@ -38,6 +38,6 @@ class UserMovies
 	{
 		$db = new DB();
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "NULL";
-		$db->queryUpdate(sprintf("UPDATE usermovies SET categoryid = %s WHERE userid = %d AND imdbid = %d", $catid, $uid, $imdbid));
+		$db->queryExec(sprintf("UPDATE usermovies SET categoryid = %s WHERE userid = %d AND imdbid = %d", $catid, $uid, $imdbid));
 	}
 }

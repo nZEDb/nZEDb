@@ -67,7 +67,7 @@ class Genres
 	public function update($id, $disabled)
 	{
 		$db = new DB();
-		return $db->queryUpdate(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
+		return $db->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
 	}
 
 	public function getDisabledIDs()

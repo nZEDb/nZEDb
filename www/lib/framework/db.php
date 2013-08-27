@@ -88,7 +88,8 @@ class DB
 		}
 	}
 
-	// Todo : replace queryDelete and queryUpdate with this.
+// Todo : replace queryDelete and queryUpdate with this.
+	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count.
 	public function queryExec($query)
 	{
 		if ($query == "")

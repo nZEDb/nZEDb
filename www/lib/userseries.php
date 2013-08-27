@@ -45,6 +45,6 @@ class UserSeries
 	{
 		$db = new DB();
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "NULL";
-		$db->queryUpdate(sprintf("UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d", $catid, $uid, $rageid));
+		$db->queryExec(sprintf("UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d", $catid, $uid, $rageid));
 	}
 }

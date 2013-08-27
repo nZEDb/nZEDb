@@ -68,7 +68,7 @@ class TvRage
 		if ($imgbytes != "")
 			$imgbytes = sprintf(", imgdata = %s", $db->escapeString($imgbytes));
 
-		$db->queryUpdate(sprintf("UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s where id = %d", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+		$db->queryExec(sprintf("UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s where id = %d", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
 	}
 
 	public function delete($id)
@@ -207,7 +207,7 @@ class TvRage
 							{
 								if ($prev_ep == "" && $arr['nextinfo'] != '' && $epInfo['next']['day_time'] > strtotime($arr["nextdate"]) && $db->unixtime_date($arr["nextdate"]) < $yesterday)
 								{
-									$db->queryUpdate(sprintf("UPDATE tvrage SET prevdate = nextdate, previnfo = nextinfo WHERE id = %d", $arr['id']));
+									$db->queryExec(sprintf("UPDATE tvrage SET prevdate = nextdate, previnfo = nextinfo WHERE id = %d", $arr['id']));
 									$prev_ep = "SWAPPED with: ".$arr['nextInfo']." - ".date("r", strtotime($arr["nextdate"]));
 								}
 								$next_ep = $epInfo['next']['episode'].', "'.$epInfo['next']['title'].'"';
@@ -231,7 +231,7 @@ class TvRage
 							{
 								$sql = join(", ", $query);
 								$sql = sprintf("UPDATE tvrage SET {$sql} WHERE id = %d", $arr['id']);
-								$db->queryUpdate($sql);
+								$db->queryExec($sql);
 							}
 						}
 					}
@@ -335,7 +335,7 @@ class TvRage
 
 		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "null";
 
-		$db->queryUpdate(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate=%s WHERE id = %d",
+		$db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate=%s WHERE id = %d",
 					$db->escapeString($show['seriesfull']), $db->escapeString($show['season']), $db->escapeString($show['episode']), $tvairdate, $relid));
 	}
 
@@ -350,10 +350,10 @@ class TvRage
 			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
 			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
 
-			$db->queryUpdate(sprintf("UPDATE releases set tvtitle = %s, tvairdate = %s, rageid = %d where id = %d", $db->escapeString(trim($tvtitle)), $db->escapeString($tvairdate), $tvrShow['showid'], $relid));
+			$db->queryExec(sprintf("UPDATE releases set tvtitle = %s, tvairdate = %s, rageid = %d where id = %d", $db->escapeString(trim($tvtitle)), $db->escapeString($tvairdate), $tvrShow['showid'], $relid));
 		}
 		else
-			$db->queryUpdate(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $tvrShow['showid'], $relid));
+			$db->queryExec(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $tvrShow['showid'], $relid));
 
 		$genre = '';
 		if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres']))
@@ -398,10 +398,10 @@ class TvRage
 		{
 			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
 			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
-			$db->queryUpdate(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)),  $db->escapeString($tvairdate), $traktArray['show']['tvrage_id'], $relid));
+			$db->queryExec(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)),  $db->escapeString($tvairdate), $traktArray['show']['tvrage_id'], $relid));
 		}
 		else
-			$db->queryUpdate(sprintf("UPDATE releases SET rageid = %d where id = %d", $traktArray['show']['tvrage_id'], $relid));
+			$db->queryExec(sprintf("UPDATE releases SET rageid = %d where id = %d", $traktArray['show']['tvrage_id'], $relid));
 
 		$genre = '';
 		if (isset($traktArray['show']['genres']) && is_array($traktArray['show']['genres']) && !empty($traktArray['show']['genres']))
@@ -528,18 +528,18 @@ class TvRage
 								$tvtitle = $db->escapeString($epinfo['title']);
 						}
 					}
-					$db->queryUpdate(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)), $db->escapeString($tvairdate), $id, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)), $db->escapeString($tvairdate), $id, $arr["id"]));
 				}
 				else
 				{
 					// cant find rageid, so set rageid to n/a
-					$db->queryUpdate(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
 				}
 			}
 			else
 			{
 				// not a tv episode, so set rageid to n/a
-				$db->queryUpdate(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
+				$db->queryExec(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
 			}
 			$ret++;
 		}

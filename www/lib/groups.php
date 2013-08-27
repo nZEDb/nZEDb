@@ -82,7 +82,7 @@ class Groups
 	public function disableForPost($name)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $db->escapeString($name)));
+		$db->queryExec(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $db->escapeString($name)));
 	}
 
 	public function getCount($groupname="")
@@ -202,13 +202,13 @@ class Groups
 	public function reset($id)
 	{
 		$db = new DB();
-		return $db->queryUpdate(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
+		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
 	}
 
 	public function resetall()
 	{
 		$db = new DB();
-		return $db->queryUpdate("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL, active = 0");
+		return $db->queryExec("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL, active = 0");
 	}
 
 	public function purge($id)
@@ -259,7 +259,7 @@ class Groups
 		else
 			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
 
-		return $db->queryUpdate(sprintf("UPDATE groups SET name = %s, description = %s, backfill_target = %s , active = %d, backfill = %d, minfilestoformrelease = %s, minsizetoformrelease = %s where id = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));
+		return $db->queryExec(sprintf("UPDATE groups SET name = %s, description = %s, backfill_target = %s , active = %d, backfill = %d, minfilestoformrelease = %s, minsizetoformrelease = %s where id = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));
 	}
 
 	//
@@ -291,7 +291,7 @@ class Groups
 					if($res)
 					{
 
-						$db->queryUpdate(sprintf("UPDATE groups SET active = %d where id = %d", $active, $res["id"]));
+						$db->queryExec(sprintf("UPDATE groups SET active = %d where id = %d", $active, $res["id"]));
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Updated');
 					}
 					else
@@ -309,7 +309,7 @@ class Groups
 	public function updateGroupStatus($id, $status = 0)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
+		$db->queryExec(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
 		$status = ($status == 0) ? 'deactivated' : 'activated';
 		return "Group $id has been $status.";
 	}
@@ -317,7 +317,7 @@ class Groups
 	public function updateBackfillStatus($id, $status = 0)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
+		$db->queryExec(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
 		$status = ($status == 0) ? 'deactivated' : 'activated';
 		return "Group $id has been $status.";
 	}

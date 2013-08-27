@@ -135,7 +135,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
+			$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -149,7 +149,7 @@ class Backfill
 		}
 		$nntp->doQuit();
 		// Set group's first postdate.
-		$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $groupArr['id']));
+		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo "Group processed in ".$timeGroup." seconds.".$n;
@@ -293,7 +293,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = now() WHERE id = %d", $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
+			$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = now() WHERE id = %d", $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -308,7 +308,7 @@ class Backfill
 		}
 		$nntp->doQuit();
 		// Set group's first postdate.
-		$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $groupArr['id']));
+		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo $data["group"]." processed in ".$timeGroup." seconds.\n";
@@ -514,7 +514,7 @@ class Backfill
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		// Let postdate handle the connection.
-		$db->queryUpdate(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($this->postdate(null,$first,false,$group)), $db->escapeString($first), $groupArr['id']));
+		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $db->from_unixtime($this->postdate(null,$first,false,$group)), $db->escapeString($first), $groupArr['id']));
 		echo "Backfill Safe Threaded on ".$group." completed.\n\n";
 	}
 }

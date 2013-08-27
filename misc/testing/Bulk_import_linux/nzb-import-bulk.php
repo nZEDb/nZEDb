@@ -8,8 +8,9 @@ require_once(WWW_DIR."lib/mysqlBulk.inc.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/site.php");
 
-
 $db = new DB();
+if($db->dbSystem() == "pgsql")
+	exit("This script is only for mysql currently.\n")
 $binaries = new Binaries();
 $page = new Page();
 $n = "\n";

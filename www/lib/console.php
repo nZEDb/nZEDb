@@ -230,7 +230,7 @@ class Console
 	{
 		$db = new DB();
 
-		$db->queryUpdate(sprintf("UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, releasedate= %s, esrb = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d", $db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($platform), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($esrb), $cover, $genreID, $id));
+		$db->queryExec(sprintf("UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, releasedate= %s, esrb = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d", $db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($platform), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($esrb), $cover, $genreID, $id));
 	}
 
 	public function updateConsoleInfo($gameInfo)
@@ -493,16 +493,16 @@ class Console
 						$gameId = $gameCheck["id"];
 
 					// Update release.
-					$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", $gameId, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", $gameId, $arr["id"]));
 
 				}
 				else
 				{
 					// Could not parse release title.
 					if($type == 1)
-						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -2, $arr["id"]));
+						$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -2, $arr["id"]));
 					if($type == 2)
-						$db->queryUpdate(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -3, $arr["id"]));
+						$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -3, $arr["id"]));
 				}
 				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);

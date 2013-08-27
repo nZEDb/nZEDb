@@ -146,8 +146,8 @@ class Nfo
 				$compress = "%s";
 				$nc = $db->escapeString(utf8_encode($nfo));
 			}
-			$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = ".$compress." WHERE releaseid = %d", $nc, $release["id"]));
-			$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
+			$db->queryExec(sprintf("UPDATE releasenfo SET nfo = ".$compress." WHERE releaseid = %d", $nc, $release["id"]));
+			$db->queryExec(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
 			if (!isset($release["completion"]))
 				$release["completion"] = 0;
 			if ($release["completion"] == 0)
@@ -209,8 +209,8 @@ class Nfo
 						$cp = "COMPRESS(%s)";
 					else if ($db->dbSystem() == "pgsql")
 						$cp = "%s";
-					$db->queryUpdate(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
-					$db->queryUpdate(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
 					$ret++;
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["id"], $db, $processImdb);
 

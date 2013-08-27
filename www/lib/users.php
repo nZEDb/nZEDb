@@ -186,7 +186,7 @@ class Users
 		if ($sabapikeytype !== false)
 			$sql[] = sprintf('sabapikeytype = %d', $sabapikeytype);
 
-		$db->queryUpdate(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
+		$db->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
 		return Users::SUCCESS;
 	}
@@ -194,21 +194,21 @@ class Users
 	public function updateRssKey($uid)
 	{
 		$db = new DB();
-		return $db->queryUpdate(sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d",
+		return $db->queryExec(sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d",
 			$db->escapeString(uniqid()), $uid));
 	}
 
 	public function updatePassResetGuid($id, $guid)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $db->escapeString($guid), $id));
+		$db->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $db->escapeString($guid), $id));
 		return Users::SUCCESS;
 	}
 
 	public function updatePassword($id, $password)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d", $db->escapeString($this->hashPassword($password)), $db->escapeString($db->uuid()), $id));
+		$db->queryExec(sprintf("UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d", $db->escapeString($this->hashPassword($password)), $db->escapeString($db->uuid()), $id));
 		return Users::SUCCESS;
 	}
 
@@ -233,7 +233,7 @@ class Users
 	public function incrementGrabs($id, $num=1)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE users SET grabs = grabs + %d WHERE id = %d ", $num, $id));
+		$db->queryExec(sprintf("UPDATE users SET grabs = grabs + %d WHERE id = %d ", $num, $id));
 	}
 
 	public function getById($id)
@@ -419,13 +419,13 @@ class Users
 		if ($host != '')
 			$hostSql = sprintf(', host = %s', $db->escapeString($host));
 
-		$db->queryUpdate(sprintf("UPDATE users SET lastlogin = NOW() %s WHERE id = %d ", $hostSql, $uid));
+		$db->queryExec(sprintf("UPDATE users SET lastlogin = NOW() %s WHERE id = %d ", $hostSql, $uid));
 	}
 
 	public function updateApiAccessed($uid)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d ", $uid));
+		$db->queryExec(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d ", $uid));
 	}
 
 	public function setCookies($uid)
@@ -580,7 +580,7 @@ class Users
 			return -1;
 
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["userid"]));
+		$db->queryExec(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["userid"]));
 		$this->deleteInvite($invitecode);
 		return $invite["userid"];
 	}
@@ -619,9 +619,9 @@ class Users
 	{
 		$db = new DB();
 		if ($isdefault == 1)
-			$db->queryUpdate("UPDATE userroles SET isdefault = 0");
+			$db->queryExec("UPDATE userroles SET isdefault = 0");
 
-		return $db->queryUpdate(sprintf("UPDATE userroles SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d WHERE id = %d", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
+		return $db->queryExec(sprintf("UPDATE userroles SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d WHERE id = %d", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
 	}
 
 	public function deleteRole($id)
@@ -635,7 +635,7 @@ class Users
 				$userids[] = $user['id'];
 
 			$defaultrole = $this->getDefaultRole();
-			$db->queryUpdate(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
+			$db->queryExec(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
 		}
 		return $db->queryDelete(sprintf("DELETE FROM userroles WHERE id = %d", $id));
 	}

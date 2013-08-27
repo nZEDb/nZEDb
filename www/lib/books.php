@@ -245,11 +245,11 @@ require_once(WWW_DIR."/lib/site.php");
 						$bookId = -2;
 
 					// Update release.
-					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", $bookId, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", $bookId, $arr["id"]));
 				}
 				// Could not parse release title.
 				else
-					$db->queryUpdate(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", -2, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", -2, $arr["id"]));
 				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);
 			}
@@ -266,14 +266,14 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			echo "Changing category to misc books: ".$releasename."\n";
 			$db = new DB();
-			$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
 			return false;
 		}
 		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 		{
 			echo "Changing category to magazines: ".$releasename."\n";
 			$db = new DB();
-			$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
 			return false;
 		}
 		else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))

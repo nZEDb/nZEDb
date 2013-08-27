@@ -144,7 +144,7 @@ class Category
 	public function update($id, $status, $desc, $disablepreview, $minsize)
 	{
 		$db = new DB();
-		return $db->queryUpdate(sprintf("UPDATE category SET disablepreview = %d, status = %d, description = %s, minsize = %d  WHERE id = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
+		return $db->queryExec(sprintf("UPDATE category SET disablepreview = %d, status = %d, description = %s, minsize = %d  WHERE id = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
 	}
 
 	public function getForMenu($excludedcats=array())

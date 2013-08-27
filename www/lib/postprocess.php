@@ -229,7 +229,7 @@ class PostProcess
 				$count = $relfiles;
 				if ($cnt !== false && $cnt["count"] > 0)
 					$count = $relfiles + $cnt["count"];
-				$db->queryUpdate(sprintf("UPDATE releases SET rarinnerfilecount = %d where id = %d", $count, $relID));
+				$db->queryExec(sprintf("UPDATE releases SET rarinnerfilecount = %d where id = %d", $count, $relID));
 			}
 			if ($foundname === true)
 				return true;
@@ -313,7 +313,7 @@ class PostProcess
 				$this->db->setAutoCommit(false);
 				$ticket = $this->db->queryOneRow("SELECT value  FROM site WHERE setting LIKE 'nextppticket'");
 				$ticket = $ticket["value"];
-				$upcnt = $this->db->queryUpdate(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'nextppticket' AND value = %d", $ticket + 1, $ticket));
+				$upcnt = $this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'nextppticket' AND value = %d", $ticket + 1, $ticket));
 				if (count($upcnt) == 1)
 				{
 					$ok = true;
@@ -512,7 +512,7 @@ class PostProcess
 				{
 					$this->debug(" skipping book flood");
 					if (substr($rel["categoryid"], 0, 1) == 8)
-						$this->db->queryUpdate(sprintf("UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d", $rel["id"]));
+						$this->db->queryExec(sprintf("UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d", $rel["id"]));
 					$flood = true;
 				}
 
@@ -671,7 +671,7 @@ class PostProcess
 											continue;
 										$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $this->tmpPath.$file, $ri->jpgSavePath, 650, 650);
 										if ($blnTookJPG !== false)
-											$this->db->queryUpdate(sprintf("UPDATE releases SET jpgstatus = %d WHERE id = %d", 1, $rel["id"]));
+											$this->db->queryExec(sprintf("UPDATE releases SET jpgstatus = %d WHERE id = %d", 1, $rel["id"]));
 
 									}
 									if ($processSample === true || $processVideo === true || $processMediainfo === true)
@@ -850,7 +850,7 @@ class PostProcess
 							{
 								$blnTookJPG = $ri->saveImage($rel["guid"].'_thumb', $this->tmpPath."samplepicture.jpg", $ri->jpgSavePath, 650, 650);
 								if ($blnTookJPG !== false)
-									$this->db->queryUpdate(sprintf("UPDATE releases SET jpgstatus = %d WHERE id = %d", 1, $rel["id"]));
+									$this->db->queryExec(sprintf("UPDATE releases SET jpgstatus = %d WHERE id = %d", 1, $rel["id"]));
 							}
 
 							foreach(glob($this->tmpPath.'samplepicture.jpg') as $v)
@@ -900,7 +900,7 @@ class PostProcess
 				else
 					$sql = sprintf("UPDATE releases SET passwordstatus = %s, rarinnerfilecount = %d %s %s %s %s WHERE id = %d", Releases::PASSWD_NONE, $size["count"], $isql, $vsql, $jsql, $hpsql, $rel["id"]);
 
-				$this->db->queryUpdate($sql);
+				$this->db->queryExec($sql);
 
 				// Erase all files and directory.
 				foreach(glob($this->tmpPath.'*') as $v)
@@ -917,7 +917,7 @@ class PostProcess
 				echo "\n";
 		}
 		if ($gui)
-			$this->db->queryUpdate(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'currentppticket1'", $ticket + 1));
+			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'currentppticket1'", $ticket + 1));
 
 		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}
@@ -1429,7 +1429,7 @@ class PostProcess
 												$newcat = Category::CAT_MUSIC_LOSSLESS;
 											else
 												$newcat = $category->determineCategory($newname, $rquer["groupid"]);
-											$this->db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+											$this->db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $this->db->escapeString($newname), $newcat, $releaseID));
 										}
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID,$xmlarray);
@@ -1460,7 +1460,7 @@ class PostProcess
 									if(@file_exists($this->audSavePath.$releaseguid.".ogg"))
 									{
 										chmod($this->audSavePath.$releaseguid.".ogg", 0764);
-										$this->db->queryUpdate(sprintf("UPDATE releases SET audiostatus = 1 WHERE id = %d", $releaseID));
+										$this->db->queryExec(sprintf("UPDATE releases SET audiostatus = 1 WHERE id = %d", $releaseID));
 										$audval = true;
 										if ($this->echooutput)
 											echo "A";
@@ -1583,7 +1583,7 @@ class PostProcess
 									if(@file_exists($ri->vidSavePath.$releaseguid.".ogv"))
 									{
 										chmod($ri->vidSavePath.$releaseguid.".ogv", 0764);
-										$this->db->queryUpdate(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s", $this->db->escapeString($releaseguid)));
+										$this->db->queryExec(sprintf("UPDATE releases SET videostatus = 1 WHERE guid = %s", $this->db->escapeString($releaseguid)));
 										$retval = true;
 										if ($this->echooutput)
 											echo "v";
@@ -1609,6 +1609,6 @@ class PostProcess
 
 	public function updateReleaseHasPreview($guid)
 	{
-		$this->db->queryUpdate(sprintf("UPDATE releases SET haspreview = 1 WHERE guid = %s", $this->db->escapeString($guid)));
+		$this->db->queryExec(sprintf("UPDATE releases SET haspreview = 1 WHERE guid = %s", $this->db->escapeString($guid)));
 	}
 }

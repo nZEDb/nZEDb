@@ -86,7 +86,7 @@ class ReleaseComments
 	public function updateReleaseCommentCount($relid)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE releases SET comments = (SELECT COUNT(id) from releasecomment WHERE releasecomment.releaseid = %d) WHERE releases.id = %d", $relid, $relid));
+		$db->queryExec(sprintf("UPDATE releases SET comments = (SELECT COUNT(id) from releasecomment WHERE releasecomment.releaseid = %d) WHERE releases.id = %d", $relid, $relid));
 	}
 
 	public function getCommentCountForUser($uid)

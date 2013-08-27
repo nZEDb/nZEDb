@@ -16,7 +16,7 @@ class Import
 		foreach ($relres as $relrow)
 		{
 			$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-			$db->queryUpdate(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
+			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
 		}
 	}
 
@@ -198,7 +198,7 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryUpdate(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
+							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
 							$db->queryDelete(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts on binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							$db->queryDelete(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();

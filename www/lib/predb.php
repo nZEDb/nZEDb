@@ -39,7 +39,7 @@ Class Predb
 			$newpdme = $this->retrievePredbme();
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if ($newnames == 0)
-				$db->queryUpdate(sprintf("UPDATE predb SET adddate = now() where id = %d", $newestrel["id"]));
+				$db->queryExec(sprintf("UPDATE predb SET adddate = now() where id = %d", $newestrel["id"]));
 		}
 		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
@@ -83,7 +83,7 @@ Class Predb
 									else
 										$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
-									$db->queryUpdate(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
+									$db->queryExec(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
 									$newnames++;
 								}
 							}
@@ -136,7 +136,7 @@ Class Predb
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-									$db->queryUpdate(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
+									$db->queryExec(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
 									$newnames++;
 								}
 							}
@@ -342,7 +342,7 @@ Class Predb
 	{
 		$db = new DB();
 		if($x = $db->queryOneRow(sprintf("SELECT id FROM predb WHERE title = %s", $db->escapeString($cleanerName))) !== false)
-			$db->queryUpdate(sprintf("UPDATE releases SET relnamestatus = 6, preid = %d WHERE id = %d", $x["id"], $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 6, preid = %d WHERE id = %d", $x["id"], $releaseID));
 	}
 
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
@@ -367,7 +367,7 @@ Class Predb
 		{
 			foreach ($res as $row)
 			{
-				$db->queryUpdate(sprintf("UPDATE releases SET preid = %d, relnamestatus = 6 WHERE id = %d", $row["preid"], $row["releaseid"]));
+				$db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 6 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;

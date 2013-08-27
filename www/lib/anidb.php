@@ -63,7 +63,7 @@ class AniDB
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
 	{
 		$db = new DB();
-		$db->queryUpdate(sprintf("UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d", $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
+		$db->queryExec(sprintf("UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d", $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
 	}
 
 	public function deleteTitle($anidbID)
@@ -199,7 +199,7 @@ class AniDB
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if(!$anidbID)
 				{
-					$db->queryUpdate(sprintf("UPDATE releases SET anidbid = %d, rageid = %d WHERE id = %d", -1, -2, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET anidbid = %d, rageid = %d WHERE id = %d", -1, -2, $arr["id"]));
 					continue;
 				}
 
@@ -246,7 +246,7 @@ class AniDB
 					if ($this->echooutput)
 						echo '- found '.$AniDBAPIArray['anidbid']."\n";
 
-					$db->queryUpdate(sprintf("UPDATE releases SET episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d", $db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releases SET episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d", $db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr["id"]));
 				}
 			}
 

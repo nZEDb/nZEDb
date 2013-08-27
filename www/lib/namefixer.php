@@ -177,10 +177,10 @@ class Namefixer
 						$status = 2;
 						if ($type == "PAR2, ")
 							$status = 7;
-						$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseid"]));
+						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseid"]));
 					}
 					else
-						$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
+						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
 				}
 			}
 		}
@@ -205,9 +205,9 @@ class Namefixer
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
+							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 						else
-							$db->queryUpdate(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
+							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 					}
 					if ($echooutput)
 					{
