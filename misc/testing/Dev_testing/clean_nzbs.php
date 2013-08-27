@@ -59,7 +59,8 @@ if (isset($argv[1]) && $argv[1] === "true")
 			$consoletools->overWrite("Checking Releases: ".$checked++." have an nzb, Running time: ".$time);
 		}
 	}
-	echo "\n";
+	if ($checked > 0)
+		echo "\n";
 }
 else
 	exit("This script removes all nzbs not found in the db.\nIf you are sure you want to run it, type php clean_nzbs.php true\n");
