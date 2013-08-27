@@ -17,3 +17,5 @@ $airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDAT
 
 Patch to remove releaseID from predb.
 Patch to remove relstatus from releases.
+
+Update tmux optimize.
