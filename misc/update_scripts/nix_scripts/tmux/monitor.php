@@ -59,12 +59,23 @@ $proc_work2 = "SELECT
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
+if ($db->dbSystem() == "mysql")
+{
+	$utd = "UNIX_TIMESTAMP(dateadded)";
+	$uta = "UNIX_TIMESTAMP(adddate)";
+}
+elseif ($db->dbSystem() == "pgsql")
+{
+	$utd = "extract(epoch FROM dateadded)";
+	$uta = "extract(epoch FROM adddate)";
+}
+
 $proc_tmux = "SELECT
-	( SELECT UNIX_TIMESTAMP(dateadded) FROM collections order by dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT UNIX_TIMESTAMP(adddate) FROM predb order by adddate DESC limit 1 ) AS newestpre,
+	( SELECT {$utd} FROM collections order by dateadded ASC limit 1 ) AS oldestcollection,
+	( SELECT {$uta} FROM predb order by adddate DESC limit 1 ) AS newestpre,
 	( SELECT name FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
-	( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
-	( SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
+	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
+	( SELECT {$utd} FROM nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
