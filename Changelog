@@ -1,3 +1,4 @@
+08272013 -> jonnyboy -> fixed clean_nzbs.php to remove nzbs and releases
 08252013 -> jonnyboy -> added regex to releaseCleaner that gets most predb style names
 						changed remove creap releases password to all negative search items and not remove releases that are applications/misc
 						added code to renumber content if new content ordinal is 1
