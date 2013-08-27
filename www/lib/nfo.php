@@ -213,7 +213,7 @@ class Nfo
 						$cp = "COMPRESS(%s)";
 					else if ($db->dbSystem() == "pgsql")
 						$cp = "%s";
-					$db->queryExec(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString($fetchedBinary), $arr["id"]));
+					$db->queryExec(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString(utf8_encode($fetchedBinary)), $arr["id"]));
 					$db->queryExec(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
 					$ret++;
 					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["id"], $db, $processImdb);
