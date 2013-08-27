@@ -39,6 +39,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 		}
 	}
 
+	if ($checked > 0)
+		echo "\n";
+
 	$timestart = TIME();
 	$checked = 0;
 	$res = $db->query('SELECT id, guid FROM releases');
