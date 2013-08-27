@@ -1,17 +1,12 @@
 <?php
-
-/*
- * This inserts the patches into MYSQL.
- */
+//This inserts the patches into MySQL and PostgreSQL.
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/site.php");
 
-//
-// Function from : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
-//
+// Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
 {
 	set_time_limit(0);
@@ -24,6 +19,7 @@ function SplitSQL($file, $delimiter = ';')
 		{
 			$query = array();
 			$db = new DB();
+			$dbsys = $db->dbSystem();
 
 			while (feof($file) === false)
 			{
@@ -33,54 +29,40 @@ function SplitSQL($file, $delimiter = ';')
 				{
 					$query = trim(implode('', $query));
 
-					if (preg_match('/UPDATE/i', $query))
+					if ($dbsys == "pgsql")
+						$query = str_replace(array("`", chr(96)), '', $query);
+					if (preg_match('/UPDATE|INSERT|DELETE/i', $query))
 					{
-						if ($db->queryUpdate($query) === false)
-							echo 'ERROR: ' . $query . "\n";
+						if ($db->queryExec($query) === false)
+							exit();
 						else
-							echo 'SUCCESS: ' . $query . "\n";
-					}
-					else if (preg_match('/DELETE/i', $query))
-					{
-						if ($db->queryDelete($query) === false)
-							echo 'ERROR: ' . $query . "\n";
-						else
-							echo 'SUCCESS: ' . $query . "\n";
-					}
-					else if (preg_match('/INSERT/i', $query))
-					{
-						if ($db->queryInsert($query) === false)
-							echo 'ERROR: ' . $query . "\n";
-						else
-							echo 'SUCCESS: ' . $query . "\n";
+							echo 'SUCCESS: '.$query."\n";
 					}
 					else
 					{
 						if ($db->query($query) === false)
-							echo 'ERROR: ' . $query . "\n";
+							exit();
 						else
-							echo 'SUCCESS: ' . $query . "\n";
+							echo 'SUCCESS: '.$query."\n";
 					}
 
 					while (ob_get_level() > 0)
 					{
 						ob_end_flush();
 					}
-
 					flush();
 				}
 
 				if (is_string($query) === true)
-				{
 					$query = array();
-				}
 			}
-
 			return fclose($file);
 		}
+		else
+			return false;
 	}
-
-	return false;
+	else
+		return false;
 }
 
 $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
@@ -114,7 +96,7 @@ if (isset($os) && $os == "unix")
 			$filepath = $patchpath.$patch;
 			$file = fopen($filepath, "r");
 			$patch = fread($file, filesize($filepath));
-			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
+			if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(\d{1,})\'? WHERE `?setting`? = \'sqlpatch\'/i', $patch, $patchnumber))
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{
@@ -155,7 +137,7 @@ else if (isset($os) && $os == "windows")
 			$filepath = $argv[1].$patch;
 			$file = fopen($filepath, "r");
 			$patch = fread($file, filesize($filepath));
-			if (preg_match('/UPDATE `site` set `value` = \'(\d{1,})\' where `setting` = \'sqlpatch\'/i', $patch, $patchnumber))
+			if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(\d{1,})\'? WHERE `?setting`? = \'sqlpatch\'/i', $patch, $patchnumber))
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{

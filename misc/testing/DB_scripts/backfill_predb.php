@@ -4,16 +4,13 @@ require_once(WWW_DIR."/lib/consoletools.php");
 require_once(WWW_DIR."/lib/predb.php");
 require_once(WWW_DIR."/lib/framework/db.php");
 
-/*
- * Downloads predb titles from github and stores them in the predb table.
- */
-
+// Downloads predb titles from github and stores them in the predb table.
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
 	$db = new DB();
 	$predb = new Predb();
 	$consoletools = new ConsoleTools();
-	$predbv = $db->queryOneRow("SELECT value as v from site where setting = 'predbversion'");
+	$predbv = $db->queryOneRow("SELECT value AS v FROM site WHERE setting = 'predbversion'");
 	if ($predbv["v"] == 142)
 		exit("You are at the maximum backfill.\n");
 	else if ($argv[1] == 0 || $argv[1] > 142)
@@ -65,16 +62,12 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 						if (file_exists($file))
 						{
 							chmod($file, 0777);
-							try {
-								$db->queryInsert(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
-							}
-							catch (PDOException $err) {
-								unlink($file);
-								exit($err."\n");
-							}
+							$ins = $db->queryInsert(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
 							unlink($file);
+							if ($ins === false)
+								exit();
 							$db->queryUpdate(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
-							$db->queryUpdate("UPDATE predb SET adddate = (now() - interval 1 day) WHERE (adddate > (now() - interval 2 hour) or adddate < (now() - interval 6 year))");
+							$db->queryUpdate("UPDATE predb SET adddate = (NOW() - INTERVAL 1 day) WHERE (adddate > (NOW() - INTERVAL 2 HOUR) OR adddate < (NOW() - INTERVAL 6 YEAR))");
 							$predb->parseTitles(2, 1, 2, 1, 1);
 							$predb->matchPredb();
 							$done++;

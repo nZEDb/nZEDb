@@ -1,14 +1,13 @@
 <?php
-
-/*
- * This script converts tables to myisam , innodb dynamic or innodb compressed, or tokudb. Run like this : php convert_mysql_tables.php dinnodb
- */
+//This script converts tables to myisam , innodb dynamic or innodb compressed, or tokudb. Run like this : php convert_mysql_tables.php dinnodb
 
 require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 
 $sql = "SHOW tables";
 $db = new DB();
+if($db->dbSystem() == "pgsql")
+	exit("Currently only for mysql.\n");
 
 if (isset($argv[1]) && $argv[1] == "myisam")
 { 
@@ -17,8 +16,7 @@ if (isset($argv[1]) && $argv[1] == "myisam")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$sql = "ALTER TABLE $tbl ENGINE=MYISAM";
-		$db->query($sql);
+		$db->query("ALTER TABLE $tbl ENGINE=MYISAM");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "dinnodb")
@@ -28,8 +26,7 @@ else if (isset($argv[1]) && $argv[1] == "dinnodb")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$sql = "ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC";
-		$db->query($sql);
+		$db->query("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "cinnodb")
@@ -39,8 +36,7 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$sql = "ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED";
-		$db->query($sql);
+		$db->query("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "tokudb")

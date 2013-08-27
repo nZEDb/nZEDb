@@ -2,17 +2,11 @@
 require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 
-//
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
-//
 
-function newname( $filename )
+function newname($filename)
 {
-    $getdate = gmDate("Ymd");
-	$path = dirname($filename);
-	$file = basename($filename,".gz");
-	$stamp = date ("Y_m_d_His", filemtime($filename));
-	rename($filename,$path."/".$file."_".$stamp.".gz");
+	rename($filename, dirname($filename)."/".basename($filename,".gz")."_".date("Y_m_d_His", filemtime($filename)).".gz");
 }
 
 $dbhost = DB_HOST;
@@ -162,7 +156,7 @@ else
 	."To restore collections, binaries, parts tables run: php mysqldump_tables.php test restore /path/where/saved\n\n"
 	."**Individal Files - OUTFILE/INFILE - No schema\n"
 	."To dump all tables, using OUTFILE run: php mysqldump_tables.php all outfile /path/to/save/to\n"
-	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m";
-	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n"
+	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m"
+	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n";
 }
 ?>

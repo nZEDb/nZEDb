@@ -1,4 +1,5 @@
 <?php
+// This script updates all releases with the guid from the nzb file.
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
@@ -8,15 +9,10 @@ require_once(FS_ROOT."/../../../www/lib/nzb.php");
 require_once(FS_ROOT."/../../../www/lib/site.php");
 require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
-
-//
-//	This script updates all releases with the guid from the nzb file.
-//
-
 if (isset($argv[1]))
 	create_guids($argv[1]);
 else
-	usage();
+	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\n");
 
 function create_guids($live)
 {
@@ -28,56 +24,56 @@ function create_guids($live)
 	$relcount = 0;
 
 	if ($live == "true")
-		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc"));
+		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
 	elseif ($live == "limited")
-		$relrecs = $db->query(sprintf("SELECT ID, guid FROM releases where nzb_guid is null and nzbstatus = 1 order by ID desc limit 10000"));
+		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
 
-	echo "\nUpdating ".sizeof($relrecs)." release guids\n";
-	$releases = new Releases();
-	$nzb = new NZB();
-	$reccnt = 0;
-	foreach ($relrecs as $relrec)
+	if ($relrecs > 0)
 	{
-		$reccnt++;
-		if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid'])))
+		echo "\nUpdating ".sizeof($relrecs)." release guids\n";
+		$releases = new Releases();
+		$nzb = new NZB();
+		$reccnt = 0;
+		foreach ($relrecs as $relrec)
 		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$nzbfile = simplexml_load_file($nzbpath);
-
-			$binary_names = array();
-			foreach($nzbfile->file as $file)
+			$reccnt++;
+			if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid'])))
 			{
-				$binary_names[] = $file["subject"];
-			}
-			if (count($binary_names) == 0)
-				continue;
+				$nzbpath = 'compress.zlib://'.$nzbpath;
+				$nzbfile = simplexml_load_file($nzbpath);
 
-			asort($binary_names);
-			$segment = "";
-			foreach($nzbfile->file as $file)
-			{
-				if ($file["subject"] == $binary_names[0])
+				$binary_names = array();
+				foreach($nzbfile->file as $file)
 				{
-					$segment = $file->segments->segment;
-					$nzb_guid = md5($segment);
+					$binary_names[] = $file["subject"];
+				}
+				if (count($binary_names) == 0)
+					continue;
 
-					$db->queryUpdate("UPDATE releases set nzb_guid = " . $db->escapestring($nzb_guid) . " WHERE ID = " . $relrec["ID"]);
-					$relcount++;
-					$consoletools->overWrite("Updating:".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
-					break;
+				asort($binary_names);
+				$segment = "";
+				foreach($nzbfile->file as $file)
+				{
+					if ($file["subject"] == $binary_names[0])
+					{
+						$segment = $file->segments->segment;
+						$nzb_guid = md5($segment);
+
+						$db->queryUpdate("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
+						$relcount++;
+						$consoletools->overWrite("Updating:".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+						break;
+					}
 				}
 			}
 		}
+
+		if ($relcount > 0)
+			echo "\n";
+		echo "Updated ".$relcount." release(s). This script ran for ";
+		echo $consoletools->convertTime(TIME() - $timestart);
+		exit(".\n");
 	}
-
-	if ($relcount > 0)
-		echo "\n";
-	echo "Updated ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);
-	echo ".\n";
-}
-
-function usage()
-{
-	exit("This script updates all releases with the guid from the nzb file.  To start the process run php populate_nzb_guid.php true\n");
+	else
+		exit("No releases are missing the guid.\n");
 }

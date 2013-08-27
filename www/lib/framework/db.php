@@ -88,6 +88,20 @@ class DB
 		}
 	}
 
+	// Todo : replace queryDelete and queryUpdate with this.
+	public function queryExec($query)
+	{
+		if ($query == "")
+			return false;
+
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
+	}
+
 	// For deleting rows. Returns row count.
 	public function queryDelete($query)
 	{

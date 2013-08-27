@@ -28,21 +28,23 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$db->queryUpdate("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
 
 	$relids = $db->query(sprintf("SELECT id, guid FROM releases"));
-	echo "Deleting ".sizeof($relids)." releases, NZB's, previews and samples.\n";
-	$releases = new Releases();
-
-	foreach ($relids as $relid)
+	if (count($relids) > 0)
 	{
-		$releases->fastDelete($relid['id'], $relid['guid'], $site);
-		$relcount++;
-		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
-	}
+		echo "Deleting ".count($relids)." releases, NZB's, previews and samples.\n";
+		$releases = new Releases();
 
+		foreach ($relids as $relid)
+		{
+			$releases->fastDelete($relid['id'], $relid['guid'], $site);
+			$relcount++;
+			$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+		}
+	}
 	if ($relcount > 0)
 		echo "\n";
 	echo "Deleted ".$relcount." release(s). This script ran for ";
 	echo $consoletools->convertTime(TIME() - $timestart);
-	echo ".\n";
+	exit(".\n");
 }
 else
 	exit("This script removes all releases, nzb files, truncates all article tables, resets groups.\nIf you are sure you want to run it, type php resetdb.php true\n");
