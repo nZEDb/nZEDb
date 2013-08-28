@@ -1056,6 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
+	('delaytime', '2'),
 	('sqlpatch','112');
 
 
