@@ -1,4 +1,5 @@
-08272013 -> jonnyboy -> changed nzbs.group to nzbs.groupname
+08272013 -> jonnyboy -> reverted nntplib.py to one that works with both 2.* and 3.*
+						changed nzbs.group to nzbs.groupname
 						fixed clean_nzbs.php to remove nzbs and releases
 08252013 -> jonnyboy -> added regex to releaseCleaner that gets most predb style names
 						changed remove creap releases password to all negative search items and not remove releases that are applications/misc
