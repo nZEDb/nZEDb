@@ -520,9 +520,11 @@ class Users
 		$category = new Category();
 		$data = $category->getByIds($data);
 		$ret = array();
-		foreach ($data as $d)
-			$ret[] = $d["title"];
-
+		if ($data !== false)
+		{
+			foreach ($data as $d)
+				$ret[] = $d["title"];
+		}
 		return $ret;
 	}
 

@@ -45,7 +45,7 @@ if ($json !== false)
 		$output.="<th style='width:80px;text-align:center;'><a href='?rall'>Resume all</a></th></tr></thead><tbody>";
 		foreach ($queue as $item)
 		{
-			if (strpos($item->{'filename'}, "fetch NZB") > 0)
+			if (strpos($item->{'filename'}, "fetch NZB") > 0) {}
 			else
 			{
 				$output.="<tr>";
