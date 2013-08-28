@@ -25,12 +25,12 @@ if (isset($argv[1]) && $argv[1] === "true")
 	{
 		if (is_file($filePath))
 		{
-			if (substr($filePath, -2) == "gz")
+			if (preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid))
 			{
 				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false)
 				{
-					$releases->fastDelete($res['id'], $res['guid'], $site);
+					$releases->fastDelete("NULL", $guid[1], $site);
 					echo "Deleted NZB: ".$filePath."\n";
 				}
 				$time = $consoletools->convertTime(TIME() - $timestart);

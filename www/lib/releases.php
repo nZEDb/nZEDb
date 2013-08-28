@@ -368,12 +368,12 @@ class Releases
 		if (file_exists($nzbpath))
 			unlink($nzbpath);
 
-		// Delete from DB.
-		if ($db->dbSystem() == "mysql")
-			$db->queryExec("DELETE releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull FROM releases LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id WHERE releases.id = ".$id);
-		else if ($db->dbSystem() == "pgsql")
+		if (isset($id))
 		{
-			if (isset($id))
+			// Delete from DB.
+			if ($db->dbSystem() == "mysql")
+				$db->queryExec("DELETE releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull FROM releases LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id WHERE releases.id = ".$id);
+			else if ($db->dbSystem() == "pgsql")
 			{
 				$db->queryExec("DELETE FROM releasenfo WHERE releaseid = ".$id);
 				$db->queryExec("DELETE FROM releasecomment WHERE releaseid = ".$id);
@@ -388,7 +388,8 @@ class Releases
 		}
 
 		// This deletes a file so not in the query.
-		$ri->delete($guid);
+		if (isset($guid))
+			$ri->delete($guid);
 	}
 
 	// For the site delete button.
