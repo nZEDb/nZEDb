@@ -1325,6 +1325,7 @@ class Releases
 			$resrel = $db->query( "SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND {$regexa} = 1 " . $where);
 			if (count($resrel) > 0)
 			{
+				$bFound = false;
 				foreach ($resrel as $rowrel)
 				{
 					// Try to get reqid.
@@ -1351,15 +1352,17 @@ class Releases
 						$db->queryExec("UPDATE releases SET reqidstatus = 1, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
 
 						if ($this->echooutput)
-							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle."\n";
+							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle;
 					}
 					else
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . $rowrel['id']);
+						$db->queryExec("UPDATE releases SET reqidstatus = -2, relnamestatus = 12 WHERE id = " . $rowrel['id']);
 						if ($this->echooutput)
 							echo ".";
 					}
 				}
+				if ($bFound)
+					echo "\n";
 			}
 
 			if ($this->echooutput)

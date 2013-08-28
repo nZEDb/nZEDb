@@ -18,6 +18,7 @@ require_once(WWW_DIR."/lib/namecleaning.php");
  * 9  : Fixed with namefixer Files.
  * 10 : Fixed with namefixer preDB.
  * 11 : Fixed with predb.php
+ * 12 : Fixed with requestID.
  * 20 : The release was checked by namefixer but no name was found.
  */
 
@@ -136,7 +137,7 @@ class Namefixer
 		{
 			$namecleaning = new nameCleaning();
 			$newname = $namecleaning->fixerCleaner($name);
-			if ($newname !== $release["searchname"])
+			if (strtolower($newname) != strtolower($release["searchname"]))
 			{
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
