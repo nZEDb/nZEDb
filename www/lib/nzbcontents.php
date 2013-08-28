@@ -41,7 +41,7 @@ Class NZBcontents
 			echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
 			return false;
 		}
-		else if(!$nzbfile = simplexml_load_file($nzbpath))
+		else if(!$nzbfile = @simplexml_load_file($nzbpath))
 		{
 			echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
 			return false;

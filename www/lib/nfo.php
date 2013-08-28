@@ -72,7 +72,7 @@ class Nfo
 		if (strlen($possibleNFO) < 45 * 1024 && strlen($possibleNFO) > 15)
 		{
 			// Check if it's a EXIF/JFIF picture.
-			if (@exif_imagetype($possibleNFO) == false && $this->check_JFIF($possibleNFO) == false)
+			if (@exif_imagetype($possibleNFO) == false)
 			{
 				// Check if it's a par2.
 				$par2info = new Par2Info();
@@ -90,9 +90,10 @@ class Nfo
 						if ($zip->error)
 						{
 							// Check if it's a SRR.
-							$srr = new SrrInfo;
-							$srr->setData($possibleNFO);
-							if ($srr->error)
+							// This gives false positive when checking against nfo
+							//$srr = new SrrInfo;
+							//$srr->setData($possibleNFO);
+							//if ($srr->error)
 							{
 								// Check if it's an SFV.
 								$sfv = new SfvInfo;
@@ -105,10 +106,12 @@ class Nfo
 				}
 			}
 		}
-		return $r;
+		else
+			return $r;
 	}
 
 	//	Check if the possible NFO is a JFIF.
+	// this fails when called from isNFO, $filename is not a file
 	function check_JFIF($filename)
 	{
 		$r = false;
