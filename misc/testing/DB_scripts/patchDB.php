@@ -79,7 +79,7 @@ if (isset($os) && $os == "unix")
 	if ($db->dbSystem() == "mysql")
 		$path = '/../../../db/mysql_patches';
 	else if ($db->dbSystem() == "pgsql")
-		$path = '/../../../db/pgsql_patches'
+		$path = '/../../../db/pgsql_patches';
 
 	// Open the patch folder.
 	if ($handle = @opendir(FS_ROOT.$path))

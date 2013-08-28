@@ -1056,7 +1056,7 @@ INSERT INTO site
 	('zippath',''),
 	('lookuppar2','0'),
 	('delaytime', '2'),
-	('sqlpatch','113');
+	('sqlpatch','114');
 
 
 DROP TABLE IF EXISTS logging;

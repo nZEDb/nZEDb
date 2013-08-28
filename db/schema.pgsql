@@ -1376,7 +1376,7 @@ INSERT INTO site
 	('zippath',''),
 	('lookuppar2','0'),
 	('delaytime','2'),
-	('sqlpatch','113');
+	('sqlpatch','114');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
