@@ -138,7 +138,10 @@ class Category
 	public function getByIds($ids)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT CONCAT(cp.title, ' > ',c.title) AS title FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.id IN (%s)", implode(',', $ids)));
+		if (count($ids) > 0)
+			return $db->query(sprintf("SELECT CONCAT(cp.title, ' > ',c.title) AS title FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.id IN (%s)", implode(',', $ids)));
+		else
+			return false;
 	}
 
 	public function update($id, $status, $desc, $disablepreview, $minsize)
