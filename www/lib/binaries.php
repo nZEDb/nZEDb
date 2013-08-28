@@ -131,7 +131,7 @@ class Binaries
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 			$newdate = $backfill->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
-				$first_record_postdate = newdate;
+				$first_record_postdate = $newdate;
 
 			$db->queryExec(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d", $db->escapeString($first), $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
