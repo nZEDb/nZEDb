@@ -61,7 +61,7 @@ class Groups
 	public function getByName($grp)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $db->escapeString($name)));
+		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $db->escapeString($grp)));
 	}
 
 	public function getByNameByID($id)
