@@ -67,6 +67,14 @@ if  ($page->isPostBack())
 	else
 		$pdos = $dbtype.':host='.$cfg->DB_HOST.$charset;
 
+
+
+// While we work on postgresql make it fail so people can't use it. If you are a dev comment our the 2 lines.
+if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } if (!$cfg->error) { /* this line */
+
+
+
+
 	$cfg->dbConnCheck = true;
 	try {
 		$pdo = new PDO($pdos, $cfg->DB_USER, $cfg->DB_PASSWORD);
@@ -76,6 +84,12 @@ if  ($page->isPostBack())
 		$cfg->error = true;
 		$cfg->dbConnCheck = false;
 	}
+
+
+
+
+} /* this line */
+
 
 	if (!$cfg->error && $dbtype == "mysql")
 	{

@@ -44,6 +44,7 @@
 			{if $cfg->error}
 			<div>
 				The following error(s) were encountered:<br />
+				{if $cfg->dbPG === false}<span class="error">&bull; PostgreSQL is currently not available for use, we are working on it.</span><br />{/if}
 				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database</span><br />{/if}
 				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database</span><br />{/if}
 				{if $cfg->pgNameCheck === false}<span class="error">&bull; Unable to determine if you have created the database for postgresql. See install.txt for instructions.</span><br />{/if}
