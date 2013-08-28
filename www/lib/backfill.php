@@ -357,7 +357,10 @@ class Backfill
 			}
 
 			if(!isset($msgs[0]['Date']) || $msgs[0]['Date']=="" || is_null($msgs[0]['Date']))
+			{
+				$post = $post+1;
 				$success = false;
+			}
 			else
 			{
 				$date = $msgs[0]['Date'];

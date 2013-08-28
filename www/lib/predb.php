@@ -66,8 +66,9 @@ Class Predb
 					{
 						if (preg_match('/<tr bgcolor=#[df]{6}>.+?<td>(?P<date>.+?)<\/td>(.+?right>(?P<size1>.+?)&nbsp;(?P<size2>.+?)<\/td.+?)?<td>(?P<category>.+?)<\/td.+?<a href=.+?(<a href="(?P<nfo>.+?)">nfo<\/a>.+)?<td>(?P<title>.+?)<\/td.+tr>/s', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title, source, id FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"])
+							$md5 = md5($matches2["title"]);
+							$oldname = $db->queryOneRow(sprintf("SELECT md5, source, id FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+							if ($oldname !== false && $oldname["md5"] == $md5)
 							{
 								if ($oldname["source"] == "womble")
 									continue;
@@ -99,7 +100,7 @@ Class Predb
 								else
 									$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
-								$db->queryExec(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $db->escapeString(md5($matches2["title"]))));
+								$db->queryExec(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -126,13 +127,12 @@ Class Predb
 					{
 						if (preg_match('/<title>(?P<title>.+?)<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title, source, id FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"])
+							$md5 = md5($matches2["title"]);
+							$oldname = $db->queryOneRow(sprintf("SELECT md5, source, id FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+							if ($oldname !== false && $oldname["md5"] == $md5)
 							{
 								if ($oldname["source"] == "womble")
-								{
 									continue;
-								}
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
@@ -144,7 +144,7 @@ Class Predb
 							{
 								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
 								$title = preg_replace("/  - omgwtfnzbs.org/", "", $matches2["title"]);
-								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($title), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $db->escapeString(md5($matches2["title"]))));
+								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($title), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -171,8 +171,9 @@ Class Predb
 					{
 						if (preg_match('/<tr bgcolor=".+?<td.+?">(?P<date>.+?)<\/td.+?<td.+?(<font.+?">(?P<category>.+?)<\/a.+?|">(?P<category1>NUKE)+?)?<\/td.+?<td.+?">(?P<title>.+?-)<a.+?<b>(?P<title2>.+?)<\/b>.+?<\/td.+?<td.+<td.+?(">(?P<size1>[\d.]+)<b>(?P<size2>.+?)<\/b>.+)?<\/tr>/s', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"].$matches2["title2"])
+							$md5 = md5($matches2["title"].$matches2["title2"]);
+							$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+							if ($oldname !== false && $oldname["md5"] == $md5)
 								continue;
 							else
 							{
@@ -188,7 +189,7 @@ Class Predb
 								else
 									$category = "NULL";
 
-								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"].$matches2["title2"]), $size, $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("zenet"), $db->escapeString(md5($matches2["title"].$matches2["title2"]))));
+								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"].$matches2["title2"]), $size, $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("zenet"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -215,8 +216,9 @@ Class Predb
 					{
 						if (!preg_match('/NUKED/', $m) && preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<title>.+?)<\/a>.+?(b>\[ (?P<size>.+?) \]<\/b)?/si', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"])
+							$md5 = md5($matches2["title"]);
+							$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+							if ($oldname !== false && $oldname["md5"] == $md5)
 								continue;
 							else
 							{
@@ -225,20 +227,21 @@ Class Predb
 								else
 									$size = $db->escapeString(round($matches2["size"]));
 
-								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
 						else if (preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<category1>.+?)<\/a.+">(?P<title>.+?)<\/a>/si', $m, $matches2))
 						{
-							$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-							if ($oldname["title"] == $matches2["title"])
+							$md5 = md5($matches2["title"]);
+							$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+							if ($oldname !== false && $oldname["md5"] == $md5)
 								continue;
 							else
 							{
 								$category = $db->escapeString($matches2["category"].", ".$matches2["category1"]);
 
-								$db->queryExec(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString(md5($matches2["title"]))));
+								$db->queryExec(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -267,8 +270,9 @@ Class Predb
 						{
 							if (preg_match('/timestamp">(?P<date>.+?)<\/span>.+?section">.+?">(?P<category>.+?)<\/a>.+?release">(?P<title>.+?)<\/span>(.+info">(?P<size>.+?) )?/s', $m, $matches2))
 							{
-								$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($matches2["title"])));
-								if ($oldname["title"] == $matches2["title"])
+								$md5 = md5($matches2["title"]);
+								$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+								if ($oldname !== false && $oldname["md5"] == $md5)
 									continue;
 								else
 								{
@@ -277,7 +281,7 @@ Class Predb
 									else
 										$size = $db->escapeString($matches2["size"]);
 
-									$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("orlydb"), $db->escapeString(md5($matches2["title"]))));
+									$db->queryExec(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("orlydb"), $db->escapeString($md5)));
 									$newnames++;
 								}
 							}
@@ -298,12 +302,13 @@ Class Predb
 		{
 			foreach ($releases->channel->item as $release)
 			{
-				$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($release->title)));
-				if ($oldname["title"] == $release->title)
+				$md5 = $release->title;
+				$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+				if ($oldname !== false && $oldname["md5"] == $md5)
 					continue;
 				else
 				{
-					$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)", $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString("srrdb"), $db->escapeString(md5($release->title))));
+					$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)", $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString("srrdb"), $db->escapeString($md5)));
 					$newnames++;
 				}
 			}
@@ -323,12 +328,13 @@ Class Predb
 			{
 				foreach ($releases->channel->item as $release)
 				{
-					$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($release->title)));
-					if ($oldname["title"] == $release->title)
+					$md5 = $release->title;
+					$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+					if ($oldname !== false && $oldname["md5"] == $md5)
 						continue;
 					else
 					{
-						$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString(md5($release->title))));
+						$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString($md5)));
 						$newnames++;
 					}
 				}
