@@ -640,7 +640,7 @@ class Releases
 			$episode = sprintf(" AND releases.episode LIKE %s", $db->escapeString('%'.$episode.'%'));
 		}
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
