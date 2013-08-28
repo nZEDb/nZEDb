@@ -377,7 +377,6 @@ class Backfill
 
 		if ($success === false)
 		{
-			echo "\nError: $group failed to get Date from NNTP server.\n";
 			// Use now - 365 days.
 			$date = TIME() - 31536000;
 			if ($old === true)
