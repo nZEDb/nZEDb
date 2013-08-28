@@ -728,7 +728,7 @@
 	<td><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill.</div>
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
 	</td>
 </tr>
 

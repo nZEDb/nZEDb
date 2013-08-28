@@ -1056,7 +1056,7 @@ INSERT INTO `site`
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','110');
+	('sqlpatch','112');
 
 
 DROP TABLE IF EXISTS `logging`;
@@ -1383,7 +1383,7 @@ INSERT INTO `tmux` (`setting`, `value`) values ('DEFRAG_CACHE','900'),
 DROP TABLE IF EXISTS `nzbs`;
 CREATE TABLE `nzbs` (
   `message_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `groupname` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `article-number` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `subject` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `collectionhash` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
