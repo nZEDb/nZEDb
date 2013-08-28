@@ -93,7 +93,10 @@ if (isset($os) && $os == "unix")
 	else
 		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
 
-	$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/patches/', FS_ROOT);
+	if ($db->dbSystem() == "mysql")
+		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', FS_ROOT);
+	else if ($db->dbSystem() == "pgsql")
+		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', FS_ROOT);
 	sort($patches);
 	foreach($patches as $patch)
 	{
