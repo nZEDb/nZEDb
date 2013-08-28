@@ -1,6 +1,5 @@
 Things to make compatible in queries:
 ON DUPLICATE
-REGEXP
 Delete table1, table2 from 
 
 Possible things to change:

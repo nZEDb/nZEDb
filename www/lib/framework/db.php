@@ -23,7 +23,7 @@ class DB
 				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			if ($this->dbsystem == 'mysql')
-				$pdos .= ';charset=utf-8';
+				$pdos .= ';charset=utf8';
 
 			try {
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
