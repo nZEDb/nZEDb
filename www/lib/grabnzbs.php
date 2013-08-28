@@ -58,15 +58,15 @@ class Import
 				$arr[] = $nzb['message_id'];
 			}
 		}
-		if($nzb && array_key_exists('group', $nzb))
+		if($nzb && array_key_exists('groupname', $nzb))
 		{
 			$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
-			$article = $nntp->getArticles($nzb['group'], $arr);
+			$article = $nntp->getArticles($nzb['groupname'], $arr);
 			if ($article === false || PEAR::isError($article))
 			{
 				$nntp->doQuit();
 				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
-				$article = $nntp->getArticles($nzb['group'], $arr);
+				$article = $nntp->getArticles($nzb['groupname'], $arr);
 				if ($article === false || PEAR::isError($article))
 				{
 					$nntp->doQuit();
@@ -77,7 +77,7 @@ class Import
 			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
-				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+				$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash))); 
 		}
 		else
 			return;

@@ -199,7 +199,7 @@ class PostProcess
 			return false;
 
 		$files = $par2info->getFileList();
-		if (count($files) > 0)
+		if ($files !== false && count($files) > 0)
 		{
 			$namefixer = new Namefixer($this->echooutput);
 			$rf = new ReleaseFiles();

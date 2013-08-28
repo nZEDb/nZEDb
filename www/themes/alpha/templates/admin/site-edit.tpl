@@ -159,7 +159,7 @@
 	<td><label for="catwebdl">Categorize WEB-DL:</label></td>
 	<td>
 		{html_radios id="catwebdl" name='catwebdl' values=$yesno_ids output=$yesno_names selected=$fsite->catwebdl separator='<br />'}
-		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.</div>
+		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br />This will also make them inaccessible to Sickbeard and possibly Couchpotato.</div>
 	</td>
 </tr>
 
@@ -728,7 +728,7 @@
 	<td><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill.</div>
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
 	</td>
 </tr>
 

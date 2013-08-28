@@ -186,7 +186,7 @@ class Nntp extends Net_NNTP_Client
 
 		if (PEAR::isError($summary))
 		{
-			echo $summary->getMessage();
+			//echo $summary->getMessage();
 			return false;
 		}
 
@@ -237,7 +237,7 @@ class Nntp extends Net_NNTP_Client
 
 		if (PEAR::isError($summary))
 		{
-			echo $summary->getMessage();
+			//echo $summary->getMessage();
 			return false;
 		}
 

@@ -2,6 +2,9 @@ Things to make compatible in queries:
 ON DUPLICATE
 Delete table1, table2 from 
 
+Delete query in grabnzbs line 80ish.
+
+
 Possible things to change:
 $row = $db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
 $airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
