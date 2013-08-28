@@ -30,7 +30,7 @@ con.autocommit(True)
 cur = con.cursor()
 
 cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus in (0, 1, 20) AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-cur.execute("SELECT r.ID, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus in (0, 1, 20) AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
+cur.execute("SELECT r.ID, r.name, g.name groupname FROM releases r LEFT JOIN groups g ON r.groupID = g.ID WHERE relnamestatus in (0, 1, 20) AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
 datas = cur.fetchall()
 
 if not datas:

@@ -1322,7 +1322,7 @@ class Releases
 			$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->query( "SELECT r.id, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND {$regexa} = 1 " . $where);
+			$resrel = $db->query( "SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND {$regexa} = 1 " . $where);
 			if (count($resrel) > 0)
 			{
 				foreach ($resrel as $rowrel)
@@ -1337,7 +1337,7 @@ class Releases
 						$requestID = (int) $requestIDtmp[0];
 						if ($requestID != 0)
 						{
-							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupName']);
+							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
 							if ($newTitle != false && $newTitle != "")
 							{
 								$bFound = true;
