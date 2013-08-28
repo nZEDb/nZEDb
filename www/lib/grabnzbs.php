@@ -61,30 +61,26 @@ class Import
 				$arr[] = $nzb['message_id'];
 			}
 		}
-		//var_dump($nzb);
-		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 		if($nzb && array_key_exists('group', $nzb))
 		{
+			$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 			$article = $nntp->getArticles($nzb['group'], $arr);
-			if (PEAR::isError($article))
+			if ($article === false || PEAR::isError($article))
 			{
-				echo $n.$n."NNTP Returned error ".$article->code.": ".$article->message.$n.$n;
 				$nntp->doQuit();
 				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
-				$nntp->selectGroup($groupArr['name']);
-				$data = $nntp->selectGroup($groupArr['name']);
 				$article = $nntp->getArticles($nzb['group'], $arr);
-				if (PEAR::isError($article))
+				if ($article === false || PEAR::isError($article))
 				{
-					echo $n.$n."Error {$data->code}: {$data->message}".$n;
-					return;
+					$nntp->doQuit();
+					$article = false;
 				}
 			}
-			if($article)
+			$nntp->doQuit();
+			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
 				$db->queryDirect(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
-			$nntp->doQuit();
 		}
 		else
 			return;

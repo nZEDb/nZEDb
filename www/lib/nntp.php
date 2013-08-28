@@ -381,7 +381,8 @@ class Nntp extends Net_NNTP_Client
 					}
 					else
 					{
-						echo "\n";
+						if ($totalbytesreceived > 10240)
+							echo "\n";
 						$completed = true;
 					}
 				}
@@ -428,5 +429,25 @@ class Nntp extends Net_NNTP_Client
 			return "\nError: unexpected fgets() fail.\n";
 		}
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
+	}
+
+	// If there is an error with selectGroup(), try to restart the connection, else show the error.
+	// Send a 3rd argument, false, for a connection with no compression.
+	public function dataError($nntp, $group, $comp=true)
+	{
+		$nntp->doQuit();
+		if ($comp === false)
+			$nntp->doConnectNC();
+		else
+			$nntp->doConnect();
+		$data = $nntp->selectGroup($group);
+		if (PEAR::isError($data))
+		{
+			echo "Error {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+			$nntp->doQuit();
+			return false;
+		}
+		else
+			return $data;
 	}
 }

@@ -519,6 +519,38 @@ jQuery(function ($) {
             }
         });
     });
+
+    // preinfo tooltip
+    $(".preinfo").each(function() {
+        var preID = $(this).attr('title');
+        $(this).qtip({
+            content: {
+              title: {
+                  text: 'PreDB info...'
+              },
+              text: 'loading...', // The text to use whilst the AJAX request is loading
+              ajax: {
+                 url: SERVERROOT + 'ajax_preinfo', // URL to the local file
+                 type: 'GET', // POST or GET
+                 data: { id: preID }, // Data to pass along with your request
+                 success: function(data, status) {
+                    this.set('content.text', data);
+                 }
+              }
+            },
+            style: {
+                classes: 'qtip-dark qtip-shadow qtip-rounded',
+                width: { max: 500 },
+                tip: { // Now an object instead of a string
+                    corner: 'topLeft', // We declare our corner within the object using the corner sub-option
+                    size: {
+                        x: 8, // Be careful that the x and y values refer to coordinates on screen, not height or width.
+                        y : 8 // Depending on which corner your tooltip is at, x and y could mean either height or width!
+                    }
+                }
+            }
+        });
+    });
 });
 
 

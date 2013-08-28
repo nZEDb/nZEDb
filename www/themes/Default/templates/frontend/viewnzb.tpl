@@ -313,6 +313,30 @@
 	</tr>
 	{/if}
 
+	{if $pre|@count > 0}
+		<tr>
+			<th>PreDB:</th>
+			<td style="padding:0;">
+				<table style="width:100%;" class="innerdata highlight">
+					<tr>
+						<th>Title</th>
+						<th class="mid">Date</th>
+						<th class="mid">Source</th>
+						<th class="mid">Size</th>
+					</tr>
+					{foreach from=$pre item=pd}
+						<tr>
+							<td>{$pd.title}</td>
+							<td class="mid">{$pd.predate|date_format}</td>
+							<td class="mid">{$pd.source}</td>
+							{if isset($pd.size)}{if $pd.size > 0}<td class="right">{$pd.size}</td>{/if}{/if}
+						</tr>
+					{/foreach}
+				</table>
+			</td>
+		</tr>
+	{/if}
+
 	{if $site->checkpasswordedrar > 0}
 	<tr><th>Password:</th>
 		<td>
@@ -325,8 +349,8 @@
 	<tr><th>Added:</th><td title="{$release.adddate}">{$release.adddate|date_format} ({$release.adddate|daysago})</td></tr>
 	<tr id="guid{$release.guid}"><th>Download:</th><td>
 		<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
-		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 		<div class="icon icon_cart" title="Add to Cart"></div>
+		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
 	</td></tr>
 
 	{if $similars|@count > 1}

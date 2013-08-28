@@ -45,7 +45,19 @@ REQUIREMENTS
 		pip-3.2 install cymysql
 		-or-
 		pip-3.3 install cymysql
-		
+
+	APC
+		sudo apt-get install php-apc
+		sudo service apache2 restart
+		sudo cp /usr/share/doc/php-apc/apc.php /var/www/nZEDb/www/admin
+		Now you can go to localhost/admin/apc.php in your browser to view apc stats.
+
+	Memcache
+		sudo apt-get install memcached php5-memcache
+		sudo nano /etc/php5/apache2/php.ini    -> add    extension=memcache.so    in the dynamic extensions section
+		sudo service apache2 restart
+		sudo nano /var/www/nZEDb/www/config.php    -> change MEMCACHE_ENABLED to true
+
 INSTALLATION
 	there is an installer in \install\ try it first by creating your website,
 	copying the application files there, and browsing to http://yournewznabserver/install.

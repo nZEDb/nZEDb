@@ -19,7 +19,7 @@ if (command_exist("php5"))
 else
 	$PHP = "php";
 
-if(isset($argv[1]) && $argv[1] == "true")
+if( isset($argv[1]) )
 {
 	$tmux = new Tmux();
 	$running = $tmux->get()->RUNNING;
@@ -27,7 +27,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	$patch = $tmux->get()->PATCHDB;
 	$restart = "false";
 
-	if ( $running == "TRUE" )
+	if ( $running == "TRUE" && $argv[1] == "true" )
 	{
 		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
 		$sleep = $delay;
@@ -73,7 +73,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 		else
 			echo $tablecnt." tables Optimized\n";
 	}
-	if ( $restart == "true" )
+	if ( $restart == "true"  && $argv[1] == "true" )
 	{
 		echo "Starting tmux scripts\n";
 		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
@@ -81,5 +81,5 @@ if(isset($argv[1]) && $argv[1] == "true")
 }
 else
 {
-	exit("If you have set the settings in adin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n");
+	exit("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n\n");
 }

@@ -83,6 +83,8 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 <span class="label label-default seriesinfo" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
 {if $result.reID > 0}
 <span class="label label-default mediainfo" title="{$result.guid}">Media</span> {/if}
+{if $result.preID > 0}
+<span class="label label-default preinfo rndbtn" title="{$result.preID}">PreDB</span> {/if}
 {if $result.group_name != ""}
 <a class="label label-default" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a> {/if}
 </div>
@@ -132,8 +134,8 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 {/if}
 </form>
 {else}
-<div class="alert alert-link" style="vertical-align:middle;">
+<div class="alert alert-warning" style="vertical-align:middle;">
 <button type="button" class="close" data-dismiss="alert">&times;</button>
-<div class="pull-left" style="margin-right: 15px;"><h2 style="margin-top: 7px;"> ಠ_ಠ </h2></div><p>There doesn't seem to be any releases found.</p>
+<strong> ಠ_ಠ </strong>There doesn't seem to be any releases found. 
 </div>
 {/if}
