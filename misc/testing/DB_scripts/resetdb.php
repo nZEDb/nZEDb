@@ -17,12 +17,12 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$relcount = 0;
 
 	echo "Truncating tables.\n";
-	$db->query("TRUNCATE TABLE collections");
-	$db->query("TRUNCATE TABLE binaries");
-	$db->query("TRUNCATE TABLE parts");
-	$db->query("TRUNCATE TABLE partrepair");
-	$db->query("TRUNCATE TABLE releasenfo");
-	$db->query("TRUNCATE TABLE nzbs");
+	$db->queryExec("TRUNCATE TABLE collections");
+	$db->queryExec("TRUNCATE TABLE binaries");
+	$db->queryExec("TRUNCATE TABLE parts");
+	$db->queryExec("TRUNCATE TABLE partrepair");
+	$db->queryExec("TRUNCATE TABLE releasenfo");
+	$db->queryExec("TRUNCATE TABLE nzbs");
 
 	echo "Resetting groups.\n";
 	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");

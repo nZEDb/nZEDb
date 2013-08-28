@@ -8,13 +8,13 @@ if (isset($argv[1]) && $argv[1] === "all")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->query("TRUNCATE TABLE consoleinfo");
-		$db->query("TRUNCATE TABLE movieinfo");
-        $db->query("TRUNCATE TABLE releasevideo");
-		$db->query("TRUNCATE TABLE musicinfo");
-		$db->query("TRUNCATE TABLE bookinfo");
-		$db->query("TRUNCATE TABLE releasenfo");
-		$db->query("TRUNCATE TABLE releaseextrafull");
+		$db->queryExec("TRUNCATE TABLE consoleinfo");
+		$db->queryExec("TRUNCATE TABLE movieinfo");
+        $db->queryExec("TRUNCATE TABLE releasevideo");
+		$db->queryExec("TRUNCATE TABLE musicinfo");
+		$db->queryExec("TRUNCATE TABLE bookinfo");
+		$db->queryExec("TRUNCATE TABLE releasenfo");
+		$db->queryExec("TRUNCATE TABLE releaseextrafull");
 		$affected = $db->queryExec("UPDATE RELEASES SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
 		echo $affected." releases reset.\n";
 	}
@@ -40,7 +40,7 @@ elseif (isset($argv[1]) && $argv[1] === "consoles")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-		$db->query("TRUNCATE TABLE consoleinfo");
+		$db->queryExec("TRUNCATE TABLE consoleinfo");
 	else
 		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
 
@@ -52,8 +52,8 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->query("TRUNCATE TABLE releasevideo");
-		$db->query("TRUNCATE TABLE movieinfo");
+		$db->queryExec("TRUNCATE TABLE releasevideo");
+		$db->queryExec("TRUNCATE TABLE movieinfo");
 	}
 	else
 		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
@@ -65,7 +65,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-		$db->query("TRUNCATE TABLE musicinfo");
+		$db->queryExec("TRUNCATE TABLE musicinfo");
 	else
 		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
 
@@ -96,7 +96,7 @@ elseif (isset($argv[1]) && $argv[1] === "books")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-		$db->query("TRUNCATE TABLE bookinfo");
+		$db->queryExec("TRUNCATE TABLE bookinfo");
 	else
 		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
 
@@ -107,7 +107,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-		$db->query("TRUNCATE TABLE releasenfo");
+		$db->queryExec("TRUNCATE TABLE releasenfo");
 	else
 		$where = " WHERE nfostatus != 1";
 

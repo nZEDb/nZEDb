@@ -90,7 +90,7 @@ class TvRage
 		if ($ragename != "")
 			$rsql .= sprintf("AND tvrage.releasetitle LIKE %s ", $db->escapeString("%".$ragename."%"));
 
-		return $db->query(sprintf(" SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC".$limit, $rsql));
+		return $db->query(sprintf("SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC".$limit, $rsql));
 	}
 
 	public function getCount($ragename="")
@@ -338,8 +338,7 @@ class TvRage
 
 		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "null";
 
-		$db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate=%s WHERE id = %d",
-					$db->escapeString($show['seriesfull']), $db->escapeString($show['season']), $db->escapeString($show['episode']), $tvairdate, $relid));
+		$db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $db->escapeString($show['seriesfull']), $db->escapeString($show['season']), $db->escapeString($show['episode']), $db->escapeString($tvairdate), $relid));
 	}
 
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)

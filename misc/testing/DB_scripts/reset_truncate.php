@@ -12,7 +12,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 	$arr = array("parts", "partrepair", "binaries", "collections", "nzbs");
 	foreach ($arr as &$value)
 	{
-		$rel = $db->query("TRUNCATE TABLE $value");
+		$rel = $db->queryExec("TRUNCATE TABLE $value");
 		if($rel !== false)
 			printf("Truncating $value completed.\n");
 	}
