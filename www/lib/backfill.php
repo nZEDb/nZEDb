@@ -327,6 +327,7 @@ class Backfill
 		}
 
 		$attempts=0;
+		$success = false;
 		do
 		{
 			$data = $nntp->selectGroup($group);
