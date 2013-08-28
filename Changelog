@@ -1,3 +1,4 @@
+08282013 -> jonnyboy -> patch rename column
 08272013 -> jonnyboy -> reverted nntplib.py to one that works with both 2.* and 3.*
                         changed nzbs.group to nzbs.groupname
                         fixed clean_nzbs.php to remove nzbs and releases
