@@ -37,7 +37,7 @@ if (isset($_GET["t"]))
 else
 	showApiError(200);
 
-$user = $uid = $apikey "";
+$user = $uid = $apikey = "";
 $catexclusions = array();
 // Page is accessible only by the apikey, or logged in users.
 if ($users->isLoggedIn())
