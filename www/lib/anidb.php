@@ -76,7 +76,11 @@ class AniDB
 	public function getanidbID($title)
 	{
 		$db = new DB();
-		$anidbID = $db->queryOneRow(sprintf("SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1", $db->escapeString('^'.$title.'$')));
+		if ($db->dbSystem() == "mysql")
+			$query = sprintf("SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1", $db->escapeString('^'.$title.'$'));
+		else if ($db->dbSystem() == "pgsql")
+			$query = sprintf("SELECT anidbid as anidbid FROM animetitles WHERE regexp_matches(title, %s) LIMIT 1", $db->escapeString('^'.$title.'$'));
+		$anidbID = $db->queryOneRow($query);
 		return $anidbID['anidbid'];
 	}
 
@@ -90,7 +94,10 @@ class AniDB
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			$rsql .= sprintf("AND anidb.title REGEXP %s", $db->escapeString('^'.$letter));
+			if ($db->dbSystem() == "mysql")
+				$rsql .= sprintf("AND anidb.title REGEXP %s", $db->escapeString('^'.$letter));
+			else if ($db->dbSystem() == "pgsql")
+				$rsql .= sprintf("AND regexp_matches(anidb.title, %s)", $db->escapeString('^'.$letter));
 		}
 
 		$tsql = '';

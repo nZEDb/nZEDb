@@ -1307,11 +1307,22 @@ class Releases
 			if ($this->echooutput)
 				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
+			if ($db->dbSystem() == "mysql")
+			{
+				$regex = "name REGEXP '^\\[[[:digit:]]+\\]'";
+				$regexa = "r.".$regex;
+			}
+			else if ($db->dbSystem() == "pgsql")
+			{
+				$regex = "regexp_matches(name, '^\\[[[:digit:]]+\\]')";
+				$regexa = "regexp_matches(r.name, '^\\[[[:digit:]]+\\]')";
+			}
+
 			// Mark records that don't have regex titles.
-			$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0 ".$where);
+			$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->query( "SELECT r.id, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 " . $where);
+			$resrel = $db->query( "SELECT r.id, r.name, g.name groupName FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND {$regexa} = 1 " . $where);
 			if (count($resrel) > 0)
 			{
 				foreach ($resrel as $rowrel)

@@ -124,7 +124,10 @@ class TvRage
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $db->escapeString('^'.$letter));
+			if ($db->dbSystem() == "mysql")
+				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $db->escapeString('^'.$letter));
+			else if ($db->dbSystem() == "pgsql")
+				$rsql .= sprintf("AND regexp_matches(tvrage.releasetitle, %s)", $db->escapeString('^'.$letter));
 		}
 		$tsql = '';
 		if ($ragename != '')

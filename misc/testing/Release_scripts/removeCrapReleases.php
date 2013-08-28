@@ -77,7 +77,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteGibberish($and)
 	{
 		$db = new DB();
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE searchname REGEXP '^[a-zA-Z0-9]{15,}$' AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		if ($db->dbSystem() == "mysql")
+			$regex = "searchname REGEXP '^[a-zA-Z0-9]{15,}$'";
+		else if ($db->dbSystem() == "pgsql")
+			$regex = "regexp_matches(searchname, '^[a-zA-Z0-9]{15,}$')";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, "Gibberish");
 		return $delcount;
 	}
@@ -86,7 +91,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteHashed($and)
 	{
 		$db = new DB();
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE searchname REGEXP '[a-zA-Z0-9]{25,}' AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		if ($db->dbSystem() == "mysql")
+			$regex = "searchname REGEXP '[a-zA-Z0-9]{25,}'";
+		else if ($db->dbSystem() == "pgsql")
+			$regex = "regexp_matches(searchname, '[a-zA-Z0-9]{25,}')";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, "Hashed";);
 		return $delcount;
 	}
@@ -95,7 +105,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteShort($and)
 	{
 		$db = new DB();
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE searchname REGEXP '^[a-zA-Z0-9]{0,5}$' AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		if ($db->dbSystem() == "mysql")
+			$regex = "searchname REGEXP '^[a-zA-Z0-9]{0,5}$'";
+		else if ($db->dbSystem() == "pgsql")
+			$regex = "regexp_matches(searchname, '^[a-zA-Z0-9]{0,5}$')";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
 		$delcount = deleteReleases($sql, "Short";);
 		return $delcount;
 	}
@@ -158,7 +173,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 	function deleteScr($and)
 	{
 		$db = new DB();
-		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE (rf.name REGEXP '\.scr$' OR r.name REGEXP '\.scr($| |\")')".$and);
+		if ($db->dbSystem() == "mysql")
+			$regex = "(rf.name REGEXP '\.scr$' OR r.name REGEXP '\.scr($| |\")')";
+		else if ($db->dbSystem() == "pgsql")
+			$regex = "(regexp_matches(rf.name, '\.scr$') OR regexp_matches(r.name, '\.scr($| |\")'))";
+
+		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regex}".$and);
 		$delcount = deleteReleases($sql, ".scr");
 		return $delcount;
 	}
@@ -173,6 +193,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 		{
 			foreach ($regexes as $regex)
 			{
+				if ($db->dbSystem() == "mysql")
+					$regex = "(rf.name REGEXP ".$db->escapeString($regex["regex"])." OR r.name REGEXP ".$db->escapeString($regex["regex"]).")";
+				else if ($db->dbSystem() == "pgsql")
+					$regex = "(regexp_matches(rf.name, ".$db->escapeString($regex["regex"]).") OR regexp_matches(r.name, ".$db->escapeString($regex["regex"])."))";
 				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE (rf.name REGEXP".$db->escapeString($regex["regex"])." OR r.name REGEXP".$db->escapeString($regex["regex"]).")".$and);
 				$delcount += deleteReleases($sql, "Blacklist");
 			}

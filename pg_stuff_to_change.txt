@@ -1,7 +1,6 @@
 Things to make compatible in queries:
 ON DUPLICATE
 REGEXP
-COMPRESS() and DECOMPRESS()
 Delete table1, table2 from 
 
 Possible things to change:
@@ -14,3 +13,5 @@ Patch to remove releaseID from predb.
 Patch to remove relstatus from releases.
 
 Update tmux optimize.
+
+Coalesce on the min / max etc files/size (stage 3 and 4.5) is wrong, it should be greatest/max.
