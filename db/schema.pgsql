@@ -1,6 +1,3 @@
-
--- MySQL 2 PostgreSQL dump
-
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -342,7 +339,7 @@ WITHOUT OIDS;
 DROP TABLE IF EXISTS "nzbs" CASCADE;
 CREATE TABLE "nzbs" (
   "message_id" character varying(255) DEFAULT ''::character varying NOT NULL,
-  "groups" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "groupname" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "article-number" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "subject" character varying(1000) DEFAULT '0'::character varying NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
@@ -1378,7 +1375,8 @@ INSERT INTO site
 	('logfile', '/var/www/nZEDb/failed-login.log'),
 	('zippath',''),
 	('lookuppar2','0'),
-	('sqlpatch','110');
+	('delaytime','2'),
+	('sqlpatch','112');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),

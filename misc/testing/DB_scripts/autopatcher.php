@@ -47,7 +47,7 @@ if(isset($argv[1]) && $argv[1] == "true")
 		$PHP = "php";
 
 	echo "Patching database - $dbname\n";
-	system("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
+	system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
 	if ( $restart == "true" )
 	{
 		echo "Starting tmux scripts\n";

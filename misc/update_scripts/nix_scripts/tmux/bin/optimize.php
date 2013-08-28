@@ -52,7 +52,7 @@ if( isset($argv[1]) )
 		}
 
 		echo "Patching database - $dbname\n";
-		exec("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
+		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
 	}
 
 	$alltables = $db->query("show table status where Data_free > 0");

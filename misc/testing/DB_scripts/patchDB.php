@@ -74,9 +74,15 @@ if (isset($os) && $os == "unix")
 	$currentversion = $site->sqlpatch;
 	$patched = 0;
 	$patches = array();
+	$db = new DB;
+
+	if ($db->dbSystem() == "mysql")
+		$path = '/../../../db/mysql_patches';
+	else if ($db->dbSystem() == "pgsql")
+		$path = '/../../../db/pgsql_patches'
 
 	// Open the patch folder.
-	if ($handle = @opendir(FS_ROOT.'/../../../db/patches'))
+	if ($handle = @opendir(FS_ROOT.$path))
 	{
 		while (false !== ($patch = readdir($handle)))
 		{

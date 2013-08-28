@@ -87,9 +87,9 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 	if (isset($argv[2]) && $argv[2] === "true")
 		$where = "";
 	else
-		$where = " WHERE rageid IN (-2, 0) or rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
+		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
 
-	$affected = $db->queryExec("UPDATE RELEASES SET rageid = NULL".$where);
+	$affected = $db->queryExec("UPDATE RELEASES SET rageid = -1".$where);
 	echo $affected." rageID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "books")
