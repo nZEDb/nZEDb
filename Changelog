@@ -1,3 +1,15 @@
+08292013 -> kevin       August 23 to 29:
+                        Convert to php database objects.
+                        Almost full support for postgresql (still needs work).
+                             Now there is a seperate schema / patches for both database types, make sure to read the readme in db if you are submiting patches.
+                             The install has been modified to support postgresql, but it has been locked for now while I keep working on it. 
+                        Start working on comment sharing throughout sites (ThePeePs will work on the rest with our help).
+                        Fixes to par2 and toggle option to turn on and off adding the files to the filelist.
+                        Changes to the install page (more checks and clearer text).
+                        Changes to namefixer to not rerun the same release, also changes to relnamestatus, consolidating relstatus and adding more types.
+                        Changes to backfill's postdate to fallback on the last known date or try a different article to get a date.
+                        Other random stuff.
+                        Various bug fixes.
 08282013 -> jonnyboy -> patch rename column
 08272013 -> jonnyboy -> reverted nntplib.py to one that works with both 2.* and 3.*
                         changed nzbs.group to nzbs.groupname
