@@ -1059,6 +1059,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('sqlpatch','115');
 
+
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
   time datetime DEFAULT NULL,
