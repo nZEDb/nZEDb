@@ -218,7 +218,24 @@ class Import
 						{
 							chmod($path, 0777);
 							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
-							$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts on binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
+							if ($db->dbSystem() == "mysql")
+							{
+								$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
+								$delq->execute();
+							}
+							elseif ($db->dbSystem() == "pgsql")
+							{
+								$idr = $db->query(sprintf("SELECT id FROM collections WHERE collectionshash = ", $db->escapeString($hash)));
+								if (count($idr) > 0)
+								{
+									foreach ($idr as $id)
+									{
+										$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+										$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+									}
+									$reccount += $db->queryExec("DELETE FROM collections WHERE collectionshash = ", $db->escapeString($hash));
+								}
+							}
 							$db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
 							$this->categorize();
 							echo "+";

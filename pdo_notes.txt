@@ -2,8 +2,6 @@ Things to make compatible in queries:
 ON DUPLICATE
 Delete table1, table2 from 
 
-Delete query in grabnzbs line 80ish.
-
 /*
 Save tvrage images to disk. Or find a way to store them in pgsql.
 still unsure about this.
