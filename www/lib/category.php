@@ -126,7 +126,7 @@ class Category
 	public function getDisabledIDs()
 	{
 		$db = new DB();
-		return $db->queryDirect("SELECT id FROM category WHERE status = 2");
+		return $db->query("SELECT id FROM category WHERE status = 2");
 	}
 
 	public function getById($id)
