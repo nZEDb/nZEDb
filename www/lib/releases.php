@@ -886,6 +886,7 @@ class Releases
 		$relcount = 0;
 
 		$resrel = $db->query("SELECT id, ".$type.", groupid FROM releases ".$where);
+		$total = count($resrel);
 		if (count($resrel) > 0)
 		{
 			foreach ($resrel as $rowrel)
@@ -894,7 +895,7 @@ class Releases
 				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catId, $rowrel['id']));
 				$relcount ++;
 				if ($this->echooutput)
-					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,count($resrel)));
+					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,$total));
 			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
@@ -1279,6 +1280,7 @@ class Releases
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
 		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where." LIMIT ".$this->stage5limit);
+		$total = count($resrel);
 		if (count($resrel) > 0)
 		{
 			foreach ($resrel as $rowrel)
@@ -1290,7 +1292,7 @@ class Releases
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,count($resrel)));
+						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
 				}
 			}
 		}
@@ -1748,12 +1750,13 @@ class Releases
 			$delstart = TIME();
 			if ($this->echooutput)
 				echo "\n";
+			$totalcIDS = count($cIDS);
 			foreach ($cIDS as $cID)
 			{
 				$db->queryExec(sprintf("DELETE FROM collections WHERE id = %d", $cID));
 				$delcount++;
 				if ($this->echooutput)
-					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,sizeof($cIDS))." Time:".$consoletools->convertTimer(TIME() - $delstart));
+					$consoletools->overWrite("Deleting old collections:".$consoletools->percentString($delcount,$totalcIDS)." Time:".$consoletools->convertTimer(TIME() - $delstart));
 			}
 			// Delete previous failed attempts.
 			$db->queryExec('DELETE FROM collections WHERE collectionhash = "0"');
