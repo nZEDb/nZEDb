@@ -258,7 +258,7 @@ class Namefixer
 		if ($namestatus == 1 && $this->matched === false)
 		{
 			$db = new Db;
-			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['id']));
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['releaseid']));
 		}
 	}
 
