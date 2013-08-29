@@ -186,14 +186,20 @@ class Releases
 	public function getEarliestUsenetPostDate()
 	{
 		$db = new DB();
-		$row = $db->queryOneRow("SELECT DATE_FORMAT(min(postdate), '%d/%m/%Y') AS postdate FROM releases");
+		if ($db->dbSystem() == "mysql")
+			$row = $db->queryOneRow("SELECT DATE_FORMAT(min(postdate), '%d/%m/%Y') AS postdate FROM releases");
+		else if ($db->dbSystem() == "pgsql")
+			$row = $db->queryOneRow("SELECT to_char(min(postdate), 'dd/mm/yyyy') AS postdate FROM releases");
 		return $row['postdate'];
 	}
 
 	public function getLatestUsenetPostDate()
 	{
 		$db = new DB();
-		$row = $db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
+		if ($db->dbSystem() == "mysql")
+			$row = $db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
+		else if ($db->dbSystem() == "pgsql")
+			$row = $db->queryOneRow("SELECT to_char(max(postdate), 'dd/mm/yyyy') AS postdate FROM releases");
 		return $row['postdate'];
 	}
 
