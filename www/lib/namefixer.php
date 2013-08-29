@@ -196,7 +196,7 @@ class Namefixer
 	{
 		$db = new DB();
 		$matched = 0;
-		$res = $db->query(sprintf("SELECT title, source FROM predb WHERE md5 = ", $db->escapeString($md5)));
+		$res = $db->query(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($md5)));
 		if (count($res) > 0)
 		{
 			foreach ($res as $row)
