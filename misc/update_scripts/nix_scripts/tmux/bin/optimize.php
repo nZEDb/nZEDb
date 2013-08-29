@@ -55,23 +55,29 @@ if( isset($argv[1]) )
 		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
 	}
 
-	$alltables = $db->query("show table status where Data_free > 0");
-	$tablecnt = sizeof($alltables);
-	if ($tablecnt > 0)
+	$tablecnt = 0;
+	if ($db->dbSystem() == "mysql")
 	{
-		foreach ($alltables as $tablename)
+		$alltables = $this->query("SHOW table status WHERE Data_free > 0");
+		$tablecnt = count($alltables);
+		foreach ($alltables as $table)
 		{
-			$name = $tablename['Name'];
-			echo "Optimizing table: ".$name.".\n";
-			if (strtolower($tablename['Engine']) == "myisam")
-				$db->queryDirect("REPAIR TABLE `".$name."`");
-			$db->queryDirect("OPTIMIZE TABLE `".$name."`");
+			echo "Optimizing table: ".$table['name'].".\n";
+			if (strtolower($table['engine']) == "myisam")
+				$db->queryDirect("REPAIR TABLE `".$table['name']."`");
+			$db->queryDirect("OPTIMIZE TABLE `".$table['name']."`");
 		}
 		$db->queryDirect("FLUSH TABLES");
-		if ($tablecnt == 1)
-			echo $tablecnt." table Optimized\n";
-		else
-			echo $tablecnt." tables Optimized\n";
+	}
+	else if ($db->dbSystem() == "pgsql")
+	{
+		$alltables = $db->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
+		$tablecnt = count($alltables);
+		foreach ($alltables as $table)
+		{
+			echo "Vacuuming table: ".$table['name'].".\n";
+			$db->query("VACUUM (ANALYZE) ".$table['name']);
+		}
 	}
 	if ( $restart == "true"  && $argv[1] == "true" )
 	{

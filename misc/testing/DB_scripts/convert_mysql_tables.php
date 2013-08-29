@@ -16,7 +16,7 @@ if (isset($argv[1]) && $argv[1] == "myisam")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$db->query("ALTER TABLE $tbl ENGINE=MYISAM");
+		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "dinnodb")
@@ -26,7 +26,7 @@ else if (isset($argv[1]) && $argv[1] == "dinnodb")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$db->query("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
+		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "cinnodb")
@@ -36,7 +36,7 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 	{
 		$tbl = $row['Tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		$db->query("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
+		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "tokudb")
@@ -50,8 +50,8 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
 		else
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
-		$db->query($sql);
-		$db->queryDirect("OPTIMIZE TABLE $tbl");
+		$db->queryExec($sql);
+		$db->queryExec("OPTIMIZE TABLE $tbl");
 	}
 }
 else

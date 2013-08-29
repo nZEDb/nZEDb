@@ -9,12 +9,6 @@ Save tvrage images to disk. Or find a way to store them in pgsql.
 still unsure about this.
 */
 
-/*
-Update tmux optimize.
-
-See db.php and optimize.php (update_scripts) for examples.
-*/
-
 Coalesce on the min / max etc files/size (stage 3 and 4.5) is wrong, it should be greatest/max.
 
 /*
