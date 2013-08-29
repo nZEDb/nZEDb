@@ -30,6 +30,7 @@ class PostProcess
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
+		$this->addpar2 = ($this->site->addpar2 == "0") ? false : true;
 		$this->audSavePath = WWW_DIR.'covers/audiosample/';
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
@@ -208,7 +209,7 @@ class PostProcess
 			foreach ($files as $fileID => $file)
 			{
 				// Add to releasefiles.
-				if ($relfiles < 11 && $db->queryOneRow(sprintf("SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
+				if ($this->addpar2 && $relfiles < 11 && $db->queryOneRow(sprintf("SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
 				{
 					if ($rf->add($relID, $file["name"], $file["size"], $quer["postdate"], 0))
 						$relfiles++;
