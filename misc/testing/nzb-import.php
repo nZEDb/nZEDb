@@ -118,7 +118,7 @@ else
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 			continue;
 
-		$postdate = $postername = $firstname array();
+		$postdate = $postername = $firstname = array();
 		$totalFiles = $i = $totalsize = 0;
 
 		foreach($xml->file as $file)

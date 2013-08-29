@@ -10,7 +10,7 @@ require_once(WWW_DIR."lib/site.php");
 
 $db = new DB();
 if($db->dbSystem() == "pgsql")
-	exit("This script is only for mysql currently.\n")
+	exit("This script is only for mysql currently.\n");
 $binaries = new Binaries();
 $page = new Page();
 $n = "\n";

@@ -3,6 +3,9 @@
 require("../../../www/config.php");
 require_once(WWW_DIR."/lib/nzb.php");
 
+if (!isset($argv[1]))
+	exit("Tests your usenet connection, edit the script first then run it with true.");
+
 $nntp = new Nntp();
 $nntp->doConnect();
 
@@ -10,7 +13,7 @@ $nntp->doConnect();
 $groupArr = $nntp->selectGroup('alt.binaries.teevee');
 print_r($groupArr);
 // Insert actual local part numbers here.
-$msg = $nntp->getXOverview('132894081-132894081',true,false);
+$msg = $nntp->getOverview('132894081-132894081',true,false);
 // Print out the array of headers.
 print_r($msg);
 $nntp->doQuit();

@@ -24,23 +24,23 @@ printf($mask, "==================================================", "===========
 
 if (isset($argv[1]) && $argv[1] === "true")
 {
-	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days FROM groups WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND last_updated IS NOT NULL ORDER BY first_record_postdate DESC %s", $limit)))
+	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND last_updated IS NOT NULL ORDER BY first_record_postdate DESC %s", $limit)))
 	{
 		foreach ($rels as $rel)
 		{
 			$headers = number_format($rel['headers_downloaded']);
-			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
+			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
 		}
 	}
 }
 else
 {
-	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS Days FROM groups WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND last_updated IS NOT NULL ORDER BY first_record_postdate ASC %s", $limit)))
+	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND last_updated IS NOT NULL ORDER BY first_record_postdate ASC %s", $limit)))
 	{
 		foreach ($rels as $rel)
 		{
 			$headers = number_format($rel['headers_downloaded']);
-			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['Days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
+			printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers);
 		}
 	}
 }

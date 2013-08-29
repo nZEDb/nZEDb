@@ -15,11 +15,7 @@ $res = $db->query("SELECT imdbid FROM movieinfo");
 if (count($res) > 0)
 {
 	foreach ($res as $row)
-	{
 		$movie->updateMovieInfo($row['imdbid']);
-		echo ".";
-	}
-	echo "\n";
 }
 exit();
 ?>

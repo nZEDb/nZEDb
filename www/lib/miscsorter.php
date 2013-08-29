@@ -28,8 +28,8 @@ class MiscSorter
 		$this->nc = new nameCleaning();
 
 
-		$res = $this->db->query("SET NAMES 'utf8'");
-		$res = $this->db->query("SET CHARACTER SET 'utf8'");
+		//$res = $this->db->query("SET NAMES 'utf8'");
+		//$res = $this->db->query("SET CHARACTER SET 'utf8'");
 
 		mb_internal_encoding("UTF-8");
 		mb_regex_encoding("UTF-8");
@@ -74,7 +74,7 @@ class MiscSorter
 	function getIDs ($cat)
 	{
 		if ($cat > 0)
-			$cats = $this->cat->getChildren($cat);
+			$cats = $this->cat->getChildren(substr($cat, 0, 1)."000");
 		else
 			$cats = $this->cat->get(true, array());
 		$thecategory = array();
@@ -82,7 +82,7 @@ class MiscSorter
 			$thecategory[] = $c['id'];
 
 		$thecategory = implode(", ", $thecategory);
-		$res = $this->db->query(sprintf("SELECT id FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryid IN ( %s ) ORDER BY RAND() LIMIT %d", $thecategory, $this->qty));
+		$res = $this->db->query(sprintf("SELECT id FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryid IN (%s) LIMIT %d", $thecategory, $this->qty));
 
 		if (count($res) == 0)
 			return false;
@@ -194,7 +194,7 @@ class MiscSorter
 		$query = "UPDATE releases SET categoryid = {$cat}";
 		if ($relname == 1 || $relname == 4)
 		{
-			$query = .= ", relnamestatus = 4";
+			$query .= ", relnamestatus = 4";
 			if ($name != '')
 				$query .= ", searchname = ".$this->db->escapeString($name);
 		}
@@ -781,7 +781,7 @@ echo "asin ".$set[1]."\n";
 
 	function nfosorter ($category = Category::CAT_PARENT_MISC, $id = 0)
 	{
-		$this->idarr = $this->getIDs ($category);
+		$this->idarr = $this->getIDs($category);
 		if ($id != 0)
 			$this->idarr = $id;
 		else
@@ -791,13 +791,14 @@ echo "asin ".$set[1]."\n";
 			$pb->matchNfo();
 			$pb->matchPredb();
 			unset($pb);
+			exit("No ID supplied so exiting.\n");
 		}
 
 		if ($this->db->dbSystem() == "mysql")
 			$uc = "UNCOMPRESS(releasenfo.nfo)";
 		else if ($this->db->dbSystem() == "pgsql")
 			$uc = "releasenfo.nfo";
-		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id in (%s) AND relnamestatus NOT IN (3, 7) ORDER BY RAND()", $this->idarr));
+		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid, releases.relnamestatus FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id IN (%s) AND relnamestatus NOT IN (3, 7)", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0)
 		{
 			foreach($res as $row)

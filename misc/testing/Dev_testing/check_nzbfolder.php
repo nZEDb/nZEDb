@@ -18,12 +18,14 @@ foreach($objects as $nzbFile)
     if($nzbFile->getExtension() != "gz")
         continue;
 	$releaseGUID = str_replace(".nzb.gz", "", $nzbFile->getFilename());
-	$consoleTools->overWrite("Checked: ".$iFilesCounted++." ok, ".$notexist." nzbs not in db  ");
+	$consoleTools->overWrite("Checked: ".$iFilesCounted++." ok, ".$notexist." nzbs not in db.");
 	$rel = $db->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $db->escapeString($releaseGUID)));
 	if (!$rel)
 	{
 		$consoleTools = new ConsoleTools();
-		$consoleTools->overWrite("Checked: ".$iFilesCounted." ok, ".$notexist++." nzbs not in db  ");
+		$consoleTools->overWrite("Checked: ".$iFilesCounted." ok, ".$notexist++." nzbs not in db.");
 		echo $releaseGUID." - Does not exist in the database\n";
 	}
 }
+if ($iFilesCounted > 0)
+	echo "\n";
