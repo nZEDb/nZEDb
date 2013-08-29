@@ -224,8 +224,11 @@ class TvRage
 							if ($this->echooutput)
 							{
 								echo $epInfo['showname']." (".$showId."):\n";
-								echo "Previous: {$prev_ep} - ".(isset($epInfo['prev']['day_time']) ? date("r",$epInfo['prev']['day_time']) : "").".\n";
-								echo "Next: {$next_ep} - ".(isset($epInfo['next']['day_time']) ? date("r",$epInfo['next']['day_time']) : "").".\n";
+								if (isset($epInfo['prev']['day_time']))
+									echo "Prev EP: {$prev_ep} - ".date("m/d/Y H:i T", $epInfo['prev']['day_time']).".\n";
+								if (isset($epInfo['next']['day_time']))
+									echo "Next EP: {$next_ep} - ".date("m/d/Y H:i T", $epInfo['next']['day_time']).".\n";
+								echo "\n";
 							}
 
 							// Update info.
