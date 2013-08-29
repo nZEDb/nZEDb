@@ -6,6 +6,9 @@ require_once(WWW_DIR."lib/nfo.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 
+if (!isset($argv[1]))
+	exit ("Type php decrypt_hashes.php to start.");
+
 preName();
 
 function preName()
@@ -24,7 +27,6 @@ function preName()
 	}
 	
 	$counter = 0;
-	$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND searchname REGEXP '[a-fA-F0-9]{32}'");
 	if(count($res) > 0)
 	{
 		$consoletools = new ConsoleTools();
