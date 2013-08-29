@@ -42,21 +42,21 @@
         </tr>
         
         {foreach from=$grouplist item=group}
-        <tr id="grouprow-{$group.ID}" class="{cycle values=",alt"}">
+        <tr id="grouprow-{$group.id}" class="{cycle values=",alt"}">
             <td>
-				<a href="{$smarty.const.WWW_TOP}/group-edit.php?id={$group.ID}">{$group.name|replace:"alt.binaries":"a.b"}</a>
+				<a href="{$smarty.const.WWW_TOP}/group-edit.php?id={$group.id}">{$group.name|replace:"alt.binaries":"a.b"}</a>
 				<div class="hint">{$group.description}</div>
 			</td>
             <td class="less">{$group.first_record_postdate|timeago}</td>
 			<td class="less">{$group.last_record_postdate|timeago}</td>
             <td class="less">{$group.last_updated|timeago} ago</td>
-            <td class="less" id="group-{$group.ID}">{if $group.active=="1"}<a href="javascript:ajax_group_status({$group.ID}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.ID}, 1)" class="group_deactive">Activate</a>{/if}</td>
-            <td class="less" id="backfill-{$group.ID}">{if $group.backfill=="1"}<a href="javascript:ajax_backfill_status({$group.ID}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.ID}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
+            <td class="less" id="group-{$group.id}">{if $group.active=="1"}<a href="javascript:ajax_group_status({$group.id}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.id}, 1)" class="group_deactive">Activate</a>{/if}</td>
+            <td class="less" id="backfill-{$group.id}">{if $group.backfill=="1"}<a href="javascript:ajax_backfill_status({$group.id}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.id}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
             <td class="less">{$group.num_releases}</td>
 			<td class="less">{if $group.minfilestoformrelease==""}n/a{else}{$group.minfilestoformrelease}{/if}</td>
 			<td class="less">{if $group.minsizetoformrelease==""}n/a{else}{$group.minsizetoformrelease|fsize_format:"MB"}{/if}</td>
             <td class="less">{$group.backfill_target}</td>
-            <td class="less" id="groupdel-{$group.ID}"><a title="Reset this group" href="javascript:ajax_group_reset({$group.ID})" class="group_reset">Reset</a> | <a href="javascript:ajax_group_delete({$group.ID})" class="group_delete">Delete</a> | <a href="javascript:ajax_group_purge({$group.ID})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, binaries/parts in the selected group');" >Purge</a></td>
+            <td class="less" id="groupdel-{$group.id}"><a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | <a href="javascript:ajax_group_delete({$group.id})" class="group_delete">Delete</a> | <a href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, binaries/parts in the selected group');" >Purge</a></td>
         </tr>
         {/foreach}
 

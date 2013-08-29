@@ -6,7 +6,7 @@ class Tmux
 
 	public function version()
 	{
-		return "0.0.1";
+		return "0.0.2";
 	}
 
 	public function update($form)
@@ -21,7 +21,7 @@ class Tmux
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$db->query(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$db->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
@@ -29,7 +29,7 @@ class Tmux
 	public function get()
 	{
 		$db = new DB();
-		$rows = $db->query("select * from tmux");
+		$rows = $db->query("SELECT * FROM tmux");
 
 		if ($rows === false)
 			return false;
@@ -60,7 +60,7 @@ class Tmux
 	public function updateItem($setting, $value)
 	{
 		$db = new DB();
-		$sql = sprintf("update tmux set value = %s where setting = %s", $db->escapeString($value), $db->escapeString($setting));
-		return $db->query($sql);
+		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $db->escapeString($value), $db->escapeString($setting));
+		return $db->queryExec($sql);
 	}
 }

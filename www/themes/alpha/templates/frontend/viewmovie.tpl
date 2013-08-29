@@ -3,12 +3,12 @@
 <h3>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:'htmlall'}">{$rel.searchname|escape:'htmlall'}</a></h3>
 {/if}
 
-<div id="backdrop"><img src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.backdrop == 1}{$movie.imdbID}{else}no{/if}-backdrop.jpg" alt=""></div>
+<div id="backdrop"><img src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.backdrop == 1}{$movie.imdbid}{else}no{/if}-backdrop.jpg" alt=""></div>
 
 <div id="movieinfo">
 
 <h1>{$movie.title|ss} {if $movie.year != ''}({$movie.year}){/if}</h1>
-<h3>{if $movie.cover == 1}<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" class="cover" alt="{$movie.title|ss}" align="left">{/if}
+<h3>{if $movie.cover == 1}<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" class="cover" alt="{$movie.title|ss}" align="left">{/if}
 {if $movie.tagline != ''}<b>{$movie.tagline|ss}</b>{/if}</h3>
 
 {if $movie.plot != ''}

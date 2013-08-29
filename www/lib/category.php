@@ -88,19 +88,19 @@ class Category
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and c.ID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND c.id NOT IN (".implode(",", $excludedcats).")";
 
 		$act = "";
 		if ($activeonly)
-			$act = sprintf(" where c.status = %d %s ", Category::STATUS_ACTIVE, $exccatlist ) ;
+			$act = sprintf(" WHERE c.status = %d %s ", Category::STATUS_ACTIVE, $exccatlist ) ;
 
-		return $db->query("select c.ID, concat(cp.title, ' > ',c.title) as title, cp.ID as parentID, c.status, c.minsize from category c inner join category cp on cp.ID = c.parentID ".$act." ORDER BY c.ID");
+		return $db->query("SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid ".$act." ORDER BY c.id");
 	}
 
 	public function isParent($cid)
 	{
 		$db = new DB();
-		$ret = $db->queryOneRow(sprintf("select * from category where ID = %d and parentID is null", $cid));
+		$ret = $db->queryOneRow(sprintf("SELECT * FROM category WHERE id = %d AND parentid IS NULL", $cid));
 		if ($ret)
 			return true;
 		else
@@ -112,40 +112,42 @@ class Category
 		$db = new DB();
 		$act = "";
 		if ($activeonly)
-			$act = sprintf(" where c.status = %d ", Category::STATUS_ACTIVE ) ;
-		return $db->query("select c.*, (SELECT title FROM category WHERE ID=c.parentID) AS parentName from category c ".$act." ORDER BY c.ID");
+			$act = sprintf(" WHERE c.status = %d ", Category::STATUS_ACTIVE ) ;
+		return $db->query("SELECT c.*, (SELECT title FROM category WHERE id=c.parentid) AS parentName FROM category c ".$act." ORDER BY c.id");
 	}
 
 	public function getChildren($cid)
 	{
 		$db = new DB();
-		return $db->query(sprintf("select c.* from category c where parentID = %d", $cid));
+		return $db->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
 	}
 
-	//
 	// Returns ID's for site disabled categories.
-	//
 	public function getDisabledIDs()
 	{
 		$db = new DB();
-		return $db->queryDirect("SELECT ID from category where status = 2");
+		return $db->query("SELECT id FROM category WHERE status = 2");
 	}
+
 	public function getById($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.ID, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID, c.minsize from category c left outer join category cp on cp.ID = c.parentID where c.ID = %d", $id));
+		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.id, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID, c.minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.id = %d", $id));
 	}
 
 	public function getByIds($ids)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT concat(cp.title, ' > ',c.title) as title from category c inner join category cp on cp.ID = c.parentID where c.ID in (%s)", implode(',', $ids)));
+		if (count($ids) > 0)
+			return $db->query(sprintf("SELECT CONCAT(cp.title, ' > ',c.title) AS title FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.id IN (%s)", implode(',', $ids)));
+		else
+			return false;
 	}
 
 	public function update($id, $status, $desc, $disablepreview, $minsize)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update category set disablepreview = %d, status = %d, description = %s, minsize = %d  where ID = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
+		return $db->queryExec(sprintf("UPDATE category SET disablepreview = %d, status = %d, description = %s, minsize = %d  WHERE id = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
 	}
 
 	public function getForMenu($excludedcats=array())
@@ -155,11 +157,11 @@ class Category
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and ID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND id NOT IN (".implode(",", $excludedcats).")";
 
-		$arr = $db->query(sprintf("select * from category where status = %d %s", Category::STATUS_ACTIVE, $exccatlist));
+		$arr = $db->query(sprintf("SELECT * FROM category WHERE status = %d %s", Category::STATUS_ACTIVE, $exccatlist));
 		foreach ($arr as $a)
-			if ($a["parentID"] == "")
+			if ($a["parentid"] == "")
 				$ret[] = $a;
 
 		foreach ($ret as $key => $parent)
@@ -168,7 +170,7 @@ class Category
 			$subcatnames = array();
 			foreach ($arr as $a)
 			{
-				if ($a["parentID"] == $parent["ID"])
+				if ($a["parentid"] == $parent["id"])
 				{
 					$subcatlist[] = $a;
 					$subcatnames[] = $a["title"];
@@ -199,7 +201,7 @@ class Category
 		}
 
 		foreach($categories as $category)
-			$temp_array[$category["ID"]] = $category["title"];
+			$temp_array[$category["id"]] = $category["title"];
 
 		return $temp_array;
 	}
@@ -208,8 +210,8 @@ class Category
 	public function getNameByID($ID)
 	{
 		$db = new DB();
-		$parent = $db->queryOneRow(sprintf("SELECT title from category where ID = %d", substr($ID, 0, 1)."000"));
-		$cat = $db->queryOneRow(sprintf("SELECT title from category where ID = %d", $ID));
+		$parent = $db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", substr($ID, 0, 1)."000"));
+		$cat = $db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", $ID));
 		return $parent["title"]." ".$cat["title"];
 	}
 
@@ -608,7 +610,7 @@ class Category
 	//	TV.
 	public function isTV($releasename, $assumeTV=TRUE)
 	{
-		$looksLikeTV = preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $releasename);
+		$looksLikeTV = preg_match('/\bS\d+\b(720|1080|Dvd|Blu)|s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $releasename);
 		$looksLikeSportTV = preg_match('/[-._ ]((19|20)\d\d[-._ ]\d{1,2}[-._ ]\d{1,2}[-._ ]VHSRip|Indy[-._ ]?Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW[-._ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[-._ ]HD|WWE[-._ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[-._ ]/i', $releasename);
 		if ($looksLikeTV && !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $releasename))
 		{

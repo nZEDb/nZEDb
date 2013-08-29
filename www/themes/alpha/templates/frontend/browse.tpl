@@ -63,34 +63,34 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 {release_flag($result.searchname, browse)}
 {if $result.videostatus == 1}
 <a class="label label-default model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a> {/if}
-{if $result.nfoID > 0}
+{if $result.nfoid > 0}
 <a class="label label-default modal_nfo" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo"><i class="icon-info-sign"></i></a> {/if}
-{if $result.imdbID > 0}
-<a class="label label-default modal_imdb" href="#" name="name{$result.imdbID}" title="View movie info" rel="movie" >Cover</a> {/if}
-{if $result.musicinfoID > 0}
-<a class="label label-default modal_music" href="#" name="name{$result.musicinfoID}" title="View music info" rel="music" >Cover</a> {/if}
-{if $result.consoleinfoID > 0}
-<a class="label label-default modal_console" href="#" name="name{$result.consoleinfoID}" title="View console info" rel="console" >Cover</a> {/if}
+{if $result.imdbid > 0}
+<a class="label label-default modal_imdb" href="#" name="name{$result.imdbid}" title="View movie info" rel="movie" >Cover</a> {/if}
+{if $result.musicinfoid > 0}
+<a class="label label-default modal_music" href="#" name="name{$result.musicinfoid}" title="View music info" rel="music" >Cover</a> {/if}
+{if $result.consoleinfoid > 0}
+<a class="label label-default modal_console" href="#" name="name{$result.consoleinfoid}" title="View console info" rel="console" >Cover</a> {/if}
 {if $result.haspreview == 1 && $userdata.canpreview == 1}
 <a class="label label-default modal_prev" href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" rel="preview">Preview</a> {/if}
 {if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 <a class="label label-default modal_prev" href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" rel="preview">Sample</a> {/if}
-{if $result.rageID > 0}
-<a class="label label-default" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}" title="View all episodes">View Series</a> {/if}
-{if $result.anidbID > 0}
-<a class="label label-default" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbID}" title="View all episodes">View Anime</a> {/if}
+{if $result.rageid > 0}
+<a class="label label-default" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View Series</a> {/if}
+{if $result.anidbid > 0}
+<a class="label label-default" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View Anime</a> {/if}
 {if $result.tvairdate != ""}
 <span class="label label-default seriesinfo" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
-{if $result.reID > 0}
+{if $result.reid > 0}
 <span class="label label-default mediainfo" title="{$result.guid}">Media</span> {/if}
-{if $result.preID > 0}
-<span class="label label-default preinfo rndbtn" title="{$result.preID}">PreDB</span> {/if}
+{if $result.preid > 0}
+<span class="label label-default preinfo rndbtn" title="{$result.preid}">PreDB</span> {/if}
 {if $result.group_name != ""}
 <a class="label label-default" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a> {/if}
 </div>
 </td>
 <td style="width:auto;text-align:center;white-space:nowrap;">
-<small><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryID}"><b>{$result.category_name}</b></a></small>
+<small><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}"><b>{$result.category_name}</b></a></small>
 </td>
 <td style="width:auto;text-align:center;white-space:nowrap;" title="{$result.postdate}">
 {$result.postdate|timeago}

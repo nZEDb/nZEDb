@@ -12,7 +12,7 @@
 <tr>
 	<td>Name:</td>
 	<td>
-		<input type="hidden" name="id" value="{$user.ID}" />
+		<input type="hidden" name="id" value="{$user.id}" />
 		<input autocomplete="off" class="long" name="username" type="text" value="{$user.username}" />
 	</td>
 </tr>
@@ -28,12 +28,12 @@
 	<td>Password:</td>
 	<td>
 		<input autocomplete="off" class="long" name="password" type="password" value="" />
-		{if $user.ID}
+		{if $user.id}
 			<div class="hint">Only enter a password if you want to change it.</div>
 		{/if}
 	</td>	
 </tr>
-{if $user.ID}
+{if $user.id}
 <tr>
 	<td>Grabs:</td>
 	<td>

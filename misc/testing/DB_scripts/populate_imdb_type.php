@@ -1,7 +1,6 @@
 <?php
-/*
- * Updates the movie type for movies.
- */
+// Update info for the imdb ID.
+
 require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/movie.php");
@@ -9,11 +8,14 @@ require_once(WWW_DIR."lib/movie.php");
 $movie = new Movie(true);
 $db = new DB();
 
-$query = "SELECT * FROM movieinfo";
-$res = $db->queryDirect($query);
+if (!isset($argv[1]))
+	exit("This script fetches missing info for IMDB id's from tmdb and imdb.\nTo run it pass true as an argument.\n");
 
-while ($rel =  $db->fetchAssoc($res))
+$res = $db->query("SELECT imdbid FROM movieinfo");
+if (count($res) > 0)
 {
-	$movie->updateMovieInfo($rel['imdbID']);
+	foreach ($res as $row)
+		$movie->updateMovieInfo($row['imdbid']);
 }
+exit();
 ?>

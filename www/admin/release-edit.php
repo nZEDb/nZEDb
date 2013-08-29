@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/releases.php");
@@ -10,37 +9,31 @@ $releases = new Releases();
 $category = new Category();
 $id = 0;
 
-// set the current action
+// Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) 
+switch($action)
 {
-    case 'submit':
-		
-		$releases->update($_POST["id"], $_POST["name"], $_POST["searchname"], $_POST["fromname"], $_POST["category"], $_POST["totalpart"], $_POST["grabs"], $_POST["size"], $_POST["postdate"], $_POST["adddate"], $_POST["rageID"], $_POST["seriesfull"], $_POST["season"], $_POST["episode"], $_POST['imdbID'], $_POST['anidbID']);
-		
+	case 'submit':
+		$releases->update($_POST["id"], $_POST["name"], $_POST["searchname"], $_POST["fromname"], $_POST["category"], $_POST["totalpart"], $_POST["grabs"], $_POST["size"], $_POST["postdate"], $_POST["adddate"], $_POST["rageid"], $_POST["seriesfull"], $_POST["season"], $_POST["episode"], $_POST['imdbid'], $_POST['anidbid']);
 		if(isset($_POST['from']) && !empty($_POST['from']))
 		{
 			header("Location:".$_POST['from']);
 			exit;
 		}
-		
 		header("Location:".WWW_TOP."/release-list.php");
-        break;
-    case 'view':
-    default:
+		break;
 
+	case 'view':
+	default:
 		if (isset($_GET["id"]))
 		{
 			$page->title = "Release Edit";
 			$id = $_GET["id"];
-			
 			$release = $releases->getByID($id);
-
-			$page->smarty->assign('release', $release);	
+			$page->smarty->assign('release', $release);
 		}
-
-      break;   
+		break;
 }
 
 $page->smarty->assign('yesno_ids', array(1,0));

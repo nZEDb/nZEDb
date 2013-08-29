@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/console.php");
 
 $page = new AdminPage();
-
 $con = new Console();
 
 $page->title = "Console List";
@@ -22,7 +20,7 @@ $page->smarty->assign('pager', $pager);
 
 $consolelist = $con->getRange($offset, ITEMS_PER_PAGE);
 
-$page->smarty->assign('consolelist',$consolelist);	
+$page->smarty->assign('consolelist',$consolelist);
 
 $page->content = $page->smarty->fetch('console-list.tpl');
 $page->render();

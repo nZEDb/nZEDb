@@ -29,7 +29,7 @@ if( isset($argv[1]) )
 
 	if ( $running == "TRUE" && $argv[1] == "true" )
 	{
-		$db->query("update tmux set value = 'FALSE' where setting = 'RUNNING'");
+		$db->queryExec("update tmux set value = 'FALSE' where setting = 'RUNNING'");
 		$sleep = $delay;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
 		$restart = "true";
@@ -52,7 +52,7 @@ if( isset($argv[1]) )
 		}
 
 		echo "Patching database - $dbname\n";
-		exec("$PHP ${DIR}testing/DB_scripts/patchmysql.php");
+		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
 	}
 
 	$alltables = $db->query("show table status where Data_free > 0");
@@ -76,7 +76,7 @@ if( isset($argv[1]) )
 	if ( $restart == "true"  && $argv[1] == "true" )
 	{
 		echo "Starting tmux scripts\n";
-		$db->query("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+		$db->queryExec("update tmux set value = 'TRUE' where setting = 'RUNNING'");
 	}
 }
 else

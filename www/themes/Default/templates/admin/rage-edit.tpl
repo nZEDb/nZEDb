@@ -10,8 +10,8 @@
 <tr>
 	<td><label for="rageID">Rage Id:</label></td>
 	<td>
-		<input type="hidden" name="id" value="{$rage.ID}" />
-		<input id="rageID" class="short" name="rageID" type="text" value="{$rage.rageID}" />
+		<input type="hidden" name="id" value="{$rage.id}" />
+		<input id="rageID" class="short" name="rageID" type="text" value="{$rage.rageid}" />
 		<div class="hint">The numeric TVRage Id.</div>
 	</td>
 </tr>
@@ -51,7 +51,7 @@
 	<td><label for="imagedata">Series Image:</label></td>
 	<td>
 		{if $rage.imgdata != ""}
-			<img style="max-width:200px; display:block;" src="{$smarty.const.WWW_TOP}/../getimage?type=tvrage&id={$rage.ID}">
+			<img style="max-width:200px; display:block;" src="{$smarty.const.WWW_TOP}/../getimage?type=tvrage&id={$rage.id}">
 		{/if}
 		<input type="file" id="imagedata" name="imagedata">
 		<div class="hint">Shown in the TV series view page.</div>

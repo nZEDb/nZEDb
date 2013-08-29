@@ -8,9 +8,9 @@
 			<select id="headcat" name="t" tabindex="2">
 				<option class="grouping" value="-1">All</option>
 			{foreach from=$parentcatlist item=parentcat}
-				<option {if $header_menu_cat==$parentcat.ID}selected="selected"{/if} class="grouping" value="{$parentcat.ID}">{$parentcat.title}</option>
+				<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if} class="grouping" value="{$parentcat.id}">{$parentcat.title}</option>
 				{foreach from=$parentcat.subcatlist item=subcat}
-					<option {if $header_menu_cat==$subcat.ID}selected="selected"{/if} value="{$subcat.ID}">&nbsp;&nbsp;{$subcat.title}</option>
+					<option {if $header_menu_cat==$subcat.id}selected="selected"{/if} value="{$subcat.id}">&nbsp;&nbsp;{$subcat.title}</option>
 				{/foreach}
 			{/foreach}
 			</select>
@@ -23,51 +23,51 @@
 	<div id="menulink"> 
 		<ul>
 		{foreach from=$parentcatlist item=parentcat}
-			{if $parentcat.ID == 1000 && $userdata.consoleview=="1" && $site->lookupgames=="1"}
+			{if $parentcat.id == 1000 && $userdata.consoleview=="1" && $site->lookupgames=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/console">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
-					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.ID}">{$subcat.title}</a></li>
+					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a></li>
 				{/foreach}
 				</ul>
 			</li>
-			{elseif $parentcat.ID == 2000 && $userdata.movieview=="1" && $site->lookupimdb=="1"}
+			{elseif $parentcat.id == 2000 && $userdata.movieview=="1" && $site->lookupimdb=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
-					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/movies?t={$subcat.ID}">{$subcat.title}</a></li>
+					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/movies?t={$subcat.id}">{$subcat.title}</a></li>
 				{/foreach}
 				</ul>
 			</li>
-			{elseif ($parentcat.ID == 3000 && $userdata.musicview=="1") && $site->lookupmusic=="1"}
+			{elseif ($parentcat.id == 3000 && $userdata.musicview=="1") && $site->lookupmusic=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
-					{if $subcat.ID == 3030}
-						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+					{if $subcat.id == 3030}
+						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 					{else}
-						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.ID}">{$subcat.title}</a></li>
+						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.id}">{$subcat.title}</a></li>
 					{/if}
 				{/foreach}
 				</ul>
 			</li>
-			{elseif ($parentcat.ID == 8000 && $userdata.bookview=="1") && $site->lookupbooks=="1"}
+			{elseif ($parentcat.id == 8000 && $userdata.bookview=="1") && $site->lookupbooks=="1"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 				<ul>
 					{foreach from=$parentcat.subcatlist item=subcat}
-						{if $subcat.ID == 8010}
-							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.ID}">{$subcat.title}</a></li>
+						{if $subcat.id == 8010}
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.id}">{$subcat.title}</a></li>
 						{else}
-							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 						{/if}
 					{/foreach}
 				</ul>
 			</li>
 			{else}
-			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">{$parentcat.title}</a>
+			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}
-					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+					<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 				{/foreach}
 				</ul>
 			</li>

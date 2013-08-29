@@ -27,36 +27,36 @@
 <![CDATA[{strip}
 	<div>
 	{if $release.cover == 1}
-		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbID}-cover.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbid}-cover.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}
 	{if $release.mu_cover == 1}
-		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoID}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}	
 	{if $release.co_cover == 1}
-		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoID}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}
 	{if $release.bo_cover == 1}
-		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoID}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}	
 	<ul>
 	<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>
 	<li>Name: {$release.searchname}</li>
 	<li>Size: {$release.size|fsize_format:"MB"} </li>
-	<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categoryID}">{$release.category_name}</a></li>
+	<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categoryid}">{$release.category_name}</a></li>
 	<li>Groups: <a href="{$serverroot}browse?g={$release.group_name}">{$release.group_name}</a></li>
 	<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 	<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>
 	<li>Password: {if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}</li>
 	
-	{if $release.nfoID != ""}
+	{if $release.nfoid != ""}
 		<li>Nfo: <a href="{$serverroot}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}">{$release.searchname}.nfo</a></li>
 	{/if}
 	
-	{if $release.parentCategoryID == 2000}
-		{if $release.imdbID != ""}
+	{if $release.parentCategoryid == 2000}
+		{if $release.imdbid != ""}
 		<li>Imdb Info: 
 			<ul>
-				<li>IMDB Link: <a href="http://www.imdb.com/title/tt{$release.imdbID}/">{$release.searchname}</a></li>
+				<li>IMDB Link: <a href="http://www.imdb.com/title/tt{$release.imdbid}/">{$release.searchname}</a></li>
 				{if $release.rating != ""}<li>Rating: {$release.rating}</li>{/if}
 				{if $release.plot != ""}<li>Plot: {$release.plot}</li>{/if}
 				{if $release.year != ""}<li>Year: {$release.year}</li>{/if}
@@ -68,8 +68,8 @@
 		{/if}
 	{/if}
 	
-	{if $release.parentCategoryID == 3000}
-		{if $release.musicinfoID > 0}
+	{if $release.parentCategoryid == 3000}
+		{if $release.musicinfoid > 0}
 		<li>Music Info: 
 			<ul>
 				{if $release.mu_url != ""}<li>Amazon: <a href="{$release.mu_url}">{$release.mu_title}</a></li>{/if}
@@ -93,8 +93,8 @@
 		{/if}
 	{/if}	
 
-	{if $release.parentCategoryID == 1000}
-		{if $release.consoleinfoID > 0}
+	{if $release.parentCategoryid == 1000}
+		{if $release.consoleinfoid > 0}
 		<li>Console Info: 
 			<ul>
 				{if $release.co_url != ""}<li>Amazon: <a href="{$release.co_url}">{$release.co_title}</a></li>{/if}
@@ -127,13 +127,13 @@
 {/if}
 {if $release.episode != ""}	<nZEDb:attr name="episode" value="{$release.episode}" />
 {/if}
-{if $release.rageID != "-1" && $release.rageID != "-2"}	<nZEDb:attr name="rageid" value="{$release.rageID}" />
+{if $release.rageid != "-1" && $release.rageid != "-2"}	<nZEDb:attr name="rageid" value="{$release.rageid}" />
 {/if}
 {if $release.tvtitle != ""}	<nZEDb:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
 {/if}
 {if $release.tvairdate != ""}	<nZEDb:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
 {/if}
-{if $release.imdbID != ""}	<nZEDb:attr name="imdb" value="{$release.imdbID}" />
+{if $release.imdbid != ""}	<nZEDb:attr name="imdb" value="{$release.imdbid}" />
 {/if}
 	<nZEDb:attr name="grabs" value="{$release.grabs}" />
 	<nZEDb:attr name="comments" value="{$release.comments}" />

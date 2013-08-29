@@ -117,7 +117,7 @@ class Contents
 		if ($content->ordinal == 1)
 		{
 			$db = new DB();
-			$db->query("update content set ordinal = ordinal + 1 where ordinal > 0");
+			$db->query("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
 		}
 		return $this->data_add($content);
 	}
@@ -125,7 +125,7 @@ class Contents
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from content where id=%d", $id));
+		return $db->queryExec(sprintf("DELETE FROM content WHERE id = %d", $id));
 	}
 
 	public function update($form)
@@ -160,25 +160,25 @@ class Contents
 	public function data_update($content)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update content set	role=%d, title = %s , 	url = %s , 	body = %s , 	metadescription = %s , 	metakeywords = %s , 	contenttype = %d , 	showinmenu = %d , 	status = %d , 	ordinal = %d	where	id = %d ", $content->role, $db->escapeString($content->title), $db->escapeString($content->url), $db->escapeString($content->body), $db->escapeString($content->metadescription), $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id ));
+		return $db->queryExec(sprintf("UPDATE content SET role = %d, title = %s, url = %s, body = %s, metadescription = %s, metakeywords = %s, contenttype = %d, showinmenu = %d, status = %d, ordinal = %d WHERE id = %d", $content->role, $db->escapeString($content->title), $db->escapeString($content->url), $db->escapeString($content->body), $db->escapeString($content->metadescription), $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id ));
 	}
 
 	public function data_add($content)
 	{
 		$db = new DB();
-		return $db->queryInsert(sprintf("insert into content (role, title, url, body, metadescription, metakeywords, 	contenttype, 	showinmenu, 	status, 	ordinal	)	values	(%d, %s, 	%s, 	%s, 	%s, 	%s, 	%d, 	%d, 	%d, 	%d 	)", $content->role, $db->escapeString($content->title),  $db->escapeString($content->url),  $db->escapeString($content->body),  $db->escapeString($content->metadescription),  $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal ));
+		return $db->queryInsert(sprintf("INSERT INTO content (role, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal) values (%d, %s, %s, %s, %s, %s, %d, %d, %d, %d )", $content->role, $db->escapeString($content->title), $db->escapeString($content->url), $db->escapeString($content->body), $db->escapeString($content->metadescription), $db->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal ));
 	}
 
 	public function data_get()
 	{
 		$db = new DB();
-		return $db->query(sprintf("select * from content where status = 1 order by contenttype, coalesce(ordinal, 1000000)"));
+		return $db->query(sprintf("SELECT * FROM content WHERE status = 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	public function data_getAll()
 	{
 		$db = new DB();
-		return $db->query(sprintf("select * from content order by contenttype, coalesce(ordinal, 1000000)"));
+		return $db->query(sprintf("SELECT * FROM content ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	public function data_getByID($id, $role)
@@ -187,21 +187,21 @@ class Contents
 		if ($role == Users::ROLE_ADMIN)
 			$role = "";
 		else
-			$role = sprintf("and (role=%d or role=0)", $role);
+			$role = sprintf("AND (role = %d OR role = 0)", $role);
 
-		return $db->queryOneRow(sprintf("select * from content where id = %d %s", $id, $role));
+		return $db->queryOneRow(sprintf("SELECT * FROM content WHERE id = %d %s", $id, $role));
 	}
 
 	public function data_getFrontPage()
 	{
 		$db = new DB();
-		return $db->query(sprintf("select * from content where status = 1 and contenttype = %d order by ordinal asc, coalesce(ordinal, 1000000), ID", Contents::TYPEINDEX));
+		return $db->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", Contents::TYPEINDEX));
 	}
 
 	public function data_getIndex()
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from content where status=1 and contenttype = %d ", Contents::TYPEINDEX));
+		return $db->queryOneRow(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d", Contents::TYPEINDEX));
 	}
 
 	public function data_getForMenuByTypeAndRole($id, $role)
@@ -210,7 +210,7 @@ class Contents
 		if ($role == Users::ROLE_ADMIN)
 			$role = "";
 		else
-			$role = sprintf("and (role=%d or role=0)", $role);
-		return $db->query(sprintf("select * from content where showinmenu=1 and status=1 and contenttype = %d %s ", $id, $role));
+			$role = sprintf("AND (role = %d OR role = 0)", $role);
+		return $db->query(sprintf("SELECT * FROM content WHERE showinmenu = 1 AND status = 1 AND contenttype = %d %s ", $id, $role));
 	}
 }

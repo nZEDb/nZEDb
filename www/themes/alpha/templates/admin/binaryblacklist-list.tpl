@@ -24,12 +24,12 @@
 	</tr>
 	
 	{foreach from=$binlist item=bin}
-	<tr id="row-{$bin.ID}" class="{cycle values=",alt"}">
-		<td>{$bin.ID}</td>
+	<tr id="row-{$bin.id}" class="{cycle values=",alt"}">
+		<td>{$bin.id}</td>
 		<td>{$bin.groupname|replace:"alt.binaries":"a.b"}</td>
-		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.ID}">Edit</a></td>
+		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">Edit</a></td>
 		<td>{$bin.description|truncate:50:"...":true}</td>
-		<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.ID})">Delete</a></td>
+		<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.id})">Delete</a></td>
 		<td>{if $bin.optype==1}Black{else}White{/if}</td>
 		<td>{if $bin.msgcol==1}Subject{elseif $bin.msgcol==2}Poster{else}MessageID{/if}</td>
 		{if $bin.status==1}
@@ -37,7 +37,7 @@
 		{else}
 			<td style="color:#FF0000">Disabled</td>
 		{/if}
-		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.ID}">{$bin.regex|escape:html|truncate:50:"...":true}</a></td>
+		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">{$bin.regex|escape:html|truncate:50:"...":true}</a></td>
 	</tr>
 	{/foreach}
 
