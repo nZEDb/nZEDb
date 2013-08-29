@@ -73,6 +73,6 @@ class Genres
 	public function getDisabledIDs()
 	{
 		$db = new DB();
-		return $db->queryDirect("SELECT id FROM genres WHERE disabled = 1");
+		return $db->query("SELECT id FROM genres WHERE disabled = 1");
 	}
 }

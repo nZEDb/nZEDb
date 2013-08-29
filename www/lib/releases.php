@@ -1559,7 +1559,8 @@ class Releases
 		}
 
 		// Disabled categories.
-		if ($catlist = $category->getDisabledIDs())
+		$catlist = $category->getDisabledIDs();
+		if (count($catlist) > 0)
 		{
 			foreach ($catlist as $cat)
 			{
@@ -1576,7 +1577,8 @@ class Releases
 		}
 
 		// Disabled music genres.
-		if ($genrelist = $genres->getDisabledIDs())
+		$genrelist = $genres->getDisabledIDs();
+		if (count($genrelist) > 0)
 		{
 			foreach ($genrelist as $genre)
 			{
