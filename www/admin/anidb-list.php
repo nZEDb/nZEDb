@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/anidb.php");
 
 $page = new AdminPage();
-
 $AniDB = new AniDB();
 
 $page->title = "AniDB List";
@@ -29,7 +27,7 @@ $page->smarty->assign('pager', $pager);
 $page->smarty->assign('animetitle',$aname);
 
 $anidblist = $AniDB->getAnimeRange($offset, ITEMS_PER_PAGE, $aname);
-$page->smarty->assign('anidblist',$anidblist);	
+$page->smarty->assign('anidblist',$anidblist);
 
 $page->content = $page->smarty->fetch('anidb-list.tpl');
 $page->render();

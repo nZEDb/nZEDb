@@ -65,6 +65,11 @@ class RottenTomato
 		return $this->_makeCall('movies/'.$rtid.'/cast.json');
 	}
 
+	public function getURLtest()
+	{
+		return RottenTomato::API_URL."movies.json?apikey=".$this->getApikey()."&q=inception&page_limit=50";
+	}
+
 	private function _makeCall($function, $param = "")
 	{
 		$params = '';
@@ -73,7 +78,6 @@ class RottenTomato
 			$params .= '&'.http_build_query($param);
 
 		$url = RottenTomato::API_URL.$function."?apikey=".$this->getApikey().$params;
-		//echo $url;die();
 
 		$results = '';
 
@@ -94,9 +98,7 @@ class RottenTomato
 			curl_close($ch);
 		}
 		else
-		{
 			$results = file_get_contents($url);
-		}
 
 		return (string) $results;
 	}

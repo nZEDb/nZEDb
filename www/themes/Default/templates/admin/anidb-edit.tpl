@@ -10,7 +10,7 @@
 <tr>
 	<td><label for="anidbID">AniDB Id:</label></td>
 	<td>
-		<input id="anidbID" class="long" name="anidbID" type="text" value="{$anime.anidbID|escape:'htmlall'}" />
+		<input id="anidbID" class="long" name="anidbID" type="text" value="{$anime.anidbid|escape:'htmlall'}" />
 	</td>
 </tr>
 

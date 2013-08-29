@@ -8,8 +8,8 @@
 <tr>
 	<td>Name:</td>
 	<td>
-		<input type="hidden" name="id" value="{$role.ID}" />
-		{if $role.ID != '' && $role.ID < 4}{$role.name}<input type="hidden" name="name" value="{$role.name}" />{else}<input name="name" type="text" value="{$role.name}" /><div class="hint">The name of the role</div>{/if}
+		<input type="hidden" name="id" value="{$role.id}" />
+		{if $role.id != '' && $role.id < 4}{$role.name}<input type="hidden" name="name" value="{$role.name}" />{else}<input name="name" type="text" value="{$role.name}" /><div class="hint">The name of the role</div>{/if}
 	</td>
 </tr>
 
@@ -45,7 +45,7 @@
 	</td>
 </tr>
 
-{if $role.ID != ''}
+{if $role.id != ''}
 <tr>
 	<td>Is Default Role:</td>
 	<td>

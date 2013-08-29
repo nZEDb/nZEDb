@@ -1,63 +1,63 @@
 <ul class="nav navbar-nav" id="nav-menu" role="navigation">
 {foreach from=$parentcatlist item=parentcat}
-{if $parentcat.ID == 1000 && $userdata.consoleview=="1"}
+{if $parentcat.id == 1000 && $userdata.consoleview=="1"}
 <li class="dropdown">
 <a id="cat1" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/console">{$parentcat.title} <b class="caret"></b></a>
 <ul class="dropdown-menu" role="menu" aria-labelledby="cat1">
 <li><a href="{$smarty.const.WWW_TOP}/console">All {$parentcat.title}</a></li>
 {foreach from=$parentcat.subcatlist item=subcat}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.ID}">{$subcat.title}</a></li>
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a></li>
 {/foreach}
 </ul>
 </li>
-{elseif $parentcat.ID == 2000 && $userdata.movieview=="1"}
+{elseif $parentcat.id == 2000 && $userdata.movieview=="1"}
 <li class="dropdown">
 <a id="cat2" role="button" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title} <b class="caret"></b></a>
 <ul class="dropdown-menu" role="menu" aria-labelledby="cat2">
 <li><a href="{$smarty.const.WWW_TOP}/movies"> All {$parentcat.title}</a></li>
 {foreach from=$parentcat.subcatlist item=subcat}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/movies?t={$subcat.ID}">{$subcat.title}</a></li>
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/movies?t={$subcat.id}">{$subcat.title}</a></li>
 {/foreach}
 </ul>
 </li>
-{elseif ($parentcat.ID == 3000 && $userdata.musicview=="1")}
+{elseif ($parentcat.id == 3000 && $userdata.musicview=="1")}
 <li class="dropdown">
 <a id="cat3" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/music">{$parentcat.title} <b class="caret"></b></a>
 <ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
 <li><a href="{$smarty.const.WWW_TOP}/music">All {$parentcat.title}</a></li>
 {foreach from=$parentcat.subcatlist item=subcat}
-{if $subcat.ID == 3030}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+{if $subcat.id == 3030}
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 {else}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.ID}">{$subcat.title}</a></li>
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.id}">{$subcat.title}</a></li>
 {/if}
 {/foreach}
 </ul>
 </li>
-{elseif ($parentcat.ID == 5000)}
+{elseif ($parentcat.id == 5000)}
 <li class="dropdown">
-<a id="cat{$parentcat.ID}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">{$parentcat.title} <b class="caret"></b></a>
-<ul class="dropdown-menu" role="menu" aria-labelledby="cat{$parentcat.ID}">
-<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">All {$parentcat.title}</a></li>
+<a id="cat{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title} <b class="caret"></b></a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="cat{$parentcat.id}">
+<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">All {$parentcat.title}</a></li>
 {foreach from=$parentcat.subcatlist item=subcat}
-{if ($subcat.ID == 7020 && $userdata.bookview=="1")}
+{if ($subcat.id == 7020 && $userdata.bookview=="1")}
 <li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 {else}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 {/if}
 {/foreach}
 </ul>
 </li>
 {else}
 <li class="dropdown">
-<a id="drop{$parentcat.ID}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">{$parentcat.title} <b class="caret"></b></a>
-<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.ID}">
-<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.ID}">All {$parentcat.title}</a></li>
+<a id="drop{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title} <b class="caret"></b></a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
+<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">All {$parentcat.title}</a></li>
 {foreach from=$parentcat.subcatlist item=subcat}
-{if ($subcat.ID == 8010 && $userdata.bookview=="1")}
+{if ($subcat.id == 8010 && $userdata.bookview=="1")}
 <li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 {else}
-<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.ID}">{$subcat.title}</a></li>
+<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 {/if}
 {/foreach}
 </ul>
@@ -83,9 +83,9 @@
 <select class="form-control" style="width: auto;" id="headcat" name="t">
 <option class="grouping" value="-1">All</option>
 {foreach from=$parentcatlist item=parentcat}
-<option {if $header_menu_cat==$parentcat.ID}selected="selected"{/if} class="grouping" value="{$parentcat.ID}">{$parentcat.title}</option>
+<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if} class="grouping" value="{$parentcat.id}">{$parentcat.title}</option>
 {foreach from=$parentcat.subcatlist item=subcat}
-<option {if $header_menu_cat==$subcat.ID}selected="selected"{/if} value="{$subcat.ID}">&nbsp;&nbsp;{$subcat.title}</option>
+<option {if $header_menu_cat==$subcat.id}selected="selected"{/if} value="{$subcat.id}">&nbsp;&nbsp;{$subcat.title}</option>
 {/foreach}
 {/foreach}
 </select>

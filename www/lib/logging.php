@@ -4,11 +4,10 @@ require_once(WWW_DIR."/lib/site.php");
 
 class Logging
 {
-
 	public function get()
 	{
 		$db = new DB();
-		return $db->query("select * from logging");
+		return $db->query("SELECT * FROM logging");
 	}
 
 	public function LogBadPasswd($username="", $host="")
@@ -18,12 +17,10 @@ class Logging
 		$s = $site->get();
 		// If logggingopt is = 0, then we do nothing, 0 = logging off.
 		if ($s->loggingopt == "1")
-		{
-			$db->queryInsert(sprintf("insert into logging (time, username, host) values (now(), %s, %s)", $db->escapeString($username), $db->escapeString($host)));
-		}
+			$db->queryInsert(sprintf("INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)", $db->escapeString($username), $db->escapeString($host)));
 		else if ($s->loggingopt == "2")
 		{
-			$db->queryInsert(sprintf("insert into logging (time, username, host) values (now(), %s, %s)", $db->escapeString($username), $db->escapeString($host)));
+			$db->queryInsert(sprintf("INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)", $db->escapeString($username), $db->escapeString($host)));
 			$logdata = date('M d H:i:s ')."Login Failed for ".$username." from ".$host.".\n";
 			if (isset($s->logfile) && $s->logfile != "")
 				file_put_contents($s->logfile, $logdata, FILE_APPEND);
@@ -39,18 +36,12 @@ class Logging
 	public function getTopCombined()
 	{
 		$db = new DB();
-		return $db->query("select max(time) as time, username, host, count(host) as count from logging
-		group by host, username
-		order by count desc
-		limit 10");
+		return $db->query("SELECT MAX(time) AS time, username, host, COUNT(host) AS count FROM logging GROUP BY host, username ORDER BY count DESC LIMIT 10");
 	}
 
 	public function getTopIPs()
 	{
 		$db = new DB();
-		return $db->query("select max(time) as time, host, count(host) as count from logging
-		group by host
-		order by count desc
-		limit 10");
+		return $db->query("SELECT MAX(time) AS time, host, COUNT(host) AS count FROM logging GROUP BY host ORDER BY count DESC LIMIT 10");
 	}
 }

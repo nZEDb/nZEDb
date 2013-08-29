@@ -2,7 +2,7 @@
 <h1>My Cart</h1>
 
 <p>
-Your cart can be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.
+Your cart can be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.
 </p>
 
 {if $results|@count > 0}
@@ -24,12 +24,12 @@ Your cart can be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.ID}" /></td>
+			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" /></td>
 			<td>
 				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
 			<td class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-			<td><a title="Delete from your cart" href="?delete={$result.ID}">delete</a></td>
+			<td><a title="Delete from your cart" href="?delete={$result.id}">delete</a></td>
 		</tr>
 	{/foreach}
 	

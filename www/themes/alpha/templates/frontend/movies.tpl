@@ -57,14 +57,14 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <tr>
 <td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 <div class="movcover">
-<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
-<img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
+<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
+<img class="shadow" style="margin: 3px 0;" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="160" border="0" alt="{$result.title|escape:"htmlall"}">
 </a>
 <div class="relextra" style="margin-top:5px;">
-<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
-<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a></span>
-<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a></span>
-{*<span class="label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">Couch</a></span>*}
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a></span>
+<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a></span>
+{*<span class="label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">Couch</a></span>*}
 </div>
 </div>
 </td>
@@ -84,7 +84,7 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <table class="table table-condensed table-hover data">
 {assign var="msplits" value=","|explode:$result.grp_release_id}
 {assign var="mguid" value=","|explode:$result.grp_release_guid}
-{assign var="mnfo" value=","|explode:$result.grp_release_nfoID}
+{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
 {assign var="mgrp" value=","|explode:$result.grp_release_grpname}
 {assign var="mname" value="#"|explode:$result.grp_release_name}
 {assign var="mpostdate" value=","|explode:$result.grp_release_postdate}
@@ -120,8 +120,8 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 {if $sabintegrated}<div class="icon icon_sab float-right" title="Send to my Sabnzbd"></div>{/if}
 <div class="icon icon_cart float-right" title="Add to Cart"></div><br>
 {*s{if $isadmin || $ismod}
-<a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
-<a class="label confirm_action label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+<a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+<a class="label confirm_action label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 {/if}*}
 </td>
 </tr>

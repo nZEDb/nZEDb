@@ -45,7 +45,7 @@
 	
 	{foreach from=$userlist item=user}
 	<tr class="{cycle values=",alt"}">
-		<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.ID}">{$user.username}</a></td>
+		<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.id}">{$user.username}</a></td>
 		<td>{$user.email}</td>
 		<td>{$user.host}</td>
 		<td title="{$user.createddate}">{$user.createddate|date_format}</td>
@@ -54,7 +54,7 @@
 		<td>{$user.grabs}</td>
 		<td>{$user.invites}</td>
 		<td>{$user.rolename}</td>
-		<td>{if $user.role!="2"}<a class="confirm_action" href="{$smarty.const.WWW_TOP}/user-delete.php?id={$user.ID}">delete</a>{/if}</td>
+		<td>{if $user.role!="2"}<a class="confirm_action" href="{$smarty.const.WWW_TOP}/user-delete.php?id={$user.id}">delete</a>{/if}</td>
 	</tr>
 	{/foreach}
 

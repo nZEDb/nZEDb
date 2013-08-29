@@ -8,7 +8,7 @@
 <tr>
 	<td>Name:</td>
 	<td>
-		<input type="hidden" name="id" value="{$group.ID}" />
+		<input type="hidden" name="id" value="{$group.id}" />
 		<input id="name" class="long" name="name" type="text" value="{$group.name}" />
 		<div class="hint">Changing the name to an invalid group will break things.</div>		
 	</td>

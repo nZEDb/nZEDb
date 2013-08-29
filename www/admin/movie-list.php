@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/movie.php");
 
 $page = new AdminPage();
-
 $movie = new Movie();
 
 $page->title = "Movie List";

@@ -7,7 +7,8 @@ $page->title = "Save Settings";
 
 $cfg = new Install();
 
-if (!$cfg->isInitialized()) {
+if (!$cfg->isInitialized())
+{
 	header("Location: index.php");
 	die();
 }
@@ -15,21 +16,17 @@ if (!$cfg->isInitialized()) {
 $cfg = $cfg->getSession();
 
 $cfg->saveConfigCheck = $cfg->saveConfig();
-if ($cfg->saveConfigCheck === false) {
-	 $cfg->error = true;
-}
+if ($cfg->saveConfigCheck === false)
+	$cfg->error = true;
 
 $cfg->saveLockCheck = $cfg->saveInstallLock();
-if ($cfg->saveLockCheck === false) {
+if ($cfg->saveLockCheck === false)
 	$cfg->error = true;
-}
 
-if (!$cfg->error) {
+if (!$cfg->error)
 	$cfg->setSession();
-}
 
 $page->smarty->assign('cfg', $cfg);
-
 $page->smarty->assign('page', $page);
 
 $page->content = $page->smarty->fetch('step4.tpl');

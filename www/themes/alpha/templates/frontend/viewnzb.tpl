@@ -18,7 +18,7 @@
 {if $isadmin || $ismod}
 <tr>
 <th style="vertical-align:top">Admin:</th>
-<td><a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.ID}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a> <a class="label label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.ID}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td>
+<td><a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}" title="Edit Release">Edit</a> <a class="label label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.id}&amp;from={$smarty.server.HTTP_REFERER}" title="Delete Release">Delete</a></td>
 </tr>
 {/if}
 
@@ -29,7 +29,7 @@
 </td>
 </tr>
 
-{if $rage && $release.rageID > 0}
+{if $rage && $release.rageid > 0}
 <tr>
 <th style="vertical-align:top">TV Info:</th>
 <td><strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br>
@@ -38,15 +38,15 @@
 {if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br>{/if}
 {if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
 <div style="margin-top:10px;">
-<span class"label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageID}">All Episodes</a></span>
-<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageID}" title="View at TV Rage">TV Rage</a></span>
-<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
+<span class"label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageid}">All Episodes</a></span>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}" title="View at TV Rage">TV Rage</a></span>
+<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 </div>
 </td>
 </tr>
 {/if}
 
-{if $movie && $release.rageID < 0}
+{if $movie && $release.rageid < 0}
 <tr>
 <th style="vertical-align:top">Movie Info:</th>
 <td><strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>
@@ -56,15 +56,15 @@
 <strong>Genre:</strong> {$movie.genre}
 <br><strong>Starring:</strong> {$movie.actors}
 <div style="margin-top:10px;">
-<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbID}/" title="View at IMDB">IMDB</a></span>
-{if $movie.tmdbID != ''}<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbID}" title="View at TMDb">TMDb</a></span>{/if}
-<span class"label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbID}&title={$movie.title}" name="CP{$release.imdbID}" title="Add to CouchPotato">CouchPotato</a></span>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a></span>
+{if $movie.tmdbid != ''}<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a></span>{/if}
+<span class"label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}" name="CP{$release.imdbid}" title="Add to CouchPotato">CouchPotato</a></span>
 </div>
 </td>
 </tr>
 {/if}
 
-{if $anidb && $anidb.anidbID > 0}
+{if $anidb && $anidb.anidbid > 0}
 <tr>
 <th style="vertical-align:top">Anime Info:</th>
 <td><strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"}{/if}</strong><br>
@@ -72,9 +72,9 @@
 {if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br>{/if}
 {if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
 <div style="margin-top:10px;">
-<span class"label label-default"><a title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbID}">All Episodes</a></span>
-<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbID}" title="View at AniDB">AniDB</a></span>
-<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbID}&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}" title="RSS feed for this anime">Anime RSS Feed</a></span>
+<span class"label label-default"><a title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbid}">All Episodes</a></span>
+<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}" title="View at AniDB">AniDB</a></span>
+<span class"label label-default"><a href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="RSS feed for this anime">Anime RSS Feed</a></span>
 </div>
 </td>
 </tr>
@@ -147,23 +147,23 @@
 </table>
 </div>
 <div class="col-xs-4" style="text-align:center" >
-{if $rage && $release.rageID > 0 && $rage.imgdata != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.ID}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
+{if $rage && $release.rageid > 0 && $rage.imgdata != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
 
-{if $movie && $release.rageID < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbID}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
+{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
-{if $anidb && $release.anidbID > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbID}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
+{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
 
-{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*{$smarty.const.WWW_TOP}/covers/console/{$con.ID}.jpg" width="160" alt="{$con.title|escape:"htmlall"}*}
+{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}*}
 
-{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.ID}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}
+{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.id}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}
 
-{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.ID}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
-{*{$smarty.const.WWW_TOP}/covers/book/{$book.ID}.jpg" width="160" alt="{$book.title|escape:"htmlall"}*}
+{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+{*{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" width="160" alt="{$book.title|escape:"htmlall"}*}
 
 </div>
 
@@ -183,14 +183,14 @@
 </tr>
 <tr>
 <th style="vertical-align:top">Category:</th>
-<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryID}">{$release.category_name}</a>
+<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
 </td>
 </tr>
-{if $nfo.ID|@count > 0}
+{if $nfo.id|@count > 0}
 <tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
 
-{if $reVideo.releaseID|@count > 0 || $reAudio|@count > 0}
+{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
 <tr>
 <th style="vertical-align:top">Media Info:</th>
 <td style="padding:0;">
@@ -268,7 +268,7 @@
 {/if}
 {foreach from=$reAudio item=audio}
 <tr>
-<td><strong>Audio {$audio.audioID}</strong></td>
+<td><strong>Audio {$audio.audioid}</strong></td>
 <td>Format</td>
 <td class="right">{$audio.audioformat}</td>
 </tr>
@@ -378,7 +378,7 @@
 </tr>
 <tr>
 <th style="vertical-align:top">ID:</th>
-<td>{$release.ID}
+<td>{$release.id}
 </td>
 </tr>
 <tr>

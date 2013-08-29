@@ -1,9 +1,22 @@
+08292013 -> kevin       August 23 to 29:
+                        Convert to php database objects.
+                        Almost full support for postgresql (still needs work).
+                             Now there is a seperate schema / patches for both database types, make sure to read the readme in db if you are submiting patches.
+                             The install has been modified to support postgresql, but it has been locked for now while I keep working on it. 
+                        Start working on comment sharing throughout sites (ThePeePs will work on the rest with our help).
+                        Fixes to par2 and toggle option to turn on and off adding the files to the filelist.
+                        Changes to the install page (more checks and clearer text).
+                        Changes to namefixer to not rerun the same release, also changes to relnamestatus, consolidating relstatus and adding more types.
+                        Changes to backfill's postdate to fallback on the last known date or try a different article to get a date.
+                        Other random stuff.
+                        Various bug fixes.
+08282013 -> jonnyboy -> patch rename column
 08272013 -> jonnyboy -> reverted nntplib.py to one that works with both 2.* and 3.*
-						changed nzbs.group to nzbs.groupname
-						fixed clean_nzbs.php to remove nzbs and releases
+                        changed nzbs.group to nzbs.groupname
+                        fixed clean_nzbs.php to remove nzbs and releases
 08252013 -> jonnyboy -> added regex to releaseCleaner that gets most predb style names
-						changed remove creap releases password to all negative search items and not remove releases that are applications/misc
-						added code to renumber content if new content ordinal is 1
+                        changed remove creap releases password to all negative search items and not remove releases that are applications/misc
+                        added code to renumber content if new content ordinal is 1
 08222013 -> jonnyboy -> removed "added and r.nzbstatus = 0 to all stage 4.5 queries, since it is for deleting before the nzbs are created" and moved stage 4.5 out of the loop
                         updated stage4567 to run max 3 loops, would run indefinately before
                         updated missing items from alhpa theme site-edit/tmux-edit

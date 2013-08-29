@@ -1,12 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/releaseextra.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
 if (!isset($_REQUEST["id"]))
 	$page->show404();
 
+require_once(WWW_DIR."/lib/releaseextra.php");
 $re = new ReleaseExtra();
 $redata = $re->getBriefByGuid($_REQUEST["id"]);
 
@@ -14,7 +13,6 @@ if (!$redata)
 	print "No media info";
 else
 {
-	//print "<h3 class=\"tooltiphead\">extended media info...</h3>\n";
 	print "<table>\n";
 	if ($redata["videocodec"] != "" && $redata["containerformat"] != "") 
 	{
@@ -32,4 +30,4 @@ else
 	if ($redata["subs"] != "")
 		print "<tr><th>Subtitles:</th><td>".htmlentities($redata["subs"], ENT_QUOTES)."</td></tr>\n";
 	print "</table>";
-}	
+}

@@ -12,7 +12,7 @@
 <tr>
 	<td>Title:</td>
 	<td>
-		<input type="hidden" name="id" value="{$category.ID}" />
+		<input type="hidden" name="id" value="{$category.id}" />
 		{$category.title}
 	</td>
 </tr>
@@ -20,7 +20,7 @@
 <tr>
 	<td>Parent:</td>
 	<td>
-		{$category.parentID}
+		{$category.parentid}
 	</td>
 </tr>
 

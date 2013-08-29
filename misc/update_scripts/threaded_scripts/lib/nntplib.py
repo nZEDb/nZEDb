@@ -1056,3 +1056,4 @@ def connect(host, port, ssl, user, password):
 		return NNTP_SSL(host, port, user, password)
 	else:
 		return NNTP(host, port, user, password)
+

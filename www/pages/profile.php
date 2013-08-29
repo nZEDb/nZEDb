@@ -1,13 +1,13 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/releasecomments.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/sabnzbd.php");
 
 $rc = new ReleaseComments;
 $sab = new SABnzbd($page);
-
-if (!$users->isLoggedIn())
-	$page->show403();
 
 $userid = 0;
 if (isset($_GET["id"]))
@@ -16,7 +16,7 @@ elseif (isset($_GET["name"]))
 {
 	$res = $users->getByUsername($_GET["name"]);
 	if ($res)
-		$userid = $res["ID"];
+		$userid = $res["id"];
 }
 else
 	$userid = $users->currentUserId();
@@ -26,9 +26,9 @@ if (!$data)
 	$page->show404();
 
 $invitedby = '';
-if ($data["invitedby"] != "")	
+if ($data["invitedby"] != "")
 	$invitedby = $users->getById($data["invitedby"]);
-	
+
 $page->smarty->assign('userinvitedby',$invitedby);
 $page->smarty->assign('user',$data);
 
@@ -44,7 +44,7 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $commentslist = $rc->getCommentsForUserRange($userid, $offset, ITEMS_PER_PAGE);
-$page->smarty->assign('commentslist',$commentslist);	
+$page->smarty->assign('commentslist',$commentslist);
 
 $exccats = $users->getCategoryExclusionNames($userid);
 $page->smarty->assign('exccats', implode(",", $exccats));

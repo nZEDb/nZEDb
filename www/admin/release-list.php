@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/releases.php");
 
 $page = new AdminPage();
-
 $releases = new Releases();
 
 $page->title = "Release List";
@@ -21,7 +19,7 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $releaselist = $releases->getRange($offset, ITEMS_PER_PAGE);
-$page->smarty->assign('releaselist',$releaselist);	
+$page->smarty->assign('releaselist',$releaselist);
 
 $page->content = $page->smarty->fetch('release-list.tpl');
 $page->render();

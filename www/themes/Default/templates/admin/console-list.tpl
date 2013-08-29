@@ -14,8 +14,8 @@
 	
 	{foreach from=$consolelist item=console}
 	<tr class="{cycle values=",alt"}">
-		<td class="less">{$console.ID}</td>
-		<td><a title="Edit" href="{$smarty.const.WWW_TOP}/console-edit.php?id={$console.ID}">{$console.title}</a></td>
+		<td class="less">{$console.id}</td>
+		<td><a title="Edit" href="{$smarty.const.WWW_TOP}/console-edit.php?id={$console.id}">{$console.title}</a></td>
 		<td>{$console.platform}</td>
 		<td>{$console.createddate|date_format}</td>
 	</tr>

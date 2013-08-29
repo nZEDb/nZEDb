@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/tvrage.php");
 
 $page = new AdminPage();
-
 $tvrage = new TvRage();
 
 $page->title = "TV Rage List";
@@ -29,7 +27,7 @@ $page->smarty->assign('pager', $pager);
 $page->smarty->assign('ragename',$tname);
 
 $tvragelist = $tvrage->getRange($offset, ITEMS_PER_PAGE, $tname);
-$page->smarty->assign('tvragelist',$tvragelist);	
+$page->smarty->assign('tvragelist',$tvragelist);
 
 $page->content = $page->smarty->fetch('rage-list.tpl');
 $page->render();

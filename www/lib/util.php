@@ -1,53 +1,46 @@
 <?php
 
-//
-// General util functions.
-//
+/*
+ * General util functions.
+ */
 
-//
 // Central function for sending site email.
-//
 function sendEmail($to, $subject, $contents, $from)
 {
-	$from_header = "From: ".$from;
-	$ret = @mail($to, $subject, $contents, $from_header);
+	$ret = @mail($to, $subject, $contents, "From: ".$from);
 	if (!$ret)
-	{
 		return false;
-	}
 
 	return true;
 }
 
+// Check if O/S is windows.
 function isWindows()
 {
 	if(strpos(PHP_OS,"WIN") === false)
-	{
 		return false;
-	}
 	else
-	{
 		return true;
-	}
 }
 
+// Convert obj to array.
 function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 {
 	$arrData = array();
 
-	// if input is object, convert into array
-	if (is_object($arrObjData)) {
+	// If input is object, convert into array.
+	if (is_object($arrObjData))
 		$arrObjData = get_object_vars($arrObjData);
-	}
 
-	if (is_array($arrObjData)) {
-		foreach ($arrObjData as $index => $value) {
-			if (is_object($value) || is_array($value)) {
-				$value = objectsIntoArray($value, $arrSkipIndices); // recursive call
-			}
-			if (in_array($index, $arrSkipIndices)) {
+	if (is_array($arrObjData))
+	{
+		foreach ($arrObjData as $index => $value)
+		{
+			// Recursive call.
+			if (is_object($value) || is_array($value))
+				$value = objectsIntoArray($value, $arrSkipIndices);
+			if (in_array($index, $arrSkipIndices))
 				continue;
-			}
 			$arrData[$index] = $value;
 		}
 	}
@@ -57,20 +50,19 @@ function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 function safeFilename($filename)
 {
 	$temp = $filename;
-
 	$result = '';
-	for ($i=0; $i<strlen($temp); $i++) {
-		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
+	for ($i=0; $i<strlen($temp); $i++)
+	{
+		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i]))
 			$result = $result . $temp[$i];
-		}
 	}
 
 	return $result;
 }
 
-function runCmd($command, $debug=false) {
+function runCmd($command, $debug=false)
+{
 	$nl = PHP_EOL;
-
 	if (isWindows() && strpos(phpversion(),"5.2") !== false)
 		$command = "\"".$command."\"";
 
@@ -87,7 +79,8 @@ function runCmd($command, $debug=false) {
 	return $output;
 }
 
-function checkStatus($code) {
+function checkStatus($code)
+{
 	return ($code == 0) ? true : false;
 }
 
@@ -125,11 +118,12 @@ function getUrl($url, $method='get', $postdata='', $language="")
 }
 
 
-function cp437toUTF($str) {
+function cp437toUTF($str)
+{
 	$out = '';
-	for ($i = 0; $i<strlen($str);$i++){
+	for ($i = 0; $i<strlen($str);$i++)
+	{
 		$ch = ord($str{$i});
-		//echo $ch.' ';
 		switch($ch){
 			case 128: $out .= 'Ç';break;
 			case 129: $out .= 'ü';break;

@@ -25,8 +25,8 @@
 					{$result.title|escape:"htmlall"}
 				{/if}
 			</td>
-			<td class="predb">{$result.adddate}</td>
-			<td class="predb">{$result.predate}</td>
+			<td class="predb">{$result.adddate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
+			<td class="predb">{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 			<td class="predb">
 				{if {$result.source} == backfill}
 					Backfill
