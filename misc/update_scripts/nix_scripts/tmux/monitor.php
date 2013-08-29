@@ -785,7 +785,7 @@ while( $i > 0 )
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
 						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php true $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{

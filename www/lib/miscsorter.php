@@ -791,7 +791,8 @@ echo "asin ".$set[1]."\n";
 			$pb->matchNfo();
 			$pb->matchPredb();
 			unset($pb);
-			exit("No ID supplied so exiting.\n");
+			if ($this-> echooutput)
+				exit("Misc sorter: No ID supplied so exiting.\n");
 		}
 
 		if ($this->db->dbSystem() == "mysql")
