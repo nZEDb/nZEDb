@@ -4,12 +4,35 @@ Delete table1, table2 from
 
 Delete query in grabnzbs line 80ish.
 
-Possible things to change:
-$row = $db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
-$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
-
+/*
 Save tvrage images to disk. Or find a way to store them in pgsql.
+still unsure about this.
+*/
 
+/*
 Update tmux optimize.
 
+See db.php and optimize.php (update_scripts) for examples.
+*/
+
 Coalesce on the min / max etc files/size (stage 3 and 4.5) is wrong, it should be greatest/max.
+
+/*
+Releases.php lines 180-200ish
+
+SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y')
+
+needs to be changed to :
+
+SELECT to_char(max(postdate), 'dd/mm/yyyy')
+*/
+
+/*
+Releases.php line 255-280ish
+and
+users.php 650-670 ish
+
+DATE_SUB
+
+$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
+*/
