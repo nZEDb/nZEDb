@@ -14,7 +14,7 @@ class DB
 		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
-			exit("ERROR: config.php is missing the DB_SYSTEM setting.\n");
+			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
 		if (DB::$initialized === false)
 		{
 			if (defined("DB_PORT"))
@@ -245,7 +245,6 @@ class DB
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
-/* Replacement for ping() */
 	// Checks whether the connection to the server is working. Optionally start a new connection.
 	public function ping($restart = false)
 	{
@@ -260,29 +259,6 @@ class DB
 			return false;
 		}
 	}
-/* See the above, Tmux possibly needs to be changed to work with the above.
-	// Checks whether the connection to the server is working. Optionally kills connection.
-	public function ping($kill=false)
-	{
-		if (DB::$mysqli->ping() === false)
-		{
-			printf ("Error: %s\n", DB::$mysqli->error());
-			DB::$mysqli->close();
-			return false;
-		}
-		if ($kill === true)
-			$this->kill();
-		return true;
-	}
-
-	//This function is used to ask the server to kill a MySQL thread specified by the processid parameter. This value must be retrieved by calling the mysqli_thread_id() function.
-	public function kill()
-	{
-		DB::$mysqli->kill(DB::$mysqli->thread_id);
-		DB::$mysqli->close();
-	}
-*/
-
 }
 
 // Class for caching queries into RAM using memcache.
