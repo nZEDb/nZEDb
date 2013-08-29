@@ -97,7 +97,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$regex = "regexp_matches(searchname, '[a-zA-Z0-9]{25,}')";
 
 		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
-		$delcount = deleteReleases($sql, "Hashed";);
+		$delcount = deleteReleases($sql, "Hashed");
 		return $delcount;
 	}
 
@@ -111,7 +111,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 			$regex = "regexp_matches(searchname, '^[a-zA-Z0-9]{0,5}$')";
 
 		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
-		$delcount = deleteReleases($sql, "Short";);
+		$delcount = deleteReleases($sql, "Short");
 		return $delcount;
 	}
 

@@ -719,7 +719,7 @@ while( $i > 0 )
 	else
 		$kill_coll = "FALSE";
 
-	$_sleep = "$_phpn ${DIR}testing/Release_scripts/showsleep.php";
+	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
 	if ( $running == "TRUE" )
 	{
