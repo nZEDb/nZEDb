@@ -215,6 +215,7 @@ if (!empty($argc) || $page->isPostBack() )
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
+				//removes everything after yEnc in subject
 				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $firstname['0']);
 				$subject = utf8_encode(trim($partless));
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
