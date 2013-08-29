@@ -318,7 +318,7 @@ class TvRage
 		$xml = getUrl($this->xmlFullShowInfoUrl.$rageid);
 		if ($xml !== false)
 		{
-			$arrXml = objectsIntoArray(simplexml_load_string($xml);
+			$arrXml = objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml))
 			{
 				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
