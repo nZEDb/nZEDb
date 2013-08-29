@@ -148,7 +148,7 @@ class DB
 	}
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
-	public function optimise()
+	public function optimise($admin=false)
 	{
 		$tablecnt = 0;
 		if ($this->dbsystem == "mysql")
@@ -157,10 +157,11 @@ class DB
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table)
 			{
-				echo "Optimizing table: ".$table['Name'].".\n";
-				if (strtolower($table['Engine']) == "myisam")
-					$this->queryDirect("REPAIR TABLE `".$table['Name']."`");
-				$this->queryDirect("OPTIMIZE TABLE `".$table['Name']."`");
+				if ($admin === false)
+					echo "Optimizing table: ".$table['name'].".\n";
+				if (strtolower($table['engine']) == "MyISAM")
+					$this->queryDirect("REPAIR TABLE `".$table['name']."`");
+				$this->queryDirect("OPTIMIZE TABLE `".$table['name']."`");
 			}
 			$this->queryDirect("FLUSH TABLES");
 		}
@@ -170,7 +171,8 @@ class DB
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table)
 			{
-				echo "Vacuuming table: ".$table['name'].".\n";
+				if ($admin === false)
+					echo "Vacuuming table: ".$table['name'].".\n";
 				$this->query("VACUUM (ANALYZE) ".$table['name']);
 			}
 		}

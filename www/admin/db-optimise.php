@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/framework/db.php");
 $page = new AdminPage();
 $db = new DB;
 
-$tablelist = $db->optimise();
+$tablelist = $db->optimise(true);
 
 $page->title = "DB Table Optimise";
 $page->smarty->assign('tablelist',$tablelist);	
