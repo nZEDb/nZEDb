@@ -48,10 +48,10 @@ if(isset($argv[1]) && $argv[1] == "true")
 
 	echo "Patching database - $dbname\n";
 	system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
-	if ( $restart == "true" )
+	if ($restart == "true")
 	{
 		echo "Starting tmux scripts\n";
-		$db->queryExec("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+		$db->queryExec("UPDATE tmux SET value = 'TRUE' WHERE setting = 'RUNNING'");
 	}
 }
 else
