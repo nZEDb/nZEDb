@@ -4,6 +4,8 @@ require_once(WWW_DIR."/lib/site.php");
 
 class ReleaseComments
 {
+
+	// Returns the row associated to the id of a comment.
 	public function getCommentById($id)
 	{
 		$db = new DB();
@@ -23,6 +25,7 @@ class ReleaseComments
 		return $res["num"];
 	}
 
+	// For deleting a single comment on the site.
 	public function deleteComment($id)
 	{
 		$db = new DB();
@@ -83,6 +86,7 @@ class ReleaseComments
 		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid INNER JOIN releases on releases.id = releasecomment.releaseid ORDER BY releasecomment.createddate DESC".$limit);
 	}
 
+	// Updates the amount of comments for the rlease.
 	public function updateReleaseCommentCount($relid)
 	{
 		$db = new DB();

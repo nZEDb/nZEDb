@@ -22,12 +22,13 @@ function preName()
 		$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND regexp_matches(searchname, '[a-fA-F0-9]{32}')");
 		$res = $db->query("SELECT id, searchname FROM releases WHERE dehashstatus BETWEEN -6 AND -1 AND regexp_matches(searchname, '[a-fA-F0-9]{32}')");
 	}
-
+	
+	$counter = 0;
 	$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND searchname REGEXP '[a-fA-F0-9]{32}'");
 	if(count($res) > 0)
 	{
 		$consoletools = new ConsoleTools();
-		$counter = $reset = 0;
+		$reset = 0;
 		$loops = 1;
 		foreach ($res as $row)
 		{
@@ -48,7 +49,11 @@ function preName()
 			if ($success == false)
 				$db->queryExec(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
 			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,count($res)));
+			echo "\n";
 		}
 	}
-	echo "\n".$counter. " release(s) names changed.\n";
+	if ($counter > 0)
+		echo $counter." release(s) names changed.\n";
+	else
+		echo "Nothing to do.\n";
 }
