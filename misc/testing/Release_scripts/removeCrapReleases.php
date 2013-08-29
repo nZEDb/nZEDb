@@ -194,10 +194,10 @@ if (isset($argv[1]) && $argv[1] == "true")
 			foreach ($regexes as $regex)
 			{
 				if ($db->dbSystem() == "mysql")
-					$regex = "(rf.name REGEXP ".$db->escapeString($regex["regex"])." OR r.name REGEXP ".$db->escapeString($regex["regex"]).")";
+					$regexsql = "(rf.name REGEXP ".$db->escapeString($regex["regex"])." OR r.name REGEXP ".$db->escapeString($regex["regex"]).")";
 				else if ($db->dbSystem() == "pgsql")
-					$regex = "(regexp_matches(rf.name, ".$db->escapeString($regex["regex"]).") OR regexp_matches(r.name, ".$db->escapeString($regex["regex"])."))";
-				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE (rf.name REGEXP".$db->escapeString($regex["regex"])." OR r.name REGEXP".$db->escapeString($regex["regex"]).")".$and);
+					$regexsql = "(regexp_matches(rf.name, ".$db->escapeString($regex["regex"]).") OR regexp_matches(r.name, ".$db->escapeString($regex["regex"])."))";
+				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} ".$and);
 				$delcount += deleteReleases($sql, "Blacklist");
 			}
 		}
