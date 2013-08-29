@@ -58,7 +58,7 @@ if( isset($argv[1]) )
 	$tablecnt = 0;
 	if ($db->dbSystem() == "mysql")
 	{
-		$alltables = $this->query("SHOW table status WHERE Data_free > 0");
+		$alltables = $db->query("SHOW table status WHERE Data_free > 0");
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table)
 		{
