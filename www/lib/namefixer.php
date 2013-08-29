@@ -160,7 +160,7 @@ class Namefixer
 
 					if ($type === "PAR2, ")
 						echo $n;
-					echo	"New name: ".$newname.$n.
+					echo	$n."New name: ".$newname.$n.
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
