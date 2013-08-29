@@ -164,10 +164,10 @@ class Backfill
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 
 		$db = new DB();
-		$groupname = $db->queryOneRow(sprintf("select name from groups WHERE (first_record_postdate BETWEEN %s and now()) and (backfill = 1) order by name asc", $db->escapeString($this->safebdate)));
+		$groupname = $db->queryOneRow(sprintf("SELECT name FROM groups WHERE first_record_postdate BETWEEN %s AND NOW() AND backfill = 1 ORDER BY name ASC", $db->escapeString($this->safebdate)));
 
 		if (!$groupname)
-			exit("No groups to backfill, they are all at the target date ".$this->safebdate.".\n");
+			exit("No groups to backfill, they are all at the target date ".$this->safebdate.", or you have not enabled them to be backfilled in the groups page.\n");
 		else
 			$this->backfillPostAllGroups($groupname["name"], $articles);
 	}
