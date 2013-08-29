@@ -231,13 +231,6 @@ class DB
 		return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
 	}
 
-	// Convert unixtime to a date, no time then back to unix time.
-	// (substitute for mysql's DATE() function)
-	public function unixtime_date($utime)
-	{
-		return strtotime(date('Y-m-d', $utime));
-	}
-
 	// Date to unix time.
 	// (substitute for mysql's UNIX_TIMESTAMP() function)
 	public function unix_timestamp($date)

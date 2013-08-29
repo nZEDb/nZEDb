@@ -182,15 +182,16 @@ class TvRage
 							if($sShow->ep == "01x01")
 								$showarray[] = $sShow->sid;
 
-							if(in_array($currShowId,$showarray)) //only stick current shows and new shows in there
-								$db->queryInsert(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $showname, $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $title, $airdate, $link, $db->escapeString($sShow->title), $db->escapeString($currShowName)));
+							// Only stick current shows and new shows in there.
+							if(in_array($currShowId,$showarray))
+								$db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString($currShowName)));
 						}
 					}
 				}
-				// update series info
+				// Update series info.
 				foreach ($xmlSchedule as $showId=>$epInfo)
 				{
-					$res = $db->query(sprintf("SELECT * from tvrage where rageid = %d", $showId));
+					$res = $db->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $showId));
 					if (sizeof($res) > 0)
 					{
 						foreach ($res as $arr)
@@ -198,30 +199,28 @@ class TvRage
 							$prev_ep = $next_ep = "";
 							$query = array();
 
-							// previous episode
+							// Previous episode.
 							if (isset($epInfo['prev']) && $epInfo['prev']['episode'] != '')
 							{
 								$prev_ep = $epInfo['prev']['episode'].', "'.$epInfo['prev']['title'].'"';
 								$query[] = sprintf("prevdate = %s, previnfo = %s", $db->from_unixtime($epInfo['prev']['day_time']), $db->escapeString($prev_ep));
 							}
 
-							// next episode
+							// Next episode.
 							if (isset($epInfo['next']) && $epInfo['next']['episode'] != '')
 							{
-								if ($prev_ep == "" && $arr['nextinfo'] != '' && $epInfo['next']['day_time'] > strtotime($arr["nextdate"]) && $db->unixtime_date($arr["nextdate"]) < $yesterday)
+								if ($prev_ep == "" && $arr['nextinfo'] != '' && $epInfo['next']['day_time'] > strtotime($arr["nextdate"]) && strtotime(date('Y-m-d', strtotime($arr["nextdate"]))) < $yesterday)
 								{
 									$db->queryExec(sprintf("UPDATE tvrage SET prevdate = nextdate, previnfo = nextinfo WHERE id = %d", $arr['id']));
-									$prev_ep = "SWAPPED with: ".$arr['nextInfo']." - ".date("r", strtotime($arr["nextdate"]));
+									$prev_ep = "SWAPPED with: ".$arr['nextinfo']." - ".date("r", strtotime($arr["nextdate"]));
 								}
 								$next_ep = $epInfo['next']['episode'].', "'.$epInfo['next']['title'].'"';
 								$query[] = sprintf("nextdate = %s, nextinfo = %s", $db->from_unixtime($epInfo['next']['day_time']), $db->escapeString($next_ep));
 							}
 							else
-							{
-								$query[] = "nextdate = null, nextinfo = null";
-							}
+								$query[] = "nextdate = NULL, nextinfo = NULL";
 
-							// output
+							// Output.
 							if ($this->echooutput)
 							{
 								echo $epInfo['showname']." (".$showId."):\n";
@@ -229,7 +228,7 @@ class TvRage
 								echo "Next: {$next_ep} - ".(isset($epInfo['next']['day_time']) ? date("r",$epInfo['next']['day_time']) : "").".\n";
 							}
 
-							// update info
+							// Update info.
 							if (count($query) > 0)
 							{
 								$sql = join(", ", $query);
