@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3411";
+$version="0.1r3412";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -267,6 +267,7 @@ $tvrage_releases_proc = 0;
 $work_remaining_now = 0;
 $book_releases_proc = 0;
 
+$requestID_inprogress_start = 0;
 $console_releases_proc_start = 0;
 $movie_releases_proc_start = 0;
 $music_releases_proc_start = 0;

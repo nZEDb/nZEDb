@@ -1,7 +1,8 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-08292013 -> jonnyboy -> removed unneeded column from nzbs table
-08292013 -> kevin       August 23 to 29:
+08292013 -> jonnyboy -> typo in monitor.php
+                        removed unneeded column from nzbs table
+08292013 -> kevin    -> August 23 to 29:
                         Convert to php database objects.
                         Almost full support for postgresql (still needs work).
                              Now there is a seperate schema / patches for both database types, make sure to read the readme in db if you are submiting patches.
