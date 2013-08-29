@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-08292013 -> jonnyboy -> typo in monitor.php
+08292013 -> jonnyboy -> update for changes to decrypt_hashes.php
+						typo in monitor.php
                         removed unneeded column from nzbs table
 08292013 -> kevin    -> August 23 to 29:
                         Convert to php database objects.

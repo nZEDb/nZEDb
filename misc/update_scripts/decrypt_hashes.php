@@ -25,7 +25,7 @@ function preName()
 		$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND regexp_matches(searchname, '[a-fA-F0-9]{32}')");
 		$res = $db->query("SELECT id, searchname FROM releases WHERE dehashstatus BETWEEN -6 AND -1 AND regexp_matches(searchname, '[a-fA-F0-9]{32}')");
 	}
-	
+
 	$counter = 0;
 	if(count($res) > 0)
 	{
