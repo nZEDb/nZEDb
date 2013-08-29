@@ -1432,8 +1432,8 @@ class Releases
 			{
 				foreach ($idr as $id)
 				{
-					$reccount = $db->queryExec("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]);
-					$reccount += $db->queryExec("DELETE FROM binaries WHERE collectionid = %d",  $id["id"]);
+					$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+					$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d",  $id["id"]));
 				}
 				$reccount += $db->queryExec("DELETE FROM collections WHERE filecheck = 5 ".$where);
 			}
