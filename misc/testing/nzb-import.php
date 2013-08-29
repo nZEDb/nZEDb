@@ -151,7 +151,7 @@ else
 			$totalFiles++;
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
-            $partless = preg_replace('/\((\d+)\/(\d+)\)$/', '', $firstname['0']);
+			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $firstname['0']);
             $subject = utf8_encode(trim($partless));
 			$namecleaning = new nameCleaning();
 

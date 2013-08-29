@@ -27,7 +27,7 @@ class Namefixer
 		$this->timeall = " and rel.adddate > (now() - interval 6 hour) group by rel.ID order by postdate desc";
 		$this->fullother = " and rel.categoryID in (1090, 2020, 3050, 6050, 5050, 7010, 8050) group by rel.ID order by postdate desc";
 		$this->fullall = " order by postdate desc";
-		$this->done = false;
+		$this->done = $this->matched = false;
 	}
 
 	//
@@ -44,7 +44,7 @@ class Namefixer
 		$db = new DB();
 		$type = "NFO, ";
 		// Only select releases we haven't checked here before
-		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1 and relstatus & " . DB::NFO_PROCESSED_NAMEFIXER . " = 0";
+		$query = "SELECT nfo.releaseID as nfoID, rel.groupID, rel.categoryID, rel.searchname, uncompress(nfo) as textstring, rel.ID as releaseID from releases rel inner join releasenfo nfo on (nfo.releaseID = rel.ID) where categoryID != 5070 and relnamestatus = 1";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -64,7 +64,7 @@ class Namefixer
 		{
 			while ($relrow = $db->fetchArray($relres))
 			{
-				$this->done = false;
+				$this->done = $this->matched = false;
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
 				if ($this->checked % 500 == 0)
@@ -111,7 +111,7 @@ class Namefixer
 		{
 			while ($relrow = $db->fetchArray($relres))
 			{
-				$this->done = false;
+				$this->done = $this->matched = false;
 				$this->checkName($relrow, $echo, $type, $namestatus);
 				$this->checked++;
 				if ($this->checked % 500 == 0)
@@ -157,7 +157,7 @@ class Namefixer
 
 					if ($type === "PAR2, ")
 						echo $n;
-					echo	"New name: ".$newname.$n.
+					echo	$n."New name: ".$newname.$n.
 							"Old name: ".$release["searchname"].$n.
 							"New cat:  ".$newcatname.$n.
 							"Old cat:  ".$oldcatname.$n.
@@ -249,6 +249,12 @@ class Namefixer
 				$this->nfoCheckTY($release, $echo, $type, $namestatus);
 				$this->nfoCheckG($release, $echo, $type, $namestatus);
 			}
+		}
+		// The release didn't match so set relnamestatus to 20 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		if ($namestatus == 1 && $this->matched === false)
+		{
+			$db = new Db;
+			$db->query(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['releaseID']));
 		}
 	}
 
