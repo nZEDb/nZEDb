@@ -85,10 +85,10 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$affecta = $db->query("update collections set dateadded = now()");
+$affecta = $db->queryExec("update collections set dateadded = now()");
 if ( count($affecta) > 0 )
 	echo count($affecta)." collections reset\n";
-$affectb = $db->query("update nzbs set dateadded = now()");
+$affectb = $db->queryExec("update nzbs set dateadded = now()");
 if ( count($affectb) > 0 )
     echo count($affectb)." nzbs reset\n";
 
