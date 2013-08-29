@@ -340,7 +340,6 @@ DROP TABLE IF EXISTS "nzbs" CASCADE;
 CREATE TABLE "nzbs" (
   "message_id" character varying(255) DEFAULT ''::character varying NOT NULL,
   "groupname" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "articlenumber" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "subject" character varying(1000) DEFAULT '0'::character varying NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "filesize" numeric(20, 0) DEFAULT 0 NOT NULL,
@@ -1377,7 +1376,7 @@ INSERT INTO site
 	('lookuppar2','0'),
 	('delaytime','2'),
 	('addpar2', '0'),
-	('sqlpatch','115');
+	('sqlpatch','116');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
