@@ -56,7 +56,11 @@
 			<td class="less">{if $group.minfilestoformrelease==""}n/a{else}{$group.minfilestoformrelease}{/if}</td>
 			<td class="less">{if $group.minsizetoformrelease==""}n/a{else}{$group.minsizetoformrelease|fsize_format:"MB"}{/if}</td>
 			<td class="less">{$group.backfill_target}</td>
-			<td class="less" id="groupdel-{$group.id}"><a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | <a href="javascript:ajax_group_delete({$group.id})" class="group_delete">Delete</a> | <a href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, binaries/parts in the selected group');" >Purge</a></td>
+			<td class="less" id="groupdel-{$group.id}">
+				<a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | 
+				<a href="javascript:ajax_group_delete({$group.id})" class="group_delete" onclick="return confirm('Are you sure? This will delete the group from this list.');" >Delete</a> | 
+				<a href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts in the selected group.');" >Purge</a>
+			</td>
 		</tr>
 		{/foreach}
 

@@ -29,7 +29,7 @@
 		<td>{$bin.groupname|replace:"alt.binaries":"a.b"}</td>
 		<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">Edit</a></td>
 		<td>{$bin.description|truncate:50:"...":true}</td>
-		<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.id})">Delete</a></td>
+		<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.id})" onclick="return confirm('Are you sure? This will delete the blacklist from this list.');" >Delete</a></td>
 		<td>{if $bin.optype==1}Black{else}White{/if}</td>
 		<td>{if $bin.msgcol==1}Subject{elseif $bin.msgcol==2}Poster{else}MessageID{/if}</td>
 		{if $bin.status==1}
