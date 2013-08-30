@@ -14,4 +14,7 @@ CREATE TABLE nzbs (
     PRIMARY KEY (id)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
+CREATE INDEX ix_nzbs_partnumber ON nzbs(partnumber);
+CREATE INDEX ix_nzbs_collectionhash ON nzbs(collectionhash);
+
 UPDATE site SET value = '117' WHERE setting = 'sqlpatch';
