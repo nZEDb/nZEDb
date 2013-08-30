@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3427";
+$version="0.1r3430";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -1228,7 +1228,7 @@ while( $i > 0 )
 			}
 		}
 	}
-	elseif ( $seq != "TRUE" )
+	elseif ( $seq == 0 )
 	{
 		for ($g=1; $g<=4; $g++)
 		{
@@ -1246,7 +1246,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
-	else
+	elseif ( $seq == 1 )
 	{
 		for ($g=1; $g<=2; $g++)
 		{
@@ -1264,8 +1264,16 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
+	elseif ( $seq == 2 )
+	{
+		for ($g=1; $g<=2; $g++)
+		{
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
+		}
+	}
 
 	$i++;
-	sleep(10);
+	sleep(5);
 }
 ?>
