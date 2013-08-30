@@ -361,7 +361,7 @@ class Movie
 				$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']));
 			$movieId = $run->execute();
 		}
-		catch (PDOException $ex
+		catch (PDOException $ex)
 		{
 			//duplicate
 			if ($ex->getCode() == 23000 || $ex->getCode() == 1062)
