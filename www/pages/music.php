@@ -1,4 +1,7 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/music.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/genres.php");
@@ -7,21 +10,18 @@ $music = new Music;
 $cat = new Category;
 $gen = new Genres;
 
-if (!$users->isLoggedIn())
-	$page->show403();
-
-
 $musiccats = $cat->getChildren(Category::CAT_PARENT_MUSIC);
 $mtmp = array();
-foreach($musiccats as $mcat) {
-	$mtmp[$mcat['ID']] = $mcat;
+foreach($musiccats as $mcat)
+{
+	$mtmp[$mcat['id']] = $mcat;
 }
 $category = Category::CAT_PARENT_MUSIC;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $mtmp))
 	$category = $_REQUEST["t"] + 0;
-	
+
 $catarray = array();
-$catarray[] = $category;	
+$catarray[] = $category;
 
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
@@ -34,9 +34,9 @@ $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $musics = array();
 $results = $music->getMusicRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
-foreach($results as $result) {
+foreach($results as $result)
+{
 	//$result['genre'] = $music->makeFieldLinks($result, 'genre');
-	
 	$musics[] = $result;
 }
 
@@ -48,8 +48,9 @@ $page->smarty->assign('title', $title);
 
 $genres = $gen->getGenres(Genres::MUSIC_TYPE, true);
 $tmpgnr = array();
-foreach($genres as $gn) {
-	$tmpgnr[$gn['ID']] = $gn['title'];
+foreach($genres as $gn)
+{
+	$tmpgnr[$gn['id']] = $gn['title'];
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
 $page->smarty->assign('genres', $genres);
@@ -73,26 +74,26 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1)
-	$page->smarty->assign("catname","All");			
+	$page->smarty->assign("catname","All");
 else
 {
 	$cat = new Category();
 	$cdata = $cat->getById($category);
 	if ($cdata)
-		$page->smarty->assign('catname',$cdata["title"]);			
+		$page->smarty->assign('catname',$cdata["title"]);
 	else
 		$page->show404();
 }
 
-foreach($ordering as $ordertype) 
+foreach($ordering as $ordertype)
 	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/music?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
 
-$page->smarty->assign('results',$musics);		
+$page->smarty->assign('results',$musics);
 
 $page->meta_title = "Browse Albums";
 $page->meta_keywords = "browse,nzb,albums,description,details";
 $page->meta_description = "Browse for Albums";
-	
+
 $page->content = $page->smarty->fetch('music.tpl');
 $page->render();
 

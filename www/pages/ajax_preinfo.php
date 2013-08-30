@@ -1,12 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/predb.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
 if (!isset($_REQUEST["id"]))
 	$page->show404();
 
+require_once(WWW_DIR."/lib/predb.php");
 $pre = new Predb();
 $predata = $pre->getOne($_REQUEST["id"]);
 
@@ -27,4 +26,4 @@ else
 	}
 	print "<tr><th>Pred:</th><td>".htmlentities($predata["predate"], ENT_QUOTES)."</td></tr>\n";
 	print "</table>";
-}	
+}

@@ -7,13 +7,13 @@ require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/movie.php");
 
 $movie = new Movie(true);
-
 $db = new Db();
 
-$movies = $db->query("SELECT imdbID from movieinfo where cover = 0");
+$movies = $db->query("SELECT imdbid FROM movieinfo WHERE cover = 0");
 
-foreach ($movies as $mov) {
-	$mov = $movie->updateMovieInfo($mov['imdbID']);
+foreach ($movies as $mov)
+{
+	$mov = $movie->updateMovieInfo($mov['imdbid']);
 	sleep(1);
 }
 

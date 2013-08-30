@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/releases.php");
@@ -14,15 +13,13 @@ if (!$users->isLoggedIn())
 
 if (isset($_GET["id"]))
 {
-
 	$releases = new Releases;
 	$rel = $releases->getByGuid($_GET["id"]);
 	if (!$rel)
 		$page->show404();
-	
-	
+
 	$binaries = new Binaries;
-	$data = $binaries->getForReleaseId($rel["ID"]);
+	$data = $binaries->getForReleaseId($rel["id"]);
 
 	$page->smarty->assign('rel', $rel);
 	$page->smarty->assign('binaries', $data);
@@ -31,7 +28,7 @@ if (isset($_GET["id"]))
 	$page->meta_title = "View Nzb file list";
 	$page->meta_keywords = "view,nzb,file,list,description,details";
 	$page->meta_description = "View Nzb File List";
-	
+
 	$page->content = $page->smarty->fetch('release-files.tpl');
 	$page->render();
 }

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This script attemps to clean release names using the NFO, file name and release name.
  * A good way to use this script is to use it in this order: php fixReleaseNames.php 3 true other yes
@@ -7,7 +6,6 @@
  * If you used the 4th argument yes, but you want to reset the status,
  * there is another script called resetRelnameStatus.php
  */
-
 
 define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
@@ -23,7 +21,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 	$update = ($argv[2] == "true") ? 1 : 2;
 	$other = ($argv[3] == "other") ? 1 : 2;
 	$setStatus = ($argv[4] == "yes") ? 1 : 2;
-				
+
 	switch ($argv[1])
 	{
 		case 1:
@@ -46,7 +44,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			break;
 		default :
 			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
-			break;			
+			break;
 	}
 }
 else

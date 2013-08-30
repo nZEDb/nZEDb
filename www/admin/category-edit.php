@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/category.php");
@@ -8,29 +7,26 @@ $page = new AdminPage();
 $category = new Category();
 $id = 0;
 
-// set the current action
+// Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) 
+switch($action)
 {
-    case 'submit':
+	case 'submit':
 		$ret = $category->update($_POST["id"], $_POST["status"], $_POST["description"], $_POST["disablepreview"], $_POST["minsize"]);
 		header("Location:".WWW_TOP."/category-list.php");
 		break;
-    case 'view':
-    default:
 
-			if (isset($_GET["id"]))
-			{
-				$page->title = "Category Edit";
-				$id = $_GET["id"];
-				
-				$cat = $category->getByID($id);
-
-				$page->smarty->assign('category', $cat);	
-			}
-
-      break;   
+	case 'view':
+	default:
+		if (isset($_GET["id"]))
+		{
+			$page->title = "Category Edit";
+			$id = $_GET["id"];
+			$cat = $category->getByID($id);
+			$page->smarty->assign('category', $cat);
+		}
+		break;
 }
 
 $page->smarty->assign('status_ids', array(Category::STATUS_ACTIVE,Category::STATUS_INACTIVE,Category::STATUS_DISABLED));

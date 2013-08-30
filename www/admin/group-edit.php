@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/groups.php");
@@ -10,25 +9,21 @@ $groups = new Groups();
 $category = new Category();
 $id = 0;
 
-// set the current action
+// Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) 
+switch($action)
 {
-    case 'submit':
-	    if ($_POST["id"] == "")
-    	{
+	case 'submit':
+		if ($_POST["id"] == "")
 			$groups->add($_POST);
-		}
 		else
-		{
 			$groups->update($_POST);
-		}
 		header("Location:".WWW_TOP."/group-list.php");
-        break;
-    case 'view':
-    default:
+		break;
 
+	case 'view':
+	default:
 			if (isset($_GET["id"]))
 			{
 				$page->title = "Newsgroup Edit";
@@ -45,9 +40,8 @@ switch($action)
 				$group["last_record"] = "0";
 				$group["backfill_target"] = "0";
 			}
-			$page->smarty->assign('group', $group);	
-
-      break;   
+			$page->smarty->assign('group', $group);
+		break;
 }
 
 $page->smarty->assign('yesno_ids', array(1,0));

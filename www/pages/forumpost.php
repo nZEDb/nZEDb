@@ -1,17 +1,16 @@
 <?php
-require_once(WWW_DIR."/lib/forum.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
 $id = $_GET["id"] + 0;
 
+require_once(WWW_DIR."/lib/forum.php");
 $forum = new Forum();
 if ($page->isPostBack())
 {
-		$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]); 
-		header("Location:".WWW_TOP."/forumpost/".$id."#last");
-		die();
+	$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]);
+	header("Location:".WWW_TOP."/forumpost/".$id."#last");
+	die();
 }
 
 $results = $forum->getPosts($id);
@@ -29,6 +28,5 @@ $page->smarty->assign('results', $results);
 
 $page->content = $page->smarty->fetch('forumpost.tpl');
 $page->render();
-
 
 ?>

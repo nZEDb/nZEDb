@@ -1,4 +1,7 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/groups.php");
 require_once(WWW_DIR."/lib/category.php");
@@ -6,9 +9,6 @@ require_once(WWW_DIR."/lib/category.php");
 $releases = new Releases;
 $grp = new Groups;
 $c = new Category;
-
-if (!$users->isLoggedIn())
-	$page->show403();
 
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";

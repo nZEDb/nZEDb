@@ -35,11 +35,11 @@
 		</tr>
 		{foreach $anime as $a}
 			<tr class="{cycle values=",alt"}">
-				<td><a class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbID}">{$a.title|escape:"htmlall"}</a>{if {$a.startdate} != ''}<br />({$a.startdate|date_format} - {/if}{if $a.enddate != ''}{$a.enddate|date_format}{/if})</td>
+				<td><a class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}">{$a.title|escape:"htmlall"}</a>{if {$a.startdate} != ''}<br />({$a.startdate|date_format} - {/if}{if $a.enddate != ''}{$a.enddate|date_format}{/if})</td>
 				<td style="text-align: center;">{if {$a.type} != ''}{$a.type|escape:"htmlall"}{/if}</td>
 				<td>{if {$a.categories} != ''}{$a.categories|escape:"htmlall"|replace:'|':', '}{/if}</td>
 				<td style="text-align: center;">{if {$a.rating} != ''}{$a.rating}{/if}</td>
-				<td><a title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbID}">Anime</a>&nbsp;&nbsp;{if $a.anidbID > 0}<a title="View at AniDB" target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$a.anidbID}">AniDB</a>{/if}</td>
+				<td><a title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}">Anime</a>&nbsp;&nbsp;{if $a.anidbid > 0}<a title="View at AniDB" target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$a.anidbid}">AniDB</a>{/if}</td>
 			</tr>
 		{/foreach}
 	{/foreach}

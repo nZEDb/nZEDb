@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
+require_once(dirname(__FILE__)."/../../../config.php");
 require_once(WWW_DIR."lib/consoletools.php");
 
 $consoletools = new consoleTools();

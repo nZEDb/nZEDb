@@ -27,13 +27,13 @@ require_once(WWW_DIR."/lib/site.php");
 	public function getBookInfo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo where bookinfo.ID = %d ", $id));
+		return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d", $id));
 	}
 
 	public function getBookInfoByName($author, $title)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM bookinfo where author like %s and title like %s", $db->escapeString("%".$author."%"),  $db->escapeString("%".$title."%")));
+		return $db->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE author LIKE %s AND title LIKE %s", $db->escapeString("%".$author."%"),  $db->escapeString("%".$title."%")));
 	}
 
 	public function getRange($start, $num)
@@ -43,7 +43,7 @@ require_once(WWW_DIR."/lib/site.php");
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		return $db->query(" SELECT * FROM bookinfo ORDER BY createddate DESC".$limit);
 	}
@@ -51,7 +51,7 @@ require_once(WWW_DIR."/lib/site.php");
 	public function getCount()
 	{
 		$db = new DB();
-		$res = $db->queryOneRow("select count(ID) as num from bookinfo");
+		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM bookinfo");
 		return $res["num"];
 	}
 
@@ -75,31 +75,28 @@ require_once(WWW_DIR."/lib/site.php");
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-								$catsrch .= " r.categoryID in (".$chlist.") or ";
+								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
-					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
-					}
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 				}
 			}
 			$catsrch.= "1=2 )";
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 		else
 			$maxage = "";
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$sql = sprintf("select count(r.ID) as num from releases r inner join bookinfo b on b.ID = r.bookinfoID and b.title != '' where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
-		$res = $db->queryOneRow($sql);
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo b ON b.id = r.bookinfoid AND b.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res["num"];
 	}
 
@@ -112,7 +109,7 @@ require_once(WWW_DIR."/lib/site.php");
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1)
@@ -128,15 +125,13 @@ require_once(WWW_DIR."/lib/site.php");
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
 						foreach ($children as $child)
-							$chlist.=", ".$child["ID"];
+							$chlist.=", ".$child["id"];
 
 						if ($chlist != "-99")
-							$catsrch .= " r.categoryID in (".$chlist.") or ";
+							$catsrch .= " r.categoryid IN (".$chlist.") OR ";
 					}
 					else
-					{
-						$catsrch .= sprintf(" r.categoryID = %d or ", $category);
-					}
+						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
 				}
 			}
 			$catsrch.= "1=2 )";
@@ -144,15 +139,14 @@ require_once(WWW_DIR."/lib/site.php");
 
 		$maxage = "";
 		if ($maxage > 0)
-			$maxage = sprintf(" and r.postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
-			$exccatlist = " and r.categoryID not in (".implode(",", $excludedcats).")";
+			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getBookOrder($orderby);
-		$sql = sprintf(" SELECT r.*, r.ID as releaseID, boo.*, groups.name as group_name, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, rn.ID as nfoID from releases r left outer join groups on groups.ID = r.groupID inner join bookinfo boo on boo.ID = r.bookinfoID left outer join releasenfo rn on rn.releaseID = r.ID and rn.nfo is not null left outer join category c on c.ID = r.categoryID left outer join category cp on cp.ID = c.parentID where r.passwordstatus <= (select value from site where setting='showpasswordedrelease') and %s %s %s %s order by %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
-		return $db->query($sql);
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AMD rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
@@ -232,15 +226,15 @@ require_once(WWW_DIR."/lib/site.php");
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where bookinfoID IS NULL and nzbstatus = 1 and categoryID = 8010 order by postdate desc LIMIT %d,%d", floor(($this->bookqty) * ($threads * 1.5)), $this->bookqty));
-		if ($db->getNumRows($res) > 0)
+		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d", $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		if (count($res) > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".$db->getNumRows($res)." book releases.\n";
+				echo "Processing ".count($res)." book releases.\n";
 
-			while ($arr = $db->fetchAssoc($res))
+			foreach ($res as $arr)
 			{
-				$bookInfo = $this->parseTitle($arr['searchname'], $arr['ID']);
+				$bookInfo = $this->parseTitle($arr['searchname'], $arr['id']);
 				if ($bookInfo !== false)
 				{
 					if ($this->echooutput)
@@ -248,19 +242,15 @@ require_once(WWW_DIR."/lib/site.php");
 
 					$bookId = $this->updateBookInfo($bookInfo);
 					if ($bookId === false)
-					{
 						$bookId = -2;
-					}
 
 					// Update release.
-					$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", $bookId, $arr["ID"]));
-
+					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", $bookId, $arr["id"]));
 				}
+				// Could not parse release title.
 				else
-				{
-					// Could not parse release title.
-					$db->query(sprintf("UPDATE releases SET bookinfoID = %d WHERE ID = %d", -2, $arr["ID"]));
-				}
+					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", -2, $arr["id"]));
+				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);
 			}
 		}
@@ -276,14 +266,14 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			echo "Changing category to misc books: ".$releasename."\n";
 			$db = new DB();
-			$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8050, $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
 			return false;
 		}
 		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 		{
 			echo "Changing category to magazines: ".$releasename."\n";
 			$db = new DB();
-			$db->query(sprintf("UPDATE releases SET categoryID = %d WHERE ID = %d", 8030, $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
 			return false;
 		}
 		else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
@@ -364,7 +354,7 @@ require_once(WWW_DIR."/lib/site.php");
 		else
 			$book['cover'] = 0;
 
-		$query = sprintf("INSERT IGNORE INTO bookinfo  (`title`, `author`, `asin`, `isbn`, `ean`, `url`, `salesrank`, `publisher`, `publishdate`, `pages`, `overview`, `genre`, `cover`, `createddate`, `updateddate`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE  `title` = %s,  `author` = %s,  `asin` = %s,  `isbn` = %s,  `ean` = %s,  `url` = %s,  `salesrank` = %s,  `publisher` = %s,  `publishdate` = %s,  `pages` = %s,  `overview` = %s, `genre` = %s, `cover` = %d,  createddate = now(),  updateddate = now()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
+		$query = sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover`, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']);
 
 		$bookId = $db->queryInsert($query);
 

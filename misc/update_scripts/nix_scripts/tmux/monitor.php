@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3264";
+$version="0.1r3430";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -29,18 +29,18 @@ $alternate_nntp_provider = $site->alternate_nntp;
 
 //totals per category in db, results by parentID
 $qry = "SELECT
-	( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 1000 AND 1999 ) AS console, ( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 3000 AND 3999 ) AS audio, ( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 4000 AND 4999 ) AS pc,
-	( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 5000 AND 5999 ) AS tv, ( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 6000 AND 6999 ) AS xxx,
-	( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 7000 AND 7999 ) AS misc, ( SELECT COUNT( * ) FROM `releases` WHERE `categoryID` BETWEEN 8000 AND 8999 ) AS books";
+	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 ) AS console, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 ) AS audio, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 ) AS pc,
+	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 ) AS tv, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 ) AS xxx,
+	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 ) AS misc, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 ) AS books";
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT( * ) FROM releases WHERE rageID = -1 and categoryID BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( * ) FROM releases WHERE imdbID IS NULL and categoryID BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( * ) FROM releases WHERE musicinfoID IS NULL and relnamestatus != 0 and categoryID in (3010, 3040, 3050) ) AS audio,
-	( SELECT COUNT( * ) FROM releases WHERE consoleinfoID IS NULL and categoryID BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( * ) FROM releases WHERE bookinfoID IS NULL and categoryID = 8010 ) AS book,
+	( SELECT COUNT( * ) FROM releases WHERE rageid = -1 and categoryid BETWEEN 5000 AND 5999 ) AS tv,
+	( SELECT COUNT( * ) FROM releases WHERE imdbid IS NULL and categoryid BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( * ) FROM releases WHERE musicinfoid IS NULL and relnamestatus != 0 and categoryid in (3010, 3040, 3050) ) AS audio,
+	( SELECT COUNT( * ) FROM releases WHERE consoleinfoid IS NULL and categoryid BETWEEN 1000 AND 1999 ) AS console,
+	( SELECT COUNT( * ) FROM releases WHERE bookinfoid IS NULL and categoryid = 8010 ) AS book,
 	( SELECT COUNT( * ) FROM releases WHERE nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( * ) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( * ) FROM releases WHERE nfostatus between -6 and -1 ) AS nforemains,
@@ -48,69 +48,80 @@ $proc_work = "SELECT
 	( SELECT COUNT( * ) FROM releases WHERE reqidstatus = 1 ) AS requestID_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( * ) FROM releases r left join category c on c.ID = r.categoryID where categoryID BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
-	( SELECT COUNT( * ) FROM releases r left join category c on c.ID = r.categoryID where (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( * ) FROM releases where preID IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT( * ) FROM releases r left join category c on c.id = r.categoryid where categoryid BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( * ) FROM releases r left join category c on c.id = r.categoryid where (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
+	( SELECT COUNT( * ) FROM releases where preid IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT( * ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
-	( SELECT COUNT( * ) FROM binaries WHERE collectionID IS NOT NULL ) AS binaries_table,
+	( SELECT COUNT( * ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
+if ($db->dbSystem() == "mysql")
+{
+	$utd = "UNIX_TIMESTAMP(dateadded)";
+	$uta = "UNIX_TIMESTAMP(adddate)";
+}
+elseif ($db->dbSystem() == "pgsql")
+{
+	$utd = "extract(epoch FROM dateadded)";
+	$uta = "extract(epoch FROM adddate)";
+}
+
 $proc_tmux = "SELECT
-	( SELECT UNIX_TIMESTAMP(dateadded) FROM collections order by dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT UNIX_TIMESTAMP(adddate) FROM predb order by adddate DESC limit 1 ) AS newestpre,
+	( SELECT {$utd} FROM collections order by dateadded ASC limit 1 ) AS oldestcollection,
+	( SELECT {$uta} FROM predb order by adddate DESC limit 1 ) AS newestpre,
 	( SELECT name FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
-	( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
-	( SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'NICENESS' ) AS niceness,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'BINARIES' ) AS binaries_run,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'BACKFILL' ) AS backfill,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'IMPORT' ) AS import,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'NZBS' ) AS nzbs,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST' ) AS post,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'RELEASES' ) AS releases_run,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'RELEASES_THREADED' ) AS releases_threaded,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'FIX_NAMES' ) AS fix_names,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'SEQ_TIMER' ) AS seq_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'BINS_TIMER' ) AS bins_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'BACK_TIMER' ) AS back_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'IMPORT_TIMER' ) AS import_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'REL_TIMER' ) AS rel_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'FIX_TIMER' ) AS fix_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_TIMER' ) AS post_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'COLLECTIONS_KILL' ) AS collections_kill,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POSTPROCESS_KILL' ) AS postprocess_kill,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'CRAP_TIMER' ) AS crap_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'FIX_CRAP' ) AS fix_crap,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'TV_TIMER' ) AS tv_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'UPDATE_TV' ) AS update_tv,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_KILL_TIMER' ) AS post_kill_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'MONITOR_PATH' ) AS monitor_path,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'MONITOR_PATH_A' ) AS monitor_path_a,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'MONITOR_PATH_B' ) AS monitor_path_b,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'SORTER' ) AS sorter,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'SORTER_TIMER' ) AS sorter_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'PROGRESSIVE' ) AS progressive,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'DEHASH' ) AS dehash,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'DEHASH_TIMER' ) AS dehash_timer,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'BACKFILL_DAYS' ) AS backfilldays,
-	( SELECT VALUE FROM `site` WHERE SETTING = 'debuginfo' ) AS debug,
-	( SELECT VALUE FROM `site` WHERE SETTING = 'lookupbooks' ) AS processbooks,
-	( SELECT VALUE FROM `site` WHERE SETTING = 'lookupmusic' ) AS processmusic,
-	( SELECT VALUE FROM `site` WHERE SETTING = 'lookupgames' ) AS processgames,
-	( SELECT VALUE FROM `site` WHERE SETTING = 'tmpunrarpath' ) AS tmpunrar,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_AMAZON' ) AS post_amazon,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_NON' ) AS post_non,
-	( SELECT VALUE FROM `tmux` WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
+	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
+	( SELECT {$utd} FROM nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'BINARIES' ) AS binaries_run,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'BACKFILL' ) AS backfill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'IMPORT' ) AS import,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'NZBS' ) AS nzbs,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST' ) AS post,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'RELEASES' ) AS releases_run,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'RELEASES_THREADED' ) AS releases_threaded,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_NAMES' ) AS fix_names,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'SEQ_TIMER' ) AS seq_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'BINS_TIMER' ) AS bins_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'BACK_TIMER' ) AS back_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'IMPORT_TIMER' ) AS import_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'REL_TIMER' ) AS rel_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_TIMER' ) AS fix_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER' ) AS post_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'COLLECTIONS_KILL' ) AS collections_kill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POSTPROCESS_KILL' ) AS postprocess_kill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'CRAP_TIMER' ) AS crap_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_CRAP' ) AS fix_crap,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'TV_TIMER' ) AS tv_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'UPDATE_TV' ) AS update_tv,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_KILL_TIMER' ) AS post_kill_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH' ) AS monitor_path,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH_A' ) AS monitor_path_a,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH_B' ) AS monitor_path_b,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'SORTER' ) AS sorter,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'SORTER_TIMER' ) AS sorter_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'PROGRESSIVE' ) AS progressive,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'DEHASH' ) AS dehash,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'DEHASH_TIMER' ) AS dehash_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'BACKFILL_DAYS' ) AS backfilldays,
+	( SELECT VALUE FROM site WHERE SETTING = 'debuginfo' ) AS debug,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupbooks' ) AS processbooks,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupmusic' ) AS processmusic,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupgames' ) AS processgames,
+	( SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath' ) AS tmpunrar,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_AMAZON' ) AS post_amazon,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
 	( SELECT COUNT( * ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(SELECT VALUE FROM `site` WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 	( SELECT COUNT( * ) FROM groups WHERE name IS NOT NULL ) AS all_groups";
 
 //get microtime
@@ -256,6 +267,7 @@ $tvrage_releases_proc = 0;
 $work_remaining_now = 0;
 $book_releases_proc = 0;
 
+$requestID_inprogress_start = 0;
 $console_releases_proc_start = 0;
 $movie_releases_proc_start = 0;
 $music_releases_proc_start = 0;
@@ -301,8 +313,8 @@ $usp2activeconnections = 0;
 $usp2totalconnections = 0;
 
 
-$mask1 = "\033[1;33m%-16s \033[38;5;214m%-49.49s \n";
-$mask2 = "\033[1;33m%-16s \033[38;5;214m%-39.39s \n";
+$mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
+$mask2 = "\033[1;33m%-16s \033[38;5;214m%-40.40s \n";
 
 //create display
 passthru('clear');
@@ -317,16 +329,16 @@ printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
 printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 
-$mask = "%-15.15s %27.27s %22.22s\n";
+$mask = "%-16.16s %25.25s %25.25s\n";
 printf("\033[1;33m\n");
 printf($mask, "Collections", "Binaries", "Parts");
-printf($mask, "====================", "=========================", "====================");
+printf($mask, "==============================", "=========================", "==============================");
 printf("\033[38;5;214m");
 printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
-printf($mask, "====================", "=========================", "====================");
+printf($mask, "==============================", "=========================", "==============================");
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
@@ -343,7 +355,7 @@ printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number
 
 printf("\n\033[1;33m\n");
 printf($mask, "Groups", "Active", "Backfill");
-printf($mask, "====================", "=========================", "====================");
+printf($mask, "==============================", "=========================", "==============================");
 printf("\033[38;5;214m");
 if ( $backfilldays == "1" )
 	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
@@ -600,7 +612,7 @@ while( $i > 0 )
 
 	printf("\033[1;33m\n");
 	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "====================", "=========================", "====================");
+	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), "~".number_format($parts_table));
 
@@ -608,7 +620,7 @@ while( $i > 0 )
 	{
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
-		printf($mask, "====================", "=========================", "====================");
+		printf($mask, "==============================", "=========================", "==============================");
 		printf("\033[38;5;214m");
 		if ( isset( $monitor_path ) && $monitor_path != "" && file_exists( $monitor_path ))
 		{
@@ -644,7 +656,7 @@ while( $i > 0 )
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
-	printf($mask, "====================", "=========================", "====================");
+	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb","~".number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
@@ -661,7 +673,7 @@ while( $i > 0 )
 
 	printf("\n\033[1;33m\n");
 	printf($mask, "Groups", "Active", "Backfill");
-	printf($mask, "====================", "=========================", "====================");
+	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
 	if ( $backfilldays == "1" )
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
@@ -708,7 +720,7 @@ while( $i > 0 )
 	else
 		$kill_coll = "FALSE";
 
-	$_sleep = "$_phpn ${DIR}testing/Release_scripts/showsleep.php";
+	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
 	if ( $running == "TRUE" )
 	{
@@ -758,7 +770,7 @@ while( $i > 0 )
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php true $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			elseif ( $dehash == 2 )
 			{
@@ -773,7 +785,7 @@ while( $i > 0 )
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
 						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php true $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -1216,7 +1228,7 @@ while( $i > 0 )
 			}
 		}
 	}
-	elseif ( $seq != "TRUE" )
+	elseif ( $seq == 0 )
 	{
 		for ($g=1; $g<=4; $g++)
 		{
@@ -1234,7 +1246,7 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
-	else
+	elseif ( $seq == 1 )
 	{
 		for ($g=1; $g<=2; $g++)
 		{
@@ -1252,8 +1264,16 @@ while( $i > 0 )
 			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
+	elseif ( $seq == 2 )
+	{
+		for ($g=1; $g<=2; $g++)
+		{
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
+		}
+	}
 
 	$i++;
-	sleep(10);
+	sleep(5);
 }
 ?>

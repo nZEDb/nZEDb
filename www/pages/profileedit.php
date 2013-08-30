@@ -1,12 +1,12 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/sabnzbd.php");
 
 $category = new Category;
 $sab = new SABnzbd($page);
-
-if (!$users->isLoggedIn())
-	$page->show403();
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
@@ -14,10 +14,10 @@ $userid = $users->currentUserId();
 $data = $users->getById($userid);
 if (!$data)
 	$page->show404();
-	
+
 $errorStr = '';
 
-switch($action) 
+switch($action)
 {
 	case 'newapikey':
 		$users->updateRssKey($userid);
@@ -28,19 +28,15 @@ switch($action)
 		header("Location: profileedit" );
 		break;
 	case 'submit':
-		
+
 		$data["email"] = $_POST['email'];
-		
+
 		if ($_POST['password']!= "" && $_POST['password'] != $_POST['confirmpassword'])
-		{
 			$errorStr = "Password Mismatch";
-		}
 		else
 		{
 			if ($_POST['password']!= "" && !$users->isValidPassword($_POST['password']))
-			{
 				$errorStr = "Your password must be longer than five characters.";
-			}
 			else
 			{
 				if (!$users->isValidEmail($_POST['email']))
@@ -48,7 +44,7 @@ switch($action)
 				else
 				{
 					$res = $users->getByEmail($_POST['email']);
-					if ($res && $res["ID"] != $userid)
+					if ($res && $res["id"] != $userid)
 						$errorStr = "Sorry, the email is already in use.";
 					else
 					{
@@ -57,15 +53,15 @@ switch($action)
 							$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
 							$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
 						}
-						
-						$users->update($userid, $data["username"], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);							
-						
+
+						$users->update($userid, $data["username"], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
+
 						$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
 						$users->addCategoryExclusions($userid, $_POST['exccat']);
 
 						if ($_POST['password'] != "")
 							$users->updatePassword($userid, $_POST['password']);
-						
+
 						header("Location:".WWW_TOP."/profile");
 						die();
 					}
@@ -73,11 +69,11 @@ switch($action)
 			}
 		}
 		break;
-		
+
 	break;
 	case 'view':
-	default:				
-	break;   
+	default:
+	break;
 }
 
 $page->smarty->assign('error', $errorStr);
@@ -103,11 +99,9 @@ $page->meta_title = "Edit User Profile";
 $page->meta_keywords = "edit,profile,user,details";
 $page->meta_description = "Edit User Profile for ".$data["username"] ;
 
-
 $page->smarty->assign('catlist',$category->getForSelect(false));
 
 $page->content = $page->smarty->fetch('profileedit.tpl');
 $page->render();
-
 
 ?>

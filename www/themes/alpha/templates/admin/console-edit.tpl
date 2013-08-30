@@ -3,7 +3,7 @@
 
 <form enctype="multipart/form-data" action="{$SCRIPT_NAME}?action=submit" method="post">
 
-<input type="hidden" name="id" value="{$console.ID}" />
+<input type="hidden" name="id" value="{$console.id}" />
 
 <table class="input">
 
@@ -68,7 +68,7 @@
 	<td>
 		<select id="genre" name="genre">
 		{foreach from=$genres item=gen}
-			<option {if $gen.ID == $console.genreID}selected="selected"{/if} value="{$gen.ID}">{$gen.title|escape:'htmlall'}</option>
+			<option {if $gen.id == $console.genreid}selected="selected"{/if} value="{$gen.id}">{$gen.title|escape:'htmlall'}</option>
 		{/foreach}
 		</select>
 	</td>
@@ -79,7 +79,7 @@
 	<td>
 		<input type="file" id="cover" name="cover" />
 		{if $console.cover == 1}
-			<img style="max-width:200px; display:block;" src="{$smarty.const.WWW_TOP}/../covers/console/{$console.ID}.jpg" alt="" />
+			<img style="max-width:200px; display:block;" src="{$smarty.const.WWW_TOP}/../covers/console/{$console.id}.jpg" alt="" />
 		{/if}
 	</td>
 </tr>

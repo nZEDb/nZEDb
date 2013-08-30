@@ -17,7 +17,7 @@
 			<select id="genre" name="genre">
 			<option class="grouping" value=""></option>
 			{foreach from=$genres item=gen}
-				<option {if $gen.ID == $genre}selected="selected"{/if} value="{$gen.ID}">{$gen.title}</option>
+				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 			{/foreach}
 			</select>
 		</td>
@@ -25,7 +25,7 @@
 			<select id="category" name="t">
 			<option class="grouping" value="1000"></option>
 			{foreach from=$catlist item=ct}
-				<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 			</select>
 		</td>
@@ -70,17 +70,17 @@
 			<td class="mid">
 				<div class="movcover">
 				<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoID}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
 				</a>
 				<div class="movextra">
-					{if $result.nfoID > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoID}" title="View amazon page">Amazon</a>
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/" name="gamespot{$result.consoleinfoID}" title="View gamespot page">Gamespot</a>
+					{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="rndbtn modal_nfo" rel="nfo">Nfo</a>{/if}
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/" name="gamespot{$result.consoleinfoid}" title="View gamespot page">Gamespot</a>
 				</div>
 				</div>
 				<div class="movextra">
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/" name="ign{$result.consoleinfoID}" title="View ign page">IGN</a>
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.title|escape:"htmlall"}/results" name="metacritic{$result.consoleinfoID}" title="View metacritic page">Metacritic</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/" name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.title|escape:"htmlall"}/results" name="metacritic{$result.consoleinfoid}" title="View metacritic page">Metacritic</a>
 					<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 				</div>
 				</div>
@@ -96,7 +96,7 @@
 				<div class="movextra">
 					<b>{$result.searchname|escape:"htmlall"}</b> <a class="rndbtn" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
 					{if $isadmin}
-						<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
+						<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
 					{/if}
 					<br />
 					<b>Info:</b> {$result.postdate|timeago},  {$result.size|fsize_format:"MB"},  <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart} files</a>,  <a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a>, {$result.grabs} grab{if $result.grabs != 1}s{/if}

@@ -1,55 +1,47 @@
 <?php
-require_once(WWW_DIR."/lib/site.php");
-
 if ($users->isLoggedIn())
 	$page->show404();
 
-$showregister = 1;	
-	
+require_once(WWW_DIR."/lib/site.php");
+
+$showregister = 1;
+
 if ($page->site->registerstatus == Sites::REGISTER_STATUS_CLOSED || $page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY)
 {
 	$page->smarty->assign('error', "Registrations are currently disabled.");
-	$showregister = 0;	
+	$showregister = 0;
 }
 elseif ($page->site->registerstatus == Sites::REGISTER_STATUS_INVITE && (!isset($_REQUEST["invitecode"]) || empty($_REQUEST['invitecode'])))
 {
 	$page->smarty->assign('error', "Registrations are currently invite only.");
-	$showregister = 0;	
+	$showregister = 0;
 }
 
 if ($showregister == 0)
-{
 	$page->smarty->assign('showregister', "0");
-}
 else
-{	
-
+{
 	$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-	switch($action) 
+	switch($action)
 	{
 		case 'submit':
-			
+
 			$page->smarty->assign('username', $_POST['username']);
 			$page->smarty->assign('password', $_POST['password']);
 			$page->smarty->assign('confirmpassword', $_POST['confirmpassword']);
 			$page->smarty->assign('email', $_POST['email']);
 			$page->smarty->assign('invitecode', $_POST["invitecode"]);
-			
-			//
-			// check uname/email isnt in use, password valid.
-			// if all good create new user account and redirect back to home page
-			//
+
+			// Check uname/email isnt in use, password valid. If all good create new user account and redirect back to home page.
 			if ($_POST['password'] != $_POST['confirmpassword'])
-			{
 				$page->smarty->assign('error', "Password Mismatch");
-			}
 			else
 			{
-				//get the default user role
+				// Get the default user role.
 				$userdefault = $users->getDefaultRole();
-			
-				$ret = $users->signup($_POST['username'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['ID'], $userdefault['defaultinvites'], $_POST['invitecode']);
+
+				$ret = $users->signup($_POST['username'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
 				if ($ret > 0)
 				{
 					$users->login($ret, $_SERVER['REMOTE_ADDR']);
@@ -88,9 +80,7 @@ else
 			{
 				if (isset($_GET["invitecode"]))
 				{
-					//
-					// see if its a valid invite
-					//
+					// See if its a valid invite.
 					$invite = $users->getInvite($_GET["invitecode"]);
 					if (!$invite)
 					{

@@ -13,7 +13,7 @@
     <meta name="application-name" content="nZEDb-v{$site->version}">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <title>{$page->meta_title}{if $site->metatitle != ""} - {$site->metatitle}{/if}</title>
-    {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">{/if}
+    {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
     <!-- nZEDb core CSS -->
     <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -64,7 +64,7 @@ nav.navbar.navbar-inverse { z-index:99999; }
     /* <![CDATA[ */
     var WWW_TOP = "{/literal}{$smarty.const.WWW_TOP}{literal}";
     var SERVERROOT = "{/literal}{$serverroot}{literal}";
-    var UID = "{/literal}{if $loggedin=="true"}{$userdata.ID}{else}{/if}{literal}";
+    var UID = "{/literal}{if $loggedin=="true"}{$userdata.id}{else}{/if}{literal}";
     var RSSTOKEN = "{/literal}{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}{literal}";
     /* ]]> */
 </script>
@@ -255,7 +255,7 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 {/if}
 
 {if $loggedin=="true"}
-<input type="hidden" name="UID" value="{$userdata.ID}">
+<input type="hidden" name="UID" value="{$userdata.id}">
 <input type="hidden" name="RSSTOKEN" value="{$userdata.rsstoken}">
 {/if}
 

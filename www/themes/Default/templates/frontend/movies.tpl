@@ -45,7 +45,7 @@
 			<select id="category" name="t">
 			<option class="grouping" value="2000"></option>
 			{foreach from=$catlist item=ct}
-				<option {if $ct.ID==$category}selected="selected"{/if} value="{$ct.ID}">{$ct.title}</option>
+				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 			</select>
 		</td>
@@ -84,14 +84,14 @@
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
-				<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="modal_imdb" rel="movie" >
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
+				<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
 				</a>
 				<div class="movextra">
-					<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="name{$result.imdbID}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbID}/" name="imdb{$result.imdbID}" title="View imdb page">Imdb</a>
-					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbID}/" name="trakt{$result.imdbID}" title="View trakt page">Trakt</a>
-					<a class="rndbtn" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbID}&title={$result.title}" name="CP{$result.imdbID}" title="Add to CouchPotato">CouchPotato</a>
+					<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
+					<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
+					<a class="rndbtn" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
 				</div>
 				</div>
 			</td>
@@ -109,7 +109,7 @@
 					<table>
 						{assign var="msplits" value=","|explode:$result.grp_release_id}
 						{assign var="mguid" value=","|explode:$result.grp_release_guid}
-						{assign var="mnfo" value=","|explode:$result.grp_release_nfoID}
+						{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
 						{assign var="mgrp" value=","|explode:$result.grp_release_grpname}
 						{assign var="mname" value="#"|explode:$result.grp_release_name}
 						{assign var="mpostdate" value=","|explode:$result.grp_release_postdate}

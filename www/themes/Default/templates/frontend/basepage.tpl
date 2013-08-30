@@ -13,7 +13,7 @@
     <meta name="application-name" content="nZEDb-v{$site->version}">
     <meta name="viewport" content="width=device-width">
 
-    {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">{/if}
+    {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
     <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.0 - plugins master style.css -->
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
@@ -42,7 +42,7 @@
     /* <![CDATA[ */
         var WWW_TOP = "{$smarty.const.WWW_TOP}";
         var SERVERROOT = "{$serverroot}";
-        var UID = "{if $loggedin=="true"}{$userdata.ID}{else}{/if}";
+        var UID = "{if $loggedin=="true"}{$userdata.id}{else}{/if}";
         var RSSTOKEN = "{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}";
     /* ]]> */
     </script>
@@ -128,7 +128,7 @@
     {/literal}{/if}
 
     {if $loggedin=="true"}
-        <input type="hidden" name="UID" value="{$userdata.ID}">
+        <input type="hidden" name="UID" value="{$userdata.id}">
         <input type="hidden" name="RSSTOKEN" value="{$userdata.rsstoken}">{/if}
 
     </body>

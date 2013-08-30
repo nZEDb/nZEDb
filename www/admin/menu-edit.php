@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/menu.php");
@@ -10,45 +9,38 @@ $menu = new Menu();
 $users = new Users();
 $id = 0;
 
-//get the user roles
+// Get the user roles.
 $userroles = $users->getRoles();
 $roles = array();
-foreach ($userroles as $r) {
-	$roles[$r['ID']] = $r['name'];
+foreach ($userroles as $r)
+{
+	$roles[$r['id']] = $r['name'];
 }
 
 // set the current action
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) 
+switch($action)
 {
-    case 'submit':
-		
-	    if ($_POST["id"] == "")
-    	{
-				$menu->add($_POST);
-			}
-			else
-			{
-				$ret = $menu->update($_POST);
-			}	
-		
-			header("Location:".WWW_TOP."/menu-list.php");
-	        break;
-    case 'view':
-    default:
+	case 'submit':
+		if ($_POST["id"] == "")
+			$menu->add($_POST);
+		else
+			$ret = $menu->update($_POST);
 
+		header("Location:".WWW_TOP."/menu-list.php");
+		break;
+
+	case 'view':
+	default:
 		if (isset($_GET["id"]))
 		{
 			$page->title = "Menu Edit";
 			$id = $_GET["id"];
-			
 			$menurow = $menu->getByID($id);
-
-			$page->smarty->assign('menu', $menurow);	
+			$page->smarty->assign('menu', $menurow);
 		}
-
-      break;   
+		break;
 }
 
 $page->smarty->assign('yesno_ids', array(1,0));

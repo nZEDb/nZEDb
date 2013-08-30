@@ -522,7 +522,7 @@ jQuery(function ($) {
 
     // preinfo tooltip
     $(".preinfo").each(function() {
-        var preID = $(this).attr('title');
+        var preid = $(this).attr('title');
         $(this).qtip({
             content: {
               title: {
@@ -532,7 +532,7 @@ jQuery(function ($) {
               ajax: {
                  url: SERVERROOT + 'ajax_preinfo', // URL to the local file
                  type: 'GET', // POST or GET
-                 data: { id: preID }, // Data to pass along with your request
+                 data: { id: preid }, // Data to pass along with your request
                  success: function(data, status) {
                     this.set('content.text', data);
                  }
@@ -572,12 +572,12 @@ function isValidEmailAddress(emailAddress)
     return pattern.test(emailAddress);
 }
 
-function mymovie_del(imdbID, btn)
+function mymovie_del(imdbid, btn)
 {
         var rand_no = Math.random();
         $.ajax({
             url         : WWW_TOP + '/ajax_mymovies?rand=' + rand_no,
-            data        : { del: imdbID},
+            data        : { del: imdbid},
             dataType    : "html",
             success     : function (data)
             {
@@ -590,7 +590,7 @@ function mymovie_del(imdbID, btn)
         return false;
 }
 
-function mymovie_add(imdbID, btn)
+function mymovie_add(imdbid, btn)
 {
         $(btn).hide();
         $(btn).next("a").show();
@@ -598,7 +598,7 @@ function mymovie_add(imdbID, btn)
         var rand_no = Math.random();
         $.ajax({
             url         : WWW_TOP + '/ajax_mymovies?rand=' + rand_no,
-            data        : { add: imdbID},
+            data        : { add: imdbid},
             dataType    : "html",
             success     : function (data)
             {
