@@ -33,7 +33,7 @@ if (count($requestIDtmp) >= 1)
 if ($bFound)
 {
 	$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 5, searchname = " . $db->escapeString($newTitle) . " WHERE id = " . $pieces[0]);
-	echo "\nUpdated requestID " . $requestID . " to release name: ".$newTitle;
+	echo "\nUpdated requestID " . $requestID . "  \tto release name: ".$newTitle;
 }
 else
 {

@@ -66,14 +66,14 @@ class TvRage
 		catch (PDOException $ex)
 		{
 			//duplicate
-			if ($ex->getCode() != 23000)
-				throw $ex;
+			if ($ex->getCode() == 23000 || $ex->getCode() == 1062)
+				return false;
 			//invalid date format
-			elseif ($ex->getCode() != 22007)
-				throw $ex;
+			elseif ($ex->getCode() == 22007)
+				return false;
 			//Data too long for column
-			elseif ($ex->getCode() != 22001)
-				throw $ex;
+			elseif ($ex->getCode() == 22001)
+				return false;
 		}
 
 	}
