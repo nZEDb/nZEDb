@@ -56,9 +56,19 @@ class TvRage
 	public function add($rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
-
 		$db = new DB();
-		return $db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%d, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $db->escapeString($imgbytes)));
+		try
+		{
+			$run = $db->prepare(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%d, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), substr($db->escapeString($genre), 0, 64), $db->escapeString($country), $db->escapeString($imgbytes)));
+			return $run->execute();
+		}
+		catch (PDOException $ex)
+		{
+			//duplicate
+			if ($ex->getCode() != 23000)
+				throw $ex;
+		}
+
 	}
 
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
