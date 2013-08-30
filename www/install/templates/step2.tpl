@@ -9,7 +9,20 @@
 <p>(mysql) Note: If your database already exists, <u>it will be overwritten</u> with this version. If not it will be created. For the database system, use mysql, default port is 3306.</p>
 
 <p>(postgresql) <u>Currently postgresql is locked out as we work on making it compatible with nZEDb.</u> You will need to manually create an empty database, see install.txt for instructions. For the database system, use pgsql, default port is 5432.</p>
+<p>(postgresql) <u>YOU MUST CREATE (empty or not, it gets overwritten) DATABASE BEFORE STARTING.</u> See install.txt</p>
 <form action="?" method="post">
+	<div style="padding-top:20px; text-align:center;">
+			{if $cfg->error}
+			<div>
+				The following error(s) were encountered:<br />
+				{if $cfg->dbPG === false}<span class="error">&bull; PostgreSQL is currently not available for use, we are working on it.</span><br />{/if}
+				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database:<br />{$cfg->emessage}</span><br />{/if}
+				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database:<br />{$cfg->emessage}</span><br />{/if}
+				{if $cfg->dbCreateCheck === false}<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />{/if}
+				<br />
+			</div>
+			{/if}
+	</div>
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="">
 			<td><label for="host">Database System (pgsql or mysql):</label></td>
@@ -42,18 +55,7 @@
 	</table>
 
 	<div style="padding-top:20px; text-align:center;">
-			{if $cfg->error}
-			<div>
-				The following error(s) were encountered:<br />
-				{if $cfg->dbPG === false}<span class="error">&bull; PostgreSQL is currently not available for use, we are working on it.</span><br />{/if}
-				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database</span><br />{/if}
-				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database</span><br />{/if}
-				{if $cfg->pgNameCheck === false}<span class="error">&bull; Unable to determine if you have created the database for postgresql. See install.txt for instructions.</span><br />{/if}
-				{if $cfg->dbCreateCheck === false}<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />{/if}
-				<br />
-			</div>
-			{/if}
-			<input type="submit" value="Setup Database" />
+		<input type="submit" value="Setup Database" />
 	</div>
 </form>
 

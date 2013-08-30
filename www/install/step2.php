@@ -66,38 +66,48 @@ if  ($page->isPostBack())
 	$cfg->DB_SYSTEM = trim($_POST['db_system']);
 
 	$dbtype = $cfg->DB_SYSTEM;
-	$charset = '';
-	if (strtolower($dbtype) == 'mysql')
-		$charset = ';charset=utf8';
-
-	if (isset($cfg->DB_PORT))
-		$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.$charset;
-	else
-		$pdos = $dbtype.':host='.$cfg->DB_HOST.$charset;
-
-
 
 // While we work on postgresql make it fail so people can't use it. If you are a dev comment our the 2 lines.
 if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } if (!$cfg->error) { /* this line */
 
+	if (strtolower($dbtype) == 'mysql')
+	{
+		if (isset($cfg->DB_PORT))
+			$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';charset=utf8';
+		else
+			$pdos = $dbtype.':host='.$cfg->DB_HOST.';charset=utf8';
 
+		$cfg->dbConnCheck = true;
+		try {
+			$pdo = new PDO($pdos, $cfg->DB_USER, $cfg->DB_PASSWORD);
+			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			$cfg->emessage = $e->getMessage();
+			$cfg->error = true;
+			$cfg->dbConnCheck = false;
+		}
+	}
+	elseif (!$cfg->error && strtolower($dbtype) == "pgsql")
+	{
+		if (isset($cfg->DB_PORT))
+			$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';dbname='.$cfg->DB_NAME;
+		else
+			$pdos = $dbtype.':host='.$cfg->DB_HOST.';dbname='.$cfg->DB_NAME;
 
+		$cfg->dbConnCheck = true;
+		try {
+			$pdo = new PDO($pdos, $cfg->DB_USER, $cfg->DB_PASSWORD);
+			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			$cfg->emessage = $e->getMessage();
+			$cfg->error = true;
+			$cfg->dbConnCheck = false;
+		}
 
-	$cfg->dbConnCheck = true;
-	try {
-		$pdo = new PDO($pdos, $cfg->DB_USER, $cfg->DB_PASSWORD);
-		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	} catch (PDOException $e) {
-		printf("Connection failed: (".$e->getMessage().")");
-		$cfg->error = true;
-		$cfg->dbConnCheck = false;
+		$cfg->dbNameCheck = true;
 	}
 
-
-
-
 } /* this line */
-
 
 	if (!$cfg->error && $dbtype == "mysql")
 	{
@@ -123,7 +133,7 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			try {
 				$pdo->query("DROP DATABASE ".$cfg->DB_NAME);
 			} catch (PDOException $e) {
-				printf($e);
+				$cfg->emessage = $e->getMessage();
 			}
 			$pdo->query("CREATE DATABASE ".$cfg->DB_NAME.$charsql);
 			if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
@@ -134,17 +144,6 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			else
 				$cfg->dbNameCheck = true;
 		}
-	}
-	elseif (!$cfg->error && $dbtype == "pgsql")
-	{
-		$cfg->dbNameCheck = true;
-		if (tablecheck($cfg->DB_NAME, $dbtype, $pdo) === false)
-		{
-			$cfg->pgNameCheck = false;
-			$cfg->error = true;
-		}
-		else
-			$cfg->pgNameCheck = true;
 	}
 
 	if (!$cfg->error)
