@@ -31,7 +31,7 @@ function SplitSQL($file, $delimiter = ';')
 
 					if ($dbsys == "pgsql")
 						$query = str_replace(array("`", chr(96)), '', $query);
-					if (preg_match('/ALTER|UPDATE|INSERT|DELETE/i', $query))
+					if (preg_match('/ALTER|UPDATE|INSERT|DELETE|DROP|CREATE/i', $query))
 					{
 						if ($db->queryExec($query) === false)
 							exit();
