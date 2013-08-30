@@ -7,7 +7,7 @@ require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 
 if (!isset($argv[1]))
-	exit ("Type php decrypt_hashes.php true to start.");
+	exit ("Type php decrypt_hashes.php true to start.\n");
 
 preName();
 

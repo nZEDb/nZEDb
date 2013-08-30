@@ -482,14 +482,14 @@ class Releases
 		{
 			foreach ($words as $word)
 			{
-			if ($word != "")
+				if ($word != "")
 				{
 					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql = sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString(substr($word, 1)."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString(substr($word, 1)."%"));
 					elseif (substr($word, 0, 2) == '--')
-						$searchsql = sprintf(" AND releases.%s NOT LIKE %s", $type, $db->escapeString("%".substr($word, 2)."%"));
+						$searchsql .= sprintf(" AND releases.%s NOT LIKE %s", $type, $db->escapeString("%".substr($word, 2)."%"));
 					else
-						$searchsql = sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString("%".$word."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString("%".$word."%"));
 
 					$intwordcount++;
 				}
@@ -1361,7 +1361,7 @@ class Releases
 
 					if ($bFound)
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = 1, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
+						$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 5, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
 
 						if ($this->echooutput)
 							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle;
