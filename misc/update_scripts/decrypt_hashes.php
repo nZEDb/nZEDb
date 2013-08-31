@@ -17,17 +17,21 @@ function preName()
 
 	if ($db->dbSystem() == "mysql")
 	{
-		$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND name REGEXP '[a-fA-F0-9]{32}'");
+		$run = $db->prepare("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND name REGEXP '[a-fA-F0-9]{32}'");
+		$run->execute();
 		$res = $db->query("SELECT id, name FROM releases WHERE dehashstatus BETWEEN -6 AND -1 AND name REGEXP '[a-fA-F0-9]{32}'");
 	}
 	else if ($db->dbSystem() == "pgsql")
 	{
-		$db->queryExec("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
+		$run = $db->prepare("UPDATE releases SET dehashstatus = -1 WHERE dehashstatus = 0 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
+		$run->execute();
 		$res = $db->query("SELECT id, name FROM releases WHERE dehashstatus BETWEEN -6 AND -1 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
 	}
 
 	$counter = 0;
-	if(count($res) > 0)
+	$total = count($res);
+	$show = '';
+	if($total > 0)
 	{
 		$consoletools = new ConsoleTools();
 		$reset = 0;
@@ -39,23 +43,26 @@ function preName()
 			{
 				if($res1 = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE md5 = %s", $db->escapeString($match[1]))))
 				{
-					$result = $db->queryExec(sprintf("UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s WHERE id = %d", $db->escapeString($res1['title']), $row['id']));
-					if (count($result) >= 1)
+					$result = $db->prepare(sprintf("UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s WHERE id = %d", $db->escapeString($res1['title']), $row['id']));
+					$result->execute();
+					if ($result->rowCount() > 0)
 					{
-						echo "Renamed hashed release: ".$res1['title']."\n";
+						$show = $res1['title'];
 						$success = true;
 						$counter++;
 					}
 				}
 			}
 			if ($success == false)
-				$db->queryExec(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
-			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,count($res)));
-			echo "\n";
+			{
+				$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
+				$fail->execute();
+			}
+			$consoletools->overWrite("Renaming hashed releases: ".$consoletools->percentString($loops++,$total)."=>".$show);
 		}
 	}
-	if ($counter > 0)
-		echo $counter." release(s) names changed.\n";
+	if ($total > 0)
+		echo "\n".$counter." release(s) names changed.\n";
 	else
-		echo "Nothing to do.\n";
+		echo "\nNothing to do.\n";
 }

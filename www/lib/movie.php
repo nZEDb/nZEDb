@@ -354,24 +354,13 @@ class Movie
 
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		$db = new DB();
-		try
-		{
+		try {
 			$run = $db->prepare(sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 				$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'],
 				$mov['imdb_id'], $mov['tmdb_id'], $db->escapeString($movtitle), $db->escapeString($mov['rating']), $db->escapeString($mov['tagline']), $db->escapeString($mov['plot']), $db->escapeString($mov['year']), $db->escapeString($mov['genre']), $db->escapeString($mov['type']), $db->escapeString($mov['director']), $db->escapeString($mov['actors']), $db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']));
 			$movieId = $run->execute();
-		}
-		catch (PDOException $ex)
-		{
-			//duplicate
-			if ($ex->getCode() == 23000 || $ex->getCode() == 1062)
-				return false;
-			//invalid date format
-			elseif ($ex->getCode() == 22007)
-				return false;
-			//Data too long for column
-			elseif ($ex->getCode() == 22001)
-				return false;
+		} catch (PDOException $e) {
+			return false;
 		}
 
 		if ($movieId) {

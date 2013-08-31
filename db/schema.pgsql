@@ -1377,7 +1377,8 @@ INSERT INTO site
 	('lookuppar2','0'),
 	('delaytime','2'),
 	('addpar2', '0'),
-	('sqlpatch','117');
+	('fixnamethreads', '1'),
+	('sqlpatch','118');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),

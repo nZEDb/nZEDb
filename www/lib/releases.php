@@ -914,7 +914,13 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupid = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
+		try {
+			$run = $db->prepare("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
+			$run->execute();
+		} catch (PDOException $e) {
+			sleep(1);
+			$this->processReleasesStage1($groupID, $echooutput=false);
+		}
 		//$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid  FROM  binaries b, collections c WHERE  b.collectionid  = c.id  GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryExec("UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id AND b.filenumber = 0 ".$where." GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1");
@@ -1063,7 +1069,7 @@ class Releases
 					$minsizecount = 0;
 				$minsizecounts = $minsizecount+$minsizecounts;
 
-				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
+				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
 					$mascq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d " . $where, $maxfilesizeres['value']));
@@ -1158,6 +1164,7 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
+		$where = (!empty($groupID)) ? " AND groupid = " . $groupID : "";
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
@@ -1166,7 +1173,7 @@ class Releases
 		$catresrel = $db->query("select c.id as id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL");
 		foreach ($catresrel as $catrowrel)
 		{
-			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d", $catrowrel['id'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d".$where, $catrowrel['id'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
@@ -1228,7 +1235,7 @@ class Releases
 				}
 			}
 
-			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
+			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0)
 			{
 				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND filesize > %d", $groupID, $maxfilesizeres['value']));
@@ -1241,7 +1248,7 @@ class Releases
 					}
 				}
 			}
-			
+
 			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID, $groupID));
 			if (count($resrel) > 0)
 			{
@@ -1292,7 +1299,10 @@ class Releases
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
+					{
+						echo "\n";
 						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
+					}
 				}
 			}
 		}
@@ -1308,7 +1318,7 @@ class Releases
 	public function processReleasesStage5b($groupID, $echooutput=true)
 	{
 		$page = new Page();
-		if ($page->site->lookup_reqids == 1)
+		if ($page->site->lookup_reqids == 1 || $page->site->lookup_reqids == 2)
 		{
 			$db = new DB();
 			$consoletools = new consoleTools();
@@ -1361,7 +1371,7 @@ class Releases
 
 					if ($bFound)
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 5, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
+						$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 12, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
 
 						if ($this->echooutput)
 							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle;

@@ -1,5 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
+08312013 -> jonnyboy -> added threaded versions for fixreleasesnames and update_releases, these should be considered alpha and could create invalid releases
+						cleaned up a few bugs
 08292013 -> jonnyboy -> changed queries for pg
 						update for changes to decrypt_hashes.php
 						typo in monitor.php

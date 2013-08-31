@@ -208,6 +208,8 @@ class PostProcess
 			$foundname = false;
 			foreach ($files as $fileID => $file)
 			{
+				if (!array_key_exists("name", $file))
+					return false;
 				// Add to releasefiles.
 				if ($this->addpar2 && $relfiles < 11 && $db->queryOneRow(sprintf("SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s", $relID, $this->db->escapeString($file["name"]))) === false)
 				{
