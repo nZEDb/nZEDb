@@ -1,20 +1,20 @@
-DROP TABLE IF EXISTS nzbs;
+DROP TABLE IF EXISTS "nzbs" CASCADE;
+CREATE TABLE "nzbs" (
+  "id" bigint DEFAULT nextval('nzbs_id_seq'::regclass) NOT NULL,
+  "message_id" character varying(255) DEFAULT ''::character varying NOT NULL,
+  "groupname" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "subject" character varying(1000) DEFAULT '0'::character varying NOT NULL,
+  "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "filesize" numeric(20, 0) DEFAULT 0 NOT NULL,
+  "partnumber" bigint DEFAULT 0 NOT NULL,
+  "totalparts" bigint DEFAULT 0 NOT NULL,
+  "postdate" timestamp without time zone,
+  "dateadded" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL
+)
+WITHOUT OIDS;
 
-CREATE TABLE nzbs (
-    id int(10) unsigned NOT NULL AUTO_INCREMENT,
-    message_id varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-    groupname varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-    subject varchar(1000) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-    collectionhash varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-    filesize bigint(20) unsigned NOT NULL DEFAULT '0',
-    partnumber int(10) unsigned NOT NULL DEFAULT '0',
-    totalparts int(10) unsigned NOT NULL DEFAULT '0',
-    postdate datetime DEFAULT NULL,
-    dateadded timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
-
-CREATE INDEX ix_nzbs_partnumber ON nzbs(partnumber);
-CREATE INDEX ix_nzbs_collectionhash ON nzbs(collectionhash);
+ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
+CREATE INDEX "nzbs_partnumber" ON "nzbs" ("partnumber");
+CREATE INDEX "nzbs_collectionhash" ON "nzbs" ("collectionhash");
 
 UPDATE site SET value = '117' WHERE setting = 'sqlpatch';
