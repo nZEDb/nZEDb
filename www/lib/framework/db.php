@@ -88,12 +88,10 @@ class DB
 					$run->execute();
 					return $run;
 				} catch (PDOException $e) {
-					printf($e);
-					return false;
+					//return false;
 				}
 				$i++;
 			}
-
 			printf($e);
 			return false;
 		}
@@ -120,8 +118,7 @@ class DB
 					$run->execute();
 					return $run;
 				} catch (PDOException $e) {
-					printf($e);
-					return false;
+					//printf($e);
 				}
 				$i++;
 			}

@@ -1138,7 +1138,7 @@ class Releases
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
-					$db->queryExec(sprintf("UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d", $relid, $rowcol['id']));
+					$db->queryExec(sprintf("UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d", $relid, (int)$rowcol['id']));
 					$retcount ++;
 					if ($this->echooutput)
 						echo "Added release ".$cleanerName."\n";
