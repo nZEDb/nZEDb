@@ -139,6 +139,7 @@ class Namefixer
 			$newname = $namecleaning->fixerCleaner($name);
 			if (strtolower($newname) != strtolower($release["searchname"]))
 			{
+				$n = "\n";
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
@@ -156,7 +157,7 @@ class Namefixer
 					$groupname = $groups->getByNameByID($release["groupid"]);
 					$oldcatname = $category->getNameByID($release["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
-					$n = "\n";
+
 
 					if ($type === "PAR2, ")
 						echo $n;
@@ -184,7 +185,9 @@ class Namefixer
 						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseid"]));
 					}
 					else
+					{
 						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
+					}
 				}
 			}
 		}
@@ -196,6 +199,7 @@ class Namefixer
 	{
 		$db = new DB();
 		$matched = 0;
+		$n = "\n";
 		$res = $db->query(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($md5)));
 		if (count($res) > 0)
 		{
@@ -209,19 +213,19 @@ class Namefixer
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 10 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
+							$db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 10 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 						else
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
+							$db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 					}
 					if ($echooutput)
 					{
 						$groups = new Groups();
-						echo"New name: ".$row["title"]."\n".
-							"Old name: ".$release["searchname"]."\n".
-							"New cat:  ".$category->getNameByID($determinedcat)."\n".
-							"Old cat:  ".$category->getNameByID($release["categoryid"])."\n".
-							"Group:    ".$groups->getByNameByID($release["groupid"])."\n".
-							"Method:   "."predb md5 release name: ".$row["source"]."\n"."\n";
+						echo $n."New name: ".$row["title"].$n.
+							"Old name: ".$release["searchname"].$n.
+							"New cat:  ".$category->getNameByID($determinedcat).$n.
+							"Old cat:  ".$category->getNameByID($release["categoryid"]).$n.
+							"Group:    ".$groups->getByNameByID($release["groupid"]).$n.
+							"Method:   "."predb md5 release name: ".$row["source"].$n.$n;
 					}
 					$matched++;
 				}

@@ -58,24 +58,7 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		$country = preg_replace('/United States/i', 'US', $country);
 		$db = new DB();
-		try
-		{
-			$run = $db->prepare(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
-			return $run->execute();
-		}
-		catch (PDOException $ex)
-		{
-			//duplicate
-			if ($ex->getCode() != 23000)
-				throw $ex;
-			//invalid date format
-			elseif ($ex->getCode() != 22007)
-				throw $ex;
-			//Data too long for column
-			elseif ($ex->getCode() != 22001)
-				throw $ex;
-		}
-
+		$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
 	}
 
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)

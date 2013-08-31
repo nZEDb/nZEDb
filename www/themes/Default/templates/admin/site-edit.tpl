@@ -873,6 +873,14 @@
 </tr>
 
 <tr>
+    <td><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
+    <td>
+        <input class="tiny" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
+        <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
+    </td>
+</tr>
+
+<tr>
 	<td><label for="postdelay">Postprocessing Threads Delay:</label></td>
 	<td>
 		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />

@@ -37,10 +37,13 @@ do
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py nfo
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py filename
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py md5
 #	php ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_old_threaded.py amazon
 #	sleep $NZEDB_SLEEP_TIME
-	if [ $1 == "true" ]
+	if [[ $1 == "true" ]]
 	then
 		loop=0
 	fi

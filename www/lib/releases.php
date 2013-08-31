@@ -482,14 +482,14 @@ class Releases
 		{
 			foreach ($words as $word)
 			{
-			if ($word != "")
+				if ($word != "")
 				{
 					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql = sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString(substr($word, 1)."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString(substr($word, 1)."%"));
 					elseif (substr($word, 0, 2) == '--')
-						$searchsql = sprintf(" AND releases.%s NOT LIKE %s", $type, $db->escapeString("%".substr($word, 2)."%"));
+						$searchsql .= sprintf(" AND releases.%s NOT LIKE %s", $type, $db->escapeString("%".substr($word, 2)."%"));
 					else
-						$searchsql = sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString("%".$word."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString("%".$word."%"));
 
 					$intwordcount++;
 				}
@@ -1063,7 +1063,7 @@ class Releases
 					$minsizecount = 0;
 				$minsizecounts = $minsizecount+$minsizecounts;
 
-				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
+				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
 					$mascq = $db->prepare(sprintf("UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d " . $where, $maxfilesizeres['value']));
@@ -1128,7 +1128,8 @@ class Releases
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
 				$relguid = sha1(uniqid().mt_rand());
 				try {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					$relid = $db->prepare(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					$relid->execute();
 				} catch (PDOException $err) {
 					if ($this->echooutput)
 						echo "\033[01;31m.".$err."\n";
@@ -1158,6 +1159,7 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
+		$where = (!empty($groupID)) ? " AND groupid = " . $groupID : "";
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
@@ -1166,7 +1168,7 @@ class Releases
 		$catresrel = $db->query("select c.id as id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL");
 		foreach ($catresrel as $catrowrel)
 		{
-			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d", $catrowrel['id'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d".$where, $catrowrel['id'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
@@ -1228,7 +1230,7 @@ class Releases
 				}
 			}
 
-			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = maxsizetoformrelease");
+			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0)
 			{
 				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND filesize > %d", $groupID, $maxfilesizeres['value']));
@@ -1241,7 +1243,7 @@ class Releases
 					}
 				}
 			}
-			
+
 			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID, $groupID));
 			if (count($resrel) > 0)
 			{
@@ -1292,7 +1294,9 @@ class Releases
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
+					{
 						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
+					}
 				}
 			}
 		}
@@ -1308,7 +1312,7 @@ class Releases
 	public function processReleasesStage5b($groupID, $echooutput=true)
 	{
 		$page = new Page();
-		if ($page->site->lookup_reqids == 1)
+		if ($page->site->lookup_reqids == 1 || $page->site->lookup_reqids == 2)
 		{
 			$db = new DB();
 			$consoletools = new consoleTools();
@@ -1361,7 +1365,7 @@ class Releases
 
 					if ($bFound)
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = 1, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
+						$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 12, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
 
 						if ($this->echooutput)
 							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle;

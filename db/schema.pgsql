@@ -338,6 +338,7 @@ WITHOUT OIDS;
 -- Table: nzbs
 DROP TABLE IF EXISTS "nzbs" CASCADE;
 CREATE TABLE "nzbs" (
+  "id" bigint DEFAULT nextval('nzbs_id_seq'::regclass) NOT NULL,
   "message_id" character varying(255) DEFAULT ''::character varying NOT NULL,
   "groupname" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "subject" character varying(1000) DEFAULT '0'::character varying NOT NULL,
@@ -1376,7 +1377,8 @@ INSERT INTO site
 	('lookuppar2','0'),
 	('delaytime','2'),
 	('addpar2', '0'),
-	('sqlpatch','116');
+	('fixnamethreads', '1'),
+	('sqlpatch','118');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
@@ -11573,7 +11575,7 @@ CREATE INDEX "groups_id" ON "groups" ("id");ALTER TABLE "menu" ADD CONSTRAINT "m
 DROP INDEX IF EXISTS "movieinfo_imdbid" CASCADE;
 CREATE UNIQUE INDEX "movieinfo_imdbid" ON "movieinfo" ("imdbid");
 DROP INDEX IF EXISTS "movieinfo_title" CASCADE;
-CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "nzbs" ADD CONSTRAINT "nzbs_message_id_pkey" PRIMARY KEY("message_id");
+CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "nzbs_partnumber" CASCADE;
 CREATE INDEX "nzbs_partnumber" ON "nzbs" ("partnumber");
 DROP INDEX IF EXISTS "nzbs_collectionhash" CASCADE;
