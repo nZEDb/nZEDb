@@ -182,21 +182,11 @@ class Namefixer
 							$status = 7;
 						else if ($type == "Filenames, ")
 							$status = 9;
-						try {
-							$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseid"]));
-							$run->execute();
-						} catch (PDOException $e) {
-							return false;
-						}
+						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString($newname), $status, $determinedcat, $release["releaseid"]));
 					}
 					else
 					{
-						try {
-							$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
-							$run->execute();
-						} catch (PDOException $e) {
-							return false;
-						}
+						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -223,23 +213,9 @@ class Namefixer
 					if ($echo == 1)
 					{
 						if ($namestatus == 1)
-						{
-							try {
-								$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 10 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
-								$run->execute();
-							} catch (PDOException $e) {
-								return false;
-							}
-						}
+							$db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 10 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 						else
-						{
-							try {
-								$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
-								$run->execute();
-							} catch (PDOException $e) {
-								return false;
-							}
-						}
+							$db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["id"]));
 					}
 					if ($echooutput)
 					{
@@ -286,12 +262,7 @@ class Namefixer
 		if ($namestatus == 1 && $this->matched === false)
 		{
 			$db = new Db;
-			try {
-				$run = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['releaseid']));
-				$run->execute();
-			} catch (PDOException $e) {
-				return false;
-			}
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release['releaseid']));
 		}
 	}
 

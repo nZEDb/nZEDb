@@ -84,12 +84,7 @@ Class Predb
 									else
 										$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
-									try {
-										$run = $db->prepare(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
-										$run->execute();
-									} catch (PDOException $e) {
-										continue;
-									}
+									$db->prepare(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
 									$newnames++;
 								}
 							}
@@ -105,12 +100,7 @@ Class Predb
 								else
 									$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
-								try {
-									$run = $db->prepare(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $db->escapeString($md5)));
-									$run->execute();
-								} catch (PDOException $e) {
-									continue;
-								}
+								$db->prepare(sprintf("INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -146,12 +136,7 @@ Class Predb
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-									try {
-										$run = $db->prepare(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
-										$run->execute();
-									} catch (PDOException $e) {
-										continue;
-									}
+									$run = $db->prepare(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
 									$newnames++;
 								}
 							}
@@ -159,12 +144,7 @@ Class Predb
 							{
 								$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
 								$title = preg_replace("/  - omgwtfnzbs.org/", "", $matches2["title"]);
-								try {
-									$run =$db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($title), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $db->escapeString($md5)));
-			    					$run->execute();
-                                } catch (PDOException $e) {
-                                    continue;
-                                }
+								$db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($title), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -209,12 +189,7 @@ Class Predb
 								else
 									$category = "NULL";
 
-                                try {
-									$run = $db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"].$matches2["title2"]), $size, $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("zenet"), $db->escapeString($md5)));
-                                    $run->execute();
-                                } catch (PDOException $e) {
-                                    continue;
-                                }
+								$db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"].$matches2["title2"]), $size, $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("zenet"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -252,13 +227,7 @@ Class Predb
 								else
 									$size = $db->escapeString(round($matches2["size"]));
 
-                                try {
-									$run = $db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
-                                    $run->execute();
-                                } catch (PDOException $e) {
-                                    continue;
-                                }
-
+								$db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -272,12 +241,7 @@ Class Predb
 							{
 								$category = $db->escapeString($matches2["category"].", ".$matches2["category1"]);
 
-								try {
-									$run = $db->prepare(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
-									$run->execute();
-								} catch (PDOException $e) {
-									continue;
-								}
+								$db->prepare(sprintf("INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $category, $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("prelist"), $db->escapeString($md5)));
 								$newnames++;
 							}
 						}
@@ -317,12 +281,7 @@ Class Predb
 									else
 										$size = $db->escapeString($matches2["size"]);
 
-									try {
-										$run = $db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("orlydb"), $db->escapeString($md5)));
-										$run->execute();
-									} catch (PDOException $e) {
-										continue;
-									}
+									$db->prepare(sprintf("INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)", $db->escapeString($matches2["title"]), $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("orlydb"), $db->escapeString($md5)));
 									$newnames++;
 								}
 							}
@@ -349,12 +308,7 @@ Class Predb
 					continue;
 				else
 				{
-					try {
-						$run = $db->prepare(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)", $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString("srrdb"), $db->escapeString($md5)));
-						$run->execute();
-					} catch (PDOException $e) {
-						continue;
-					}
+					$db->prepare(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)", $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString("srrdb"), $db->escapeString($md5)));
 					$newnames++;
 				}
 			}
@@ -380,12 +334,7 @@ Class Predb
 						continue;
 					else
 					{
-						try {
-							$run = $db->prepare(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString($md5)));
-							$run->execute();
-						} catch (PDOException $e) {
-							continue;
-						}
+						$db->prepare(sprintf("INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)", $db->escapeString($release->title), $db->escapeString("predbme"), $db->escapeString($md5)));
 						$newnames++;
 					}
 				}
@@ -400,12 +349,7 @@ Class Predb
 		$db = new DB();
 		if($x = $db->queryOneRow(sprintf("SELECT id FROM predb WHERE title = %s", $db->escapeString($cleanerName))) !== false)
 		{
-			try {
-				$run = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d", $x["id"], $releaseID));
-				$run->execute();
-			} catch (PDOException $e) {
-				continue;
-			}
+			$db->prepare(sprintf("UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d", $x["id"], $releaseID));
 		}
 	}
 
@@ -431,12 +375,7 @@ Class Predb
 		{
 			foreach ($res as $row)
 			{
-				try {
-					$run = $db->prepare(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
-					$run->execute();
-				} catch (PDOException $e) {
-					continue;
-				}
+				$db->prepare(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;

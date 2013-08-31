@@ -914,13 +914,7 @@ class Releases
 		$where = (!empty($groupID)) ? " AND groupid = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		try {
-			$run = $db->prepare("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
-			$run->execute();
-		} catch (PDOException $e) {
-			sleep(1);
-			$this->processReleasesStage1($groupID, $echooutput=false);
-		}
+		$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
 		//$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid  FROM  binaries b, collections c WHERE  b.collectionid  = c.id  GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryExec("UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id AND b.filenumber = 0 ".$where." GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1");
@@ -1134,7 +1128,8 @@ class Releases
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
 				$relguid = sha1(uniqid().mt_rand());
 				try {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					$relid = $db->prepare(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					$relid->execute();
 				} catch (PDOException $err) {
 					if ($this->echooutput)
 						echo "\033[01;31m.".$err."\n";
@@ -1300,7 +1295,6 @@ class Releases
 					$nzbcount++;
 					if ($this->echooutput)
 					{
-						echo "\n";
 						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
 					}
 				}

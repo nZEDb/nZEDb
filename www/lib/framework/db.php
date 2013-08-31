@@ -66,7 +66,8 @@ class DB
 		{
 			if ($this->dbsystem() == "mysql")
 			{
-				$ins = DB::$pdo->exec($query);
+				$ins = DB::$pdo->prepare($query);
+				$ins->execute();
 				return DB::$pdo->lastInsertId();
 			}
 			else
@@ -77,6 +78,22 @@ class DB
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
+			//deadlock, try 5 time
+			$i = 1;
+			while ( $e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 5)
+			{
+				sleep(1);
+				try {
+					$run = DB::$pdo->prepare($query);
+					$run->execute();
+					return $run;
+				} catch (PDOException $e) {
+					printf($e);
+					return false;
+				}
+				$i++;
+			}
+
 			printf($e);
 			return false;
 		}
@@ -89,8 +106,25 @@ class DB
 			return false;
 
 		try {
-			return DB::$pdo->exec($query);
+			$run = DB::$pdo->prepare($query);
+			$run->execute();
+			return $run;
 		} catch (PDOException $e) {
+			//deadlock, try 5 time
+			$i = 1;
+			while ( $e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 5)
+			{
+				sleep(1);
+				try {
+					$run = DB::$pdo->prepare($query);
+					$run->execute();
+					return $run;
+				} catch (PDOException $e) {
+					printf($e);
+					return false;
+				}
+				$i++;
+			}
 			printf($e);
 			return false;
 		}
