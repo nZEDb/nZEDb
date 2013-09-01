@@ -38,7 +38,7 @@ Class Predb
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
-			if($newnames->rowCount() > 0)
+			if(count($newnames) > 0)
 				$db->queryExec(sprintf("UPDATE predb SET adddate = NOW() WHERE id = %d", $newestrel["id"]));
 		}
 		$matched = $this->matchPredb();
