@@ -335,6 +335,11 @@ CREATE TABLE "musicinfo" (
 )
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "nzbs_id_seq" CASCADE;
+CREATE SEQUENCE "nzbs_id_seq" INCREMENT BY 1
+                                  NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('nzbs_id_seq', 1, true);
+
 -- Table: nzbs
 DROP TABLE IF EXISTS "nzbs" CASCADE;
 CREATE TABLE "nzbs" (
