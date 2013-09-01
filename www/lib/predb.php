@@ -26,7 +26,7 @@ Class Predb
 		$db = new DB();
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1");
-		if (strtotime($newestrel["adddate"]) < time()-900 || is_null($newestrel["adddate"]))
+		if (strtotime($newestrel['adddate']) < time()-900 || is_null($newestrel['adddate']))
 		{
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
@@ -38,7 +38,7 @@ Class Predb
 			$newsrr = $this->retrieveSrr();
 			$newpdme = $this->retrievePredbme();
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
-			if ($newnames == 0)
+			if($newnames->rowCount() > 0)
 				$db->queryExec(sprintf("UPDATE predb SET adddate = NOW() WHERE id = %d", $newestrel["id"]));
 		}
 		$matched = $this->matchPredb();
@@ -375,7 +375,7 @@ Class Predb
 		{
 			foreach ($res as $row)
 			{
-				$db->prepare(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
+				$db->queryexec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					echo ".";
 				$updated++;
