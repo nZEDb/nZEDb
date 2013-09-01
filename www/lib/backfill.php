@@ -379,16 +379,10 @@ class Backfill
 			$nntp->doQuit();
 
 		if ($success === false)
-		{
-			// Use now - 365 days.
-			$date = TIME() - 31536000;
-			if ($old === true)
-				$date = false;
-			return $date;
-		}
+			return false;
 
 		if($debug)
-			echo "DEBUG: postdate for post: .".$post." came back ".$date." (";
+			echo "DEBUG: postdate for post: ".$post." came back ".$date." (";
 		$date = strtotime($date);
 
 		if($debug)

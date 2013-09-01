@@ -676,7 +676,7 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		$maxage = ($maxage > 0) ? sprintf(" AND postdate > now() - INTERVAL %d DAY ", $maxage) : '';
@@ -707,7 +707,7 @@ class Releases
 		else
 			$imdbId = "";
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
@@ -1114,8 +1114,8 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		$rescol = $db->query("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 ". $where." LIMIT ".$this->stage5limit);
-		if(count($rescol) > 0)
+		$rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 ". $where." LIMIT ".$this->stage5limit);
+		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
 			$predb = new  Predb();
@@ -1128,8 +1128,7 @@ class Releases
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
 				$relguid = sha1(uniqid().mt_rand());
 				try {
-					$relid = $db->prepare(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-					$relid->execute();
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 				} catch (PDOException $err) {
 					if ($this->echooutput)
 						echo "\033[01;31m.".$err."\n";
@@ -1146,9 +1145,9 @@ class Releases
 			}
 		}
 
-		if ($this->echooutput)
-			echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
-		return $retcount;
+		//if ($this->echooutput)
+		//	echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
+		//return $retcount;
 	}
 
 	/*
@@ -1294,9 +1293,7 @@ class Releases
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-					{
 						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
-					}
 				}
 			}
 		}

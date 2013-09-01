@@ -78,22 +78,20 @@ class DB
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
-			//deadlock, try 5 time
+			//deadlock, try 10 times
 			$i = 1;
 			while ( $e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 5)
 			{
-				sleep(1);
+				sleep($i);
 				try {
-					$run = DB::$pdo->prepare($query);
-					$run->execute();
-					return $run;
+					$ins = DB::$pdo->prepare($query);
+					$ins->execute();
+					return DB::$pdo->lastInsertId();
 				} catch (PDOException $e) {
-					printf($e);
-					return false;
+					//return false;
 				}
 				$i++;
 			}
-
 			printf($e);
 			return false;
 		}
@@ -110,18 +108,17 @@ class DB
 			$run->execute();
 			return $run;
 		} catch (PDOException $e) {
-			//deadlock, try 5 time
+			//deadlock, try 10 times
 			$i = 1;
 			while ( $e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 5)
 			{
-				sleep(1);
+				sleep($i);
 				try {
 					$run = DB::$pdo->prepare($query);
 					$run->execute();
 					return $run;
 				} catch (PDOException $e) {
-					printf($e);
-					return false;
+					//printf($e);
 				}
 				$i++;
 			}
