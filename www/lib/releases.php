@@ -1121,7 +1121,7 @@ class Releases
 			$predb = new  Predb();
 			$page = new Page();
 
-			foreach ($rescol as $rowcol)
+			//foreach ($rescol as $rowcol)
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
@@ -1138,7 +1138,7 @@ class Releases
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
-					$db->queryExec(sprintf("UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d", $relid, (int)$rowcol['id']));
+					$db->queryExec(sprintf("UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d", $relid, (int) ($rowcol['id'])));
 					$retcount ++;
 					if ($this->echooutput)
 						echo "Added release ".$cleanerName."\n";
