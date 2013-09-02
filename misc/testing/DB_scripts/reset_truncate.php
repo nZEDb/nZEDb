@@ -18,8 +18,9 @@ if(isset($argv[1]) && $argv[1] == "true")
 	}
 	unset($value);
 
-	$delcount = $db->queryExec("DELETE FROM releases WHERE nzbstatus = 0");
-	echo $delcount." releases had no nzb, deleted.\n";
+	$delcount = $db->prepare("DELETE FROM releases WHERE nzbstatus = 0");
+	$delcount->execute();
+	echo $delcount->rowCount()." releases had no nzb, deleted.\n";
 }
 else
 	exit("This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.\nIf you are sure you want to run it, type php reset_truncate.php true\n");

@@ -85,14 +85,10 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$affecta = $db->prepare("update collections set dateadded = now()");
-$affecta->execute();
-if ( $affecta->rowCount() > 0 )
-	echo $affecta->rowCount()." collections reset\n";
-$affectb = $db->prepare("update nzbs set dateadded = now()");
-$affectb->execute();
-if ( $affectb->rowCount() > 0 )
-    echo $affectb->rowCount()." nzbs reset\n";
+$run = $db->queryExec("update collections set dateadded = now()");
+echo $run->rowCount()." collections reset\n";
+$run = $db->queryExec("update nzbs set dateadded = now()");
+echo $run->rowCount()." nzbs reset\n";
 
 function start_apps($tmux_session)
 {

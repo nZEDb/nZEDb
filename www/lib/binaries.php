@@ -433,7 +433,7 @@ class Binaries
 
 				foreach($this->message AS $subject => $data)
 				{
-					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
+					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '' && strlen($data['Xref']) <= 255)
 					{
 						$collectionHash = $data['CollectionHash'];
 						if ($lastCollectionHash == $collectionHash)

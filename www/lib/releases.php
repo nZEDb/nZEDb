@@ -911,35 +911,26 @@ class Releases
 		if ($this->echooutput)
 			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m\n";
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? " AND groupid = ".$groupID : "";
+		$where = (!empty($groupID)) ? " AND c.groupid = ".$groupID : "";
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ".$where);
-		//$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid  FROM  binaries b, collections c WHERE  b.collectionid  = c.id  GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
+		$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id ".$where." GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ");
+		//$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0".$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryExec("UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id AND b.filenumber = 0 ".$where." GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1");
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$db->queryExec("UPDATE collections SET filecheck = 15 WHERE filecheck = 1");
+		$db->queryExec("UPDATE collections c SET filecheck = 15 WHERE filecheck = 1".$where);
 
 		// If we have all the parts set partcheck to 1.
-		if (empty($groupID))
-		{
-			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts) AND b.partcheck = 0");
-			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1) AND b.partcheck = 0");
-		}
-		else
-		{
-			// Same as the if but for a specific group.
-			$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p ,collections c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid AND c.groupid = ".$groupID." GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0");
-			$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p ,collections c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid AND c.groupid = ".$groupID." GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0");
-		}
+		// If filecheck 15, check if we have all the parts for a file then set partcheck.
+		$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid ".$where." GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0");
+		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
+		$db->queryExec("UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid ".$where." GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0");
 
 		// Set filecheck to 2 if partcheck = 1.
-		$db->queryExec("UPDATE collections c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE c.id = b.collectionid AND b.partcheck = 1 GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ".$where);
+		$db->queryExec("UPDATE collections c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE c.id = b.collectionid AND b.partcheck = 1 ".$where." GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ");
 		// Set filecheck to 1 if we don't have all the parts.
-		$db->queryExec("UPDATE collections SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
+		$db->queryExec("UPDATE collections c SET filecheck = 1 WHERE filecheck in (15, 16) ".$where);
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10) ".$where, $this->delaytimet));
 
@@ -1421,6 +1412,7 @@ class Releases
 		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupid = ".$groupID : "";
+		$delq = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
@@ -1441,14 +1433,14 @@ class Releases
 			{
 				foreach ($idr as $id)
 				{
-					$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+					$reccount += $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
 					$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d",  $id["id"]));
 				}
 				$reccount += $db->queryExec("DELETE FROM collections WHERE filecheck = 5 ".$where);
 			}
 		}
 		if ($this->echooutput)
-				echo "Removed ".$delq->rowCount()." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
+				echo "Removed ".$reccount." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
 	}
 
 	public function processReleasesStage7b($groupID, $echooutput=false)

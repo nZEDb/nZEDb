@@ -146,7 +146,7 @@ require_once(WWW_DIR."/lib/site.php");
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getBookOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AMD rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
