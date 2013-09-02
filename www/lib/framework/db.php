@@ -78,18 +78,14 @@ class DB
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
-			//deadlock, try 10 times
+			//deadlock or lock wait timeout, try 10 times
 			$i = 1;
-			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001) && $i <= 10)
+			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $e->errorInfo[0]==1205) && $i <= 10)
 			{
 				sleep($i * $i);
-				try {
-					$ins = DB::$pdo->prepare($query);
-					$ins->execute();
-					return DB::$pdo->lastInsertId();
-				} catch (PDOException $e) {
-					//return false;
-				}
+				$ins = DB::$pdo->prepare($query);
+				$ins->execute();
+				return DB::$pdo->lastInsertId();
 				$i++;
 			}
 			printf($e);
@@ -108,18 +104,13 @@ class DB
 			$run->execute();
 			return $run;
 		} catch (PDOException $e) {
-			//deadlock, try 10 times
+			//deadlock or lock wait timeout, try 10 times
 			$i = 1;
-			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001) && $i <= 10)
+			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $e->errorInfo[0]==1205) && $i <= 10)
 			{
-				sleep($i * $i);
-				try {
-					$run = DB::$pdo->prepare($query);
-					$run->execute();
-					return $run;
-				} catch (PDOException $e) {
-					//printf($e);
-				}
+				$run = DB::$pdo->prepare($query);
+				$run->execute();
+				return $run;
 				$i++;
 			}
 			printf($e);
