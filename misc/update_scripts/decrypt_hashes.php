@@ -18,11 +18,11 @@ function preName()
 
 	if ($db->dbSystem() == "mysql")
 	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -6 AND 0 AND name REGEXP '[a-fA-F0-9]{32}'");
+		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND name REGEXP '[a-fA-F0-9]{32}'");
 	}
 	else if ($db->dbSystem() == "pgsql")
 	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -6 AND 0 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
+		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
 	}
 
 	$counter = 0;
@@ -40,7 +40,7 @@ function preName()
 			$success = false;
 			if (preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match))
 			{
-				if($res1 = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE md5 = %s", $db->escapeString($match[1]))))
+				if($res1 = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1]))))
 				{
 					var_dump($resl);
 					$determinedcat = $category->determineCategory($res1['title'], $row["groupid"]);
@@ -58,6 +58,7 @@ function preName()
 							"New cat:   ".$newcatname.$n.
 							"Old cat:   ".$oldcatname.$n.
 							"Group:     ".$groupname.$n.
+							"Method:    "."predb md5 release name: ".$row["source"].$n.
 							"ReleaseID: ". $row["id"].$n;
 
 
