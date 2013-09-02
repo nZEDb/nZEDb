@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3454";
+$version="0.1r3455";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -1130,7 +1130,7 @@ while( $i > 0 )
             $color = get_color($colors_start, $colors_end, $colors_exc);
             $log = writelog($panes0[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
-					${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+					"nice -n${niceness} ${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 		}
 		else
 		{
