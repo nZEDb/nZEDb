@@ -361,7 +361,7 @@ Class Predb
 		$db = new DB();
 		if($x = $db->queryOneRow(sprintf("SELECT id FROM predb WHERE title = %s", $db->escapeString($cleanerName))) !== false)
 		{
-			$db->queryExece(sprintf("UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d", $x["id"], $releaseID));
+			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d", $x["id"], $releaseID));
 		}
 	}
 
