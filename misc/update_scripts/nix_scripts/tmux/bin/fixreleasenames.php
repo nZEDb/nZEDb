@@ -21,7 +21,7 @@ if (isset($argv[1]))
 			$namefixer->done = $namefixer->matched = false;
 			$namefixer->checkName($res, $echo=true, $type="NFO, ", $namestatus="1");
 			$namefixer->checked++;
-			//echo ".";
+			echo ".";
 		}
 	}
 	if (isset($pieces[1]) && $pieces[0] == "filename")
@@ -33,7 +33,7 @@ if (isset($argv[1]))
 			$namefixer->done = $namefixer->matched = false;
 			$namefixer->checkName($res, $echo=true, $type="Filenames, ", $namestatus="1");
 			$namefixer->checked++;
-			//echo ".";
+			echo ".";
 		}
 	}
 	if (isset($pieces[1]) && $pieces[0] == "md5")

@@ -61,8 +61,6 @@ function preName()
 							"Method:    "."predb md5 release name: ".$row["source"].$n.
 							"ReleaseID: ". $row["id"].$n;
 
-
-						$show = $res1['title'];
 						$success = true;
 						$counter++;
 					}

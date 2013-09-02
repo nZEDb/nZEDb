@@ -19,7 +19,7 @@ require_once(WWW_DIR."lib/namecleaning.php");
  * 10 : Fixed with namefixer preDB.
  * 11 : Fixed with predb.php
  * 12 : Fixed with requestID.
- * 20 : The release was checked by namefixer but no name was found, this is incremented for nfo, filename and md5
+ * 20 : The release was checked by namefixer but no name was found
  */
 
 class Namefixer
