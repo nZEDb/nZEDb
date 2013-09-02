@@ -161,12 +161,13 @@ class Namefixer
 
 					if ($type === "PAR2, ")
 						echo $n;
-					echo	$n."New name: ".$newname.$n.
-							"Old name: ".$release["searchname"].$n.
-							"New cat:  ".$newcatname.$n.
-							"Old cat:  ".$oldcatname.$n.
-							"Group:    ".$groupname.$n.
-							"Method:   ".$type.$method.$n;
+					echo	$n."New name:  ".$newname.$n.
+							"Old name:  ".$release["searchname"].$n.
+							"New cat:   ".$newcatname.$n.
+							"Old cat:   ".$oldcatname.$n.
+							"Group:     ".$groupname.$n.
+							"Method:    ".$type.$method.$n.
+							"ReleaseID: ". $release["releaseid"].$n;
 					if ($type !== "PAR2, ")
 						echo $n;
 				}
@@ -220,12 +221,13 @@ class Namefixer
 					if ($echooutput)
 					{
 						$groups = new Groups();
-						echo $n."New name: ".$row["title"].$n.
-							"Old name: ".$release["searchname"].$n.
-							"New cat:  ".$category->getNameByID($determinedcat).$n.
-							"Old cat:  ".$category->getNameByID($release["categoryid"]).$n.
-							"Group:    ".$groups->getByNameByID($release["groupid"]).$n.
-							"Method:   "."predb md5 release name: ".$row["source"].$n.$n;
+						echo $n."New name:  ".$row["title"].$n.
+							"Old name:  ".$release["searchname"].$n.
+							"New cat:   ".$category->getNameByID($determinedcat).$n.
+							"Old cat:   ".$category->getNameByID($release["categoryid"]).$n.
+							"Group:     ".$groups->getByNameByID($release["groupid"]).$n.
+							"Method:    "."predb md5 release name: ".$row["source"].$n.
+							"ReleaseID: ". $release["id"].$n.$n;
 					}
 					$matched++;
 				}
