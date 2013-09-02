@@ -452,7 +452,7 @@ Class Predb
 		else if ($db->dbSystem() == "pgsql")
 			$regex = "(regexp_matches(r.name, '[a-fA-F0-9]{32}') OR regexp_matches(rf.name, '[a-fA-F0-9]{32}'))";
 
-		$res = $db->query(sprintf("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE {$regex} AND r.relnamestatus IN (0, 1, 20) AND r.categoryid = 7010 AND passwordstatus >= -1 %s ORDER BY rf.releaseid, rf.size DESC ", $tq));
+		$res = $db->query(sprintf("SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE {$regex} AND r.relnamestatus IN (0, 1, 20) AND dehashstatus BETWEEN -5 AND 0 AND r.categoryid = 7010 AND passwordstatus >= -1 %s ORDER BY rf.releaseid, rf.size DESC ", $tq));
 		if (count($res) > 0)
 		{
 			foreach ($res as $row)

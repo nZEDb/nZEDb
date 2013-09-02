@@ -15,46 +15,36 @@ if (isset($argv[1]))
 	if (isset($pieces[1]) && $pieces[0] == "nfo")
 	{
 		$release = $pieces[1];
-		if ($res = $db->query(sprintf("SELECT rel.guid AS guid, nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, uncompress(nfo) AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE rel.id = %d", $release)))
+		if ($res = $db->queryOneRow(sprintf("SELECT rel.guid AS guid, nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, uncompress(nfo) AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE rel.id = %d", $release)))
 		{
-			foreach ($res as $rel)
-			{
-				//echo $rel['textstring']."\n";
-				$namefixer->done = $namefixer->matched = false;
-				$namefixer->checkName($rel, $echo=true, $type="NFO, ", $namestatus="1");
-				$namefixer->checked++;
-			}
+			//echo $res['textstring']."\n";
+			$namefixer->done = $namefixer->matched = false;
+			$namefixer->checkName($res, $echo=true, $type="NFO, ", $namestatus="1");
+			$namefixer->checked++;
 			echo ".";
 		}
 	}
 	if (isset($pieces[1]) && $pieces[0] == "filename")
 	{
 		$release = $pieces[1];
-		if ($res = $db->query(sprintf("SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d", $release)))
+		if ($res = $db->queryOneRow(sprintf("SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d", $release)))
 		{
-			foreach ($res as $rel)
-			{
-				//echo $rel['textstring']."\n";
-				$namefixer->done = $namefixer->matched = false;
-				$namefixer->checkName($rel, $echo=true, $type="Filenames, ", $namestatus="1");
-				$namefixer->checked++;
-			}
+			//echo $res['textstring']."\n";
+			$namefixer->done = $namefixer->matched = false;
+			$namefixer->checkName($res, $echo=true, $type="Filenames, ", $namestatus="1");
+			$namefixer->checked++;
 			echo ".";
 		}
 	}
 	if (isset($pieces[1]) && $pieces[0] == "md5")
 	{
 		$release = $pieces[1];
-		if ($res = $db->query(sprintf("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d", $release)))
+		if ($res = $db->queryOneRow(sprintf("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d", $release)))
 		{
-			foreach ($res as $rel)
-			{
-				if (preg_match("/[a-f0-9]{32}/i", $rel["name"], $matches))
-					$namefixer->matchPredbMD5($matches[0], $rel, $echo=true, $namestatus="1", $echooutput=true);
-				else if (preg_match("/[a-f0-9]{32}/i", $rel["filename"], $matches))
-					$namefixer->matchPredbMD5($matches[0], $rel, $echo=true, $namestatus="1", $echooutput=true);
-			}
-			echo ".";
+			if (preg_match("/[a-f0-9]{32}/i", $res["name"], $matches))
+				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
+			elseif (preg_match("/[a-f0-9]{32}/i", $res["filename"], $matches))
+				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
 		}
 	}
 }
