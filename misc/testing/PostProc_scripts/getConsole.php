@@ -8,25 +8,26 @@ require_once(FS_ROOT."/../../../www/lib/console.php");
 require_once(FS_ROOT."/../../../www/lib/category.php");
 
 $console = new Console(true);
-
 $db = new Db();
 
-$res = $db->queryDirect(sprintf("SELECT searchname, ID from releases where consoleinfoID IS NULL and categoryID in ( select ID from category where parentID = %d ) ORDER BY id DESC", Category::CAT_PARENT_GAME));
-if ($db->getNumRows($res) > 0) {
-
-	while ($arr = $db->fetchAssoc($res)) 
-	{				
+$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = %d ) ORDER BY id DESC", Category::CAT_PARENT_GAME));
+if (count($res) > 0)
+{
+	foreach ($res as $arr) 
+	{
 		$gameInfo = $console->parseTitle($arr['searchname']);
-		if ($gameInfo !== false) {
+		if ($gameInfo !== false)
+		{
 			echo 'Searching '.$gameInfo['release'].'<br />';
 			$game = $console->updateConsoleInfo($gameInfo);
-			if ($game !== false) {
+			if ($game !== false)
+			{
 				echo "<pre>";
 				print_r($game);
 				echo "</pre>";
-			} else {
-				echo '<br />Game not found<br /><br />';
 			}
+			else
+				echo '<br />Game not found<br /><br />';
 		}
 	}
 }

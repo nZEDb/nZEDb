@@ -42,15 +42,12 @@ class BasePage
 			foreach($_COOKIE as $k => $v) $_COOKIE[$k] = (is_array($v)) ? array_map("stripslashes", $v) : stripslashes($v);
 		}
 
-		// set site variable
+		// Set site variable.
 		$s = new Sites();
 		$this->site = $s->get();
 
 		$this->smarty = new Smarty();
-		$this->smarty->setTemplateDir(array(
-			'user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend',
-			'frontend' => WWW_DIR.'themes/Default/templates/frontend',
-		));
+		$this->smarty->setTemplateDir(array('user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend', 'frontend' => WWW_DIR.'themes/Default/templates/frontend'));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');
@@ -75,9 +72,9 @@ class BasePage
 			$this->userdata = $users->getById($users->currentUserId());
 			$this->userdata["categoryexclusions"] = $users->getCategoryExclusion($users->currentUserId());
 
-			//update lastlogin every 15 mins
+			// Update lastlogin every 15 mins.
 			if (strtotime($this->userdata['now'])-900 > strtotime($this->userdata['lastlogin']))
-				$users->updateSiteAccessed($this->userdata['ID']);
+				$users->updateSiteAccessed($this->userdata['id']);
 
 			$this->smarty->assign('userdata',$this->userdata);
 			$this->smarty->assign('loggedin',"true");
@@ -106,32 +103,20 @@ class BasePage
 
 	$this->smarty->assign('site',$this->site);
 	$this->smarty->assign('page',$this);
-
 	}
 
 	public function floodCheck($loggedin, $role)
 	{
-		//
-		// if flood wait set, the user must wait x seconds until they can access a page
-		//
-		if (empty($argc) &&
-			$role != Users::ROLE_ADMIN &&
-			isset($_SESSION['flood_wait_until']) &&
-			$_SESSION['flood_wait_until'] > microtime(true))
-			{
+		// If flood wait set, the user must wait x seconds until they can access a page.
+		if (empty($argc) && $role != Users::ROLE_ADMIN && isset($_SESSION['flood_wait_until']) && $_SESSION['flood_wait_until'] > microtime(true))
 				$this->showFloodWarning();
-			}
 		else
 		{
-			//
-			// if user not an admin, they are allowed three requests in FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS seconds
-			//
+			// If user not an admin, they are allowed three requests in FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS seconds.
 			if(empty($argc) && $role != Users::ROLE_ADMIN)
 			{
 				if (!isset($_SESSION['flood_check']))
-				{
 					$_SESSION['flood_check'] = "1_".microtime(true);
-				}
 				else
 				{
 					$hit = substr($_SESSION['flood_check'], 0, strpos($_SESSION['flood_check'], "_", 0));
@@ -145,9 +130,7 @@ class BasePage
 							$this->showFloodWarning();
 						}
 						else
-						{
 							$_SESSION['flood_check'] = "1_".microtime(true);
-						}
 					}
 					else
 					{
@@ -159,9 +142,7 @@ class BasePage
 		}
 	}
 
-	//
-	// Done in html here to reduce any smarty processing burden if a large flood is underway
-	//
+	// Done in html here to reduce any smarty processing burden if a large flood is underway.
 	public function showFloodWarning()
 	{
 		header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -184,17 +165,13 @@ class BasePage
 		die();
 	}
 
-	//
-	// Inject content into the html head
-	//
+	// Inject content into the html head.
 	public function addToHead($headcontent)
 	{
 		$this->head = $this->head."\n".$headcontent;
 	}
 
-	//
-	// Inject js/attributes into the html body tag
-	//
+	// Inject js/attributes into the html body tag.
 	public function addToBody($attr)
 	{
 		$this->body = $this->body." ".$attr;

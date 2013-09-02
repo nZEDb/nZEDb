@@ -26,9 +26,9 @@
 	
 	{foreach from=$anidblist item=anidb}
 	<tr class="{cycle values=",alt"}">
-		<td class="less"><a href="http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$anidb.anidbID}" title="View in AniDB">{$anidb.anidbID}</a></td>
-		<td><a title="Edit" href="{$smarty.const.WWW_TOP}/anidb-edit.php?id={$anidb.anidbID}">{$anidb.title|escape:"htmlall"}</a></td>
-		<td class="right"><a title="Delete this AniDB entry" href="{$smarty.const.WWW_TOP}/anidb-delete.php?id={$anidb.anidbID}">delete</a> | <a title="Remove this anidbID from all releases" href="{$smarty.const.WWW_TOP}/anidb-remove.php?id={$anidb.anidbID}">remove</a></td>
+		<td class="less"><a href="http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$anidb.anidbid}" title="View in AniDB">{$anidb.anidbid}</a></td>
+		<td><a title="Edit" href="{$smarty.const.WWW_TOP}/anidb-edit.php?id={$anidb.anidbid}">{$anidb.title|escape:"htmlall"}</a></td>
+		<td class="right"><a title="Delete this AniDB entry" href="{$smarty.const.WWW_TOP}/anidb-delete.php?id={$anidb.anidbid}">delete</a> | <a title="Remove this anidbID from all releases" href="{$smarty.const.WWW_TOP}/anidb-remove.php?id={$anidb.anidbid}">remove</a></td>
 	</tr>
 	{/foreach}
 

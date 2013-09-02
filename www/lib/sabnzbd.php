@@ -29,7 +29,7 @@ class SABnzbd
 
 	function SABnzbd(&$page)
 	{
-		$this->uid = $page->userdata['ID'];
+		$this->uid = $page->userdata['id'];
 		$this->rsstoken = $page->userdata['rsstoken'];
 		$this->serverurl = $page->serverurl;
 

@@ -1,9 +1,8 @@
 <?php
-require_once(WWW_DIR."lib/sabnzbd.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
+require_once(WWW_DIR."lib/sabnzbd.php");
 $sab = new SABnzbd($page);
 
 if (empty($sab->url))

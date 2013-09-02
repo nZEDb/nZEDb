@@ -13,11 +13,25 @@ REQUIREMENTS
 
 	PEAR
 
-	MySQL
-		max_allowed_packet=12582912
-		group_concat_max_len=8192
-		timezone set to php's
-	
+	Database:
+		MySQL
+			max_allowed_packet=12582912
+			group_concat_max_len=8192
+			timezone set to php's
+	OR
+		PostgreSQL
+			To determine the IP / port ; on linux as root, run:
+				netstat -plunt |grep postgres
+			To set it up ; on linux as root, run:
+				sudo apt-get install php5-pgsql postgresql
+				sudo -i -u postgres
+				psql
+				CREATE USER EnterYourUserNameHere;
+				CREATE DATABASE nzedb OWNER EnterYourUserNameHere;
+					(the single quotes for the password are needed)
+				ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';
+				
+
 	Apache
 		script timeout of at least 60 seconds
 		mod_rewrite enabled

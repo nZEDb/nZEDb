@@ -51,10 +51,10 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '111' )
+if ( $patch < '118' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
-	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
+	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
 	exit(1);
 }
 
@@ -85,12 +85,10 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now()");
-if ( $db->getAffectedRows() > 0 )
-	echo $db->getAffectedRows()." collections reset\n";
-$db->query("update nzbs set dateadded = now()");
-if ( $db->getAffectedRows() > 0 )
-    echo $db->getAffectedRows()." nzbs reset\n";
+$run = $db->queryExec("update collections set dateadded = now()");
+echo $run->rowCount()." collections reset\n";
+$run = $db->queryExec("update nzbs set dateadded = now()");
+echo $run->rowCount()." nzbs reset\n";
 
 function start_apps($tmux_session)
 {

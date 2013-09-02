@@ -1,25 +1,25 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/movie.php");
 require_once(WWW_DIR."/lib/category.php");
 
 $movie = new Movie;
 $cat = new Category;
 
-if (!$users->isLoggedIn())
-	$page->show403();
-
-
 $moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
 $mtmp = array();
-foreach($moviecats as $mcat) {
-	$mtmp[$mcat['ID']] = $mcat;
+foreach($moviecats as $mcat)
+{
+	$mtmp[$mcat['id']] = $mcat;
 }
 $category = Category::CAT_PARENT_MOVIE;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $mtmp))
 	$category = $_REQUEST["t"] + 0;
-	
+
 $catarray = array();
-$catarray[] = $category;	
+$catarray[] = $category;
 
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
@@ -32,7 +32,8 @@ $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $movies = array();
 $results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
-foreach($results as $result) {
+foreach($results as $result)
+{
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
@@ -78,26 +79,26 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1)
-	$page->smarty->assign("catname","All");			
+	$page->smarty->assign("catname","All");
 else
 {
 	$cat = new Category();
 	$cdata = $cat->getById($category);
 	if ($cdata)
-		$page->smarty->assign('catname',$cdata["title"]);			
+		$page->smarty->assign('catname',$cdata["title"]);
 	else
 		$page->show404();
 }
 
-foreach($ordering as $ordertype) 
+foreach($ordering as $ordertype)
 	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/movies?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
 
-$page->smarty->assign('results',$movies);		
+$page->smarty->assign('results',$movies);
 
 $page->meta_title = "Browse Movies";
 $page->meta_keywords = "browse,movies,nzb,description,details";
 $page->meta_description = "Browse for Moviess";
-	
+
 $page->content = $page->smarty->fetch('movies.tpl');
 $page->render();
 

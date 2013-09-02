@@ -12,7 +12,7 @@
 <tr>
 	<td>Title:</td>
 	<td>
-		<input type="hidden" name="id" value="{$genre.ID}" />
+		<input type="hidden" name="id" value="{$genre.id}" />
 		{$genre.title}
 	</td>
 </tr>

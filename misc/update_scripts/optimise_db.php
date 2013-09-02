@@ -1,12 +1,24 @@
 <?php
-
 require_once(dirname(__FILE__)."/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 
 $db = new DB();
-echo "Optimizing MYSQL tables, this can take a while...\n";
+$type = $db->dbSystem();
+if ($type == "mysql")
+{
+	$a = "MySQL";
+	$b = "Optimizing";
+	$c = "Optimized";
+}
+if ($type == "pgsql")
+{
+	$a = "PostgreSQL";
+	$b = "Vacuuming";
+	$c = "Vacuumed";
+}
+echo "{$b} {$a} tables, this can take a while...\n";
 $tablecnt = $db->optimise();
 if ($tablecnt > 0)
-	exit ("Optimized ".$tablecnt." MYSQL tables succesfuly.\n");
+	exit ("{$c} {$tablecnt} {$a} tables succesfuly.\n");
 else
-	exit ("No MYSQL tables to optimize.\n");
+	exit ("No {$a} tables to optimize.\n");

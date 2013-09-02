@@ -36,10 +36,10 @@
     <newznab:attr name="poster" value="{$release.fromname|escape:html}" />
     {if $release.season != ""}<newznab:attr name="season" value="{$release.season}" />{/if}
     {if $release.episode != ""}<newznab:attr name="episode" value="{$release.episode}" />{/if}
-    {if $release.rageID != "-1" && $release.rageID != "-2"}<newznab:attr name="rageid" value="{$release.rageID}" />{/if}
+    {if $release.rageid != "-1" && $release.rageid != "-2"}<newznab:attr name="rageid" value="{$release.rageid}" />{/if}
     {if $release.tvtitle != ""}<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />{/if}
     {if $release.tvairdate != ""}<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />{/if}
-    {if $release.imdbID != ""}<newznab:attr name="imdb" value="{$release.imdbID}" />{/if}
+    {if $release.imdbid != ""}<newznab:attr name="imdb" value="{$release.imdbid}" />{/if}
     <newznab:attr name="grabs" value="{$release.grabs}" />
     <newznab:attr name="comments" value="{$release.comments}" />
     <newznab:attr name="password" value="{$release.passwordstatus}" />

@@ -1,64 +1,50 @@
 <?php
 require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
-
 $db = new DB();
-
 
 if (isset($argv[1]) && $argv[1] === "all")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->query("truncate table consoleinfo");
-		$db->query("truncate table movieinfo");
-        $db->query("truncate table releasevideo");
-		$db->query("truncate table musicinfo");
-		$db->query("truncate table bookinfo");
-		$db->query("truncate table releasenfo");
-		$db->query("truncate table releaseextrafull");
-		$db->query("update releases set consoleinfoID = NULL, imdbID = NULL, musicinfoID = NULL, bookinfoID = NULL, rageID = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
-		$affected = $db->getAffectedRows();
+		$db->queryExec("TRUNCATE TABLE consoleinfo");
+		$db->queryExec("TRUNCATE TABLE movieinfo");
+        $db->queryExec("TRUNCATE TABLE releasevideo");
+		$db->queryExec("TRUNCATE TABLE musicinfo");
+		$db->queryExec("TRUNCATE TABLE bookinfo");
+		$db->queryExec("TRUNCATE TABLE releasenfo");
+		$db->queryExec("TRUNCATE TABLE releaseextrafull");
+		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
 		echo $affected." releases reset.\n";
 	}
 	else
 	{
-		$db->query("update releases set consoleinfoID = NULL where consoleinfoID in (-2, 0)");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE consoleinfoid IN (-2, 0)");
 		echo $affected." consoleinfoID's reset.\n";
-		$db->query("update releases set imdbID = NULL where imdbID in (-2, 0)");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET imdbid = NULL WHERE imdbid IN (-2, 0)");
 		echo $affected." imdbID's reset.\n";
-		$db->query("update releases set musicinfoID = NULL where musicinfoID in (-2, 0)");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL WHERE musicinfoid IN (-2, 0)");
 		echo $affected." musicinfoID's reset.\n";
-		$db->query("update releases set rageID = -1 where rageID <= 0 or rageID IS NULL");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET rageid = -1 WHERE rageid != 1 or rageid IS NULL");
 		echo $affected." rageID's reset.\n";
-		$db->query("update releases set bookinfoID = NULL where bookinfoID in (-2, 0)");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL WHERE bookinfoid IN (-2, 0)");
 		echo $affected." bookinfoID's reset.\n";
-		$db->query("update releases set nfostatus = -1 where nfostatus != 1");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus != 1");
 		echo $affected." nfos reset.\n";
-		$db->query("update releases set passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 where haspreview = 0");
-		$affected = $db->getAffectedRows();
+		$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE haspreview = 0");
 		echo $affected." releases reset.\n";
 	}
 }
 elseif (isset($argv[1]) && $argv[1] === "consoles")
 {
+	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
-		$where = "";
-		$db->query("truncate table consoleinfo");
-	}
+		$db->queryExec("TRUNCATE TABLE consoleinfo");
 	else
-	{
-		$where = " where consoleinfoID in (-2, 0) and categoryID BETWEEN 1000 AND 1999";
-	}
-	$db->query("update releases set consoleinfoID = NULL".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
+
+	$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL".$where);
 	echo $affected." consoleinfoID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "movies")
@@ -66,100 +52,78 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->query("truncate table releasevideo");
-		$db->query("truncate table movieinfo");
+		$db->queryExec("TRUNCATE TABLE releasevideo");
+		$db->queryExec("TRUNCATE TABLE movieinfo");
 	}
 	else
-	{
-		$where = " where imdbID in (-2, 0) and categoryID BETWEEN 2000 AND 2999";
-	}
-	$db->query("update releases set imdbID = NULL".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
+
+	$affected = $db->queryExec("UPDATE releases SET imdbid = NULL".$where);
 	echo $affected." imdbID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "music")
 {
+	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
-		$where = "";
-		$db->query("truncate table musicinfo");
-	}
+		$db->queryExec("TRUNCATE TABLE musicinfo");
 	else
-	{
-		$where = " where musicinfoID in (-2, 0) and categoryID BETWEEN 3000 AND 3999";
-	}
-	$db->query("update releases set musicinfoID = NULL".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
+
+	$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL".$where);
 	echo $affected." musicinfoID's reset.\n";
 }
 elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2] === "true"))
 {
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
 		$where = "";
-	}
 	else
-	{
-		$where = " where haspreview = 0";
-	}
-	$db->query("update releases set passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0");
-	$affected = $db->getAffectedRows();
+		$where = " WHERE haspreview = 0";
+
+	$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0");
 	echo $affected." releases reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "tv")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
 		$where = "";
-	}
 	else
-	{
-		$where = " where rageID in (-2, 0) and categoryID BETWEEN 5000 AND 5999";
-	}
-	$db->query("update releases set rageID = NULL".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
+
+	$affected = $db->queryExec("UPDATE releases SET rageid = -1".$where);
 	echo $affected." rageID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "books")
 {
+	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
-		$where = "";
-		$db->query("truncate table bookinfo");
-	}
+		$db->queryExec("TRUNCATE TABLE bookinfo");
 	else
-	{
-		$where = " where bookinfoID in (-2, 0) and categoryID BETWEEN 8000 AND 8999";
-	}
-	$db->query("update releases set bookinfoID = NULL".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
+
+	$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL".$where);
 	echo $affected." bookinfoID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "nfos")
 {
+	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
-	{
-		$where = "";
-		$db->query("truncate table releasenfo");
-	}
+		$db->queryExec("TRUNCATE TABLE releasenfo");
 	else
-	{
-		$where = " where nfostatus != 1";
-	}
-	$db->query("update releases set nfostatus = -1".$where);
-	$affected = $db->getAffectedRows();
+		$where = " WHERE nfostatus != 1";
+
+	$affected = $db->queryExec("UPDATE releases SET nfostatus = -1".$where);
 	echo $affected." nfos reset.\n";
 }
 else
 {
-	echo "\033[1;33mTo reset consoles, run php reset_postrpocessing.php consoles true\n";
-	echo "To reset movies, run php reset_postrpocessing.php movies true\n";
-	echo "To reset music, run php reset_postrpocessing.php music true\n";
-	echo "To reset misc, run php reset_postrpocessing.php misc true\n";
-	echo "To reset tv, run php reset_postrpocessing.php tv true\n";
-	echo "To reset books, run php reset_postrpocessing.php books true\n";
-	echo "To reset nfos, run php reset_postrpocessing.php nfos true\n";
-	echo "To reset everything, run php reset_postrpocessing.php all true\n";
-	echo "To reset only those without covers or previews use second argument false\033[m\n";
+	exit("\033[1;33mTo reset consoles, run php reset_postrpocessing.php consoles true\n"
+		."To reset movies, run php reset_postrpocessing.php movies true\n"
+		."To reset music, run php reset_postrpocessing.php music true\n"
+		."To reset misc, run php reset_postrpocessing.php misc true\n"
+		."To reset tv, run php reset_postrpocessing.php tv true\n"
+		."To reset books, run php reset_postrpocessing.php books true\n"
+		."To reset nfos, run php reset_postrpocessing.php nfos true\n"
+		."To reset everything, run php reset_postrpocessing.php all true\n"
+		."To reset only those without covers or previews use second argument false\033[m\n");
 }
 ?>

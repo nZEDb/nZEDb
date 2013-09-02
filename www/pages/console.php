@@ -1,4 +1,7 @@
 <?php
+if (!$users->isLoggedIn())
+	$page->show403();
+
 require_once(WWW_DIR."/lib/console.php");
 require_once(WWW_DIR."/lib/category.php");
 require_once(WWW_DIR."/lib/genres.php");
@@ -7,21 +10,18 @@ $console = new Console;
 $cat = new Category;
 $gen = new Genres;
 
-if (!$users->isLoggedIn())
-	$page->show403();
-
-
 $concats = $cat->getChildren(Category::CAT_PARENT_GAME);
 $ctmp = array();
-foreach($concats as $ccat) {
-	$ctmp[$ccat['ID']] = $ccat;
+foreach($concats as $ccat)
+{
+	$ctmp[$ccat['id']] = $ccat;
 }
 $category = Category::CAT_PARENT_GAME;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $ctmp))
 	$category = $_REQUEST["t"] + 0;
-	
+
 $catarray = array();
-$catarray[] = $category;	
+$catarray[] = $category;
 
 $page->smarty->assign('catlist', $ctmp);
 $page->smarty->assign('category', $category);
@@ -36,12 +36,15 @@ $results = $consoles = array();
 $results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
-foreach($results as $result) {	
-	if (!empty($result['review'])) {
+foreach($results as $result)
+{
+	if (!empty($result['review']))
+	{
 		$words = explode(' ', $result['review']);
-		if (sizeof($words) > $maxwords) {
+		if (sizeof($words) > $maxwords)
+		{
 			$newwords = array_slice($words, 0, $maxwords);
-			$result['review'] = implode(' ', $newwords).'...';	
+			$result['review'] = implode(' ', $newwords).'...';
 		}
 	}
 	$consoles[] = $result;
@@ -55,8 +58,9 @@ $page->smarty->assign('title', $title);
 
 $genres = $gen->getGenres(Genres::CONSOLE_TYPE, true);
 $tmpgnr = array();
-foreach($genres as $gn) {
-	$tmpgnr[$gn['ID']] = $gn['title'];
+foreach($genres as $gn)
+{
+	$tmpgnr[$gn['id']] = $gn['title'];
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
 $page->smarty->assign('genres', $genres);
@@ -74,26 +78,26 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1)
-	$page->smarty->assign("catname","All");			
+	$page->smarty->assign("catname","All");
 else
 {
 	$cat = new Category();
 	$cdata = $cat->getById($category);
 	if ($cdata)
-		$page->smarty->assign('catname',$cdata["title"]);			
+		$page->smarty->assign('catname',$cdata["title"]);
 	else
 		$page->show404();
 }
 
-foreach($ordering as $ordertype) 
+foreach($ordering as $ordertype)
 	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/console?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
 
-$page->smarty->assign('results',$consoles);		
+$page->smarty->assign('results',$consoles);
 
 $page->meta_title = "Browse Console";
 $page->meta_keywords = "browse,nzb,console,games,description,details";
 $page->meta_description = "Browse for Games";
-	
+
 $page->content = $page->smarty->fetch('console.tpl');
 $page->render();
 

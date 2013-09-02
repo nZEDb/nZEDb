@@ -23,7 +23,7 @@
 				<span title="{$result.createddate}">{$result.createddate|date_format}</span> ({$result.createddate|timeago})
 				{if $isadmin || $ismod}
 				<div>
-					<a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
+					<a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
 				</div>
 				{/if}
 				

@@ -21,7 +21,7 @@ body
 {
 	position: relative;
 	z-index: 3;
-	max-width: 1210px; 
+	max-width: 95%; 
 	min-width: 1210px;
 	margin: 10px auto 0 auto;
 	padding: 10px 0 15px;
@@ -95,14 +95,14 @@ page structure
 */
 #header 
 { 
-	max-width: 1100px; 
+	max-width: 95%; 
 	min-width: 1100px;
 	margin: 0 auto; 
 }
 
 #page 
 { 
-	max-width: 1100px; 
+	max-width: 95%; 
 	min-width: 1100px;
 	margin: 0 auto; 
 	padding: 50px 0px 5px 0px;
@@ -110,7 +110,7 @@ page structure
 
 #logo 
 { 
-	max-width: 1100px; 
+	max-width: 95%; 
 	min-width: 1100px;
 	height: 55px; 
 	margin: 0 auto; 
@@ -126,7 +126,7 @@ page structure
 
 #logo .logolink 
 {
-	float:left;
+	float: left;
 	margin: 0px 0px 0px -12px;
 }
 
@@ -135,11 +135,12 @@ page structure
 #logo .banner { float: right; }
 #statusbar 
 { 
-	width:1100px; 
+	max-width: 90%;
+	min-width: 1100px; 
 	margin: 0 auto; 
-	text-align:right; 
+	text-align: right; 
 /*	display: none; */
-	padding:5px 10px 0;
+	padding: 5px 10px 0 0;
 }
 
 #statusbar a { text-decoration: none; color: #515151;}
@@ -257,7 +258,7 @@ browse by category top menu
 
 #menucontainer 
 { 
-	max-width: 1100px; 
+	max-width: 100%; 
 	min-width: 1100px;
 	height:10px; 
 }
@@ -673,3 +674,4 @@ div.icon_check			{ background-image:url('../../Default/images/icons/check.png');
         .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+

@@ -6,7 +6,7 @@
 <h1>
 {foreach $rage as $r}
 {if $isadmin || $ismod}
-<a title="Edit rage data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$r.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$r.releasetitle} </a>
+<a title="Edit rage data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$r.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$r.releasetitle} </a>
 {else}
 {$r.releasetitle}
 {/if}
@@ -25,15 +25,15 @@
 
 </div>
 <div class="col-xs-3" style="text-align:center">
-{if $rage[0].imgdata != ""}<img class="shadow img-thumbnail" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].ID}">{/if}
+{if $rage[0].imgdata != ""}<img class="shadow img-thumbnail" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].id}">{/if}
 </div>
 <b>My Shows</b>:
 
-{if $myshows.ID != ''}
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$rage[0].rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$rage[0].rageID}" title="Edit">Edit</a> ]
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$rage[0].rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$rage[0].rageID}" title="Remove from My Shows">Remove</a> ]
+{if $myshows.id != ''}
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$rage[0].rageid}" title="Edit">Edit</a> ]
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$rage[0].rageid}" title="Remove from My Shows">Remove</a> ]
 {else}
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$rage[0].rageID}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$rage[0].rageID}" title="Add to My Shows">Add</a> ]
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$rage[0].rageid}" title="Add to My Shows">Add</a> ]
 {/if}
 
 <form id="nzb_multi_operations_form" action="get">
@@ -85,21 +85,21 @@ Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_
 
 <div class="resextra">
 <div class="btns pull-left">
-{if $result.nfoID > 0}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo " rel="nfo">Nfo</a></span> {/if}
+{if $result.nfoid > 0}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo " rel="nfo">Nfo</a></span> {/if}
 {if $result.haspreview == 1 && $userdata.canpreview == 1}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev " rel="preview">Preview</a></span> {/if}
 {if $result.tvairdate != ""}<span class="label label-default" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span> {/if}
-{if $result.reID > 0}<span class="mediainfo label label-default" title="{$result.guid}">Media</span>{/if}
+{if $result.reid > 0}<span class="mediainfo label label-default" title="{$result.guid}">Media</span>{/if}
 </div>
 
 {if $isadmin || $ismod}
 <div class="admin pull-right">
-<span class="label label-warning"><a class="" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a></span> <span class="label label-danger"><a class=" confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.ID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a></span> 
+<span class="label label-warning"><a class="" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a></span> <span class="label label-danger"><a class=" confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a></span> 
 </div>
 {/if}
 </div>
 </td>
 <td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}"></td>
-<td style="text-align:center;"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.rageID}?t={$result.categoryID}">{$result.category_name}</a></td>
+<td style="text-align:center;"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}?t={$result.categoryid}">{$result.category_name}</a></td>
 <td style="text-align:center;" title="{$result.postdate}">{$result.postdate|timeago}</td>
 <td style="text-align:center;">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
 <td style="text-align:center;">

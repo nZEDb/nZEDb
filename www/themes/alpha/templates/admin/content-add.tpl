@@ -74,6 +74,7 @@
 	<td><label for="ordinal">Ordinal:</label></td>
 	<td>
 		<input id="ordinal" name="ordinal" type="text" value="{$content->ordinal}" />
+		<div class="hint">If you set the ordinal = 1, then a all ordinals greater than 0 will be renumbered. This allows new content to be at the top without having to renumber all previous content.<br />If you set ordinal = 0, it will be at the top, sorted by ID(order added)</div>
 	</td>
 </tr>
 

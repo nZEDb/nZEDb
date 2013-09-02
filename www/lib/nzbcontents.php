@@ -41,7 +41,7 @@ Class NZBcontents
 			echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
 			return false;
 		}
-		else if(!$nzbfile = simplexml_load_file($nzbpath))
+		else if(!$nzbfile = @simplexml_load_file($nzbpath))
 		{
 			echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
 			return false;
@@ -186,7 +186,7 @@ Class NZBcontents
 						else
 						{
 							// NFO download failed, increment attempts.
-							$db->queryDirect(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE ID = %d", $relID));
+							$db->queryExec(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE id = %d", $relID));
 							$failed = true;
 						}
 					}
@@ -204,7 +204,7 @@ Class NZBcontents
 				// No NFO file in the NZB.
 				if ($this->echooutput)
 					echo "-";
-				$db->queryDirect(sprintf("update releases set nfostatus = 0 where ID = %d", $relID));
+				$db->queryExec(sprintf("UPDATE releases SET nfostatus = 0 WHERE id = %d", $relID));
 				return false;
 			}
 			if ($failed == true)
@@ -257,6 +257,6 @@ Class NZBcontents
 	function updateCompletion($completion, $relID)
 	{
 		$db = new DB();
-		$db->queryDirect(sprintf("update releases set completion = %d where ID = %d", $completion, $relID));
+		$db->queryExec(sprintf("UPDATE releases SET completion = %d WHERE id = %d", $completion, $relID));
 	}
 }

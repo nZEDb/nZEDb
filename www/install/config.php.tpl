@@ -3,7 +3,7 @@
 //=========================
 // Config you must change - updated by installer.
 //=========================
-define('DB_TYPE', 'mysql');
+define('DB_SYSTEM', '%%DB_SYSTEM%%');
 define('DB_HOST', '%%DB_HOST%%');
 define('DB_PORT', '%%DB_PORT%%');
 define('DB_SOCKET', '%%DB_SOCKET%%');

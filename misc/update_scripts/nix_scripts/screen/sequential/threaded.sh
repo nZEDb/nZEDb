@@ -18,8 +18,8 @@ if [ $count != 1 ]
 then
 	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
-
-while :
+loop=1
+while [ $loop -ge 1 ]
 do
 #	$PYTHON -OO ${THREADED_PATH}/partrepair_threaded.py
 #	$PYTHON -OO ${THREADED_PATH}/binaries_threaded.py
@@ -28,15 +28,23 @@ do
 #	$PYTHON -OO ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all no
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all true
+#	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
-#	$PHP ${NZEDB_PATH}/decrypt_hashes.php
+#	$PHP ${NZEDB_PATH}/decrypt_hashes.php true
 #	$PHP ${DEV_PATH}/test_misc_sorter.php
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py additional
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
-#   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
-#   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py amazon
-	sleep $NZEDB_SLEEP_TIME
+#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
+#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py nfo
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py filename
+#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py md5
+#	php ${TEST_PATH}/fixReleaseNames.php 4 true all yes
+#	$PYTHON -OO ${THREADED_PATH}/postprocess_old_threaded.py amazon
+#	sleep $NZEDB_SLEEP_TIME
+	if [[ $1 == "true" ]]
+	then
+		loop=0
+	fi
 done

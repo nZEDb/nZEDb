@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/genres.php");
 
 $page = new AdminPage();
-
 $genres = new Genres();
 
 $page->title = "Music Genres";
@@ -20,12 +18,10 @@ $page->smarty->assign('pagertotalitems', $count);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 
-if ($activeOnly) {
+if ($activeOnly)
 	$activeOnlySearch = "activeonly=1&amp;";
-}
-else {
+else
 	$activeOnlySearch = "";
-}
 
 $page->smarty->assign('pagerquerybase', WWW_TOP."/musicgenre-list.php?".$activeOnlySearch."offset=");
 
@@ -34,7 +30,7 @@ $page->smarty->assign('pager', $pager);
 
 $genrelist = $genres->getRange(Genres::MUSIC_TYPE, $activeOnly, $offset, ITEMS_PER_PAGE);
 
-$page->smarty->assign('genrelist',$genrelist);	
+$page->smarty->assign('genrelist',$genrelist);
 
 $page->content = $page->smarty->fetch('musicgenre-list.tpl');
 $page->render();

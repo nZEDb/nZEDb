@@ -159,7 +159,7 @@
 	<td><label for="catwebdl">Categorize WEB-DL:</label></td>
 	<td>
 		{html_radios id="catwebdl" name='catwebdl' values=$yesno_ids output=$yesno_names selected=$fsite->catwebdl separator='<br />'}
-		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.</div>
+		<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br />This will also make them inaccessible to Sickbeard and possibly Couchpotato.</div>
 	</td>
 </tr>
 
@@ -506,18 +506,26 @@
 </tr>
 
 <tr>
-	<td><label for="lookupnfo">Lookup NFO:</label></td>
-	<td>
-		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
-		<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="lookuppar2">Lookup PAR2:</label></td>
 	<td>
 		{html_radios id="lookuppar2" name='lookuppar2' values=$yesno_ids output=$yesno_names selected=$fsite->lookuppar2 separator='<br />'}
 		<div class="hint">Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/><strong>NOTE: this can be slow depending on the group!</strong></div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="addpar2">Add PAR2 contents to file contents:</label></td>
+	<td>
+		{html_radios id="addpar2" name='addpar2' values=$yesno_ids output=$yesno_names selected=$fsite->addpar2 separator='<br />'}
+		<div class="hint">When going through PAR2 files, add them to the RAR file content list of the NZB.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="lookupnfo">Lookup NFO:</label></td>
+	<td>
+		{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$fsite->lookupnfo separator='<br />'}
+		<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
 	</td>
 </tr>
 
@@ -728,7 +736,7 @@
 	<td><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill.</div>
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
 	</td>
 </tr>
 
@@ -862,6 +870,14 @@
 		<input class="tiny" id="postthreadsnon" name="postthreadsnon" type="text" value="{$fsite->postthreadsnon}" />
 		<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and tv lookups.</div>
 	</td>
+</tr>
+
+<tr>
+    <td><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
+    <td>
+        <input class="tiny" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
+        <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
+    </td>
 </tr>
 
 <tr>

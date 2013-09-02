@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/music.php");
@@ -10,48 +9,46 @@ $music = new Music();
 $gen = new Genres();
 $id = 0;
 
-// set the current action
+// Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 if (isset($_REQUEST["id"]))
 {
 	$id = $_REQUEST["id"];
 	$mus = $music->getMusicInfo($id);
-	
-	if (!$mus) {
+
+	if (!$mus)
 		$page->show404();
-	}
-	
-	switch($action) 
+
+	switch($action)
 	{
-	    case 'submit':
-	    	$coverLoc = WWW_DIR."covers/music/".$id.'.jpg';
-	    	
+		case 'submit':
+			$coverLoc = WWW_DIR."covers/music/".$id.'.jpg';
+
 			if($_FILES['cover']['size'] > 0)
 			{
 				$tmpName = $_FILES['cover']['tmp_name'];
 				$file_info = getimagesize($tmpName);
 				if(!empty($file_info))
-				{
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
-				}
 			}
-			
+
 			$_POST['cover'] = (file_exists($coverLoc)) ? 1 : 0;
 			$_POST['salesrank'] = (empty($_POST['salesrank']) || !ctype_digit($_POST['salesrank'])) ? "null" : $_POST['salesrank'];
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $mus['releasedate'] : date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
-			
+
 			$music->update($id, $_POST["title"], $_POST['asin'], $_POST['url'], $_POST["salesrank"], $_POST["artist"], $_POST["publisher"], $_POST["releasedate"], $_POST["year"], $_POST["tracks"], $_POST["cover"], $_POST["genre"]);
 
 			header("Location:".WWW_TOP."/music-list.php");
-	        die();
-	    break;
-	    case 'view':
-	    default:
+			die();
+			break;
+
+		case 'view':
+		default:
 			$page->title = "Music Edit";
 			$page->smarty->assign('music', $mus);
 			$page->smarty->assign('genres', $gen->getGenres(Genres::MUSIC_TYPE));
-		break;   
+			break;
 	}
 }
 

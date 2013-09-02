@@ -141,7 +141,7 @@ class Nntp extends Net_NNTP_Client
 
 		if (PEAR::isError($summary))
 		{
-			echo $summary->getMessage();
+			//echo $summary->getMessage();
 			return false;
 		}
 
@@ -186,7 +186,7 @@ class Nntp extends Net_NNTP_Client
 
 		if (PEAR::isError($summary))
 		{
-			echo $summary->getMessage();
+			//echo $summary->getMessage();
 			return false;
 		}
 
@@ -237,11 +237,11 @@ class Nntp extends Net_NNTP_Client
 
 		if (PEAR::isError($summary))
 		{
-			echo $summary->getMessage();
+			//echo $summary->getMessage();
 			return false;
 		}
 
-		$resparts = $db->query(sprintf("SELECT size, partnumber, messageID FROM parts WHERE binaryID = %d ORDER BY partnumber", $binaryId));
+		$resparts = $db->query(sprintf("SELECT size, partnumber, messageid FROM parts WHERE binaryid = %d ORDER BY partnumber", $binaryId));
 
 		if (sizeof($resparts) > 1 && $isNfo === true)
 		{
@@ -251,7 +251,7 @@ class Nntp extends Net_NNTP_Client
 
 		foreach($resparts as $part)
 		{
-			$messageID = '<'.$part['messageID'].'>';
+			$messageID = '<'.$part['messageid'].'>';
 			$body = $this->getBody($messageID, true);
 			if (PEAR::isError($body))
 			{

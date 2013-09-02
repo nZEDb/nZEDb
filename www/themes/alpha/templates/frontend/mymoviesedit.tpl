@@ -1,7 +1,7 @@
 <h1>{$page->title}</h1>
 
 <p>
-Use this page to manage movies added to your personal list. If the movie becomes available it will be added to an <a href="{$smarty.const.WWW_TOP}/rss?t=-4&amp;dl=1&amp;i={$userdata.ID}&amp;r={$userdata.rsstoken}">Rss Feed</a> you can use to automatically download. To add more movies use the <a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a> search feature.
+Use this page to manage movies added to your personal list. If the movie becomes available it will be added to an <a href="{$smarty.const.WWW_TOP}/rss?t=-4&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss Feed</a> you can use to automatically download. To add more movies use the <a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a> search feature.
 </p>
 
 {if $movies|@count > 0}
@@ -22,9 +22,9 @@ Use this page to manage movies added to your personal list. If the movie becomes
 			<td class="mid">
 			
 				<div class="movcover">
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbID}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$movie.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$movie.title|escape:"htmlall"}" />
 					<div class="movextra">
-						<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$movie.imdbID}" title="View IMDB">IMDB</a>
+						<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$movie.imdbid}" title="View IMDB">IMDB</a>
 					</div>
 				</div>
 			</td>
@@ -40,7 +40,7 @@ Use this page to manage movies added to your personal list. If the movie becomes
 			</td>
 			<td class="less">{if $movie.categoryNames != ''}{$movie.categoryNames|escape:"htmlall"}{else}All{/if}</td>
 			<td class="less" title="Added on {$movie.createddate}">{$movie.createddate|date_format}</td>
-			<td class="mid"><a href="{$smarty.const.WWW_TOP}/mymoviesedit?del={$movie.imdbID}" rel="remove" title="Remove from my movies">Remove</a></td>
+			<td class="mid"><a href="{$smarty.const.WWW_TOP}/mymoviesedit?del={$movie.imdbid}" rel="remove" title="Remove from my movies">Remove</a></td>
 		</tr>
 	{/foreach}
 	

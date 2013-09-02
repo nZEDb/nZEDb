@@ -2,17 +2,15 @@
 require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 
-//
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
-//
 
-function newname( $filename )
+$db = new DB();
+if ($db->dbSystem() == "pgsql")
+	exit("This script is only for mysql.\n");
+
+function newname($filename)
 {
-    $getdate = gmDate("Ymd");
-	$path = dirname($filename);
-	$file = basename($filename,".gz");
-	$stamp = date ("Y_m_d_His", filemtime($filename));
-	rename($filename,$path."/".$file."_".$stamp.".gz");
+	rename($filename, dirname($filename)."/".basename($filename,".gz")."_".date("Y_m_d_His", filemtime($filename)).".gz");
 }
 
 $dbhost = DB_HOST;
@@ -43,7 +41,6 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -59,7 +56,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -75,7 +71,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -89,7 +84,6 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
 	{
@@ -105,7 +99,6 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -120,7 +113,6 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
 {
 	$sql = "SHOW tables";
-	$db = new DB();
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -129,13 +121,12 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$db->query(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
+			$db->queryExec(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
 		}
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
-	$db = new DB();
 	$tables = array('predb');
 	foreach($tables as $row)
 	{
@@ -162,7 +153,7 @@ else
 	."To restore collections, binaries, parts tables run: php mysqldump_tables.php test restore /path/where/saved\n\n"
 	."**Individal Files - OUTFILE/INFILE - No schema\n"
 	."To dump all tables, using OUTFILE run: php mysqldump_tables.php all outfile /path/to/save/to\n"
-	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m";
-	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n"
+	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m"
+	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n";
 }
 ?>

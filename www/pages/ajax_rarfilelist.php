@@ -1,12 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/releasefiles.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
 if (!isset($_REQUEST["id"]))
 	$page->show404();
 
+require_once(WWW_DIR."/lib/releasefiles.php");
 $rf = new ReleaseFiles();
 $files = $rf->getByGuid($_REQUEST["id"]);
 
