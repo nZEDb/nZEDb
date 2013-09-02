@@ -26,17 +26,31 @@ Class Predb
 		$db = new DB();
 		$newnames = 0;
 		$newestrel = $db->queryOneRow("SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1");
-		if (strtotime($newestrel['adddate']) < time()-900 || is_null($newestrel['adddate']))
+		if (strtotime($newestrel['adddate']) < time()-0 || is_null($newestrel['adddate']))
 		{
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
+			if ($this->echooutput)
+				echo $newwomble." Retrieved.\n";
 			$newomgwtf = $this->retrieveOmgwtfnzbs();
+			if ($this->echooutput)
+				echo $newomgwtf." Retrieved.\n";
 			$newzenet = $this->retrieveZenet();
+			if ($this->echooutput)
+				echo $newzenet." Retrieved.\n";
 			$newprelist = $this->retrievePrelist();
+			if ($this->echooutput)
+				echo $newprelist." Retrieved.\n";
 			$neworly = $this->retrieveOrlydb();
+			if ($this->echooutput)
+				echo $neworly." Retrieved.\n";
 			$newsrr = $this->retrieveSrr();
+			if ($this->echooutput)
+				echo $newsrr." Retrieved.\n";
 			$newpdme = $this->retrievePredbme();
+			if ($this->echooutput)
+				echo $newpdme." Retrieved.\n";
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf("UPDATE predb SET adddate = NOW() WHERE id = %d", $newestrel["id"]));
@@ -85,7 +99,6 @@ Class Predb
 										$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
 									$db->queryExec(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
-									$newnames++;
 								}
 							}
 							else
@@ -136,8 +149,7 @@ Class Predb
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
-									$run = $db->queryExec(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
-									$newnames++;
+									$db->queryExec(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
 								}
 							}
 							else
@@ -302,7 +314,7 @@ Class Predb
 		{
 			foreach ($releases->channel->item as $release)
 			{
-				$md5 = $release->title;
+				$md5 = md5($release->title);
 				$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
 				if ($oldname !== false && $oldname["md5"] == $md5)
 					continue;
@@ -328,7 +340,7 @@ Class Predb
 			{
 				foreach ($releases->channel->item as $release)
 				{
-					$md5 = $release->title;
+					$md5 = md5($release->title);
 					$oldname = $db->queryOneRow(sprintf("SELECT md5 FROM predb WHERE md5 = %s", $db->escapeString($md5)));
 					if ($oldname !== false && $oldname["md5"] == $md5)
 						continue;

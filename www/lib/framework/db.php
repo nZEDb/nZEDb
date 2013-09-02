@@ -80,7 +80,7 @@ class DB
 		} catch (PDOException $e) {
 			//deadlock, try 10 times
 			$i = 1;
-			while ($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 10)
+			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001) && $i <= 10)
 			{
 				sleep($i * $i);
 				try {
@@ -110,7 +110,7 @@ class DB
 		} catch (PDOException $e) {
 			//deadlock, try 10 times
 			$i = 1;
-			while ($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $i <= 10)
+			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001) && $i <= 10)
 			{
 				sleep($i * $i);
 				try {
