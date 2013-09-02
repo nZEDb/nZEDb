@@ -40,20 +40,20 @@ function preName()
 			$success = false;
 			if (preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match))
 			{
-				if($res1 = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1]))))
+				$pre = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1])));
+				if ($pre !== false)
 				{
-					var_dump($resl);
-					$determinedcat = $category->determineCategory($res1['title'], $row["groupid"]);
-					$result = $db->prepare(sprintf("UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($res1['title']), $determinedcat, $row['id']));
+					$determinedcat = $category->determineCategory($pre['title'], $row["groupid"]);
+					$result = $db->prepare(sprintf("UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['id']));
 					$result->execute();
-					if ($result->rowCount() > 0)
+					if (count($result) > 0)
 					{
 						$groups = new Groups();
 						$groupname = $groups->getByNameByID($row["groupid"]);
 						$oldcatname = $category->getNameByID($row["categoryid"]);
 						$newcatname = $category->getNameByID($determinedcat);
 
-						echo	$n."New name:  ".$res1['title'].$n.
+						echo	$n."New name:  ".$pre['title'].$n.
 							"Old name:  ".$row["searchname"].$n.
 							"New cat:   ".$newcatname.$n.
 							"Old cat:   ".$oldcatname.$n.
