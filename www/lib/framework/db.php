@@ -90,7 +90,7 @@ class DB
 			}
 			//printf($e);
 			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
-				echo "\nError: Insert would create duplicate row, skippingn";
+				echo "\nError: Insert would create duplicate row, skipping\n";
 			return false;
 		}
 	}
@@ -117,7 +117,7 @@ class DB
 			}
 			//printf($e);
 			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
-				echo "\nError: Update would create duplicate row, skippingn";
+				echo "\nError: Update would create duplicate row, skipping\n";
 			return false;
 		}
 	}
