@@ -71,11 +71,21 @@ class Namefixer
 		{
 			foreach ($relres as $relrow)
 			{
-				$this->done = $this->matched = false;
-				$this->checkName($relrow, $echo, $type, $namestatus);
-				$this->checked++;
-				if ($this->checked % 500 == 0)
-					echo $this->checked." NFOs processed.\n\n";
+				//ignore encrypted nfos
+				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['nfo']))
+				{
+					$fail = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $relrow['id']));
+					$fail->execute();
+					$this->checked++;
+				}
+				else
+				{
+					$this->done = $this->matched = false;
+					$this->checkName($relrow, $echo, $type, $namestatus);
+					$this->checked++;
+					if ($this->checked % 500 == 0)
+						echo $this->checked." NFOs processed.\n\n";
+				}
 			}
 			if($echo == 1)
 				echo $this->fixed." releases have had their names changed out of: ".$this->checked." NFO's.\n";

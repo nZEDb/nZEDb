@@ -17,11 +17,23 @@ if (isset($argv[1]))
 		$release = $pieces[1];
 		if ($res = $db->queryOneRow(sprintf("SELECT rel.guid AS guid, nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, uncompress(nfo) AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE rel.id = %d", $release)))
 		{
-			//echo $res['textstring']."\n";
-			$namefixer->done = $namefixer->matched = false;
-			$namefixer->checkName($res, $echo=true, $type="NFO, ", $namestatus="1");
-			$namefixer->checked++;
-			echo ".";
+			//ignore encrypted nfos
+			if (preg_match('/^=newz\[NZB\]=\w+/', $res['textstring']))
+			{
+				$namefixer->done = $namefixer->matched = false;
+				$fail = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $res['releaseid']));
+				$fail->execute();
+				$namefixer->checked++;
+				echo ".";
+			}
+			else
+			{
+				//echo $res['textstring']."\n";
+				$namefixer->done = $namefixer->matched = false;
+				$namefixer->checkName($res, $echo=true, $type="NFO, ", $namestatus="1");
+				$namefixer->checked++;
+				echo ".";
+			}
 		}
 	}
 	if (isset($pieces[1]) && $pieces[0] == "filename")
