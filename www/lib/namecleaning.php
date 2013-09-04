@@ -892,6 +892,17 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.sounds.flac")
+		{
+			//[32974]-[FULL]-[#a.b.flac]-[ Tenniscoats-Tokinouta-JP-CD-FLAC-2011-BCC ]-[04/28] - "00-tenniscoats-tokinouta-jp-cd-flac-2011.nfo" yEnc
+			if (preg_match('/^\[\d+\]-\[[a-zA-Z]+\]-\[\#.+?\]-\[(.+?)\]-\[\d.?\/\d.?] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[33008]-[FULL]-[a b flac]-[ Moby-Destroyed-Deluxe_Edition-2CD-FLAC-2011-WRE ]-[02/37] - "000-moby-destroyed-deluxe_edition-2cd-2011 nfo" yEnc
+			else if (preg_match('/^\[\d+\]-\[[a-zA-Z]+\]-\[.+?\]-\[(.+?)\]-\[\d.?\/\d.?] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->releaseCleanerHelper($subject);
+		}
 		else if ($groupName === "alt.binaries.sounds.lossless")
 		{
 			//http://dream-of-usenet.org empfehlen newsconnection.eu - [02/32] - "Adam_Ant-Manners_and_Physique-(MCAD-6315)-CD-FLAC-1989-2Eleven.par2" yEnc
