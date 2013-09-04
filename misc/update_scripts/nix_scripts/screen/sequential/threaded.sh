@@ -28,7 +28,7 @@ do
 #	$PYTHON -OO ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all no
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all true
+#	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
 #	$PHP ${NZEDB_PATH}/decrypt_hashes.php
@@ -37,6 +37,6 @@ do
 #	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
 #   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
 #   $PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py amazon
+#	$PYTHON -OO ${THREADED_PATH}/postprocess_old_threaded.py amazon
 	sleep $NZEDB_SLEEP_TIME
 done
