@@ -488,11 +488,11 @@ class Releases
 			if ($word != "")
 				{
 					if ($intwordcount == 0 && (strpos($word, "^") === 0))
-						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString(substr($word, 1)."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString(substr($word, 1)."%")); 
 					elseif (substr($word, 0, 2) == '--')
-						$searchsql = sprintf(" and releases.%s not like %s", $type, $db->escapeString("%".substr($word, 2)."%"));
+						$searchsql .= sprintf(" AND releases.%s NOT LIKE %s", $type, $db->escapeString("%".substr($word, 2)."%")); 
 					else
-						$searchsql = sprintf(" and releases.%s like %s", $type, $db->escapeString("%".$word."%"));
+						$searchsql .= sprintf(" AND releases.%s LIKE %s", $type, $db->escapeString("%".$word."%")); 
 
 					$intwordcount++;
 				}
