@@ -147,6 +147,7 @@ class Binaries
 		{
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
 			$newdatel = $backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
+			var_dump($newdatel);
 			if ($groupArr['last_record'] != 0 && $newdatel !== false)
 				$lastr_postdate = $newdatel;
 		}
@@ -158,6 +159,7 @@ class Binaries
 		{
 			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 			$newdate = $backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
+			var_dump($newdate);
 			if ($groupArr['first_record'] != 0 && $newdate !== false)
 				$first_record_postdate = $newdate;
 		}
@@ -184,18 +186,19 @@ class Binaries
 				if ($total > $this->messagebuffer)
 				{
 					if ($first + $this->messagebuffer > $grouplast)
-						$last = $grouplast;
+						$last = $grouplast - 1;
 					else
-						$last = $first + $this->messagebuffer;
+						$last = $first + $this->messagebuffer - 1;
 				}
-
-				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue.\n";
+				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last - 1)." in queue.\n";
 				flush();
 
 				// Get article headers from newsgroup.
 				$lastId = $this->scan($nntp, $groupArr, $first, $last);
 				// Scan failed - skip group.
-				if ($lastId === false)
+				if ($lastId != false)
+					$lastId = $last;
+				else
 				{
 					$nntp->doQuit();
 					return;

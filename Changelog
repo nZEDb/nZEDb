@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09072103 -> jonnyboy -> fixed bug where update_binaries not running correctly on new groups(i hope)
+09072103 -> jonnyboy -> fixed bug where update_binaries not getting correct set of headers, when postdate fails initial attempt, may need to reset_truncate.php to be safe
+						fixed bug where update_binaries not running correctly on new groups(i hope)
                         fixed bug where parsePAR2 was not using alternate nntp, other minor fixes
 09022013 -> jonnyboy -> various, numberous little bug fixes
 08312013 -> jonnyboy -> added threaded versions for fixreleasesnames and update_releases, these should be considered alpha and could create invalid releases
