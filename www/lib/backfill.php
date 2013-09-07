@@ -354,6 +354,7 @@ class Backfill
 						return;
 				}
 			}
+
 			if(!isset($msgs[0]['Date']) || $msgs[0]['Date']=="" || is_null($msgs[0]['Date']))
 			{
 				$post = $post + MT_RAND(0,100);
@@ -370,7 +371,7 @@ class Backfill
 				echo "Retried ".$attempts." time(s).\n";
 
 			$attempts++;
-		}while($attempts <= 10 && $success === false);
+		} while ($attempts <= 10 && $success === false);
 
 		if ($st === true)
 			$nntp->doQuit();

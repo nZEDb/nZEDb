@@ -51,7 +51,7 @@ Class NZBcontents
 	}
 
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
-	public function NZBcompletion($guid, $relID, $groupID, $nfocheck=false)
+	public function NZBcompletion($guid, $relID, $groupID, $nntp, $nfocheck=false)
 	{
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
@@ -85,7 +85,7 @@ Class NZBcontents
 				{
 					if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $subject))
 					{
-						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID) === true)
+						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 							$foundpar2 = true;
 					}
 				}
@@ -111,7 +111,7 @@ Class NZBcontents
 	// Look for an .nfo file in the NZB, return the NFO. Also gets the NZB completion.
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
-		$messageid = $this->NZBcompletion($guid, $relID, $groupID, true);
+		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, true);
 		if ($messageid !== "")
 		{
 			$nfo = new NFO();

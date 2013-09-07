@@ -165,7 +165,7 @@ class PostProcess
 	}
 
 	// Attempt to get a better name from a par2 file and categorize the release.
-	public function parsePAR2($messageID, $relID, $groupID)
+	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
 		$db = new DB();
 		$category = new Category();
@@ -177,8 +177,6 @@ class PostProcess
 		if (!in_array($quer["relnamestatus"], array(0, 1, 6, 20)) || $quer["relnamestatus"] === 7 || $quer["categoryid"] != Category::CAT_MISC)
 			return false;
 
-		$nntp = new NNTP();
-		$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
