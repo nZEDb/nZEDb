@@ -155,7 +155,7 @@ class Nfo
 			if ($release["completion"] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
-				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"]);
+				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"], $nntp);
 			}
 			return true;
 		}
