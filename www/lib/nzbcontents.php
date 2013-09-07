@@ -81,7 +81,6 @@ Class NZBcontents
 						$foundnfo = true;
 					}
 				}
-
 				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
 				{
 					if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $subject))
@@ -122,7 +121,7 @@ Class NZBcontents
 			if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 			{
 				$nntp->doQuit();
-				$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
 				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 				{
@@ -167,7 +166,7 @@ Class NZBcontents
 						if ($possibleNFO === false || PEAR::isError($possibleNFO))
 						{
 							$nntp->doQuit();
-							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
 							if ($possibleNFO === false || PEAR::isError($possibleNFO))
 							{

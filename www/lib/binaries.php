@@ -143,6 +143,8 @@ class Binaries
 			$lastr_postdate = time();
 		else
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
+		if ($groupArr['last_record'] < 1 || $groupArr['last_record'] == "NULL" || is_null($groupArr['last_record']))
+			$groupArr['last_record'] = 0;
 		$newdatel = $backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
 		if ($groupArr['last_record'] != 0 && $newdatel !== false)
 			$lastr_postdate = $newdatel;

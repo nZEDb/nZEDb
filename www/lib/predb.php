@@ -404,7 +404,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		$res = $db->query("SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100");
+		$res = $db->query("SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 1000");
 		if(count($res) > 0)
 		{
 			$nfo = new Nfo($this->echooutput);

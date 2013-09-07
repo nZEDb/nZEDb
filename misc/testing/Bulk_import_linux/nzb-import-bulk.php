@@ -132,7 +132,8 @@ else
 			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			//removes everything after yEnc in subject
-			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $firstname['0']);
+			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
+			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
             $subject = utf8_encode(trim($partless));
 			$namecleaning = new nameCleaning();
 

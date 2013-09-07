@@ -216,7 +216,8 @@ if (!empty($argc) || $page->isPostBack() )
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
 				//removes everything after yEnc in subject
-				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
 				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));

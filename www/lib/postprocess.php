@@ -178,13 +178,13 @@ class PostProcess
 			return false;
 
 		$nntp = new NNTP();
-		$nntp->doConnect();
+		$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
 		{
 			$nntp->doQuit();
-			$nntp->doConnect();
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 			if ($par2 === false || PEAR::isError($par2))
 			{
@@ -559,12 +559,12 @@ class PostProcess
 							{
 								$mid = array_slice((array)$rarFile["segments"], 0, $this->segmentstodownload);
 								$bingroup = $groupName;
-								$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 								{
 									$nntp->doQuit();
-									$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 									if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 									{
@@ -707,12 +707,12 @@ class PostProcess
 					{
 						if (!empty($samplemsgid))
 						{
-							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 							if ($sampleBinary === false || PEAR::isError($sampleBinary))
 							{
 								$nntp->doQuit();
-								$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 								if ($sampleBinary === false || PEAR::isError($sampleBinary))
 								{
@@ -751,12 +751,12 @@ class PostProcess
 					{
 						if (!empty($mediamsgid))
 						{
-							$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 							if ($mediaBinary === false || PEAR::isError($mediaBinary))
 							{
 								$nntp->doQuit();
-								$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 								if ($mediaBinary === false || PEAR::isError($mediaBinary))
 								{
@@ -793,12 +793,12 @@ class PostProcess
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
 				{
-					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+					$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 					if ($audioBinary === false || PEAR::isError($audioBinary))
 					{
 						$nntp->doQuit();
-						$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 						if ($audioBinary === false || PEAR::isError($audioBinary))
 						{
@@ -828,12 +828,12 @@ class PostProcess
 				// Download JPG file.
 				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
 				{
-					$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+					$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 					if ($jpgBinary === false || PEAR::isError($jpgBinary))
 					{
 						$nntp->doQuit();
-						$this->site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 						if ($jpgBinary === false || PEAR::isError($jpgBinary))
 						{

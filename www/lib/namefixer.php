@@ -72,9 +72,9 @@ class Namefixer
 			foreach ($relres as $relrow)
 			{
 				//ignore encrypted nfos
-				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['nfo']))
+				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['textstring']))
 				{
-					$fail = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $relrow['id']));
+					$fail = $db->prepare(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $relrow['rel.id']));
 					$fail->execute();
 					$this->checked++;
 				}

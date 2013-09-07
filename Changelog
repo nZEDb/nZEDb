@@ -1,5 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
+09072103 -> jonnyboy -> fixed bug where parsePAR2 was not using alternate nntp, other minor fixes
 09022013 -> jonnyboy -> various, numberous little bug fixes
 08312013 -> jonnyboy -> added threaded versions for fixreleasesnames and update_releases, these should be considered alpha and could create invalid releases
 						cleaned up a few bugs

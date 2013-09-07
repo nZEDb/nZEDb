@@ -38,7 +38,7 @@ function preName()
 		foreach ($res as $row)
 		{
 			$success = false;
-			if (preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match))
+			if (preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match))
 			{
 				$pre = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1])));
 				if ($pre !== false)
@@ -58,7 +58,7 @@ function preName()
 							"New cat:   ".$newcatname.$n.
 							"Old cat:   ".$oldcatname.$n.
 							"Group:     ".$groupname.$n.
-							"Method:    "."predb md5 release name: ".$row["source"].$n.
+							"Method:    "."predb md5 release name: ".$pre["source"].$n.
 							"ReleaseID: ". $row["id"].$n;
 
 						$success = true;

@@ -17,7 +17,7 @@ import lib.info as info
 import signal
 import datetime
 
-threads = 1
+threads = 25
 print("\nUpdate Releases Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
@@ -29,7 +29,8 @@ con = None
 con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
 cur = con.cursor()
 
-cur.execute("SELECT DISTINCT groupid FROM collections")
+cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid)")
+#cur.execute("SELECT id FROM groups WHERE active = 1")
 datas = cur.fetchall()
 
 if not datas:
@@ -82,10 +83,12 @@ def main():
 			p.start()
 
 	#now load some arbitrary jobs into the queue
-	count = 1
+	count = 0
 	for release in datas:
+		if count >= threads:
+			count = 0
 		count += 1
-		my_queue.put("%s  %d" % (str(release[0]), count))
+		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
 
