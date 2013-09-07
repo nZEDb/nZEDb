@@ -132,7 +132,7 @@ class Nfo
 	}
 
 	// Adds an NFO found from predb, rar, zip etc...
-	public function addAlternateNfo($db, $nfo, $release)
+	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
 	{
 		if ($this->isNFO($nfo) && $release["id"] > 0)
 		//if ($release["id"] > 0)
