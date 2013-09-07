@@ -121,7 +121,7 @@ NNTP_PORT = 119
 NNTP_SSL_PORT = 563
 
 # Response numbers that are followed by additional text (e.g. article)
-_LONGRESP = {
+_LONGRESP = set([
 	'100',   # HELP
 	'101',   # CAPABILITIES
 	'211',   # LISTGROUP   (also not multi-line with GROUP)
@@ -134,7 +134,7 @@ _LONGRESP = {
 	'230',   # NEWNEWS
 	'231',   # NEWGROUPS
 	'282',   # XGTITLE
-}
+])
 
 # Default decoded value for LIST OVERVIEW.FMT if not supported
 _DEFAULT_OVERVIEW_FMT = [
@@ -200,8 +200,8 @@ def _parse_overview(lines, fmt, data_process_func=None):
 	overview = []
 	for line in lines:
 		fields = {}
-		article_number, *tokens = line.split('\t')
-		article_number = int(article_number)
+		temp = line.split('\t')
+		article_number, tokens = int(temp[0]), temp[1:]
 		for i, token in enumerate(tokens):
 			if i >= len(fmt):
 				# XXX should we raise an error? Some servers might not
@@ -280,11 +280,14 @@ if _have_ssl:
 		- sock: New, encrypted socket.
 		"""
 		# Generate a default SSL context if none was passed.
-		if context is None:
-			context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-			# SSLv2 considered harmful.
-			context.options |= ssl.OP_NO_SSLv2
-		return context.wrap_socket(sock)
+#		if context is None:
+#			context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+#			# SSLv2 considered harmful.
+#			context.options |= ssl.OP_NO_SSLv2
+		if context != None:
+			return context.wrap_socket(sock)
+		else:
+				return ssl.wrap_socket(sock)
 
 
 # The classes themselves
@@ -315,7 +318,7 @@ class _NNTPBase:
 
 		readermode is sometimes necessary if you are connecting to an
 		NNTP server on the local machine and intend to call
-		reader-specific commands, such as `group'.  If you get
+		reader-specific comamnds, such as `group'.  If you get
 		unexpected NNTPPermanentErrors, you might need to set
 		readermode.
 		"""
@@ -364,7 +367,7 @@ class _NNTPBase:
 			self.nntp_implementation = None
 			try:
 				resp, caps = self.capabilities()
-			except (NNTPPermanentError, NNTPTemporaryError):
+			except NNTPPermanentError:
 				# Server doesn't support capabilities
 				self._caps = {}
 			else:
@@ -531,11 +534,13 @@ class _NNTPBase:
 		caps = {}
 		resp, lines = self._longcmdstring("CAPABILITIES")
 		for line in lines:
-			name, *tokens = line.split()
+			temp = line.split()
+			name = temp[0]
+			tokens = temp[1:]
 			caps[name] = tokens
 		return resp, caps
 
-	def newgroups(self, date, *, file=None):
+	def newgroups(self, date, file=None, *args):
 		"""Process a NEWGROUPS command.  Arguments:
 		- date: a date or datetime object
 		Return:
@@ -551,7 +556,7 @@ class _NNTPBase:
 		resp, lines = self._longcmdstring(cmd, file)
 		return resp, self._grouplist(lines)
 
-	def newnews(self, group, date, *, file=None):
+	def newnews(self, group, date, file=None, *args):
 		"""Process a NEWNEWS command.  Arguments:
 		- group: group name or '*'
 		- date: a date or datetime object
@@ -567,7 +572,7 @@ class _NNTPBase:
 		cmd = 'NEWNEWS {0} {1} {2}'.format(group, date_str, time_str)
 		return self._longcmdstring(cmd, file)
 
-	def list(self, group_pattern=None, *, file=None):
+	def list(self, group_pattern=None, file=None, *args):
 		"""Process a LIST or LIST ACTIVE command. Arguments:
 		- group_pattern: a pattern indicating which groups to query
 		- file: Filename string or file object to store the result in
@@ -648,7 +653,7 @@ class _NNTPBase:
 						name = words[4].lower()
 		return resp, int(count), int(first), int(last), name
 
-	def help(self, *, file=None):
+	def help(self, file=None, *args):
 		"""Process a HELP command. Argument:
 		- file: Filename string or file object to store the result in
 		Returns:
@@ -701,7 +706,7 @@ class _NNTPBase:
 		resp, art_num, message_id = self._statparse(resp)
 		return resp, ArticleInfo(art_num, message_id, lines)
 
-	def head(self, message_spec=None, *, file=None):
+	def head(self, message_spec=None, file=None, *args):
 		"""Process a HEAD command.  Argument:
 		- message_spec: article number or message id
 		- file: filename string or file object to store the headers in
@@ -715,7 +720,7 @@ class _NNTPBase:
 			cmd = 'HEAD'
 		return self._artcmd(cmd, file)
 
-	def body(self, message_spec=None, *, file=None):
+	def body(self, message_spec=None, file=None, *args):
 		"""Process a BODY command.  Argument:
 		- message_spec: article number or message id
 		- file: filename string or file object to store the body in
@@ -729,7 +734,7 @@ class _NNTPBase:
 			cmd = 'BODY'
 		return self._artcmd(cmd, file)
 
-	def article(self, message_spec=None, *, file=None):
+	def article(self, message_spec=None, file=None, *args):
 		"""Process an ARTICLE command.  Argument:
 		- message_spec: article number or message id
 		- file: filename string or file object to store the article in
@@ -749,7 +754,7 @@ class _NNTPBase:
 		"""
 		return self._shortcmd('SLAVE')
 
-	def xhdr(self, hdr, str, *, file=None):
+	def xhdr(self, hdr, str, file=None, *args):
 		"""Process an XHDR command (optional server extension).  Arguments:
 		- hdr: the header type (e.g. 'subject')
 		- str: an article nr, a message id, or a range nr1-nr2
@@ -765,7 +770,7 @@ class _NNTPBase:
 			return m.group(1, 2) if m else line
 		return resp, [remove_number(line) for line in lines]
 
-	def xover(self, start, end, *, file=None):
+	def xover(self, start, end, file=None, *args):
 		"""Process an XOVER command (optional server extension) Arguments:
 		- start: start of range
 		- end: end of range
@@ -779,7 +784,7 @@ class _NNTPBase:
 		fmt = self._getoverviewfmt()
 		return resp, _parse_overview(lines, fmt)
 
-	def over(self, message_spec, *, file=None):
+	def over(self, message_spec, file=None, *args):
 		"""Process an OVER command.  If the command isn't supported, fall
 		back to XOVER. Arguments:
 		- message_spec:
@@ -806,7 +811,7 @@ class _NNTPBase:
 		fmt = self._getoverviewfmt()
 		return resp, _parse_overview(lines, fmt)
 
-	def xgtitle(self, group, *, file=None):
+	def xgtitle(self, group, file=None, *args):
 		"""Process an XGTITLE command (optional server extension) Arguments:
 		- group: group name wildcard (i.e. news.*)
 		Returns:
@@ -941,9 +946,6 @@ class _NNTPBase:
 				resp = self._shortcmd('authinfo pass ' + password)
 				if not resp.startswith('281'):
 					raise NNTPPermanentError(resp)
-		# Capabilities might have changed after login
-		self._caps = None
-		self.getcapabilities()
 		# Attempt to send mode reader if it was requested after login.
 		if self.readermode_afterauth:
 			self._setreadermode()
@@ -1004,7 +1006,7 @@ class NNTP(_NNTPBase):
 
 		readermode is sometimes necessary if you are connecting to an
 		NNTP server on the local machine and intend to call
-		reader-specific commands, such as `group'.  If you get
+		reader-specific comamnds, such as `group'.  If you get
 		unexpected NNTPPermanentErrors, you might need to set
 		readermode.
 		"""
@@ -1024,7 +1026,7 @@ class NNTP(_NNTPBase):
 			self.sock.close()
 
 
-if _have_ssl:
+if _have_ssl and ssl:
 	class NNTP_SSL(_NNTPBase):
 
 		def __init__(self, host, port=NNTP_SSL_PORT,
@@ -1050,10 +1052,8 @@ if _have_ssl:
 
 	__all__.append("NNTP_SSL")
 
-
 def connect(host, port, ssl, user, password):
 	if ssl == "true":
 		return NNTP_SSL(host, port, user, password)
 	else:
 		return NNTP(host, port, user, password)
-
