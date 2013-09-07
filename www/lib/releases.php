@@ -1186,7 +1186,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND filesize > %d", $groupID['id'], $maxfilesizeres['value']));
+					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND size > %d", $groupID['id'], $maxfilesizeres['value']));
 					if (count($resrel) > 0)
 					{
 						foreach ($resrel as $rowrel)
