@@ -34,7 +34,7 @@ if (sizeof($argv) == 4)
 	$releases = new Releases();
 	foreach ($relids as $relid)
 	{
-		$releases->fastDelete($relid['ID'], $relid['guid'], $site);
+		$releases->fastDelete($relid['id'], $relid['guid'], $site);
 		$relcount++;
 		$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 	}

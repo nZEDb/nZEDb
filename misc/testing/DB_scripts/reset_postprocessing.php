@@ -16,24 +16,24 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->queryExec("TRUNCATE TABLE releasenfo");
 		$db->queryExec("TRUNCATE TABLE releaseextrafull");
 		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
-		echo $affected." releases reset.\n";
+		echo count($affected)." releases reset.\n";
 	}
 	else
 	{
 		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE consoleinfoid IN (-2, 0)");
-		echo $affected." consoleinfoID's reset.\n";
+		echo count($affected)." consoleinfoID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET imdbid = NULL WHERE imdbid IN (-2, 0)");
-		echo $affected." imdbID's reset.\n";
+		echo count($affected)." imdbID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL WHERE musicinfoid IN (-2, 0)");
-		echo $affected." musicinfoID's reset.\n";
+		echo count($affected)." musicinfoID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET rageid = -1 WHERE rageid != 1 or rageid IS NULL");
-		echo $affected." rageID's reset.\n";
+		echo count($affected)." rageID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL WHERE bookinfoid IN (-2, 0)");
-		echo $affected." bookinfoID's reset.\n";
+		echo count($affected)." bookinfoID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus != 1");
-		echo $affected." nfos reset.\n";
+		echo count($affected)." nfos reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE haspreview = 0");
-		echo $affected." releases reset.\n";
+		echo count($affected)." releases reset.\n";
 	}
 }
 elseif (isset($argv[1]) && $argv[1] === "consoles")
@@ -45,7 +45,7 @@ elseif (isset($argv[1]) && $argv[1] === "consoles")
 		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
 
 	$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL".$where);
-	echo $affected." consoleinfoID's reset.\n";
+	echo count($affected)." consoleinfoID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "movies")
 {
@@ -59,7 +59,7 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
 
 	$affected = $db->queryExec("UPDATE releases SET imdbid = NULL".$where);
-	echo $affected." imdbID's reset.\n";
+	echo count($affected)." imdbID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "music")
 {
@@ -70,7 +70,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
 
 	$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL".$where);
-	echo $affected." musicinfoID's reset.\n";
+	echo count($affected)." musicinfoID's reset.\n";
 }
 elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2] === "true"))
 {
@@ -80,7 +80,7 @@ elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2]
 		$where = " WHERE haspreview = 0";
 
 	$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0");
-	echo $affected." releases reset.\n";
+	echo count($affected)." releases reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "tv")
 {
@@ -90,7 +90,7 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
 
 	$affected = $db->queryExec("UPDATE releases SET rageid = -1".$where);
-	echo $affected." rageID's reset.\n";
+	echo count($affected)." rageID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "books")
 {
@@ -101,7 +101,7 @@ elseif (isset($argv[1]) && $argv[1] === "books")
 		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
 
 	$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL".$where);
-	echo $affected." bookinfoID's reset.\n";
+	echo count($affected)." bookinfoID's reset.\n";
 }
 elseif (isset($argv[1]) && $argv[1] === "nfos")
 {
@@ -112,7 +112,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 		$where = " WHERE nfostatus != 1";
 
 	$affected = $db->queryExec("UPDATE releases SET nfostatus = -1".$where);
-	echo $affected." nfos reset.\n";
+	echo count($affected)." nfos reset.\n";
 }
 else
 {

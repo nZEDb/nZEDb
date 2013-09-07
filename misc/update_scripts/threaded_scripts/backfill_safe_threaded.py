@@ -161,7 +161,7 @@ def main(args):
 			p.start()
 
 	#now load some arbitrary jobs into the queue
-	for i in range(0, geteach):
+	for i in range(0, int(geteach)):
 		my_queue.put("%s %d %d %d" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
 
 	my_queue.join()

@@ -132,9 +132,10 @@ class Nfo
 	}
 
 	// Adds an NFO found from predb, rar, zip etc...
-	public function addAlternateNfo($db, $nfo, $release)
+	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
 	{
 		if ($this->isNFO($nfo) && $release["id"] > 0)
+		//if ($release["id"] > 0)
 		{
 			$this->addReleaseNfo($release["id"]);
 			if ($db->dbSystem() == "mysql")
@@ -154,7 +155,7 @@ class Nfo
 			if ($release["completion"] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
-				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"]);
+				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"], $nntp);
 			}
 			return true;
 		}
@@ -200,7 +201,7 @@ class Nfo
 
 			foreach ($res as $arr)
 			{
-				$site->alternate_nntp == "1" ? $nntp->doConnect_A() : $nntp->doConnect();
+				$site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp);
 				if ($fetchedBinary !== false)
 				{

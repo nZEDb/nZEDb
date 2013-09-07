@@ -1186,7 +1186,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND filesize > %d", $groupID['id'], $maxfilesizeres['value']));
+					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE groupid = %d AND size > %d", $groupID['id'], $maxfilesizeres['value']));
 					if (count($resrel) > 0)
 					{
 						foreach ($resrel as $rowrel)
@@ -1450,7 +1450,7 @@ class Releases
 		$category = new Category();
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
-		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
+		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
 		$where = (!empty($groupID)) ? " AND collections.groupid = ".$groupID : "";
 
@@ -1535,15 +1535,19 @@ class Releases
 		}
 
 		// Crossposted releases.
-		$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
-		if(count($resrel) > 0)
+		do
 		{
-			foreach ($resrel as $rowrel)
+			$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+			$total = count($resrel);
+			if(count($resrel) > 0)
 			{
-				$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
-				$dupecount ++;
+				foreach ($resrel as $rowrel)
+				{
+					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$dupecount ++;
+				}
 			}
-		}
+		} while ($total > 0);
 
 		// Releases below completion %.
 		if($this->completion > 0)

@@ -27,15 +27,15 @@ do
 	if ! $SCREEN -list | grep -q "POSTP"; then
 		cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true
 	fi
-	
+
 	cd ${THREAD_PATH}
 	$PYTHON -OO ${THREAD_PATH}/binaries_threaded.py
-	
+
 	cd ${HELP_PATH}
 	if ! $SCREEN -list | grep -q "RELEASES"; then
 		cd $HELP_PATH && $SCREEN -dmS RELEASES $SCREEN sh $HELP_PATH/helper.sh
 	fi
-	
+
 	cd ${TEST_PATH}
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 	if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
@@ -46,7 +46,7 @@ do
 		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
 	fi
-	
+
 	cd ${NZEDB_PATH}
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE1))
 	if [ "$DIFF" -gt 7200 ] || [ "$DIFF" -lt 1 ]

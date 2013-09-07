@@ -38,7 +38,7 @@ if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
 	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21) LIMIT 10000")
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20) LIMIT 10000")
+	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20)")
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	cur.execute("SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21) AND rel.categoryid = 7010 AND passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') LIMIT 10000")
@@ -73,7 +73,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/fixreleasenames.php", ""+my_id])
-					time.sleep(.5)
+					time.sleep(.1)
 					self.my_queue.task_done()
 
 def main():

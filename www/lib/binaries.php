@@ -81,6 +81,7 @@ class Binaries
 		$nntp = new Nntp();
 		$nntp->doConnect();
 		$data = $nntp->selectGroup($groupArr['name']);
+
 		// Attempt to reconnect if there is an error.
 		if(PEAR::isError($data))
 		{
@@ -129,36 +130,38 @@ class Binaries
 				$first_record_postdate = time();
 			else
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
+
 			$newdate = $backfill->postdate($nntp, $first, false, $groupArr['name'], true);
+
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-
 			$db->queryExec(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d", $db->escapeString($first), $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
 		else
 			$first = $groupArr['last_record'] + 1;
 
-		// Generate last record postdate. In case there are missing article sin the loop it can use this (the loop will update this if it doesnt fail).
-		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == "NULL")
+		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
+		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == "NULL" || $groupArr['last_record'] == "0")
 			$lastr_postdate = time();
 		else
-			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
-		$newdatel = $backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
-		if ($groupArr['last_record'] != 0 && $newdatel !== false)
-			$lastr_postdate = $newdatel;
-
-		// Generate postdates for first and last records, for those that upgraded.
-		if ((is_null($groupArr['first_record_postdate']) || is_null($groupArr['last_record_postdate'])) && ($groupArr['last_record'] != "0" && $groupArr['first_record'] != "0"))
 		{
-			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == "NULL")
-				$first_record_postdate = time();
-			else
-				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
-			if ($newdate = $backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true) !== false)
-				$first_record_postdate = $newdate;
-
-			 $db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d", $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
+			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
+			$newdatel = $backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
+			if ($groupArr['last_record'] != 0 && $newdatel !== false)
+				$lastr_postdate = $newdatel;
 		}
+
+		// Generate postdates for first records, for those that upgraded.
+		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == "NULL" || $groupArr['first_record'] == "0")
+			$first_record_postdate = time();
+		else
+		{
+			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
+			$newdate = $backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
+			if ($groupArr['first_record'] != 0 && $newdate !== false)
+				$first_record_postdate = $newdate;
+		}
+		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d", $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
 
 		// Calculate total number of parts.
 		$total = $grouplast - $first + 1;
@@ -229,7 +232,6 @@ class Binaries
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 		$n = $this->n;
-
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 

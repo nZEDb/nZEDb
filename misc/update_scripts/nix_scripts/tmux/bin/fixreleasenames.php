@@ -57,6 +57,7 @@ if (isset($argv[1]))
 				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
 			elseif (preg_match("/[a-f0-9]{32}/i", $res["filename"], $matches))
 				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
+			echo ".";
 		}
 	}
 }
