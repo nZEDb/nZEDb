@@ -31,23 +31,21 @@ class Import
 
 		if ($hash == '')
 		{
-			if ($hashes = $db->query("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts"))
+			$hashes = $db->query("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts");
+			if (count($hashes) > 0)
 			{
-				if (count($hashes) > 0)
+				foreach ($hashes as $hash)
 				{
-					foreach ($hashes as $hash)
+					$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapeString($hash['collectionhash'])));
+					$arr = '';
+					foreach ($rel as $nzb)
 					{
-						$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapeString($hash['collectionhash'])));
-						$arr = '';
-						foreach ($rel as $nzb)
-   						{
-	   						$arr[] = $nzb['message_id'];
-						}
+   						$arr[] = $nzb['message_id'];
 					}
 				}
-				else
-					exit("No NZBs to grab\n");
 			}
+			else
+				exit("No NZBs to grab\n");
 		}
 		else
 		{
@@ -61,6 +59,8 @@ class Import
 		if($nzb && array_key_exists('groupname', $nzb))
 		{
 			$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
+			if (sizeof($arr) > 10)
+				echo "\nGetting ".sizeof($arr)." articles for ".$hash."\n";
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
 			if ($article === false || PEAR::isError($article))
 			{
@@ -74,28 +74,14 @@ class Import
 				}
 			}
 			$nntp->doQuit();
+			// If article downloaded, to to import, else delete from nzbs
 			if($article !== false)
 				$this->processGrabNZBs($article, $hash);
 			else
 			{
-				if ($db->dbSystem() == "mysql")
-				{
-					$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
-					$delq->execute();
-				}
-				elseif ($db->dbSystem() == "pgsql")
-				{
-					$idr = $db->query(sprintf("SELECT id FROM collections WHERE collectionshash = ", $db->escapeString($hash)));
-					if (count($idr) > 0)
-					{
-						foreach ($idr as $id)
-						{
-							$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
-							$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
-						}
-						$reccount += $db->queryExec("DELETE FROM collections WHERE collectionshash = ", $db->escapeString($hash));
-					}
-				}
+				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+				echo "-";
+				return;
 			}
 		}
 		else
@@ -124,8 +110,13 @@ class Import
 
 		$importfailed = $isBlackListed = false;
 		$xml = @simplexml_load_string($article);
+		// If article is not a valid xml, delete from nzbs
 		if (!$xml)
+		{
 			$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+			echo "-";
+			return;
+		}
 		else
 		{
 			$skipCheck = false;
@@ -144,7 +135,8 @@ class Import
 				$totalFiles++;
 				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 
@@ -200,13 +192,13 @@ class Import
 					break;
 				}
 			}
+
 			if (!$importfailed)
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
-
-				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))));
+				if($relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanerName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0))) !== false);
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');

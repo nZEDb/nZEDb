@@ -150,7 +150,6 @@ def main(args):
 
 	def signal_handler(signal, frame):
 		sys.exit(0)
-
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
@@ -159,7 +158,6 @@ def main(args):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()
-
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
 		my_queue.put("%s %d %d %d" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))

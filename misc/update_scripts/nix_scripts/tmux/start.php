@@ -51,7 +51,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '118' )
+if ( $patch < '119' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -95,6 +95,7 @@ function start_apps($tmux_session)
 	$tmux = new Tmux();
 	$htop = $tmux->get()->HTOP;
 	$vnstat = $tmux->get()->VNSTAT;
+	
 	$vnstat_args = $tmux->get()->VNSTAT_ARGS;
 	$tcptrack = $tmux->get()->TCPTRACK;
 	$tcptrack_args = $tmux->get()->TCPTRACK_ARGS;

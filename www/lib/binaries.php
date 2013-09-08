@@ -124,7 +124,6 @@ class Binaries
 				else
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
-
 			// In case postdate doesn't get a date.
 			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == "NULL")
 				$first_record_postdate = time();
@@ -138,7 +137,7 @@ class Binaries
 			$db->queryExec(sprintf("UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d", $db->escapeString($first), $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
 		else
-			$first = $groupArr['last_record'] + 1;
+			$first = $groupArr['last_record'];
 
 		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
 		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == "NULL" || $groupArr['last_record'] == "0")
@@ -164,7 +163,7 @@ class Binaries
 		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d", $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
 
 		// Calculate total number of parts.
-		$total = $grouplast - $first + 1;
+		$total = $grouplast - $first;
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
@@ -172,7 +171,7 @@ class Binaries
 			echo "Group ".$data["group"]." has ".number_format($total)." new articles.\n"."Server oldest: ".number_format($data['first'])." Server newest: ".number_format($data['last'])." Local newest: ".number_format($groupArr['last_record']).$n.$n;
 
 			if ($groupArr['last_record'] == 0)
-				echo "New group starting with ".(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan." days" : $this->NewGroupMsgsToScan." messages")." worth.\n";
+				echo "New group starting with ".(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan." days" : number_format($this->NewGroupMsgsToScan)." messages")." worth.\n";
 
 			$done = false;
 
@@ -188,14 +187,16 @@ class Binaries
 					else
 						$last = $first + $this->messagebuffer;
 				}
-
+				$first++;
 				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue.\n";
 				flush();
 
-				// Get article headers from newsgroup.
-				$lastId = $this->scan($nntp, $groupArr, $first, $last);
+				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
+				$lastId = $this->scan(null, $groupArr, $first, $last);
 				// Scan failed - skip group.
-				if ($lastId === false)
+				if ($lastId != false)
+					$lastId = $last;
+				else
 				{
 					$nntp->doQuit();
 					return;
@@ -212,7 +213,7 @@ class Binaries
 				else
 				{
 					$last = $lastId;
-					$first = $last + 1;
+					$first = $last;
 				}
 			}
 			$nntp->doQuit();
@@ -232,6 +233,7 @@ class Binaries
 		$site = $s->get();
 		$tmpPath = $site->tmpunrarpath."/";
 		$n = $this->n;
+
 		if ($this->debug)
 			$consoletools = new ConsoleTools();
 
@@ -393,7 +395,7 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo date('H:i:s').": Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not yEnc.\n";
+				echo "Received ".number_format(sizeof($msgsreceived))." articles of ".(number_format($last-$first+1))." requested, ".sizeof($msgsblacklisted)." blacklisted, ".sizeof($msgsignored)." not yEnc.\n";
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -435,7 +437,8 @@ class Binaries
 
 				foreach($this->message AS $subject => $data)
 				{
-					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '' && strlen($data['Xref']) <= 255)
+					//if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '' && strlen($data['Xref']) <= 255)
+					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
 					{
 						$collectionHash = $data['CollectionHash'];
 						if ($lastCollectionHash == $collectionHash)
@@ -449,7 +452,7 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$csql = sprintf("INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, now())", $db->escapeString(substr($subject,0,255)), $db->escapeString($data['From']), $db->from_unixtime($data['Date']), $db->escapeString($data['Xref']), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								$csql = sprintf("INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, now())", $db->escapeString(substr($subject,0,255)), $db->escapeString($data['From']), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
@@ -487,10 +490,11 @@ class Binaries
 							$pMessageID = $partdata['Message-ID'];
 							$pNumber = $partdata['number'];
 							$pPartNumber = round($partdata['part']);
-							$pSize = $partdata['size'];
-
+							//if (is_numberic($partdata['size']))
+								//$pSize = $partdata['size'];
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
-
+							if (is_numeric($partdata['size']))
+								$pSize = $partdata['size'];
 							if (!$insPartsStmt->execute())
 								$msgsnotinserted[] = $partdata['number'];
 						}
@@ -502,8 +506,8 @@ class Binaries
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 				}
-				$db->beginTransaction();
-				$db->Commit();
+				//$db->beginTransaction();
+				//$db->Commit();
 			}
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);

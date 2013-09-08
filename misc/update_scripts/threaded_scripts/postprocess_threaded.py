@@ -55,13 +55,12 @@ tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 
-maxtries = -1
 if maxsizeck == 0:
 	maxsize = ''
 else:
 	maxsize = "r.size < %d and "%(int(maxsizeck * 1073741824))
 datas = []
-maxtries = -1
+maxtries = -2
 
 if sys.argv[1] == "additional":
 	while len(datas) < run_threads * ppperrun and maxtries >= -6:

@@ -18,11 +18,11 @@ function preName()
 
 	if ($db->dbSystem() == "mysql")
 	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND name REGEXP '[a-fA-F0-9]{32}'");
+		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND name REGEXP '[a-fA-F0-9]{32}' LIMIT 1000");
 	}
 	else if ($db->dbSystem() == "pgsql")
 	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND regexp_matches(name, '[a-fA-F0-9]{32}')");
+		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND regexp_matches(name, '[a-fA-F0-9]{32}') LIMIT 1000");
 	}
 
 	$counter = 0;

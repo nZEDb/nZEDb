@@ -178,6 +178,10 @@ class PostProcess
 			return false;
 
 		$groups = new Groups();
+		if (!isset($nntp))
+			$nntp = new Nntp();
+		if ($messageID = "")
+			return false;
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
 		{
@@ -346,7 +350,8 @@ class PostProcess
 			$result = 0;
 			if ($releaseToWork == '')
 			{
-				$i = -1;
+				// Starting at -1 seems to take a very long time for query
+				$i = -2;
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{

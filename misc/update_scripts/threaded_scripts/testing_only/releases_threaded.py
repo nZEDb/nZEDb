@@ -17,7 +17,7 @@ import lib.info as info
 import signal
 import datetime
 
-threads = 25
+threads = 1
 print("\nUpdate Releases Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()

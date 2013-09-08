@@ -1,11 +1,11 @@
-	<?php
+<?php
 require_once(dirname(__FILE__)."/../../../../www/config.php");
 require_once(WWW_DIR."lib/postprocess.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3480";
+$version="0.1r3487";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -313,8 +313,8 @@ $usp2activeconnections = 0;
 $usp2totalconnections = 0;
 
 
-$mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
-$mask2 = "\033[1;33m%-16s \033[38;5;214m%-40.40s \n";
+$mask1 = "\033[1;33m%-16s \033[38;5;214m%-51.51s \n";
+$mask2 = "\033[1;33m%-16s \033[38;5;214m%-41.41s \n";
 
 //create display
 passthru('clear');
@@ -770,7 +770,7 @@ while( $i > 0 )
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\"; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php true $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			elseif ( $dehash == 2 )
 			{
@@ -835,7 +835,7 @@ while( $i > 0 )
 				{
 					if ( TIME() - $time2 >= $post_kill_timer )
 					{
-						shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
+						passthru("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
 						$wipe = `tmux clearhist -t${tmux_session}:2.0`;
 						$color = get_color($colors_start, $colors_end, $colors_exc);
 						$time2 = TIME();
@@ -1130,7 +1130,7 @@ while( $i > 0 )
             $color = get_color($colors_start, $colors_end, $colors_exc);
             $log = writelog($panes0[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
-					nice -n${niceness} ${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+					${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 		}
 		else
 		{
