@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09082103 -> jonnyboy -> fixed bug in grabnzbs where failed to get article deleted collection from collections, added more output to grabnzbs, added unique index to nzbs
+09082103 -> jonnyboy -> changed pp additonal first query to passwordstatus BETWEEN -2 and -1, seems that -1 and -1 or = -1 takes a very long time
+						fixed bug in grabnzbs where failed to get article deleted collection from collections, added more output to grabnzbs, added unique index to nzbs
 						fixed python script echo properlly when run from php script, other minor tweaks	
 09072103 -> jonnyboy -> fixed bug where update_binaries not using compression after first grab
 						fixed bug where update_binaries not getting correct set of headers, when postdate fails initial attempt, may need to reset_truncate.php to be safe

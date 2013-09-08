@@ -350,7 +350,8 @@ class PostProcess
 			$result = 0;
 			if ($releaseToWork == '')
 			{
-				$i = -1;
+				// Starting at -1 seems to take a very long time for query
+				$i = -2;
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
