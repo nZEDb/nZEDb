@@ -95,6 +95,7 @@ function start_apps($tmux_session)
 	$tmux = new Tmux();
 	$htop = $tmux->get()->HTOP;
 	$vnstat = $tmux->get()->VNSTAT;
+	
 	$vnstat_args = $tmux->get()->VNSTAT_ARGS;
 	$tcptrack = $tmux->get()->TCPTRACK;
 	$tcptrack_args = $tmux->get()->TCPTRACK_ARGS;
