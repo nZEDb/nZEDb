@@ -35,31 +35,31 @@ do
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full executable
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full short
 #	$PHP ${NZEDB_PATH}/update_binaries.php alt.binaries.classic.tv.shows
-#	$PYTHON -OO ${THREADED_PATH}/binaries_threaded.py
-#	$PYTHON -OO ${THREADED_PATH}/backfill_threaded.py all
-#	$PYTHON -OO ${THREADED_PATH}/backfill_safe_threaded.py
-#	$PYTHON -OO ${THREADED_PATH}/grabnzbs_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/binaries_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
+#	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
-#	$PYTHON -OO ${THREADED_PATH}/testing_only/releases_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/testing_only/releases_threaded.py
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PYTHON -OO ${THREADED_PATH}/requestid_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
+#	$PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
 #	$PHP ${NZEDB_PATH}/decrypt_hashes.php true
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
 #	$PHP ${DEV_PATH}/test_misc_sorter.php
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py additional
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py md5
-#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py nfo
-#	$PYTHON -OO ${THREADED_PATH}/fixreleasenames_threaded.py filename
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py movie
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_threaded.py tv
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
+#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5
+#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo
+#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py filename
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
-#	$PYTHON -OO ${THREADED_PATH}/postprocess_old_threaded.py amazon
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
 #	sleep $NZEDB_SLEEP_TIME
 	if [[ $# -eq 1 && $1 == "true" ]]
 	then

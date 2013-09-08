@@ -845,7 +845,7 @@ while( $i > 0 )
 				if ( $dead1 == 1 )
 					$time2 = TIME();
 				$log = writelog($panes2[0]);
-				system("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
@@ -853,7 +853,7 @@ while( $i > 0 )
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes2[0]);
-				system("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
@@ -880,7 +880,7 @@ while( $i > 0 )
 				if ( $dead1 == 1 )
 					$time2 = TIME();
 				$log = writelog($panes2[0]);
-				system("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
@@ -901,7 +901,7 @@ while( $i > 0 )
 				//run postprocess_releases non amazon
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes2[1]);
-				system("tmux respawnp -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py tv $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py movie $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
 			}
@@ -921,7 +921,7 @@ while( $i > 0 )
 				//run postprocess_releases amazon
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes2[2]);
-				system("tmux respawnp -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
 			}
 			elseif (( $post_amazon == "TRUE" ) && ( $processbooks == 0 ) && ( $processmusic == 0 ) && ( $processgames == 0 ))
@@ -969,7 +969,7 @@ while( $i > 0 )
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[1]);
-				system("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			else
@@ -986,7 +986,7 @@ while( $i > 0 )
 				//runs all/safe less than 4800
 				if (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
@@ -997,7 +997,7 @@ while( $i > 0 )
 				//runs all less than 4800
 				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
@@ -1008,7 +1008,7 @@ while( $i > 0 )
 				//runs bin/back/safe less than 4800
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
@@ -1019,7 +1019,7 @@ while( $i > 0 )
 				//runs bin/back less than 4800
 				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run != "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
@@ -1029,7 +1029,7 @@ while( $i > 0 )
 				//runs back/safe/rel less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -1037,7 +1037,7 @@ while( $i > 0 )
 				//runs back/rel less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -1045,7 +1045,7 @@ while( $i > 0 )
 				//runs bin/rel less than 4800
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
@@ -1054,7 +1054,7 @@ while( $i > 0 )
 				//runs bin less than 4800
 				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -1062,14 +1062,14 @@ while( $i > 0 )
 				//runs back/safe less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
-					system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
@@ -1091,7 +1091,7 @@ while( $i > 0 )
 				//run backfill all once and resets the timer
 				if ( $backfill != "0" )
 				{
-					system("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+					shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 					$time6 = TIME();
@@ -1118,7 +1118,7 @@ while( $i > 0 )
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[1]);
-				system("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			else
@@ -1129,7 +1129,7 @@ while( $i > 0 )
 			//run user_threaded.sh
             $color = get_color($colors_start, $colors_end, $colors_exc);
             $log = writelog($panes0[2]);
-			system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+			shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 					${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 		}
 		else
@@ -1139,7 +1139,7 @@ while( $i > 0 )
 			if (( $binaries == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				$log = writelog($panes0[2]);
-				system("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
@@ -1165,21 +1165,21 @@ while( $i > 0 )
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[3]);
-				system("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 <= 4800 ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[3]);
-				system("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 >= 4800 ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[3]);
-				system("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 				$time6 = TIME();
 			}
@@ -1199,7 +1199,7 @@ while( $i > 0 )
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				$log = writelog($panes0[1]);
-				system("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
+				shell_exec("tmux respawnp -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			elseif ( $kill_pp == "TRUE" )
