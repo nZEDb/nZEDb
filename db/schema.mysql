@@ -1399,7 +1399,7 @@ CREATE TABLE nzbs (
 
 CREATE INDEX ix_nzbs_partnumber ON nzbs(partnumber);
 CREATE INDEX ix_nzbs_collectionhash ON nzbs(collectionhash);
-
+CREATE UNIQUE INDEX ix_nzbs_message ON nzbs(message_id);
 
 INSERT INTO tvrage (id, rageid, releasetitle, description, createddate, imgdata, tvdbid)
 VALUES

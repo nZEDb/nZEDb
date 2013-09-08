@@ -178,6 +178,10 @@ class PostProcess
 			return false;
 
 		$groups = new Groups();
+		if (!isset($nntp))
+			$nntp = new Nntp();
+		if ($messageID = "")
+			return false;
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
 		{
