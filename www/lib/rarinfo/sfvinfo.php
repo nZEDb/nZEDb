@@ -31,7 +31,7 @@ require_once dirname(__FILE__).'/archivereader.php';
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    2.0
+ * @version    2.1
  */
 class SfvInfo extends ArchiveReader
 {
@@ -111,7 +111,12 @@ class SfvInfo extends ArchiveReader
 	protected function analyze()
 	{
 		// Get the available data up to the maximum allowed
-		$data = $this->read(min($this->length, $this->maxReadBytes));
+		try {
+			$data = $this->read(min($this->length, $this->maxReadBytes));
+		} catch (Exception $e) {
+			$this->close();
+			return false;
+		}
 
 		// Split on all line ending types
 		foreach (preg_split('/\R/', $data, -1, PREG_SPLIT_NO_EMPTY) as $line) {

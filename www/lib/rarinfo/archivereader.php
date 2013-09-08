@@ -755,6 +755,7 @@ abstract class ArchiveReader
 		$this->fileCount = 0;
 		$this->markerPosition = null;
 		$this->deleteTempFiles();
+		clearstatcache();
 	}
 
 } // End ArchiveReader class

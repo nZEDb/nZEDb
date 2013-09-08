@@ -528,9 +528,13 @@ CREATE TABLE "releases" (
   "audiostatus" smallint DEFAULT 0 NOT NULL,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
-  "nzb_guid" character varying(50)
+  "nzb_guid" character varying(50),
+  "hashed" bool DEFAULT false
 )
 WITHOUT OIDS;
+
+CREATE TRIGGER hash_check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true;
+CREATE TRIGGER hash_check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true;
 
 DROP SEQUENCE IF EXISTS "releasesubs_id_seq" CASCADE;
 CREATE SEQUENCE "releasesubs_id_seq" INCREMENT BY 1
@@ -1378,7 +1382,7 @@ INSERT INTO site
 	('delaytime','2'),
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
-	('sqlpatch','119');
+	('sqlpatch','120');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
