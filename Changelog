@@ -1,26 +1,27 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09092013 -> jonnyboy -> rewrote the trigger to add another check
+09092013 -> jonnyboy -> updated backfill_groups.php and active_groups.php
+                        rewrote the trigger to add another check
 09082013 -> jonnyboy -> fixed bad patch 119, added triggers for and added index
-						changed pp additonal first query to passwordstatus BETWEEN -2 and -1, seems that -1 and -1 or = -1 takes a very long time
-						fixed bug in grabnzbs where failed to get article deleted collection from collections, added more output to grabnzbs, added unique index to nzbs
-						fixed python script echo properlly when run from php script, other minor tweaks	
+                        changed pp additonal first query to passwordstatus BETWEEN -2 and -1, seems that -1 and -1 or = -1 takes a very long time
+                        fixed bug in grabnzbs where failed to get article deleted collection from collections, added more output to grabnzbs, added unique index to nzbs
+                        fixed python script echo properlly when run from php script, other minor tweaks
 09072103 -> jonnyboy -> fixed bug where update_binaries not using compression after first grab
-						fixed bug where update_binaries not getting correct set of headers, when postdate fails initial attempt, may need to reset_truncate.php to be safe
-						fixed bug where update_binaries not running correctly on new groups(i hope)
+                        fixed bug where update_binaries not getting correct set of headers, when postdate fails initial attempt, may need to reset_truncate.php to be safe
+                        fixed bug where update_binaries not running correctly on new groups(i hope)
                         fixed bug where parsePAR2 was not using alternate nntp, other minor fixes
 09022013 -> jonnyboy -> various, numberous little bug fixes
 08312013 -> jonnyboy -> added threaded versions for fixreleasesnames and update_releases, these should be considered alpha and could create invalid releases
-						cleaned up a few bugs
+                        cleaned up a few bugs
 08292013 -> jonnyboy -> changed queries for pg
-						update for changes to decrypt_hashes.php
-						typo in monitor.php
+                        update for changes to decrypt_hashes.php
+                        typo in monitor.php
                         removed unneeded column from nzbs table
 08292013 -> kevin    -> August 23 to 29:
                         Convert to php database objects.
                         Almost full support for postgresql (still needs work).
-                             Now there is a seperate schema / patches for both database types, make sure to read the readme in db if you are submiting patches.
-                             The install has been modified to support postgresql, but it has been locked for now while I keep working on it. 
+                        Now there is a seperate schema / patches for both database types, make sure to read the readme in db if you are submiting patches.
+                        The install has been modified to support postgresql, but it has been locked for now while I keep working on it.
                         Start working on comment sharing throughout sites (ThePeePs will work on the rest with our help).
                         Fixes to par2 and toggle option to turn on and off adding the files to the filelist.
                         Changes to the install page (more checks and clearer text).
@@ -76,7 +77,7 @@ NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 08062013 -> sinfulj  -> Add a new theme (currently in alpha testing).
 08052013 -> kevin    -> Clean up postprocess.php, make sure there are no duplicate names for releaseID's in the releasefiles table, more regex in namecleaning.
 08052013 -> wtf911   -> Attempt to fix duplicate tvrage entries when running threaded.
-08042013 -> sinfulj  -> Fix up some theme issues.   
+08042013 -> sinfulj  -> Fix up some theme issues.
 08042013 -> kevin    -> Add more regex, fix up a few issues, reset collection hash again with these changes.
 08032013 -> kevin    -> Update namecleaning, requires a reset of the collection hash.
 08022013 -> kevin    -> When many releases are added at the same time the hash for the guid can be the same, so add mt_rand while hashing.
