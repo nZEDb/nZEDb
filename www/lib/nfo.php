@@ -100,7 +100,7 @@ class Nfo
 							// Check if it's an SFV.
 							$sfv = new SfvInfo;
 							$sfv->setData($possibleNFO);
-							if ($sfv->error)*/
+							if ($sfv->error)
 								return true;
 						}
 					}
