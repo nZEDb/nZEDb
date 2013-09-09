@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3487";
+$version="0.1r3489";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -314,7 +314,7 @@ $usp2totalconnections = 0;
 
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-51.51s \n";
-$mask2 = "\033[1;33m%-16s \033[38;5;214m%-41.41s \n";
+$mask2 = "\033[1;33m%-16s \033[38;5;214m%-40.40s \n";
 
 //create display
 passthru('clear');

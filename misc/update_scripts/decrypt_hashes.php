@@ -7,24 +7,18 @@ require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 
 if (!isset($argv[1]))
-	exit ("Type php decrypt_hashes.php true to start.\n");
+	exit ("This script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\nphp decrypt_hashes.php true to limit 1000.\nphp decrypt_hashes.php full to run on full database.\n");
 
-echo "Matching predb MD5 to md5(releasename)\n";
-preName();
+echo "\nDecrypt Hashes Started at ".date("g:i:s")."\nMatching predb MD5 to md5(releases.name or releases.searchname)\n";
+preName($argv);
 
-function preName()
+function preName($argv)
 {
 	$db = new DB();
+	$timestart = TIME();
+	$limit = ($argv[1] == "full") ? "" : " LIMIT 1000";
 
-	if ($db->dbSystem() == "mysql")
-	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND name REGEXP '[a-fA-F0-9]{32}' LIMIT 1000");
-	}
-	else if ($db->dbSystem() == "pgsql")
-	{
-		$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND regexp_matches(name, '[a-fA-F0-9]{32}') LIMIT 1000");
-	}
-
+	$res = $db->query("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND hashed = true".$limit);
 	$counter = 0;
 	$total = count($res);
 	$show = '';
@@ -38,7 +32,7 @@ function preName()
 		foreach ($res as $row)
 		{
 			$success = false;
-			if (preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match))
+			if (preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match))
 			{
 				$pre = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1])));
 				if ($pre !== false)
@@ -74,7 +68,7 @@ function preName()
 		}
 	}
 	if ($total > 0)
-		echo "\n".$counter." release(s) names changed.\n";
+		echo "\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart)."\n";
 	else
 		echo "\nNothing to do.\n";
 }

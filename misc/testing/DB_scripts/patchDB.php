@@ -34,14 +34,14 @@ function SplitSQL($file, $delimiter = ';')
 					if (preg_match('/ALTER|UPDATE|INSERT|DELETE|DROP|CREATE/i', $query))
 					{
 						if ($db->queryExec($query) === false)
-							exit();
+							exit("Error: ".$query." Failed\n");
 						else
 							echo 'SUCCESS: '.$query."\n";
 					}
 					else
 					{
 						if ($db->query($query) === false)
-							exit();
+							exit("Error: ".$query." Failed\n");
 						else
 							echo 'SUCCESS: '.$query."\n";
 					}
