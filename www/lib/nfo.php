@@ -70,9 +70,10 @@ class Nfo
 		$r = false;
 		if ($possibleNFO === false)
 			return $r;
-		//ignore encrypted nfos
+		// Ignore encrypted nfos
 		if (preg_match('/^=newz\[NZB\]=\w+/', $possibleNFO))
 			return $r;
+		// Ignore other file types
 		if (preg_match('/(<?xml|;\s*Generated\sby.+SF\w|^\s*PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
 			return $r;
 		// Make sure it's not too big, also exif_imagetype needs a minimum size or else it doesn't work.
@@ -99,7 +100,7 @@ class Nfo
 							// Check if it's an SFV.
 							$sfv = new SfvInfo;
 							$sfv->setData($possibleNFO);
-							if ($sfv->error)
+							if ($sfv->error)*/
 								return true;
 						}
 					}
@@ -134,8 +135,8 @@ class Nfo
 	// Adds an NFO found from predb, rar, zip etc...
 	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
 	{
-		if ($this->isNFO($nfo) && $release["id"] > 0)
-		//if ($release["id"] > 0)
+		//if ($this->isNFO($nfo) && $release["id"] > 0)
+		if ($release["id"] > 0)
 		{
 			$this->addReleaseNfo($release["id"]);
 			if ($db->dbSystem() == "mysql")

@@ -167,6 +167,8 @@ class PostProcess
 	// Attempt to get a better name from a par2 file and categorize the release.
 	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
+		if ($messageID = "")
+			return false;
 		$db = new DB();
 		$category = new Category();
 		if ($db->dbSystem() == "mysql")
@@ -178,10 +180,6 @@ class PostProcess
 			return false;
 
 		$groups = new Groups();
-		if (!isset($nntp))
-			$nntp = new Nntp();
-		if ($messageID = "")
-			return false;
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
 		{
@@ -195,7 +193,6 @@ class PostProcess
 			}
 		}
 		$nntp->doQuit();
-
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
 		if ($par2info->error)

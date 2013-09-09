@@ -67,7 +67,7 @@ Class Predb
 	public function retrieveWomble()
 	{
 		$db = new DB();
-		$newnames = 0;
+		$newnames = $updated = 0;
 
 		$buffer = getUrl("http://www.newshost.co.za");
 		if ($buffer !== false && strlen($buffer))
@@ -99,6 +99,7 @@ Class Predb
 										$nfo = $db->escapeString("http://nzb.isasecret.com/".$matches2["nfo"]);
 
 									$db->queryExec(sprintf("UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $nfo, $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("womble"), $oldname["id"]));
+									$updated++;
 								}
 							}
 							else
@@ -121,13 +122,14 @@ Class Predb
 				}
 			}
 		}
+		echo $updated." Updated.\n";
 		return $newnames;
 	}
 
 	public function retrieveOmgwtfnzbs()
 	{
 		$db = new DB();
-		$newnames = 0;
+		$newnames = $updated = 0;
 
 		$buffer = getUrl("http://rss.omgwtfnzbs.org/rss-info.php");
 		if ($buffer !== false && strlen($buffer))
@@ -144,12 +146,13 @@ Class Predb
 							$oldname = $db->queryOneRow(sprintf("SELECT md5, source, id FROM predb WHERE md5 = %s", $db->escapeString($md5)));
 							if ($oldname !== false && $oldname["md5"] == $md5)
 							{
-								if ($oldname["source"] == "womble")
+								if ($oldname["source"] == "womble" || $oldname["source"] == "omgwtfnzbs")
 									continue;
 								else
 								{
 									$size = $db->escapeString(round($matches2["size1"]).$matches2["size2"]);
 									$db->queryExec(sprintf("UPDATE predb SET size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d", $size, $db->escapeString($matches2["category"]), $db->from_unixtime(strtotime($matches2["date"])), $db->escapeString("omgwtfnzbs"), $oldname["id"]));
+									$updated++;
 								}
 							}
 							else
@@ -164,6 +167,7 @@ Class Predb
 				}
 			}
 		}
+		echo $updated." Updated.\n";
 		return $newnames;
 	}
 
@@ -404,7 +408,7 @@ Class Predb
 		if($this->echooutput)
 			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
-		$res = $db->query("SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 1000");
+		$res = $db->query("SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100");
 		if(count($res) > 0)
 		{
 			$nfo = new Nfo($this->echooutput);
@@ -412,14 +416,15 @@ Class Predb
 			foreach ($res as $row)
 			{
 				$buffer = getUrl($row["nfo"]);
-				if ($buffer !== false && strlen($buffer))
+				if ($buffer !== false)
 				{
 					if($nfo->addAlternateNfo($db, $buffer, $row))
 					{
 						if($this->echooutput)
-							echo ".";
+							echo "+";
 						$nfos++;
 					}
+					echo "-";
 				}
 			}
 			return $nfos;
