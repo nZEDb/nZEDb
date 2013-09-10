@@ -71,7 +71,7 @@ while (count - first) < 10000:
 		cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
 		datas = cur.fetchone()
 	else:
-		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (sys.argv[1], backfilldays, group))
+		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00'" % (sys.argv[1]))
 		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")

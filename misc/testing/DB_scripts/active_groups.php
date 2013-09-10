@@ -42,7 +42,7 @@ if ($rels = $db->query("SELECT name, backfill_target, first_record_postdate, las
 	}
 }
 
-printf($mask, "Group Name => ".$groups."(".number_format($count)." downloaded)", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded", "Releases");
+printf($mask, "\nGroup Name => ".$groups."(".number_format($count)." downloaded)", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded", "Releases");
 printf($mask, "==================================================", "======================", "======================", "======================", "======================", "======================");
 
 if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit)))
@@ -54,5 +54,5 @@ if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postd
 		printf($mask, $rel['name'], $rel['backfill_target']."(".$rel['days'].")", $rel['first_record_postdate'], $rel['last_updated'], $headers, $rel['num_releases']);
 	}
 }
-
+echo "\033[0m\n";
 ?>

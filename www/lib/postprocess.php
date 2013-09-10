@@ -179,6 +179,11 @@ class PostProcess
 		if (!in_array($quer["relnamestatus"], array(0, 1, 6, 20)) || $quer["relnamestatus"] === 7 || $quer["categoryid"] != Category::CAT_MISC)
 			return false;
 
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+		}
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
