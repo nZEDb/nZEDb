@@ -5,6 +5,8 @@ require_once(WWW_DIR."lib/backfill.php");
 if (isset($argv[1]))
 {
 	$pieces = explode(" ", $argv[1]);
+	//printf("%s, %s, %s, %s\n", $pieces[0], $pieces[1], $pieces[2], $pieces[3]);
+	//exit();
 	if (isset($pieces[3]))
 	{
 		$backfill = new Backfill();
@@ -14,7 +16,7 @@ if (isset($argv[1]))
 	elseif (isset($pieces[2]))
 	{
 		$backfill = new Backfill();
-		$backfill->getFinal($pieces[0], $pieces[1]);
+		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
 	}
 	elseif (isset($pieces[1]))
 	{

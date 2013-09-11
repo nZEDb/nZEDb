@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09102013 -> jonnyboy -> added check for $nntp in parsePAR2
+09102013 -> jonnyboy -> added Safe Binary Threaded update, this maximizes thread usage for all groups, instead of running 1 thread to grab all from 1 group, this should be considered testing only, for now
+						added check for $nntp in parsePAR2
 09092013 -> jonnyboy -> updated backfill_groups.php and active_groups.php
                         rewrote the trigger to add another check
 09082013 -> jonnyboy -> fixed bad patch 119, added triggers for and added index

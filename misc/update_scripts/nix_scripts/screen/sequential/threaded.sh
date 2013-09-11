@@ -35,6 +35,7 @@ do
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full executable
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full short
 #	$PHP ${NZEDB_PATH}/update_binaries.php alt.binaries.classic.tv.shows
+#   $PYTHON -OOu ${THREADED_PATH}/binaries_safe_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/binaries_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
