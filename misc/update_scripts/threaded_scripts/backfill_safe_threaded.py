@@ -71,7 +71,7 @@ while (count - first) < 10000:
 		cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
 		datas = cur.fetchone()
 	else:
-		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (sys.argv[1], backfilldays, group))
+		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00'" % (sys.argv[1]))
 		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")
@@ -145,7 +145,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+	print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -164,7 +164,7 @@ def main(args):
 
 	my_queue.join()
 
-	final = ("%s %d %s" % (datas[0], int(datas[1] - (maxmssgs * geteach)), geteach))
+	final = ("%s %d Backfill" % (datas[0], int(datas[1] - (maxmssgs * geteach))))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
 	group = ("%s %d" % (datas[0], 1000))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])

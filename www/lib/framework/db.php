@@ -110,6 +110,7 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $e->errorInfo[0]==1205) && $i <= 10)
 			{
+				sleep($i * $i);
 				$run = DB::$pdo->prepare($query);
 				$run->execute();
 				return $run;

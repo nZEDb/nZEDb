@@ -503,7 +503,7 @@ class Backfill
 			return;
 	}
 
-	function getFinal($group, $first)
+	function getFinal($group, $first, $type)
 	{
 		$db = new DB();
 		$groups = new Groups();
@@ -515,7 +515,10 @@ class Backfill
 			//echo "Trying to get postdate on ".$first."\n";
 		}
 		$postsdate = $db->from_unixtime($postsdate);
-		$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $postsdate, $db->escapeString($first), $groupArr['id']));
-		echo "Backfill Safe Threaded on ".$group." completed.\n\n";
+		if ($type == "Backfill")
+			$db->queryExec(sprintf("UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d", $postsdate, $db->escapeString($first), $groupArr['id']));
+		else
+			$db->queryExec(sprintf("UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d", $postsdate, $db->escapeString($first), $groupArr['id']));
+		echo $type." Safe Threaded on ".$group." completed.\n\n";
 	}
 }
