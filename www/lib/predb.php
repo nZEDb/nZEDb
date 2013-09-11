@@ -424,7 +424,8 @@ Class Predb
 							echo "+";
 						$nfos++;
 					}
-					echo "-";
+					else
+						echo "-";
 				}
 			}
 			return $nfos;

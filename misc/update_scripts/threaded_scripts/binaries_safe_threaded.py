@@ -92,13 +92,17 @@ def main():
 			p.start()
 
 	#now load some arbitrary jobs into the queue
+	time.sleep(0.01)
+	print("Connectiong to USP")
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
+	time.sleep(0.01)
 	run = 0
 	finals = []
 	groups = []
 	for group in datas:
 		try:
 			resp, count, first, last, name = s.group(group[0])
+			time.sleep(0.01)
 		except nntplib.NNTPError:
 			cur.execute("update groups set active = 0 where name = %s" % (mdb.escape_string(group[0])))
 			con.autocommit(True)
@@ -115,13 +119,13 @@ def main():
 			elif count > 0:
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
-				for loop in range(geteach):
+				for loop in range(int(geteach)):
 					run += 1
 					my_queue.put("%s %d %d %d" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
 				my_queue.put("%s %d %d %d" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 	my_queue.join()
-
+	resp = s.quit
 	for group in list(zip(groups, finals)):
 		run +=1
 		final = ("%s %d Binary" % (group[0], group[1]))
