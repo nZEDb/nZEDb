@@ -95,7 +95,7 @@ def main():
 	time.sleep(0.01)
 	print("Connectiong to USP")
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	time.sleep(0.01)
+	time.sleep(0.1)
 	run = 0
 	finals = []
 	groups = []
@@ -110,7 +110,7 @@ def main():
 		if name:
 			count = last - group[1] - 1
 			if count > 0:
-				#print("%s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last))))
+				print("%s has %s articles available, grabbing the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last))))
 				groups.append(group[0])
 				finals.append(int(last))
 			if count <= maxmssgs and count > 0:

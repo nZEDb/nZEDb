@@ -35,13 +35,13 @@ cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
 run_threads = cur.fetchone()
 	
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21) LIMIT 1000")
+	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21) ORDER BY postdate DESC LIMIT 10000")
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20) LIMIT 1000")
+	cur.execute("SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20) ORDER BY postdate DESC LIMIT 10000")
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	cur.execute("SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') LIMIT 1000")
+	cur.execute("SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT 10000")
 	datas = cur.fetchall()
 
 #close connection to mysql

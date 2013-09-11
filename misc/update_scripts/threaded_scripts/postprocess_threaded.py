@@ -18,7 +18,10 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+if len(sys.argv) == 3 and sys.argv[2] == "clean":
+	print("\nPostProcess Clean Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+else:
+	print("\nPostProcess Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
 if sys.argv[1] == "additional":
@@ -72,11 +75,17 @@ elif sys.argv[1] == "nfo":
 		cur.execute("SELECT r.ID, r.guid, r.groupID, r.name FROM releases r WHERE %s r.nfostatus between %d and -1 and r.nzbstatus = 1 order by r.postdate desc limit %d" % (maxsize, maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
+elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
+		cur.execute("SELECT searchname as name, ID, categoryID from releases where relnamestatus not in (0, 1) and imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" % (run_threads * movieperrun))
+		datas = cur.fetchall()
 elif sys.argv[1] == "movie":
 		cur.execute("SELECT searchname as name, ID, categoryID from releases where imdbID IS NULL and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 2000 ) order by postdate desc limit %d" % (run_threads * movieperrun))
 		datas = cur.fetchall()
+elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
+		cur.execute("SELECT searchname, ID from releases where relnamestatus not in (0, 1) and rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" % (run_threads * tvrageperrun))
+		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		cur.execute("SELECT searchname, ID from releases where rageID = -1 and  nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" % (run_threads * tvrageperrun))
+		cur.execute("SELECT searchname, ID from releases where rageID = -1 and nzbstatus = 1 and categoryID in ( select ID from category where parentID = 5000 ) order by postdate desc limit %d" % (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 
 #close connection to mysql
@@ -111,7 +120,7 @@ class queue_runner(threading.Thread):
 					time.sleep(.5)
 					self.my_queue.task_done()
 
-def main():
+def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
@@ -166,4 +175,4 @@ def main():
 	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1:])

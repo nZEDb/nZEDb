@@ -1537,14 +1537,17 @@ class Releases
 		// Crossposted releases.
 		do
 		{
-			$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
-			$total = count($resrel);
-			if(count($resrel) > 0)
+			if ($this->crosspostt != 0)
 			{
-				foreach ($resrel as $rowrel)
+				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+				$total = count($resrel);
+				if(count($resrel) > 0)
 				{
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
-					$dupecount ++;
+					foreach ($resrel as $rowrel)
+					{
+						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$dupecount ++;
+					}
 				}
 			}
 		} while ($total > 0);

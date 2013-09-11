@@ -852,7 +852,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "b";
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
-						if (is_dir($this->tmpPath))
+						if (is_dir($this->tmpPath) && is_file($this->tmpPath."samplepicture.jpg"))
 						{
 							if (filesize($this->tmpPath."samplepicture.jpg") > 15 && exif_imagetype($this->tmpPath."samplepicture.jpg") !== false && $blnTookJPG === false)
 							{

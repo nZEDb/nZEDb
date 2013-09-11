@@ -88,7 +88,7 @@ while (count - first) < 10000:
 		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
 		con.autocommit(True)
 		print("%s not found, disabling." %(datas[0]))
-	resp = s.quit()
+	resp = s.quit
 
 	if (datas[1] - first) < 0:
 		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
