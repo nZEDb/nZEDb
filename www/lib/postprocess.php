@@ -352,12 +352,11 @@ class PostProcess
 			$result = 0;
 			if ($releaseToWork == '')
 			{
-				// Starting at -1 seems to take a very long time for query
-				$i = -2;
+				$i = -1;
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf("SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 ORDER BY r.postdate DESC LIMIT %d", $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf("SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d", $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho("Passwordstatus = ".$i.": Available to process = ".count($result));
 					$i--;
@@ -852,7 +851,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "b";
 						$this->addmediafile($this->tmpPath."samplepicture.jpg", $jpgBinary);
-						if (is_dir($this->tmpPath))
+						if (is_dir($this->tmpPath) && is_file($this->tmpPath."samplepicture.jpg"))
 						{
 							if (filesize($this->tmpPath."samplepicture.jpg") > 15 && exif_imagetype($this->tmpPath."samplepicture.jpg") !== false && $blnTookJPG === false)
 							{

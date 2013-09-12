@@ -75,7 +75,7 @@
 					The 'In Process' predb is the total unmatched predb and inside the parenthesis is number changed since the script started. The 'In Database' is the total matched predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br />
 					The 'In Process' NZBs are total nzbs, inside the parenthesis is distinct nzbs and 'In Database' are nzbs that have all parts available and will be processed on next run.<br />
 					The 'In Process' requestID is the number waiting to be processed and inside the parenthesis is the number changed since the script started. The 'In Database' is the total matches of releases to requestIDs and inside the parenthesis is percentage of total releases that you have matched to a requestID.
-									</div>
+				</div>
 			</td>
 		</tr>
 		</table>
@@ -115,8 +115,8 @@
 			<tr>
 				<td><label for="BINARIES">Update Binaries:</label></td>
 				<td>
-					{html_radios id="BINARIES" name='BINARIES' values=$truefalse_names output=$truefalse_names selected=$ftmux->BINARIES separator='<br />'}
-					<div class="hint">Choose to run update_binaries true/false. Update binaries gets from your last_record to now. </div>
+					{html_options class="siteeditstyle" id="BINARIES" name='BINARIES' values=$binaries_ids output=$binaries_names selected=$ftmux->BINARIES}
+					<div class="hint">Choose to run update_binaries. Update binaries gets from your last_record to now.<br />Simple Threaded Update runs 1 group per thread.<br />Complete Threaded Update splits all work across multiple threads.</div>
 				</td>
 			</tr>
 

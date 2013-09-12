@@ -1136,9 +1136,9 @@ class Releases
 			}
 		}
 
-		//if ($this->echooutput)
-		//	echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
-		//return $retcount;
+		if ($this->echooutput)
+			echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
+		return $retcount;
 	}
 
 	/*
@@ -1537,14 +1537,17 @@ class Releases
 		// Crossposted releases.
 		do
 		{
-			$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
-			$total = count($resrel);
-			if(count($resrel) > 0)
+			if ($this->crosspostt != 0)
 			{
-				foreach ($resrel as $rowrel)
+				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+				$total = count($resrel);
+				if(count($resrel) > 0)
 				{
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
-					$dupecount ++;
+					foreach ($resrel as $rowrel)
+					{
+						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$dupecount ++;
+					}
 				}
 			}
 		} while ($total > 0);
@@ -1660,7 +1663,7 @@ class Releases
 			$loops++;
 		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
-
+var_dump($tot_retcount);
 		return $tot_retcount;
 	}
 

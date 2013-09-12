@@ -69,7 +69,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.1)
 					self.my_queue.task_done()
 
@@ -95,7 +95,7 @@ def main():
 	time.sleep(0.01)
 	print("Connectiong to USP")
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	time.sleep(0.01)
+	time.sleep(0.1)
 	run = 0
 	finals = []
 	groups = []
@@ -110,7 +110,7 @@ def main():
 		if name:
 			count = last - group[1] - 1
 			if count > 0:
-				#print("%s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last))))
+				print("%s has %s articles available, grabbing the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last))))
 				groups.append(group[0])
 				finals.append(int(last))
 			if count <= maxmssgs and count > 0:
@@ -129,7 +129,7 @@ def main():
 	for group in list(zip(groups, finals)):
 		run +=1
 		final = ("%s %d Binary" % (group[0], group[1]))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
 if __name__ == '__main__':
 	main()
