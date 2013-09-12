@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3497";
+$version="0.1r3498";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -36,25 +36,25 @@ $qry = "SELECT
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT( * ) FROM releases WHERE rageid = -1 and categoryid BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( * ) FROM releases WHERE imdbid IS NULL and categoryid BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( * ) FROM releases WHERE musicinfoid IS NULL and relnamestatus != 0 and categoryid in (3010, 3040, 3050) ) AS audio,
-	( SELECT COUNT( * ) FROM releases WHERE consoleinfoid IS NULL and categoryid BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( * ) FROM releases WHERE bookinfoid IS NULL and categoryid = 8010 ) AS book,
+	( SELECT COUNT( * ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 ) AS tv,
+	( SELECT COUNT( * ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( * ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid in (3010, 3040, 3050) ) AS audio,
+	( SELECT COUNT( * ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ) AS console,
+	( SELECT COUNT( * ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 ) AS book,
 	( SELECT COUNT( * ) FROM releases WHERE nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( * ) FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT( * ) FROM releases WHERE nfostatus between -6 and -1 ) AS nforemains,
+	( SELECT COUNT( * ) FROM releases WHERE nfostatus between -6 AND -1 ) AS nforemains,
 	( SELECT COUNT( * ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 ) AS requestid_inprogress,
 	( SELECT COUNT( * ) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( * ) FROM releases r left join category c on c.id = r.categoryid where categoryid BETWEEN 4000 AND 4999 and ((r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0))) AS pc,
-	( SELECT COUNT( * ) FROM releases r left join category c on c.id = r.categoryid where (r.passwordstatus between -6 and -1) and (r.haspreview = -1 and c.disablepreview = 0)) AS work,
-	( SELECT COUNT( * ) FROM releases where preid IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT( * ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( * ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS work,
+	( SELECT COUNT( * ) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT( * ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( * ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
-	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
-	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
+	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
+	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
@@ -71,11 +71,11 @@ elseif ($db->dbSystem() == "pgsql")
 }
 
 $proc_tmux = "SELECT
-	( SELECT {$utd} FROM collections order by dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT {$uta} FROM predb order by adddate DESC limit 1 ) AS newestpre,
-	( SELECT name FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestaddname,
-	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 order by adddate DESC limit 1 ) AS newestadd,
-	( SELECT {$utd} FROM nzbs order by dateadded ASC limit 1 ) AS oldestnzb,
+	( SELECT {$utd} FROM collections ORDER BY dateadded ASC limit 1 ) AS oldestcollection,
+	( SELECT {$uta} FROM predb ORDER BY adddate DESC limit 1 ) AS newestpre,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestaddname,
+	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestadd,
+	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC limit 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -120,8 +120,8 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
 	( SELECT COUNT( * ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
+	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 	( SELECT COUNT( * ) FROM groups WHERE name IS NOT NULL ) AS all_groups";
 
 //get microtime
@@ -720,6 +720,11 @@ while( $i > 0 )
 	else
 		$kill_coll = "FALSE";
 
+	if ($binaries != 0)
+		$which_bins = "$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py";
+	elseif ($binaries == 2)
+		$which_bins = "$_python ${DIR}update_scripts/threaded_scripts/binaries_safe_threaded.py";
+
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
 	if ( $running == "TRUE" )
@@ -984,44 +989,44 @@ while( $i > 0 )
 			if (( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 <= 4800 ))
 			{
 				//runs all/safe less than 4800
-				if (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
+				if (( $binaries != 0 ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs all less than 4800
-				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
+				elseif (( $binaries != 0 ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back/safe less than 4800
-				elseif (( $binaries == "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
+				elseif (( $binaries != 0 ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; \
 							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back less than 4800
-				elseif (( $binaries == "TRUE" ) && ( $backfill != "0" ) && ( $releases_run != "TRUE" ))
+				elseif (( $binaries != 0 ) && ( $backfill != "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -1043,20 +1048,20 @@ while( $i > 0 )
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/rel less than 4800
-				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
+				elseif (( $binaries != 0 ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin less than 4800
-				elseif (( $binaries == "TRUE" ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
+				elseif (( $binaries != 0 ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+							$which_bins $log; \
 							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe less than 4800
@@ -1136,12 +1141,12 @@ while( $i > 0 )
 		{
 			//run update_binaries
 			$color = get_color($colors_start, $colors_end, $colors_exc);
-			if (( $binaries == "TRUE" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
+			if (( $binaries != 0 ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ))
 			{
 				$log = writelog($panes0[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 						$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
-						$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py $log; \
+						$which_bins $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))

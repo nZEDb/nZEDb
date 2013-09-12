@@ -69,7 +69,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.1)
 					self.my_queue.task_done()
 
@@ -129,7 +129,7 @@ def main():
 	for group in list(zip(groups, finals)):
 		run +=1
 		final = ("%s %d Binary" % (group[0], group[1]))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
 if __name__ == '__main__':
 	main()

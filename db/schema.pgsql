@@ -1382,14 +1382,14 @@ INSERT INTO site
 	('delaytime','2'),
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
-	('sqlpatch','121');
+	('sqlpatch','122');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
 	('MONITOR_DELAY','30'),
 	('TMUX_SESSION','nZEDb'),
 	('NICENESS','19'),
-	('BINARIES','FALSE'),
+	('BINARIES','0'),
 	('BACKFILL','0'),
 	('IMPORT','0'),
 	('NZBS','/path/to/nzbs'),

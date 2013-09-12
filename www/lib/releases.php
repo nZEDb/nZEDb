@@ -1136,9 +1136,9 @@ class Releases
 			}
 		}
 
-		//if ($this->echooutput)
-		//	echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
-		//return $retcount;
+		if ($this->echooutput)
+			echo $retcount." Releases added in ".$consoletools->convertTime(TIME() - $stage4).".";
+		return $retcount;
 	}
 
 	/*
@@ -1663,7 +1663,7 @@ class Releases
 			$loops++;
 		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
-
+var_dump($tot_retcount);
 		return $tot_retcount;
 	}
 

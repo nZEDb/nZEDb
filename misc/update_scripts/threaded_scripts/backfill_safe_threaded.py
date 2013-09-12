@@ -36,7 +36,7 @@ while (count - first) < 10000:
 	cur = con.cursor()
 
 	#get values from db
-	cur.execute("select (select value from site where setting = 'backfillthreads') as a, (select value from tmux where setting = 'BACKFILL_QTY') as b, (select value from tmux where setting = 'BACKFILL') as c, (select value from tmux where setting = 'BACKFILL_GROUPS') as d, (select value from tmux where setting = 'BACKFILL_ORDER') as e, (select value from tmux where setting = 'BACKFILL_DAYS') as f, (select value from site where setting = 'maxmssgs') as g")
+	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'BACKFILL_QTY') AS b, (SELECT value FROM tmux WHERE setting = 'BACKFILL') AS c, (SELECT value FROM tmux WHERE setting = 'BACKFILL_GROUPS') AS d, (SELECT value FROM tmux WHERE setting = 'BACKFILL_ORDER') AS e, (SELECT value FROM tmux WHERE setting = 'BACKFILL_DAYS') AS f, (SELECT value FROM site WHERE setting = 'maxmssgs') AS g")
 	dbgrab = cur.fetchall()
 	run_threads = int(dbgrab[0][0])
 	backfill_qty = int(dbgrab[0][1])
@@ -64,14 +64,14 @@ while (count - first) < 10000:
 	if intbackfilltype == 1:
 		backfilldays = "backfill_target"
 	elif intbackfilltype == 2:
-		backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
+		backfilldays = "datediff(curdate(),(SELECT value FROM site WHERE setting = 'safebackfilldate'))"
 
 	#query to grab backfill groups
 	if len(sys.argv) == 1:
-		cur.execute("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
 		datas = cur.fetchone()
 	else:
-		cur.execute("SELECT name, first_record from groups where name = '%s' and first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00'" % (sys.argv[1]))
+		cur.execute("SELECT name, first_record FROM groups WHERE name = '%s' AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00'" % (sys.argv[1]))
 		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")
@@ -85,13 +85,13 @@ while (count - first) < 10000:
 		resp, count, first, last, name = s.group(datas[0])
 		time.sleep(0.1)
 	except nntplib.NNTPError:
-		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
+		cur.execute("update groups set backfill = 0 WHERE name = %s" % (mdb.escape_string(datas[0])))
 		con.autocommit(True)
 		print("%s not found, disabling." %(datas[0]))
 	resp = s.quit
 
 	if (datas[1] - first) < 0:
-		cur.execute("update groups set backfill = 0 where name = %s" % (mdb.escape_string(datas[0])))
+		cur.execute("update groups set backfill = 0 WHERE name = %s" % (mdb.escape_string(datas[0])))
 		con.autocommit(True)
 		print("%s has invalid first_post, disabling." %(datas[0]))
 
@@ -103,7 +103,7 @@ while (count - first) < 10000:
 
 		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:
 			group = ("%s 10000" % (datas[0]))
-			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 			cur.close()
 			con.close()
 
@@ -137,7 +137,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.5)
 					self.my_queue.task_done()
 
@@ -165,9 +165,9 @@ def main(args):
 	my_queue.join()
 
 	final = ("%s %d Backfill" % (datas[0], int(datas[1] - (maxmssgs * geteach))))
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(final)])
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 	group = ("%s %d" % (datas[0], 1000))
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_safe.php", ""+str(group)])
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
 		print("\nWe used %s threads, a queue of %s and grabbed %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 	else:

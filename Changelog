@@ -1,5 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
+09112013 -> jonnyboy -> changed query for pp to speed up query on large databases
 09102013 -> jonnyboy -> added option to postprocess movie/tv only renamed releases
 						added Safe Binary Threaded update, this maximizes thread usage for all groups, instead of running 1 thread to grab all from 1 group, this should be considered testing only, for now
 						added check for $nntp in parsePAR2
