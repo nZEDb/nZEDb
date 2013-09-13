@@ -39,16 +39,16 @@ foreach (range(0, 256) as $number) {
 			if ($cpass % 7 == 0)
 				$pass .= $passed."\n";
 			else
-				$pass .= $passed."      ";
+				$pass .= $passed."\t";
 		}
 		if ($i == 10000)
 		{
-			$failed = "Color \033[38;5;${number}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m [".str_pad($number,3,'0',STR_PAD_LEFT)."] is excluded";
+			$failed = "Color \033[38;5;${number}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m [".str_pad($number,3,'0',STR_PAD_LEFT)."] excluded";
 			$cfail++;
 			if ($cfail % 7 == 0)
 				$fail .= $failed."\n";
 			else
-				$fail .= $failed."   ";
+				$fail .= $failed."\t";
 		}
 		$i++;
 	} while ($color != $number && $i <= 10000);
