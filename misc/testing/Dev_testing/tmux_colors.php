@@ -34,21 +34,21 @@ foreach (range(0, 256) as $number) {
 		$color = get_color($colors_start, $colors_end, $colors_exc);
 		if ($color == $number)
 		{
-			$passed = "\033[38;5;${color}mThis Color is \033[0m".str_pad($number,3,'0',STR_PAD_LEFT);
+			$passed = "\033[38;5;${color}mThis is color number \033[0m".str_pad($number,3,'0',STR_PAD_LEFT);
 			$cpass++;
-			if ($cpass % 8 == 0)
-				$pass .= $passed."    "."\n";
+			if ($cpass % 7 == 0)
+				$pass .= $passed."\n";
 			else
-				$pass .= $passed."\t";
+				$pass .= $passed."      ";
 		}
 		if ($i == 10000)
 		{
-			$failed = "Color \033[38;5;${number}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m is excluded";
+			$failed = "Color \033[38;5;${number}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m [".str_pad($number,3,'0',STR_PAD_LEFT)."] is excluded";
 			$cfail++;
-			if ($cfail % 8 == 0)
+			if ($cfail % 7 == 0)
 				$fail .= $failed."\n";
 			else
-				$fail .= $failed."\t";
+				$fail .= $failed."   ";
 		}
 		$i++;
 	} while ($color != $number && $i <= 10000);
