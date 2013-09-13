@@ -14,7 +14,7 @@ export NZEDB_SLEEP_TIME="60" # in seconds
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }
 
-date1=$(date +"%s")
+date1=`date +%s`
 
 #delete stale tmpunrar folders
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
@@ -66,7 +66,8 @@ do
 	then
 		loop=0
 	fi
+	date2=`date +%s`
+	diff=$(($date2-$date1))
+	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."
+
 done
-date2=$(date +"%s")
-diff=$(($date2-$date1))
-echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."

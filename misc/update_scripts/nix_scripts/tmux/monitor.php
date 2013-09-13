@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3499";
+$version="0.1r3500";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -156,7 +156,8 @@ function writelog( $pane )
 
 function get_color($colors_start, $colors_end, $colors_exc)
 {
-	$exceptions = explode( ",", $colors_exc );
+	$exceptions = str_replace(".", ".", $colors_exc);
+	$exceptions = explode( ",", $exceptions );
 	sort($exceptions);
 	$number = mt_rand($colors_start, $colors_end - count($exceptions));
 	foreach ($exceptions as $exception)
