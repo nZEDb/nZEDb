@@ -1460,6 +1460,7 @@ class Releases
 		$stage7 = TIME();
 
 		// Old collections that were missed somehow.
+		$timer1 = TIME();
 		if ($db->dbSystem() == "mysql")
 		{
 			$delq = $db->prepare(sprintf("DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.dateadded < (NOW() - INTERVAL %d HOUR) ".$where, $page->site->partretentionhours));
@@ -1479,8 +1480,10 @@ class Releases
 			}
 			$reccount += $db->queryExec(sprintf("DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR".$where, $page->site->partretentionhours));
 		}
+		echo "Query 1 took ".TIME() - $timer1." seconds.\n";
 
 		// Binaries/parts that somehow have no collection.
+		$timer2 = TIME();
 		if ($db->dbSystem() == "mysql")
 			$db->queryExec("DELETE binaries, parts FROM binaries LEFT JOIN parts ON binaries.id = parts.binaryid WHERE binaries.collectionid = 0 ");
 		else if ($db->dbSystem() == "pgsql")
@@ -1488,14 +1491,22 @@ class Releases
 			$db->queryExec("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = 0)");
 			$db->queryExec("DELETE FROM binaries WHERE collectionid = 0");
 		}
+		echo "Query 2 took ".TIME() - $timer2." seconds.\n";
 		// Parts that somehow have no binaries.
+		$timer3 = TIME();
 		$db->queryExec("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)");
+		echo "Query 3 took ".TIME() - $timer3." seconds.\n";
 		// Binaries that somehow have no collection.
+		$timer4 = TIME();
 		$db->queryExec("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c)");
+		echo "Query 4 took ".TIME() - $timer4." seconds.\n";
 		// Collections that somehow have no binaries.
+		$timer5 = TIME();
 		$db->queryExec("DELETE FROM collections WHERE collections.id NOT IN (SELECT binaries.collectionid FROM binaries) ".$where);
+		echo "Query 5 took ".TIME() - $timer5." seconds.\n";
 
 		// Releases past retention.
+		$timer6 = TIME();
 		if($page->site->releaseretentiondays != 0)
 		{
 			$result = $db->query(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)", $page->site->releaseretentiondays));
@@ -1505,8 +1516,10 @@ class Releases
 				$remcount ++;
 			}
 		}
+		echo "Query 6 took ".TIME() - $timer6." seconds.\n";
 
 		// Passworded releases.
+		$timer7 = TIME();
 		if($page->site->deletepasswordedrelease == 1)
 		{
 			$result = $db->query("SELECT id, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_RAR);
@@ -1519,8 +1532,9 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 7 took ".TIME() - $timer7." seconds.\n";
 		// Possibly passworded releases.
+		$timer8 = TIME();
 		if($page->site->deletepossiblerelease == 1)
 		{
 			$result = $db->query("SELECT id, guid FROM releases WHERE passwordstatus = ".Releases::PASSWD_POTENTIAL);
@@ -1533,8 +1547,9 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 8 took ".TIME() - $timer8." seconds.\n";
 		// Crossposted releases.
+		$timer9 = TIME();
 		do
 		{
 			if ($this->crosspostt != 0)
@@ -1551,8 +1566,9 @@ class Releases
 				}
 			}
 		} while ($total > 0);
-
+		echo "Query 9 took ".TIME() - $timer9." seconds.\n";
 		// Releases below completion %.
+		$timer10 = TIME();
 		if($this->completion > 0)
 		{
 			$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE completion < %d AND completion > 0", $this->completion));
@@ -1565,9 +1581,10 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 10 took ".TIME() - $timer10." seconds.\n";
 		// Disabled categories.
 		$catlist = $category->getDisabledIDs();
+		$timer11 = TIME();
 		if (count($catlist) > 0)
 		{
 			foreach ($catlist as $cat)
@@ -1583,9 +1600,10 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 11 took ".TIME() - $timer11." seconds.\n";
 		// Disabled music genres.
 		$genrelist = $genres->getDisabledIDs();
+		$timer12 = TIME();
 		if (count($genrelist) > 0)
 		{
 			foreach ($genrelist as $genre)
@@ -1601,8 +1619,9 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 12 took ".TIME() - $timer12." seconds.\n";
 		// Misc other.
+		$timer13 = TIME();
 		if ($page->site->miscotherretentionhours > 0)
 		{
 			$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR", CATEGORY::CAT_MISC, $page->site->miscotherretentionhours));
@@ -1615,8 +1634,10 @@ class Releases
 				}
 			}
 		}
-
+		echo "Query 13 took ".TIME() - $timer13." seconds.\n";
+		$timer14 = TIME();
 		$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)", $page->site->partretentionhours));
+		echo "Query 14 took ".TIME() - $timer14." seconds.\n";
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3498";
+$version="0.1r3505";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -19,9 +19,6 @@ else
 $tmux = new Tmux();
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
-$colors_start = $tmux->get()->COLORS_START;
-$colors_end = $tmux->get()->COLORS_END;
-$colors_exc = $tmux->get()->COLORS_EXC;
 
 $s = new Sites();
 $site = $s->get();
@@ -122,7 +119,10 @@ $proc_tmux = "SELECT
 	( SELECT COUNT( * ) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
 	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
-	( SELECT COUNT( * ) FROM groups WHERE name IS NOT NULL ) AS all_groups";
+	( SELECT COUNT( * ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_EXC' ) AS colors_exc";
 
 //get microtime
 function microtime_float()
@@ -156,7 +156,8 @@ function writelog( $pane )
 
 function get_color($colors_start, $colors_end, $colors_exc)
 {
-	$exceptions = explode( ",", $colors_exc );
+	$exceptions = str_replace(".", ".", $colors_exc);
+	$exceptions = explode( ",", $exceptions );
 	sort($exceptions);
 	$number = mt_rand($colors_start, $colors_end - count($exceptions));
 	foreach ($exceptions as $exception)
@@ -454,6 +455,10 @@ while( $i > 0 )
 	if ( @$proc_tmux_result[0]['backfill_groups_date'] != NULL ) { $backfill_groups_date = $proc_tmux_result[0]['backfill_groups_date']; }
 	if ( @$proc_tmux_result[0]['all_groups'] != NULL ) { $all_groups = $proc_tmux_result[0]['all_groups']; }
 
+	if ( @$proc_tmux_result[0]['colors_start'] != NULL ) { $colors_start = $proc_tmux_result[0]['colors_start']; }
+	if ( @$proc_tmux_result[0]['colors_end'] != NULL ) { $colors_end = $proc_tmux_result[0]['colors_end']; }
+	if ( @$proc_tmux_result[0]['colors_exc'] != NULL ) { $colors_exc = $proc_tmux_result[0]['colors_exc']; }
+
 	if ( @$proc_tmux_result[0]['defrag'] != NULL ) { $defrag = $proc_tmux_result[0]['defrag']; }
 	if ( @$proc_tmux_result[0]['processbooks'] != NULL ) { $processbooks = $proc_tmux_result[0]['processbooks']; }
 	if ( @$proc_tmux_result[0]['processmusic'] != NULL ) { $processmusic = $proc_tmux_result[0]['processmusic']; }
@@ -482,6 +487,7 @@ while( $i > 0 )
 	$monitor_path = "";
 	$monitor_path_a = "";
 	$monitor_path_b = "";
+
 	if ( @$proc_tmux_result[0]['monitor_path'] != NULL ) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
 	if ( @$proc_tmux_result[0]['monitor_path_a'] != NULL ) { $monitor_path_a = $proc_tmux_result[0]['monitor_path_a']; }
 	if ( @$proc_tmux_result[0]['monitor_path_b'] != NULL ) { $monitor_path_b = $proc_tmux_result[0]['monitor_path_b']; }
@@ -687,7 +693,16 @@ while( $i > 0 )
 	{
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
+		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
+		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
+		$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
+	}
+	if ( $seq == 2 )
+	{
+		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
+		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
+		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
 		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 	}
 
@@ -732,6 +747,9 @@ while( $i > 0 )
 		//run these if complete sequential not set
 		if ( $seq != 2 )
 		{
+			// Show all available colors
+			shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+
 			//fix names
 			if ( $fix_names == "TRUE"  &&  $i == 1 )
 			{
@@ -1118,6 +1136,9 @@ while( $i > 0 )
 		}
 		elseif ( $seq == 2 )
 		{
+			// Show all available colors
+			shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+
 			//run import-nzb-bulk
 			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
@@ -1131,11 +1152,34 @@ while( $i > 0 )
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
 			}
+
+			//update tv and theaters
+			if (( $update_tv == "TRUE" ) && (( TIME() - $time3 >= $tv_timer ) || ( $i == 1 )))
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				$log = writelog($panes1[0]);
+				shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\"; \
+						$_phpn ${DIR}update_scripts/update_theaters.php $log; $_phpn ${DIR}update_scripts/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+				$time3 = TIME();
+			}
+			elseif ( $update_tv == "TRUE" )
+			{
+				$run_time = relativeTime( $tv_timer + $time3 );
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
+			}
+
 			//run user_threaded.sh
-            $color = get_color($colors_start, $colors_end, $colors_exc);
-            $log = writelog($panes0[2]);
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			$log = writelog($panes0[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 					${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+
 		}
 		else
 		{
