@@ -43,7 +43,7 @@ foreach (range(0, 256) as $number) {
 		}
 		if ($i == 10000)
 		{
-			$failed = "Color ".str_pad($number,3,'0',STR_PAD_LEFT)." is excluded";
+			$failed = "Color \033[38;5;${color}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m is excluded";
 			$cfail++;
 			if ($cfail % 8 == 0)
 				$fail .= $failed."\n";
