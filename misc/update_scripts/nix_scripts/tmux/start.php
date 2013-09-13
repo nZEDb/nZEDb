@@ -95,7 +95,6 @@ function start_apps($tmux_session)
 	$tmux = new Tmux();
 	$htop = $tmux->get()->HTOP;
 	$vnstat = $tmux->get()->VNSTAT;
-	
 	$vnstat_args = $tmux->get()->VNSTAT_ARGS;
 	$tcptrack = $tmux->get()->TCPTRACK;
 	$tcptrack_args = $tmux->get()->TCPTRACK_ARGS;
@@ -149,6 +148,16 @@ function window_utilities($tmux_session)
 	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
+function window_colors($tmux_session)
+{
+    exec("tmux new-window -t $tmux_session -n colors 'printf \"\033]2;tmux_colors\033\"'");
+}
+
+function window_stripped_utilities($tmux_session)
+{
+    exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
+}
+
 function window_post($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
@@ -194,6 +203,7 @@ if ( $seq == 1 )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
@@ -203,6 +213,8 @@ elseif ( $seq == 2 )
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
+	window_stripped_utilities($tmux_session);
+	window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
@@ -216,6 +228,7 @@ else
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
