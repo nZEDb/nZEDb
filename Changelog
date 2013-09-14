@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09142013 -> jonnyboy -> added par2 filecheck to fixreleasenames, fixed bug in parsePAR2
+09142013 -> jonnyboy -> added "S1 D1" names to regex for TV renaming
+						added par2 filecheck to fixreleasenames, fixed bug in parsePAR2
 						added option to set maximum per run in threaded fixreleasenames
 						removed typo from FAQ
 09122013 -> jonnyboy -> added update tv/movies and tmux_colors to tmux
