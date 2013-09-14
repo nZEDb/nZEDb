@@ -5,6 +5,7 @@ require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/groups.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/predb.php");
+require_once(WWW_DIR."lib/nzbcontents.php");
 
 $db = new DB();
 $namefixer = new Namefixer();
@@ -36,6 +37,7 @@ if (isset($argv[1]))
 			}
 		}
 	}
+
 	if (isset($pieces[1]) && $pieces[0] == "filename")
 	{
 		$release = $pieces[1];
@@ -48,6 +50,7 @@ if (isset($argv[1]))
 			echo ".";
 		}
 	}
+
 	if (isset($pieces[1]) && $pieces[0] == "md5")
 	{
 		$release = $pieces[1];
@@ -59,5 +62,15 @@ if (isset($argv[1]))
 				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
 			echo ".";
 		}
+	}
+
+	if (isset($pieces[1]) && $pieces[0] == "par2")
+	{
+		$relID = $pieces[1];
+		$guid = $pieces[2];
+		$groupID = $pieces[3];
+		$nzbcontents = new NZBcontents();
+		$nzbcontents->checkPAR2($guid, $relID, $groupID, true);
+		echo ".";
 	}
 }

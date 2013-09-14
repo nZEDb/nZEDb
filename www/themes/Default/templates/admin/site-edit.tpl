@@ -881,6 +881,14 @@
 </tr>
 
 <tr>
+	<td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
+	<td>
+		<input class="tiny" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
+		<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="postdelay">Postprocessing Threads Delay:</label></td>
 	<td>
 		<input class="tiny" id="postdelay" name="postdelay" type="text" value="{$fsite->postdelay}" />

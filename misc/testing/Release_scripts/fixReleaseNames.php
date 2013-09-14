@@ -1,6 +1,6 @@
 <?php
 /*
- * This script attemps to clean release names using the NFO, file name and release name.
+ * This script attemps to clean release names using the NFO, file name and release name, Par2 file.
  * A good way to use this script is to use it in this order: php fixReleaseNames.php 3 true other yes
  * php fixReleaseNames.php 5 true other yes
  * If you used the 4th argument yes, but you want to reset the status,
@@ -42,6 +42,12 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 		case 6:
 			$namefixer->fixNamesWithFiles(2,$update,$other,$setStatus);
 			break;
+		case 7:
+			$namefixer->fixNamesWithPar2(1,$update,$other,$setStatus);
+			break;
+		case 8:
+			$namefixer->fixNamesWithPar2(2,$update,$other,$setStatus);
+			break;
 		default :
 			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			break;
@@ -56,6 +62,8 @@ else
 			"php fixReleaseNames.php 4 false other no ...: Fix release names using NFO.".$n.
 			"php fixReleaseNames.php 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.".$n.
 			"php fixReleaseNames.php 6 false other no ...: Fix release names in misc categories using File Name.".$n.
+			"php fixReleaseNames.php 7 false other no ...: Fix release names in misc categories using Par2 Files in the past 6 hours.".$n.
+			"php fixReleaseNames.php 8 false other no ...: Fix release names in misc categories using Par2 Files.".$n.
 			"The 2nd argument false will display the results, but not change the name, type true to have the names changed.".$n.
 			"The 3rd argument other will only do against other categories, to do against all categories use all.".$n.
 			"The 4th argument yes will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.".$n.$n);

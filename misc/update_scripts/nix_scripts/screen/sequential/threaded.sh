@@ -22,8 +22,6 @@ if [ $count != 1 ]
 then
     rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
-#$PHP ${TEST_PATH}/resetSearchname.php reset
-#$PHP ${NZEDB_PATH}/../../apre.php
 loop=1
 while [ $loop -ge 1 ]
 do
@@ -57,11 +55,11 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py filename
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv
+#   $PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py par2
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie clean
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
-#	sleep $NZEDB_SLEEP_TIME
 	if [[ $# -eq 1 && $1 == "true" ]]
 	then
 		loop=0
@@ -69,5 +67,6 @@ do
 	date2=`date +%s`
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."
-
+	sleep 2
+#	sleep $NZEDB_SLEEP_TIME
 done

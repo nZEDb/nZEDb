@@ -167,7 +167,7 @@ class PostProcess
 	// Attempt to get a better name from a par2 file and categorize the release.
 	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
-		if ($messageID = "")
+		if ($messageID == "")
 			return false;
 		$db = new DB();
 		$category = new Category();
@@ -176,7 +176,7 @@ class PostProcess
 		elseif ($db->dbSystem() == "pgsql")
 			$t = "extract(epoch FROM postdate)";
 		$quer = $db->queryOneRow("SELECT id, groupid, categoryid, relnamestatus, searchname, ".$t." as postdate, id as releaseid  FROM releases WHERE id = {$relID}");
-		if (!in_array($quer["relnamestatus"], array(0, 1, 6, 20)) || $quer["relnamestatus"] === 7 || $quer["categoryid"] != Category::CAT_MISC)
+		if (!in_array($quer["relnamestatus"], array(0, 1, 6, 20, 21)) || $quer["relnamestatus"] === 7 || $quer["categoryid"] != Category::CAT_MISC)
 			return false;
 
 		if (!isset($nntp))
