@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3505";
+$version="0.1r3506";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -26,30 +26,34 @@ $alternate_nntp_provider = $site->alternate_nntp;
 
 //totals per category in db, results by parentID
 $qry = "SELECT
-	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 ) AS console, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 ) AS audio, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 ) AS pc,
-	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 ) AS tv, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 ) AS xxx,
-	( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 ) AS misc, ( SELECT COUNT( * ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 ) AS books";
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 ) AS console,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 ) AS audio,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 ) AS pc,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 ) AS tv,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 ) AS xxx,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 ) AS misc,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 ) AS books";
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT( * ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( * ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( * ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid in (3010, 3040, 3050) ) AS audio,
-	( SELECT COUNT( * ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( * ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 ) AS book,
-	( SELECT COUNT( * ) FROM releases WHERE nzbstatus = 1 ) AS releases,
-	( SELECT COUNT( * ) FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT( * ) FROM releases WHERE nfostatus between -6 AND -1 ) AS nforemains,
-	( SELECT COUNT( * ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 ) AS requestid_inprogress,
-	( SELECT COUNT( * ) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched";
+	( SELECT COUNT( id ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 ) AS tv,
+	( SELECT COUNT( id ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ) AS movies,
+	( SELECT COUNT( id ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid in (3010, 3040, 3050) ) AS audio,
+	( SELECT COUNT( id ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ) AS console,
+	( SELECT COUNT( id ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 ) AS book,
+	( SELECT COUNT( id ) FROM releases WHERE nzbstatus = 1 ) AS releases,
+	( SELECT COUNT( id ) FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 ) AS nforemains,
+	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 ) AS requestid_inprogress,
+	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( * ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
-	( SELECT COUNT( * ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS work,
-	( SELECT COUNT( * ) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
-	( SELECT COUNT( * ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
-	( SELECT COUNT( * ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS work,
+	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
+	( SELECT COUNT( id ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = '$db_name' ) AS parts_table,
 	( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
@@ -116,10 +120,10 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
-	( SELECT COUNT( * ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-	( SELECT COUNT( * ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
-	( SELECT COUNT( * ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
+	( SELECT COUNT( id ) FROM groups WHERE active = 1 ) AS active_groups,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+	( SELECT COUNT( id ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_EXC' ) AS colors_exc";
@@ -718,9 +722,9 @@ while( $i > 0 )
 	$_php = $show_time." nice -n$niceness $PHP";
 	$_phpn = "nice -n$niceness $PHP";
 	if (command_exist("python3"))
-		$PYTHON = "python3 -OO";
+		$PYTHON = "python3 -OOu";
 	else
-		$PYTHON = "python -OO";
+		$PYTHON = "python -OOu";
 
 	$_python = $show_time." nice -n$niceness $PYTHON";
 	$_pythonn = "nice -n$niceness $PYTHON";

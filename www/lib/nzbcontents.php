@@ -50,12 +50,31 @@ Class NZBcontents
 			return $nzbfile;
 	}
 
+	// Attempts to get the releasename from a par2 file
+	public function checkPAR2($guid, $relID, $groupID, $echooutput)
+	{
+		$nzbfile = $this->LoadNZB($guid);
+		if ($nzbfile !== false)
+		{
+			foreach ($nzbfile->file as $nzbcontents)
+			{
+				if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $nzbcontents->attributes()->subject))
+				{
+					$pp = new Postprocess($echooutput);
+					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, null) === true)
+						break;
+				}
+			}
+		}
+	}
+
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
 	public function NZBcompletion($guid, $relID, $groupID, $nntp, $nfocheck=false)
 	{
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
+			$db = new DB();
 			$messageid = '';
 			$actualParts = $artificialParts = 0;
 			$foundnfo = $foundpar2 = false;

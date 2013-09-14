@@ -1063,7 +1063,8 @@ INSERT INTO site
 	('delaytime', '2'),
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
-	('sqlpatch','122');
+	('fixnamesperrun', '1000'),
+	('sqlpatch','123');
 
 
 DROP TABLE IF EXISTS logging;

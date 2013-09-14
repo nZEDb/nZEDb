@@ -20,7 +20,7 @@ import datetime
 
 print("\nfixReleasesNames Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [md5, nfo, filename]\n")
+	sys.exit("\nAn argument is required, \npostprocess_threaded.py [md5, nfo, filename, par2]\n")
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -33,15 +33,20 @@ cur = con.cursor()
 
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
 run_threads = cur.fetchone()
+cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
+perrun = cur.fetchone()
 	
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT 10000")
+	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT 10000")
+	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) %d" % (int(perrun[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	cur.execute("SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT 10000")
+	cur.execute("SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0])))
+	datas = cur.fetchall()
+elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
+	cur.execute("SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 6, 20, 21) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0])))
 	datas = cur.fetchall()
 
 #close connection to mysql
@@ -80,7 +85,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s %s releases" % (run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
+	print("We will be using a max of %s threads, a queue of %s releases using %s" % (run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -105,6 +110,9 @@ def main():
 	elif sys.argv[1] == "md5":
 		for release in datas:
 			my_queue.put("%s %s" % ("md5", release[0]))
+	elif sys.argv[1] == "par2":
+		for release in datas:
+			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 
 	my_queue.join()
 
