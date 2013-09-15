@@ -651,11 +651,11 @@ class Releases
 			$episode = sprintf(" and releases.episode like %s", $db->escapeString('%'.$episode.'%'));
 		}
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
-			$maxagesql = sprintf(" and postdate > now() - interval %d day ", $maxage);
+			$maxagesql = sprintf(" and releases.postdate > now() - interval %d day ", $maxage);
 
 		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) as category_name, concat(cp.ID, ',', c.ID) as category_ids, groups.name as group_name, rn.ID as nfoID, re.releaseID as reID from releases left outer join category c on c.ID = releases.categoryID left outer join groups on groups.ID = releases.groupID left outer join releasevideo re on re.releaseID = releases.ID left outer join releasenfo rn on rn.releaseID = releases.ID and rn.nfo is not null left outer join category cp on cp.ID = c.parentID where releases.passwordstatus <= (select value from site where setting='showpasswordedrelease') %s %s %s %s %s %s order by postdate desc limit %d, %d ", $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $offset, $limit);
 		$orderpos = strpos($sql, "order by");
@@ -678,10 +678,10 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
-		$maxage = ($maxage > 0) ? sprintf(" and postdate > now() - interval %d day ", $maxage) : '';
+		$maxage = ($maxage > 0) ? sprintf(" and releases.postdate > now() - interval %d day ", $maxage) : '';
 
 		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title)
 			AS category_name, concat(cp.ID, ',', c.ID) AS category_ids, groups.name AS group_name, rn.ID AS nfoID
@@ -714,11 +714,11 @@ class Releases
 		else
 			$imdbId = "";
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
-			$maxage = sprintf(" and postdate > now() - interval %d day ", $maxage);
+			$maxage = sprintf(" and releases.postdate > now() - interval %d day ", $maxage);
 		else
 			$maxage = "";
 

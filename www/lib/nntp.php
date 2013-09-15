@@ -49,6 +49,8 @@ class Nntp extends Net_NNTP_Client
 						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
 				}
 			}
+			elseif(NNTP_USERNAME=="")
+				$ret2 = 0;
 			if($compressionstatus == "1")
 			{
 				$this->enableCompression();
@@ -320,17 +322,17 @@ class Nntp extends Net_NNTP_Client
 
 	function _getXfeatureTextResponse()
 	{
-		$tries 				= 0;
-		$bytesreceived 		= 0;
+		$tries              = 0;
+		$bytesreceived      = 0;
 		$totalbytesreceived = 0;
-		$completed			= false;
-		$data 				= null;
+		$completed          = false;
+		$data               = null;
 		// Build binary array that represents zero results basically a compressed empty string terminated with .(period) char(13) char(10)
-		$emptyreturnend 	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
-		$emptyreturn  		= chr(0x78).chr(0x9C).$emptyreturnend;
-		$emptyreturn2 		= chr(0x78).chr(0x01).$emptyreturnend;
-		$emptyreturn3 		= chr(0x78).chr(0x5e).$emptyreturnend;
-		$emptyreturn4 		= chr(0x78).chr(0xda).$emptyreturnend;
+		$emptyreturnend     = chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
+		$emptyreturn        = chr(0x78).chr(0x9C).$emptyreturnend;
+		$emptyreturn2       = chr(0x78).chr(0x01).$emptyreturnend;
+		$emptyreturn3       = chr(0x78).chr(0x5e).$emptyreturnend;
+		$emptyreturn4       = chr(0x78).chr(0xda).$emptyreturnend;
 
 		while (!feof($this->_socket))
 		{

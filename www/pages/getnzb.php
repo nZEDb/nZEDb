@@ -6,9 +6,7 @@ $nzb = new NZB;
 $rel = new Releases;
 $uid = 0;
 
-//
-// page is accessible only by the rss token, or logged in users.
-//
+// Page is accessible only by the rss token, or logged in users.
 if ($users->isLoggedIn())
 {
 	$uid = $users->currentUserId();
@@ -18,9 +16,7 @@ else
 {
 
 	if ($page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY)
-	{
 		$res = $users->getById(0);
-	}
 	else
 	{
 		if ((!isset($_GET["i"]) || !isset($_GET["r"])))
@@ -29,38 +25,28 @@ else
 		$res = $users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		if (!$res)
 			$page->show403();
-
 	}
-			
 	$uid = $res["ID"];
 	$maxdls = $res["downloadrequests"];
 }
 
-//
-// remove any suffixed id with .nzb which is added to help 
-// weblogging programs see nzb traffic
-//
+// Remove any suffixed id with .nzb which is added to help weblogging programs see nzb traffic.
 if (isset($_GET["id"]))
 	$_GET["id"] = preg_replace("/\.nzb/i", "", $_GET["id"]);
 
-
-//check download limit on user role
+// Check download limit on user role.
 $dlrequests = $users->getDownloadRequests($uid);
 if ($dlrequests['num'] > $maxdls)
 	$page->show503();
 
-//
-// user requested a zip of guid,guid,guid releases
-//
+// User requested a zip of guid,guid,guid releases.
 if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1")
 {
 	$guids = explode(",", $_GET["id"]);
-	
 	if ($dlrequests['num']+sizeof($guids) > $maxdls)
 		$page->show503();
-	
-	$zip = $rel->getZipped($guids);	
 
+	$zip = $rel->getZipped($guids);
 	if (strlen($zip) > 0)
 	{
 		$users->incrementGrabs($uid, count($guids));
@@ -68,7 +54,7 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1")
 		{
 			$rel->updateGrab($guid);
 			$users->addDownloadRequest($uid);
-			
+
 			if (isset($_GET["del"]) && $_GET["del"]==1)
 				$users->delCartByUserAndRelease($guid, $uid);
 		}
@@ -87,7 +73,7 @@ if (isset($_GET["id"]))
 {
 	$reldata = $rel->getByGuid($_GET["id"]);
 	$nzbpath = $nzb->getNZBPath($_GET["id"], $page->site->nzbpath, false, $page->site->nzbsplitlevel);
-	
+
 	if (!file_exists($nzbpath))
 		$page->show404();
 
@@ -101,14 +87,14 @@ if (isset($_GET["id"]))
 	}
 	else
 		$page->show404();
-		
+
 	header("Content-type: application/x-nzb");
 	header("X-DNZB-Name: ".$reldata["searchname"]);
 	header("X-DNZB-Category: ".$reldata["category_name"]);
 	header("X-DNZB-MoreInfo: "); //TODO:
 	header("X-DNZB-NFO: "); //TODO:
-	header("Content-Disposition: attachment; filename=".str_replace(" ", "_", $reldata["searchname"]).".nzb");
-	
+	header("Content-Disposition: attachment; filename=".str_replace(",", "_", str_replace(" ", "_", $reldata["searchname"])).".nzb");
+
 	readgzfile($nzbpath);
 }
 
