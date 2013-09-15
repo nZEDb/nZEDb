@@ -651,7 +651,7 @@ class Releases
 			$episode = sprintf(" and releases.episode like %s", $db->escapeString('%'.$episode.'%'));
 		}
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)
@@ -678,7 +678,7 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		$maxage = ($maxage > 0) ? sprintf(" and postdate > now() - interval %d day ", $maxage) : '';
@@ -714,7 +714,7 @@ class Releases
 		else
 			$imdbId = "";
 
-		$searchql = $this->searchSQL($name, $db, "searchname");
+		$searchsql = $this->searchSQL($name, $db, "searchname");
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0)

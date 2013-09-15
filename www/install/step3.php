@@ -34,7 +34,7 @@ if  ($page->isPostBack())
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
 	if(PEAR::isError($cfg->nntpCheck)){
 		$cfg->error = true;	
-	} else {
+	} else if ($cfg->NNTP_USERNAME != "") {
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
 		if(PEAR::isError($cfg->nntpCheck)){
 			$cfg->error = true;	
