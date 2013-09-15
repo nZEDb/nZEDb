@@ -94,7 +94,7 @@ CREATE INDEX ix_releases_imdbid ON releases (imdbid);
 CREATE INDEX ix_releases_preid ON releases (preid);
 CREATE INDEX ix_releases_guid ON releases (guid);
 CREATE INDEX ix_releases_nzbstatus ON releases(nzbstatus);
-CREATE INDEX ix_release_name ON releases(name);
+CREATE INDEX ix_releases_name ON releases(name);
 CREATE INDEX ix_releases_searchname ON releases(searchname);
 CREATE INDEX ix_releases_groupid ON releases(groupid);
 CREATE INDEX ix_releases_relnamestatus on releases(relnamestatus);

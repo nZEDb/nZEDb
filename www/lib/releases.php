@@ -1111,7 +1111,7 @@ class Releases
 			$predb = new  Predb();
 			$page = new Page();
 			$cleanName = $propername = "";
-			
+
 			foreach ($rescol as $rowcol)
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
@@ -1141,7 +1141,7 @@ class Releases
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d", $relid, $rowcol['id']));
 					$retcount ++;
 					if ($this->echooutput)
-						echo "Added release ".$cleanerName."\n";
+						echo "Added release ".$cleanerName['cleansubject']."\n";
 				}
 			}
 		}
