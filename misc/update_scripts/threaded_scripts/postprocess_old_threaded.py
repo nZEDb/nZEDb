@@ -68,7 +68,7 @@ class queue_runner(threading.Thread):
 					time_of_last_run = time.time()
 					if len(sys.argv) > 1 and sys.argv[1] == "amazon":
 						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+my_id])
-					time.sleep(.5)
+					time.sleep(.01)
 					self.my_queue.task_done()
 
 def main(args):

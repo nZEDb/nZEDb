@@ -71,7 +71,7 @@ class queue_runner(threading.Thread):
 						subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
 					else:
 						subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+my_id])
-					time.sleep(.5)
+					time.sleep(.01)
 					self.my_queue.task_done()
 
 def main(args):

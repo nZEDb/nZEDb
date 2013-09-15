@@ -27,7 +27,7 @@ if (isset($argv[1]) && isset($argv[2]))
 	{
 		echo "Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.\n";
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease("name", "WHERE relnamestatus = 0 and categoryID = 7010", true);
+		$relcount = $releases->categorizeRelease("name", "WHERE relnamestatus = 0 AND categoryID = 7010", true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.\n";

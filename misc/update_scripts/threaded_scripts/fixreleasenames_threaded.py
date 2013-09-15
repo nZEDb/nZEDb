@@ -37,16 +37,17 @@ cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
 perrun = cur.fetchone()
 	
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND ( rel.relnamestatus in (0, 1, 21, 22) or rel.categoryid between 7000 and 7999) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus IN (0, 1, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) %d" % (int(perrun[0]) * int(run_threads[0])))
+	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND ( rel.relnamestatus in (0, 1, 20, 22) or rel.categoryid between 7000 and 7999) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	cur.execute("SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus IN (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	cur.execute("SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE ( rel.relnamestatus in (0, 1, 20, 21, 22) or rel.categoryid between 7000 and 7999) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
-	cur.execute("SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 6, 20, 21) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate ASC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
+	cur.execute("SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid = 7010 AND ( rel.relnamestatus in (0, 1, 20, 21, 22) or rel.categoryid between 7000 and 7999) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate ASC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
 #close connection to mysql

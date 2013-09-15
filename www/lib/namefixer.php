@@ -81,10 +81,19 @@ class Namefixer
 					$fail->execute();
 					$this->checked++;
 				}
+				elseif (preg_match('/[^._-]?([A-Z0-9][-.\w]{5,}-[A-Za-z0-9]{2,})(\.[A-Za-z0-9]{2,3})?/', $relrow['textstring']))
+				{
+					$this->done = $this->matched = false;
+					$this->checkName($relrow, $echo, $type, $namestatus);
+					$this->checked++;
+					if ($this->checked % 500 == 0)
+						echo $this->checked." NFOs processed.\n\n";
+				}
 				else
 				{
 					$this->done = $this->matched = false;
 					$this->checkName($relrow, $echo, $type, $namestatus);
+					echo "this did not match initial query\n";
 					$this->checked++;
 					if ($this->checked % 500 == 0)
 						echo $this->checked." NFOs processed.\n\n";
@@ -153,7 +162,7 @@ class Namefixer
 
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE relnamestatus IN (0, 1, 6, 20, 21)";
+		$query = "SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE ( rel.relnamestatus IN (0, 1, 20, 21) OR rel.categoryid = 7010)";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
