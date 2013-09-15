@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09152013 -> jonnyboy -> added categorize to requestid, fixed a few bugs, added set relnamestatus = 6 when releaseCleaner cleans name
+09152013 -> jonnyboy -> added changes by bblanchon
+						added categorize to requestid, fixed a few bugs, added set relnamestatus = 6 when releaseCleaner cleans name
 09142013 -> jonnyboy -> added "S1 D1" names to regex for TV renaming
 						added par2 filecheck to fixreleasenames, fixed bug in parsePAR2
 						added option to set maximum per run in threaded fixreleasenames
