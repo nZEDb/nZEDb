@@ -102,12 +102,16 @@ if (isset($_GET["id"]))
 	else
 		$page->show404();
 		
+	$filename=$reldata["searchname"].".nzb";
+	$filename=str_replace(" ", "_", $filename);
+	$filename=str_replace(",", "_", $filename);
+		
 	header("Content-type: application/x-nzb");
 	header("X-DNZB-Name: ".$reldata["searchname"]);
 	header("X-DNZB-Category: ".$reldata["category_name"]);
 	header("X-DNZB-MoreInfo: "); //TODO:
 	header("X-DNZB-NFO: "); //TODO:
-	header("Content-Disposition: attachment; filename=".str_replace(" ", "_", $reldata["searchname"]).".nzb");
+	header("Content-Disposition: attachment; filename=".$filename);
 	
 	readgzfile($nzbpath);
 }
