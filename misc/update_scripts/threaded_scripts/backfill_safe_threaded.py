@@ -138,7 +138,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
-					time.sleep(.5)
+					time.sleep(.01)
 					self.my_queue.task_done()
 
 def main(args):

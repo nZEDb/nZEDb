@@ -884,7 +884,6 @@ class Releases
 		$cat = new Category();
 		$consoletools = new consoleTools();
 		$relcount = 0;
-
 		$resrel = $db->query("SELECT id, ".$type.", groupid FROM releases ".$where);
 		$total = count($resrel);
 		if (count($resrel) > 0)
@@ -894,11 +893,11 @@ class Releases
 				$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
 				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catId, $rowrel['id']));
 				$relcount ++;
-				if ($this->echooutput)
+				if ($echooutput)
 					$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,$total));
 			}
 		}
-		if ($this->echooutput !== false && $relcount > 0)
+		if ($echooutput !== false && $relcount > 0)
 			echo "\n";
 		return $relcount;
 	}
@@ -1111,15 +1110,26 @@ class Releases
 			$namecleaning = new nameCleaning();
 			$predb = new  Predb();
 			$page = new Page();
-
+			$cleanName = $propername = "";
+			
 			foreach ($rescol as $rowcol)
 			{
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
+				if (!is_array($cleanerName))
+					$cleanName = $cleanerName;
+				else
+				{
+					$cleanName = $cleanerName['cleansubject'];
+					$propername = $cleanerName['properlynamed'];
+				}
 				$relguid = sha1(uniqid().mt_rand());
 				try {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanerName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					if ($propername === true)
+						$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 6)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+					else
+						$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 				} catch (PDOException $err) {
 					if ($this->echooutput)
 						echo "\033[01;31m.".$err."\n";
@@ -1304,9 +1314,12 @@ class Releases
 		{
 			$db = new DB();
 			$consoletools = new consoleTools();
+			$category = new Category();
+			$groups = new Groups();
 			$iFoundcnt = 0;
 			$where = (!empty($groupID)) ? " AND groupid = ".$groupID : "";
 			$stage8 = TIME();
+			$n = "\n";
 
 			if ($this->echooutput)
 				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
@@ -1323,12 +1336,13 @@ class Releases
 			}
 
 			// Mark records that don't have regex titles.
-			$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
+			//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->query( "SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus = 1 AND nzbstatus = 1 AND reqidstatus = 0 AND {$regexa} = 1 " . $where);
+			$resrel = $db->query("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND  {$regexa} = 1 LIMIT 100" . $where);
 			if (count($resrel) > 0)
 			{
+				echo $n;
 				$bFound = false;
 				foreach ($resrel as $rowrel)
 				{
@@ -1336,6 +1350,7 @@ class Releases
 					$requestIDtmp = explode("]", substr($rowrel['name'], 1));
 					$bFound = false;
 					$newTitle = "";
+					$updated = 0;
 
 					if (count($requestIDtmp) >= 1)
 					{
@@ -1350,17 +1365,27 @@ class Releases
 							}
 						}
 					}
-
 					if ($bFound)
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 12, searchname = ".$db->escapeString($newTitle)." WHERE id = ".$rowrel['id']);
-
+						$groupname = $groups->getByNameByID($rowrel['groupname']);
+						$determinedcat = $category->determineCategory($newTitle, $groupname);
+						$run = $db->prepare(sprintf("UPDATE releases set reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d where id = %d", $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
+						$run->execute();
+						$newcatname = $category->getNameByID($determinedcat);
 						if ($this->echooutput)
-							echo "\nUpdated requestID ".$requestID." to release name: ".$newTitle;
+						{
+							echo	$n.$n."New name:  ".$newTitle.$n.
+								"Old name:  ".$rowrel['name'].$n.
+								"New cat:   ".$newcatname.$n.
+								"Group:     ".$rowrel['groupname'].$n.
+								"Method:    "."requestID".$n.
+								"ReleaseID: ". $rowrel['id'].$n;
+						}
+						$updated++;
 					}
 					else
 					{
-						$db->queryExec("UPDATE releases SET reqidstatus = -2, relnamestatus = 12 WHERE id = " . $rowrel['id']);
+						$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . $rowrel['id']);
 						if ($this->echooutput)
 							echo ".";
 					}
@@ -1370,7 +1395,7 @@ class Releases
 			}
 
 			if ($this->echooutput)
-				echo $iFoundcnt." Releases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
+				echo $n.$iFoundcnt." Releases updated in ".$consoletools->convertTime(TIME() - $stage8).".";
 		}
 	}
 

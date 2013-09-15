@@ -901,7 +901,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\]-\[[a-zA-Z]+\]-\[.+?\]-\[(.+?)\]-\[\d.?\/\d.?] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return $this->collectionsCleanerHelper($subject);
 		}
 		else if ($groupName === "alt.binaries.sounds.lossless")
 		{
@@ -1146,7 +1146,7 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9].+?)\(\d+\/\d+\) - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.anime")
 		{
@@ -1178,7 +1178,7 @@ class nameCleaning
 			else if (preg_match('/^(.+? \[Dual [aA]udio, EngSub\] .+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.ath")
 		{
@@ -1207,7 +1207,7 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9].+?\s{2,}|Old Dad uppt\s+)(.+?) \d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[2];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.audio.warez")
 		{
@@ -1233,7 +1233,7 @@ class nameCleaning
 				return $match[1];
 			/*TODO: REFRESH : Tonehammer Ambius 1 'Transmissions' ~ REQ: SAMPLE LOGIC SYNERGY [1 of 52] "dynamics.nfo" yEnc*/
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.b4e")
 		{
@@ -1247,7 +1247,7 @@ class nameCleaning
 			else if (preg_match('/^- "(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.barbarella")
 		{
@@ -1294,7 +1294,7 @@ class nameCleaning
 			else if (preg_match('/^"([a-z0-9]+)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.big")
 		{
@@ -1328,7 +1328,7 @@ class nameCleaning
 			else if (preg_match('/^([a-f0-9]{32}) - \(\d+\/\d+\) - "[a-f0-9]{32}.+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.bloaf")
 		{
@@ -1358,7 +1358,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\/\d+ (.+?)\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.blu-ray")
 		{
@@ -1385,7 +1385,7 @@ class nameCleaning
 			else if (preg_match('/^([A-Z0-9]+) - "[a-z0-9]+\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.boneless")
 		{
@@ -1439,7 +1439,7 @@ class nameCleaning
 			else if (preg_match('/^\[[A-Z]+\] - \[\d+\/\d+\] - "(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.british.drama")
 		{
@@ -1452,7 +1452,7 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9]+ .+? (S\d+)?E\d+-\d\d) \[\d+\/\d+\] - "\d(\d |\.).+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.cats")
 		{
@@ -1461,7 +1461,7 @@ class nameCleaning
 			if (preg_match('/^([a-zA-Z0-9]{5,}) ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.cd.image")
 		{
@@ -1499,7 +1499,7 @@ class nameCleaning
 			else if (preg_match('/^(\[[A-Z ]+\] - )?([a-zA-Z0-9.-]{10,}) - ".+?" - \[\d+\/\d+\] - yEnc$/', $subject, $match))
 				return $match[2];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.cd.lossless")
 		{
@@ -1525,7 +1525,7 @@ class nameCleaning
 			else if (preg_match('/^\(\d+\/\d+\) "(.+?)'.$this->e0.' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.chello")
 		{
@@ -1540,7 +1540,7 @@ class nameCleaning
 			else if (preg_match('/^([A-Za-z0-9-]+ .+?)[. ]\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.classic.tv.shows")
 		{
@@ -1584,7 +1584,7 @@ class nameCleaning
 			else if (preg_match('/^(REQ - )?[A-Z0-9a-z][A-Z0-9a-z.]+ - \d+x\d+ (- [A-Z0-9a-z.]+ )?- \[\d+\/\d+\] - "(.+?)(\.avi|\.mkv)?'.$this->e1, $subject, $match))
 				return $match[3];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.comics.dcp")
 		{
@@ -1594,10 +1594,10 @@ class nameCleaning
 				if (strlen($match[1]) > 7 && !preg_match('/\.vol.+/', $match[1]))
 					return $match[1];
 				else
-					return $this->releaseCleanerHelper($subject);
+					return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 			}
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.comp")
 		{
@@ -1614,7 +1614,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\/\d+ (.+?)(\.(part\d*|rar|avi|iso|mp4|mkv|mpg))?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return implode(' ', array_intersect_key(explode(' ', $match[1]), array_unique(array_map('strtolower', explode(' ', $match[1])))));
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.console.ps3")
 		{
@@ -1630,7 +1630,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\]-\[.+?\]-\[ (.+?) \] \(\d+\/\d+\) ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.cores")
 		{
@@ -1656,7 +1656,7 @@ class nameCleaning
 			else if (preg_match('/^[A-Za-z]+ - \[\d+\/\d+\] - "\d+-(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.dc")
 		{
@@ -1682,7 +1682,7 @@ class nameCleaning
 			else if (preg_match('/^([\w.]{10,})".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.documentaries")
 		{
@@ -1690,7 +1690,7 @@ class nameCleaning
 			if (preg_match('/^#sterntuary - (.+? - ".+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.dvd")
 		{
@@ -1698,7 +1698,7 @@ class nameCleaning
 			if (preg_match('/^thnx to original poster \[\d+(\/\d+\] - ".+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4})("| `).+? yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.dvd-r")
 		{
@@ -1709,7 +1709,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\/\d+\] - "([A-Z0-9](19|20)\d\d[01]\d[123]\d_\d+\.).+?" - \d+[,.]\d+ [mMkKgG][bB] yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.erotica")
 		{
@@ -1744,7 +1744,7 @@ class nameCleaning
 			else if (preg_match('/^([A-Z0-9].{5,}?) - \(\d+\/\d+\) "[A-Z0-9].{5,}?" - yenc yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.fz")
 		{
@@ -1752,7 +1752,7 @@ class nameCleaning
 			if (preg_match('/^>ghost-of-usenet\.org>(.+?)<.+?> ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.games")
 		{
@@ -1766,7 +1766,7 @@ class nameCleaning
 			else if (preg_match('/^\[ ([-.a-zA-Z0-9]+) \] - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.german.movies")
 		{
@@ -1777,7 +1777,7 @@ class nameCleaning
 			else if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.ghosts")
 		{
@@ -1785,7 +1785,7 @@ class nameCleaning
 			if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.hdtv")
 		{
@@ -1796,7 +1796,7 @@ class nameCleaning
 				return $match[2];
 			
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.hdtv.x264")
 		{
@@ -1827,7 +1827,7 @@ class nameCleaning
 			else if (preg_match('/^\[ ([A-Za-z0-9.-]{7,}) \] - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.highspeed")
 		{
@@ -1871,10 +1871,10 @@ class nameCleaning
 				if (strlen($match[1]) > 7 && !preg_match('/\.vol.+/', $match[1]))
 					return $match[1];
 				else
-					return $this->releaseCleanerHelper($subject);
+					return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 			}
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.inner-sanctum")
 		{
@@ -1885,7 +1885,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+\]-\[.+?\]-\[ (.+?) \] \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.mojo")
 		{
@@ -1893,7 +1893,7 @@ class nameCleaning
 			if (preg_match('/^\[\d+\/\d+\] - "(.+?)'.$this->e0.' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.mom")
 		{
@@ -1907,7 +1907,7 @@ class nameCleaning
 			else if (preg_match('/^<ghost-of-usenet\.org>(.+?) \[\d+\/\d+\] - ".+?" .+? yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.moovee")
 		{
@@ -1950,7 +1950,7 @@ class nameCleaning
 			else if (preg_match('/^\([a-zA-Z0-9].+?\) ([a-zA-Z0-9.-]+) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.movies.divx")
 		{
@@ -1967,7 +1967,7 @@ class nameCleaning
 			else if (preg_match('/.+?by mayhem masta"(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.mp3.complete_cd")
 		{
@@ -1975,7 +1975,7 @@ class nameCleaning
 			if (preg_match('/^\[\d+\]-\[.+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.multimedia")
 		{
@@ -1984,7 +1984,7 @@ class nameCleaning
 			if (preg_match('/^([A-Z0-9a-z.-]{10,})\s+(- )?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.multimedia.anime")
 		{
@@ -1992,7 +1992,7 @@ class nameCleaning
 			if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)'.$this->e1, $subject, $match))
 				return $match[2];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.multimedia.anime.highspeed")
 		{
@@ -2000,7 +2000,7 @@ class nameCleaning
 			if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)'.$this->e1, $subject, $match))
 				return $match[2];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.multimedia.documentaries")
 		{
@@ -2008,7 +2008,7 @@ class nameCleaning
 			if (preg_match('/^"(.+?)'.$this->e0.' - \[\d+ of \d+ - \d+ [kKmMgG][bB]\] yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.multimedia.scifi")
 		{
@@ -2016,7 +2016,7 @@ class nameCleaning
 			if (preg_match('/^some m4vs - "(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.ps3")
 		{
@@ -2024,7 +2024,7 @@ class nameCleaning
 			if (preg_match('/^(\[\d+\] )\[\d+\/\d+\] - "(.+?)'.$this->e1, $subject, $match))
 				return $match[1].$match[2];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.sounds.lossless")
 		{
@@ -2068,7 +2068,7 @@ class nameCleaning
 			else if (preg_match('/^([\w-]{5,})\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.sounds.mp3")
 		{
@@ -2085,7 +2085,7 @@ class nameCleaning
 			else if (preg_match('/^.+?usenet-space.+?Powered by.+? "(.+?)'.$this->e0.'.+? \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) .+? \d+[.,]\d+ [kKmMgG][bB] .+?yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.teevee")
 		{
@@ -2146,7 +2146,7 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9]+ .+? - S\d+E\d+ - .+?) \[\d+\/\d+\] - ".+?\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.town")
 		{
@@ -2160,7 +2160,7 @@ class nameCleaning
 			else if (preg_match('/^[\[(]\d+\/\d+[\])] - "([A-Z0-9].{2,}?)'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB]( -)? yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		/*else if ($groupName === "alt.binaries.tun")
 		{
@@ -2173,7 +2173,7 @@ class nameCleaning
 			else if (preg_match('/^\[PRiVATE\] ([a-z0-9A-Z]{4,}=*) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return base64_decode($match[1]);
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}*/
 		else if ($groupName === "alt.binaries.tv")
 		{
@@ -2184,7 +2184,7 @@ class nameCleaning
 			else if (preg_match('/^\(bf1\) \[\d+\/\d+\] - "(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "dk.binaer.tv")
 		{
@@ -2192,14 +2192,14 @@ class nameCleaning
 			if (preg_match('/^([a-zA-Z0-9].+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->releaseCleanerHelper($subject);
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		// Run at the end because this can be dangerous. In the future it's better to make these per group. There should not be numbers after yEnc because we remove them as well before inserting (even when importing).
 		// This regex gets almost all of the predb release names also keep in mind that not every subject ends with yEnc, some are truncated, because of the 255 character limit and some have extra charaters tacked onto the end, like (5/10).
 		else if (preg_match('/^\[\d+\][- ]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}\[[- #@\.\w]+\][- ]{0,3}|\[[- #@\.\w]+\][- ]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}|\[.+?efnet\][- ]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3})(\[FULL\])?[- ]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,}) ?(\])?[- ]{0,3}(\[)? ?(REPOST|REPACK|SCENE|EXTRA PARS|REAL)? ?(\])?[- ]{0,3}?(\[\d+[-\/~]\d+\])?[- ]{0,3}["|#34;]*.+["|#34;]* ?[yEnc]{0,4}/i', $subject, $match))
 			return $match['title'];
 		else
-			return $this->releaseCleanerHelper($subject);
+			return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 	}
 
 	public function releaseCleanerHelper($subject)

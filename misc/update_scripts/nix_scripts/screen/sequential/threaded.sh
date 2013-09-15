@@ -22,6 +22,11 @@ if [ $count != 1 ]
 then
     rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
+if [[ $1 != "true" ]]
+then
+	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/resetdelattime.php
+fi
+
 loop=1
 while [ $loop -ge 1 ]
 do

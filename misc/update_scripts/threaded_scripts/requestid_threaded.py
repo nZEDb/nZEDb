@@ -30,7 +30,7 @@ con.autocommit(True)
 cur = con.cursor()
 
 #cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus in (0, 1, 20) AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-cur.execute("SELECT r.id, r.name, g.name groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus in (0, 1, 20, 21) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 1000")
 datas = cur.fetchall()
 
 if not datas:
@@ -62,7 +62,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/requestID.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.01)
 					self.my_queue.task_done()
 
 def main():

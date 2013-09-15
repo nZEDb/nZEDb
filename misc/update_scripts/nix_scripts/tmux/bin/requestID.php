@@ -3,17 +3,21 @@ require_once(dirname(__FILE__)."/../../../config.php");
 require_once(WWW_DIR."lib/backfill.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/page.php");
+require_once(WWW_DIR."lib/category.php");
+require_once(WWW_DIR."lib/groups.php");
 
 $pieces = explode("                       ", $argv[1]);
 
 $db = new DB();
 $page = new Page();
 $n = "\n";
-
+$category = new Category();
+$groups = new Groups();
 
 $requestIDtmp = explode("]", substr($pieces[1], 1));
 $bFound = false;
 $newTitle = "";
+$updated = 0;
 
 if (count($requestIDtmp) >= 1)
 {
@@ -22,9 +26,7 @@ if (count($requestIDtmp) >= 1)
 	{
 		$newTitle = getReleaseNameFromRequestID($page->site, $requestID, $pieces[2]);
 		if ($newTitle != false && $newTitle != "")
-		{
 			$bFound = true;
-		}
 		else
 			echo ".";
 	}
@@ -32,8 +34,18 @@ if (count($requestIDtmp) >= 1)
 
 if ($bFound)
 {
-	$db->queryExec("UPDATE releases SET reqidstatus = 1, relnamestatus = 5, searchname = " . $db->escapeString($newTitle) . " WHERE id = " . $pieces[0]);
-	echo "\nUpdated requestID " . $requestID . "  \tto release name: ".$newTitle;
+	$groupname = $groups->getByNameByID($pieces[2]);
+	$determinedcat = $category->determineCategory($newTitle, $groupname);
+	$run = $db->prepare(sprintf("UPDATE releases set reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d where id = %d", $db->escapeString($newTitle), $determinedcat, $pieces[0]));
+	$run->execute();
+	$newcatname = $category->getNameByID($determinedcat);
+	echo	$n.$n."New name:  ".$newTitle.$n.
+		"Old name:  ".$pieces[1].$n.
+		"New cat:   ".$newcatname.$n.
+		"Group:     ".$pieces[2].$n.
+		"Method:    "."requestID".$n.
+		"ReleaseID: ". $pieces[0].$n;
+	$updated++;
 }
 else
 {

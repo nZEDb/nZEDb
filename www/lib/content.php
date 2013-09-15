@@ -114,11 +114,9 @@ class Contents
 	{
 		$content = $this->row2Object($form);
 		$content = $this->validate($content);
+		$db = new DB();
 		if ($content->ordinal == 1)
-		{
-			$db = new DB();
-			$db->query("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
-		}
+			$db->queryDirect("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
 		return $this->data_add($content);
 	}
 
