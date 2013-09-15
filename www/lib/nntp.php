@@ -49,6 +49,11 @@ class Nntp extends Net_NNTP_Client
 						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
 				}
 			}
+			else 
+			{
+				$ret2 = 0;
+			}
+				
 			if($compressionstatus == "1")
 			{
 				$this->enableCompression();
