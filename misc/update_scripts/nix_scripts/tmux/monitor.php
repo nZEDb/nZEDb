@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3510";
+$version="0.1r3512";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -23,35 +23,36 @@ $powerline = $tmux->get()->POWERLINE;
 $s = new Sites();
 $site = $s->get();
 $alternate_nntp_provider = $site->alternate_nntp;
+$patch = $site->sqlpatch;
 
 //totals per category in db, results by parentID
 $qry = "SELECT
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 ) AS audio,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 ) AS pc,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 ) AS xxx,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 ) AS misc,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 ) AS books";
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 AND nzbstatus = 1 ) AS console,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 AND nzbstatus = 1 ) AS movies,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 AND nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 AND nzbstatus = 1 ) AS pc,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND nzbstatus = 1 ) AS tv,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 AND nzbstatus = 1 ) AS xxx,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 AND nzbstatus = 1 ) AS misc,
+	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 AND nzbstatus = 1 ) AS books";
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT( id ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 ) AS tv,
-	( SELECT COUNT( id ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ) AS movies,
-	( SELECT COUNT( id ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid in (3010, 3040, 3050) ) AS audio,
-	( SELECT COUNT( id ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ) AS console,
-	( SELECT COUNT( id ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 ) AS book,
+	( SELECT COUNT( id ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 AND nzbstatus = 1 ) AS tv,
+	( SELECT COUNT( id ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 AND nzbstatus = 1 ) AS movies,
+	( SELECT COUNT( id ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) AND nzbstatus = 1 ) AS audio,
+	( SELECT COUNT( id ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 AND nzbstatus = 1 ) AS console,
+	( SELECT COUNT( id ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 AND nzbstatus = 1 ) AS book,
 	( SELECT COUNT( id ) FROM releases WHERE nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( id ) FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 ) AS nforemains,
-	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 ) AS requestid_inprogress,
-	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched";
+	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 AND nzbstatus = 1 ) AS nforemains,
+	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 AND nzbstatus = 1 ) AS requestid_inprogress,
+	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 AND nzbstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS work,
-	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND nzbstatus = 1 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 ) AS work,
+	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL AND nzbstatus = 1 ) AS predb_matched,
 	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( id ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
 	( SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = '$db_name' ) AS predb,
@@ -74,7 +75,7 @@ elseif ($db->dbSystem() == "pgsql")
 $proc_tmux = "SELECT
 	( SELECT {$utd} FROM collections ORDER BY dateadded ASC limit 1 ) AS oldestcollection,
 	( SELECT {$uta} FROM predb ORDER BY adddate DESC limit 1 ) AS newestpre,
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestaddname,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1) AS newestaddname,
 	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestadd,
 	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC limit 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
@@ -282,6 +283,7 @@ $book_releases_proc_start = 0;
 $work_remaining_start = 0;
 $nfo_remaining_start = 0;
 $predb_matched = 0;
+$predb_start = 0;
 $predb = 0;
 $requestid_inprogress = 0;
 $requestid_diff = 0;
@@ -319,12 +321,12 @@ $usp2totalconnections = 0;
 
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-51.51s \n";
-$mask2 = "\033[1;33m%-16s \033[38;5;214m%-40.40s \n";
+$mask2 = "\033[1;33m%-20s \033[38;5;214m%-36.36s \n";
 
 //create display
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
+printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
 printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
 if ($alternate_nntp_provider == "1")
 	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
@@ -605,7 +607,7 @@ while( $i > 0 )
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-	printf($mask2, "Monitor Running v$version: ", relativeTime("$time"));
+	printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
 	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
 	if ($alternate_nntp_provider == "1")
 		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));

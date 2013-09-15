@@ -44,7 +44,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
@@ -59,7 +59,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename))
 		{
@@ -102,12 +102,12 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
-		$filename = $argv[3]."/".$tbl.".sql";
+		$tbl = $row['tables_in_'.DB_NAME];
+		$filename = $argv[3].$tbl.".csv";
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
 			newname($filename);
-		$db->query(sprintf("SELECT * INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
+		$db->queryDirect(sprintf("SELECT * INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
@@ -116,12 +116,12 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
-		$filename = $argv[3]."/".$tbl.".sql";
+		$tbl = $row['tables_in_'.DB_NAME];
+		$filename = $argv[3].$tbl.".csv";
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$db->queryExec(sprintf("LOAD DATA INFILE '%s' INTO TABLE `%s`", $filename, $tbl));
+			$db->queryExec(sprintf("LOAD DATA INFILE %s INTO TABLE %s", $db->escapeString($filename), $tbl));
 		}
 	}
 }
@@ -130,12 +130,12 @@ elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] 
 	$tables = array('predb');
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl."_clean.sql";
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
 			newname($filename);
-		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE '%s' FROM `%s`", $filename, $tbl));
+		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
     }
 }
 else
