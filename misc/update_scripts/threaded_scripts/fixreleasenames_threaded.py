@@ -20,7 +20,10 @@ import datetime
 
 print("\nfixReleasesNames Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [md5, nfo, filename, par2]\n")
+	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
+
+if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2":
+	sys.exit("\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -104,16 +107,16 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
-			my_queue.put("%s %s" % ("nfo", release[0]))
+			my_queue.put("'%s' '%s'" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
-			my_queue.put("%s %s" % ("filename", release[0]))
+			my_queue.put("'%s' '%s'" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
-			my_queue.put("%s %s" % ("md5", release[0]))
+			my_queue.put("'%s' '%s'" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
-			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
+			my_queue.put("'%s' '%s' '%s' '%s'" % ("par2", release[0], release[1], release[2]))
 
 	my_queue.join()
 

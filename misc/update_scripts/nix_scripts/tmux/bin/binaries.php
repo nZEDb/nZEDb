@@ -4,4 +4,4 @@ require_once(WWW_DIR."lib/binaries.php");
 
 $pieces = explode(" ", $argv[1]);
 $binaries = new Binaries(true);
-$binaries->partRepair($nntp=null, $groupArr='', $pieces[0], $pieces[1]);
+$binaries->partRepair($nntp=null, $groupArr='', trim($pieces[0],"'"), trim($pieces[1],"'"));

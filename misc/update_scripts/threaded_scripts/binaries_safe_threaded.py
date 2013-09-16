@@ -110,25 +110,25 @@ def main():
 		if name:
 			count = last - group[1] - 1
 			if count > 0:
-				print("%s has %s articles available, grabbing the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last))))
+				print("\nGetting %s articles (%s to %s) from %s - 0 in queue." % ("{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last)), name))
 				groups.append(group[0])
 				finals.append(int(last))
 			if count <= maxmssgs and count > 0:
 				run += 1							
-				my_queue.put("%s %d %d %d" % (group[0], int(last), group[1]+1, run))
+				my_queue.put("'%s' %d %d %d" % (group[0], int(last), group[1]+1, run))
 			elif count > 0:
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					my_queue.put("%s %d %d %d" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
+					my_queue.put("'%s' %d %d %d" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
-				my_queue.put("%s %d %d %d" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
+				my_queue.put("'%s' %d %d %d" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 	my_queue.join()
 	resp = s.quit
 	for group in list(zip(groups, finals)):
 		run +=1
-		final = ("%s %d Binary" % (group[0], group[1]))
+		final = ("'%s' %d Binary" % (group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
 if __name__ == '__main__':

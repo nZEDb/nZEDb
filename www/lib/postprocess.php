@@ -365,7 +365,7 @@ class PostProcess
 			else
 			{
 				$pieces = explode("           =+=            ", $releaseToWork);
-				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6]));
+				$result = array(array('id' => $pieces[0], 'guid' => trim($pieces[1],"'"), 'name' => trim($pieces[2],"'"), 'disablepreview' => trim($pieces[3],"'"), 'size' => trim($pieces[4],"'"), 'groupid' => trim($pieces[5],"'"), 'nfostatus' => trim($pieces[6],"'")));
 			}
 		}
 
@@ -1205,8 +1205,7 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-
-			if (count($files) == 0)
+			if (count($files) == 0 || !is_array($files) || !isset($files[0]["compressed"]))
 				return false;
 
 			if ($files[0]["compressed"] == 0 && $files[0]["name"] != $this->name)

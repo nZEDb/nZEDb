@@ -88,7 +88,7 @@ def main():
 		if count >= threads:
 			count = 0
 		count += 1
-		my_queue.put("%s  %s" % (str(release[0]), count))
+		my_queue.put("'%s'  '%s'" % (str(release[0]), count))
 
 	my_queue.join()
 

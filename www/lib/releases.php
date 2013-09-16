@@ -975,7 +975,8 @@ class Releases
 					$minsizecount = 0;
 					if ($db->dbSystem() == "mysql")
 					{
-						$mscq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID['id']);
+						printf("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease ANDc.filesize > 0 AND groupid = ".$groupID['id']);
+						$mscq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, GREATES(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID['id']);
 						$mscq->execute();
 						$minsizecount = $mscq->rowCount();
 					}
@@ -1682,9 +1683,9 @@ class Releases
 	{
 		$DIR = MISC_DIR;
 		if ($this->command_exist("python3"))
-			$PYTHON = "python3 -OO";
+			$PYTHON = "python3 -OOu";
 		else
-			$PYTHON = "python -OO";
+			$PYTHON = "python -OOu";
 
 		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do

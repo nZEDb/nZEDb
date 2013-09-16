@@ -519,7 +519,7 @@ class Movie
 		else
 		{
 			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('name' => $pieces[0], 'id' => $pieces[1]));
+			$res = array(array('name' => trim($pieces[0],"'"), 'id' => trim($pieces[1],"'")));
 			$moviecount = 1;
 		}
 

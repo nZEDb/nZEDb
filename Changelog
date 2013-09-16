@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09162013 -> jonnyboy -> bug fixes
+09162013 -> jonnyboy -> changed python script to escape strings
+						bug fixes
                         fixed update releases showing insert release greater than actual inserted
 09152013 -> jonnyboy -> fixed a few bugs
 						added changes by bblanchon
