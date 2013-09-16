@@ -33,35 +33,35 @@ Class Predb
 				echo "Retrieving titles from preDB sources.\n";
 			$newwomble = $this->retrieveWomble();
 			if ($this->echooutput)
-				echo $newwomble." Retrieved from Womble.\n";
+				echo $newwomble." \tRetrieved from Womble.\n";
 			$newomgwtf = $this->retrieveOmgwtfnzbs();
 			if ($this->echooutput)
-				echo $newomgwtf." Retrieved from Omgwtfnzbs.\n";
+				echo $newomgwtf." \tRetrieved from Omgwtfnzbs.\n";
 			$newzenet = $this->retrieveZenet();
 			if ($this->echooutput)
-				echo $newzenet." Retrieved from Zenet.\n";
+				echo $newzenet." \tRetrieved from Zenet.\n";
 			$newprelist = $this->retrievePrelist();
 			if ($this->echooutput)
-				echo $newprelist." Retrieved from Prelist.\n";
+				echo $newprelist." \tRetrieved from Prelist.\n";
 			$neworly = $this->retrieveOrlydb();
 			if ($this->echooutput)
-				echo $neworly." Retrieved from Orlydb.\n";
+				echo $neworly." \tRetrieved from Orlydb.\n";
 			$newsrr = $this->retrieveSrr();
 			if ($this->echooutput)
-				echo $newsrr." Retrieved from Srrdb.\n";
+				echo $newsrr." \tRetrieved from Srrdb.\n";
 			$newpdme = $this->retrievePredbme();
 			if ($this->echooutput)
-				echo $newpdme." Retrieved from Predbme.\n";
+				echo $newpdme." \tRetrieved from Predbme.\n";
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf("UPDATE predb SET adddate = NOW() WHERE id = %d", $newestrel["id"]));
 		}
-		/*$matched = $this->matchPredb();
+		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
 			echo "\nMatched ".$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
-			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";*/
+			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
 	}
 
@@ -123,7 +123,7 @@ Class Predb
 				}
 			}
 		}
-		echo $updated." Updated from Womble.\n";
+		echo $updated." \tUpdated from Womble.\n";
 		return $newnames;
 	}
 
@@ -168,7 +168,7 @@ Class Predb
 				}
 			}
 		}
-		echo $updated." Updated from Omgwtfnzbs.\n";
+		echo $updated." \tUpdated from Omgwtfnzbs.\n";
 		return $newnames;
 	}
 
@@ -393,12 +393,11 @@ Class Predb
 		$total = $res->rowCount();
 		if($total > 0)
 		{
-			$updated = 1;
 			foreach ($res as $row)
 			{
 				$run = $db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
-					$consoletools->overWrite("Matching up preDB titles with release search names: ".$consoletools->percentString($updated++,$total));
+					$consoletools->overWrite("Matching up preDB titles with release search names: ".$consoletools->percentString(++$updated,$total));
 			}
 		}
 		return $updated;

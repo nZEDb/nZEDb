@@ -1131,10 +1131,13 @@ class Releases
 					else
 						$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 				} catch (PDOException $err) {
+					// Mark dupes filecheck = 5, so they will be deleted
+					if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+						$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $rowcol['collectionhash']));
 					if ($this->echooutput)
 						echo "\033[01;31m.".$err."\n";
 				}
-				if (!isset($error))
+				if (!isset($err) && isset($relid) && $relid != "")
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1281,7 +1284,7 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where." LIMIT ".$this->stage5limit);
+		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where);
 		$total = count($resrel);
 		if (count($resrel) > 0)
 		{
@@ -1465,7 +1468,7 @@ class Releases
 			}
 		}
 		if ($this->echooutput)
-				echo "Removed ".$reccount." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7).".";
+				echo "Removed ".$reccount." parts/binaries/collection rows in ".$consoletools->convertTime(TIME() - $stage7);
 	}
 
 	public function processReleasesStage7b($groupID, $echooutput=false)
@@ -1579,6 +1582,7 @@ class Releases
 		{
 			if ($this->crosspostt != 0)
 			{
+				echo "Crosspost time set to :".$crosspostt."\n";
 				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
 				$total = count($resrel);
 				if(count($resrel) > 0)
@@ -1705,11 +1709,10 @@ class Releases
 
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
 			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
-			$this->processReleasesStage7a($groupID, $echooutput=false);
+			$this->processReleasesStage7a($groupID, $echooutput);
 			$loops++;
 		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
-var_dump($tot_retcount);
 		return $tot_retcount;
 	}
 

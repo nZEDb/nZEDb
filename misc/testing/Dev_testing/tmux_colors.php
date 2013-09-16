@@ -39,7 +39,7 @@ foreach (range(0, 256) as $number) {
 		{
 			$passed = "\033[38;5;${color}mThis is color number \033[0m".str_pad($number,3,'0',STR_PAD_LEFT);
 			$cpass++;
-			if ($cpass % 7 == 0)
+			if ($cpass % 6 == 0)
 				$pass .= $passed."\n";
 			else
 				$pass .= $passed."\t";
@@ -48,7 +48,7 @@ foreach (range(0, 256) as $number) {
 		{
 			$failed = "Color \033[38;5;${number}m".str_pad($number,3,'0',STR_PAD_LEFT)."\033[0m [".str_pad($number,3,'0',STR_PAD_LEFT)."] excluded";
 			$cfail++;
-			if ($cfail % 7 == 0)
+			if ($cfail % 6 == 0)
 				$fail .= $failed."\n";
 			else
 				$fail .= $failed."\t";
