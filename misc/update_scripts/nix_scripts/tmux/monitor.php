@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3512";
+$version="0.1r3515";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -50,8 +50,8 @@ $proc_work = "SELECT
 	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 AND nzbstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND nzbstatus = 1 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 ) AS work,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND r.nzbstatus = 1 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.nzbstatus = 1 ) AS work,
 	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL AND nzbstatus = 1 ) AS predb_matched,
 	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( id ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
