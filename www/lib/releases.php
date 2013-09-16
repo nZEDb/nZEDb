@@ -37,13 +37,13 @@ class Releases
 		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->stage5limit = (!empty($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
-		$this->completion = (!empty($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
-		$this->crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
+		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
+		$this->completion = (isset($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
+		$this->crosspostt = (isset($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == "0") ? false : true;
 		$this->requestids = $this->site->lookup_reqids;
-		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
-		$this->delaytimet = (!empty($this->site->delaytime)) ? $this->site->delaytime : 2;
+		$this->hashcheck = (isset($this->site->hashcheck)) ? $this->site->hashcheck : 0;
+		$this->delaytimet = (isset($this->site->delaytime)) ? $this->site->delaytime : 2;
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 	}
 
@@ -1582,7 +1582,6 @@ class Releases
 		{
 			if ($this->crosspostt != 0)
 			{
-				echo "Crosspost time set to :".$crosspostt."\n";
 				$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
 				$total = count($resrel);
 				if(count($resrel) > 0)
