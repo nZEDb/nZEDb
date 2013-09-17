@@ -142,16 +142,16 @@ def main(args):
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
 		for release in datas:
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+			my_queue.put("'%s'           =+=            '%s'           =+=            '%s'           =+=            '%s'           =+=            '%s'           =+=            '%s'           =+=            '%s'" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put("'%s'           =+=            '%s'           =+=            '%s'           =+=            '%s'" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
-			my_queue.put("%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2]))
+			my_queue.put("'%s'           =+=            '%s'           =+=            '%s'" % (release[0], release[1], release[2]))
 	elif sys.argv[1] == "tv":
 		for release in datas:
-			my_queue.put("%s           =+=            %s" % (release[0], release[1]))
+			my_queue.put("'%s'           =+=            '%s'" % (release[0], release[1]))
 
 	my_queue.join()
 

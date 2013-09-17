@@ -1087,7 +1087,12 @@ class Category
 	{
 		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds/', $releasename))
 		{
-			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
+			if(preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $releasename))
+			{
+				$this->tmpCat = Category::CAT_GAME_NDS;
+				return true;
+			}
+			if(preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA)/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
@@ -1100,7 +1105,7 @@ class Category
 	{
 		if (preg_match('/PS3/i', $releasename))
 		{
-			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JPN|KONDIOS|\[PS3\]|PSN/i', $releasename))
+			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JAP|JPN|KONDIOS|\[PS3\]|PSN/i', $releasename))
 			{
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;

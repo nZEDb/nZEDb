@@ -115,6 +115,12 @@ class ArchiveInfo extends ArchiveReader
 	public $type = self::TYPE_NONE;
 
 	/**
+	 * Is the archive encrypted with a password?
+	 * @var boolean
+	 */
+	public $isEncrypted = false;
+
+	/**
 	 * Sets the list of supported archive reader classes for the current instance,
 	 * overriding the defaults. The keys should be valid archive types:
 	 *

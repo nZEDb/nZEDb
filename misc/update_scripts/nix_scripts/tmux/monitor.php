@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3515";
+$version="0.1r3522";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -46,11 +46,12 @@ $proc_work = "SELECT
 	( SELECT COUNT( id ) FROM releases WHERE nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( id ) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 AND nzbstatus = 1 ) AS nforemains,
-	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 0 AND relnamestatus = 1 AND nzbstatus = 1 ) AS requestid_inprogress,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus IN (0, -1) AND ( r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 OR r.searchname REGEXP '^\\[[[:digit:]]+\\]' = 1 )) AS requestid_inprogress,
 	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 AND nzbstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND r.nzbstatus = 1 AND ((r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0))) AS pc,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pc,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 6000 AND 6999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pron,
 	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.nzbstatus = 1 ) AS work,
 	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL AND nzbstatus = 1 ) AS predb_matched,
 	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
@@ -228,6 +229,7 @@ $releases_now_formatted = 0;
 $releases_since_start = 0;
 $work_diff = 0;
 $misc_diff = 0;
+$pron_diff = 0;
 $book_diff = 0;
 $tvrage_diff = 0;
 $pc_diff = 0;
@@ -238,6 +240,7 @@ $nfo_diff = 0;
 $pre_diff = 0;
 
 $misc_percent = 0;
+$pron_percent = 0;
 $book_percent = 0;
 $tvrage_percent = 0;
 $pc_percent = 0;
@@ -257,6 +260,7 @@ $music_releases_now = 0;
 $pc_releases_now = 0;
 $tvrage_releases_now = 0;
 $misc_releases_now = 0;
+$pron_releases_now = 0;
 $book_releases_now = 0;
 $nfo_remaining_now = 0;
 $nfo_now = 0;
@@ -270,7 +274,6 @@ $movie_releases_proc = 0;
 $music_releases_proc = 0;
 $pc_releases_proc = 0;
 $tvrage_releases_proc = 0;
-$work_remaining_now = 0;
 $book_releases_proc = 0;
 
 $requestid_inprogress_start = 0;
@@ -281,6 +284,7 @@ $pc_releases_proc_start = 0;
 $tvrage_releases_proc_start = 0;
 $book_releases_proc_start = 0;
 $work_remaining_start = 0;
+$pron_remaining_start = 0;
 $nfo_remaining_start = 0;
 $predb_matched = 0;
 $predb_start = 0;
@@ -289,10 +293,9 @@ $requestid_inprogress = 0;
 $requestid_diff = 0;
 $requestid_matched = 0;
 
-$misc_releases_now = 0;
 $work_remaining_now = 0;
+$pron_remaining_now = 0;
 $book_releases_now = 0;
-$book_releases_proc = 0;
 $tvrage_releases_now = 0;
 $tvrage_releases_proc = 0;
 $pc_releases_now = 0;
@@ -356,6 +359,7 @@ printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.
 printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
 printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
 printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
+printf($mask, "Pron(6000)",number_format($pron_remaining_now)."(".$pron_diff.")",number_format($pron_releases_now)."(".$pron_percent."%)");
 printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
 printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
 printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
@@ -411,6 +415,8 @@ while( $i > 0 )
 		if ( @$proc_work_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_work_result[0]['book']; }
 		if ( @$proc_work_result2[0]['work'] != NULL ) { $work_remaining_start = $proc_work_result2[0]['work']; }
 		if ( @$proc_work_result2[0]['work'] != NULL ) { $work_start = $proc_work_result2[0]['work']; }
+		if ( @$proc_work_result2[0]['pron'] != NULL ) { $pron_remaining_start = $proc_work_result2[0]['pron']; }
+		if ( @$proc_work_result2[0]['pron'] != NULL ) { $pron_start = $proc_work_result2[0]['pron']; }
 		if ( @$proc_work_result[0]['releases'] != NULL ) { $releases_start = $proc_work_result[0]['releases']; }
 		if ( @$proc_work_result[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress_start = $proc_work_result[0]['requestid_inprogress']; }
 	}
@@ -434,6 +440,7 @@ while( $i > 0 )
 	if ( @$proc_work_result[0]['tv'] != NULL ) { $tvrage_releases_proc = $proc_work_result[0]['tv']; }
 	if ( @$proc_work_result[0]['book'] != NULL ) { $book_releases_proc = $proc_work_result[0]['book']; }
 	if ( @$proc_work_result2[0]['work'] != NULL ) { $work_remaining_now = $proc_work_result2[0]['work']; }
+	if ( @$proc_work_result2[0]['pron'] != NULL ) { $pron_remaining_now = $proc_work_result2[0]['pron']; }
 	if ( @$proc_work_result[0]['releases'] != NULL ) { $releases_loop = $proc_work_result[0]['releases']; }
 	if ( @$proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
 	if ( @$proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
@@ -531,6 +538,7 @@ while( $i > 0 )
 	$releases_misc_diff = number_format( $releases_now - $releases_start );
 	$releases_since_start = number_format( $releases_now - $releases_start );
 	$work_misc_diff = $work_remaining_now - $work_remaining_start;
+	$pron_misc_diff = $pron_remaining_now - $pron_remaining_start;
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
@@ -563,6 +571,7 @@ while( $i > 0 )
 
 	//formatted output
 	$misc_diff = number_format( $work_remaining_now - $work_start );
+	$pron_diff = number_format( $pron_remaining_now - $pron_start );
 
 	$work_since_start = ( $total_work_now - $total_work_start );
 	$work_diff = number_format($work_since_start);
@@ -575,6 +584,7 @@ while( $i > 0 )
 		$movie_percent = sprintf( "%02s", floor(( $movie_releases_now / $releases_now) * 100 ));
 		$music_percent = sprintf( "%02s", floor(( $music_releases_now / $releases_now) * 100 ));
 		$pc_percent = sprintf( "%02s", floor(( $pc_releases_now / $releases_now) * 100 ));
+		$pron_percent = sprintf( "%02s", floor(( $pron_releases_now / $releases_now) * 100 ));
 		$tvrage_percent = sprintf( "%02s", floor(( $tvrage_releases_now / $releases_now) * 100 ));
 		$book_percent = sprintf( "%02s", floor(( $book_releases_now / $releases_now) * 100 ));
 		$misc_percent = sprintf( "%02s", floor(( $misc_releases_now / $releases_now) * 100 ));
@@ -679,6 +689,7 @@ while( $i > 0 )
 	printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
 	printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
 	printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
+	printf($mask, "Pron(6000)",number_format($pron_remaining_now)."(".$pron_diff.")",number_format($pron_releases_now)."(".$pron_percent."%)");
 	printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
 	printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
 	printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");

@@ -14,6 +14,7 @@ class Backfill
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
+		$this->compressedHeaders = ($site->compressedheaders == "1") ? true : false;
 	}
 
 	// Backfill groups using user specified time/date.
@@ -494,7 +495,7 @@ class Backfill
 		$binaries = new Binaries();
 		$groupArr = $groups->getByName($group);
 
-		echo 'Processing '.$groupArr['name']." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
+		echo "Processing ".$groupArr['name'].(($this->compressedHeaders)?" Using Compression":" Not UsingCompression")." ==> T-".$threads." ==> ".number_format($first)." to ".number_format($last).$n;
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');

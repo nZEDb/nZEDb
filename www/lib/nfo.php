@@ -184,7 +184,7 @@ class Nfo
 		{
 			$res = 0;
 			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
+			$res = array(array('id' => trim($pieces[0],"'"), 'guid' => trim($pieces[1],"'"), 'groupid' => trim($pieces[2],"'"), 'name' => trim($pieces[3],"'")));
 			$nfocount = 1;
 		}
 

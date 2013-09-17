@@ -99,6 +99,7 @@ while (count - first) < 10000:
 		print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
 		print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
 		print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
+		sys.exit
 		count = datas[1]
 
 		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:
@@ -160,7 +161,7 @@ def main(args):
 			p.start()
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
-		my_queue.put("%s %d %d %d" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
+		my_queue.put("'%s' %d %d %d" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
 
 	my_queue.join()
 
