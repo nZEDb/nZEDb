@@ -24,7 +24,7 @@ then
 fi
 if [[ $1 != "true" ]]
 then
-	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/resetdelattime.php
+	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/resetdelaytime.php
 fi
 
 loop=1
