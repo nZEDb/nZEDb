@@ -162,7 +162,7 @@ class Namefixer
 
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT DISTINCT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE ( rel.relnamestatus IN (0, 1, 20, 21) OR rel.categoryid = 7010)";
+		$query = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21)";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
@@ -251,10 +251,14 @@ class Namefixer
 							$status = 7;
 						else if ($type == "Filenames, ")
 							$status = 9;
-						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+						$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, relnamestatus = %d, categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+						$run->execute();
 					}
 					else
-						$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($newname), $determinedcat, $release["releaseid"]));
+					{
+						$run = $db->prepare(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run->execute();
+					}
 				}
 			}
 		}

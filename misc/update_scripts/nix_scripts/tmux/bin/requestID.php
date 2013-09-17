@@ -7,12 +7,17 @@ require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/groups.php");
 
 $pieces = explode("                       ", $argv[1]);
-
 $db = new DB();
 $page = new Page();
 $n = "\n";
 $category = new Category();
 $groups = new Groups();
+
+if (!preg_match('/^\[\d+\]/', trim($pieces[1],"'")))
+{
+	$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . trim($pieces[0],"'"));
+	exit(".");
+}
 
 $requestIDtmp = explode("]", substr(trim($pieces[1],"'"), 1));
 $bFound = false;
@@ -22,17 +27,15 @@ $updated = 0;
 if (count($requestIDtmp) >= 1)
 {
 	$requestID = (int) $requestIDtmp[0];
-	if ($requestID != 0)
+	if ($requestID != 0 and $requestID != "")
 	{
 		$newTitle = getReleaseNameFromRequestID($page->site, $requestID, trim($pieces[2],"'"));
 		if ($newTitle != false && $newTitle != "")
 			$bFound = true;
-		else
-			echo ".";
 	}
 }
 
-if ($bFound)
+if ($bFound === true)
 {
 	$groupname = $groups->getByNameByID(trim($pieces[2],"'"));
 	$determinedcat = $category->determineCategory($newTitle, $groupname);
@@ -50,6 +53,7 @@ if ($bFound)
 else
 {
 	$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . trim($pieces[0],"'"));
+	echo ".";
 }
 
 function getReleaseNameFromRequestID($site, $requestID, $groupName)

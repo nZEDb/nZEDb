@@ -536,10 +536,17 @@
 					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
+		</table>
+</fieldset>
 
+<fieldset>
+    <legend>Tmux Colors</legend>
+        <table class="input">
 			<tr>
 				<td style="width:160px;"><label for="COLORS">256 Colors:</label></td>
 				<td>
+					{html_radios id="COLORS" name='COLORS' values=$truefalse_names output=$truefalse_names selected=$ftmux->COLORS separator='<br />'}
+					<div class="hint">Show a color display of all available colors based on the settings below. true/fasle</div>
 					<input id="COLORS_START" name="COLORS_START" class="short" type="text" value="{$ftmux->COLORS_START}" />
 					<input id="COLORS_END" name="COLORS_END" class="short" type="text" value="{$ftmux->COLORS_END}" /><br />
 					<input id="COLORS_EXC" name="COLORS_EXC" class="longer" type="text" value="{$ftmux->COLORS_EXC}" />

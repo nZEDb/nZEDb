@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3522";
+$version="0.1r3523";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -19,6 +19,7 @@ else
 $tmux = new Tmux();
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
+$colors = $tmux->get()->COLORS;
 
 $s = new Sites();
 $site = $s->get();
@@ -46,7 +47,7 @@ $proc_work = "SELECT
 	( SELECT COUNT( id ) FROM releases WHERE nzbstatus = 1 ) AS releases,
 	( SELECT COUNT( id ) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 AND nzbstatus = 1 ) AS nforemains,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus IN (0, -1) AND ( r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 OR r.searchname REGEXP '^\\[[[:digit:]]+\\]' = 1 )) AS requestid_inprogress,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus IN (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
 	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 AND nzbstatus = 1 ) AS requestid_matched";
 
 $proc_work2 = "SELECT
@@ -765,7 +766,8 @@ while( $i > 0 )
 		if ( $seq != 2 )
 		{
 			// Show all available colors
-			shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+			if ($colors == "TRUE")
+				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 
 			//fix names
 			if ( $fix_names == "TRUE"  &&  $i == 1 )
@@ -1154,7 +1156,8 @@ while( $i > 0 )
 		elseif ( $seq == 2 )
 		{
 			// Show all available colors
-			shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+			if ($colors = "TRUE")
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 
 			//run import-nzb-bulk
 			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
