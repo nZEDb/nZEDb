@@ -21,8 +21,8 @@ $namecleaning = new nameCleaning();
 if (!isset($argv[2]))
 {
 	$pieces = explode(" ", $argv[1]);
-	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
-	$path = $pieces[0];
+	$usenzbname = (isset($pieces[1]) && trim($pieces[1],"'") == 'true') ? true : false;
+	$path = trim($pieces[0],"'");
 }
 else
 {
