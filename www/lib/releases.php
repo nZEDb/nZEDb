@@ -1367,6 +1367,11 @@ class Releases
 								$iFoundcnt++;
 							}
 						}
+						else
+						{
+							$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . trim($pieces[0],"'"));
+							echo ".";
+						}
 					}
 					if ($bFound)
 					{

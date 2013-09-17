@@ -54,7 +54,7 @@
 				<td><label for="MONITOR_PATH">Monitor a Ramdisk:</label></td>
 				<td>
 					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" /><br />
-						<input id="MONITOR_PATH_A" name="MONITOR_PATH_A" class="long" type="text" value="{$ftmux->MONITOR_PATH_A}" /><br />
+					<input id="MONITOR_PATH_A" name="MONITOR_PATH_A" class="long" type="text" value="{$ftmux->MONITOR_PATH_A}" /><br />
 					<input id="MONITOR_PATH_B" name="MONITOR_PATH_B" class="long" type="text" value="{$ftmux->MONITOR_PATH_B}" />
 					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
 					gid == group id == /etc/groups, uid == user id == /etc/passwd</div>
@@ -536,10 +536,17 @@
 					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
+		</table>
+</fieldset>
 
+<fieldset>
+    <legend>Tmux Colors</legend>
+        <table class="input">
 			<tr>
 				<td style="width:160px;"><label for="COLORS">256 Colors:</label></td>
 				<td>
+					{html_radios id="COLORS" name='COLORS' values=$truefalse_names output=$truefalse_names selected=$ftmux->COLORS separator='<br />'}
+					<div class="hint">Show a color display of all available colors based on the settings below. true/fasle</div>
 					<input id="COLORS_START" name="COLORS_START" class="short" type="text" value="{$ftmux->COLORS_START}" />
 					<input id="COLORS_END" name="COLORS_END" class="short" type="text" value="{$ftmux->COLORS_END}" /><br />
 					<input id="COLORS_EXC" name="COLORS_EXC" class="longer" type="text" value="{$ftmux->COLORS_EXC}" />

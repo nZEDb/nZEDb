@@ -66,6 +66,9 @@ Class NZBcontents
 				}
 			}
 		}
+		$db = new DB();
+		$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d", $relID));
+		echo ".";
 	}
 
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.

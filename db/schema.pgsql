@@ -1383,7 +1383,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','123');
+	('sqlpatch','124');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
@@ -1449,7 +1449,8 @@ INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
 	('COLORS_END', '250'),
 	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
 	('MONITOR_PATH_A', NULL),
-	('MONITOR_PATH_B', NULL);
+	('MONITOR_PATH_B', NULL),
+	('COLORS', 'FALSE');
 
 
 INSERT INTO tvrage (id, rageid, releasetitle, description, createddate, imgdata, tvdbid)

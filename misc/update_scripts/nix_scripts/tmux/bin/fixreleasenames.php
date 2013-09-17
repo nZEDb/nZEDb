@@ -71,6 +71,5 @@ if (isset($argv[1]))
 		$groupID = trim($pieces[3],"'");
 		$nzbcontents = new NZBcontents();
 		$nzbcontents->checkPAR2($guid, $relID, $groupID, true);
-		echo ".";
 	}
 }
