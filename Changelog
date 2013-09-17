@@ -1,21 +1,22 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09162013 -> jonnyboy -> changed python script to escape strings
-						bug fixes
+09162013 -> jonnyboy -> added pron to monitor
+                        changed python script to escape strings
+                        bug fixes
                         fixed update releases showing insert release greater than actual inserted
 09152013 -> jonnyboy -> fixed a few bugs
-						added changes by bblanchon
-						added categorize to requestid, fixed a few bugs, added set relnamestatus = 6 when releaseCleaner cleans name
+                        added changes by bblanchon
+                        added categorize to requestid, fixed a few bugs, added set relnamestatus = 6 when releaseCleaner cleans name
 09142013 -> jonnyboy -> added "S1 D1" names to regex for TV renaming
-						added par2 filecheck to fixreleasenames, fixed bug in parsePAR2
-						added option to set maximum per run in threaded fixreleasenames
-						removed typo from FAQ
+                        added par2 filecheck to fixreleasenames, fixed bug in parsePAR2
+                        added option to set maximum per run in threaded fixreleasenames
+                        removed typo from FAQ
 09122013 -> jonnyboy -> added update tv/movies and tmux_colors to tmux
-						added script to show colors available to tmux, this should help you remove bad colors
+                        added script to show colors available to tmux, this should help you remove bad colors
 09112013 -> jonnyboy -> changed query for pp to speed up query on large databases
 09102013 -> jonnyboy -> added option to postprocess movie/tv only renamed releases
-						added Safe Binary Threaded update, this maximizes thread usage for all groups, instead of running 1 thread to grab all from 1 group, this should be considered testing only, for now
-						added check for $nntp in parsePAR2
+                        added Safe Binary Threaded update, this maximizes thread usage for all groups, instead of running 1 thread to grab all from 1 group, this should be considered testing only, for now
+                        added check for $nntp in parsePAR2
 09092013 -> jonnyboy -> updated backfill_groups.php and active_groups.php
                         rewrote the trigger to add another check
 09082013 -> jonnyboy -> fixed bad patch 119, added triggers for and added index

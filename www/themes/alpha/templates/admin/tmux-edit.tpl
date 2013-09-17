@@ -12,8 +12,8 @@
 			<tr>
 				<td><label for="explain">Information:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 				<td>
-					<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br />
-						Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. 
+					<div class="explanation">Tmux is a screen multiplexer and at least version 1.6 is required. It is used here to allow multiple windows per session and multiple panes per window.<br /><br />
+						Each script is run in its own shell environment. It is not looped, but allowed to run once and then exit. This notifies tmux that the pane is dead and can then be respawned with another iteration of the script in a new shell environment. <br />
 						This allows for scripts that crash to be restarted without user intervention.<br /><br />
 						You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all sessions must use the same tmux.conf file.<br /><br />
 						<h3><b>NOTICE:</b></h3> If "Save Tmux Settings" is the last thing you did on this page or if it is the active element and if you have this page set to autorefresh or you refresh instead of following a link to this page, you will set the db with the settings currently on this page, not reload from db. This could cause tmux scripts to start while optimize or patch the database is running.</div>
@@ -54,7 +54,7 @@
 				<td><label for="MONITOR_PATH">Monitor a Ramdisk:</label></td>
 				<td>
 					<input id="MONITOR_PATH" name="MONITOR_PATH" class="long" type="text" value="{$ftmux->MONITOR_PATH}" /><br />
-					<input id="MONITOR_PATH_A" name="MONITOR_PATH_A" class="long" type="text" value="{$ftmux->MONITOR_PATH_A}" /><br />
+						<input id="MONITOR_PATH_A" name="MONITOR_PATH_A" class="long" type="text" value="{$ftmux->MONITOR_PATH_A}" /><br />
 					<input id="MONITOR_PATH_B" name="MONITOR_PATH_B" class="long" type="text" value="{$ftmux->MONITOR_PATH_B}" />
 					<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
 					gid == group id == /etc/groups, uid == user id == /etc/passwd</div>
@@ -66,15 +66,16 @@
 			<td>
 				<div class="explanation">
 					Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops scripts based on user settings. It queries the database to provide stats from your nZEDb database.<br /><br />
-					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br />
-					The 'In Process' column has 2 sets of numbers, the total for each category that needs to be postprocessed and inside the parenthesis is the difference from when the script started to what it is now.<br />
-					The 'In Database' column also has 2 sets of numbers, the total releases for each category and inside the parenthesis is the percentage that category is to the total number of releases.<br />
-					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br />
+					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases that need to be postprocessed. The 'In Database' is the number of releases matching that category.<br /><br />
+					The 'In Process' column has 2 sets of numbers, the total for each category that needs to be postprocessed and inside the parenthesis is the difference from when the script started to what it is now.<br /><br />
+					The 'In Database' column also has 2 sets of numbers, the total releases for each category and inside the parenthesis is the percentage that category is to the total number of releases.<br /><br />
+					The Misc row means something different in both columns. The 'In Process' column is all releases that have not had 'Additional' run on them. This includes 100% of all releases, not just the Misc Category.<br /><br />
 					The 'In Database' Misc means the number of releases that have not been categorized in any other category.<br />
-					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br />
-					The 'In Process' predb is the total unmatched predb and inside the parenthesis is number changed since the script started. The 'In Database' is the total matched predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br />
-					The 'In Process' NZBs are total nzbs, inside the parenthesis is distinct nzbs and 'In Database' are nzbs that have all parts available and will be processed on next run.<br />
-					The 'In Process' requestID is the number waiting to be processed and inside the parenthesis is the number changed since the script started. The 'In Database' is the total matches of releases to requestIDs and inside the parenthesis is percentage of total releases that you have matched to a requestID.
+					The counts for parts, binaries and predb totals are estimates and can vary wildly between queries. It is too slow to query the db for real counts, when using InnoDB. All of the other counts are actual counts.<br /><br />
+					The 'In Process' predb is the total unmatched predb and inside the parenthesis is number changed since the script started. The 'In Database' is the total matched predb's you have and the number inside the parenthesis is the percentage of total releases that you have matched to a predb release.<br /><br />
+					The 'In Process' NZBs are total nzbs, inside the parenthesis is distinct nzbs and 'In Database' are nzbs that have all parts available and will be processed on next run.<br /><br />
+					The 'In Process' requestID is the number waiting to be processed and inside the parenthesis is the number changed since the script started. The 'In Database' is the total matches of releases to requestIDs and inside the parenthesis is percentage of total releases that you have matched to a requestID.<br /><br />
+					The 'In Process' rows PC and Pron are simply subsets of the 'In Process' row Misc. There is no postprocessing specifically for these categories. The 'In Database' is the actual count for the catagory.
 				</div>
 			</td>
 		</tr>

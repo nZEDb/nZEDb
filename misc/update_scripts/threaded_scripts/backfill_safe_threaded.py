@@ -99,6 +99,7 @@ while (count - first) < 10000:
 		print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
 		print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
 		print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
+		sys.exit
 		count = datas[1]
 
 		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:

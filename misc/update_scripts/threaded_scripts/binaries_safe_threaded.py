@@ -110,7 +110,11 @@ def main():
 		if name:
 			count = last - group[1] - 1
 			if count > 0:
-				print("\nGetting %s articles (%s to %s) from %s - 0 in queue." % ("{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last)), name))
+				if (int(count) - maxmssgs) > 0:
+					remains = "{:,}".format(int(count) - maxmssgs)
+				else:
+					remains = 0
+				print("\nGetting %s articles (%s to %s) from %s - %s in queue." % ("{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last)), name, remains))
 				groups.append(group[0])
 				finals.append(int(last))
 			if count <= maxmssgs and count > 0:
