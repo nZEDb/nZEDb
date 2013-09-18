@@ -193,6 +193,20 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 				}
 			}
 
+			// post install
+			try	{
+				$pdo->exec("CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;");
+			} catch (PDOException $err){
+				printf("Error inserting: (".$err->getMessage().")");
+				exit();
+			}
+            try {
+                $pdo->exec("CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;");
+            } catch (PDOException $err){
+                printf("Error inserting: (".$err->getMessage().")");
+                exit();
+            }
+
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
 			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM category");
@@ -217,7 +231,7 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			{
 				header("Location: ?success");
                 if (file_exists($cfg->DB_DIR.'/post_install.php'))
-					exec("php ".$cfg->DB_DIR."/post_install.php");
+					exec("php ".$cfg->DB_DIR."/post_install.php ${pdo}");
 				die();
 			}
 			else
