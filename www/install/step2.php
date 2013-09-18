@@ -216,6 +216,8 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			if ($dbInstallWorked)
 			{
 				header("Location: ?success");
+                if (file_exists($cfg->DB_DIR.'/post_install.php'))
+					exec("php ".$cfg->DB_DIR."/post_install.php");
 				die();
 			}
 			else

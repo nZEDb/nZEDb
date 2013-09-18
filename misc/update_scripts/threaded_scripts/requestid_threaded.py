@@ -19,6 +19,8 @@ import signal
 import datetime
 import re
 
+print("\n\nRequestID Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+
 threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -87,9 +89,10 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		match = re.search('/^\[\d+\]/', release[1])
-		if match:
-			process(my_queue.put("'%s'                       '%s'                       '%s'" % (release[0], release[1], release[2])))
+		my_queue.put("'%s'                       '%s'                       '%s'" % (release[0], release[1], release[2]))
+		#match = re.search('/^\[\d+\]/', release[1])
+		#if match:
+			#process(my_queue.put("'%s'                       '%s'                       '%s'" % (release[0], release[1], release[2])))
 
 	my_queue.join()
 

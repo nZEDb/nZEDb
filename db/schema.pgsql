@@ -533,9 +533,6 @@ CREATE TABLE "releases" (
 )
 WITHOUT OIDS;
 
-CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.name REGEXP '^\\[[[:digit:]]+\\]' = 0 THEN SET NEW.reqidstatus = -1; ELSEIF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
-CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.name REGEXP '^\\[[[:digit:]]+\\]' = 0 THEN SET NEW.reqidstatus = -1; ELSEIF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
-
 DROP SEQUENCE IF EXISTS "releasesubs_id_seq" CASCADE;
 CREATE SEQUENCE "releasesubs_id_seq" INCREMENT BY 1
                                   NO MAXVALUE NO MINVALUE CACHE 1;
@@ -1383,7 +1380,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','124');
+	('sqlpatch','125');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
