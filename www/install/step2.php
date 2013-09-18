@@ -166,7 +166,7 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			if ($dbtype == "mysql")
 				$pdo->query("USE ".$cfg->DB_NAME);
 
-			$queries = explode(";", $dbData);
+/*			$queries = explode(";", $dbData);
 			$queries = array_map("trim", $queries);
 			foreach($queries as $q)
 			{
@@ -192,20 +192,13 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 					}
 				}
 			}
-
-			// post install
+*/
 			try	{
-				$pdo->exec("CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;");
+				$pdo->exec($dbData);
 			} catch (PDOException $err){
 				printf("Error inserting: (".$err->getMessage().")");
 				exit();
 			}
-            try {
-                $pdo->exec("CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;");
-            } catch (PDOException $err){
-                printf("Error inserting: (".$err->getMessage().")");
-                exit();
-            }
 
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;

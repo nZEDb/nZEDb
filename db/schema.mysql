@@ -11471,3 +11471,6 @@ VALUES
 (10022,23905,'Ghost Lab',NULL,now(),NULL,117651),
 (10023,18274,'Tess of the D\'Urbervilles',NULL,now(),NULL,83099),
 (10024,23238,'Secret Girlfriend',NULL,now(),NULL,117731);
+
+CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
+CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
