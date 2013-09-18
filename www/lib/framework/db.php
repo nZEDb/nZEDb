@@ -50,7 +50,7 @@ class DB
 	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
 	public function escapeString($str)
 	{
-		if (is_null($str))
+		if (is_null($str) || $str == "")
 			return "NULL";
 
 		return DB::$pdo->quote($str);
