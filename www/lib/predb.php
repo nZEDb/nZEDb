@@ -480,12 +480,16 @@ Class Predb
 	public function getAll($offset, $offset2)
 	{
 		$db = new DB();
-		
-		$parr = $db->query(sprintf('SELECT SQL_CALC_FOUND_ROWS p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
 		if ($db->dbSystem() == 'mysql')
+		{
+			$parr = $db->query(sprintf('SELECT SQL_CALC_FOUND_ROWS p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
 			$pcount = $db->queryOneRow('SELECT FOUND_ROWS() AS t');
+		}
 		else
+		{
+			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
 			$pcount = $this->getCount();
+		}
 		return array('arr' => $parr, 'count' => $pcount['t']);
 	}
 
