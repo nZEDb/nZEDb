@@ -1137,7 +1137,6 @@ class Releases
 					if ($err->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
 						$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $db->escapeString($rowcol['collectionhash'])));
 				}
-				//if (!isset($err) && isset($relid) && $relid != "")
 				if (!isset($err))
 				{
 					$predb->matchPre($cleanRelName, $relid);
