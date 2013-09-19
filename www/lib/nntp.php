@@ -41,7 +41,7 @@ class Nntp extends Net_NNTP_Client
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
-					echo 'Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl)':'(ssl) ').': '.$ret->getMessage();
+					echo 'Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage();
 			}
 			else
 				$connected = true;
@@ -87,7 +87,7 @@ class Nntp extends Net_NNTP_Client
 
 		$enc = $ret = $ret2 = $connected = false;
 
-		if (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED == true)
+		if (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A == true)
 			$enc = 'ssl';
 
 		$retries = 10;
@@ -117,7 +117,7 @@ class Nntp extends Net_NNTP_Client
 					if(PEAR::isError($ret2))
 					{
 						if ($retries < 1)
-							echo 'Cannot authenticate to server '.NNTP_SERVERA.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAMEA.' ('.$ret2->getMessage().')';
+							echo 'Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')';
 					}
 					else
 						$authent = true;
