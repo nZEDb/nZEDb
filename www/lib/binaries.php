@@ -436,6 +436,7 @@ class Binaries
 				{
 					if(isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '')
 					{
+						$db->beginTransaction();
 						$collectionHash = $data['CollectionHash'];
 						if ($lastCollectionHash == $collectionHash)
 							$collectionID = $lastCollectionID;
@@ -492,6 +493,7 @@ class Binaries
 							if (!$insPartsStmt->execute())
 								$msgsnotinserted[] = $partdata['number'];
 						}
+						$db->Commit();
 					}
 				}
 				if (sizeof($msgsnotinserted) > 0)

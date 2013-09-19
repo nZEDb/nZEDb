@@ -441,7 +441,7 @@ class Backfill
 			if ($st === true)
 				$nntp->doQuit();
 			echo 'ERROR: Backfill target of '.$days.' day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least '.ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n";
-			return "";
+			return '';
 		}
 
 		if ($debug)
