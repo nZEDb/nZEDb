@@ -1114,7 +1114,7 @@ class Releases
 			foreach ($rescol as $rowcol)
 			{
 				$propername = false;
-				$cleanName = "";
+				$cleanName = $err = "";
 				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
 				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
@@ -1135,9 +1135,10 @@ class Releases
 				} catch (PDOException $err) {
 					// Mark dupes filecheck = 5, so they will be deleted
 					if ($err->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
-						$failed = $db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $rowcol['collectionhash']));
+						$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $db->escapeString($rowcol['collectionhash'])));
 				}
-				if (!isset($err) && isset($relid) && $relid != "")
+				//if (!isset($err) && isset($relid) && $relid != "")
+				if (!isset($err))
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
