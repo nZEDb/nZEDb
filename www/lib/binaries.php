@@ -188,7 +188,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				$first++;
-				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." - ".number_format($grouplast - $last)." in queue.\n";
+				echo "\nGetting ".number_format($last-$first+1)." articles (".number_format($first)." to ".number_format($last).") from ".$data["group"]." -\033[1;33m ".number_format($grouplast - $last)." in queue\033[0m.\n";
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab

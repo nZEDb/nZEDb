@@ -94,7 +94,8 @@ class DB
 				$i++;
 			}
 			//printf($e);
-			//if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+				return $e;
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 			return false;
 		}
