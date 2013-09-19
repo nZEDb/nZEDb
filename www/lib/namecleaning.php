@@ -89,6 +89,14 @@ class nameCleaning
 			else
 				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
 		}
+		else if ($groupName === "alt.binaries.astronomy")
+		{
+			//58600-0[51/51] - "58600-0.vol0+1.par2" yEnc
+			if (preg_match('/^(\d+)\-\d+\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return $this->collectionsCleanerHelper($subject, $groupName, $nofiles);
+		}
 		else if ($groupName === "alt.binaries.ath")
 		{
 			//[3/3 Karel Gott - Die Biene Maja Original MP3 Karel Gott - Die Biene Maja Original MP3.mp3.vol0+1.PAR2" yEnc
