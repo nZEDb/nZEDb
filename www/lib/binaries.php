@@ -693,7 +693,7 @@ class Binaries
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND b.categoryid NOT IN ('.implode(',', $excludedcats).') ';
 
-		$res = $db->query(sprintf('
+		$res = $db->query(sprintf("
 					SELECT b.*,
 					g.name AS group_name,
 					r.guid,
@@ -701,7 +701,7 @@ class Binaries
 					FROM binaries b
 					INNER JOIN groups g ON g.id = b.groupid
 					LEFT OUTER JOIN releases r ON r.id = b.releaseid
-					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ',
+					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ",
 					$searchsql, $exccatlist, $limit));
 
 		return $res;

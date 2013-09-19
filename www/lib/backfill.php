@@ -339,7 +339,7 @@ class Backfill
 			$msgs = $nntp->getOverview($post."-".$post,true,false);
 			if (PEAR::isError($msgs))
 			{
-				$nntp->doQuit())
+				$nntp->doQuit();
 				if ($nntp->doConnectNC() === false)
 					return;
 
