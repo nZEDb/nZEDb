@@ -164,12 +164,15 @@ Most of this guide is done from the command line (terminal).
 		sudo apt-get install memcached php5-memcache
 
 		# Edit php.ini, add   extension=memcache.so   in the dynamic extensions section (if you get warnings on apache start you can remove this).
-		sudo nano /etc/php5/apache2/php.ini
+			sudo nano /etc/php5/apache2/php.ini
 
 		sudo service apache2 restart
 
-		# Edit config.php and change MEMCACHE_ENABLED to true.
-		sudo nano /var/www/nZEDb/www/config.php
+		#############################################################
+		# AFTER git cloning and seting up the indexer (step 7 & 8), #
+		#    edit config.php and change MEMCACHE_ENABLED to true.   #
+		#############################################################
+			sudo nano /var/www/nZEDb/www/config.php
 
 7. Git clone the nZEDb source.
 
