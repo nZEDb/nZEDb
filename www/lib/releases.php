@@ -1342,7 +1342,7 @@ class Releases
 			//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->query("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND  {$regexa} = 1 LIMIT 100" . $where);
+			$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND  {$regexa} = 1 LIMIT 100" . $where);
 			if (count($resrel) > 0)
 			{
 				echo $n;
@@ -1363,8 +1363,11 @@ class Releases
 							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
 							if ($newTitle != false && $newTitle != "")
 							{
-								$bFound = true;
-								$iFoundcnt++;
+								if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+								{ 
+									$bFound = true;
+									$iFoundcnt++;
+								}
 							}
 						}
 						else
@@ -1383,7 +1386,7 @@ class Releases
 						if ($this->echooutput)
 						{
 							echo	$n.$n."New name:  ".$newTitle.$n.
-								"Old name:  ".$rowrel['name'].$n.
+								"Old name:  ".$rowrel['searchname'].$n.
 								"New cat:   ".$newcatname.$n.
 								"Group:     ".$rowrel['groupname'].$n.
 								"Method:    "."requestID".$n.
