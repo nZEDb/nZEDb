@@ -12,8 +12,8 @@ do
 	$PHP $NZEDB_PATH/update_releases.php 1 false
 	cd ${TEST_PATH}
 	$PHP ${TEST_PATH}/removeCrapReleases.php true 1
-	
+
 	echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
 	sleep ${NZEDB_SLEEP_TIME}
-	
+
 done

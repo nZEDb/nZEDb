@@ -25,8 +25,8 @@ if (!isset($argv[1]))
 if (!isset($argv[2]))
 {
 	$pieces = explode(" ", $argv[1]);
-	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
-	$path = $pieces[0];
+	$usenzbname = (isset($pieces[1]) && trim($pieces[1],"'") == 'true') ? true : false;
+	$path = trim($pieces[0],"'");
 }
 else
 {
@@ -224,7 +224,17 @@ else
 			$relguid = sha1(uniqid().mt_rand());
 			$nzb = new NZB();
 			$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
-			$data[] = array('name' => $subject, 'searchname' => $cleanerName, 'totalpart' => $totalFiles, 'groupid' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageid' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryid' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
+			if (!is_array($cleanerName))
+				$cleanName = $cleanerName;
+			else
+			{
+				$cleanName = $cleanerName['cleansubject'];
+				$propername = $cleanerName['properlynamed'];
+			}
+			if ($propername === true)
+				$data[] = array('name' => $subject, 'searchname' => $cleanName, 'totalpart' => $totalFiles, 'groupid' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageid' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryid' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1', 'relnamestatus' => '6');
+			else
+				$data[] = array('name' => $subject, 'searchname' => $cleanName, 'totalpart' => $totalFiles, 'groupid' => $groupID, 'adddate' => date('Y-m-d H:i:s'), 'guid' => $relguid, 'rageid' => '-1', 'postdate' => $postdate['0'], 'fromname' => $postername['0'], 'size' => $totalsize, 'passwordstatus' => ($page->site->checkpasswordedrar == "1" ? -1 : 0), 'haspreview' => '-1', 'categoryid' => '7010', 'nfostatus' => '-1', 'nzbstatus' => '1');
 			if($nzb->copyNZBforImport($relguid, $nzba))
 			{
 				if ( $nzbCount % 100 == 0)

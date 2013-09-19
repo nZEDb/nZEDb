@@ -359,7 +359,7 @@ class Binaries
 					{
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int)$matches[2];
-						$this->message[$subject]['Date'] = strtotime($this->message[$subject]['Date']);
+						$this->message[$subject]['Date'] = strtotime($msg['Date']);
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['id'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
@@ -369,7 +369,7 @@ class Binaries
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-						$db->queryInsert(sprintf("INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->from_unixtime($this->message[$subject]['Date'])));
+						$db->queryInsert(sprintf("INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())", $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[1], (int)$matches[2], $db->from_unixtime($msg['Date'])));
 						$db->queryExec(sprintf("UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s", $db->escapeString($this->message[$subject]['CollectionHash'])));
 					}
 

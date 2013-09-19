@@ -166,7 +166,7 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			if ($dbtype == "mysql")
 				$pdo->query("USE ".$cfg->DB_NAME);
 
-			$queries = explode(";", $dbData);
+/*			$queries = explode(";", $dbData);
 			$queries = array_map("trim", $queries);
 			foreach($queries as $q)
 			{
@@ -192,6 +192,13 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 					}
 				}
 			}
+*/
+			try	{
+				$pdo->exec($dbData);
+			} catch (PDOException $err){
+				printf("Error inserting: (".$err->getMessage().")");
+				exit();
+			}
 
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
@@ -216,6 +223,8 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 			if ($dbInstallWorked)
 			{
 				header("Location: ?success");
+                if (file_exists($cfg->DB_DIR.'/post_install.php'))
+					exec("php ".$cfg->DB_DIR."/post_install.php ${pdo}");
 				die();
 			}
 			else

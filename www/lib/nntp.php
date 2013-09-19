@@ -25,37 +25,53 @@ class Nntp extends Net_NNTP_Client
 		$compressionstatus = $site->compressedheaders;
 		unset($s);
 		unset($site);
+		$enc = $ret = $ret2 = $connected = false;
+
+		if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
+			$enc = 'ssl';
 
 		$retries = 10;
 		while($retries >= 1)
 		{
 			usleep(10000);
+			$authent = false;
 			$retries--;
-			if (defined("NNTP_SSLENABLED") && NNTP_SSLENABLED == true)
-				$enc = 'ssl';
+			if ($connected === false)
+				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 
-			$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, $this->timeout);
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
 					echo "Cannot connect to server ".NNTP_SERVER.(!$enc?" (nonssl) ":"(ssl) ").": ".$ret->getMessage();
 			}
-			if(!defined(NNTP_USERNAME) && NNTP_USERNAME!="" )
+			else
+				$connected = true;
+
+			if ($connected === true && $authent === false && !defined(NNTP_USERNAME))
 			{
-				$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-				if(PEAR::isError($ret2))
+				if (NNTP_USERNAME == "")
+					$authent = true;
+				else
 				{
-					if ($retries < 1)
-						echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
+					$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
+					if(PEAR::isError($ret2))
+					{
+						if ($retries < 1)
+							echo "Cannot authenticate to server ".NNTP_SERVER.(!$enc?" (nonssl) ":" (ssl) ")." - ".NNTP_USERNAME." (".$ret2->getMessage().")";
+					}
+					else
+						$authent = true;
 				}
 			}
-			elseif(NNTP_USERNAME=="")
-				$ret2 = 0;
-			if($compressionstatus == "1")
+
+			if ($connected && $authent === true)
 			{
-				$this->enableCompression();
+				if($compressionstatus == "1")
+					$this->enableCompression();
+				return $ret && $ret2;
 			}
-			return $ret && $ret2;
+			else
+				return false;
 		}
 	}
 
@@ -320,118 +336,104 @@ class Nntp extends Net_NNTP_Client
 		return parent::_getTextResponse();
 	}
 
+	// Loop over the data when compression is on, add it to a long string, look for a terminator, split the string into an array, return the headers.
 	function _getXfeatureTextResponse()
 	{
-		$tries 				= 0;
-		$bytesreceived 		= 0;
-		$totalbytesreceived = 0;
-		$completed			= false;
-		$data 				= null;
-		// Build binary array that represents zero results basically a compressed empty string terminated with .(period) char(13) char(10)
-		$emptyreturnend 	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
-		$emptyreturn  		= chr(0x78).chr(0x9C).$emptyreturnend;
-		$emptyreturn2 		= chr(0x78).chr(0x01).$emptyreturnend;
-		$emptyreturn3 		= chr(0x78).chr(0x5e).$emptyreturnend;
-		$emptyreturn4 		= chr(0x78).chr(0xda).$emptyreturnend;
+		$tries = $bytesreceived = $totalbytesreceived = 0;
+		$completed = false;
+		$data = null;
+		// Build a binary array that represents zero results, basically a compressed empty string terminated with .(period) char(13) char(10)
+		$erend	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
+		$er1	= chr(0x78).chr(0x9C).$erend;
+		$er2	= chr(0x78).chr(0x01).$erend;
+		$er3	= chr(0x78).chr(0x5e).$erend;
+		$er4	= chr(0x78).chr(0xda).$erend;
 
 		while (!feof($this->_socket))
 		{
 			$completed = false;
 			// Get data from the stream.
 			$buffer = fgets($this->_socket);
-			// Get byte count and update total bytes.
+			// Get byte count.
 			$bytesreceived = strlen($buffer);
 			// If we got no bytes at all try one more time to pull data.
 			if ($bytesreceived == 0)
 			{
 				$buffer = fgets($this->_socket);
+				$bytesreceived = strlen($buffer);
 			}
+
 			// Get any socket error codes.
 			 $errorcode = socket_last_error();
 
-			// If the buffer is zero it's zero...
+			// If the buffer is zero it's zero, return error.
 			if ($bytesreceived === 0)
-				return $this->throwError('No data returned.', 1000);
-			// Did we have any socket errors?
+				return $this->throwError('The NNTP server has returned no data.', 1000);
+
+			// Keep going if no errors.
 			if ($errorcode === 0)
 			{
 				// Append buffer to final data object.
-				 $data .= $buffer;
-				 $totalbytesreceived = $totalbytesreceived+$bytesreceived;
+				$data .= $buffer;
 
-				 // Output byte count in real time once we have 10KB of data.
-				if ($totalbytesreceived > 10240)
-				if ($totalbytesreceived%128 == 0)
-				{
-					$kb = 1024;
-					echo "Receiving ".round($totalbytesreceived/$kb)."KB\r";
-				}
+				// Update total bytes received.
+				$totalbytesreceived += $bytesreceived;
+
+				// Show bytes recieved
+				if ($totalbytesreceived > 10240 && $totalbytesreceived%128 == 0) echo 'Receiving '.round($totalbytesreceived / 1024)."KB from ".$this->group()."\r";
 
 				// Check to see if we have the magic terminator on the byte stream.
 				$b1 = null;
 				if ($bytesreceived > 2)
-				if (ord($buffer[$bytesreceived-3]) == 0x2e && ord($buffer[$bytesreceived-2]) == 0x0d && ord($buffer[$bytesreceived-1]) == 0x0a)
 				{
-					// Check if the returned binary string is 11 bytes long generally and indicator of an compressed empty string.
-					if ($totalbytesreceived==11)
+					if (ord($buffer[$bytesreceived-3]) == 0x2e && ord($buffer[$bytesreceived-2]) == 0x0d && ord($buffer[$bytesreceived-1]) == 0x0a)
 					{
-						// Compare the data to the empty string if the data is a compressed empty string. Throw an error, else return the data.
-						if (($data === $emptyreturn)||($data === $emptyreturn2)||($data === $emptyreturn3)||($data === $emptyreturn4))
+						// Check if the returned binary string is 11 bytes long, generally an indicator of a compressed empty string.
+						if ($totalbytesreceived == 11)
 						{
-							return $this->throwError('No data returned. This is normal. Do not cry.', 1000);
+							// Compare the data to the empty string if the data is a compressed empty string. If it is, throw an error.
+							if ($data === $er1 || $data === $er2 || $data === $er3 || $data === $er4)
+								return $this->throwError('The NNTP server has returned an empty article. This is normal, the article is probably missing/removed.', 1000);
 						}
-					}
-					else
-					{
-						if ($totalbytesreceived > 10240)
-							echo "\n";
-						$completed = true;
+						// We found the terminator.
+						else
+						{
+							if ($totalbytesreceived > 10240)
+								echo "\n";
+							$completed = true;
+						}
 					}
 				}
 			 }
 			 else
-			 {
-				 echo "Failed to read line from socket.\n";
-				 return $this->throwError('Failed to read line from socket.', 1000);
-			 }
+				 return $this->throwError('Socket error: '.socket_strerror($errorcode), 1000);
 
-			if ($completed)
+			if ($completed === true)
 			{
-				// Check if the header is valid for a gzip stream.
-				if(ord($data[0]) == 0x78 && in_array(ord($data[1]),array(0x01,0x5e,0x9c,0xda)))
-				{
-					$decomp = @gzuncompress(mb_substr ( $data , 0 ,-3, '8bit' ));
-				}
+				// Check if the header is valid for a gzip stream, then decompress it.
+				if (ord($data[0]) == 0x78 && in_array(ord($data[1]), array(0x01, 0x5e, 0x9c, 0xda)))
+					$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
 				else
-				{
-					echo "Invalid header on the gzip stream.\n";
-					return $this->throwError('Invalid gzip stream.', 1000);
-				}
+					return $this->throwError('Unable to decompress the data, the header on the gzip stream is invalid.', 1000);
 
+				// Split the string of headers into and array of individual headers, then return it.
 				if ($decomp != false)
-				{
-					$decomp = explode("\r\n", trim($decomp));
-					return $decomp;
-				}
+					return explode("\r\n", trim($decomp));
 				else
 				{
-					$tries++;
-					echo "Decompression failed. Retry number: $tries\n";
-					if ($tries > 10)
-					{
-						echo "10 tries and it still failed, so skipping";
-						return $this->throwError('Decompression Failed, connection closed.', 1000);
-					}
+					// Try 5 times to decompress.
+					if ($tries++ > 5)
+						return $this->throwError('Decompression Failed after 5 tries, connection closed.', 1000);
 				}
 			}
 		}
 		// Throw an error if we get out of the loop.
 		if (!feof($this->_socket))
-		{
-			return "\nError: unexpected fgets() fail.\n";
-		}
+			return "Error: Could not find the end-of-file pointer on the gzip stream.\n";
+
 		return $this->throwError('Decompression Failed, connection closed.', 1000);
 	}
+
 
 	// If there is an error with selectGroup(), try to restart the connection, else show the error.
 	// Send a 3rd argument, false, for a connection with no compression.

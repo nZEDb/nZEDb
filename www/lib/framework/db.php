@@ -26,8 +26,13 @@ class DB
 				$pdos .= ';charset=utf8';
 
 			try {
-				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD);
-				DB::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$options = array(
+					PDO::ATTR_PERSISTENT => true,
+					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+					PDO::ATTR_TIMEOUT => 120,
+					PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+				);
+				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			} catch (PDOException $e) {
@@ -50,7 +55,7 @@ class DB
 	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
 	public function escapeString($str)
 	{
-		if (is_null($str))
+		if (is_null($str) || $str == "")
 			return "NULL";
 
 		return DB::$pdo->quote($str);
@@ -251,12 +256,25 @@ class DB
 		return DB::$pdo->rollBack();
 	}
 
-	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00, also escapes it, pass false as 2nd arg to not escape.
-	// (substitute for mysql FROM_UNIXTIME function)
 	public function from_unixtime($utime, $escape=true)
 	{
-		return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
+		if ($escape === true)
+		{
+			if ($this->dbsystem == 'mysql')
+				return 'FROM_UNIXTIME('.$utime.')';
+			else if ($this->dbsystem == 'pgsql')
+				return 'TO_TIMESTAMP('.$utime.')::TIMESTAMP';
+		}
+		else
+			return date('Y-m-d h:i:s', $utime);
 	}
+
+	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00, also escapes it, pass false as 2nd arg to not escape.
+	// (substitute for mysql FROM_UNIXTIME function)
+	//public function from_unixtime($utime, $escape=true)
+	//{
+	//	return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
+	//}
 
 	// Date to unix time.
 	// (substitute for mysql's UNIX_TIMESTAMP() function)

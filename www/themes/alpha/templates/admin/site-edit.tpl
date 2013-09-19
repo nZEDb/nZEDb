@@ -827,6 +827,14 @@
 </tr>
 
 <tr>
+    <td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
+    <td>
+        <input class="tiny" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
+        <div class="hint">The maximum number of releases to check per run(threaded script only).</div>
+    </td>
+</tr>
+
+<tr>
 	<td><label for="amazonsleep">Amazon sleep time:</label></td>
 	<td>
 		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
@@ -878,14 +886,6 @@
         <input class="tiny" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
         <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
     </td>
-</tr>
-
-<tr>
-	<td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
-	<td>
-		<input class="tiny" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
-		<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
-	</td>
 </tr>
 
 <tr>

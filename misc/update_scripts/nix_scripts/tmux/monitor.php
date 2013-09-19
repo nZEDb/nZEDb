@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3523";
+$version="0.1r3539";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -387,21 +387,19 @@ while( $i > 0 )
 
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
-	$initquery = @$db->query($qry);
+	$initquery = @$db->query($qry, true);
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
-		$proc_work_result = @$db->query($proc_work);
-		$proc_work_result2 = @$db->query($proc_work2);
+		$proc_work_result = @$db->query($proc_work, true);
+		$proc_work_result2 = @$db->query($proc_work2, true);
 		$time1 = TIME();
 		$runloop = "true";
 	}
 	else
-	{
 		$runloop = "false";
-	}
 
 	//get start values from $qry
 	if ( $i == 1 )

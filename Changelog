@@ -1,6 +1,8 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09172013 -> jonnyboy -> made color pane optional
+09182013 -> jonnyboy -> bugfixes
+09172013 -> jonnyboy -> moved triggers out of schema and into separate file, fixed step2.php
+						made color pane optional
 						fixed bug in fixreleasenames par2
 09162013 -> jonnyboy -> added pron to monitor
                         changed python script to escape strings
