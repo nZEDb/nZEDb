@@ -1767,11 +1767,12 @@ class Releases
 	public function resetCollections()
 	{
 		$db = new DB();
-		$namecleaner = new nameCleaning();
-		$consoletools = new ConsoleTools();
 		$res = $db->query("SELECT b.id as bid, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionid = c.id");
 		if(count($res) > 0)
 		{
+			$groups = new Groups();
+			$namecleaner = new nameCleaning();
+			$consoletools = new ConsoleTools();
 			$timestart = TIME();
 			if ($this->echooutput)
 				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
@@ -1784,7 +1785,9 @@ class Releases
 				$nofiles = true;
 				if ($row['totalfiles'] > 0)
 					$nofiles = false;
-				$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $row['groupid'], $nofiles).$row['fromname'].$row['groupid'].$row['totalfiles']);
+
+				$groupName = $groups->getByNameByID($row['groupid']);
+				$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $groupName, $nofiles).$row['fromname'].$row['groupid'].$row['totalfiles']);
 				$cres = $db->queryOneRow(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 				if(!$cres)
 				{
