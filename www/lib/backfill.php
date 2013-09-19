@@ -60,17 +60,15 @@ class Backfill
 		if (!isset($nntpc))
 			$nntpc = new Nntp;
 		// No compression.
-		$nntp->doConnectNC();
+		if ($nntp->doConnectNC() === false)
+			return;
 
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false)
-			{
-				$db = null;
 				return;
-			}
 		}
 
 		// Get targetpost based on days target.
@@ -80,7 +78,6 @@ class Backfill
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo 'Group '.$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?\n";
 			return;
 		}
@@ -89,7 +86,6 @@ class Backfill
 		if($groupArr['first_record'] <= ($data['first'] + 50000))
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo 'We have hit the maximum we can backfill for this '.$groupArr['name'].", disabling it.\n\n";
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
@@ -99,7 +95,6 @@ class Backfill
 		if($targetpost >= $groupArr['first_record'])
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo "Nothing to do, we already have the target post\n\n";
 			return '';
 		}
@@ -154,7 +149,6 @@ class Backfill
 		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
-		$db = null;
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo 'Group processed in '.$timeGroup." seconds.\n";
@@ -169,7 +163,6 @@ class Backfill
 
 		$db = new DB();
 		$groupname = $db->queryOneRow(sprintf('SELECT name FROM groups WHERE first_record_postdate BETWEEN %s AND NOW() AND backfill = 1 ORDER BY name ASC', $db->escapeString($this->safebdate)));
-		$db = null;
 
 		if (!$groupname)
 			exit('No groups to backfill, they are all at the target date '.$this->safebdate.", or you have not enabled them to be backfilled in the groups page.\n");
@@ -221,16 +214,15 @@ class Backfill
 
 		echo 'Processing '.$groupArr['name']."\n";
 
-		$nntp->doConnectNC();
+		if ($nntp->doConnectNC() === false)
+			return;
+
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false)
-			{
-				$db = null;
 				return;
-			}
 		}
 
 		// Get targetpost based on days target.
@@ -241,7 +233,6 @@ class Backfill
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo 'You need to run update_binaries on the '.$data['group'].". Otherwise the group is dead, you must disable it.\n";
 			return '';
 		}
@@ -250,7 +241,6 @@ class Backfill
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo 'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n";
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
@@ -261,7 +251,6 @@ class Backfill
 		if($targetpost >= $groupArr['first_record'])
 		{
 			$nntp->doQuit();
-			$db = null;
 			echo "Nothing to do, we already have the target post.\n\n";
 			return '';
 		}
@@ -319,7 +308,6 @@ class Backfill
 		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
-		$db = null;
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		echo $data['group'].' processed in '.$timeGroup." seconds.\n";
@@ -332,7 +320,8 @@ class Backfill
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
-			$nntp->doConnectNC();
+			if ($nntp->doConnectNC() === false)
+				return;
 			$st = true;
 		}
 
@@ -341,20 +330,22 @@ class Backfill
 		do
 		{
 			$data = $nntp->selectGroup($group);
-			if(PEAR::isError($data))
+			if (PEAR::isError($data))
 			{
 				$data = $nntp->dataError($nntp, $group, false);
 				if ($data === false)
 					return;
 			}
 			$msgs = $nntp->getOverview($post."-".$post,true,false);
-			if(PEAR::isError($msgs))
+			if (PEAR::isError($msgs))
 			{
-				$nntp->doQuit();
-				$nntp->doConnectNC();
+				$nntp->doQuit())
+				if ($nntp->doConnectNC() === false)
+					return;
+
 				$nntp->selectGroup($group);
 				$msgs = $nntp->getOverview($post."-".$post,true,false);
-				if(PEAR::isError($msgs))
+				if (PEAR::isError($msgs))
 				{
 					echo "Error {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.\n";
 					$nntp->doQuit();
@@ -365,7 +356,7 @@ class Backfill
 				}
 			}
 
-			if(!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
+			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
 			{
 				$post = $post + MT_RAND(0,100);
 				$success = false;
@@ -377,7 +368,7 @@ class Backfill
 					$success = true;
 			}
 
-			if($debug && $attempts > 0)
+			if ($debug && $attempts > 0)
 				echo 'Retried '.$attempts." time(s).\n";
 
 			$attempts++;
@@ -409,12 +400,14 @@ class Backfill
 		if (!isset($nntp))
 		{
 			$nntp = new Nntp;
-			$nntp->doConnectNC();
+			if ($nntp->doConnectNC() === false)
+				return;
+
 			$st = true;
 		}
 
 		$data = $nntp->selectGroup($group);
-		if(PEAR::isError($data))
+		if (PEAR::isError($data))
 		{
 			$data = $nntp->dataError($nntp, $group, false);
 			if ($data === false)
@@ -527,7 +520,6 @@ class Backfill
 		else
 			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 
-		$db = null;
 		echo $type.' Safe Threaded on '.$group." completed.\n\n";
 	}
 }
