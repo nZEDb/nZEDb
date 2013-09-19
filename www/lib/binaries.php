@@ -332,14 +332,14 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['id'], $nofiles);
+					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							/* Uncomment this to only show articles matched by collectionsCleanerHelper(might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							/* Uncomment this to only show articles matched by generic function of namecleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
 							if (preg_match('/yEnc$/', $cleansubject))
 							{
