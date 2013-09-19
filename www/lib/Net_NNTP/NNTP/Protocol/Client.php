@@ -1639,7 +1639,6 @@ class Net_NNTP_Protocol_Client extends PEAR
 		switch ($response) {
 			case NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC2980: 'information follows'
 				$data = $this->_getTextResponse();
-				var_dump($data);
 				if (PEAR::isError($data)) {
 					return $data;
 				}
