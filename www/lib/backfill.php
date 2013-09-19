@@ -169,6 +169,7 @@ class Backfill
 
 		$db = new DB();
 		$groupname = $db->queryOneRow(sprintf('SELECT name FROM groups WHERE first_record_postdate BETWEEN %s AND NOW() AND backfill = 1 ORDER BY name ASC', $db->escapeString($this->safebdate)));
+		$db = null;
 
 		if (!$groupname)
 			exit('No groups to backfill, they are all at the target date '.$this->safebdate.", or you have not enabled them to be backfilled in the groups page.\n");
