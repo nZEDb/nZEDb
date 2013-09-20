@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nUpdate Binaries Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nUpdate Binaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -71,7 +71,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s groups" % (run_threads[0], "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads[0], "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -92,8 +92,8 @@ def main():
 
 	my_queue.join()
 
-	print("\nUpdate Binaries Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nUpdate Binaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 	
 if __name__ == '__main__':
 	main()

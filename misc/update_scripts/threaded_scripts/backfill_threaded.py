@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nBackfill Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -60,9 +60,9 @@ elif intbackfilltype == 2:
 
 #query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
-	cur.execute("%s %s" % ("SELECT name, first_record FROM groups where first_record IS NOT NULL and backfill = 1 ", group))
+	cur.execute("{} {}".format("SELECT name, first_record FROM groups where first_record IS NOT NULL and backfill = 1 ", group))
 else:
-	cur.execute("%s %s %s %s %s %d" % ("SELECT name, first_record FROM groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
+	cur.execute("{} {} {} {} {} {}".format("SELECT name, first_record FROM groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
 datas = cur.fetchall()
 if not datas:
 	print("No Groups enabled for backfill")
@@ -103,7 +103,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s groups" % (run_threads, "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -120,12 +120,12 @@ def main(args):
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		my_queue.put("'%s' '%s'" % (gnames[0], type))
+		my_queue.put("{} {}".format(gnames[0], type))
 
 	my_queue.join()
 
-	print("\nBackfill Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nBackfill Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

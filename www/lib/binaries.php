@@ -183,7 +183,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				$first++;
-				echo "\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." -\033[1;33m ".number_format($grouplast - $last)." in queue\033[0m.\n";
+				echo "\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." -\033[1;33m (".number_format($grouplast - $last)." articles in queue)\033[0m.\n";
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
@@ -262,7 +262,7 @@ class Binaries
 			if(PEAR::isError($msgs))
 			{
 				$nntp->doQuit();
-				echo "Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\n";
+				echo "\033[38;5;9mError {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n";
 				return;
 			}
 		}
@@ -366,7 +366,7 @@ class Binaries
 
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->from_unixtime($msg['Date'])));
+						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->from_unixtime($db->escapeString($msg['Date']))));
 						$db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 					}
 
@@ -498,7 +498,7 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0)
 				{
-					echo 'WARNING: '.sizeof($msgsnotinserted)." parts failed to insert.\n";
+					echo "\033[38;5;9mWARNING: ".sizeof($msgsnotinserted)." parts failed to insert.\033[0m\n";
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 				}
@@ -516,7 +516,7 @@ class Binaries
 		{
 			if ($type != 'partrepair')
 			{
-				echo "Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n";
+				echo "\033[38;5;9mError: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\033[0m\n";
 				return false;
 			}
 		}

@@ -1,11 +1,13 @@
 <?php
-require_once(WWW_DIR."/lib/groups.php");
-require_once(WWW_DIR."/lib/predb.php");
+require_once(WWW_DIR.'/lib/category.php');
+require_once(WWW_DIR.'/lib/groups.php');
+require_once(WWW_DIR.'/lib/namefixer.php');
+require_once(WWW_DIR.'/lib/predb.php');
 
+/*
+ * Cleans names for collections/releases/imports/namefixer.
+ */
 
-//
-//	Cleans names for collections/releases/imports/namefixer.
-//
 class nameCleaning
 {
 	function nameCleaning()
@@ -165,16 +167,16 @@ class nameCleaning
 	{
 		//ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0 - [08/35] - "ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0.vol43+09.par2" yEnc
 		if (preg_match('/^([a-zA-Z0-9].+?)( - )\[\d+(\/\d+\] - ").+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2].$match[3];
+			return $match[1].$match[2].$match[3];//return array('hash' => $match[1].$match[2].$match[3], 'subject' => $match[1], 'rstatus' => NFIXER_NAMECLEANING, 'cat' => Category::CAT_PC_0DAY);
 		//rld-tcavu1 [5/6] - "rld-tcavu1.rar" yEnc
 		else if (preg_match('/^([a-zA-Z0-9].+?) \[\d+(\/\d+\] - ").+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(DVD Shrink.ss) [1/1] - "DVD Shrink.ss.rar" yEnc
-		else if (preg_match('/^(\(.+?\) \[)\d+(\/\d+] - ").+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+		else if (preg_match('/^(\((.+?)\) \[)\d+(\/\d+] - ").+?" yEnc$/', $this->subject, $match))
+			return $match[1].$match[3];//return array('hash' => $match[1].$match[3], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//WinASO.Registry.Optimizer.4.8.0.0(1/4) - "WinASO_RO_v4.8.0.rar" yEnc
 		else if (preg_match('/^([a-zA-Z0-9].+?)\(\d+(\/\d+\) - ").+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[1], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_PC_0DAY);
 		else
 			return $this->generic();
 	}
@@ -183,33 +185,36 @@ class nameCleaning
 	public function anime()
 	{
 		//([AST] One Piece Episode 301-350 [720p]) [007/340] - "One Piece episode 301-350.part006.rar" yEnc
-		if (preg_match('/^(\(\[.+?\] .+?\) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		if (preg_match('/^(\((\[.+?\] .+?)\) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//[REPOST][ New Doraemon 2013.05.03 Episode 328 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [35/61] - "doraclub.org-doraemon-20130503-b8de1f8e.r32" yEnc
-		else if (preg_match('/^(\[.+?\]\[ .+? \] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\[.+?\]\[ (.+?) \] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D] [000/357] - "[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D].nzb" yEnc
-		else if (preg_match('/^(\[.+?\] .+? \[[A-F0-9]+\] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\[.+?\] (.+?) \[[A-F0-9]+\] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) - [01/65] - "[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) .md5" yEnc
-		else if (preg_match('/^(\[.+?\] .+? - \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\[.+?\] (.+?) - \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//(01/27) - Maid.Sama.Jap.dubbed.german.english.subbed - "01 Misaki ist eine Maid!.divx" - 6,44 GB - yEnc
-		else if (preg_match('/^\(\d+(\/\d+\) - .+? - ").+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\(\d+(\/\d+\) - (.+?) - ").+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//[ New Doraemon 2013.06.14 Episode 334 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [01/60] - "doraclub.org-doraemon-20130614-fae28cec.nfo" yEnc
-		else if (preg_match('/^(\[ .+? \] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\[ (.+?) \] \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//<TOWN> www.town.ag > sponsored by www.ssl-news.info > (1/3) "HolzWerken_40.par2" - 43,89 MB - yEnc
 		//<TOWN> www.town.ag > sponsored by www.ssl-news.info > (1/5) "[HorribleSubs]_Aku_no_Hana_-_01_[480p].par2" - 157,13 MB - yEnc
 		else if (preg_match('/^<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+(\/\d+\) ".+?)'.$this->e0.' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_TV_ANIME);
 		//(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
-		else if (preg_match('/^\(\d+\/\d+\)(.+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+?) ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\(\d+\/\d+\)(.+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?(.+?)) ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[3], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
+		//Overman King Gainer [Dual audio, EngSub] Exiled Destiny - [002/149] - "Overman King Gainer.part001.rar" yEnc
+		else if (preg_match('/^(.+? \[Dual [aA]udio, EngSub\] .+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[1], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_TV_ANIME);
 		//blazedazer_NAN000010 [140/245] - "blazedazer_NAN000010.part138.rar" yEnc
-		else if (preg_match('/^(blazedazer_.+? \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^((blazedazer_.+?) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		else
 			return $this->generic();
 	}
@@ -1122,7 +1127,7 @@ class nameCleaning
 		if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+] - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1];
 		else
-			return $this->generic($subject);
+			return $this->generic();
 	}
 
 	// a.b.sounds.lossless

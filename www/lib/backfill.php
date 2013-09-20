@@ -20,7 +20,7 @@ class Backfill
 	public function backfillAllGroups($groupName='')
 	{
 		if ($this->hashcheck == 0)
-			exit("You must run update_binaries.php to update your collectionhash.\n");
+			exit("\033[38;5;9mYou must run update_binaries.php to update your collectionhash.\033[0m\n");
 		$groups = new Groups();
 
 		if ($groupName != '')
@@ -126,7 +126,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo 'Getting '.(number_format($last-$first+1)).' articles from '.$data['group'].', '.$left.' group(s) left. ('.(number_format($first-$targetpost))." articles in queue).\n";
+			echo "Getting ".(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. \033[1;33m(".(number_format($first-$targetpost))." articles in queue).\033[0m\n";
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
@@ -283,7 +283,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "\nGetting ".($last-$first+1).' articles from '.$data['group'].', '.$left.' group(s) left. ('.($first-$targetpost)." articles in queue).\n";
+			echo "\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. \033[1;33m(".(number_format($first-$targetpost))." articles in queue).\033[0m\n";
 			flush();
 
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
@@ -347,7 +347,7 @@ class Backfill
 				$msgs = $nntp->getOverview($post."-".$post,true,false);
 				if (PEAR::isError($msgs))
 				{
-					echo "Error {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.\n";
+					echo "\033[38;5;9mError {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.\033[0m\n";
 					$nntp->doQuit();
 					if ($old === true)
 						return false;
