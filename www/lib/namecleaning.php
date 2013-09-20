@@ -36,25 +36,25 @@ class nameCleaning
 	*					'hash' =>		'[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml" yEnc',
 	*					'subject' =>	'Trance.2013.DVDRiP.XViD-SML',
 	*					'rstatus' =>	Namefixer::NF_NAMECLEANING,
-	* 					'cat' =>		Category::CAT_MOVIE_SD
-	* 					)
+	*					'cat' =>		Category::CAT_MOVIE_SD
+	*					)
 	*
 	*		## If our regex picks up HD movies as well. Then set name status to new and category to misc, and category.php will categorize it. ##
 	*		return array(
 	*					'hash' =>		'[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml" yEnc',
 	*					'subject' =>	'Trance.2013.DVDRiP.XViD-SML',
 	*					'rstatus' =>	Namefixer::NF_NEW,
-	* 					'cat' =>		Category::CAT_MISC
-	* 					)
+	*					'cat' =>		Category::CAT_MISC
+	*					)
 	*
 	*
-	* @param string		$subject				The usenet subject, ending with yEnc (part count removed from the end).
-	* @param string		$groupName				The name of the usenet group for the article.
-	* @param bool		$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
+	*	@param string		$subject				The usenet subject, ending with yEnc (part count removed from the end).
+	*	@param string		$groupName				The name of the usenet group for the article.
+	*	@param bool		$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
 	*
 	* 
-	* @return
-	*  - (array)	'hash'		string	Unique parts of the $subject string.
+	*	@return
+	*	- (array)	'hash'		string	Unique parts of the $subject string.
 	*				'subject'	string	Nice looking part of the $suject string.
 	*				'rstatus'	int		relnamestatus
 	*				'cat'		int		category ID
