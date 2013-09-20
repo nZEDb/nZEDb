@@ -1104,7 +1104,7 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		$rescol = $db->queryDirect('SELECT *, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE filecheck = 3 AND filesize > 0 '. $where.' LIMIT '.$this->stage5limit);
+		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE filecheck = 3 AND filesize > 0 '. $where.' LIMIT '.$this->stage5limit);
 		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
@@ -1280,6 +1280,7 @@ class Releases
 		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
 		$nzbcount = 0;
+		$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
 		$where = (!empty($groupID)) ? " AND groupid = " . $groupID : "";
 
 		// Create NZB.
@@ -1288,18 +1289,17 @@ class Releases
 		$stage5 = TIME();
 		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where);
 		$total = count($resrel);
-		if (count($resrel) > 0)
+		if ($total > 0)
 		{
 			foreach ($resrel as $rowrel)
 			{
-				$nzb_guid = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryid'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat);
-				if($nzb_guid != false)
+				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryid'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $cat);
+				if($nzb_create === true)
 				{
-					$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE id = %d", $db->escapestring(md5($nzb_guid)), $rowrel['id']));
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
+						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount, $total));
 				}
 			}
 		}
