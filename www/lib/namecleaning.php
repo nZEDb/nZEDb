@@ -39,7 +39,7 @@ class nameCleaning
 	* 					'cat' =>		Category::CAT_MOVIE_SD
 	* 					)
 	*
-	*		## If our regex picks up HD movies as well. ##
+	*		## If our regex picks up HD movies as well. Then set name status to new and category to misc, and category.php will categorize it. ##
 	*		return array(
 	*					'hash' =>		'[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml" yEnc',
 	*					'subject' =>	'Trance.2013.DVDRiP.XViD-SML',
