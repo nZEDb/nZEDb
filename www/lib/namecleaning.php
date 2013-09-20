@@ -1122,7 +1122,7 @@ class nameCleaning
 		if (preg_match('/^(\[\d+\]-\[.+?\]-\[.+?\]-\[.+?\]-\[)\d+\/\d+] - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1];
 		else
-			return $this->generic($subject);
+			return $this->generic();
 	}
 
 	// a.b.sounds.lossless

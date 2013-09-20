@@ -207,16 +207,16 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				try {
-					if ($propername === true)
-						$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-					else
-						$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				} catch (PDOException $err) {
-					if ($this->echooutput)
-						echo "\033[01;31m.".$err."\n";
+				if ($propername === true)
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				else
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+				{
+					$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+					echo "!";
 				}
-				if (!isset($error))
+				else
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
@@ -227,7 +227,7 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
+							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relid));
 							if ($db->dbSystem() == "mysql")
 								$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							elseif ($db->dbSystem() == "pgsql")
@@ -249,15 +249,13 @@ class Import
 						}
 						else
 						{
-							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relID));
+							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relid));
 							$importfailed = true;
 							echo "-";
 						}
 					}
 				}
 			}
-			else
-				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 	}
 }
