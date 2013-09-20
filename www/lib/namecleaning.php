@@ -19,23 +19,45 @@ class nameCleaning
 		$this->nofiles = false;
 	}
 
-	/*
-		Cleans a usenet subject returning something that can tie many articles together.
-
-		$subject = The usenet subject, ending with yEnc (part count removed from the end).
-		$groupName = The name of the group for the article.
-		$nofiles = Wether the article has a filecount or not.
-
-		First, try against groups with strict regex.
-		If that fails, try against more generic regex.
-		$nofiles can help with bunched releases, by having its own set of regex.
-
-		Example: Take the following subjects:
-		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[01/46] - "tranceb-xvid-sml.par2" yEnc
-		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[02/46] - "tranceb-xvid-sml.r00" yEnc
-
-		Return something like this :
-		[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml." yEnc
+	/**
+	* Cleans a usenet subject returning a string that can be used to "merge" files together, a pretty subject, a categoryID and the name status.
+	*
+	* 
+	*	Usage Example:
+	*		$subject = 
+	*			[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[01/46] - "tranceb-xvid-sml.par2" yEnc
+	*		$groupName = 
+	*			alt.binaries.moovee
+	*		$nofiles =
+	*			false
+	*
+	*		## Assuming our regex would always pick up SD movies. ##
+	*		return array(
+	*					'hash' =>		'[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml" yEnc',
+	*					'subject' =>	'Trance.2013.DVDRiP.XViD-SML',
+	*					'rstatus' =>	Namefixer::NF_NAMECLEANING,
+	* 					'cat' =>		Category::CAT_MOVIE_SD
+	* 					)
+	*
+	*		## If our regex picks up HD movies as well. ##
+	*		return array(
+	*					'hash' =>		'[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[/46] - "tranceb-xvid-sml" yEnc',
+	*					'subject' =>	'Trance.2013.DVDRiP.XViD-SML',
+	*					'rstatus' =>	Namefixer::NF_NEW,
+	* 					'cat' =>		Category::CAT_MISC
+	* 					)
+	*
+	*
+	* @param string		$subject				The usenet subject, ending with yEnc (part count removed from the end).
+	* @param string		$groupName				The name of the usenet group for the article.
+	* @param bool		$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
+	*
+	* 
+	* @return
+	*  - (array)	'hash'		string	Unique parts of the $subject string.
+	*				'subject'	string	Nice looking part of the $suject string.
+	*				'rstatus'	int		relnamestatus
+	*				'cat'		int		category ID
 	*/
 
 	// TODO: Get rid of releaseCleaner and return an array with both results.
