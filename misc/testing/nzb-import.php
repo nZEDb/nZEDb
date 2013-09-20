@@ -192,7 +192,10 @@ else
 			{
 				$group = (string)$group;
 				if (array_key_exists($group, $siteGroups))
+				{
+					$groupName = $group;
 					$groupID = $siteGroups[$group];
+				}
 
 				$groupArr[] = $group;
 
@@ -228,7 +231,8 @@ else
 		{
 			$relguid = sha1(uniqid().mt_rand());
 			$nzb = new NZB();
-			$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
+			$propername = false;
+			$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
 			if (!is_array($cleanerName))
 				$cleanName = $cleanerName;
 			else

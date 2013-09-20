@@ -1366,12 +1366,8 @@ class nameCleaning
 
 		Return: Trance.2013.DVDRiP.XViD-SML
 	*/
-	public function releaseCleaner($subject, $groupID)
+	public function releaseCleaner($subject, $groupName)
 	{
-		$groups = new Groups();
-		$groupName = $groups->getByNameByID($groupID);
-
-
 		if ($groupName === "alt.binaries.0day.stuffz")
 		{
 			//ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0 - [08/35] - "ArcSoft.TotalMedia.Theatre.v5.0.1.87-Lz0.vol43+09.par2" yEnc
