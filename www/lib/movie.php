@@ -569,19 +569,6 @@ class Movie
 						continue;
 					}
 
-					if ($check === false && $year === true)
-					{
-						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title LIKE %s', "'%".$parsed['title']."%'"));
-						if ($check !== false)
-						{
-							$imdbId = $this->domovieupdate('tt'.$check['imdbid'], 'Local DB',  $arr['id'], $db);
-							if ($imdbId === false)
-								$db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-
-							continue;
-						}
-					}
-
 					// Check on trakt.
 					$traktimdbid = $trakt->traktMoviesummary($moviename, 'imdbid');
 					if ($traktimdbid !== false)
@@ -668,6 +655,18 @@ class Movie
 						continue;
 					else if ($this->yahooSearch($moviename, $arr["id"], $db) === true)
 						continue;
+					else if ($check === false && $year === true)
+					{
+						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title LIKE %s', "'%".$parsed['title']."%'"));
+						if ($check !== false)
+						{
+							$imdbId = $this->domovieupdate('tt'.$check['imdbid'], 'Local DB',  $arr['id'], $db);
+							if ($imdbId === false)
+								$db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
+
+							continue;
+						}
+					}
 					else
 					{
 						echo "Exceeded request limits on google.com bing.com and yahoo.com.\n";
