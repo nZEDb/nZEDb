@@ -386,19 +386,21 @@ Class Predb
 		$consoletools = new ConsoleTools();
 		$updated = 0;
 		if($this->echooutput)
-			echo "\nQuerying DB for matches in preDB titles with release searchnames.\n";
+			echo "Querying DB for matches in preDB titles with release searchnames.";
 
 		$res = $db->prepare("SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL");
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)
 		{
+			echo "\n";
 			foreach ($res as $row)
 			{
 				$run = $db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					$consoletools->overWrite("Matching up preDB titles with release search names: ".$consoletools->percentString(++$updated,$total));
 			}
+			echo "\n";
 		}
 		return $updated;
 	}
