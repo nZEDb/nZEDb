@@ -1113,12 +1113,14 @@ class Releases
 
 			foreach ($rescol as $rowcol)
 			{
-				$dupe = false;
-				$propername = false;
-				$cleanName = $err = "";
-				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
+				$propername = $dupe = false;
+				$cleanName = $err = '';
+				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
+				/*$ncarr = $namecleaning->collectionsCleaner($subject, $groupName);
+				$cleanerName = $ncarr['subject'];
+				$category = $ncarr['cat'];
+				$relstat = $ncar['rstatus'];*/
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
@@ -1790,6 +1792,8 @@ class Releases
 					$nofiles = false;
 
 				$groupName = $groups->getByNameByID($row['groupid']);
+				/*$ncarr = $namecleaner->collectionsCleaner($row['bname'], $groupName, $nofiles);
+				$newSHA1 = sha1($ncarr['hash']).$row['fromname'].$row['groupid'].$row['totalfiles']);*/
 				$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $groupName, $nofiles).$row['fromname'].$row['groupid'].$row['totalfiles']);
 				$cres = $db->queryOneRow(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 				if(!$cres)
