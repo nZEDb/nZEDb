@@ -331,6 +331,11 @@ class Binaries
 					// Used for the sha1 hash (see below).
 					$cleansubject = $namecleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 
+					/*
+					$ncarr = $namecleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = $ncarr['hash'];
+					*/
+
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug)
 					{

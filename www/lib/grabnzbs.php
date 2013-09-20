@@ -170,7 +170,10 @@ class Import
 				{
 					$group = (string)$group;
 					if (array_key_exists($group, $siteGroups))
+					{
+						$groupName = $group;
 						$groupID = $siteGroups[$group];
+					}
 					$groupArr[] = $group;
 
 					if ($binaries->isBlacklisted($msg, $group))
@@ -198,8 +201,12 @@ class Import
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
-				$cleanName = $propername = "";
+				$cleanName = $propername = '';
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
+				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
+				$cleanerName = $ncarr['subject'];
+				$category = $ncarr['cat'];
+				$relstat = $ncar['rstatus'];*/
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
