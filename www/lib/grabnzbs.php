@@ -134,21 +134,21 @@ class Import
 				$postername[] = $fromname;
 				$unixdate = (string)$file->attributes()->date;
 				$totalFiles++;
-				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
+				$date = date('Y-m-d H:i:s', (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
-				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
+				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 
 				// Make a fake message object to use to check the blacklist.
-				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
+				$msg = array('Subject' => $firstname['0'], 'From' => $fromname, 'Message-ID' => '');
 
 				// If the release is in our DB already then don't bother importing it.
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s",
+					$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s',
 						$db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
@@ -201,8 +201,8 @@ class Import
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
-				$cleanName = $propername = '';
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
+				$propername = false;
+				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
 				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];

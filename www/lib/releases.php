@@ -1104,7 +1104,7 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		$rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 ". $where." LIMIT ".$this->stage5limit);
+		$rescol = $db->queryDirect('SELECT *, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE filecheck = 3 AND filesize > 0 '. $where.' LIMIT '.$this->stage5limit);
 		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
@@ -1116,8 +1116,8 @@ class Releases
 				$propername = $dupe = false;
 				$cleanName = $err = '';
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
-				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
-				/*$ncarr = $namecleaning->collectionsCleaner($subject, $groupName);
+				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
+				/*$ncarr = $namecleaning->collectionsCleaner($subject, $rowcol['gname']);
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];
 				$relstat = $ncar['rstatus'];*/
