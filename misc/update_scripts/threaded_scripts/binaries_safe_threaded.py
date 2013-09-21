@@ -19,7 +19,7 @@ import lib.info as info
 import datetime
 import math
 
-print("\nBinary Safe Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBinary Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -77,9 +77,6 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	#print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
-	#time.sleep(2)
-
 	def signal_handler(signal, frame):
 		sys.exit(0)
 	signal.signal(signal.SIGINT, signal_handler)
@@ -104,36 +101,40 @@ def main():
 			resp, count, first, last, name = s.group(group[0])
 			time.sleep(0.01)
 		except nntplib.NNTPError:
-			cur.execute("update groups set active = 0 where name = %s" % (mdb.escape_string(group[0])))
+			cur.execute("update groups set active = 0 where name = {}".format(mdb.escape_string(group[0])))
 			con.autocommit(True)
-			print("%s not found, disabling." %(datas[0]))
+			print("{} not found, disabling.".format(datas[0]))
 		if name:
 			count = last - group[1] - 1
-			if count > 0:
+			#only update groups that have at least 1000 headers to grab
+			if count > 1000:
 				if (int(count) - maxmssgs) > 0:
 					remains = "{:,}".format(int(count) - maxmssgs)
 				else:
 					remains = 0
-				print("\nGetting %s articles (%s to %s) from %s - %s in queue." % ("{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last)), name, remains))
+				print("\nGetting {} articles ({} to {}) from {} \033[1;33m({} articles in queue).\033[0m".format("{:,}".format(int(count)), "{:,}".format(group[1]+1), "{:,}".format(int(last)), name, remains))
 				groups.append(group[0])
 				finals.append(int(last))
 			if count <= maxmssgs and count > 0:
 				run += 1							
-				my_queue.put("'%s' %d %d %d" % (group[0], int(last), group[1]+1, run))
+				my_queue.put("{} {} {} {}".format(mdb.escape_string(group[0]), int(last), group[1]+1, run))
 			elif count > 0:
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					my_queue.put("'%s' %d %d %d" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
+					my_queue.put("{} {} {} {}".format(mdb.escape_string(group[0]), group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
-				my_queue.put("'%s' %d %d %d" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
+				my_queue.put("{} {} {} {}".format(mdb.escape_string(group[0]), group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 	my_queue.join()
 	resp = s.quit
 	for group in list(zip(groups, finals)):
 		run +=1
-		final = ("'%s' %d Binary" % (group[0], group[1]))
+		final = ("{} {} Binary".format(mdb.escape_string(group[0]), group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
+
+	print("\nUpdate Binaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()

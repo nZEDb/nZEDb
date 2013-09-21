@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nPostProcess Old Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -75,7 +75,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s items" % (run_threads[0], "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} items".format(run_threads[0], "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -96,8 +96,8 @@ def main(args):
 
 	my_queue.join()
 
-	print("\nPostProcess Old Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nPostProcess Old Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

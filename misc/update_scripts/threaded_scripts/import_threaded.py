@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nNZB Import Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -40,7 +40,7 @@ bulk = dbgrab[0][2]
 
 if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 	print("We will be using filename as searchname")
-print("Sorting Folders in %s, be patient." % (nzbs))
+print("Sorting Folders in {}, be patient.".format(nzbs))
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
 
 #close connection to mysql
@@ -78,7 +78,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s folders" % (run_threads, "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} folders".format(run_threads, "{:,}".format(len(datas))))
 	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 		print("We will be using filename as searchname")
 	time.sleep(2)
@@ -102,19 +102,19 @@ def main(args):
 				my_queue.put(os.path.join(nzbs,gnames))
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
-				my_queue.put("'%s' '%s'" % (os.path.join(nzbs,gnames), "true"))
+				my_queue.put("{} {}".format(mdb.escape_string(os.path.join(nzbs,gnames)), "true"))
 	if len(datas) == 0:
 		if int(use_true[0]) == 1:
 			my_queue.put(nzbs)
 		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
-			my_queue.put("%s %s" % (nzbs, "true"))
+			my_queue.put("{} {}".format(nzbs, "true"))
 
 	my_queue.join()
 
 	final = "true"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\nNZB Import Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nNZB Import Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 
 if __name__ == '__main__':

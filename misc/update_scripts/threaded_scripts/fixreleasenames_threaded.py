@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nfixReleasesNames Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nfixReleasesNames Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
 
@@ -40,17 +40,21 @@ cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
 perrun = cur.fetchone()
 	
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	cur.execute("SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	cur.execute("SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	cur.execute("SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21) AND id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d" % (int(perrun[0]) * int(run_threads[0])))
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21) AND id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
 #close connection to mysql
@@ -89,7 +93,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s releases using %s" % (run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
+	print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -107,21 +111,21 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
-			my_queue.put("'%s' '%s'" % ("nfo", release[0]))
+			my_queue.put("{} {}".format("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
-			my_queue.put("'%s' '%s'" % ("filename", release[0]))
+			my_queue.put("{} {}".format("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
-			my_queue.put("'%s' '%s'" % ("md5", release[0]))
+			my_queue.put("{} {}".format("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
-			my_queue.put("'%s' '%s' '%s' '%s'" % ("par2", release[0], release[1], release[2]))
+			my_queue.put("{} {} {} {}".format("par2", release[0], mdb.escape_string(release[1]), release[2]))
 
 	my_queue.join()
 
-	print("\nfixReleaseNames Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nfixReleaseNames Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()

@@ -19,7 +19,7 @@ import lib.info as info
 import datetime
 import math
 
-print("\nBackfill Safe Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -68,10 +68,10 @@ while (count - first) < 10000:
 
 	#query to grab backfill groups
 	if len(sys.argv) == 1:
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval %s day) < first_record_postdate %s" % (backfilldays, group))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {} day) < first_record_postdate {}".format(backfilldays, group))
 		datas = cur.fetchone()
 	else:
-		cur.execute("SELECT name, first_record FROM groups WHERE name = '%s' AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00'" % (sys.argv[1]))
+		cur.execute("SELECT name, first_record FROM groups WHERE name = {} AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00000'".format(mdb.escape_string(sys.argv[1])))
 		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")
@@ -85,25 +85,25 @@ while (count - first) < 10000:
 		resp, count, first, last, name = s.group(datas[0])
 		time.sleep(0.1)
 	except nntplib.NNTPError:
-		cur.execute("update groups set backfill = 0 WHERE name = %s" % (mdb.escape_string(datas[0])))
+		cur.execute("update groups set backfill = 0 WHERE name = {}".format(mdb.escape_string(datas[0])))
 		con.autocommit(True)
-		print("%s not found, disabling." %(datas[0]))
+		print("{} not found, disabling.".format(datas[0]))
 	resp = s.quit
 
 	if (datas[1] - first) < 0:
-		cur.execute("update groups set backfill = 0 WHERE name = %s" % (mdb.escape_string(datas[0])))
+		cur.execute("update groups set backfill = 0 WHERE name = {}".format(mdb.escape_string(datas[0])))
 		con.autocommit(True)
-		print("%s has invalid first_post, disabling." %(datas[0]))
+		print("{} has invalid first_post, disabling.".format(datas[0]))
 
 	if name:
-		print("Group %s has %s articles, in the range %s to %s" % (name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
-		print("Our oldest post is: %s" % ("{:,}".format(datas[1])))
-		print("Available Posts: %s" % ("{:,}".format(datas[1] - first)))
+		print("Group {} has {} articles, in the range {} to {}".format(name, "{:,}".format(int(count)), "{:,}".format(int(first)), "{:,}".format(int(last))))
+		print("Our oldest post is: {}".format("{:,}".format(datas[1])))
+		print("Available Posts: {}".format("{:,}".format(datas[1] - first)))
 		sys.exit
 		count = datas[1]
 
 		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:
-			group = ("%s 10000" % (datas[0]))
+			group = ("{} 10000".format(datas[0]))
 			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 			cur.close()
 			con.close()
@@ -146,7 +146,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s and grabbing %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+	print("We will be using a max of {} threads, a queue of {} and grabbing {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -161,21 +161,21 @@ def main(args):
 			p.start()
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
-		my_queue.put("'%s' %d %d %d" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
+		my_queue.put("{} {} {} {}".format(mdb.escape_string(datas[0]), datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
 
 	my_queue.join()
 
-	final = ("%s %d Backfill" % (datas[0], int(datas[1] - (maxmssgs * geteach))))
+	final = ("{} {} Backfill".format(mdb.escape_string(datas[0]), int(datas[1] - (maxmssgs * geteach))))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
-	group = ("%s %d" % (datas[0], 1000))
+	group = ("{} {}".format(mdb.escape_string(datas[0]), 1000))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
-		print("\nWe used %s threads, a queue of %s and grabbed %s headers" % (run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 	else:
-		print("\nWe used %s threads, a queue of %s and grabbed %s headers" % (geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
+		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 
-	print("Backfill Safe Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Backfill Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 
 if __name__ == '__main__':

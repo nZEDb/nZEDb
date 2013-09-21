@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\nPartrepair Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nPartrepair Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -42,7 +42,7 @@ datas = []
 maxtries = 0
 
 while (len(datas) < run_threads * maxpartrepair) and maxtries < 5:
-	cur.execute("select groupID, numberID from partrepair where attempts between %d and 0 limit %d" % (maxtries, run_threads * maxpartrepair))
+	cur.execute("select groupID, numberID from partrepair where attempts between {} and 0 limit {}".format(maxtries, run_threads * maxpartrepair))
 	datas = cur.fetchall()
 	maxtries = maxtries + 1
 
@@ -83,7 +83,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s groups" % (run_threads, "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -100,12 +100,12 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		my_queue.put("'%s' '%s'" % (release[0], release[1]))
+		my_queue.put("{} {}".format(release[0], release[1]))
 
 	my_queue.join()
 
-	print("\nPartrepair Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nPartrepair Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()

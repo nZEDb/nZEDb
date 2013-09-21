@@ -18,7 +18,7 @@ import lib.info as info
 import signal
 import datetime
 
-print("\n\nGrabNZBs Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -37,7 +37,7 @@ if int(grab[0]) == 0:
 cur.execute("select value from site where setting = 'delaytime'")
 delay = cur.fetchone()
 
-cur.execute("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts union select distinct(collectionhash) from nzbs where dateadded < now() - interval %d hour" % int(delay[0]))
+cur.execute("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts union select distinct(collectionhash) from nzbs where dateadded < now() - interval {} hour".format(int(delay[0])))
 datas = cur.fetchall()
 if len(datas) == 0:
 	sys.exit("No NZBs to Grab")
@@ -78,7 +78,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s nzbs" % (run_threads[0], "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))))
 	print("+ = nzb imported, - = probably not nzb, ! = duplicate")
 	time.sleep(2)
 
@@ -102,8 +102,8 @@ def main():
 
 	final = "limited"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\n\nGrabNZBs Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 
 if __name__ == '__main__':
