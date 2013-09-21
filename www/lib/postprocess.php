@@ -51,6 +51,22 @@ class PostProcess
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
 
+		/*
+		 * List of supported (popularish) mediainfo audio containers:
+		 * aac|ac3|aiff|ape|dts|flac|mka|mp2|mp3|ogg|ra|w64|wav|wma
+		 * 
+		 * List of supported (popularish) mediainfo video containers:
+		 * avi|f4v|ifo|m1v|m2v|m4v|mkv|mov|mp4|mpeg|mpg|mpgv|mpv|ogm|ogv|qt|rm|rmvb|ts|vob|wmv
+		 * 
+		 * List of supported (popularish) getid3 audio containers:
+		 * aac|ac3|aiff|ape|dts|flac|la|m4a|midi|mp1|mp2|mp3|mp4|mpc|ogg|ra|wav|wv
+		 * 
+		 * List of supported (popularish) getid3 audio containers:
+		 * avi|mpeg|mpg|qt|rm|rmvb|webm|wmv
+		 * 
+		 * getid3 can also parse zip|tar|gzip|jpeg|gif etc... can maybe be used to filter NFO's
+		 */
+
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->ignorebookregex = "/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i";
 		$this->supportfiles = "/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb";
