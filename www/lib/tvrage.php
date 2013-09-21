@@ -58,7 +58,30 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		$country = preg_replace('/United States/i', 'US', $country);
 		$db = new DB();
-		$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+		if ($db->dbSystem() == 'mysql')
+			$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+		else if ($db->dbSystem() == 'pgsql')
+		{
+			if ($Stmt = $db->Prepare('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, imgdata, createddate) VALUES (?, ?, ?, ?, ?, ?, NOW())'))
+			{
+					$Stmt->bindParam(1, $rageid, PDO::PARAM_INT);
+					$Stmt->bindParam(2, $releasename, PDO::PARAM_STR);
+					$Stmt->bindParam(3, $desc, PDO::PARAM_STR);
+					$Stmt->bindParam(4, substr($genre, 0, 64), PDO::PARAM_STR);
+					$Stmt->bindParam(5, $country, PDO::PARAM_STR);
+					$Stmt->bindParam(6, $imgbytes, PDO::PARAM_LOB);
+			}
+			else
+				exit("Couldn't prepare tvrage insert statement!\n");
+			$db->beginTransaction();
+			try {
+				$Stmt->execute();
+				$db->Commit();
+			} catch (PDOException $e) {
+				printf($e);
+				$db->Rollback();
+			}
+		}
 	}
 
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
