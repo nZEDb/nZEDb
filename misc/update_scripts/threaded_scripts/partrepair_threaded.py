@@ -24,7 +24,7 @@ if conf['DB_SYSTEM'] == "mysql":
 		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
-		import psycopg as mdb
+		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")

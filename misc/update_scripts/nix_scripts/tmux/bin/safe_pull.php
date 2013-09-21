@@ -4,6 +4,7 @@ require_once(WWW_DIR."lib/backfill.php");
 require_once(WWW_DIR."lib/binaries.php");
 require_once(WWW_DIR."lib/groups.php");
 
+echo $argv[1]."\n";
 if (isset($argv[1]))
 {
 	$pieces = explode(" ", $argv[1]);
@@ -19,6 +20,7 @@ if (isset($argv[1]))
 	}
 	elseif (isset($pieces[1]) && $pieces[0] == "binupdate")
 	{
+		echo $pieces[1]"\n";
 		$binaries = new Binaries();
 		$grp = new Groups();
 		$group = $grp->getByName($pieces[1]);

@@ -25,7 +25,7 @@ if conf['DB_SYSTEM'] == "mysql":
 		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
-		import psycopg as mdb
+		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
@@ -75,8 +75,9 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
+					print(my_id)
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
-					time.sleep(.1)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():
@@ -98,15 +99,21 @@ def main():
 	time.sleep(0.05)
 	print("Connectiong to USP")
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	time.sleep(0.1)
+	print("Connectiong to USP")
+	time.sleep(0.05)
 	run = 0
 	finals = []
 	groups = []
-	name = ""
+	#name = ""
 	for group in datas:
+		print(group[0])
+		print(group[1])
+		
 		try:
+			print(group[0])
 			resp, count, first, last, name = s.group(group[0])
-			time.sleep(0.05)
+			time.sleep(0.1)
+			print(name)
 		except nntplib.NNTPError:
 			print("\033[38;5;9m{} not found, skipping.\033[0m\n".format(group[0]))
 		if name:
@@ -117,10 +124,12 @@ def main():
 			#start new groups using binaries.php
 			if group[1] == 0:
 				run += 1
+				print("this 1")
 				my_queue.put("binupdate %s" % (group[0]))
 			#run small groups using binaries.php
 			elif count != 0 and count <= maxmssgs * 3:
 				run += 1
+				print("this 2")
 				my_queue.put("binupdate %s" % (group[0]))
 			#thread large groups using backfill.php
 			elif count > maxmssgs:
@@ -128,11 +137,14 @@ def main():
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
+					print("this 3")
 					my_queue.put("%s %s %s %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
+				print("this 4")
 				my_queue.put("%s %s %s %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 				groups.append(group[0])
 				finals.append(int(last))
+				print("here")
 	my_queue.join()
 	resp = s.quit
 	for group in list(zip(groups, finals)):
