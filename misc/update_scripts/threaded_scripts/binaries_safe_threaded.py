@@ -45,7 +45,7 @@ run_threads = int(dbgrab[0][0])
 maxmssgs = int(dbgrab[0][1])
 
 #query to grab all active groups
-cur.execute("SELECT name, last_record FROM groups WHERE active = 1 ORDER BY last_record ASC")
+cur.execute("SELECT name, last_record FROM groups WHERE active = 1")
 datas = cur.fetchall()
 if not datas:
 	print("No Groups activated")
@@ -102,12 +102,13 @@ def main():
 	run = 0
 	finals = []
 	groups = []
+	name = ""
 	for group in datas:
 		try:
 			resp, count, first, last, name = s.group(group[0])
 			time.sleep(0.05)
 		except nntplib.NNTPError:
-			print("\033[38;5;9m{} not found, skipping.\033[0m\n".format(datas[0]))
+			print("\033[38;5;9m{} not found, skipping.\033[0m\n".format(group[0]))
 		if name:
 			if group[1] == 0:
 				count = 0

@@ -42,6 +42,8 @@ if int(grab[0]) == 0:
 	sys.exit("GrabNZBs is disabled")
 cur.execute("SELECT value FROM site WHERE setting = 'delaytime'")
 delay = cur.fetchone()
+cur.execute("SELECT COUNT(*) FROM collections")
+collstart = cur.fetchone()
 
 run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s hour"
 cur.execute(run, (int(delay[0])))
@@ -52,10 +54,6 @@ if len(datas) == 0:
 #get threads for update_binaries
 cur.execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
 run_threads = cur.fetchone()
-
-#close connection to mysql
-cur.close()
-con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -110,7 +108,14 @@ def main():
 	final = "limited"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
 	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	cur.execute("SELECT COUNT(*) FROM collections")
+	collend = cur.fetchone()
+	print("{} duplicate Collections were deleted during this process.\n\n".format("{:,}".format(collstart[0]-collend[0])))
+
+	#close connection to mysql
+	cur.close()
+	con.close()
 
 if __name__ == '__main__':
 	main()
