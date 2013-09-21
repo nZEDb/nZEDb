@@ -24,6 +24,8 @@ if (isset($argv[1]) && $argv[1] == "full")
 		{
 			$nc = new nameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
@@ -61,6 +63,8 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		{
 			$nc = new nameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
@@ -98,6 +102,8 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
 		{
 			$nc = new nameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
