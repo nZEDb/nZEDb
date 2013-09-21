@@ -88,7 +88,12 @@ require_once(WWW_DIR.'lib/site.php');
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 		else
 			$maxage = '';
 
@@ -139,7 +144,12 @@ require_once(WWW_DIR.'lib/site.php');
 
 		$maxage = '';
 		if ($maxage > 0)
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 
 		$exccatlist = '';
 		if (count($excludedcats) > 0)
