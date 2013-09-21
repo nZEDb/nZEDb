@@ -1237,7 +1237,15 @@ class Releases
 		}
 		else
 		{
-			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %d", $groupID, $groupID));
+			if ($db->dbSystem() == 'mysql')
+				$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %d", $groupID, $groupID));
+			else if ($db->dbSystem() == 'pgsql')
+			{
+				$resrel = array();
+				$s = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = ".$groupID);
+				if ($s['size'] > 0)
+					$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE size < %d AND groupid = %d', $s['size'], $groupID));
+			}
 			if (count($resrel) > 0)
 			{
 				foreach ($resrel as $rowrel)
@@ -1261,7 +1269,15 @@ class Releases
 				}
 			}
 
-			$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID, $groupID));
+			if ($db->dbSystem() == 'mysql')
+				$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID, $groupID));
+			else if ($db->dbSystem() == 'pgsql')
+			{
+				$resrel = array();
+				$f = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = ".$groupID);
+				if ($f['files'] > 0)
+					$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND groupid = %d', $f['files'], $groupID));
+			}
 			if (count($resrel) > 0)
 			{
 				foreach ($resrel as $rowrel)
@@ -1516,8 +1532,7 @@ class Releases
 		}
 		else if ($db->dbSystem() == 'pgsql')
 		{
-			// TODO : < (NOW() - INTERVAL %d HOUR)    doesnt work in pgsql.
-			/*$idr = $db->query(sprintf('SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL %d HOUR) '.$where, $page->site->partretentionhours));
+			$idr = $db->query(sprintf("SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
 			if (count($idr) > 0)
 			{
 				foreach ($idr as $id)
@@ -1526,7 +1541,7 @@ class Releases
 					$reccount += $db->Exec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id['id']));
 				}
 			}
-			$reccount += $db->Exec(sprintf('DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR'.$where, $page->site->partretentionhours));*/
+			$reccount += $db->Exec(sprintf("DELETE FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
 		}
 		echo 'Query 1 took '.(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
 
@@ -1605,10 +1620,7 @@ class Releases
 				if ($db->dbSystem() == 'mysql')
 					$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
 				else if ($db->dbSystem() == 'pgsql')
-				{
-					// TODO : make it work in pgsql..
-					$resrel = array();
-				}
+					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
 				$total = count($resrel);
 				if(count($resrel) > 0)
 				{
