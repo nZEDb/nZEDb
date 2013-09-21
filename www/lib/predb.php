@@ -451,7 +451,12 @@ Class Predb
 
 		$tq = '';
 		if ($time == 1)
-			$tq = 'AND r.adddate > (NOW() - INTERVAL 3 HOUR)';
+		{
+			if ($db->dbSystem() == 'mysql')
+				$tq = 'AND r.adddate > (NOW() - INTERVAL 3 HOUR)';
+			else if ($db->dbSystem() == 'pgsql')
+				$tq = "AND r.adddate > (NOW() - INTERVAL '3 HOURS')";
+		}
 		$ct = '';
 		if ($cats == 1)
 			$ct = 'AND r.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050)';

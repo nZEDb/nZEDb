@@ -35,7 +35,11 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && isset($argv[2]) && $argv[2] == '
 else if (isset($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
 	echo 'Removing crap releases from the past '.$argv[2]." hour(s).\n";
-	$and = ' AND adddate > (NOW() - INTERVAL '.$argv[2].' HOUR) ORDER BY id ASC';
+	$db = new DB();
+	if ($db->dbSystem() == 'mysql')
+		$and = ' AND adddate > (NOW() - INTERVAL '.$argv[2].' HOUR) ORDER BY id ASC';
+	else if ($db->dbSystem() == 'pgsql')
+		$and = " AND adddate > (NOW() - INTERVAL '".$argv[2]." HOURS') ORDER BY id ASC";
 }
 else if (!isset($argv[2]) || $argv[2] !== 'full' || !is_numeric($argv[2]))
 	exit("ERROR: Wrong second argument.\n");

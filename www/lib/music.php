@@ -89,9 +89,14 @@ class Music
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 		else
-			$maxage = "";
+			$maxage = '';
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -141,9 +146,14 @@ class Music
 			$catsrch.= "1=2 )";
 		}
 
-		$maxage = "";
+		$maxage = '';
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)

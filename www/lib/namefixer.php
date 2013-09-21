@@ -29,8 +29,17 @@ class Namefixer
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-		$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 hour) GROUP BY rel.id ORDER BY postdate DESC";
+		$db = new DB;
+		if ($db->dbSystem() == 'mysql')
+		{
+			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
+		}
+		else if ($db->dbSystem() == 'pgsql')
+		{
+			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
+		}
 		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 		$this->fullall = " ORDER BY postdate DESC";
 		$this->done = $this->matched = false;
