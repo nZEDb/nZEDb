@@ -1184,7 +1184,13 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %s", $groupID['id'], $groupID['id']));
+				if ($db->dbSystem() == 'mysql')
+					$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %s", $groupID['id'], $groupID['id']));
+				else if ($db->dbSystem() == 'pgsql')
+				{
+					// TODO : make this work with pg..
+					$resrel = array();
+				}
 				if (count($resrel) > 0)
 				{
 					foreach ($resrel as $rowrel)
@@ -1208,7 +1214,13 @@ class Releases
 					}
 				}
 
-				$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID['id'], $groupID['id']));
+				if ($db->dbSystem() == 'mysql')
+					$resrel = $db->query(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID['id'], $groupID['id']));
+				else if ($db->dbSystem() == 'pgsql')
+				{
+					// TODO : make it work..
+					$resrel = array();
+				}
 				if (count($resrel) > 0)
 				{
 					foreach ($resrel as $rowrel)
@@ -1440,7 +1452,7 @@ class Releases
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = 0;
+		$reccount = 0;
 
 		$where = (!empty($groupID)) ? ' AND collections.groupid = '.$groupID : '';
 		$delq = 0;
@@ -1464,10 +1476,10 @@ class Releases
 			{
 				foreach ($idr as $id)
 				{
-					$reccount += $db->queryExec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
-					$reccount += $db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+					$reccount += $db->Exec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+					$reccount += $db->Exec(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
 				}
-				$reccount += $db->queryExec('DELETE FROM collections WHERE filecheck = 5 '.$where);
+				$reccount += $db->Exec('DELETE FROM collections WHERE filecheck = 5 '.$where);
 			}
 		}
 		if ($this->echooutput)
@@ -1481,7 +1493,7 @@ class Releases
 		$category = new Category();
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
-		$remcount = $passcount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
+		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
 		$where = (!empty($groupID)) ? ' AND collections.groupid = '.$groupID : '';
 
@@ -1500,16 +1512,17 @@ class Releases
 		}
 		else if ($db->dbSystem() == 'pgsql')
 		{
-			$idr = $db->query(sprintf('SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL %d HOUR) '.$where, $page->site->partretentionhours));
+			// TODO : < (NOW() - INTERVAL %d HOUR)    doesnt work in pgsql.
+			/*$idr = $db->query(sprintf('SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL %d HOUR) '.$where, $page->site->partretentionhours));
 			if (count($idr) > 0)
 			{
 				foreach ($idr as $id)
 				{
-					$reccount = $db->queryExec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
-					$reccount += $db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id['id']));
+					$reccount += $db->Exec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+					$reccount += $db->Exec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id['id']));
 				}
 			}
-			$reccount += $db->queryExec(sprintf('DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR'.$where, $page->site->partretentionhours));
+			$reccount += $db->Exec(sprintf('DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR'.$where, $page->site->partretentionhours));*/
 		}
 		echo 'Query 1 took '.(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
 
@@ -1585,7 +1598,13 @@ class Releases
 		{
 			if ($this->crosspostt != 0)
 			{
-				$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
+				if ($db->dbSystem() == 'mysql')
+					$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
+				else if ($db->dbSystem() == 'pgsql')
+				{
+					// TODO : make it work in pgsql..
+					$resrel = array();
+				}
 				$total = count($resrel);
 				if(count($resrel) > 0)
 				{

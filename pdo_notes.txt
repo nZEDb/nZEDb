@@ -17,3 +17,10 @@ DATE_SUB
 
 $airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ", $airdate) : '';
 */
+
+
+releases.php
+Line 1188ish
+1220ish
+1509ish
+1600ish

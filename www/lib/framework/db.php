@@ -101,7 +101,7 @@ class DB
 		}
 	}
 
-	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	// Used for deleting, updating (and inserting without needing the last insert id).
 	public function queryExec($query)
 	{
 		if ($query == '')
@@ -128,6 +128,21 @@ class DB
 			return false;
 		}
 	}
+
+	// Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	public function Exec($query)
+	{
+		if ($query == '')
+			return false;
+
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
+	}
+
 
 	// Return an array of rows, an empty array if no results.
 	// Optional: Pass true to cache the result with memcache.
