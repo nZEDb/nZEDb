@@ -1,32 +1,29 @@
 <?php
-
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/namecleaning.php");
-require_once(WWW_DIR."lib/nzbcontents.php");
-
-/* Values of relnamestatus:
- * 0  : New release, just inserted into the table.
- * 1  : Categorized release.
- * 								Previously (see 8,9,10): 2 : Fixed with namefixer.
- * 3  : Fixed with post proc (from mp3 tags or music.php).
- * 4  : Fixed with misc_sorter.
- * 5  : Fixed with decrypt hashes.
- * 6  : Matched properly in namecleaning.php's releaseCleaner function.
- * 7  : Fixed with PAR2.
- * 8  : Fixed with namefixer NFO.
- * 9  : Fixed with namefixer Files.
- * 10 : Fixed with namefixer preDB.
- * 11 : Fixed with predb.php
- * 12 : Fixed with requestID.
- * 20 : The release was checked by namefixer nfo but no name was found
- * 21 : The release was checked by namefixer filename but no name was found
- * 22 : The release was checked by namefixer par2 but no name was found
- */
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/category.php');
+require_once(WWW_DIR.'lib/groups.php');
+require_once(WWW_DIR.'lib/namecleaning.php');
+require_once(WWW_DIR.'lib/nzbcontents.php');
 
 class Namefixer
 {
+	// TODO: replace all queries using numbers to these constants.
+	const NF_NEW = 0;				// New release, just inserted into the table.
+	const NF_CATEGORIZED = 1;		// Categorized release.
+										// Previously 2 (now split into 8,9,10) : Fixed with namefixer.
+	const NF_POST_PROC = 3;			// Fixed with post proc (from mp3 tags or music.php).
+	const NF_MISC_SORTER = 4;		// Fixed with misc_sorter.
+	const NF_DECRYPT_HASHES = 5;	// Fixed with decrypt hashes.
+	const NF_NAMECLEANING = 6;		// Matched properly in namecleaning.php.
+	const NF_PAR2 = 7;				// Fixed with PAR2.
+	const NF_NF_NFO = 8;			// Fixed with namefixer NFO.
+	const NF_NF_FILES = 9;			// Fixed with namefixer Files.
+	const NF_NF_PREDB = 10;			// Fixed with namefixer preDB.
+	const NF_PREDB = 11;			// Fixed with predb.php
+	const NF_REQUID = 12;			// Fixed with requestID.
+	const NF_NF_NFO_F = 20;			// Checked by namefixer nfo but no name was found.
+	const NF_NFO_FILES_F = 21;		// Checked by namefixer filename but no name was found.
+	const NF_NF_PAR2_F = 22;		// Checked by namefixer par2 but no name was found.
 
 	function Namefixer($echooutput=true)
 	{

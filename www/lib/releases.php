@@ -1104,7 +1104,7 @@ class Releases
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		$rescol = $db->queryDirect("SELECT * FROM collections WHERE filecheck = 3 AND filesize > 0 ". $where." LIMIT ".$this->stage5limit);
+		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE filecheck = 3 AND filesize > 0 '. $where.' LIMIT '.$this->stage5limit);
 		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
@@ -1113,11 +1113,14 @@ class Releases
 
 			foreach ($rescol as $rowcol)
 			{
-				$propername = false;
-				$cleanName = $err = "";
-				$cleanArr = array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö');
-				$cleanRelName = str_replace($cleanArr, '', $rowcol['subject']);
-				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['groupid']);
+				$propername = $dupe = false;
+				$cleanName = $err = '';
+				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
+				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
+				/*$ncarr = $namecleaning->collectionsCleaner($subject, $rowcol['gname']);
+				$cleanerName = $ncarr['subject'];
+				$category = $ncarr['cat'];
+				$relstat = $ncar['rstatus'];*/
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
@@ -1126,18 +1129,17 @@ class Releases
 					$propername = $cleanerName['properlynamed'];
 				}
 				$relguid = sha1(uniqid().mt_rand());
-				try {
-					if ($propername != false)
-						$relid = $db->prepare(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 6)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-					else
-						$relid = $db->prepare(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-					$relid->execute();
-				} catch (PDOException $err) {
-					// Mark dupes filecheck = 5, so they will be deleted
-					if ($err->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
-						$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $db->escapeString($rowcol['collectionhash'])));
-				}
-				if (!isset($err))
+				if ($propername != false)
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 6)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				else
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)", $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+
+				// Mark dupes filecheck = 5, so they will be deleted
+				if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE collectionhash = %s", $db->escapeString($rowcol['collectionhash'])));
+				elseif (isset($relid->errorInfo[1]))
+					continue;
+				else
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1268,36 +1270,34 @@ class Releases
 	public function processReleasesStage5($groupID, $echooutput=false)
 	{
 		$db = new DB();
-		$nzb = new Nzb();
-		$page = new Page();
-		$cat = new Category();
-		$s = new Sites();
-		$version = $s->version();
-		$site = $s->get();
-		$nzbsplitlevel = $site->nzbsplitlevel;
-		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
 		$nzbcount = 0;
-		$where = (!empty($groupID)) ? " AND groupid = " . $groupID : "";
+		$where = (!empty($groupID)) ? " AND r.groupid = " . $groupID : "";
 
 		// Create NZB.
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where);
+		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE r.nzbstatus = 0 ".$where);
 		$total = count($resrel);
-		if (count($resrel) > 0)
+		if ($total > 0)
 		{
+			$nzb = new Nzb();
+			$s = new Sites();
+			$version = $s->version();
+			$site = $s->get();
+			$nzbsplitlevel = $site->nzbsplitlevel;
+			$nzbpath = $site->nzbpath;
+			$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
 			foreach ($resrel as $rowrel)
 			{
-				$nzb_guid = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryid'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), false, $version, $cat);
-				if($nzb_guid != false)
+				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
+				if($nzb_create === true)
 				{
-					$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE id = %d", $db->escapestring(md5($nzb_guid)), $rowrel['id']));
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount,$total));
+						$consoletools->overWrite("Creating NZBs:".$consoletools->percentString($nzbcount, $total));
 				}
 			}
 		}
@@ -1342,7 +1342,7 @@ class Releases
 			//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
 
 			// Look for records that potentially have regex titles.
-			$resrel = $db->query("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND  {$regexa} = 1 LIMIT 100" . $where);
+			$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND  {$regexa} = 1 LIMIT 100" . $where);
 			if (count($resrel) > 0)
 			{
 				echo $n;
@@ -1363,8 +1363,11 @@ class Releases
 							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
 							if ($newTitle != false && $newTitle != "")
 							{
-								$bFound = true;
-								$iFoundcnt++;
+								if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+								{ 
+									$bFound = true;
+									$iFoundcnt++;
+								}
 							}
 						}
 						else
@@ -1383,7 +1386,7 @@ class Releases
 						if ($this->echooutput)
 						{
 							echo	$n.$n."New name:  ".$newTitle.$n.
-								"Old name:  ".$rowrel['name'].$n.
+								"Old name:  ".$rowrel['searchname'].$n.
 								"New cat:   ".$newcatname.$n.
 								"Group:     ".$rowrel['groupname'].$n.
 								"Method:    "."requestID".$n.
@@ -1513,7 +1516,7 @@ class Releases
 			}
 			$reccount += $db->queryExec(sprintf("DELETE FROM collections dateadded < (NOW() - INTERVAL %d HOUR".$where, $page->site->partretentionhours));
 		}
-		echo "Query 1 took ".(TIME() - $timer1)." seconds.\n";
+		echo "Query 1 took ".(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
 
 		// Binaries/parts that somehow have no collection.
 		$timer2 = TIME();
@@ -1524,19 +1527,19 @@ class Releases
 			$db->queryExec("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = 0)");
 			$db->queryExec("DELETE FROM binaries WHERE collectionid = 0");
 		}
-		echo "Query 2 took ".(TIME() - $timer2)." seconds.\n";
+		echo "Query 2 took ".(TIME() - $timer2)." seconds (binaries/parts with no collections).\n";
 		// Parts that somehow have no binaries.
 		$timer3 = TIME();
 		$db->queryExec("DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)");
-		echo "Query 3 took ".(TIME() - $timer3)." seconds.\n";
+		echo "Query 3 took ".(TIME() - $timer3)." seconds (parts with no binaries).\n";
 		// Binaries that somehow have no collection.
 		$timer4 = TIME();
 		$db->queryExec("DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c)");
-		echo "Query 4 took ".(TIME() - $timer4)." seconds.\n";
+		echo "Query 4 took ".(TIME() - $timer4)." seconds (binaries with no collections).\n";
 		// Collections that somehow have no binaries.
 		$timer5 = TIME();
 		$db->queryExec("DELETE FROM collections WHERE collections.id NOT IN (SELECT binaries.collectionid FROM binaries) ".$where);
-		echo "Query 5 took ".(TIME() - $timer5)." seconds.\n";
+		echo "Query 5 took ".(TIME() - $timer5)." seconds (collections with no binaries).\n";
 
 		// Releases past retention.
 		$timer6 = TIME();
@@ -1549,7 +1552,7 @@ class Releases
 				$remcount ++;
 			}
 		}
-		echo "Query 6 took ".(TIME() - $timer6)." seconds.\n";
+		echo "Query 6 took ".(TIME() - $timer6)." seconds (releases past retention).\n";
 
 		// Passworded releases.
 		$timer7 = TIME();
@@ -1565,7 +1568,7 @@ class Releases
 				}
 			}
 		}
-		echo "Query 7 took ".(TIME() - $timer7)." seconds.\n";
+		echo "Query 7 took ".(TIME() - $timer7)." seconds (passworded releases).\n";
 		// Possibly passworded releases.
 		$timer8 = TIME();
 		if($page->site->deletepossiblerelease == 1)
@@ -1580,7 +1583,7 @@ class Releases
 				}
 			}
 		}
-		echo "Query 8 took ".(TIME() - $timer8)." seconds.\n";
+		echo "Query 8 took ".(TIME() - $timer8)." seconds (possible passworded releases).\n";
 		// Crossposted releases.
 		$timer9 = TIME();
 		do
@@ -1599,7 +1602,7 @@ class Releases
 				}
 			}
 		} while ($total > 0);
-		echo "Query 9 took ".(TIME() - $timer9)." seconds.\n";
+		echo "Query 9 took ".(TIME() - $timer9)." seconds (crossposted releases).\n";
 		// Releases below completion %.
 		$timer10 = TIME();
 		if($this->completion > 0)
@@ -1614,7 +1617,7 @@ class Releases
 				}
 			}
 		}
-		echo "Query 10 took ".(TIME() - $timer10)." seconds.\n";
+		echo "Query 10 took ".(TIME() - $timer10)." seconds (releases under completion).\n";
 		// Disabled categories.
 		$catlist = $category->getDisabledIDs();
 		$timer11 = TIME();
@@ -1633,7 +1636,7 @@ class Releases
 				}
 			}
 		}
-		echo "Query 11 took ".(TIME() - $timer11)." seconds.\n";
+		echo "Query 11 took ".(TIME() - $timer11)." seconds (releases in disabled categories).\n";
 		// Disabled music genres.
 		$genrelist = $genres->getDisabledIDs();
 		$timer12 = TIME();
@@ -1652,7 +1655,7 @@ class Releases
 				}
 			}
 		}
-		echo "Query 12 took ".(TIME() - $timer12)." seconds.\n";
+		echo "Query 12 took ".(TIME() - $timer12)." seconds (releases in disabled music genres).\n";
 		// Misc other.
 		$timer13 = TIME();
 		if ($page->site->miscotherretentionhours > 0)
@@ -1667,10 +1670,10 @@ class Releases
 				}
 			}
 		}
-		echo "Query 13 took ".(TIME() - $timer13)." seconds.\n";
+		echo "Query 13 took ".(TIME() - $timer13)." seconds (misc other retention).\n";
 		$timer14 = TIME();
 		$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)", $page->site->partretentionhours));
-		echo "Query 14 took ".(TIME() - $timer14)." seconds.\n";
+		echo "Query 14 took ".(TIME() - $timer14)." seconds (old nzbs).\n";
 
 		echo "Removed releases : ".number_format($remcount)." past retention, ".number_format($passcount)." passworded, ".number_format($dupecount)." crossposted, ".number_format($disabledcount)." from disabled categoteries, ".number_format($disabledgenrecount)." from disabled music genres, ".number_format($miscothercount)." from misc->other";
 		if ($this->echooutput && $this->completion > 0)
@@ -1787,6 +1790,8 @@ class Releases
 					$nofiles = false;
 
 				$groupName = $groups->getByNameByID($row['groupid']);
+				/*$ncarr = $namecleaner->collectionsCleaner($row['bname'], $groupName, $nofiles);
+				$newSHA1 = sha1($ncarr['hash']).$row['fromname'].$row['groupid'].$row['totalfiles']);*/
 				$newSHA1 = sha1($namecleaner->collectionsCleaner($row['bname'], $groupName, $nofiles).$row['fromname'].$row['groupid'].$row['totalfiles']);
 				$cres = $db->queryOneRow(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($newSHA1)));
 				if(!$cres)

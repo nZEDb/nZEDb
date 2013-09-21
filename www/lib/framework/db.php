@@ -1,7 +1,9 @@
 <?php
 
-/* Class for handling connection to SQL database, querying etc using PDO.
- * Exceptions are caught and displayed to the user. */
+/*
+* Class for handling connection to MySQL and PostgreSQL database using PDO.
+* Exceptions are caught and displayed to the user.
+*/
 
 class DB
 {
@@ -9,29 +11,27 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	function DB()
+	public function DB()
 	{
-		if (defined("DB_SYSTEM") && strlen(DB_SYSTEM) > 0)
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
 		if (DB::$initialized === false)
 		{
-			if (defined("DB_PORT"))
-				$pdos = $this->dbsystem.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME;
-			else
-				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+			$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+			if (defined('DB_PORT'))
+				$pdos .= ';port='.DB_PORT;
 
 			if ($this->dbsystem == 'mysql')
 				$pdos .= ';charset=utf8';
 
 			try {
-				$options = array(
-					PDO::ATTR_PERSISTENT => true,
-					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-					PDO::ATTR_TIMEOUT => 120,
-					PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
-				);
+				if ($this->dbsystem == 'mysql')
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true);
+				else
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120);
+
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
@@ -55,21 +55,21 @@ class DB
 	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
 	public function escapeString($str)
 	{
-		if (is_null($str) || $str == "")
-			return "NULL";
+		if (is_null($str))
+			return 'NULL';
 
 		return DB::$pdo->quote($str);
 	}
 
-	// For inserting a row. Returns last insert ID.
+	// For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
 	public function queryInsert($query)
 	{
-		if ($query=="")
+		if ($query == '')
 			return false;
 
 		try
 		{
-			if ($this->dbsystem() == "mysql")
+			if ($this->dbsystem() == 'mysql')
 			{
 				$ins = DB::$pdo->prepare($query);
 				$ins->execute();
@@ -77,15 +77,15 @@ class DB
 			}
 			else
 			{
-				$p = DB::$pdo->prepare($query." RETURNING id");
+				$p = DB::$pdo->prepare($query.' RETURNING id');
 				$p->execute();
 				$r = $p->fetch(PDO::FETCH_ASSOC);
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
-			//deadlock or lock wait timeout, try 10 times
+			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $e->errorInfo[0]==1205) && $i <= 10)
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
 			{
 				sleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
@@ -94,7 +94,8 @@ class DB
 				$i++;
 			}
 			//printf($e);
-			//if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+				return $e;
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 			return false;
 		}
@@ -103,7 +104,7 @@ class DB
 	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	public function queryExec($query)
 	{
-		if ($query == "")
+		if ($query == '')
 			return false;
 
 		try {
@@ -111,9 +112,9 @@ class DB
 			$run->execute();
 			return $run;
 		} catch (PDOException $e) {
-			//deadlock or lock wait timeout, try 10 times
+			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[1]==1213 || $e->errorInfo[0]==40001 || $e->errorInfo[0]==1205) && $i <= 10)
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
 			{
 				sleep($i * $i);
 				$run = DB::$pdo->prepare($query);
@@ -132,17 +133,21 @@ class DB
 	// Optional: Pass true to cache the result with memcache.
 	public function query($query, $memcache=false)
 	{
-		if ($query == "")
+		if ($query == '')
 			return false;
 
-		if ($this->memcached === true && $memcache === true)
+		if ($memcache === true && $this->memcached === true)
 		{
-			$memcached = new Mcached();
-			if ($memcached !== false)
-			{
-				$crows = $memcached->get($query);
-				if ($crows !== false)
-					return $crows;
+			try {
+				$memcached = new Mcached();
+				if ($memcached !== false)
+				{
+					$crows = $memcached->get($query);
+					if ($crows !== false)
+						return $crows;
+				}
+			} catch (Exception $er) {
+					printf ($er);
 			}
 		}
 
@@ -162,7 +167,7 @@ class DB
 			$rows[] = $row;
 		}
 
-		if ($this->memcached === true && $memcache === true)
+		if ($memcache === true && $this->memcached === true)
 			$memcached->add($query, $rows);
 
 		return $rows;
@@ -179,42 +184,10 @@ class DB
 		return ($rows) ? $rows[0] : $rows;
 	}
 
-	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
-	public function optimise($admin=false)
-	{
-		$tablecnt = 0;
-		if ($this->dbsystem == "mysql")
-		{
-			$alltables = $this->query("SHOW table status WHERE Data_free > 0");
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table)
-			{
-				if ($admin === false)
-					echo "Optimizing table: ".$table['name'].".\n";
-				if (strtolower($table['engine']) == "myisam")
-					$this->queryDirect("REPAIR TABLE `".$table['name']."`");
-				$this->queryDirect("OPTIMIZE TABLE `".$table['name']."`");
-			}
-			$this->queryDirect("FLUSH TABLES");
-		}
-		else if ($this->dbsystem == "pgsql")
-		{
-			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table)
-			{
-				if ($admin === false)
-					echo "Vacuuming table: ".$table['name'].".\n";
-				$this->query("VACUUM (ANALYZE) ".$table['name']);
-			}
-		}
-		return $tablecnt;
-	}
-
 	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	public function queryDirect($query)
 	{
-		if ($query == "")
+		if ($query == '')
 			return false;
 
 		try {
@@ -224,6 +197,38 @@ class DB
 			$result = false;
 		}
 		return $result;
+	}
+
+	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
+	public function optimise($admin=false)
+	{
+		$tablecnt = 0;
+		if ($this->dbsystem == 'mysql')
+		{
+			$alltables = $this->query('SHOW table status WHERE Data_free > 0');
+			$tablecnt = count($alltables);
+			foreach ($alltables as $table)
+			{
+				if ($admin === false)
+					echo 'Optimizing table: '.$table['name'].".\n";
+				if (strtolower($table['engine']) == 'myisam')
+					$this->queryDirect('REPAIR TABLE `'.$table['name'].'`');
+				$this->queryDirect('OPTIMIZE TABLE `'.$table['name'].'`');
+			}
+			$this->queryDirect('FLUSH TABLES');
+		}
+		else if ($this->dbsystem == 'pgsql')
+		{
+			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
+			$tablecnt = count($alltables);
+			foreach ($alltables as $table)
+			{
+				if ($admin === false)
+					echo 'Vacuuming table: '.$table['name'].".\n";
+				$this->query('VACUUM (ANALYZE) '.$table['name']);
+			}
+		}
+		return $tablecnt;
 	}
 
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
@@ -269,13 +274,6 @@ class DB
 			return date('Y-m-d h:i:s', $utime);
 	}
 
-	// Convert unixtime to sql compatible timestamp : 1969-12-31 07:00:00, also escapes it, pass false as 2nd arg to not escape.
-	// (substitute for mysql FROM_UNIXTIME function)
-	//public function from_unixtime($utime, $escape=true)
-	//{
-	//	return ($escape) ? $this->escapeString(date('Y-m-d h:i:s', $utime)) : date('Y-m-d h:i:s', $utime);
-	//}
-
 	// Date to unix time.
 	// (substitute for mysql's UNIX_TIMESTAMP() function)
 	public function unix_timestamp($date)
@@ -310,35 +308,29 @@ class DB
 class Mcached
 {
 	// Make a connection to memcached server.
-	function Mcached()
+	public function Mcached()
 	{
-		if (!defined("MEMCACHE_HOST"))
-			define('MEMCACHE_HOST', '127.0.0.1');
-		if (!defined("MEMCACHE_PORT"))
-			define('MEMCACHE_PORT', '11211');
 		if (extension_loaded('memcache'))
 		{
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false)
-				return false;
+				throw new Exception('Unable to connect to the memcached server.');
 		}
 		else
-			return false;
+			throw new Exception('Extension "memcache" not loaded.');
 
-		// Amount of time for the query to expire from memcached server.
-		$this->expiry = 900;
-		if (defined("MEMCACHE_EXPIRY"))
-			$this->expiry = MEMCACHE_EXPIRY;
+		$this->expiry = MEMCACHE_EXPIRY;
 
-		// Uses more CPU but less RAM.
 		$this->compression = MEMCACHE_COMPRESSED;
-		if (defined("MEMCACHE_COMPRESSION"))
+		if (defined('MEMCACHE_COMPRESSION'))
+		{
 			if (MEMCACHE_COMPRESSION === false)
 				$this->compression = false;
+		}
 	}
 
 	// Return a SHA1 hash of the query, used for the key.
-	function key($query)
+	public function key($query)
 	{
 		return sha1($query);
 	}

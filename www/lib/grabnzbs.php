@@ -134,21 +134,21 @@ class Import
 				$postername[] = $fromname;
 				$unixdate = (string)$file->attributes()->date;
 				$totalFiles++;
-				$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
+				$date = date('Y-m-d H:i:s', (string)($file->attributes()->date));
 				$postdate[] = $date;
-				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
-				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
+				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
+				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
 				$namecleaning = new nameCleaning();
 
 				// Make a fake message object to use to check the blacklist.
-				$msg = array("Subject" => $firstname['0'], "From" => $fromname, "Message-ID" => "");
+				$msg = array('Subject' => $firstname['0'], 'From' => $fromname, 'Message-ID' => '');
 
 				// If the release is in our DB already then don't bother importing it.
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s",
+					$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s',
 						$db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
@@ -170,7 +170,10 @@ class Import
 				{
 					$group = (string)$group;
 					if (array_key_exists($group, $siteGroups))
+					{
+						$groupName = $group;
 						$groupID = $siteGroups[$group];
+					}
 					$groupArr[] = $group;
 
 					if ($binaries->isBlacklisted($msg, $group))
@@ -198,8 +201,12 @@ class Import
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
-				$cleanName = $propername = "";
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
+				$propername = false;
+				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
+				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
+				$cleanerName = $ncarr['subject'];
+				$category = $ncarr['cat'];
+				$relstat = $ncar['rstatus'];*/
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
@@ -207,16 +214,16 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				try {
-					if ($propername === true)
-						$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-					else
-						$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				} catch (PDOException $err) {
-					if ($this->echooutput)
-						echo "\033[01;31m.".$err."\n";
+				if ($propername === true)
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				else
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+				{
+					$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+					echo "!";
 				}
-				if (!isset($error))
+				else
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
@@ -227,7 +234,7 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relID));
+							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relid));
 							if ($db->dbSystem() == "mysql")
 								$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
 							elseif ($db->dbSystem() == "pgsql")
@@ -249,15 +256,13 @@ class Import
 						}
 						else
 						{
-							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relID));
+							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relid));
 							$importfailed = true;
 							echo "-";
 						}
 					}
 				}
 			}
-			else
-				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
 		}
 	}
 }

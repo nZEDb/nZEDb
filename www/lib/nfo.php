@@ -33,7 +33,7 @@ class Nfo
 		if ($res === false)
 			return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseid) VALUES (%d)", $relid));
 		else
-			return $res["id"];
+			return $res['id'];
 	}
 
 	public function deleteReleaseNfo($relid)
@@ -47,9 +47,8 @@ class Nfo
 	{
 		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
 		if (isset($matches[1]) && !empty($matches[1]))
-		{
 			return trim($matches[1]);
-		}
+
 		return false;
 	}
 

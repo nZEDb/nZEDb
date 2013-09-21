@@ -12,7 +12,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]) && $argv[1] == "full")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus NOT IN (3, 7)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
@@ -23,7 +23,9 @@ if (isset($argv[1]) && $argv[1] == "full")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
@@ -49,7 +51,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus IN (0, 1, 20)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus IN (0, 1, 20)");
 
 	if (count($res) > 0)
 	{
@@ -60,7 +62,9 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));
@@ -86,7 +90,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groupid FROM releases WHERE relnamestatus NOT IN (3, 7)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
@@ -97,7 +101,9 @@ elseif (isset($argv[1]) && $argv[1] == "reset")
 		foreach ($res as $row)
 		{
 			$nc = new nameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['groupid']);
+			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			if (is_array($newname))
+				$newname = $newname['cleansubject'];
 			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $db->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWrite("Renaming:".$consoletools->percentString($done,count($res)));

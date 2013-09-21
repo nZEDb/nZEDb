@@ -58,10 +58,10 @@ Class Predb
 		}
 		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
-			echo "\nMatched ".$matched." predDB titles to release search names.\n";
+			echo "Matched ".$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
-			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
+			echo "Added ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
 	}
 
@@ -386,19 +386,21 @@ Class Predb
 		$consoletools = new ConsoleTools();
 		$updated = 0;
 		if($this->echooutput)
-			echo "\nQuerying DB for matches in preDB titles with release searchnames.\n";
+			echo "Querying DB for matches in preDB titles with release searchnames.";
 
 		$res = $db->prepare("SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL");
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)
 		{
+			echo "\n";
 			foreach ($res as $row)
 			{
 				$run = $db->queryExec(sprintf("UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d", $row["preid"], $row["releaseid"]));
 				if($this->echooutput)
 					$consoletools->overWrite("Matching up preDB titles with release search names: ".$consoletools->percentString(++$updated,$total));
 			}
+			echo "\n";
 		}
 		return $updated;
 	}
@@ -409,7 +411,7 @@ Class Predb
 		$db = new DB();
 		$nfos = 0;
 		if($this->echooutput)
-			echo "\nMatching up predb NFOs with releases missing an NFO.\n";
+			echo "Matching up predb NFOs with releases missing an NFO.\n";
 
 		$res = $db->prepare("SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100");
 		$res->execute();
@@ -480,14 +482,24 @@ Class Predb
 	public function getAll($offset, $offset2)
 	{
 		$db = new DB();
-		return $db->query(sprintf("SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d", $offset2, $offset));
+		if ($db->dbSystem() == 'mysql')
+		{
+			$parr = $db->query(sprintf('SELECT SQL_CALC_FOUND_ROWS p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
+			$pcount = $db->queryOneRow('SELECT FOUND_ROWS() AS t');
+		}
+		else
+		{
+			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
+			$pcount = $this->getCount();
+		}
+		return array('arr' => $parr, 'count' => $pcount['t']);
 	}
 
 	public function getCount()
 	{
 		$db = new DB();
-		$count = $db->queryOneRow("SELECT COUNT(*) AS cnt FROM predb");
-		return $count["cnt"];
+		$count = $db->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
+		return $count['cnt'];
 	}
 
 	// Returns a single row for a release.

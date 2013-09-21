@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/amazon.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/amazon.php');
+require_once(WWW_DIR.'lib/category.php');
+require_once(WWW_DIR.'lib/releaseimage.php');
+require_once(WWW_DIR.'lib/site.php');
 
 /*
- *	Class for fetching book info from amazon.com.
+ * Class for fetching book info from amazon.com.
  */
 
  class Books
@@ -27,13 +27,13 @@ require_once(WWW_DIR."/lib/site.php");
 	public function getBookInfo($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d", $id));
+		return $db->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
 	}
 
 	public function getBookInfoByName($author, $title)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE author LIKE %s AND title LIKE %s", $db->escapeString("%".$author."%"),  $db->escapeString("%".$title."%")));
+		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title LIKE %s', $db->escapeString('%'.$author.'%'),  $db->escapeString('%'.$title.'%')));
 	}
 
 	public function getRange($start, $num)
@@ -41,18 +41,18 @@ require_once(WWW_DIR."/lib/site.php");
 		$db = new DB();
 
 		if ($start === false)
-			$limit = "";
+			$limit = '';
 		else
-			$limit = " LIMIT ".$num." OFFSET ".$start;
+			$limit = ' LIMIT '.$num.' OFFSET '.$start;
 
-		return $db->query(" SELECT * FROM bookinfo ORDER BY createddate DESC".$limit);
+		return $db->query(' SELECT * FROM bookinfo ORDER BY createddate DESC'.$limit);
 	}
 
 	public function getCount()
 	{
 		$db = new DB();
-		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM bookinfo");
-		return $res["num"];
+		$res = $db->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
+		return $res['num'];
 	}
 
 	public function getBookCount($cat, $maxage=-1, $excludedcats=array())
@@ -61,10 +61,10 @@ require_once(WWW_DIR."/lib/site.php");
 
 		$browseby = $this->getBrowseBy();
 
-		$catsrch = "";
+		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1)
 		{
-			$catsrch = " (";
+			$catsrch = ' (';
 			foreach ($cat as $category)
 			{
 				if ($category != -1)
@@ -73,31 +73,31 @@ require_once(WWW_DIR."/lib/site.php");
 					if ($categ->isParent($category))
 					{
 						$children = $categ->getChildren($category);
-						$chlist = "-99";
+						$chlist = '-99';
 						foreach ($children as $child)
-							$chlist.=", ".$child["id"];
+							$chlist .= ', '.$child['id'];
 
-						if ($chlist != "-99")
-								$catsrch .= " r.categoryid IN (".$chlist.") OR ";
+						if ($chlist != '-99')
+								$catsrch .= ' r.categoryid IN ('.$chlist.') OR ';
 					}
 					else
-						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
+						$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
 				}
 			}
-			$catsrch.= "1=2 )";
+			$catsrch .= '1=2 )';
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		else
-			$maxage = "";
+			$maxage = '';
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0)
-			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
+			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo b ON b.id = r.bookinfoid AND b.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
-		return $res["num"];
+		return $res['num'];
 	}
 
 	public function getBookRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
@@ -107,14 +107,14 @@ require_once(WWW_DIR."/lib/site.php");
 		$browseby = $this->getBrowseBy();
 
 		if ($start === false)
-			$limit = "";
+			$limit = '';
 		else
-			$limit = " LIMIT ".$num." OFFSET ".$start;
+			$limit = ' LIMIT '.$num.' OFFSET '.$start;
 
-		$catsrch = "";
+		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1)
 		{
-			$catsrch = " (";
+			$catsrch = ' (';
 			foreach ($cat as $category)
 			{
 				if ($category != -1)
@@ -123,27 +123,27 @@ require_once(WWW_DIR."/lib/site.php");
 					if ($categ->isParent($category))
 					{
 						$children = $categ->getChildren($category);
-						$chlist = "-99";
+						$chlist = '-99';
 						foreach ($children as $child)
-							$chlist.=", ".$child["id"];
+							$chlist .= ', '.$child['id'];
 
-						if ($chlist != "-99")
-							$catsrch .= " r.categoryid IN (".$chlist.") OR ";
+						if ($chlist != '-99')
+							$catsrch .= ' r.categoryid IN ('.$chlist.') OR ';
 					}
 					else
-						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
+						$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
 				}
 			}
-			$catsrch.= "1=2 )";
+			$catsrch .= '1=2)';
 		}
 
-		$maxage = "";
+		$maxage = '';
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0)
-			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
+			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$order = $this->getBookOrder($orderby);
 		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
@@ -152,7 +152,7 @@ require_once(WWW_DIR."/lib/site.php");
 	public function getBookOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
-		$orderArr = explode("_", $order);
+		$orderArr = explode('_', $order);
 		switch($orderArr[0]) {
 			case 'title':
 				$orderfield = 'boo.title';
@@ -188,7 +188,7 @@ require_once(WWW_DIR."/lib/site.php");
 
 	public function getBrowseByOptions()
 	{
-		return array('author'=>'author', 'title'=>'title');
+		return array('author' => 'author', 'title' => 'title');
 	}
 
 	public function getBrowseBy()
@@ -200,7 +200,7 @@ require_once(WWW_DIR."/lib/site.php");
 		foreach ($browsebyArr as $bbk=>$bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= "boo.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').") AND ";
+				$browseby .= "boo.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').') AND ';
 			}
 		}
 		return $browseby;
@@ -211,7 +211,7 @@ require_once(WWW_DIR."/lib/site.php");
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try
 		{
-			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, "TITLE");
+			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, 'TITLE');
 		}
 		catch(Exception $e)
 		{
@@ -226,11 +226,11 @@ require_once(WWW_DIR."/lib/site.php");
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d", $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".count($res)." book releases.\n";
+				echo 'Processing '.count($res)." book releases.\n";
 
 			foreach ($res as $arr)
 			{
@@ -245,11 +245,11 @@ require_once(WWW_DIR."/lib/site.php");
 						$bookId = -2;
 
 					// Update release.
-					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", $bookId, $arr["id"]));
+					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
 				}
 				// Could not parse release title.
 				else
-					$db->queryExec(sprintf("UPDATE releases SET bookinfoid = %d WHERE id = %d", -2, $arr["id"]));
+					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);
 			}
@@ -258,7 +258,7 @@ require_once(WWW_DIR."/lib/site.php");
 
 	public function parseTitle($releasename, $releaseID)
 	{
-		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[\.\-_ ](Novel|TIA)([\.\-_ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
+		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
 		$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 		$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 
@@ -304,36 +304,36 @@ require_once(WWW_DIR."/lib/site.php");
 		$book['asin'] = (string) $amaz->Items->Item->ASIN;
 
 		$book['isbn'] = (string) $amaz->Items->Item->ItemAttributes->ISBN;
-		if ($book['isbn'] == "")
+		if ($book['isbn'] == '')
 			$book['isbn'] = 'null';
 
 		$book['ean'] = (string) $amaz->Items->Item->ItemAttributes->EAN;
-		if ($book['ean'] == "")
+		if ($book['ean'] == '')
 			$book['ean'] = 'null';
 
 		$book['url'] = (string) $amaz->Items->Item->DetailPageURL;
 		$book['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $book['url']);
 
 		$book['salesrank'] = (string) $amaz->Items->Item->SalesRank;
-		if ($book['salesrank'] == "")
+		if ($book['salesrank'] == '')
 			$book['salesrank'] = 'null';
 
 		$book['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
-		if ($book['publisher'] == "")
+		if ($book['publisher'] == '')
 			$book['publisher'] = 'null';
 
-		$book['publishdate'] = date("Y-m-d", strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
-		if ($book['publishdate'] == "")
+		$book['publishdate'] = date('Y-m-d', strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
+		if ($book['publishdate'] == '')
 			$book['publishdate'] = 'null';
 
 		$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
-		if ($book['pages'] == "")
+		if ($book['pages'] == '')
 			$book['pages'] = 'null';
 
 		if(isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content))
 		{
 			$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
-			if ($book['overview'] == "")
+			if ($book['overview'] == '')
 				$book['overview'] = 'null';
 		}
 		else
@@ -342,14 +342,14 @@ require_once(WWW_DIR."/lib/site.php");
 		if(isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name))
 		{
 			$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
-			if ($book['genre'] == "")
+			if ($book['genre'] == '')
 				$book['genre'] = 'null';
 		}
 		else
 			$book['genre'] = 'null';
 
 		$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
-		if ($book['coverurl'] != "")
+		if ($book['coverurl'] != '')
 			$book['cover'] = 1;
 		else
 			$book['cover'] = 0;
@@ -362,12 +362,12 @@ require_once(WWW_DIR."/lib/site.php");
 		{
 			if ($this->echooutput)
 			{
-				echo "Added/updated book: ";
-				if ($book['author'] !== "")
-					echo "Author: ".$book['author'].", ";
-				echo "Title: ".$book['title'];
-				if ($book['genre'] !== "null")
-					echo ", Genre: ".$book['genre'].".\n";
+				echo 'Added/updated book: ';
+				if ($book['author'] !== '')
+					echo 'Author: '.$book['author'].', ';
+				echo 'Title: '.$book['title'];
+				if ($book['genre'] !== 'null')
+					echo ', Genre: '.$book['genre'].".\n";
 				else
 					echo ".\n";
 			}
@@ -377,7 +377,7 @@ require_once(WWW_DIR."/lib/site.php");
 		else
 		{
 			if ($this->echooutput)
-				echo "Nothing to update: ".$book['author']." - ".$book['title'].".\n";
+				echo 'Nothing to update: '.$book['author'].' - '.$book['title'].".\n";
 		}
 		return $bookId;
 	}

@@ -14,7 +14,7 @@ if (isset($argv[1]) && $argv[1] == "myisam")
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
 	}
@@ -24,7 +24,7 @@ else if (isset($argv[1]) && $argv[1] == "dinnodb")
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
@@ -34,7 +34,7 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
@@ -44,7 +44,7 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
-		$tbl = $row['Tables_in_'.DB_NAME];
+		$tbl = $row['tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
 		if ($tbl != "parts" || $tbl != "binaries" || $tbl != "collections")
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";

@@ -171,7 +171,10 @@ if (!empty($argc) || $page->isPostBack() )
 				{
 					$group = (string)$group;
 					if (array_key_exists($group, $siteGroups))
+					{
 						$groupID = $siteGroups[$group];
+						$groupName = $group;
+					}
 					$groupArr[] = $group;
 
 					if ($binaries->isBlacklisted($msg, $group))
@@ -215,11 +218,10 @@ if (!empty($argc) || $page->isPostBack() )
 			{
 				$relguid = sha1(uniqid().mt_rand());
 				$nzb = new NZB();
-				//removes everything after yEnc in subject
-				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
-				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
-				$subject = utf8_encode(trim($partless));
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupID);
+				$propername = false;
+				// Removes everything after yEnc in subject.
+				$subject = utf8_encode(trim(preg_replace('/yEnc.*?$/', 'yEnc', preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0'])));
+				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
