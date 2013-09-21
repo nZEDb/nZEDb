@@ -47,6 +47,7 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf("SELECT GROUP_CONCAT(subslanguage SEPARATOR ', ') AS subs FROM releasesubs WHERE releaseid = %d ORDER BY subsid ASC", $id));
+		//SELECT STRING_AGG(subslanguage, ', ') AS subs FROM releasesubs WHERE releaseid = 344 GROUP BY subsid ORDER BY subsid ASC;
 	}
 
 	public function getBriefByGuid($guid)
