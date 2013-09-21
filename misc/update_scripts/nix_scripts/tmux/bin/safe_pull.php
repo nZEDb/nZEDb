@@ -10,12 +10,12 @@ if (isset($argv[1]))
 	if (isset($pieces[3]))
 	{
 		$backfill = new Backfill();
-		$backfill->getRange(trim($pieces[0],"'"), $pieces[1], $pieces[2], $pieces[3]);
+		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3]);
 	}
 	elseif (isset($pieces[2]))
 	{
 		$backfill = new Backfill();
-		$backfill->getFinal(trim($pieces[0],"'"), $pieces[1], $pieces[2]);
+		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
 	}
 	elseif (isset($pieces[1]) && $pieces[0] == "binupdate")
 	{
@@ -27,6 +27,6 @@ if (isset($argv[1]))
 	elseif (isset($pieces[1]))
 	{
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups(trim($pieces[0],"'"), $pieces[1]);
+		$backfill->backfillPostAllGroups($pieces[0], $pieces[1]);
 	}
 }

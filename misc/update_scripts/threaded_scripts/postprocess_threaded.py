@@ -174,7 +174,7 @@ def main(args):
 
 	for item in final:
 		run = "DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %s"
-		cur.execute(run, (item))
+		cur.execute(run, (item[0]))
 		final = cur.fetchall()
 
 	#close connection to mysql

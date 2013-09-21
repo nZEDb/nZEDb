@@ -12,7 +12,6 @@ class Backfill
 		$site = $s->get();
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
-		$this->sleeptime = (!empty($site->postdelay)) ? $site->postdelay : 300;
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
 	}
 

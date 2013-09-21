@@ -7,8 +7,8 @@ require_once(WWW_DIR."lib/consoletools.php");
 require_once(WWW_DIR."lib/binaries.php");
 
 $pieces = explode("  ", $argv[1]);
-$groupid = trim($pieces[0],"'");
-//sleep(trim($pieces[1],"'")*2);
+$groupid = $pieces[0];
+//sleep($pieces[1]*2);
 
 $releases = new Releases(true);
 $groups = new Groups();
@@ -17,13 +17,13 @@ $group = $groups->getByName($groupname);
 $consoletools = new ConsoleTools();
 $binaries = new Binaries();
 
-if (trim($pieces[0],"'") != "Stage7b" && trim($pieces[0],"'") != "Stage1")
+if ($pieces[0] != "Stage7b" && $pieces[0] != "Stage1")
 {
 	if ($releases->hashcheck == 0)
 		exit("You must run update_binaries.php to update your collectionhash.\n");
 
 //update_binaries per group
-if (trim($pieces[0],"'") != "Stage7b")
+if ($pieces[0] != "Stage7b")
 	$releases->processReleases = microtime(true);
 	echo "\n\nStarting release update process on ".$groupname." (".date("Y-m-d H:i:s").")\n";
 	$releases->processReleasesStage1($groupid, $echooutput=true);
@@ -40,7 +40,7 @@ if (trim($pieces[0],"'") != "Stage7b")
 	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid, $echooutput=true);
 	$releases->processReleasesStage7a($groupid, $echooutput=true);
 }
-elseif (trim($pieces[0],"'") == "Stage7b")
+elseif ($pieces[0] == "Stage7b")
 {
 	//$releases->processReleasesStage4dot5($groupid, $echooutput=true);
 	$deletedCount = $releases->processReleasesStage7b($groupid="", $echooutput=true);
