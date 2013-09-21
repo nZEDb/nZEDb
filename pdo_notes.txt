@@ -1,5 +1,5 @@
 Things to make compatible in queries:
-ON DUPLICATE
+ON DUPLICATE binaries.php line 628
 
 /*
 Save tvrage images to disk. Or find a way to store them in pgsql.

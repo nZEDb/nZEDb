@@ -351,9 +351,9 @@ class Music
 		$mus['musicgenre'] = $genreName;
 		$mus['musicgenreid'] = $genreKey;
 
-		if ($db->dbSystem == 'mysql')
+		if ($db->dbSystem() == 'mysql')
 			$musicId = $db->queryInsert(sprintf("INSERT INTO musicinfo (title, asin, url, salesrank, artist, publisher, releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, review = %s, year = %s, genreid = %s, tracks = %s, cover = %d, createddate = now(), updateddate = now()", $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover'], $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover']));
-		else if ($db->dbSystem == 'pgsql')
+		else if ($db->dbSystem() == 'pgsql')
 		{
 			$check = $db->queryOneRow(sprintf('SELECT id FROM musicinfo WHERE asin = %s', $db->escapeString($mus['asin'])));
 			if ($check === false)

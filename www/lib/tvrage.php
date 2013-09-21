@@ -187,9 +187,9 @@ class TvRage
 							// Only stick current shows and new shows in there.
 							if(in_array($currShowId,$showarray))
 							{
-								if ($db->dbSystem == 'mysql')
+								if ($db->dbSystem() == 'mysql')
 									$db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString($currShowName)));
-								else if ($db->dbSystem == 'pgsql')
+								else if ($db->dbSystem() == 'pgsql')
 								{
 									$check = $db->queryOneRow(sprintf('SELECT id FROM tvrageepisodes WHERE rageid = %d', $sShow->sid));
 									if ($check === false)
