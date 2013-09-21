@@ -30,7 +30,7 @@ REQUIREMENTS
 				CREATE DATABASE nzedb OWNER EnterYourUserNameHere;
 					(the single quotes for the password are needed)
 				ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';
-				
+
 
 	Apache
 		script timeout of at least 60 seconds
@@ -41,24 +41,38 @@ REQUIREMENTS
 		tmdb (signup @ http://api.themoviedb.org/2.1/)
 		amazon (signup @ https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html)
 		rottentomatoes (signup @ http://developer.rottentomatoes.com)
-	
+
 	Deep rar password inspection
 		unrar version 3.9 or higher
-	
+
 	Thumbnailing and media info (if feep rar inspection is enabled)
 		ffmpeg
 		mediainfo
 
-	Python 2.*
-		apt-get install python-setuptools	
-		python -m easy_install
-		easy_install cymysql
-	Python 3.* - If Python 3 is installed, the module also must be installed
-		apt-get install python3-setuptools
-		python3 -m easy_install pip
-		pip-3.2 install cymysql
+	For the threaded scripts you will require the Python cymysql module for mysql:
+		Python 2.*
+			sudo apt-get install python-setuptools
+			sudo python -m easy_install
+			sudo easy_install cymysql
+		Python 3.* - If Python 3 is installed, the module also must be installed
+			sudo apt-get install python3-setuptools
+			sudo python3 -m easy_install pip
+			sudo pip-3.2 install cymysql
 		-or-
-		pip-3.3 install cymysql
+			sudo pip-3.3 install cymysql
+
+	Or the Python psycopg module for PostgreSQL
+		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql
+		Python 2.*
+			sudo easy_install psycopg2
+		 Python 3.* - If Python 3 is installed, the module also must be installed
+			sudo easy_install3 psycopg2
+		If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/
+			wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
+			tar xfvz psycopg2-2.5.1.tar.gz
+			cd psycopg2-2.5.1/
+			sudo python setup.py install
+			sudo python3 setup.py install
 
 	APC
 		sudo apt-get install php-apc
@@ -75,37 +89,37 @@ REQUIREMENTS
 INSTALLATION
 	there is an installer in \install\ try it first by creating your website,
 	copying the application files there, and browsing to http://yournewznabserver/install.
-	
+
 	refer to the list of requirements above if you encounter any errors during install, or the FAQ in the README
-	
+
 	once installed activate only one or two groups to test with first (a.b.teevee is a good choice), this
 	will save you time if it is not working correctly.
-	
+
 	run the update_binaries.php and update_releases.php scripts in \misc\update_scripts\ via command-line.
-	
+
 	if updating was successful then you can continue to setup your site and configure the update scripts for
 	auto-updating.
-	
-	
+
+
 RUNNING OUTSIDE OF WEB ROOT
 	set /.htaccess RewriteBase to your virtual directory
-	
-	
+
+
 SAMPLE APACHE VHOST CONFIG
-	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.  
-	You should find this under /etc/apache2/sites-enabled/ (000-default).	
+	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.
+	You should find this under /etc/apache2/sites-enabled/ (000-default).
 	<VirtualHost *:80>
-	        <Directory /domains/www/example.com/newz/www/>
-	                Options FollowSymLinks
-	                AllowOverride All
-	                Order allow,deny
-	                allow from all
-	        </Directory>
-	
-	        ServerAdmin admin@example.com
-	        ServerName example.com 
-	        ServerAlias www.example.com
-	        DocumentRoot /domains/www/example.com/newz/www
-	        LogLevel warn
-	        ServerSignature Off
+			<Directory /domains/www/example.com/newz/www/>
+					Options FollowSymLinks
+					AllowOverride All
+					Order allow,deny
+					allow from all
+			</Directory>
+
+			ServerAdmin admin@example.com
+			ServerName example.com
+			ServerAlias www.example.com
+			DocumentRoot /domains/www/example.com/newz/www
+			LogLevel warn
+			ServerSignature Off
 	</VirtualHost>

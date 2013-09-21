@@ -8,47 +8,52 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
 
-print("\n\nGrabNZBs Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg2 as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
+
+print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
-
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
 
 #get array of collectionhash
-cur.execute("select value from site where setting = 'grabnzbs'")
+cur.execute("SELECT value FROM site WHERE setting = 'grabnzbs'")
 grab = cur.fetchone()
 if int(grab[0]) == 0:
 	sys.exit("GrabNZBs is disabled")
-cur.execute("select value from site where setting = 'delaytime'")
+cur.execute("SELECT value FROM site WHERE setting = 'delaytime'")
 delay = cur.fetchone()
+cur.execute("SELECT COUNT(*) FROM collections")
+collstart = cur.fetchone()
 
-cur.execute("select collectionhash from nzbs group by collectionhash, totalparts having count(*) >= totalparts union select distinct(collectionhash) from nzbs where dateadded < now() - interval %d hour" % int(delay[0]))
+run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s hour"
+cur.execute(run, (int(delay[0])))
 datas = cur.fetchall()
 if len(datas) == 0:
 	sys.exit("No NZBs to Grab")
 
 #get threads for update_binaries
-cur.execute("select value from site where setting = 'grabnzbthreads'")
+cur.execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
 run_threads = cur.fetchone()
-
-#close connection to mysql
-cur.close()
-con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -71,14 +76,14 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/grabnzbs.php", ""+my_id])
-					time.sleep(.01)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s nzbs" % (run_threads[0], "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))))
 	print("+ = nzb imported, - = probably not nzb, ! = duplicate")
 	time.sleep(2)
 
@@ -102,9 +107,15 @@ def main():
 
 	final = "limited"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\n\nGrabNZBs Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	cur.execute("SELECT COUNT(*) FROM collections")
+	collend = cur.fetchone()
+	print("{} duplicate Collections were deleted during this process.\n\n".format("{:,}".format(collstart[0]-collend[0])))
 
+	#close connection to mysql
+	cur.close()
+	con.close()
 
 if __name__ == '__main__':
 	main()

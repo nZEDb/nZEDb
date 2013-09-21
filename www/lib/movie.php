@@ -513,13 +513,13 @@ class Movie
 
 		if ($releaseToWork == '')
 		{
-			$res = $db->query(sprintf("SELECT searchname as name, id FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+			$res = $db->query(sprintf("SELECT searchname AS name, id FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 			$moviecount = count($res);
 		}
 		else
 		{
 			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('name' => trim($pieces[0],"'"), 'id' => trim($pieces[1],"'")));
+			$res = array(array('name' => $pieces[0], 'id' => $pieces[1]));
 			$moviecount = 1;
 		}
 

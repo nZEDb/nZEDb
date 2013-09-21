@@ -159,7 +159,7 @@ class Namefixer
 
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21)";
+		$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE rel.categoryid = 7010 AND rel.relnamestatus IN (0, 1, 20, 21)";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)

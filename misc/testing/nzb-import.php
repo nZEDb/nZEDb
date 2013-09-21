@@ -22,8 +22,8 @@ $namecleaning = new nameCleaning();
 if (!isset($argv[2]))
 {
 	$pieces = explode(" ", $argv[1]);
-	$usenzbname = (isset($pieces[1]) && trim($pieces[1],"'") == 'true') ? true : false;
-	$path = trim($pieces[0],"'");
+	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
+	$path = $pieces[0];
 }
 else
 {
@@ -240,17 +240,18 @@ else
 				$cleanName = $cleanerName['cleansubject'];
 				$propername = $cleanerName['properlynamed'];
 			}
-			try {
-				if ($propername === true)
-					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				else
-					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-			} catch (PDOException $err) {
-				if ($this->echooutput)
-					echo "\033[01;31m.".$err."\n";
-			}
+			if ($propername === true)
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+			else
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 
-			if(!isset($error) && $relID !== false);
+			if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+			{
+				$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
+				$importfailed = true;
+			}
+			else
 			{
 				if($nzb->copyNZBforImport($relguid, $nzba))
 				{
@@ -270,12 +271,6 @@ else
 					}
 					else
 						echo ".";
-				}
-				else
-				{
-					$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
-					$importfailed = true;
 				}
 				$nzbCount++;
 				@unlink($nzbFile);
