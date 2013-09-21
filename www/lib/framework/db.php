@@ -27,12 +27,11 @@ class DB
 				$pdos .= ';charset=utf8';
 
 			try {
-				$options = array(
-					PDO::ATTR_PERSISTENT => true,
-					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-					PDO::ATTR_TIMEOUT => 120,
-					PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
-				);
+				if ($this->dbsystem == 'mysql')
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true);
+				else
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120);
+
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
