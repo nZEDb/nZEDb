@@ -41,7 +41,7 @@ count = 0
 #get values from db
 cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b")
 dbgrab = cur.fetchall()
-run_threads = int(dbgrab[0][0])
+run_threads = int(dbgrab[0][0])-1
 maxmssgs = int(dbgrab[0][1])
 
 #query to grab all active groups
@@ -65,7 +65,6 @@ class queue_runner(threading.Thread):
 
 	def run(self):
 		global time_of_last_run
-
 		while True:
 			try:
 				my_id = self.my_queue.get(True, 1)
@@ -89,31 +88,25 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
-		#spawn a pool of place worker threads, minus 1
-		for i in range(run_threads -1):
+		#spawn a pool of place worker threads
+		for i in range(run_threads):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()
 
 	#now load some arbitrary jobs into the queue
-	time.sleep(0.05)
+	time.sleep(0.1)
 	print("Connectiong to USP")
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	print("Connectiong to USP")
-	time.sleep(0.05)
+	time.sleep(0.1)
 	run = 0
 	finals = []
 	groups = []
-	#name = ""
+	name = ""
 	for group in datas:
-		print(group[0])
-		print(group[1])
-		
 		try:
-			print(group[0])
 			resp, count, first, last, name = s.group(group[0])
 			time.sleep(0.1)
-			print(name)
 		except nntplib.NNTPError:
 			print("\033[38;5;9m{} not found, skipping.\033[0m\n".format(group[0]))
 		if name:
@@ -124,12 +117,10 @@ def main():
 			#start new groups using binaries.php
 			if group[1] == 0:
 				run += 1
-				print("this 1")
 				my_queue.put("binupdate %s" % (group[0]))
 			#run small groups using binaries.php
 			elif count != 0 and count <= maxmssgs * 3:
 				run += 1
-				print("this 2")
 				my_queue.put("binupdate %s" % (group[0]))
 			#thread large groups using backfill.php
 			elif count > maxmssgs:
@@ -137,14 +128,11 @@ def main():
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					print("this 3")
 					my_queue.put("%s %s %s %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
-				print("this 4")
 				my_queue.put("%s %s %s %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 				groups.append(group[0])
 				finals.append(int(last))
-				print("here")
 	my_queue.join()
 	resp = s.quit
 	for group in list(zip(groups, finals)):
