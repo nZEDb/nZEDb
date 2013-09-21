@@ -61,7 +61,7 @@ Class Predb
 			echo 'Matched '.$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
-			echo 'Added '.$nfos." missing NFOs from preDB sources.\n";
+			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
 	}
 
