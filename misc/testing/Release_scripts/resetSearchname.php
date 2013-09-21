@@ -12,7 +12,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]) && $argv[1] == "full")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
@@ -49,7 +49,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus IN (0, 1, 20)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus IN (0, 1, 20)");
 
 	if (count($res) > 0)
 	{
@@ -86,7 +86,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 elseif (isset($argv[1]) && $argv[1] == "reset")
 {
 	$db = new DB();
-	$res = $db->query("SELECT id, name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus NOT IN (3, 7)");
 
 	if (count($res) > 0)
 	{
