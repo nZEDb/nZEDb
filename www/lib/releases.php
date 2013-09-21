@@ -1372,7 +1372,7 @@ class Releases
 						}
 						else
 						{
-							$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . trim($pieces[0],"'"));
+							$db->queryExec("UPDATE releases SET reqidstatus = -2 WHERE id = " . $pieces[0]);
 							echo ".";
 						}
 					}

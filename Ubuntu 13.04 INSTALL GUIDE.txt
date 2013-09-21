@@ -11,17 +11,24 @@ Most of this guide is done from the command line (terminal).
 		sudo /etc/init.d/apparmor teardown
 		sudo update-rc.d -f apparmor remove
 
-	# For the threaded scripts you will require the Python MySQLdb module:
+	# For the threaded scripts you will require the Python cymysql module for mysql:
 		# Python 2.*
-			apt-get install python-setuptools
-			python -m easy_install
-			easy_install cymysql
+			sudo apt-get install python-setuptools
+			sudo python -m easy_install
+			sudo easy_install cymysql
 		# Python 3.* - If Python 3 is installed, the module also must be installed
-			apt-get install python3-setuptools
-			python3 -m easy_install pip
-			pip-3.2 install cymysql
+			sudo apt-get install python3-setuptools
+			sudo python3 -m easy_install pip
+			sudo pip-3.2 install cymysql
 		# -or-
-			pip-3.3 install cymysql
+			sudo pip-3.3 install cymysql
+
+	# Or the Python psycopg module for PostgreSQL
+		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql
+		# Python 2.*
+			sudo easy_install psycopg2
+		# Python 3.* - If Python 3 is installed, the module also must be installed
+			sudo easy_install3 psycopg2
 
 1. Update and upgrade the operating system.
 

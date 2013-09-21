@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3573";
+$version="0.1r3588";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -74,12 +74,13 @@ elseif ($db->dbSystem() == "pgsql")
 	$uta = "extract(epoch FROM adddate)";
 }
 
+// tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT {$utd} FROM collections ORDER BY dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT {$uta} FROM predb ORDER BY adddate DESC limit 1 ) AS newestpre,
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1) AS newestaddname,
-	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestadd,
-	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC limit 1 ) AS oldestnzb,
+	( SELECT {$utd} FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
+	( SELECT {$uta} FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestaddname,
+	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
+	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -382,17 +383,18 @@ while( $i > 0 )
 	if ( $db->ping() === false )
 	{
 		unset($db);
+		$db = NULL;
 		$db = new DB();
 	}
 
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
-	$initquery = @$db->query($qry, true);
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
+		$initquery = @$db->query($qry, true);
 		$proc_work_result = @$db->query($proc_work, true);
 		$proc_work_result2 = @$db->query($proc_work2, true);
 		$time1 = TIME();

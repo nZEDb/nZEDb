@@ -1,7 +1,7 @@
 <?php
 require(dirname(__FILE__)."/config.php");
-require_once(WWW_DIR."/lib/binaries.php");
-require_once(WWW_DIR."/lib/groups.php");
+require_once(WWW_DIR."lib/binaries.php");
+require_once(WWW_DIR."lib/groups.php");
 
 $binaries = new Binaries();
 

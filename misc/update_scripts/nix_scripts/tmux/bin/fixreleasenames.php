@@ -67,7 +67,7 @@ if (isset($argv[1]))
 	if (isset($pieces[1]) && $pieces[0] == "par2")
 	{
 		$relID = $pieces[1];
-		$guid = trim($pieces[2],"'");
+		$guid = $pieces[2];
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBcontents();
 		$nzbcontents->checkPAR2($guid, $relID, $groupID, true);

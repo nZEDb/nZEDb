@@ -7,34 +7,39 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
 import signal
 import lib.nntplib as nntplib
-import lib.info as info
 import datetime
 import math
+
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
 
 print("\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
 
 count = 0
 first = 0
 #if the group has less than 10000 to grab, just grab them, and loop another group
 while (count - first) < 10000:
-
-	#create the connection to mysql
-	con = None
-	con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-	cur = con.cursor()
-
 	#get values from db
 	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'BACKFILL_QTY') AS b, (SELECT value FROM tmux WHERE setting = 'BACKFILL') AS c, (SELECT value FROM tmux WHERE setting = 'BACKFILL_GROUPS') AS d, (SELECT value FROM tmux WHERE setting = 'BACKFILL_ORDER') AS e, (SELECT value FROM tmux WHERE setting = 'BACKFILL_DAYS') AS f, (SELECT value FROM site WHERE setting = 'maxmssgs') AS g")
 	dbgrab = cur.fetchall()
@@ -68,30 +73,35 @@ while (count - first) < 10000:
 
 	#query to grab backfill groups
 	if len(sys.argv) == 1:
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {} day) < first_record_postdate {}".format(backfilldays, group))
+		# Using string formatting is not the correct way to do this, but using +group is even worse
+		# removing the % before the variables at the end of the query adds quotes/escapes strings
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL %s DAY) < first_record_postdate %s" % (backfilldays, group,))
 		datas = cur.fetchone()
 	else:
-		cur.execute("SELECT name, first_record FROM groups WHERE name = {} AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00000'".format(mdb.escape_string(sys.argv[1])))
+		run = "SELECT name, first_record FROM groups WHERE name = %s AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00000'"
+		cur.execute(run, (sys.argv[1]))
 		datas = cur.fetchone()
 	if not datas:
 		print("No Groups enabled for backfill")
 		sys.exit()
 
 	#get first, last from nntp sever
-	time.sleep(0.01)
+	time.sleep(0.05)
 	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	time.sleep(0.01)
+	time.sleep(0.05)
 	try:
 		resp, count, first, last, name = s.group(datas[0])
 		time.sleep(0.1)
 	except nntplib.NNTPError:
-		cur.execute("update groups set backfill = 0 WHERE name = {}".format(mdb.escape_string(datas[0])))
+		run = "UPDATE GROUPS SET backfill = 0 WHERE name = %s"
+		cur.execute(run, (datas[0]))
 		con.autocommit(True)
-		print("{} not found, disabling.".format(datas[0]))
+		print("\033[38;5;9m{} not found, disabling.\033[0m\n".format(datas[0]))
 	resp = s.quit
 
 	if (datas[1] - first) < 0:
-		cur.execute("update groups set backfill = 0 WHERE name = {}".format(mdb.escape_string(datas[0])))
+		run = "UPDATE GROUPS SET backfill = 0 WHERE name = %s"
+		cur.execute(run, (datas[0]))
 		con.autocommit(True)
 		print("{} has invalid first_post, disabling.".format(datas[0]))
 
@@ -105,8 +115,6 @@ while (count - first) < 10000:
 		if (datas[1] - first) < 10000 and (datas[1] - first) > 0:
 			group = ("{} 10000".format(datas[0]))
 			subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
-			cur.close()
-			con.close()
 
 #close connection to mysql
 cur.close()
@@ -139,7 +147,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
-					time.sleep(.01)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main(args):
@@ -161,13 +169,13 @@ def main(args):
 			p.start()
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
-		my_queue.put("{} {} {} {}".format(mdb.escape_string(datas[0]), datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
+		my_queue.put("%s %s %s %s" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
 
 	my_queue.join()
 
-	final = ("{} {} Backfill".format(mdb.escape_string(datas[0]), int(datas[1] - (maxmssgs * geteach))))
+	final = ("{} {} Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
-	group = ("{} {}".format(mdb.escape_string(datas[0]), 1000))
+	group = ("{} {}".format(datas[0], 1000))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
 		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
@@ -175,7 +183,7 @@ def main(args):
 		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs + 1000)))
 
 	print("Backfill Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 
 if __name__ == '__main__':

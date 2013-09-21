@@ -8,32 +8,38 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
+
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
 
 print("\nPartrepair Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
 
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
-
-cur.execute("select value from site where setting = 'partrepair'")
+cur.execute("SELECT value FROM site WHERE setting = 'partrepair'")
 torun = cur.fetchone()
 if int(torun[0]) != 2:
 	sys.exit("Part Repair Threaded is disabled")
-cur.execute("select (select value from site where setting = 'binarythreads') as a, (select value from site where setting = 'maxpartrepair') as b")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxpartrepair') AS b")
 dbgrab = cur.fetchall()
 
 run_threads = int(dbgrab[0][0])
@@ -42,7 +48,8 @@ datas = []
 maxtries = 0
 
 while (len(datas) < run_threads * maxpartrepair) and maxtries < 5:
-	cur.execute("select groupID, numberID from partrepair where attempts between {} and 0 limit {}".format(maxtries, run_threads * maxpartrepair))
+	run = "SELECT groupID, numberID FROM partrepair WHERE attempts between %s and 0 limit %s"
+	cur.execute(run, (maxtries, run_threads * maxpartrepair))
 	datas = cur.fetchall()
 	maxtries = maxtries + 1
 
@@ -76,7 +83,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/binaries.php", ""+my_id])
-					time.sleep(.01)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():
@@ -100,12 +107,12 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		my_queue.put("{} {}".format(release[0], release[1]))
+		my_queue.put("%s %s" % (release[0], release[1]))
 
 	my_queue.join()
 
 	print("\nPartrepair Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()

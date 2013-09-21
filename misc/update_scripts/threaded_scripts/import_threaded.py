@@ -8,31 +8,37 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
+
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
 
 print("\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
-
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
 
 #get valuse from db
-cur.execute("select value from tmux where setting = 'IMPORT'")
+cur.execute("SELECT value FROM tmux WHERE setting = 'IMPORT'")
 use_true = cur.fetchone()
-cur.execute("select (select value from site where setting = 'nzbthreads') as a, (select value from tmux where setting = 'NZBS') as b, (select value from tmux where setting = 'IMPORT_BULK') as c")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'NZBS') AS b, (SELECT value FROM tmux WHERE setting = 'IMPORT_BULK') AS c")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
@@ -71,7 +77,7 @@ class queue_runner(threading.Thread):
 						subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
 					else:
 						subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+my_id])
-					time.sleep(.01)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main(args):
@@ -102,20 +108,19 @@ def main(args):
 				my_queue.put(os.path.join(nzbs,gnames))
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
-				my_queue.put("{} {}".format(mdb.escape_string(os.path.join(nzbs,gnames)), "true"))
+				my_queue.put("%s %s" % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if int(use_true[0]) == 1:
 			my_queue.put(nzbs)
 		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
-			my_queue.put("{} {}".format(nzbs, "true"))
+			my_queue.put("%s $s".format(nzbs, "true"))
 
 	my_queue.join()
 
 	final = "true"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
 	print("\nNZB Import Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
-
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

@@ -8,30 +8,36 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
+
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
 
 print("\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
-
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
 
 #get number of threads from db
 if len(sys.argv) > 1 and sys.argv[1] == "amazon":
-	cur.execute("select value from site where setting = 'postthreadsamazon'")
+	cur.execute("SELECT value FROM site WHERE setting = 'postthreadsamazon'")
 else:
 	sys.exit("\nAn argument is required, \npostprocess_old_threaded.py amazon\n")
 run_threads = cur.fetchone()
@@ -68,7 +74,7 @@ class queue_runner(threading.Thread):
 					time_of_last_run = time.time()
 					if len(sys.argv) > 1 and sys.argv[1] == "amazon":
 						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_amazon.php", ""+my_id])
-					time.sleep(.01)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main(args):
@@ -97,7 +103,7 @@ def main(args):
 	my_queue.join()
 
 	print("\nPostProcess Old Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

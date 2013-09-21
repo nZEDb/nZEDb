@@ -8,15 +8,27 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
+
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
 
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print("\nPostProcess Clean Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
@@ -33,12 +45,6 @@ elif sys.argv[1] == "nfo":
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
-
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
 	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'POST') AS h, (SELECT value FROM tmux WHERE setting = 'POST_NON') AS i")
@@ -99,10 +105,6 @@ elif sys.argv[1] == "tv":
 		run = "SELECT searchname, id FROM releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
-
-#close connection to mysql
-cur.close()
-con.close()
 
 if not datas:
 	print("No Work to Process")
@@ -167,11 +169,6 @@ def main(args):
 
 	my_queue.join()
 
-	#create the connection to mysql
-	con = None
-	con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-	cur = con.cursor()
-
 	cur.execute("SELECT id FROM releases WHERE nfostatus <= -6")
 	final = cur.fetchall()
 
@@ -185,7 +182,7 @@ def main(args):
 	con.close()
 
 	print("\nPostProcess Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
