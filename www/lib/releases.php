@@ -1270,30 +1270,28 @@ class Releases
 	public function processReleasesStage5($groupID, $echooutput=false)
 	{
 		$db = new DB();
-		$nzb = new Nzb();
-		$page = new Page();
-		$cat = new Category();
-		$s = new Sites();
-		$version = $s->version();
-		$site = $s->get();
-		$nzbsplitlevel = $site->nzbsplitlevel;
-		$nzbpath = $site->nzbpath;
 		$consoletools = new ConsoleTools();
 		$nzbcount = 0;
-		$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
-		$where = (!empty($groupID)) ? " AND groupid = " . $groupID : "";
+		$where = (!empty($groupID)) ? " AND r.groupid = " . $groupID : "";
 
 		// Create NZB.
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$resrel = $db->query("SELECT id, guid, name, categoryid FROM releases WHERE nzbstatus = 0 ".$where);
+		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE r.nzbstatus = 0 ".$where);
 		$total = count($resrel);
 		if ($total > 0)
 		{
+			$nzb = new Nzb();
+			$s = new Sites();
+			$version = $s->version();
+			$site = $s->get();
+			$nzbsplitlevel = $site->nzbsplitlevel;
+			$nzbpath = $site->nzbpath;
+			$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
 			foreach ($resrel as $rowrel)
 			{
-				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['categoryid'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $cat);
+				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
 				if($nzb_create === true)
 				{
 					$db->queryExec(sprintf("UPDATE collections SET filecheck = 5 WHERE releaseid = %s", $rowrel['id']));
