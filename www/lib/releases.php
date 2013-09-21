@@ -1323,22 +1323,22 @@ class Releases
 			if ($this->echooutput)
 				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
+			// Look for records that potentially have regex titles.
 			if ($db->dbSystem() == 'mysql')
 			{
-				$regex = "name REGEXP '^\\[[[:digit:]]+\\]'";
-				$regexa = 'r.'.$regex;
+				//$regex = "name REGEXP '^\\[[0-9]+\\]'";
+				// Mark records that don't have regex titles.
+				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[0-9]+\\]' LIMIT 100".$where);
 			}
 			else if ($db->dbSystem() == 'pgsql')
 			{
-				$regex = "regexp_matches(name, '^\\[[[:digit:]]+\\]')";
-				$regexa = "regexp_matches(r.name, '^\\[[[:digit:]]+\\]')";
+				//$regex = "regexp_matches(name, '^\\[[[:digit:]]+\\]')";
+				// Mark records that don't have regex titles.
+				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name ~ '^\\[[0-9]+\\]' LIMIT 100".$where);
 			}
 
-			// Mark records that don't have regex titles.
-			//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND {$regex} = 0 ".$where);
-
-			// Look for records that potentially have regex titles.
-			$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND {$regexa} = 1 LIMIT 100".$where);
 			if (count($resrel) > 0)
 			{
 				echo $n;
