@@ -21,6 +21,8 @@ $airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= DATE_SUB(CURDAT
 /*
 Mysql: (NOW() - INTERVAL %d HOUR)
 PDO: (NOW() - INTERVAL '%d HOURS')
+*/
 
-
+/*
+tmux monitor.php line 78
 */

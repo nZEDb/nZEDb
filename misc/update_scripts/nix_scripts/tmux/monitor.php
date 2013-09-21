@@ -63,15 +63,20 @@ $proc_work2 = "SELECT
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
-if ($db->dbSystem() == "mysql")
+if ($db->dbSystem() == 'mysql')
 {
 	$utd = "UNIX_TIMESTAMP(dateadded)";
 	$uta = "UNIX_TIMESTAMP(adddate)";
+	$interva = 'backfill_target day';
+	$intervb = "datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day";
 }
-elseif ($db->dbSystem() == "pgsql")
+elseif ($db->dbSystem() == 'pgsql')
 {
 	$utd = "extract(epoch FROM dateadded)";
 	$uta = "extract(epoch FROM adddate)";
+	$interva = "'backfill_target days'";
+	// TODO : check if this works in pgsql.
+	$intervb = "'datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days'";
 }
 
 // tmux and site settings, refreshes every loop
@@ -125,8 +130,8 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
 	( SELECT COUNT( id ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {$interva}) < first_record_postdate ) AS backfill_groups_days,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {$intervb}) < first_record_postdate) AS backfill_groups_date,
 	( SELECT COUNT( id ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
