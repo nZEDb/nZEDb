@@ -27,6 +27,8 @@ else
 		print "<tr><th>Aspect Ratio:</th><td>".htmlentities($redata["videoaspect"], ENT_QUOTES)."</td></tr>\n";
 	if ($redata["audio"] != "" && $redata["audio"] != ", ")
 		print "<tr><th>Audio Languages:</th><td>".htmlentities($redata["audio"], ENT_QUOTES)."</td></tr>\n";
+    if ($redata["audioformat"] != "" && $redata["audioformat"] != ", ")
+        print "<tr><th>Audio Format:</th><td>".htmlentities($redata["audioformat"], ENT_QUOTES)."</td></tr>\n";
 	if ($redata["subs"] != "")
 		print "<tr><th>Subtitles:</th><td>".htmlentities($redata["subs"], ENT_QUOTES)."</td></tr>\n";
 	print "</table>";
