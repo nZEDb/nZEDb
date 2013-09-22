@@ -925,8 +925,16 @@ class Movie
 	public function updateInsUpcoming($source, $type, $info)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
-		$db->queryInsert($sql);
+		if ($db->dbSystem() == 'mysql')
+			$db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info)));
+		else
+		{
+			$check = $db->queryOneRow(sprintf('SELECT id FROM upcoming WHERE source = %s, typeid = %d, info = %s', $db->escapeString($source), $type, $db->escapeString($info)));
+			if ($check === false)
+				$db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW())", $db->escapeString($source), $type, $db->escapeString($info)));
+			else
+				$db->Exec(sprintf('UPDATE upcoming SET source = %s, typeid = %s, info = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($source), $type, $db->escapeString($info), $check['id']));
+		}
 	}
 
 

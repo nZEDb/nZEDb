@@ -624,12 +624,20 @@ class Binaries
 		$db = new DB();
 		$insertStr = 'INSERT INTO partrepair (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
-		{
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
-		}
+
 		$insertStr = substr($insertStr, 0, -2);
-		$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
-		return $db->queryInsert($insertStr);
+		if ($db->dbSystem() == 'mysql')
+		{
+			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
+			return $db->queryInsert($insertStr);
+		}
+		else
+		{
+			$id = $db->queryInsert($insertStr);
+			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = '.$id);
+			return $id;
+		}
 	}
 
 	public function retrieveBlackList()
