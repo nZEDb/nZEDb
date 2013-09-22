@@ -1496,10 +1496,16 @@ class Releases
 			{
 				foreach ($idr as $id)
 				{
-					$reccount += $db->Exec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
-					$reccount += $db->Exec(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+					$delqa = $db->prepare(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+					$delqa->execute();
+					$reccount += $delqa->rowCount();
+					$delqb = $db->prepare(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+					$delqb->execute();
+					$reccount += $delqb->rowCount();
 				}
-				$reccount += $db->Exec('DELETE FROM collections WHERE filecheck = 5 '.$where);
+				$delqc = $db->prepare('DELETE FROM collections WHERE filecheck = 5 '.$where);
+				$delqc->execute();
+				$reccount += $delqc->rowCount();
 			}
 		}
 		if ($this->echooutput)
