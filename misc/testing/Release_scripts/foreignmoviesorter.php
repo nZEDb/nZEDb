@@ -6,7 +6,10 @@ require_once(WWW_DIR."lib/category.php");
 function getForeignMovies()
 {
 	$db = new DB();
-	return $db->query("SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage LIKE '%English%' AND r.categoryid = 2010");
+	$like = 'ILIKE';
+	if ($db->dbSystem() == 'mysql')
+		$like = 'LIKE';
+	return $db->query('SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage '.$like." '%English%' AND r.categoryid = 2010");
 }
 
 function updateRelease($id, $cat)

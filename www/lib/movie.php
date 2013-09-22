@@ -213,15 +213,20 @@ class Movie
 		$db = new Db();
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		foreach ($browsebyArr as $bb) {
-			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
+		$like = ' ILIKE(';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE(';
+		foreach ($browsebyArr as $bb)
+		{
+			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb]))
+			{
 				$bbv = stripslashes($_REQUEST[$bb]);
-				if ($bb == 'rating') { $bbv .= '.'; }
-				if ($bb == 'imdb') {
-					$browseby .= "m.{$bb}id = $bbv AND ";
-				} else {
-					$browseby .= "m.$bb LIKE(".$db->escapeString('%'.$bbv.'%').") AND ";
-				}
+				if ($bb == 'rating')
+					$bbv .= '.';
+				if ($bb == 'imdb')
+					$browseby .= 'm.'.$bb.'id = '.$bbv.' AND ';
+				else
+					$browseby .= 'm.'.$bb.$like.$db->escapeString('%'.$bbv.'%').') AND ';
 			}
 		}
 		return $browseby;
@@ -555,6 +560,10 @@ class Movie
 			if ($this->echooutput && $moviecount > 1)
 				echo "Processing ".$moviecount." movie release(s)."."\n";
 
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+
 			foreach ($res as $arr)
 			{
 				$parsed = $this->parseMovieSearchName($arr['name']);
@@ -582,10 +591,10 @@ class Movie
 							$start ++;
 						}
 						$ystr .= $end.')';
-						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title LIKE %s AND year IN %s', "'%".$parsed['title']."%'", $ystr));
+						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s AND year IN %s', $like, "'%".$parsed['title']."%'", $ystr));
 					}
 					else
-						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title LIKE %s', "'%".$parsed['title']."%'"));
+						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s', $like, "'%".$parsed['title']."%'"));
 
 					if ($check !== false)
 					{
@@ -684,7 +693,7 @@ class Movie
 						continue;
 					else if ($check === false && $year === true)
 					{
-						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title LIKE %s', "'%".$parsed['title']."%'"));
+						$check = $db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s', $like, "'%".$parsed['title']."%'"));
 						if ($check !== false)
 						{
 							$imdbId = $this->domovieupdate('tt'.$check['imdbid'], 'Local DB',  $arr['id'], $db);

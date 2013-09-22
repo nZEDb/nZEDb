@@ -91,7 +91,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s", $grpsql));
 		return $res["num"];
@@ -103,7 +108,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s AND active = 1", $grpsql));
 		return $res["num"];
@@ -115,7 +125,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s AND active = 0", $grpsql));
 		return $res["num"];
@@ -132,7 +147,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
@@ -149,7 +169,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases group by groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s AND active = 1 ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
@@ -166,7 +191,12 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("AND groups.name LIKE %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
 		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases group by groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s AND active = 0 ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
