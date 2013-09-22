@@ -68,8 +68,8 @@ class TvRage
 				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
 				if (file_exists($path))
 					unlink($path);
-				file_put_contents($path, $imgbytes);
-				if (file_exists($path))
+				$check = file_put_contents($path, $imgbytes);
+				if ($check !== false)
 				{
 					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
 					chmod($path, 0755);

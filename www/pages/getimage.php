@@ -23,12 +23,9 @@ if ($_GET["type"] == "tvrage")
 	}
 	else if ($db->dbSystem() == 'pgsql')
 	{
-		$path = WWW_DIR.'covers/tvrage/'.$_GET['id'].'.jpg';
-		if (!file_exists($path))
+		$imgdata = @file_get_contents(WWW_DIR.'covers/tvrage/'.$_GET['id'].'.jpg');
+		if ($imgdata === false)
 			$page->show404();
-
-		$imgdata = file_get_contents($path);
-		$imagedata = @imagecreatefromstring($data);
 	}
 	header("Content-type: image/jpeg");
 	print $imgdata;
