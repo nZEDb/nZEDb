@@ -78,7 +78,7 @@ class AniDB
 		$db = new DB();
 		if ($db->dbSystem() == 'mysql')
 			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $db->escapeString('^'.$title.'$'));
-		else if ($db->dbSystem() == 'pgsql')
+		else
 			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title ~ %s LIMIT 1', $db->escapeString('^'.$title.'$'));
 		$anidbID = $db->queryOneRow($query);
 		return $anidbID['anidbid'];
@@ -88,21 +88,29 @@ class AniDB
 	{
 		$db = new DB();
 
+		if ($db->dbSystem() == 'mysql')
+		{
+			$regex = 'REGEXP';
+			$like = 'LIKE';
+		}
+		else
+		{
+			$regex = '~';
+			$like = 'ILIKE';
+		}
+
 		$rsql = '';
 		if ($letter != '')
 		{
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			if ($db->dbSystem() == 'mysql')
-				$rsql .= sprintf('AND anidb.title REGEXP %s', $db->escapeString('^'.$letter));
-			else if ($db->dbSystem() == 'pgsql')
-				$rsql .= sprintf('AND anidb.title ~ %s', $db->escapeString('^'.$letter));
+			$rsql .= sprintf('AND anidb.title %s %s', $regex, $db->escapeString('^'.$letter));
 		}
 
 		$tsql = '';
 		if ($animetitle != '')
-			$tsql .= sprintf('AND anidb.title LIKE %s', $db->escapeString('%'.$animetitle.'%'));
+			$tsql .= sprintf('AND anidb.title %s %s', $like, $db->escapeString('%'.$animetitle.'%'));
 
 		return $db->query(sprintf('SELECT anidb.id, anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbid > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC', $rsql, $tsql));
 	}
@@ -118,7 +126,12 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '')
-			$rsql = sprintf('AND anidb.title LIKE %s', $db->escapeString('%'.$animetitle.'%'));
+		{
+			if ($db->dbSystem() == 'mysql')
+				$rsql = sprintf('AND anidb.title LIKE %s', $db->escapeString('%'.$animetitle.'%'));
+			else
+				$rsql = sprintf('AND anidb.title ILIKE %s', $db->escapeString('%'.$animetitle.'%'));
+		}
 
 		return $db->query(sprintf('SELECT id, anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC'.$limit, $rsql));
 	}
@@ -129,7 +142,12 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '')
-			$rsql .= sprintf('AND anidb.title LIKE %s', $db->escapeString('%'.$animetitle.'%'));
+		{
+			if ($db->dbSystem() == 'mysql')
+				$rsql .= sprintf('AND anidb.title LIKE %s', $db->escapeString('%'.$animetitle.'%'));
+			else
+				$rsql .= sprintf('AND anidb.title ILIKE %s', $db->escapeString('%'.$animetitle.'%'));
+		}
 
 		$res = $db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM anidb WHERE 1=1 %s', $rsql));
 

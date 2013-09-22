@@ -496,16 +496,20 @@ class Releases
 		$intwordcount = 0;
 		if (count($words) > 0)
 		{
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			else
+				$like = 'ILIKE';
 			foreach ($words as $word)
 			{
 				if ($word != '')
 				{
 					if ($intwordcount == 0 && (strpos($word, '^') === 0))
-						$searchsql .= sprintf(' AND releases.%s LIKE %s', $type, $db->escapeString(substr($word, 1).'%'));
+						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1).'%'));
 					elseif (substr($word, 0, 2) == '--')
-						$searchsql .= sprintf(' AND releases.%s NOT LIKE %s', $type, $db->escapeString('%'.substr($word, 2).'%'));
+						$searchsql .= sprintf(' AND releases.%s NOT %s %s', $type, $like, $db->escapeString('%'.substr($word, 2).'%'));
 					else
-						$searchsql .= sprintf(' AND releases.%s LIKE %s', $type, $db->escapeString('%'.$word.'%'));
+						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString('%'.$word.'%'));
 
 					$intwordcount++;
 				}
