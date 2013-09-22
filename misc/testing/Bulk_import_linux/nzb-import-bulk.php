@@ -25,8 +25,8 @@ if (!isset($argv[1]))
 if (!isset($argv[2]))
 {
 	$pieces = explode(" ", $argv[1]);
-	$usenzbname = (isset($pieces[1]) && trim($pieces[1],"'") == 'true') ? true : false;
-	$path = trim($pieces[0],"'");
+	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
+	$path = $pieces[0];
 }
 else
 {
@@ -143,12 +143,21 @@ else
 			// If the release is in our DB already then don't bother importing it.
 			if ($usenzbname && $skipCheck !== true)
 			{
-				$usename = str_replace('.nzb', '', basename($nzbFile));
-				$usename = str_replace('.gz', '', $usename);
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				$res = $db->queryOneRow($dupeCheckSql);
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				$res1 = $db->queryOneRow($dupeCheckSql);
+				$usename = str_replace(array('.nzb', '.gz'), '', basename($nzbFile));
+				if ($db->dbSystem() == 'mysql')
+				{
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res = $db->queryOneRow($dupeCheckSql);
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res1 = $db->queryOneRow($dupeCheckSql);
+				}
+				else if ($db->dbSystem() == 'pgsql')
+				{
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res = $db->queryOneRow($dupeCheckSql);
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res1 = $db->queryOneRow($dupeCheckSql);
+				}
 				// Only check one binary per nzb, they should all be in the same release anyway.
 				$skipCheck = true;
 
@@ -165,8 +174,10 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
-				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s",
-					$db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+				if ($db->dbSystem() == 'mysql')
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+				else if ($db->dbSystem() == 'pgsql')
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
 				// Only check one binary per nzb, they should all be in the same release anyway.

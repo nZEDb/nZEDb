@@ -29,8 +29,17 @@ class Namefixer
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-		$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 hour) GROUP BY rel.id ORDER BY postdate DESC";
+		$db = new DB;
+		if ($db->dbSystem() == 'mysql')
+		{
+			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
+		}
+		else if ($db->dbSystem() == 'pgsql')
+		{
+			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
+		}
 		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 		$this->fullall = " ORDER BY postdate DESC";
 		$this->done = $this->matched = false;
@@ -159,7 +168,7 @@ class Namefixer
 
 		$db = new DB();
 		$type = "Filenames, ";
-		$query = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21)";
+		$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE rel.categoryid = 7010 AND rel.relnamestatus IN (0, 1, 20, 21)";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)

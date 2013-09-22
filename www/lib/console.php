@@ -87,9 +87,14 @@ class Console
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 		else
-			$maxage = "";
+			$maxage = '';
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -136,9 +141,14 @@ class Console
 			$catsrch.= "1=2 )";
 		}
 
-		$maxage = "";
+		$maxage = '';
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -418,7 +428,19 @@ class Console
 		$con['consolegenre'] = $genreName;
 		$con['consolegenreID'] = $genreKey;
 
-		$consoleId = $db->queryInsert(sprintf("INSERT INTO consoleinfo  (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreID = %s, esrb = %s, releasedate = %s, review = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover'], $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover']));
+		if ($db->dbSystem() == 'mysql')
+			$consoleId = $db->queryInsert(sprintf("INSERT INTO consoleinfo  (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreID = %s, esrb = %s, releasedate = %s, review = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover'], $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover']));
+		else if ($db->dbSystem() == 'pgsql')
+		{
+			$check = $db->queryOneRow(sprintf('SELECT id FROM consoleinfo WHERE title = %s AND asin = %s', $db->escapeString($book['title']), $db->escapeString($book['asin'])));
+			if ($check === false)
+				$bookId = $db->queryInsert(sprintf("INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())", $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover']));
+			else
+			{
+				$consoleId = $check['id'];
+				$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreid = %s, esrb = %s, releasedate = %s, review = %s, cover = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID']==-1?"null":$con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover'], $consoleId));
+			}
+		}
 
 		if ($consoleId)
 		{

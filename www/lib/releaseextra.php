@@ -46,7 +46,10 @@ class ReleaseExtra
 	public function getSubs($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT GROUP_CONCAT(subslanguage SEPARATOR ', ') AS subs FROM releasesubs WHERE releaseid = %d ORDER BY subsid ASC", $id));
+		if ($db->dbSystem() == 'mysql')
+			return $db->queryOneRow(sprintf("SELECT GROUP_CONCAT(subslanguage SEPARATOR ', ') AS subs FROM releasesubs WHERE releaseid = %d ORDER BY subsid ASC", $id));
+		else
+			return $db->queryOneRow(sprintf("SELECT STRING_AGG(subslanguage, ', ') AS subs FROM releasesubs WHERE releaseid = %d GROUP BY subsid ORDER BY subsid ASC", $id));
 	}
 
 	public function getBriefByGuid($guid)

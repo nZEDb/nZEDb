@@ -22,8 +22,8 @@ $namecleaning = new nameCleaning();
 if (!isset($argv[2]))
 {
 	$pieces = explode(" ", $argv[1]);
-	$usenzbname = (isset($pieces[1]) && trim($pieces[1],"'") == 'true') ? true : false;
-	$path = trim($pieces[0],"'");
+	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
+	$path = $pieces[0];
 }
 else
 {
@@ -146,12 +146,21 @@ else
 			// If the release is in our DB already then don't bother importing it.
 			if ($usenzbname && $skipCheck !== true)
 			{
-				$usename = str_replace('.nzb', '', basename($nzbFile));
-				$usename = str_replace('.gz', '', $usename);
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				$res = $db->queryOneRow($dupeCheckSql);
-				$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				$res1 = $db->queryOneRow($dupeCheckSql);
+				$usename = str_replace(array('.nzb', '.gz'), '', basename($nzbFile));
+				if ($db->dbSystem() == 'mysql')
+				{
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res = $db->queryOneRow($dupeCheckSql);
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res1 = $db->queryOneRow($dupeCheckSql);
+				}
+				else if ($db->dbSystem() == 'pgsql')
+				{
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res = $db->queryOneRow($dupeCheckSql);
+					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					$res1 = $db->queryOneRow($dupeCheckSql);
+				}
 
 				// Only check one binary per nzb, they should all be in the same release anyway.
 				$skipCheck = true;
@@ -169,8 +178,10 @@ else
 			if (!$usenzbname && $skipCheck !== true)
 			{
 				$usename = $db->escapeString($name);
-				$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s",
-					$db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+				if ($db->dbSystem() == 'mysql')
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+				else if ($db->dbSystem() == 'pgsql')
+					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 				$res = $db->queryOneRow($dupeCheckSql);
 
 				// Only check one binary per nzb, they should all be in the same release anyway.
@@ -240,17 +251,18 @@ else
 				$cleanName = $cleanerName['cleansubject'];
 				$propername = $cleanerName['properlynamed'];
 			}
-			try {
-				if ($propername === true)
-					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				else
-					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-			} catch (PDOException $err) {
-				if ($this->echooutput)
-					echo "\033[01;31m.".$err."\n";
-			}
+			if ($propername === true)
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+			else
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 
-			if(!isset($error) && $relID !== false);
+			if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+			{
+				$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
+				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
+				$importfailed = true;
+			}
+			else
 			{
 				if($nzb->copyNZBforImport($relguid, $nzba))
 				{
@@ -270,12 +282,6 @@ else
 					}
 					else
 						echo ".";
-				}
-				else
-				{
-					$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-					echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
-					$importfailed = true;
 				}
 				$nzbCount++;
 				@unlink($nzbFile);

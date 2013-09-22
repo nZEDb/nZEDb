@@ -381,7 +381,7 @@ class PostProcess
 			else
 			{
 				$pieces = explode("           =+=            ", $releaseToWork);
-				$result = array(array('id' => trim($pieces[0],"'"), 'guid' => trim($pieces[1],"'"), 'name' => trim($pieces[2],"'"), 'disablepreview' => trim($pieces[3],"'"), 'size' => trim($pieces[4],"'"), 'groupid' => trim($pieces[5],"'"), 'nfostatus' => trim($pieces[6],"'")));
+				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6]));
 			}
 		}
 

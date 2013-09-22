@@ -28,9 +28,9 @@ class DB
 
 			try {
 				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true);
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 150, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true);
 				else
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 120);
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 150);
 
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
@@ -93,7 +93,7 @@ class DB
 				return DB::$pdo->lastInsertId();
 				$i++;
 			}
-			//printf($e);
+			printf($e);
 			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
 				return $e;
 				//echo "\nError: Insert would create duplicate row, skipping\n";
@@ -101,7 +101,7 @@ class DB
 		}
 	}
 
-	// Used for deleting, updating (and inserting without needing the last insert id). Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	// Used for deleting, updating (and inserting without needing the last insert id).
 	public function queryExec($query)
 	{
 		if ($query == '')
@@ -122,12 +122,27 @@ class DB
 				return $run;
 				$i++;
 			}
-			//printf($e);
+			printf($e);
 			//if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
 				//echo "\nError: Update would create duplicate row, skipping\n";
 			return false;
 		}
 	}
+
+	// Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	public function Exec($query)
+	{
+		if ($query == '')
+			return false;
+
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
+	}
+
 
 	// Return an array of rows, an empty array if no results.
 	// Optional: Pass true to cache the result with memcache.

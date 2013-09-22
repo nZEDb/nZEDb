@@ -148,8 +148,10 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $db->escapeString($name);
-					$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s',
-						$db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					if ($db->dbSystem() == 'mysql')
+						$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s', $db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
+					else if ($db->dbSystem() == 'pgsql')
+						$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
 					$res = $db->queryOneRow($dupeCheckSql);
 
 					// Only check one binary per nzb, they should all be in the same release anyway.

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3561";
+$version="0.1r3595";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -53,7 +53,7 @@ $proc_work = "SELECT
 $proc_work2 = "SELECT
 	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pc,
 	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 6000 AND 6999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pron,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.nzbstatus = 1 ) AS work,
+	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus between -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND r.nzbstatus = 1 ) AS work,
 	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL AND nzbstatus = 1 ) AS predb_matched,
 	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
 	( SELECT COUNT( id ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
@@ -63,23 +63,29 @@ $proc_work2 = "SELECT
 	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
 
-if ($db->dbSystem() == "mysql")
+if ($db->dbSystem() == 'mysql')
 {
 	$utd = "UNIX_TIMESTAMP(dateadded)";
 	$uta = "UNIX_TIMESTAMP(adddate)";
+	$interva = 'backfill_target day';
+	$intervb = "datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day";
 }
-elseif ($db->dbSystem() == "pgsql")
+elseif ($db->dbSystem() == 'pgsql')
 {
 	$utd = "extract(epoch FROM dateadded)";
 	$uta = "extract(epoch FROM adddate)";
+	$interva = "'backfill_target days'";
+	// TODO : check if this works in pgsql.
+	$intervb = "'datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days'";
 }
 
+// tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT {$utd} FROM collections ORDER BY dateadded ASC limit 1 ) AS oldestcollection,
-	( SELECT {$uta} FROM predb ORDER BY adddate DESC limit 1 ) AS newestpre,
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1) AS newestaddname,
-	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC limit 1 ) AS newestadd,
-	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC limit 1 ) AS oldestnzb,
+	( SELECT {$utd} FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
+	( SELECT {$uta} FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestaddname,
+	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
+	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -124,8 +130,8 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
 	( SELECT COUNT( id ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {$interva}) < first_record_postdate ) AS backfill_groups_days,
+	( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval {$intervb}) < first_record_postdate) AS backfill_groups_date,
 	( SELECT COUNT( id ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
@@ -382,17 +388,18 @@ while( $i > 0 )
 	if ( $db->ping() === false )
 	{
 		unset($db);
+		$db = NULL;
 		$db = new DB();
 	}
 
 	$getdate = gmDate("Ymd");
 	$proc_tmux_result = @$db->query($proc_tmux);
-	$initquery = @$db->query($qry, true);
 
 	//run queries only after time exceeded, this query take take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
+		$initquery = @$db->query($qry, true);
 		$proc_work_result = @$db->query($proc_work, true);
 		$proc_work_result2 = @$db->query($proc_work2, true);
 		$time1 = TIME();

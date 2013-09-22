@@ -7,30 +7,36 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
 
-threads = 10
-print("\nUpdate Releases Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
+
+threads = 3
+print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
 
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
-
-cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid)")
-#cur.execute("SELECT id FROM groups WHERE active = 1")
+cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid) DESC")
 datas = cur.fetchall()
 
 if not datas:
@@ -67,7 +73,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s groups" % (threads, "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -88,7 +94,7 @@ def main():
 		if count >= threads:
 			count = 0
 		count += 1
-		my_queue.put("'%s'  '%s'" % (str(release[0]), count))
+		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
 
@@ -96,8 +102,8 @@ def main():
 	final = "Stage7b"
 	subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+str(final)])
 
-	print("\nUpdate Releases Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main()
