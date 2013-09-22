@@ -913,23 +913,69 @@ class Movie
 
 			$ret = $rt->getBoxOffice();
 			if ($ret != "")
-				$this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $ret);
+			{
+				$cnt = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $ret);
+				if ($this->echooutput && $cnt > 0)
+					echo "Added/updated movies to the box office list.\n";
+			}
+			else
+			{
+				if ($this->echooutput)
+					echo "No new updates for box office list.\n";
+			}
 
 			$ret = $rt->getInTheaters();
 			if ($ret != "")
-				$this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $ret);
+			{
+				$cnt = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $ret);
+				if ($this->echooutput && $cnt > 0)
+					echo "Added/updated movies to the theaters list.\n";
+			}
+			else
+			{
+				if ($this->echooutput)
+					echo "No new updates for theaters list.\n";
+			}
 
 			$ret = $rt->getOpening();
 			if ($ret != "")
-				$this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $ret);
+			{
+				$cnt = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $ret);
+				if ($this->echooutput && $cnt > 0)
+					echo "Added/updated movies to the opening list.\n";
+			}
+			else
+			{
+				if ($this->echooutput)
+					echo "No new updates for opening list.\n";
+			}
 
 			$ret = $rt->getUpcoming();
 			if ($ret != "")
-				$this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $ret);
+			{
+				$cnt = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $ret);
+				if ($this->echooutput && $cnt > 0)
+					echo "Added/updated movies to the upcoming list.\n";
+			}
+			else
+			{
+				if ($this->echooutput)
+					echo "No new updates for upcoming list.\n";
+			}
 
 			$ret = $rt->getDVDReleases();
 			if ($ret != "")
-				$this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
+			{
+				$cnt = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $ret);
+				if ($this->echooutput && $cnt > 0)
+					echo "Added/updated movies to the DVD list.\n";
+			}
+			else
+			{
+				if ($this->echooutput)
+					echo "No new updates for upcoming list.\n";
+			}
+
 			if ($this->echooutput)
 				echo "Updated successfully.\n";
 	  }
@@ -939,14 +985,14 @@ class Movie
 	{
 		$db = new DB();
 		if ($db->dbSystem() == 'mysql')
-			$db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info)));
+			return $db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info)));
 		else
 		{
-			$check = $db->queryOneRow(sprintf('SELECT id FROM upcoming WHERE source = %s, typeid = %d, info = %s', $db->escapeString($source), $type, $db->escapeString($info)));
+			$check = $db->queryOneRow(sprintf('SELECT id FROM upcoming WHERE source = %s AND typeid = %d AND info = %s', $db->escapeString($source), $type, $db->escapeString($info)));
 			if ($check === false)
-				$db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW())", $db->escapeString($source), $type, $db->escapeString($info)));
+				return $db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW())", $db->escapeString($source), $type, $db->escapeString($info)));
 			else
-				$db->Exec(sprintf('UPDATE upcoming SET source = %s, typeid = %s, info = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($source), $type, $db->escapeString($info), $check['id']));
+				return $db->Exec(sprintf('UPDATE upcoming SET source = %s, typeid = %s, info = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($source), $type, $db->escapeString($info), $check['id']));
 		}
 	}
 
