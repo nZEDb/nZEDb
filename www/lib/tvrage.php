@@ -105,7 +105,12 @@ class TvRage
 
 		$rsql = '';
 		if ($ragename != "")
-			$rsql .= sprintf("AND tvrage.releasetitle LIKE %s ", $db->escapeString("%".$ragename."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $db->escapeString("%".$ragename."%"));
+		}
 
 		return $db->query(sprintf("SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC".$limit, $rsql));
 	}
@@ -116,7 +121,12 @@ class TvRage
 
 		$rsql = '';
 		if ($ragename != "")
-			$rsql .= sprintf("AND tvrage.releasetitle LIKE %s ", $db->escapeString("%".$ragename."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $db->escapeString("%".$ragename."%"));
+		}
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM tvrage WHERE 1=1 %s", $rsql));
 		return $res["num"];
@@ -143,7 +153,7 @@ class TvRage
 
 			if ($db->dbSystem() == "mysql")
 				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $db->escapeString('^'.$letter));
-			else if ($db->dbSystem() == "pgsql")
+			else
 				$rsql .= sprintf("AND tvrage.releasetitle ~ %s", $db->escapeString('^'.$letter));
 		}
 		$tsql = '';
@@ -152,7 +162,7 @@ class TvRage
 
 		if ($db->dbSystem() == 'mysql')
 			return $db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
-		else if ($db->dbSystem() == 'pgsql')
+		else
 			return $db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid, tvrage.id, userseries.id ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
 	}
 

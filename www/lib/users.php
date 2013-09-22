@@ -66,15 +66,19 @@ class Users
 		else
 			$limit = " LIMIT ".$num." OFFSET ".$start;
 
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+
 		$usql = $esql = $hsql = $rsql = '';
 		if ($username != '')
-			$usql = sprintf(" AND users.username LIKE %s ", $db->escapeString("%".$username."%"));
+			$usql = sprintf(" AND users.username %s %s ", $like, $db->escapeString("%".$username."%"));
 
 		if ($email != '')
-			$esql = sprintf(" AND users.email LIKE %s ", $db->escapeString("%".$email."%"));
+			$esql = sprintf(" AND users.email %s %s ", $like, $db->escapeString("%".$email."%"));
 
 		if ($host != '')
-			$hsql = sprintf(" AND users.host LIKE %s ", $db->escapeString("%".$host."%"));
+			$hsql = sprintf(" AND users.host %s %s ", $like, $db->escapeString("%".$host."%"));
 
 		if ($role != '')
 			$rsql = sprintf(" AND users.role = %d ", $role);

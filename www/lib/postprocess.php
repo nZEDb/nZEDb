@@ -327,6 +327,9 @@ class PostProcess
 	//
 	public function processAdditional($releaseToWork='', $id='', $gui=false)
 	{
+		$like = 'ILIKE';
+		if ($this->db->dbSystem() == 'mysql')
+			$like = 'LIKE';
 		if ($gui)
 		{
 			$ok = false;
@@ -334,9 +337,9 @@ class PostProcess
 			{
 				usleep(mt_rand(10,300));
 				$this->db->setAutoCommit(false);
-				$ticket = $this->db->queryOneRow("SELECT value  FROM site WHERE setting LIKE 'nextppticket'");
+				$ticket = $this->db->queryOneRow('SELECT value  FROM site WHERE setting '.$like." 'nextppticket'");
 				$ticket = $ticket["value"];
-				$upcnt = $this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'nextppticket' AND value = %d", $ticket + 1, $ticket));
+				$upcnt = $this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'nextppticket' AND value = %d", $ticket + 1, $like, $ticket));
 				if (count($upcnt) == 1)
 				{
 					$ok = true;
@@ -352,7 +355,7 @@ class PostProcess
 			do
 			{
 				sleep($sleep);
-				$serving = $this->db->queryOneRow("SELECT *  FROM site WHERE setting LIKE 'currentppticket1'");
+				$serving = $this->db->queryOneRow('SELECT * FROM site WHERE setting '.$like." 'currentppticket1'");
 				$time = strtotime($serving["updateddate"]);
 				$serving = $serving["value"];
 				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
@@ -940,7 +943,7 @@ class PostProcess
 				echo "\n";
 		}
 		if ($gui)
-			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting LIKE 'currentppticket1'", $ticket + 1));
+			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
 
 		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}

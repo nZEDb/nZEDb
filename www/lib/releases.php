@@ -496,10 +496,9 @@ class Releases
 		$intwordcount = 0;
 		if (count($words) > 0)
 		{
+			$like = 'ILIKE';
 			if ($db->dbSystem() == 'mysql')
 				$like = 'LIKE';
-			else
-				$like = 'ILIKE';
 			foreach ($words as $word)
 			{
 				if ($word != '')
@@ -681,7 +680,10 @@ class Releases
 			if (is_numeric($episode))
 				$episode = sprintf('E%02d', $episode);
 
-			$episode = sprintf(' AND releases.episode LIKE %s', $db->escapeString('%'.$episode.'%'));
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$episode = sprintf(' AND releases.episode %s %s', $like, $db->escapeString('%'.$episode.'%'));
 		}
 
 		$searchsql = $this->searchSQL($name, $db, 'searchname');
@@ -714,7 +716,11 @@ class Releases
 
 		$anidbID = ($anidbID > -1) ? sprintf(' AND anidbid = %d ', $anidbID) : '';
 
-		is_numeric($epno) ? $epno = sprintf(" AND releases.episode LIKE '%s' ", $db->escapeString('%'.$epno.'%')) : '';
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+
+		is_numeric($epno) ? $epno = sprintf(" AND releases.episode %s '%s' ", $like, $db->escapeString('%'.$epno.'%')) : '';
 
 		$searchsql = $this->searchSQL($name, $db, 'searchname');
 		$catsrch = $this->categorySQL($cat);
