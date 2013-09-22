@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3595";
+$version="0.1r3629";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -81,11 +81,11 @@ elseif ($db->dbSystem() == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT {$utd} FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
-	( SELECT {$uta} FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
+	( SELECT ".$utd." FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
+	( SELECT ".$uta." FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
 	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestaddname,
-	( SELECT {$uta} FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
-	( SELECT {$utd} FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb,
+	( SELECT ".$uta." FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
+	( SELECT ".$utd." FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -329,6 +329,16 @@ $usp1totalconnections = 0;
 $usp2activeconnections = 0;
 $usp2totalconnections = 0;
 
+$tmux_session = '';
+$niceness = 19;
+$postprocess_kill = 0;
+$collections_kill = 0;
+$binaries = 0;
+$colors_start = 1;
+$colors_end = 255;
+$colors_exc = '';
+$post = 0;
+$pron_start = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-51.51s \n";
 $mask2 = "\033[1;33m%-20s \033[38;5;214m%-36.36s \n";

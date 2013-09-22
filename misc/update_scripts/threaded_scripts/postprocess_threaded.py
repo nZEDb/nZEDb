@@ -169,13 +169,14 @@ def main(args):
 
 	my_queue.join()
 
-	cur.execute("SELECT id FROM releases WHERE nfostatus <= -6")
-	final = cur.fetchall()
-
-	for item in final:
-		run = "DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %s"
-		cur.execute(run, (item[0]))
+	if sys.argv[1] == "nfo":
+		cur.execute("SELECT id FROM releases WHERE nfostatus <= -6")
 		final = cur.fetchall()
+		if len(datas) > 0:
+			for item in final:
+				run = "DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %s"
+				cur.execute(run, (item[0]))
+				final = cur.fetchall()
 
 	#close connection to mysql
 	cur.close()

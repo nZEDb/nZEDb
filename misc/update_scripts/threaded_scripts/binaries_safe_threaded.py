@@ -45,7 +45,7 @@ run_threads = int(dbgrab[0][0])-1
 maxmssgs = int(dbgrab[0][1])
 
 #query to grab all active groups
-cur.execute("SELECT name, last_record FROM groups WHERE active = 1")
+cur.execute("SELECT DISTINCT name, last_record FROM groups WHERE active = 1")
 datas = cur.fetchall()
 if not datas:
 	print("No Groups activated")
@@ -74,7 +74,6 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					print(my_id)
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()

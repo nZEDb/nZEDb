@@ -130,7 +130,7 @@ class Binaries
 
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $db->escapeString($first), $db->from_unixtime($first_record_postdate), $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
 		else
 			$first = $groupArr['last_record'];
@@ -366,13 +366,15 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['id'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
-
 					}
-
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->from_unixtime($db->escapeString($msg['Date']))));
-						$db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
+						$ckhash = $db->queryOneRow(sprintf('SELECT message_id from nzbs where message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
+						if (!$ckhash)
+						{
+							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
+							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
+						}
 					}
 
 					if((int)$matches[2] > 0)
@@ -454,7 +456,8 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($data['From']), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
+								$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
