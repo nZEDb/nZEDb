@@ -112,7 +112,7 @@ Class NZBcontents
 				}
 				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
 				{
-					if (preg_match('/\.(par2?|\d{2,3}").+\(1\/1\))$/i', $subject))
+					if (preg_match('/\.(par2?|\d{2,3}").+\(1\/1\)$/i', $subject))
 					{
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 							$foundpar2 = true;
@@ -204,17 +204,19 @@ Class NZBcontents
 						{
 							if ($nfo->isNFO($possibleNFO) == true)
 							{
+								// If a previous attempt failed, set this to false because we got an nfo anyways.
+								if ($failed === true)
+									$failed = false;
 								$fetchedBinary = $possibleNFO;
 								$foundnfo = true;
 								break;
 							}
+							// Set it back to false so we can possibly get another nfo.
+							else
+								$possibleNFO = false;
 						}
 						else
-						{
-							// NFO download failed, increment attempts.
-							$db->queryExec(sprintf('UPDATE releases SET nfostatus = nfostatus-1 WHERE id = %d', $relID));
 							$failed = true;
-						}
 					}
 				}
 			}
@@ -235,6 +237,8 @@ Class NZBcontents
 			}
 			if ($failed === true)
 			{
+				// NFO download failed, increment attempts.
+				$db->queryExec(sprintf('UPDATE releases SET nfostatus = nfostatus-1 WHERE id = %d', $relID));
 				if ($this->echooutput)
 					echo 'f';
 				return false;
