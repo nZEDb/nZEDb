@@ -46,7 +46,7 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 	{
 		$tbl = $row['tables_in_'.DB_NAME];
 		printf("Converting $tbl\n");
-		if ($tbl != "parts" || $tbl != "binaries" || $tbl != "collections")
+		if ($tbl != "parts" && $tbl != "binaries" && $tbl != "collections")
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
 		else
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
