@@ -32,7 +32,10 @@ class Console
 	public function getConsoleInfoByName($title, $platform)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE title LIKE %s AND platform LIKE %s", $db->escapeString("%".$title."%"),  $db->escapeString("%".$platform."%")));
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE title LIKE %s AND platform %s %s", $db->escapeString("%".$title."%"), $like,  $db->escapeString("%".$platform."%")));
 	}
 
 	public function getRange($start, $num)
@@ -209,12 +212,15 @@ class Console
 
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
 		foreach ($browsebyArr as $bbk=>$bbv)
 		{
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk]))
 			{
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= "con.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').") AND ";
+				$browseby .= 'con.'.$bbv.' '.$like.' ('.$db->escapeString('%'.$bbs.'%').') AND ';
 			}
 		}
 		return $browseby;

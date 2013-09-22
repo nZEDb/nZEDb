@@ -33,7 +33,10 @@ require_once(WWW_DIR.'lib/site.php');
 	public function getBookInfoByName($author, $title)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title LIKE %s', $db->escapeString('%'.$author.'%'),  $db->escapeString('%'.$title.'%')));
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%'.$author.'%'), $like;  $db->escapeString('%'.$title.'%')));
 	}
 
 	public function getRange($start, $num)
@@ -205,12 +208,18 @@ require_once(WWW_DIR.'lib/site.php');
 	{
 		$db = new DB();
 
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		foreach ($browsebyArr as $bbk=>$bbv) {
-			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
+		foreach ($browsebyArr as $bbk=>$bbv)
+		{
+			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk]))
+			{
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= "boo.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').') AND ';
+				$browseby .= 'boo.'.$bbv.' '.$like.' ('.$db->escapeString('%'.$bbs.'%').') AND ';
 			}
 		}
 		return $browseby;
