@@ -1398,7 +1398,7 @@ class Releases
 						}
 						else
 						{
-							$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
+							$db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $pieces[0]));
 							if ($this->echooutput)
 								echo '.';
 						}

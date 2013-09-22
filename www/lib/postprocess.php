@@ -1590,7 +1590,7 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
 						continue;
 
-					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t '.$this->ffmpeg_duration.' -acodec libvorbis -loglevel quiet -y "'.$ramdrive."zzzz".$releaseguid.'.ogv"');
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t '.$this->ffmpeg_duration.' -acodec libvorbis -loglevel quiet -y "'.$ramdrive.'zzzz'.$releaseguid.'.ogv"');
 
 					if (is_dir($ramdrive))
 					{

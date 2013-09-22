@@ -916,7 +916,7 @@ class Movie
 	public function updateInsUpcoming($source, $type, $info)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NULL) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
+		$sql = sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $db->escapeString($source), $type, $db->escapeString($info), $db->escapeString($info));
 		$db->queryInsert($sql);
 	}
 
