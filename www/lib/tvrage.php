@@ -222,7 +222,7 @@ class TvRage
 									if ($check === false)
 										$db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s)", $sShow->sid, $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title)));
 									else
-										$db->queryExec(sprintf('UPDATE tvrageepisodes SET showtitle = %s, fullep = %s, aridate = %s, link = %s, eptitle = %s WHERE id = %d', $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $check['id']));
+										$db->queryExec(sprintf('UPDATE tvrageepisodes SET showtitle = %s, fullep = %s, airdate = %s, link = %s, eptitle = %s WHERE id = %d', $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $check['id']));
 								}
 							}
 						}
