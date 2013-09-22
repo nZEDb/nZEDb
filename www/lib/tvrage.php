@@ -62,24 +62,18 @@ class TvRage
 			$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
 		else if ($db->dbSystem() == 'pgsql')
 		{
-			if ($Stmt = $db->Prepare('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, imgdata, createddate) VALUES (?, ?, ?, ?, ?, ?, NOW())'))
+			$id = $db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
+			if ($imgbytes != '')
 			{
-					$Stmt->bindParam(1, $rageid, PDO::PARAM_INT);
-					$Stmt->bindParam(2, $releasename, PDO::PARAM_STR);
-					$Stmt->bindParam(3, $desc, PDO::PARAM_STR);
-					$Stmt->bindParam(4, substr($genre, 0, 64), PDO::PARAM_STR);
-					$Stmt->bindParam(5, $country, PDO::PARAM_STR);
-					$Stmt->bindParam(6, $imgbytes, PDO::PARAM_LOB);
-			}
-			else
-				exit("Couldn't prepare tvrage insert statement!\n");
-			$db->beginTransaction();
-			try {
-				$Stmt->execute();
-				$db->Commit();
-			} catch (PDOException $e) {
-				printf($e);
-				$db->Rollback();
+				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
+				if (file_exists($path))
+					unlink($path);
+				file_put_contents($path, $imgbytes);
+				if (file_exists($path))
+				{
+					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
+					chmod($path, 0755);
+				}
 			}
 		}
 	}
