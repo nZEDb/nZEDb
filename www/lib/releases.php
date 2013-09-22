@@ -1620,7 +1620,7 @@ class Releases
 				if ($db->dbSystem() == 'mysql')
 					$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
 				else if ($db->dbSystem() == 'pgsql')
-					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+					$resrel = $db->query(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
 				$total = count($resrel);
 				if(count($resrel) > 0)
 				{
@@ -1702,7 +1702,10 @@ class Releases
 		}
 		echo 'Query 13 took '.(TIME() - $timer13)." seconds (misc other retention).\n";
 		$timer14 = TIME();
-		$db->queryExec(sprintf('DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)', $page->site->partretentionhours));
+		if ($db->dbSystem() == 'mysql')
+			$db->queryExec(sprintf('DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)', $page->site->partretentionhours));
+		else if ($db->dbSystem() == 'pgsql')
+			$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $page->site->partretentionhours));
 		echo 'Query 14 took '.(TIME() - $timer14)." seconds (old nzbs).\n";
 
 		echo 'Removed releases : '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other';
