@@ -1,23 +1,18 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/movie.php");
-require_once(WWW_DIR."lib/nntp.php");
-require_once(WWW_DIR."lib/nzbcontents.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/tvrage.php");
-require_once(WWW_DIR."lib/rarinfo/par2info.php");
-require_once(WWW_DIR."lib/rarinfo/rarinfo.php");
-require_once(WWW_DIR."lib/rarinfo/sfvinfo.php");
-require_once(WWW_DIR."lib/rarinfo/srrinfo.php");
-require_once(WWW_DIR."lib/rarinfo/zipinfo.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/groups.php');
+require_once(WWW_DIR.'lib/movie.php');
+require_once(WWW_DIR.'lib/nntp.php');
+require_once(WWW_DIR.'lib/nzbcontents.php');
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/tvrage.php');
 
 /*
  * Class for handling fetching/storing of NFO files.
  */
 class Nfo
 {
-	function Nfo($echooutput=false)
+	public function Nfo($echooutput=false)
 	{
 		$s = new Sites();
 		$site = $s->get();
@@ -29,9 +24,9 @@ class Nfo
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("SELECT id FROM releasenfo WHERE releaseid = %d", $relid));
+		$res = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $relid));
 		if ($res === false)
-			return $db->queryInsert(sprintf("INSERT INTO releasenfo (releaseid) VALUES (%d)", $relid));
+			return $db->queryInsert(sprintf('INSERT INTO releasenfo (releaseid) VALUES (%d)', $relid));
 		else
 			return $res['id'];
 	}
@@ -39,7 +34,7 @@ class Nfo
 	public function deleteReleaseNfo($relid)
 	{
 		$db = new DB();
-		return $db->queryExec(sprintf("DELETE FROM releasenfo WHERE releaseid = %d", $relid));
+		return $db->queryExec(sprintf('DELETE FROM releasenfo WHERE releaseid = %d', $relid));
 	}
 
 	// Find an IMDB ID in a NFO file.
@@ -69,61 +64,31 @@ class Nfo
 		$r = false;
 		if ($possibleNFO === false)
 			return $r;
-		// Ignore encrypted nfos
-		if (preg_match('/^=newz\[NZB\]=\w+/', $possibleNFO))
+		// Ignore common file types.
+		if (preg_match('/<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO))
 			return $r;
-		// Ignore other file types
-		if (preg_match('/(<?xml|;\s*Generated\sby.+SF\w|^\s*PAR|\.[a-z0-9]{2,7}\s[a-z0-9]{8}|^\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3))/i', $possibleNFO))
-			return $r;
-		// Make sure it's not too big, also exif_imagetype needs a minimum size or else it doesn't work.
-		if (strlen($possibleNFO) < 45 * 1024 && strlen($possibleNFO) > 15)
+		// Make sure it's not too big, size needs to be at least 12 bytes for header checking.
+		$size = strlen($possibleNFO);
+		if ($size < 100 * 1024 && $size > 12)
 		{
-			// Check if it's a EXIF/JFIF picture.
-			if (@exif_imagetype($possibleNFO) == false)
+			// Use getid3 to check if it's an image/video/rar/zip etc..
+			require_once(WWW_DIR.'lib/getid3/getid3/getid3.php');
+			$getid3 = new getid3;
+			$check = $getid3->analyze($possibleNFO);
+			unset($getid3);
+			if (isset($check['error']))
 			{
 				// Check if it's a par2.
+				require_once(WWW_DIR.'lib/rarinfo/par2info.php');
 				$par2info = new Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error)
 				{
-					// Check if it's a rar.
-					$rar = new RarInfo;
-					$rar->setData($possibleNFO);
-					if ($rar->error)
-					{
-						// Check if it's a zip.
-						$zip = new ZipInfo;
-						$zip->setData($possibleNFO);
-						if ($zip->error)
-						{
-							// Check if it's an SFV.
-							$sfv = new SfvInfo;
-							$sfv->setData($possibleNFO);
-							if ($sfv->error)
-								return true;
-						}
-					}
-				}
-			}
-		}
-		return $r;
-	}
-
-	// Check if the possible NFO is a JFIF. /* Need a new way of checking for this.. */
-	function check_JFIF($filename)
-	{
-		$r = false;
-		$fp = @fopen($filename, 'r');
-		if ($fp)
-		{
-			// JFIF often (but not always) starts at offset 6.
-			if (fseek($fp, 6) == 0)
-			{
-				// JFIF header is 16 bytes.
-				if (($bytes = fread($fp, 16)) !== false)
-				{
-					// Make sure it is JFIF header.
-					if (substr($bytes, 0, 4) == "JFIF")
+					// Check if it's an SFV.
+					require_once(WWW_DIR.'lib/rarinfo/sfvinfo.php');
+					$sfv = new SfvInfo;
+					$sfv->setData($possibleNFO);
+					if ($sfv->error)
 						return true;
 				}
 			}
@@ -134,28 +99,27 @@ class Nfo
 	// Adds an NFO found from predb, rar, zip etc...
 	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
 	{
-		//if ($this->isNFO($nfo) && $release["id"] > 0)
-		if ($release["id"] > 0)
+		if ($release['id'] > 0)
 		{
-			$this->addReleaseNfo($release["id"]);
-			if ($db->dbSystem() == "mysql")
+			$this->addReleaseNfo($release['id']);
+			if ($db->dbSystem() == 'mysql')
 			{
-				$compress = "compress(%s)";
+				$compress = 'compress(%s)';
 				$nc = $db->escapeString($nfo);
 			}
-			else if ($db->dbSystem() == "pgsql")
+			else if ($db->dbSystem() == 'pgsql')
 			{
-				$compress = "%s";
+				$compress = '%s';
 				$nc = $db->escapeString(utf8_encode($nfo));
 			}
-			$db->queryExec(sprintf("UPDATE releasenfo SET nfo = ".$compress." WHERE releaseid = %d", $nc, $release["id"]));
-			$db->queryExec(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $release["id"]));
-			if (!isset($release["completion"]))
-				$release["completion"] = 0;
-			if ($release["completion"] == 0)
+			$db->queryExec(sprintf('UPDATE releasenfo SET nfo = '.$compress.' WHERE releaseid = %d', $nc, $release['id']));
+			$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $release['id']));
+			if (!isset($release['completion']))
+				$release['completion'] = 0;
+			if ($release['completion'] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
-				$nzbcontents->NZBcompletion($release["guid"], $release["id"], $release["groupid"], $nntp);
+				$nzbcontents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp);
 			}
 			return true;
 		}
@@ -174,7 +138,7 @@ class Nfo
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf("SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d", $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
@@ -182,7 +146,7 @@ class Nfo
 		else
 		{
 			$res = 0;
-			$pieces = explode("           =+=            ", $releaseToWork);
+			$pieces = explode('           =+=            ', $releaseToWork);
 			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
 			$nfocount = 1;
 		}
@@ -190,7 +154,7 @@ class Nfo
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput && $releaseToWork == '')
-				echo "Processing ".$nfocount." NFO(s), starting at ".$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
+				echo 'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
 			$s = new Sites();
 			$site = $s->get();
@@ -205,16 +169,16 @@ class Nfo
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp);
 				if ($fetchedBinary !== false)
 				{
-					//insert nfo into database
-					$this->addReleaseNfo($arr["id"]);
-					if ($db->dbSystem() == "mysql")
-						$cp = "COMPRESS(%s)";
-					else if ($db->dbSystem() == "pgsql")
-						$cp = "%s";
-					$db->queryExec(sprintf("UPDATE releasenfo SET nfo = {$cp} WHERE releaseid = %d", $db->escapeString(utf8_encode($fetchedBinary)), $arr["id"]));
-					$db->queryExec(sprintf("UPDATE releases SET nfostatus = 1 WHERE id = %d", $arr["id"]));
+					// Insert nfo into database.
+					$this->addReleaseNfo($arr['id']);
+					if ($db->dbSystem() == 'mysql')
+						$cp = 'COMPRESS(%s)';
+					else if ($db->dbSystem() == 'pgsql')
+						$cp = '%s';
+					$db->queryExec(sprintf('UPDATE releasenfo SET nfo = '.$cp.' WHERE releaseid = %d', $db->escapeString(utf8_encode($fetchedBinary)), $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
-					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr["id"], $db, $processImdb);
+					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $db, $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1)
@@ -226,7 +190,7 @@ class Nfo
 							$show = $tvrage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '')
 							{
-								// update release with season, ep, and airdate info (if available) from releasetitle
+								// Update release with season, ep, and airdate info (if available) from releasetitle.
 								$tvrage->updateEpInfo($show, $arr['id']);
 
 								$rid = $tvrage->getByRageID($rageId);
@@ -246,10 +210,10 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->query("SELECT id FROM releases WHERE nfostatus <= -6");
+			$relres = $db->query('SELECT id FROM releases WHERE nfostatus <= -6');
 			foreach ($relres as $relrow)
 			{
-				$db->queryExec(sprintf("DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d", $relrow['id']));
+				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
 			}
 
 			if ($this->echooutput)
