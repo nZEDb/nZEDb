@@ -41,7 +41,7 @@ class Movie
 	public function getMovieInfoMultiImdb($imdbIds)
 	{
 		$db = new DB();
-		$allids = implode(",", $imdbIds);
+		$allids = str_replace(',,', ',', str_replace(array('(,', ' ,', ', )', ',)'), '', implode(',', $imdbIds)));
 		$sql = sprintf("SELECT DISTINCT movieinfo.*, releases.imdbid AS relimdb FROM movieinfo LEFT OUTER JOIN releases ON releases.imdbid = movieinfo.imdbid WHERE movieinfo.imdbid IN (%s)", $allids);
 		return $db->query($sql);
 	}
