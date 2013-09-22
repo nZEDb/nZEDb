@@ -1941,12 +1941,12 @@ class Releases
 			$db->queryExec('DELETE FROM collections WHERE collectionhash = "0"');
 
 			if ($this->hashcheck == 0)
-				$db->query("UPDATE site SET value = '1' WHERE setting = 'hashcheck'");
+				$db->queryExec("UPDATE site SET value = 1 WHERE setting = 'hashcheck'");
 			if ($this->echooutput)
 				echo "\nRemade ".count($cIDS).' collections in '.$consoletools->convertTime(TIME() - $timestart)."\n";
 		}
 		else
-			$db->query("UPDATE site SET value = '1' WHERE setting = 'hashcheck'");
+			$db->queryExec("UPDATE site SET value = 1 WHERE setting = 'hashcheck'");
 	}
 
 	public function getTopDownloads()
