@@ -1543,11 +1543,17 @@ class Releases
 			{
 				foreach ($idr as $id)
 				{
-					$reccount += $db->Exec(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
-					$reccount += $db->Exec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id['id']));
+					$delqa = $db->prepare(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+					$delqa->execute();
+					$reccount += $delqa->rowCount();
+					$delqb = $db->prepare(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id['id']));
+					$delqb->execute();
+					$reccount += $delqb->rowCount();
 				}
 			}
-			$reccount += $db->Exec(sprintf("DELETE FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
+			$delqc = $db->prepare(sprintf("DELETE FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
+			$delqc->execute();
+			$reccount += $delqc->rowCount();
 		}
 		echo 'Query 1 took '.(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
 
