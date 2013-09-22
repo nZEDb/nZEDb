@@ -2,31 +2,31 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/TMDb.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/usermovies.php");
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/TMDb.php');
+require_once(WWW_DIR.'lib/movie.php');
+require_once(WWW_DIR.'lib/usermovies.php');
 $um = new UserMovies();
 
-if (isset($_REQUEST["del"]))
-	$usermovies = $um->delMovie($users->currentUserId(), $_REQUEST["del"]);
-elseif (isset($_REQUEST["add"]))
+if (isset($_REQUEST['del']))
+	$usermovies = $um->delMovie($users->currentUserId(), $_REQUEST['del']);
+else if (isset($_REQUEST['add']))
 {
 	// Derive cats from user preferences.
 	$cats = array();
-	$cats[] = "2030";
-	$cats[] = "2040";
+	$cats[] = '2030';
+	$cats[] = '2040';
 
 	$m = new Movie(false);
-	$mi = $m->getMovieInfo($_REQUEST["add"]);
+	$mi = $m->getMovieInfo($_REQUEST['add']);
 	if (!$mi)
-		$m->updateMovieInfo($_REQUEST["add"]);
+		$m->updateMovieInfo($_REQUEST['add']);
 
-	$usermovies = $um->addMovie($users->currentUserId(), $_REQUEST["add"], $cats);
+	$usermovies = $um->addMovie($users->currentUserId(), $_REQUEST['add'], $cats);
 }
 else
 {
-	if (!isset($_REQUEST["id"]))
+	if (!isset($_REQUEST['id']))
 		$page->show404();
 
 	$s = new Sites();
@@ -34,26 +34,26 @@ else
 	$tmdb = new TMDb($site->tmdbkey, $site->imdblanguage);
 	$m = new Movie(false);
 
-	if (is_numeric($_REQUEST["id"]))
+	if (is_numeric($_REQUEST['id']))
 	{
-		$movie = $m->fetchTmdbProperties($_REQUEST["id"]);
-		if($movie !== false)
+		$movie = $m->fetchTmdbProperties($_REQUEST['id']);
+		if ($movie !== false)
 			$obj = array($movie);
 	}
 	else
 	{
-		$searchm = $tmdb->searchMovie($_REQUEST["id"]);
-		if($searchm !== false)
+		$searchm = $tmdb->searchMovie($_REQUEST['id']);
+		if ($searchm !== false)
 		{
-			if(isset($searchm['results']))
+			if (isset($searchm['results']))
 			{
 				$obj = array();
 				$limit = 0;
-				foreach($searchm['results'] as $movie)
+				foreach ($searchm['results'] as $movie)
 				{
 					$limit++;
 					$movieinfo = $m->fetchTmdbProperties($movie['id'], true);
-					if($movieinfo !== false)
+					if ($movieinfo !== false)
 						$obj[] = $movieinfo;
 					if ($limit > 4)
 						break;
@@ -68,8 +68,7 @@ else
 		foreach ($obj as $movie)
 		{
 			if (isset($movie['title']) && isset($movie['imdb_id']))
-				$imdbids[] = str_replace("tt", "", $movie['imdb_id']);
-			else { // No results. }
+				$imdbids[] = str_replace('tt', '', $movie['imdb_id']);
 		}
 
 		if (count($imdbids) == 0)
@@ -82,14 +81,16 @@ else
 				$m = new Movie();
 				$allmovies = $m->getMovieInfoMultiImdb($imdbids);
 				foreach ($allmovies as $ourmovie)
-					if ($ourmovie["relimdb"] != "")
-						$ourmovieimdbs[$ourmovie["imdbid"]] = $ourmovie["imdbid"];
+				{
+					if ($ourmovie['relimdb'] != '')
+						$ourmovieimdbs[$ourmovie['imdbid']] = $ourmovie['imdbid'];
+				}
 			}
 
 			$userimdbs = array();
 			$usermovies = $um->getMovies($users->currentUserId());
 			foreach ($usermovies as $umovie)
-				$userimdbs[$umovie["imdbid"]] = $umovie["imdbid"];
+				$userimdbs[$umovie['imdbid']] = $umovie['imdbid'];
 
 			$page->smarty->assign('data', $obj);
 			$page->smarty->assign('ourmovies', $ourmovieimdbs);

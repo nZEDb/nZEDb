@@ -20,5 +20,3 @@ Using 'My Movies' you can search for movies, and add them to a wishlist. If the 
 </center>
 <div id="divMovResults">
 </div>
-
-
