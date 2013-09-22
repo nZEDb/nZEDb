@@ -1,11 +1,6 @@
 Things to make compatible in queries:
 ON DUPLICATE binaries.php line 628
 
-/*
-Save tvrage images to disk. Or find a way to store them in pgsql.
-still unsure about this.
-*/
-
 Coalesce on the min / max etc files/size (stage 3 and 4.5) is wrong, it should be greatest/max.
 
 /*
