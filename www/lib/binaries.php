@@ -687,13 +687,16 @@ class Binaries
 		$intwordcount = 0;
 		if (count($words) > 0)
 		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
 			foreach ($words as $word)
 			{
 				// See if the first word had a caret, which indicates search must start with term.
 				if ($intwordcount == 0 && (strpos($word, '^') === 0))
-					$searchsql.= sprintf(' AND b.name LIKE %s', $db->escapeString(substr($word, 1).'%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString(substr($word, 1).'%'));
 				else
-					$searchsql.= sprintf(' AND b.name LIKE %s', $db->escapeString('%'.$word.'%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString('%'.$word.'%'));
 
 				$intwordcount++;
 			}
@@ -703,18 +706,7 @@ class Binaries
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND b.categoryid NOT IN ('.implode(',', $excludedcats).') ';
 
-		$res = $db->query(sprintf("
-					SELECT b.*,
-					g.name AS group_name,
-					r.guid,
-					(SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum'
-					FROM binaries b
-					INNER JOIN groups g ON g.id = b.groupid
-					LEFT OUTER JOIN releases r ON r.id = b.releaseid
-					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ",
-					$searchsql, $exccatlist, $limit));
-
-		return $res;
+		return $db->query(sprintf("SELECT b.*, g.name AS group_name, r.guid, (SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum' FROM binaries b INNER JOIN groups g ON g.id = b.groupid LEFT OUTER JOIN releases r ON r.id = b.releaseid WHERE 1=1 %s %s order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit));
 	}
 
 	public function getForReleaseId($id)
@@ -737,11 +729,7 @@ class Binaries
 		if ($activeonly)
 			$where = ' WHERE binaryblacklist.status = 1 ';
 
-		return $db->query("SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex,
-												groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist
-												left outer JOIN groups ON groups.name = binaryblacklist.groupname
-												".$where."
-												ORDER BY coalesce(groupname,'zzz')");
+		return $db->query('SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname '.$where." ORDER BY coalesce(groupname,'zzz')");
 	}
 
 	public function getBlacklistByID($id)
