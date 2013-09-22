@@ -64,13 +64,14 @@ class Nfo
 		$r = false;
 		if ($possibleNFO === false)
 			return $r;
-		// Ignore common file types.
-		if (preg_match('/<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO))
-			return $r;
-		// Make sure it's not too big, size needs to be at least 12 bytes for header checking.
+		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
 		$size = strlen($possibleNFO);
 		if ($size < 100 * 1024 && $size > 12)
 		{
+			// Ignore common file types.
+			if (preg_match('/<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO))
+				return $r;
+
 			// Use getid3 to check if it's an image/video/rar/zip etc..
 			require_once(WWW_DIR.'lib/getid3/getid3/getid3.php');
 			$getid3 = new getid3;

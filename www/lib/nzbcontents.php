@@ -1,8 +1,7 @@
 <?php
-
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/nzb.php");
-require_once(WWW_DIR."/lib/nfo.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/nzb.php');
+require_once(WWW_DIR.'lib/nfo.php');
 
 /*
  * Gets information contained within the NZB.
@@ -31,23 +30,30 @@ Class NZBcontents
 	{
 		$nzb = new NZB();
 		// Fetch the NZB location using the GUID.
-		if (!file_exists($nzbpath = $nzb->NZBPath($guid)))
+		$nzbpath = $nzb->NZBPath($guid);
+		if (!file_exists($nzbpath))
 		{
-			echo "\n".$guid." appears to be missing the nzb file, skipping.\n";
+			if ($this->echooutput)
+				echo "\n".$guid." appears to be missing the nzb file, skipping.\n";
 			return false;
 		}
-		else if(!$nzbpath = 'compress.zlib://'.$nzbpath)
+
+		$nzbpath = 'compress.zlib://'.$nzbpath;
+		if(!$nzbpath)
 		{
-			echo "\nUnable to decompress: ".$nzbpath." - ".fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
+			if ($this->echooutput)
+				echo "\nUnable to decompress: ".$nzbpath.' - '.fileperms($nzbpath)." - may have bad file permissions, skipping.\n";
 			return false;
 		}
-		else if(!$nzbfile = @simplexml_load_file($nzbpath))
+
+		$nzbfile = @simplexml_load_file($nzbpath);
+		if(!$nzbfile)
 		{
-			echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
+			if ($this->echooutput)
+				echo "\nUnable to load NZB: ".$guid." appears to be an invalid NZB, skipping.\n";
 			return false;
 		}
-		else
-			return $nzbfile;
+		return $nzbfile;
 	}
 
 	// Attempts to get the releasename from a par2 file
@@ -67,8 +73,9 @@ Class NZBcontents
 			}
 		}
 		$db = new DB();
-		$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d", $relID));
-		echo ".";
+		$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
+		if ($this->echooutput)
+			echo '.';
 	}
 
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
@@ -105,7 +112,7 @@ Class NZBcontents
 				}
 				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
 				{
-					if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $subject))
+					if (preg_match('/\.(par2?|\d{2,3}").+\(1\/1\))$/i', $subject))
 					{
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 							$foundpar2 = true;
@@ -134,7 +141,7 @@ Class NZBcontents
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
 	{
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, true);
-		if ($messageid !== "")
+		if ($messageid !== '')
 		{
 			$nfo = new NFO();
 			$nfo->addReleaseNfo($relID);
@@ -154,13 +161,10 @@ Class NZBcontents
 			if ($nfo->isNFO($fetchedBinary) === true)
 			{
 				if ($this->echooutput)
-					echo "+";
+					echo '+';
 				return $fetchedBinary;
 			}
-			else
-				return false;
 		}
-		else
 			return false;
 	}
 
@@ -179,7 +183,7 @@ Class NZBcontents
 			{
 				$subject = $nzbcontents->attributes()->subject;
 				// Look for a subject with 1 part, ignore common file extensions.
-				if (preg_match('/(yEnc\s\(1\/1\)|\(1\/1\)$)/i', $subject) && !preg_match('/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i', $subject))
+				if (preg_match('/\(1\/1\)$/i', $subject) && !preg_match('/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i', $subject))
 				{
 					$messageid = $nzbcontents->segments->segment;
 					if ($messageid !== false)
@@ -202,36 +206,37 @@ Class NZBcontents
 							{
 								$fetchedBinary = $possibleNFO;
 								$foundnfo = true;
+								break;
 							}
 						}
 						else
 						{
 							// NFO download failed, increment attempts.
-							$db->queryExec(sprintf("UPDATE releases SET nfostatus = nfostatus-1 WHERE id = %d", $relID));
+							$db->queryExec(sprintf('UPDATE releases SET nfostatus = nfostatus-1 WHERE id = %d', $relID));
 							$failed = true;
 						}
 					}
 				}
 			}
-			if ($foundnfo !== false && $failed == false)
+			if ($foundnfo !== false && $failed === false)
 			{
 				$nfo->addReleaseNfo($relID);
 				if ($this->echooutput)
-					echo "*";
+					echo '*';
 				return $fetchedBinary;
 			}
-			if ($foundnfo == false && $failed == false)
+			if ($foundnfo === false && $failed === false)
 			{
 				// No NFO file in the NZB.
 				if ($this->echooutput)
-					echo "-";
-				$db->queryExec(sprintf("UPDATE releases SET nfostatus = 0 WHERE id = %d", $relID));
+					echo '-';
+				$db->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
 				return false;
 			}
-			if ($failed == true)
+			if ($failed === true)
 			{
 				if ($this->echooutput)
-					echo "f";
+					echo 'f';
 				return false;
 			}
 		}
@@ -250,9 +255,7 @@ Class NZBcontents
 
 		if (file_exists($nzbpath))
 		{
-			$nzbpath = 'compress.zlib://'.$nzbpath;
-			$xmlObj = @simplexml_load_file($nzbpath);
-
+			$xmlObj = @simplexml_load_file('compress.zlib://'.$nzbpath);
 			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb')
 			{
 				foreach($xmlObj->file as $file)
@@ -278,6 +281,6 @@ Class NZBcontents
 	function updateCompletion($completion, $relID)
 	{
 		$db = new DB();
-		$db->queryExec(sprintf("UPDATE releases SET completion = %d WHERE id = %d", $completion, $relID));
+		$db->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
 	}
 }
