@@ -32,7 +32,10 @@ class Music
 	public function getMusicInfoByName($artist, $album)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist LIKE %s", $db->escapeString("%".$artist."%"),  $db->escapeString("%".$album."%")));
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $db->escapeString("%".$artist."%"), $like, $db->escapeString("%".$album."%")));
 	}
 
 	public function getRange($start, $num)
@@ -210,16 +213,21 @@ class Music
 	{
 		$db = new Db;
 
+		$like = ' ILIKE(';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE(';
+
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		foreach ($browsebyArr as $bbk=>$bbv) {
-			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
+		foreach ($browsebyArr as $bbk=>$bbv)
+		{
+			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk]))
+			{
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				if (preg_match('/id/i', $bbv)) {
-					$browseby .= "m.{$bbv} = $bbs AND ";
-				} else {
-					$browseby .= "m.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').") AND ";
-				}
+				if (preg_match('/id/i', $bbv))
+					$browseby .= 'm.'.$bbv.' = '.$bbs.' AND ';
+				else
+					$browseby .= 'm.'.$bbv.$like.$db->escapeString('%'.$bbs.'%').') AND ';
 			}
 		}
 		return $browseby;

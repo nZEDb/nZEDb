@@ -36,7 +36,7 @@ require_once(WWW_DIR.'lib/site.php');
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%'.$author.'%'), $like;  $db->escapeString('%'.$title.'%')));
+		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%'.$author.'%'), $like, $db->escapeString('%'.$title.'%')));
 	}
 
 	public function getRange($start, $num)
