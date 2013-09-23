@@ -447,29 +447,29 @@ class nameCleaning
 	{
 		//"786936833607.MK.A.part086.rar" yEnc
 		if (preg_match('/^"(\d+\.MK\.[A-Z])\..+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $this->subject, 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(????) [001/107] - "260713thbldnstnsclw.par2" yEnc
 		else if (preg_match('/^(\(\?{4}\) \[)\d+\/\d+\] - "([a-z0-9]+)\..+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//[www.allyourbasearebelongtous.pw]-[The Place Beyond the Pines 2012 1080p US Blu-ray AVC DTS-HD MA 5.1-HDWinG]-[03/97] "tt1817273-us-hdwing-bd.r00" - 46.51 GB - yEnc
-		else if (preg_match('/^(\[www\..+?\]-\[.+?\]-\[)\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\[www\..+?\]-\[(.+?)\]-\[)\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//(01/71)  - "EwRQCtU4BnaeXmT48hbg7bCn.par2" - 54,15 GB - yEnc
 		//(63/63) "dfbgfdgtghtghthgGPGEIBPBrwg34t05.rev" - 10.67 GB - yEnc
 		else if (preg_match('/^\(\d+(\/\d+\)(\s+ -)? "[a-zA-Z0-9]+?)\d*\..+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $this->subject, 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//[01/67] - "O3tk4u681gd767Y.par2" yEnc
-		else if (preg_match('/^\[\d+(\/\d+\] - "[a-zA-Z0-9]+\.).+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\[\d+(\/\d+\] - "([a-zA-Z0-9]+)\.).+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//209a212675ba31ca24a8 [usenet-4all.info] [powered by ssl-news] [21,59 GB] [002/223] "209a212675ba31ca24a8.part001.rar" yEnc
-		else if (preg_match('/^([a-z0-9]+ \[.+?\] \[.+?\] \[)\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(([a-z0-9]+) \[.+?\] \[.+?\] \[)\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//TIS97CC - "tis97cc.par2" yEnc
-		else if (preg_match('/^([A-Z0-9]+ - "[a-z0-9]+\.).+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(([A-Z0-9]+) - "[a-z0-9]+\.).+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//<<OBLIVION - Untouched>><<TLR for usenet-4all.info>><<www.ssl-news.info>><<13/14>> "xxtxxlxxrxxbdxx05.vol421+98.par2" - 2,54 GB - yEnc
 		else if (preg_match('/^.+?<<\d+\/\d+>> "(.+?)'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		else
 			return $this->generic();
 	}
@@ -479,61 +479,61 @@ class nameCleaning
 	{
 		//4Etmo7uBeuTW[047/106] - "006dEbPcea29U6K.part046.rar" yEnc
 		if (preg_match('/^([a-zA-Z0-9]+)\[\d+(\/\d+\] - "[a-zA-Z0-9]+\.).+?" yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(68/89) "dz1R2wT8hH1iQEA28gRvm.part67.rar" - 7,91 GB - yEnc
 		//(01/14)  - "JrjCY4pUjQ9qUqQ7jx6k2VLF.par2" - 4,39 GB - yEnc
-		else if (preg_match('/^\(\d+(\/\d+\)\s+(- )?"[a-zA-Z0-9]+\.).+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\(\d+(\/\d+\)\s+(- )?"([a-zA-Z0-9]+)\.).+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[3], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(110320152518519) [22/78] - "110320152518519.part21.rar" yEnc
-		else if (preg_match('/^(\(\d+\) \[)\d+\/\d+\] - "\d+\..+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\((\d+)\) \[)\d+\/\d+\] - "\d+\..+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//1VSXrAZPD - [123/177] - "1VSXrAZPD.part122.rar" yEnc
-		else if (preg_match('/^([a-zA-Z0-9]+ - \[)\d+\/\d+\] - "[a-zA-Z0-9]+\..+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(([a-zA-Z0-9]+) - \[)\d+\/\d+\] - "[a-zA-Z0-9]+\..+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//( Peter Gabriel Albums 24x +17 Singles = 71x cd By Dready Niek )  ( ** By Dready Niek ** ) [113/178] - "Peter Gabriel Albums 24x +17 Singles = 71CDs By Dready Niek (1977-2010).part112.rar" yEnc
-		else if (preg_match('/^(\( .+? \)\s+\( .+?\) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(\( (.+?) \)\s+\( .+?\) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//Tarja - Colours In The Dark (2013) "00. Tarja-Colours In The Dark.m3u" yEnc
-		else if (preg_match('/^([A-Za-z0-9].+? \((19|20)\d\d\) ")\d{2}\. .+?'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^(([A-Za-z0-9].+?) \((19|20)\d\d\) ")\d{2}\. .+?'.$this->e1, $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//"BB636.part14.rar" - (15/39) - yEnc
 		else if (preg_match('/^"([a-zA-Z0-9]+)'.$this->e0.' - \(\d+\/\d+\) - yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//Lutheria - FC Twente TV Special - Ze wilde op voetbal [16/49] - "Lutheria - FC Twente TV Special - Ze wilde op voetbal.part16.rar" yEnc
 		// panter - [001/101] - "74518-The Hunters (2011).par2" yEnc
-		else if (preg_match('/^[-a-zA-Z0-9 ]+ \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^[-a-zA-Z0-9 ]+ \[\d+(\/\d+\] - "(.+?))'.$this->e1, $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//Pee Mak Prakanong - 2013 - Thailand - ENG Subs - "Pee Mak Prakanong.2013.part22.rar" yEnc
 		//P2H - "AMHZQHPHDUZZJSFZ.vol181+33.par2" yEnc
-		else if (preg_match('/^([-a-zA-Z0-9 ]+ - ".+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^([-a-zA-Z0-9 ]+ - "(.+?))'.$this->e1, $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(????) [011/161] - "flynns-image-redux.part010.rar" yEnc
 		//(Dgpc) [000/110] - "Teen Wolf - Seizoen.3 - Dvd.2 (NLsub).nzb" yEnc
-		else if (preg_match('/^\((\?{4}|[a-zA-Z]+)\) \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
-			return $match[1].$match[2];
+		else if (preg_match('/^\((\?{4}|[a-zA-Z]+)\) \[\d+(\/\d+\] - "(.+?))'.$this->e1, $this->subject, $match))
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[3], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//("Massaladvd5Kilusadisc4S1.par2" - 4,55 GB -) "Massaladvd5Kilusadisc4S1.par2" - 4,55 GB - yEnc
 		else if (preg_match('/^\("([a-z0-9A-Z]+).+?" - \d+[,.]\d+ [mMkKgG][bB] -\) ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//"par.4kW9beE.1.vol122+21.par2" yEnc
 		else if (preg_match('/^"(.+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[1], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/19] - "Age.of.Dinosaurs.German.AC3.HDRip.x264-FuN.par2" yEnc
 		//>>>>>Hell-of-Usenet.org>>>>> - [01/35] - "Female.Agents.German.2008.AC3.DVDRip.XviD.iNTERNAL-VideoStar.par2" yEnc
 		else if (preg_match('/^(.+?\.(info|org)>+ - \[)\d+\/\d+\] - "(.+?)'.$this->e1, $this->subject, $match))
-			return $match[1].$match[3];
+			return $match[1].$match[3];//return array('hash' => $match[1].$match[3], 'subject' => $match[3], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//[010/101] - "Bf56a8aR-20743f8D-Vf7a11fD-d7c6c0.part09.rar" yEnc
 		//[1/9] - "fdbvgdfbdfb.part.par2" yEnc
-		else if (preg_match('/^\[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\[\d+(\/\d+\] - "(.+?))'.$this->e1, $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//[LB] - [063/112] - "RVL-GISSFBD.part063.rar" yEnc
 		else if (preg_match('/^(\[[A-Z]+\] - \[)\d+\/\d+\] - "(.+?)'.$this->e1, $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1].$match[2];//return array('hash' => $match[1].$match[2], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//(¯`*•.¸(PWP).•*´¯) (071/100) "JUST4US_025.part070.rar" - 22,50 GB – yEnc
-		else if (preg_match('/^\(.+?\(PWP\).+?\) \(\d+(\/\d+\) ".+?)'.$this->e0.' .+? \d+[,.]\d+ [mMkKgG][bB] .+ yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\(.+?\(PWP\).+?\) \(\d+(\/\d+\) "(.+?))'.$this->e0.' .+? \d+[,.]\d+ [mMkKgG][bB] .+ yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//thnx to original poster [00/98] - "2669DFKKFD2008.nzb ` 2669DFKKFD2008 " yEnc
-		else if (preg_match('/^thnx to original poster \[\d+(\/\d+\] - ".+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4})("| `).+? yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^thnx to original poster \[\d+(\/\d+\] - "(.+?))(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4})("| `).+? yEnc$/', $this->subject, $match))
+			return $match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		else
 			return $this->generic();
 	}
