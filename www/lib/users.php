@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/forum.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/releasecomments.php");
-require_once(WWW_DIR."/lib/usermovies.php");
-require_once(WWW_DIR."/lib/userseries.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/releases.php');
+require_once(WWW_DIR.'lib/forum.php');
+require_once(WWW_DIR.'lib/util.php');
+require_once(WWW_DIR.'lib/releasecomments.php');
+require_once(WWW_DIR.'lib/usermovies.php');
+require_once(WWW_DIR.'lib/userseries.php');
 
 class Users
 {
@@ -66,15 +66,19 @@ class Users
 		else
 			$limit = " LIMIT ".$num." OFFSET ".$start;
 
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+
 		$usql = $esql = $hsql = $rsql = '';
 		if ($username != '')
-			$usql = sprintf(" AND users.username LIKE %s ", $db->escapeString("%".$username."%"));
+			$usql = sprintf(" AND users.username %s %s ", $like, $db->escapeString("%".$username."%"));
 
 		if ($email != '')
-			$esql = sprintf(" AND users.email LIKE %s ", $db->escapeString("%".$email."%"));
+			$esql = sprintf(" AND users.email %s %s ", $like, $db->escapeString("%".$email."%"));
 
 		if ($host != '')
-			$hsql = sprintf(" AND users.host LIKE %s ", $db->escapeString("%".$host."%"));
+			$hsql = sprintf(" AND users.host %s %s ", $like, $db->escapeString("%".$host."%"));
 
 		if ($role != '')
 			$rsql = sprintf(" AND users.role = %d ", $role);
@@ -560,7 +564,7 @@ class Users
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
 		if ($db->dbSystem() == 'mysql')
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
-		else if ($db->dbSystem() == 'pgsql')
+		else
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL '%d DAYS'", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 
 		return $db->queryOneRow(sprintf("SELECT * FROM userinvite WHERE guid = %s", $db->escapeString($inviteToken)));
@@ -649,9 +653,16 @@ class Users
 	{
 		$db = new DB();
 		// Clear old requests.
-		$db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
-
-		return $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		if ($db->dbSystem() == 'mysql')
+		{
+			$db->queryExec(sprintf('DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+			return $db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+		}
+		else
+		{
+			$db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
+			return $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
+		}
 	}
 
 	public function addApiRequest($userid, $request)
@@ -664,9 +675,16 @@ class Users
 	{
 		$db = new DB();
 		// Clear old requests.
-		$db->queryExec(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
-
-		return $db->queryOneRow(sprintf("select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)", $userid));
+		if ($db->dbSystem() == 'mysql')
+		{
+			$db->queryExec(sprintf('DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+			return $db->queryOneRow(sprintf('select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+		}
+		else
+		{
+			$db->queryExec(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
+			return $db->queryOneRow(sprintf("select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
+		}
 	}
 
 	public function addDownloadRequest($userid)
