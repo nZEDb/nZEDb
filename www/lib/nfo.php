@@ -102,25 +102,24 @@ class Nfo
 	{
 		if ($release['id'] > 0)
 		{
-			$this->addReleaseNfo($release['id']);
 			if ($db->dbSystem() == 'mysql')
 			{
 				$compress = 'compress(%s)';
 				$nc = $db->escapeString($nfo);
 			}
-			else if ($db->dbSystem() == 'pgsql')
+			else
 			{
 				$compress = '%s';
 				$nc = $db->escapeString(utf8_encode($nfo));
 			}
-			$db->queryExec(sprintf('UPDATE releasenfo SET nfo = '.$compress.' WHERE releaseid = %d', $nc, $release['id']));
+			$db->queryExec(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$compress.', %d)', $nc, $release['id']));
 			$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $release['id']));
 			if (!isset($release['completion']))
 				$release['completion'] = 0;
 			if ($release['completion'] == 0)
 			{
 				$nzbcontents = new NZBcontents($this->echooutput);
-				$nzbcontents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp);
+				$nzbcontents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp, $db);
 			}
 			return true;
 		}
@@ -163,23 +162,29 @@ class Nfo
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$movie = new Movie($this->echooutput);
+			$tvrage = new Tvrage();
 
 			foreach ($res as $arr)
 			{
 				$site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
-				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp);
+				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $db, $this);
 				if ($fetchedBinary !== false)
 				{
 					// Insert nfo into database.
-					$this->addReleaseNfo($arr['id']);
 					if ($db->dbSystem() == 'mysql')
+					{
 						$cp = 'COMPRESS(%s)';
+						$nc = $db->escapeString($fetchedBinary);
+					}
 					else if ($db->dbSystem() == 'pgsql')
+					{
 						$cp = '%s';
-					$db->queryExec(sprintf('UPDATE releasenfo SET nfo = '.$cp.' WHERE releaseid = %d', $db->escapeString(utf8_encode($fetchedBinary)), $arr['id']));
+						$nc = $db->escapeString(utf8_encode($fetchedBinary));
+					}
+					$db->queryExec(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$cp.', %d)', $nc, $arr['id']));
 					$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
-					$imdbId = $movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $db, $processImdb);
+					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $db, $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1)
@@ -187,7 +192,6 @@ class Nfo
 						$rageId = $this->parseRageId($fetchedBinary);
 						if ($rageId !== false)
 						{
-							$tvrage = new Tvrage();
 							$show = $tvrage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '')
 							{
@@ -213,9 +217,7 @@ class Nfo
 		{
 			$relres = $db->query('SELECT id FROM releases WHERE nfostatus <= -6');
 			foreach ($relres as $relrow)
-			{
 				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
-			}
 
 			if ($this->echooutput)
 			{

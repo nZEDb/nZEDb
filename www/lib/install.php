@@ -67,7 +67,6 @@ class Install {
 	public $dbConnCheck;
 	public $dbNameCheck;
 	public $dbCreateCheck;
-	public $dbPG;
 	public $emessage;
 
 	public $nntpCheck;
