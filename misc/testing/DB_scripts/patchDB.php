@@ -65,7 +65,37 @@ function SplitSQL($file, $delimiter = ';')
 		return false;
 }
 
+function BackupDatabase()
+{
+	$db = new DB();
+	$returnvar = NULL;
+	$output = NULL;
+	
+	//Backup based on database system
+	if($db->dbSystem() == "mysql")
+	{
+		exec("mysqldump -u ".DB_USER." -h ".DB_HOST." -P ".DB_PORT." -p".DB_PASSWORD." ".DB_NAME." > ".FS_ROOT."/../../../safe-upgrade-".date("mdyHis").".sql", $output, $returnvar);
+		if($returnvar)
+			exit("Exiting. Unable to backup database because of error. Does mysqldump exist?\n");		
+	}
+	else if($db->dbSystem() == "pgsql")
+	{
+		exec("export PGPASSWORD=".DB_PASSWORD." && PGUSER=".DB_USER." && pg_dump -h ".DB_HOST." ".DB_NAME." -CdiOv > ".FS_ROOT."/../../../safe-upgrade-".date("mdyHis").".sql && unset PGPASSWORD && unset PGUSER", $output, $returnvar);
+		if($returnvar)
+			exit("Exiting. Unable to backup database because of and error. Does pg_dump exist?\n");
+	}
+}
+
 $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
+
+if(isset($argv[1]) && $argv[1] == "safe")
+{
+	$safeupgrade = true;
+}
+else 
+{
+	$safeupgrade = false;
+}
 
 if (isset($os) && $os == "unix")
 {
@@ -74,7 +104,8 @@ if (isset($os) && $os == "unix")
 	$currentversion = $site->sqlpatch;
 	$patched = 0;
 	$patches = array();
-	$db = new DB;
+	$db = new DB();
+	$backedup = false;
 
 	if ($db->dbSystem() == "mysql")
 		$path = '/../../../db/mysql_patches';
@@ -109,6 +140,11 @@ if (isset($os) && $os == "unix")
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{
+					if($safeupgrade == true && $backedup == false)
+					{
+						BackupDatabase();
+						$backedup = true;
+					}
 					SplitSQL($filepath);
 					$patched++;
 				}
@@ -126,7 +162,7 @@ else if (isset($os) && $os == "windows")
 
 	// Open the patch folder.
 	if (!isset($argv[1]))
-		exit("You must suply the directory to the patches.\n");
+		exit("You must supply the directory to the patches.\n");
 	if ($handle = @opendir($argv[1]))
 	{
 		while (false !== ($patch = readdir($handle)))
@@ -150,6 +186,11 @@ else if (isset($os) && $os == "windows")
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{
+					if($safeupgrade == true && $backedup == false)
+					{
+						BackupDatabase();
+						$backedup = true;
+					}
 					SplitSQL($filepath);
 					$patched++;
 				}
