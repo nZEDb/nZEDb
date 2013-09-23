@@ -430,7 +430,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
 						// Increment.
-						$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 						continue;
 					}
 				}
