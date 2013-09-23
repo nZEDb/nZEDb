@@ -75,7 +75,10 @@ while (count - first) < 10000:
 	if len(sys.argv) == 1:
 		# Using string formatting is not the correct way to do this, but using +group is even worse
 		# removing the % before the variables at the end of the query adds quotes/escapes strings
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL %s DAY) < first_record_postdate %s" % (backfilldays, group,))
+		if conf['DB_SYSTEM'] == "mysql":
+			cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL %s DAY) < first_record_postdate %s" % (backfilldays, group,))
+		elif conf['DB_SYSTEM'] == "pgsql":
+			cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL '%s DAYS') < first_record_postdate %s" % (backfilldays, group,))
 		datas = cur.fetchone()
 	else:
 		run = "SELECT name, first_record FROM groups WHERE name = %s AND first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00000'"

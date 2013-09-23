@@ -23,8 +23,11 @@ if (sizeof($argv) == 4)
 	}
 	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
-		$relids = $db->query("SELECT id, guid FROM releases WHERE ".$argv[1]." LIKE '%".$argv[3]."%'");
-		printf("SELECT id, guid FROM releases WHERE ".$argv[1]." LIKE '%".$argv[3]."%'");
+		$like = ' ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE';
+		$relids = $db->query("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
+		printf("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
 	}
 	else
 		exit("This script removes all releases and nzb files from a poster or by searchname, name or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, guid ] like [ name/guid ]\n");

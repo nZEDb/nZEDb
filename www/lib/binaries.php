@@ -130,7 +130,7 @@ class Binaries
 
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $db->escapeString($first), $db->from_unixtime($first_record_postdate), $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
 		else
 			$first = $groupArr['last_record'];
@@ -366,13 +366,15 @@ class Binaries
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['id'].$filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
-
 					}
-
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
-						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], (int)$matches[3], $db->from_unixtime($db->escapeString($msg['Date']))));
-						$db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
+						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
+						if (!$ckmsg)
+						{
+							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
+							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
+						}
 					}
 
 					if((int)$matches[2] > 0)
@@ -454,7 +456,8 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
-								$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($data['From']), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $db->escapeString($data['MaxFiles']), $db->escapeString($collectionHash));
+								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
+								$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
@@ -621,12 +624,20 @@ class Binaries
 		$db = new DB();
 		$insertStr = 'INSERT INTO partrepair (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
-		{
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
-		}
+
 		$insertStr = substr($insertStr, 0, -2);
-		$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
-		return $db->queryInsert($insertStr);
+		if ($db->dbSystem() == 'mysql')
+		{
+			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
+			return $db->queryInsert($insertStr);
+		}
+		else
+		{
+			$id = $db->queryInsert($insertStr);
+			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = '.$id);
+			return $id;
+		}
 	}
 
 	public function retrieveBlackList()
@@ -684,13 +695,16 @@ class Binaries
 		$intwordcount = 0;
 		if (count($words) > 0)
 		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
 			foreach ($words as $word)
 			{
 				// See if the first word had a caret, which indicates search must start with term.
 				if ($intwordcount == 0 && (strpos($word, '^') === 0))
-					$searchsql.= sprintf(' AND b.name LIKE %s', $db->escapeString(substr($word, 1).'%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString(substr($word, 1).'%'));
 				else
-					$searchsql.= sprintf(' AND b.name LIKE %s', $db->escapeString('%'.$word.'%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString('%'.$word.'%'));
 
 				$intwordcount++;
 			}
@@ -700,18 +714,7 @@ class Binaries
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND b.categoryid NOT IN ('.implode(',', $excludedcats).') ';
 
-		$res = $db->query(sprintf("
-					SELECT b.*,
-					g.name AS group_name,
-					r.guid,
-					(SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum'
-					FROM binaries b
-					INNER JOIN groups g ON g.id = b.groupid
-					LEFT OUTER JOIN releases r ON r.id = b.releaseid
-					WHERE 1=1 %s %s order by DATE DESC LIMIT %d ",
-					$searchsql, $exccatlist, $limit));
-
-		return $res;
+		return $db->query(sprintf("SELECT b.*, g.name AS group_name, r.guid, (SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum' FROM binaries b INNER JOIN groups g ON g.id = b.groupid LEFT OUTER JOIN releases r ON r.id = b.releaseid WHERE 1=1 %s %s order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit));
 	}
 
 	public function getForReleaseId($id)
@@ -734,11 +737,7 @@ class Binaries
 		if ($activeonly)
 			$where = ' WHERE binaryblacklist.status = 1 ';
 
-		return $db->query("SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex,
-												groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist
-												left outer JOIN groups ON groups.name = binaryblacklist.groupname
-												".$where."
-												ORDER BY coalesce(groupname,'zzz')");
+		return $db->query('SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname '.$where." ORDER BY coalesce(groupname,'zzz')");
 	}
 
 	public function getBlacklistByID($id)

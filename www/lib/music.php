@@ -32,7 +32,10 @@ class Music
 	public function getMusicInfoByName($artist, $album)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist LIKE %s", $db->escapeString("%".$artist."%"),  $db->escapeString("%".$album."%")));
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $db->escapeString("%".$artist."%"), $like, $db->escapeString("%".$album."%")));
 	}
 
 	public function getRange($start, $num)
@@ -89,9 +92,14 @@ class Music
 		}
 
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 		else
-			$maxage = "";
+			$maxage = '';
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -141,9 +149,14 @@ class Music
 			$catsrch.= "1=2 )";
 		}
 
-		$maxage = "";
+		$maxage = '';
 		if ($maxage > 0)
-			$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL %d DAY ", $maxage);
+		{
+			if ($db->dbSystem() == 'mysql')
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+			else if ($db->dbSystem() == 'pgsql')
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+		}
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -200,16 +213,21 @@ class Music
 	{
 		$db = new Db;
 
+		$like = ' ILIKE(';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE(';
+
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		foreach ($browsebyArr as $bbk=>$bbv) {
-			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
+		foreach ($browsebyArr as $bbk=>$bbv)
+		{
+			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk]))
+			{
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				if (preg_match('/id/i', $bbv)) {
-					$browseby .= "m.{$bbv} = $bbs AND ";
-				} else {
-					$browseby .= "m.$bbv LIKE(".$db->escapeString('%'.$bbs.'%').") AND ";
-				}
+				if (preg_match('/id/i', $bbv))
+					$browseby .= 'm.'.$bbv.' = '.$bbs.' AND ';
+				else
+					$browseby .= 'm.'.$bbv.$like.$db->escapeString('%'.$bbs.'%').') AND ';
 			}
 		}
 		return $browseby;
@@ -341,8 +359,19 @@ class Music
 		$mus['musicgenre'] = $genreName;
 		$mus['musicgenreid'] = $genreKey;
 
-		$query = sprintf("INSERT INTO musicinfo (title, asin, url, salesrank,  artist, publisher, releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, review = %s, year = %s, genreid = %s, tracks = %s, cover = %d, createddate = now(), updateddate = now()", $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover'], $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover'] );
-		$musicId = $db->queryInsert($query);
+		if ($db->dbSystem() == 'mysql')
+			$musicId = $db->queryInsert(sprintf("INSERT INTO musicinfo (title, asin, url, salesrank, artist, publisher, releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, review = %s, year = %s, genreid = %s, tracks = %s, cover = %d, createddate = now(), updateddate = now()", $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover'], $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover']));
+		else if ($db->dbSystem() == 'pgsql')
+		{
+			$check = $db->queryOneRow(sprintf('SELECT id FROM musicinfo WHERE asin = %s', $db->escapeString($mus['asin'])));
+			if ($check === false)
+				$musicId = $db->queryInsert(sprintf("INSERT INTO musicinfo (title, asin, url, salesrank, artist, publisher, releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover']));
+			else
+			{
+				$musicId = $check['id'];
+				$db->queryExec(sprintf('UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, review = %s, year = %s, genreid = %s, tracks = %s, cover = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($mus['title']), $db->escapeString($mus['asin']), $db->escapeString($mus['url']), $mus['salesrank'], $db->escapeString($mus['artist']), $db->escapeString($mus['publisher']), $mus['releasedate'], $db->escapeString($mus['review']), $db->escapeString($mus['year']), ($mus['musicgenreid']==-1?"null":$mus['musicgenreid']), $db->escapeString($mus['tracks']), $mus['cover'], $musicId));
+			}
+		}
 
 		if ($musicId)
 		{

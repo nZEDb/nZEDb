@@ -155,13 +155,13 @@ class Category
 		$db = new DB();
 		$ret = array();
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0)
-			$exccatlist = " AND id NOT IN (".implode(",", $excludedcats).")";
+			$exccatlist = ' AND id NOT IN ('.implode(',', $excludedcats).')';
 
-		$arr = $db->query(sprintf("SELECT * FROM category WHERE status = %d %s", Category::STATUS_ACTIVE, $exccatlist));
+		$arr = $db->query(sprintf('SELECT * FROM category WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist));
 		foreach ($arr as $a)
-			if ($a["parentid"] == "")
+			if ($a['parentid'] == '')
 				$ret[] = $a;
 
 		foreach ($ret as $key => $parent)
@@ -170,17 +170,17 @@ class Category
 			$subcatnames = array();
 			foreach ($arr as $a)
 			{
-				if ($a["parentid"] == $parent["id"])
+				if ($a['parentid'] == $parent['id'])
 				{
 					$subcatlist[] = $a;
-					$subcatnames[] = $a["title"];
+					$subcatnames[] = $a['title'];
 				}
 			}
 
 			if (count($subcatlist) > 0)
 			{
 				array_multisort($subcatnames, SORT_ASC, $subcatlist);
-				$ret[$key]["subcatlist"] = $subcatlist;
+				$ret[$key]['subcatlist'] = $subcatlist;
 			}
 			else
 			{

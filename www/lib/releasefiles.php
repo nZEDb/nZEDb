@@ -24,8 +24,12 @@ class ReleaseFiles
 	public function add($id, $name, $size, $createddate, $passworded)
 	{
 		$db = new DB();
-		$sql = sprintf("INSERT INTO releasefiles (releaseid, name, size, createddate, passworded) VALUES (%d, %s, %s, %s, %d)", $id, $db->escapeString($name), $db->escapeString($size), $db->from_unixtime($createddate), $passworded );
-		return $db->queryInsert($sql);
+		$ckname = $db->queryOneRow(sprintf('SELECT name FROM releasefiles WHERE name = %s', $db->escapeString(utf8_encode($name))));
+		if (!$ckname)
+		{
+			$sql = sprintf("INSERT INTO releasefiles (releaseid, name, size, createddate, passworded) VALUES (%d, %s, %s, %s, %d)", $id, $db->escapeString(utf8_encode($name)), $db->escapeString($size), $db->from_unixtime($createddate), $passworded );
+			return $db->queryInsert($sql);
+		}
 	}
 
 }

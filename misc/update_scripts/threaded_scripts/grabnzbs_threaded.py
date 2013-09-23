@@ -45,7 +45,10 @@ delay = cur.fetchone()
 cur.execute("SELECT COUNT(*) FROM collections")
 collstart = cur.fetchone()
 
-run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s hour"
+if conf['DB_SYSTEM'] == "mysql":
+	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
+elif conf['DB_SYSTEM'] == "pgsql":
+	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL '%s HOURS'"
 cur.execute(run, (int(delay[0])))
 datas = cur.fetchall()
 if len(datas) == 0:
