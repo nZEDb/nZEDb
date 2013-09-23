@@ -439,7 +439,7 @@ class PostProcess
 				if (!file_exists($nzbpath))
 				{
 					// Increment.
-					$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
@@ -452,7 +452,7 @@ class PostProcess
 				if (count($nzbfiles) == 0)
 				{
 					// Increment.
-					$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
