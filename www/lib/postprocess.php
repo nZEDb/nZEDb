@@ -429,13 +429,19 @@ class PostProcess
 					{
 						if ($this->echooutput)
 							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
+						// Increment.
+						$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 						continue;
 					}
 				}
 
 				$nzbpath = $nzb->getNZBPath($rel["guid"], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 				if (!file_exists($nzbpath))
+				{
+					// Increment.
+					$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 					continue;
+				}
 
 				ob_start();
 				@readgzfile($nzbpath);
@@ -443,8 +449,12 @@ class PostProcess
 				ob_end_clean();
 
 				$nzbfiles = $nzb->nzbFileList($nzbfile);
-				if (!$nzbfiles)
+				if (count($nzbfiles) == 0)
+				{
+					// Increment.
+					$db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
 					continue;
+				}
 
 				usort($nzbfiles, "PostProcess::sortrar");
 
