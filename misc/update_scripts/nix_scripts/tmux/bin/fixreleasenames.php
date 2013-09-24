@@ -70,7 +70,7 @@ if (isset($argv[1]))
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBcontents(true);
-		$pp = new Postprocess($this->echooutput);
+		$pp = new Postprocess($echooutput=true);
 		if ($nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp))
 			echo "checkPAR2 was successful for release $relID.\n";
 		else

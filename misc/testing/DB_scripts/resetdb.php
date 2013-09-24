@@ -27,23 +27,24 @@ if (isset($argv[1]) && $argv[1] === "true")
 	echo "Resetting groups.\n";
 	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
 
+	echo "Querying db for releases.\n";
 	$relids = $db->query(sprintf("SELECT id, guid FROM releases"));
 	if (count($relids) > 0)
 	{
-		echo "Deleting ".count($relids)." releases, NZB's, previews and samples.\n";
+		echo "Deleting ".number_format(count($relids))." releases, NZB's, previews and samples.\n";
 		$releases = new Releases();
 
 		foreach ($relids as $relid)
 		{
 			$releases->fastDelete($relid['id'], $relid['guid'], $site);
-			$relcount++;
-			$consoletools->overWrite("Deleting:".$consoletools->percentString($relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+			$consoletools->overWrite("Deleting:".$consoletools->percentString(++$relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 		}
 	}
 	if ($relcount > 0)
-		echo "\n";
-	echo "Deleted ".$relcount." release(s). This script ran for ";
-	echo $consoletools->convertTime(TIME() - $timestart);
+	{
+		$consoletools = new ConsoleTools();
+		echo "\nDeleted ".$relcount." release(s). This script ran for ".$consoletools->convertTime(TIME() - $timestart);
+	}
 	exit(".\n");
 }
 else

@@ -58,11 +58,23 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		$country = preg_replace('/United States/i', 'US', $country);
 		$db = new DB();
+		$ckmsg = $db->queryOneRow('SELECT id FROM tvrage WHERE rageid = '.$rageid);
 		if ($db->dbSystem() == 'mysql')
-			$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
-		else if ($db->dbSystem() == 'pgsql')
 		{
-			$id = $db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
+			if ($ckmsg === false)
+				$db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+			else
+				$db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes), $ckmsg['id']));
+		}
+		else
+		{
+			if ($ckmsg === false)
+				$id = $db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
+			else
+			{
+				$id = $ckmsg['id'];
+				$db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $ckmsg['id']));
+			}
 			if ($imgbytes != '')
 			{
 				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
@@ -81,11 +93,29 @@ class TvRage
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$db = new DB();
+		if ($db->dbSystem() == 'mysql')
+		{
+			if ($imgbytes != '')
+				$imgbytes = ', imgdata = '.$db->escapeString($imgbytes);
 
-		if ($imgbytes != "")
-			$imgbytes = sprintf(", imgdata = %s", $db->escapeString($imgbytes));
-
-		$db->queryExec(sprintf("UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s where id = %d", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+		}
+		else
+		{
+			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $id ));
+			if ($imgbytes != '')
+			{
+				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
+				if (file_exists($path))
+					unlink($path);
+				$check = file_put_contents($path, $imgbytes);
+				if ($check !== false)
+				{
+					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
+					chmod($path, 0755);
+				}
+			}
+		}
 	}
 
 	public function delete($id)
