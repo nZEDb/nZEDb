@@ -93,11 +93,29 @@ class TvRage
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$db = new DB();
+		if ($db->dbSystem() == 'mysql')
+		{
+			if ($imgbytes != '')
+				$imgbytes = ', imgdata = '.$db->escapeString($imgbytes);
 
-		if ($imgbytes != "")
-			$imgbytes = sprintf(", imgdata = %s", $db->escapeString($imgbytes));
-
-		$db->queryExec(sprintf("UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s where id = %d", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+		}
+		else
+		{
+			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $id ));
+			if ($imgbytes != '')
+			{
+				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
+				if (file_exists($path))
+					unlink($path);
+				$check = file_put_contents($path, $imgbytes);
+				if ($check !== false)
+				{
+					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
+					chmod($path, 0755);
+				}
+			}
+		}
 	}
 
 	public function delete($id)
