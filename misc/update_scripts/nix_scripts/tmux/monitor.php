@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3693";
+$version="0.1r3697";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -28,47 +28,38 @@ $alternate_nntp_provider = $site->alternate_nntp;
 $patch = $site->sqlpatch;
 
 //totals per category in db, results by parentID
-$qry = "SELECT
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 1000 AND 1999 AND nzbstatus = 1 ) AS console,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 2000 AND 2999 AND nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 3000 AND 3999 AND nzbstatus = 1 ) AS audio,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 4000 AND 4999 AND nzbstatus = 1 ) AS pc,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND nzbstatus = 1 ) AS tv,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 6000 AND 6999 AND nzbstatus = 1 ) AS xxx,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 7000 AND 7999 AND nzbstatus = 1 ) AS misc,
-	( SELECT COUNT( id ) FROM releases WHERE categoryid BETWEEN 8000 AND 8999 AND nzbstatus = 1 ) AS books";
+$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT( id ) FROM releases WHERE rageid = -1 AND categoryid BETWEEN 5000 AND 5999 AND nzbstatus = 1 ) AS tv,
-	( SELECT COUNT( id ) FROM releases WHERE imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 AND nzbstatus = 1 ) AS movies,
-	( SELECT COUNT( id ) FROM releases WHERE musicinfoid IS NULL AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) AND nzbstatus = 1 ) AS audio,
-	( SELECT COUNT( id ) FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 AND nzbstatus = 1 ) AS console,
-	( SELECT COUNT( id ) FROM releases WHERE bookinfoid IS NULL AND categoryid = 8010 AND nzbstatus = 1 ) AS book,
-	( SELECT COUNT( id ) FROM releases WHERE nzbstatus = 1 ) AS releases,
-	( SELECT COUNT( id ) FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT( id ) FROM releases WHERE nfostatus between -6 AND -1 AND nzbstatus = 1 ) AS nforemains,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus IN (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
-	( SELECT COUNT( id ) FROM releases WHERE reqidstatus = 1 AND nzbstatus = 1 ) AS requestid_matched";
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 5000 AND rageid = -1 ) AS tv,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.id IN ( 3010, 3040, 3050 ) AND r.musicinfoid IS NULL AND r.relnamestatus != 0 ) AS audio,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 ) AS console,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 8000 AND bookinfoid IS NULL ) AS book,
+	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
+	( SELECT COUNT(*) FROM releases WHERE nfostatus = 1 ) AS nfo,
+	( SELECT COUNT(*) FROM releases WHERE nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 4000 AND 4999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pc,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE categoryid BETWEEN 6000 AND 6999 AND r.nzbstatus = 1 AND (r.passwordstatus between -6 AND -1) AND (r.haspreview = -1 AND c.disablepreview = 0)) AS pron,
-	( SELECT COUNT( r.id ) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus between -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND r.nzbstatus = 1 ) AS work,
-	( SELECT COUNT( id ) FROM releases WHERE preid IS NOT NULL AND nzbstatus = 1 ) AS predb_matched,
-	( SELECT COUNT( id ) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
-	( SELECT COUNT( id ) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table,
-	( SELECT COUNT( id ) FROM predb WHERE id IS NOT NULL ) AS predb,
-	( SELECT COUNT( id ) FROM parts WHERE id IS NOT NULL ) AS parts_table,
-	( SELECT COUNT( distinct( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
-	( SELECT COUNT( collectionhash ) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
-	( SELECT COUNT( collectionhash ) FROM ( SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
+	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pc,
+	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pron,
+	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS work,
+	( SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table,
+	( SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table";
+
+$proc_work3 = "SELECT
+	( SELECT COUNT(*) FROM releases WHERE ( relnamestatus IN (0, 1, 20, 21, 22) OR categoryid IN ( 7000, 7010 )) AND reqidstatus IN (0, -1) AND name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
+	( SELECT COUNT(*) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched,
+	( SELECT COUNT(*) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT(*) FROM predb WHERE id IS NOT NULL ) AS predb,
+	( SELECT COUNT(*) FROM parts WHERE id IS NOT NULL ) AS parts_table";
 
 if ($dbtype == 'mysql')
 {
 	$split_query = "SELECT
-		( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
-		( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate ) AS backfill_groups_days,
+		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
 		( SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
 		( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
@@ -77,8 +68,8 @@ if ($dbtype == 'mysql')
 elseif ($dbtype == 'pgsql')
 {
 	$split_query = "SELECT
-		( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target days) < first_record_postdate ) AS backfill_groups_days,
-		( SELECT COUNT( id ) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days) < first_record_postdate) AS backfill_groups_date,
+		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target days) < first_record_postdate ) AS backfill_groups_days,
+		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days) < first_record_postdate) AS backfill_groups_date,
 		( SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
 		( SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
 		( SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
@@ -131,11 +122,16 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
-	( SELECT COUNT( id ) FROM groups WHERE active = 1 ) AS active_groups,
-	( SELECT COUNT( id ) FROM groups WHERE name IS NOT NULL ) AS all_groups,
+	( SELECT COUNT(*) FROM groups WHERE active = 1 ) AS active_groups,
+	( SELECT COUNT(*) FROM groups WHERE name IS NOT NULL ) AS all_groups,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_EXC' ) AS colors_exc";
+	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_EXC' ) AS colors_exc,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'SHOWQUERY' ) AS show_query,
+	( SELECT COUNT( DISTINCT( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
+	( SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
+	( SELECT COUNT(*) FROM ( SELECT id FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
+
 
 //get microtime
 function microtime_float()
@@ -232,7 +228,7 @@ $newestpre = TIME();
 $oldestcollection = TIME();
 $oldestnzb = TIME();
 
-$active_groups = $all_groups = 0;
+$active_groups = $all_groups = $show_query = 0;
 $backfilldays = $backfill_groups_date = 0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
@@ -250,6 +246,7 @@ $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
 $collections_table = $parts_table = $binaries_table = 0;
 $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
+$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = 0;
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
 $mask2 = "\033[1;33m%-20s \033[38;5;214m%-33.33s \n";
@@ -301,6 +298,20 @@ if ( $backfilldays == "1" )
 else
 	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
 
+if ( $show_query == "TRUE" )
+{
+	printf("\n\033[1;33m\n");
+	printf($mask, "Query Block", "Time", "Cumulative");
+	printf($mask, "==============================", "=========================", "==============================");
+	printf("\033[38;5;214m");
+	printf($mask, "Tmux Site", "0",  "0");
+	printf($mask, "Split", "0",  "0");
+	printf($mask, "Initial", "0",  "0");
+	printf($mask, "In Process 1", "0",  "0");
+	printf($mask, "In Process 2", "0",  "0");
+    printf($mask, "In Process 3", "0",  "0");
+}
+
 $monitor = 30;
 $i = 1;
 while( $i > 0 )
@@ -314,16 +325,36 @@ while( $i > 0 )
 	}
 
 	$getdate = gmDate("Ymd");
+
+	// These queries are very fast, run every loop
+	$time01 = TIME();
 	$proc_tmux_result = $db->query($proc_tmux, false);
-	$split_result = $db->query($split_query, false);
-	
+	$tmux_time = ( TIME() - $time01 );
+
 	//run queries only after time exceeded, these queries can take awhile
 	$running = $tmux->get()->RUNNING;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
-		$initquery = $db->query($qry, true);
-		$proc_work_result = $db->query($proc_work, true);
-		$proc_work_result2 = $db->query($proc_work2, true);
+		$time02 = TIME();
+		$split_result = $db->query($split_query, false);
+		$split_time = ( TIME() - $time02 );
+		$split1_time = ( TIME() - $time01 );
+		$time03 = TIME();
+		$initquery = $db->query($qry, false);
+		$init_time = ( TIME() - $time03 );
+		$init1_time = ( TIME() - $time01 );
+		$time04 = TIME();
+		$proc_work_result = $db->query($proc_work, false);
+		$proc1_time = ( TIME() - $time04 );
+		$proc11_time = ( TIME() - $time01 );
+		$time05 = TIME();
+		$proc_work_result2 = $db->query($proc_work2, false);
+		$proc2_time = ( TIME() - $time05 );
+		$proc21_time = ( TIME() - $time01 );
+        $time06 = TIME();
+        $proc_work_result3 = $db->query($proc_work3, true);
+        $proc3_time = ( TIME() - $time06 );
+        $proc31_time = ( TIME() - $time01 );
 		$time1 = TIME();
 		$runloop = "true";
 	}
@@ -334,30 +365,33 @@ while( $i > 0 )
 	if ( $i == 1 )
 	{
 		if ( $proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_start = $proc_work_result[0]['nforemains']; }
-		if ( $proc_work_result2[0]['predb_matched'] != NULL ) { $predb_start = $proc_work_result2[0]['predb_matched']; }
+		if ( $proc_work_result3[0]['predb_matched'] != NULL ) { $predb_start = $proc_work_result3[0]['predb_matched']; }
 		if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc_start = $proc_work_result[0]['console']; }
 		if ( $proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc_start = $proc_work_result[0]['movies']; }
 		if ( $proc_work_result[0]['audio'] != NULL ) { $music_releases_proc_start = $proc_work_result[0]['audio']; }
 		if ( $proc_work_result2[0]['pc'] != NULL ) { $pc_releases_proc_start = $proc_work_result2[0]['pc']; }
 		if ( $proc_work_result[0]['tv'] != NULL ) { $tvrage_releases_proc_start = $proc_work_result[0]['tv']; }
 		if ( $proc_work_result[0]['book'] != NULL ) { $book_releases_proc_start = $proc_work_result[0]['book']; }
-		if ( $proc_work_result2[0]['work'] != NULL ) { $work_remaining_start = $proc_work_result2[0]['work']; }
-		if ( $proc_work_result2[0]['work'] != NULL ) { $work_start = $proc_work_result2[0]['work']; }
+		if ( $proc_work_result2[0]['work'] != NULL ) { $work_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
 		if ( $proc_work_result2[0]['pron'] != NULL ) { $pron_remaining_start = $proc_work_result2[0]['pron']; }
 		if ( $proc_work_result2[0]['pron'] != NULL ) { $pron_start = $proc_work_result2[0]['pron']; }
 		if ( $proc_work_result[0]['releases'] != NULL ) { $releases_start = $proc_work_result[0]['releases']; }
-		if ( $proc_work_result[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress_start = $proc_work_result[0]['requestid_inprogress']; }
+		if ( $proc_work_result3[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress_start = $proc_work_result3[0]['requestid_inprogress']; }
+		if ( $proc_work_result2[0]['work'] != NULL ) { $work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
 	}
 
 	//get values from $qry
-	if ( $initquery[0]['console'] != NULL ) { $console_releases_now = $initquery[0]['console']; }
-	if ( $initquery[0]['movies'] != NULL ) { $movie_releases_now = $initquery[0]['movies']; }
-	if ( $initquery[0]['audio'] != NULL ) { $music_releases_now = $initquery[0]['audio']; }
-	if ( $initquery[0]['pc'] != NULL ) { $pc_releases_now = $initquery[0]['pc']; }
-	if ( $initquery[0]['tv'] != NULL ) { $tvrage_releases_now = $initquery[0]['tv']; }
-	if ( $initquery[0]['xxx'] != NULL ) { $pron_releases_now = $initquery[0]['xxx']; }
-	if ( $initquery[0]['misc'] != NULL ) { $misc_releases_now = $initquery[0]['misc']; }
-	if ( $initquery[0]['books'] != NULL ) { $book_releases_now = $initquery[0]['books']; }
+	foreach ($initquery as $cat)
+	{
+		if ( $cat['parentid'] == 1000 ) { $console_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 2000 ) { $movie_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 3000 ) { $music_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 4000 ) { $pc_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 5000 ) { $tvrage_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 6000 ) { $pron_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 7000 ) { $misc_releases_now = $cat['count']; }
+		if ( $cat['parentid'] == 8000 ) { $book_releases_now = $cat['count']; }
+	}
 
 	//get values from $proc
 	if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
@@ -367,27 +401,27 @@ while( $i > 0 )
 	if ( $proc_work_result2[0]['pc'] != NULL ) { $pc_releases_proc = $proc_work_result2[0]['pc']; }
 	if ( $proc_work_result[0]['tv'] != NULL ) { $tvrage_releases_proc = $proc_work_result[0]['tv']; }
 	if ( $proc_work_result[0]['book'] != NULL ) { $book_releases_proc = $proc_work_result[0]['book']; }
-	if ( $proc_work_result2[0]['work'] != NULL ) { $work_remaining_now = $proc_work_result2[0]['work']; }
+	if ( $proc_work_result2[0]['work'] != NULL ) { $work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
 	if ( $proc_work_result2[0]['pron'] != NULL ) { $pron_remaining_now = $proc_work_result2[0]['pron']; }
 	if ( $proc_work_result[0]['releases'] != NULL ) { $releases_loop = $proc_work_result[0]['releases']; }
 	if ( $proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
 	if ( $proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
 	if ( $proc_work_result2[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result2[0]['collections_table']; }
 	if ( $proc_work_result2[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result2[0]['binaries_table']; }
-	if ( $proc_work_result2[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result2[0]['parts_table']; }
+	if ( $proc_work_result3[0]['parts_table'] != NULL ) { $parts_table = $proc_work_result3[0]['parts_table']; }
 
-	if ( $proc_work_result2[0]['predb'] != NULL ) { $predb = $proc_work_result2[0]['predb']; }
-	if ( $proc_work_result2[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result2[0]['predb_matched']; }
-	if ( $proc_work_result2[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_work_result2[0]['distinctnzbs']; }
-	if ( $proc_work_result2[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_work_result2[0]['totalnzbs']; }
-	if ( $proc_work_result2[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_work_result2[0]['pendingnzbs']; }
-	if ( $proc_work_result[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress = $proc_work_result[0]['requestid_inprogress']; }
-	if ( $proc_work_result[0]['requestid_matched'] != NULL ) { $requestid_matched = $proc_work_result[0]['requestid_matched']; }
+	if ( $proc_work_result3[0]['predb'] != NULL ) { $predb = $proc_work_result3[0]['predb']; }
+	if ( $proc_work_result3[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
+	if ( $proc_work_result3[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress = $proc_work_result3[0]['requestid_inprogress']; }
+	if ( $proc_work_result3[0]['requestid_matched'] != NULL ) { $requestid_matched = $proc_work_result3[0]['requestid_matched']; }
 
 	if ( $proc_tmux_result[0]['collections_kill'] != NULL ) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
 	if ( $proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
 	if ( $proc_tmux_result[0]['backfilldays'] != NULL ) { $backfilldays = $proc_tmux_result[0]['backfilldays']; }
 	if ( $proc_tmux_result[0]['tmpunrar'] != NULL ) { $tmpunrar = $proc_tmux_result[0]['tmpunrar']; }
+    if ( $proc_tmux_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_tmux_result[0]['distinctnzbs']; }
+    if ( $proc_tmux_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_tmux_result[0]['totalnzbs']; }
+    if ( $proc_tmux_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_tmux_result[0]['pendingnzbs']; }
 
 	if ( $proc_tmux_result[0]['active_groups'] != NULL ) { $active_groups = $proc_tmux_result[0]['active_groups']; }
 	if ( $proc_tmux_result[0]['all_groups'] != NULL ) { $all_groups = $proc_tmux_result[0]['all_groups']; }
@@ -404,7 +438,7 @@ while( $i > 0 )
 	if ( $proc_tmux_result[0]['backfill'] != NULL ) { $backfill = $proc_tmux_result[0]['backfill']; }
 	if ( $proc_tmux_result[0]['niceness'] != NULL ) { $niceness = $proc_tmux_result[0]['niceness']; }
 	if ( $proc_tmux_result[0]['progressive'] != NULL ) { $progressive = $proc_tmux_result[0]['progressive']; }
-	
+
 	if ( $proc_tmux_result[0]['binaries_run'] != NULL ) { $binaries = $proc_tmux_result[0]['binaries_run']; }
 	if ( $proc_tmux_result[0]['import'] != NULL ) { $import = $proc_tmux_result[0]['import']; }
 	if ( $proc_tmux_result[0]['nzbs'] != NULL ) { $nzbs = $proc_tmux_result[0]['nzbs']; }
@@ -417,13 +451,14 @@ while( $i > 0 )
 	if ( $proc_tmux_result[0]['releases_threaded'] != NULL ) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
 	if ( $proc_tmux_result[0]['dehash'] != NULL ) { $dehash = $proc_tmux_result[0]['dehash']; }
 	if ( $proc_tmux_result[0]['newestname'] ) { $newestname = $proc_tmux_result[0]['newestname']; }
+	if ( $proc_tmux_result[0]['show_query'] ) { $show_query = $proc_tmux_result[0]['show_query']; }
 
 	if ( $split_result[0]['oldestnzb'] != NULL ) { $oldestnzb = $split_result[0]['oldestnzb']; }
 	if ( $split_result[0]['newestpre'] ) { $newestpre = $split_result[0]['newestpre']; }
 	if ( $split_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $split_result[0]['oldestcollection']; }
 	if ( $split_result[0]['backfill_groups_days'] != NULL ) { $backfill_groups_days = $split_result[0]['backfill_groups_days']; }
 	if ( $split_result[0]['backfill_groups_date'] != NULL ) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
-	
+
 	//reset monitor paths before query
 	$monitor_path = "";
 	$monitor_path_a = "";
@@ -474,7 +509,7 @@ while( $i > 0 )
 	if ($site->lookupnfo != 1)
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 
-	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now;
+	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $pron_remaining_now;
 	if ( $i == 1 ) { $total_work_start = $total_work_now; }
 
 	$nfo_diff = number_format( $nfo_remaining_now - $nfo_remaining_start );
@@ -621,6 +656,20 @@ while( $i > 0 )
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
 	else
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
+
+	if ( $show_query == "TRUE" )
+	{
+		printf("\n\033[1;33m\n");
+		printf($mask, "Query Block", "Time", "Cumulative");
+		printf($mask, "==============================", "=========================", "==============================");
+		printf("\033[38;5;214m");
+		printf($mask, "Tmux Site", $tmux_time, $tmux_time);
+		printf($mask, "Split", $split_time, $split1_time);
+		printf($mask, "Initial", $init_time, $init1_time);
+		printf($mask, "In Process 1", $proc1_time, $proc11_time);
+		printf($mask, "In Process 2", $proc2_time, $proc21_time);
+		printf($mask, "In Process 3", $proc3_time, $proc31_time);
+	}
 
 	//get list of panes by name
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
@@ -782,7 +831,7 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 			}
 
-			if ( $post == 1 && $work_remaining_now > 0 )
+			if ( $post == 1 && ( $work_remaining_now + pc_remaining_now + pron_remaining_now ) > 0 )
 			{
 				//run postprocess_releases additional
 				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -817,7 +866,7 @@ while( $i > 0 )
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now > 0)))
+			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now + pc_remaining_now + pron_remaining_now > 0)))
 			{
 				//run postprocess_releases additional
 				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -845,7 +894,7 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now == 0 ))
+			elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now + pc_remaining_now + pron_remaining_now == 0 ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");

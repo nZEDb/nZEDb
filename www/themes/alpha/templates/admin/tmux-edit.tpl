@@ -481,6 +481,14 @@
 	<legend>Server Monitors</legend>
 		<table class="input">
 			<tr>
+				<td style="width:160px;"><label for="SHOWQUERY">Display Query Times:</label></td>
+				<td>
+					{html_radios id="SHOWQUERY" name='SHOWQUERY' values=$truefalse_names output=$truefalse_names selected=$ftmux->SHOWQUERY separator='<br />'}
+					<div class="hint">Choose to display the query times for each set of queries. true/false.</div>
+				</td>
+			</tr>
+
+			<tr>
 				<td style="width:160px;"><label for="HTOP">htop:</label></td>
 				<td>
 					{html_radios id="HTOP" name='HTOP' values=$truefalse_names output=$truefalse_names selected=$ftmux->HTOP separator='<br />'}

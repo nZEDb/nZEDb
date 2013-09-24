@@ -71,9 +71,7 @@ if (isset($argv[1]))
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBcontents(true);
 		$pp = new Postprocess($echooutput=true);
-		if ($nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp))
-			echo "checkPAR2 was successful for release $relID.\n";
-		else
-			echo "checkPAR2 was unsuccessful for release $relID.\n";
+		$nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp);
+		echo ".";
 	}
 }
