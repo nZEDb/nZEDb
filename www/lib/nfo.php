@@ -15,17 +15,20 @@ class Nfo
 	public function Nfo($echooutput=false)
 	{
 		$s = new Sites();
-		$site = $s->get();
-		$this->nzbs = (!empty($site->maxnfoprocessed)) ? $site->maxnfoprocessed : 100;
-		$this->maxsize = (!empty($site->maxsizetopostprocess)) ? $site->maxsizetopostprocess : 100;
+		$this->site = $s->get();
+		$this->nzbs = (!empty($this->site->maxnfoprocessed)) ? $this->site->maxnfoprocessed : 100;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
 		$this->echooutput = $echooutput;
+		$this->tmpPath = $this->site->tmpunrarpath;
+		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
+			$this->tmpPath = $this->tmpPath.'/';
 	}
 
 	public function addReleaseNfo($relid)
 	{
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $relid));
-		if ($res === false)
+		if ($res == false)
 			return $db->queryInsert(sprintf('INSERT INTO releasenfo (releaseid) VALUES (%d)', $relid));
 		else
 			return $res['id'];
@@ -59,7 +62,7 @@ class Nfo
 	}
 
 	// Confirm that the .nfo file is not something else.
-	public function isNFO($possibleNFO)
+	public function isNFO($possibleNFO, $guid)
 	{
 		$r = false;
 		if ($possibleNFO === false)
@@ -75,8 +78,13 @@ class Nfo
 			// Use getid3 to check if it's an image/video/rar/zip etc..
 			require_once(WWW_DIR.'lib/getid3/getid3/getid3.php');
 			$getid3 = new getid3;
-			$check = $getid3->analyze($possibleNFO);
+			// getid3 works with files, so save to disk
+			$tmpPath = $this->tmpPath;
+			$this->tmpPath = $tmpPath.$guid.".nfo";
+			file_put_contents($this->tmpPath, $possibleNFO);
+			$check = $getid3->analyze($this->tmpPath);
 			unset($getid3);
+			@unlink($this->tmpPath);
 			if (isset($check['error']))
 			{
 				// Check if it's a par2.
@@ -112,7 +120,9 @@ class Nfo
 				$compress = '%s';
 				$nc = $db->escapeString(utf8_encode($nfo));
 			}
-			$db->queryExec(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$compress.', %d)', $nc, $release['id']));
+			$ckreleaseid = $db->queryOneRow(sprintf('SELECT releaseid FROM releasenfo WHERE id = %d', $release['id']));
+			if ($ckreleaseid == false)
+				$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$compress.', %d)', $nc, $release['id']));
 			$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $release['id']));
 			if (!isset($release['completion']))
 				$release['completion'] = 0;
@@ -156,8 +166,6 @@ class Nfo
 			if ($this->echooutput && $releaseToWork == '')
 				echo 'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
 
-			$s = new Sites();
-			$site = $s->get();
 			$nntp = new Nntp();
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
@@ -166,7 +174,7 @@ class Nfo
 
 			foreach ($res as $arr)
 			{
-				$site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $db, $this);
 				if ($fetchedBinary !== false)
 				{
@@ -181,7 +189,9 @@ class Nfo
 						$cp = '%s';
 						$nc = $db->escapeString(utf8_encode($fetchedBinary));
 					}
-					$db->queryExec(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$cp.', %d)', $nc, $arr['id']));
+					$ckreleaseid = $db->queryOneRow(sprintf('SELECT releaseid FROM releasenfo WHERE id = %d', $arr['id']));
+					if ($ckreleaseid == false)
+						$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$cp.', %d)', $nc, $arr['id']));
 					$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
 					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $db, $processImdb);

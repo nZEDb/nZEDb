@@ -157,7 +157,7 @@ Class NZBcontents
 					$fetchedBinary = false;
 				}
 			}
-			if ($nfo->isNFO($fetchedBinary) === true)
+			if ($nfo->isNFO($fetchedBinary, $guid) === true)
 			{
 				if ($this->echooutput)
 					echo '+';
@@ -197,7 +197,7 @@ Class NZBcontents
 						}
 						if ($possibleNFO !== false)
 						{
-							if ($nfo->isNFO($possibleNFO) == true)
+							if ($nfo->isNFO($possibleNFO, $guid) == true)
 							{
 								// If a previous attempt failed, set this to false because we got an nfo anyways.
 								if ($failed === true)

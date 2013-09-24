@@ -43,6 +43,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 		echo "\n";
 
 	$timestart = TIME();
+	$consoletools = new ConsoleTools();
 	$checked = 0;
 	$res = $db->query('SELECT id, guid FROM releases');
 	if (count($res) > 0)

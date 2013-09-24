@@ -165,7 +165,7 @@ class ReleaseExtra
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releasevideo WHERE releaseid = %s', $releaseID));
 		if (!$ckid)
-			return $db->queryExec(sprintf('INSERT INTO releasevideo (releaseid, containerformat, overallbitrate, videoduration, videoformat, videocodec, videowidth, videoheight, videoaspect, videoframerate, videolibrary) VALUES (%d, %s, %s, %s, %s, %s, %d, %d, %s, %d, %s)', $releaseID, $db->escapeString($containerformat), $db->escapeString($overallbitrate),	$db->escapeString($videoduration), $db->escapeString($videoformat), $db->escapeString($videocodec), $videowidth,$videoheight, $db->escapeString($videoaspect), $videoframerate, $db->escapeString($videolibrary)));
+			return $db->queryExec(sprintf('INSERT INTO releasevideo (releaseid, containerformat, overallbitrate, videoduration, videoformat, videocodec, videowidth, videoheight, videoaspect, videoframerate, videolibrary) VALUES (%d, %s, %s, %s, %s, %s, %d, %d, %s, %d, %s)', $releaseID, $db->escapeString($containerformat), $db->escapeString($overallbitrate),	$db->escapeString($videoduration), $db->escapeString($videoformat), $db->escapeString($videocodec), $videowidth,$videoheight, $db->escapeString($videoaspect), $videoframerate, $db->escapeString(substr($videolibrary, 0, 50))));
 	}
 
 	public function addAudio($releaseID, $audioID, $audioformat, $audiomode, $audiobitratemode, $audiobitrate, $audiochannels,$audiosamplerate, $audiolibrary, $audiolanguage,$audiotitle)
@@ -173,7 +173,7 @@ class ReleaseExtra
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releaseaudio WHERE releaseid = %s', $releaseID));
 		if (!$ckid)
-			return $db->queryExec(sprintf('INSERT INTO releaseaudio (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary ,audiolanguage, audiotitle) VALUES (%d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s)', $releaseID, $audioID,$db->escapeString($audioformat),$db->escapeString($audiomode), $db->escapeString($audiobitratemode), 	$db->escapeString($audiobitrate), $db->escapeString($audiochannels),$db->escapeString($audiosamplerate), $db->escapeString($audiolibrary),$db->escapeString($audiolanguage),$db->escapeString(substr($audiotitle, 0, 50))));
+			return $db->queryExec(sprintf('INSERT INTO releaseaudio (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary ,audiolanguage, audiotitle) VALUES (%d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s)', $releaseID, $audioID,$db->escapeString($audioformat),$db->escapeString($audiomode), $db->escapeString($audiobitratemode), $db->escapeString(substr($audiobitrate, 0, 10)), $db->escapeString($audiochannels),$db->escapeString($audiosamplerate), $db->escapeString($audiolibrary),$db->escapeString($audiolanguage),$db->escapeString(substr($audiotitle, 0, 50))));
 	}
 
 	public function addSubs($releaseID, $subsID, $subslanguage)
