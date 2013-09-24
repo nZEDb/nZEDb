@@ -58,11 +58,13 @@ class TvRage
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
 		$country = preg_replace('/United States/i', 'US', $country);
 		$db = new DB();
-		if ($db->dbSystem() == 'mysql')
-			$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+		$ckmsg = $db->queryOneRow(sprintf('SELECT rageid FROM tvrage where rageid = %d', $rageid));
+		if ($db->dbSystem() == 'mysql' && $ckmsg == false)
+				$db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
 		else if ($db->dbSystem() == 'pgsql')
 		{
-			$id = $db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
+			if ($ckmsg == false)
+				$id = $db->queryInsert(sprintf("INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())", $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
 			if ($imgbytes != '')
 			{
 				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';

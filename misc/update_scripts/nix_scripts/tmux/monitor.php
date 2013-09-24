@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3690";
+$version="0.1r3693";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -233,45 +233,26 @@ $oldestcollection = TIME();
 $oldestnzb = TIME();
 
 $active_groups = $all_groups = 0;
-
 $backfilldays = $backfill_groups_date = 0;
-
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
-
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
-
 $misc_diff = $misc_percent = $misc_releases_now = 0;
-
 $music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
-
 $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
-
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = 0;
-
 $pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = 0;
-
 $pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = 0;
-
 $pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
-
 $releases_now = $releases_since_start = 0;
-
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
-
 $total_work_now = $work_diff = $work_remaining_now = 0;
-
 $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 0;
-
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
-
 $collections_table = $parts_table = $binaries_table = 0;
-
 $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
 
-
-
-$mask1 = "\033[1;33m%-16s \033[38;5;214m%-51.51s \n";
-$mask2 = "\033[1;33m%-20s \033[38;5;214m%-36.36s \n";
+$mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
+$mask2 = "\033[1;33m%-20s \033[38;5;214m%-33.33s \n";
 
 //create display
 passthru('clear');

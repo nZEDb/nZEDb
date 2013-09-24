@@ -1473,7 +1473,7 @@ class PostProcess
 												$newcat = Category::CAT_MUSIC_LOSSLESS;
 											else
 												$newcat = $category->determineCategory($newname, $rquer["groupid"]);
-											$this->db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $this->db->escapeString($newname), $newcat, $releaseID));
+											$this->db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d", $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 										}
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID,$xmlarray);
