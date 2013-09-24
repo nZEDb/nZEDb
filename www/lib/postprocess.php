@@ -586,7 +586,10 @@ class PostProcess
 								continue;
 
 							// Process rar contents until 1G or 85% of file size is found (smaller of the two).
-							$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
+							if ($rarFile["size"] == 0 && $rarFile["partsactual"] != 0 && $rarFile["partstotal"] != 0)
+								$this->segsize = $rarFile["size"]/($rarFile["partsactual"]/$rarFile["partstotal"]);
+							else
+								$this->segsize = 0;
 							$this->sum = $this->sum + $this->adj * $this->segsize;
 							if ($this->sum > $this->size || $this->adj === 0)
 							{
@@ -1057,7 +1060,7 @@ class PostProcess
 		  return false;
 		}
 
-		if ($zip->isEncrypted)
+		if (!empty($zip->isEncrypted))
 		{
 			$this->debug("ZIP archive is password encrypted.");
 			$this->password = true;
@@ -1146,7 +1149,7 @@ class PostProcess
 			$this->debug("Error: {$rar->error}.");
 			return $retval;
 		}
-		if ($rar->isEncrypted)
+		if (!empty($rar->isEncrypted))
 		{
 			$this->debug("Archive is password encrypted.");
 			$this->password = true;
@@ -1226,7 +1229,7 @@ class PostProcess
 				return false;
 			}
 
-			if ($rar->isEncrypted)
+			if (!empty($rar->isEncrypted))
 			{
 				$this->debug("Archive is password encrypted.");
 				$this->password = true;
@@ -1290,7 +1293,10 @@ class PostProcess
 				}
 
 				$this->sum = $this->adj;
-				$this->adj = $this->adj / $this->segsize;
+				if ($this->segsize != 0)
+					$this->adj = $this->adj / $this->segsize;
+				else
+					$this->adj = 0;
 
 				if ($this->adj < .7)
 					$this->adj = 1;
@@ -1361,7 +1367,10 @@ class PostProcess
 
 				$this->size = $this->sum;
 				$this->sum = $this->adj;
-				$this->adj = $this->adj / $this->segsize;
+				if ($this->segsize != 0)
+					$this->adj = $this->adj / $this->segsize;
+				else
+					$this->adj = 0;
 
 				if ($this->adj < .7)
 					$this->adj = 1;
@@ -1539,8 +1548,7 @@ class PostProcess
 
 					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
 					//$output = runCmd($cmd);
-
-					$sample_duration = exec($ffmpeginfo." -i ".$samplefile." 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
+					$sample_duration = exec($ffmpeginfo." -i ".'"'.$samplefile.'"'." 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
 					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == "")
 						$sample_duration = 2;
 					$output_file=$ramdrive."zzzz".mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).".jpg";

@@ -44,6 +44,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	echo "\nGetting List of releases to check against nzbs.\n";
+	$consoletools = new ConsoleTools();
 	$res = $db->query('SELECT id, guid FROM releases');
 	if (count($res) > 0)
 	{
