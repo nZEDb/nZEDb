@@ -16,11 +16,11 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$releases = new Releases();
 	$consoletools = new ConsoleTools();
 	$nzb = new NZB(true);
+	$timestart = TIME();
+	$checked = $deleted = 0;
+	echo "Getting List of nzbs to check against db.\n";
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
-
-	$timestart = TIME();
-	$checked = 0;
 	foreach ($itr as $filePath)
 	{
 		if (is_file($filePath))
@@ -31,36 +31,37 @@ if (isset($argv[1]) && $argv[1] === "true")
 				if ($res === false)
 				{
 					$releases->fastDelete("NULL", $guid[1], $site);
-					echo "Deleted NZB: ".$filePath."\n";
+					//echo "\nDeleted NZB: ".$filePath."\n";
+					$deleted++;
 				}
 				$time = $consoletools->convertTime(TIME() - $timestart);
-				$consoletools->overWrite("Checking NZBs: ".$checked++." exists in db,  Running time: ".$time);
+				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." deleted from disk,  Running time: ".$time);
 			}
 		}
 	}
-
-	if ($checked > 0)
-		echo "\n";
+	echo number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs deleted.\n";
 
 	$timestart = TIME();
-	$checked = 0;
+	$checked = $deleted = 0;
+	echo "\nGetting List of releases to check against nzbs.\n";
 	$res = $db->query('SELECT id, guid FROM releases');
 	if (count($res) > 0)
 	{
+		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
 			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
 			if (!file_exists($nzbpath))
 			{
-				echo "Deleting ".$row['guid']."\n";
-				$releases->fastDelete($row['id'], $row['guid'], $site); 
+				//echo "Deleting ".$row['guid']."\n";
+				$releases->fastDelete($row['id'], $row['guid'], $site);
+				$deleted++;
 			}
 			$time = $consoletools->convertTime(TIME() - $timestart);
-			$consoletools->overWrite("Checking Releases: ".$checked++." have an nzb, Running time: ".$time);
+			$consoletools->overWrite("Checking Releases: ".$deleted." of ".++$checked." deleted from db,  Running time: ".$time);
 		}
 	}
-	if ($checked > 0)
-		echo "\n";
+	echo number_format($checked)." releases checked, ".number_format($deleted)." releases deleted.\n";
 }
 else
 	exit("This script removes all nzbs not found in the db.\nIf you are sure you want to run it, type php clean_nzbs.php true\n");
