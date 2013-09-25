@@ -6,6 +6,12 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/site.php");
 
+function command_exist($cmd)
+{
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
+}
+
 // Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
 {
@@ -70,19 +76,21 @@ function BackupDatabase()
 	$db = new DB();
 	$returnvar = NULL;
 	$output = NULL;
+	$DIR = MISC_DIR;
+	
+	if (command_exist("php5"))
+		$PHP = "php5";
+	else
+		$PHP = "php";
 	
 	//Backup based on database system
 	if($db->dbSystem() == "mysql")
 	{
-		exec("mysqldump -u ".DB_USER." -h ".DB_HOST." -P ".DB_PORT." -p".DB_PASSWORD." ".DB_NAME." > ".FS_ROOT."/../../../safe-upgrade-".date("mdyHis").".sql", $output, $returnvar);
-		if($returnvar)
-			exit("Exiting. Unable to backup database because of error. Does mysqldump exist?\n");		
+		system("$PHP ${DIR}testing/DB_scripts/mysqldump_tables.php db dump ../../../");
 	}
 	else if($db->dbSystem() == "pgsql")
 	{
-		exec("export PGPASSWORD=".DB_PASSWORD." && PGUSER=".DB_USER." && pg_dump -h ".DB_HOST." ".DB_NAME." -CdiOv > ".FS_ROOT."/../../../safe-upgrade-".date("mdyHis").".sql && unset PGPASSWORD && unset PGUSER", $output, $returnvar);
-		if($returnvar)
-			exit("Exiting. Unable to backup database because of and error. Does pg_dump exist?\n");
+		exit("Currently not supported on this platform.");
 	}
 }
 
