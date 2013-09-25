@@ -56,13 +56,18 @@ class TvRage
 	public function add($rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
-		$country = preg_replace('/United States/i', 'US', $country);
 		$db = new DB();
+		if (strlen($country) > 2)
+		{
+			$code = $db->queryOneRow('SELECT code FROM country WHERE LOWER(name) = LOWER('.$db->escapeString($country).')');
+			if (isset($code['code']))
+				$country = $code['code'];
+		}
 		$ckmsg = $db->queryOneRow('SELECT id FROM tvrage WHERE rageid = '.$rageid);
 		if ($db->dbSystem() == 'mysql')
 		{
 			if ($ckmsg === false)
-				$db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+				$db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $db->escapeString($releasename), $db->escapeString(substr($desc, 0, 10000)), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
 			else
 				$db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes), $ckmsg['id']));
 		}
@@ -400,13 +405,26 @@ class TvRage
 		return false;
 	}
 
+	//Convert 2012-24-07 to 2012-07-24, there is probably a better way
+	public function checkDate($date)
+	{
+		if (!empty($date))
+		{
+			$chk = explode(" ", $date);
+			$chkd = explode("-", $chk[0]);
+			if ($chkd[1] > 12)
+				$date = date('Y-m-d', strtotime($chkd[1]." ".$chkd[2]." ".$chkd[0]))." ".$chk[1];
+		}
+		return $date;
+	}
+
 	public function updateEpInfo($show, $relid)
 	{
 		$db = new DB();
 		if ($this->echooutput)
 			echo "TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
 
-		$tvairdate = (!empty($show['airdate'])) ? $db->escapestring($show['airdate']) : "NULL";
+		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $db->escapeString($this->checkDate($show['airdate'])) : "NULL";
 		$db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $db->escapeString($show['seriesfull']), $db->escapeString($show['season']), $db->escapeString($show['episode']), $tvairdate, $relid));
 	}
 
@@ -576,7 +594,7 @@ class TvRage
 				}
 				elseif ($id > 0)
 				{
-					$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $db->escapeString($show['airdate']) : "NULL";
+					$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $db->escapeString($this->checkDate($show['airdate'])) : "NULL";
 					$tvtitle = "NULL";
 
 					if ($lookupTvRage)
@@ -584,8 +602,8 @@ class TvRage
 						$epinfo = $this->getEpisodeInfo($id, $show['season'], $show['episode']);
 						if ($epinfo !== false)
 						{
-							if (!empty($epinfo['airdate']))
-								$tvairdate = $db->escapeString($epinfo['airdate']);
+							if (isset($epinfo['airdate']) && !empty($epinfo['airdate']))
+								$tvairdate = $db->escapeString($this->checkDate($epinfo['airdate']));
 
 							if (!empty($epinfo['title']))
 								$tvtitle = $db->escapeString($epinfo['title']);

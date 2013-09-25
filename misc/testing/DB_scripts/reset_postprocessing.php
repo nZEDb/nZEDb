@@ -8,6 +8,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
+		echo "Trancating tables\n";
 		$db->queryExec("TRUNCATE TABLE consoleinfo");
 		$db->queryExec("TRUNCATE TABLE movieinfo");
         $db->queryExec("TRUNCATE TABLE releasevideo");
@@ -15,6 +16,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->queryExec("TRUNCATE TABLE bookinfo");
 		$db->queryExec("TRUNCATE TABLE releasenfo");
 		$db->queryExec("TRUNCATE TABLE releaseextrafull");
+		echo "Resetting all postprocessing\n";
 		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
 		echo number_format($affected->rowCount())." releases reset.\n";
 	}

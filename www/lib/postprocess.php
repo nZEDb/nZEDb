@@ -969,7 +969,7 @@ class PostProcess
 
 	function addfile($v, $release, $rar=false)
 	{
-		if (!isset($v['error']))
+		if (!isset($v['error']) && isset($v['source']))
 		{
 			if ($rar !== false && preg_match('/\.zip$/', $v['source']))
 			{

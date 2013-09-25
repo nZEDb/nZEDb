@@ -1,5 +1,8 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
+09252013 -> jonnyboy -> added table for country codes, tvrage does not always return an abbreviation
+                        added yesterdays patch to schema, correct patch for pgsql
+09242013 -> jonnyboy -> numerous changes queries, improved query speed, fixed some bugs
 09212013 -> jonnyboy -> fixed a few bugs
                         updated python scripts to use Psycopg, untested
                         updated install texts to reflect changes for Psycopg
