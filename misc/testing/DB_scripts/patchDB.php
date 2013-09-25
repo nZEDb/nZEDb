@@ -97,13 +97,9 @@ function BackupDatabase()
 $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
 
 if(isset($argv[1]) && $argv[1] == "safe")
-{
 	$safeupgrade = true;
-}
 else 
-{
 	$safeupgrade = false;
-}
 
 if (isset($os) && $os == "unix")
 {

@@ -68,10 +68,10 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 {
 	$filename = $argv[3]."/".$dbname.".gz";
 	printf("Dumping $dbname\n");
-	$command = "mysqldump --defaults-extra-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname | gzip -9 > $filename";
-	system($command);
 	if (file_exists($filename))
 		newname($filename);
+	$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname | gzip -9 > $filename";
+	system($command);
 }
 elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
@@ -79,7 +79,7 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 	if (file_exists($filename))
 	{
 		printf("Restoring $dbname\n");
-		$command = "gunzip < $filename | mysql --defaults-extra-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+		$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 		system($command);
     }
 }
@@ -92,10 +92,10 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
 		printf("Dumping $tbl\n");
-		$command = "mysqldump --defaults-extra-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
-		system($command);
 		if (file_exists($filename))
 			newname($filename);
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
+		system($command);
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
@@ -109,7 +109,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$command = "gunzip < $filename | mysql --defaults-extra-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
@@ -121,10 +121,10 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 	{
 		$filename = $argv[3]."/".$tbl.".gz";
 		printf("Dumping $tbl.\n");
-		$command = "mysqldump --defaults-extra-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
-		system($command);
 		if (file_exists($filename))
 			newname($filename);
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
+		system($command);
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
@@ -136,7 +136,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$command = "gunzip < $filename | mysql --defaults-extra-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
@@ -150,9 +150,9 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3].$tbl.".csv";
 		printf("Dumping $tbl\n");
-		$db->queryDirect(sprintf("SELECT * INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
 		if (file_exists($filename))
 			newname($filename);
+		$db->queryDirect(sprintf("SELECT * INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
 	}
 }
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
@@ -178,9 +178,9 @@ elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] 
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl."_clean.sql";
 		printf("Dumping $tbl\n");
-		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
 		if (file_exists($filename))
 			newname($filename);
+		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
     }
 }
 else
@@ -203,8 +203,6 @@ else
 }
 
 if(file_exists("mysql-defaults.txt"))
-{
 	unlink("mysql-defaults.txt");
-}
 
 ?>
