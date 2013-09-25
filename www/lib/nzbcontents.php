@@ -8,18 +8,19 @@ require_once(WWW_DIR.'lib/nfo.php');
  */
 Class NZBcontents
 {
-	function NZBcontents($echooutput=false)
+	public function NZBcontents($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$this->site = $s->get();
+		$this->lookuppar2 = (isset($this->site->lookuppar2)) ? $this->site->lookuppar2 : 0;
 	}
 
-	public function getNfoFromNZB($guid, $relID, $groupID, $nntp)
+	public function getNfoFromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
-		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp))
+		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
 			return $fetchedBinary;
-		else if ($fetchedBinary = $this->hiddenNFOfromNZB($guid, $relID, $groupID, $nntp))
+		else if ($fetchedBinary = $this->hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
 			return $fetchedBinary;
 		else
 			return false;
@@ -57,46 +58,40 @@ Class NZBcontents
 	}
 
 	// Attempts to get the releasename from a par2 file
-	public function checkPAR2($guid, $relID, $groupID, $echooutput)
+	public function checkPAR2($guid, $relID, $groupID, $db, $pp)
 	{
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
 			foreach ($nzbfile->file as $nzbcontents)
 			{
-				if (preg_match('/\.(par2?|\d{2,3}").+(yEnc \(1\/1\)|\(1\/1\))$/i', $nzbcontents->attributes()->subject))
+				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject))
 				{
-					$pp = new Postprocess($echooutput);
 					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, null) === true)
-						break;
+					{
+						$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
+						return true;
+					}
 				}
 			}
 		}
-		$db = new DB();
-		$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
-		if ($this->echooutput)
-			echo '.';
+		return false;
 	}
 
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
-	public function NZBcompletion($guid, $relID, $groupID, $nntp, $nfocheck=false)
+	public function NZBcompletion($guid, $relID, $groupID, $nntp, $db, $nfocheck=false)
 	{
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
-			$db = new DB();
 			$messageid = '';
 			$actualParts = $artificialParts = 0;
 			$foundnfo = $foundpar2 = false;
-			if ($this->site->lookuppar2 == 1)
-				$pp = new Postprocess($this->echooutput);
 
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				foreach($nzbcontents->segments->segment as $segment)
-				{
 					$actualParts++;
-				}
 
 				$subject = $nzbcontents->attributes()->subject;
 				if(preg_match('/(\d+)\)$/', $subject, $parts))
@@ -110,10 +105,11 @@ Class NZBcontents
 						$foundnfo = true;
 					}
 				}
-				if ($this->site->lookuppar2 == 1 && $foundpar2 === false)
+				if ($this->lookuppar2 == 1 && $foundpar2 === false)
 				{
-					if (preg_match('/\.(par2?|\d{2,3}").+\(1\/1\)$/i', $subject))
+					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject))
 					{
+						$pp = new Postprocess($this->echooutput);
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 							$foundpar2 = true;
 					}
@@ -129,56 +125,55 @@ Class NZBcontents
 			if ($completion > 100)
 				$completion = 100;
 
-			$this->updateCompletion($completion, $relID);
+			$db->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
 			if ($nfocheck !== false)
-				return $messageid;
+			{
+				if ($foundnfo === true)
+					return $messageid;
+				else
+					return false;
+			}
 			else
 				return true;
 		}
+		return false;
 	}
 
 	// Look for an .nfo file in the NZB, return the NFO. Also gets the NZB completion.
-	public function NFOfromNZB($guid, $relID, $groupID, $nntp)
+	public function NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
-		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, true);
-		if ($messageid !== '')
+		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
+		if ($messageid !== false)
 		{
-			$nfo = new NFO();
-			$nfo->addReleaseNfo($relID);
-			$groups = new Groups();
-			$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
+			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 			if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 			{
 				$nntp->doQuit();
 				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
-				$fetchedBinary = $nntp->getMessage($groups->getByNameByID($groupID), $messageid);
+				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 				{
 					$nntp->doQuit();
 					$fetchedBinary = false;
 				}
 			}
-			if ($nfo->isNFO($fetchedBinary) === true)
+			if ($nfo->isNFO($fetchedBinary, $guid) === true)
 			{
 				if ($this->echooutput)
 					echo '+';
 				return $fetchedBinary;
 			}
 		}
-			return false;
+		return false;
 	}
 
 	// Look for an NFO in the nzb which does not end in .nfo, return the nfo.
-	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp)
+	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
-			$db = new DB();
-			$groups = new Groups();
-			$groupName = $groups->getByNameByID($groupID);
 			$foundnfo = $failed = false;
-			$nfo = new NFO($this->echooutput);
 			foreach ($nzbfile->file as $nzbcontents)
 			{
 				$subject = $nzbcontents->attributes()->subject;
@@ -202,7 +197,7 @@ Class NZBcontents
 						}
 						if ($possibleNFO !== false)
 						{
-							if ($nfo->isNFO($possibleNFO) == true)
+							if ($nfo->isNFO($possibleNFO, $guid) == true)
 							{
 								// If a previous attempt failed, set this to false because we got an nfo anyways.
 								if ($failed === true)
@@ -222,7 +217,6 @@ Class NZBcontents
 			}
 			if ($foundnfo !== false && $failed === false)
 			{
-				$nfo->addReleaseNfo($relID);
 				if ($this->echooutput)
 					echo '*';
 				return $fetchedBinary;
@@ -279,12 +273,5 @@ Class NZBcontents
 		}
 		else
 			return false;
-	}
-
-	//	Update the releases completion.
-	function updateCompletion($completion, $relID)
-	{
-		$db = new DB();
-		$db->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
 	}
 }

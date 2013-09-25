@@ -15,7 +15,6 @@
 			{if $cfg->error}
 			<div>
 				The following error(s) were encountered:<br />
-				{if $cfg->dbPG === false}<span class="error">&bull; PostgreSQL is currently not available for use, we are working on it.</span><br />{/if}
 				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database:<br />{$cfg->emessage}</span><br />{/if}
 				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database:<br />{$cfg->emessage}</span><br />{/if}
 				{if $cfg->dbCreateCheck === false}<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />{/if}

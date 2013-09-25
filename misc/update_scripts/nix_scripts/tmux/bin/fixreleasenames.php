@@ -8,7 +8,7 @@ require_once(WWW_DIR."lib/predb.php");
 require_once(WWW_DIR."lib/nzbcontents.php");
 
 $db = new DB();
-$namefixer = new Namefixer();
+$namefixer = new Namefixer(true);
 
 if (isset($argv[1]))
 {
@@ -69,7 +69,9 @@ if (isset($argv[1]))
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
-		$nzbcontents = new NZBcontents();
-		$nzbcontents->checkPAR2($guid, $relID, $groupID, true);
+		$nzbcontents = new NZBcontents(true);
+		$pp = new Postprocess($echooutput=true);
+		$nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp);
+		echo ".";
 	}
 }

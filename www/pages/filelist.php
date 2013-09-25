@@ -28,9 +28,9 @@ if (isset($_GET["id"]))
 
 	$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 
-	$page->smarty->assign('pagertotalitems',sizeof($ret));
-	$page->smarty->assign('pageroffset',$offset);
-	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
+	$page->smarty->assign('pagertotalitems', sizeof($ret));
+	$page->smarty->assign('pageroffset', $offset);
+	$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerybase', WWW_TOP."/filelist/".$_GET["id"]."/&amp;offset=");
 	$page->smarty->assign('pagerquerysuffix', "#results");
 

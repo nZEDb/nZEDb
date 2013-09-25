@@ -39,10 +39,15 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 count = 0
 
 #get values from db
-cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b, (SELECT value FROM site WHERE setting = 'hashcheck') AS c")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])-1
 maxmssgs = int(dbgrab[0][1])
+hashcheck = int(dbgrab[0][2])
+
+if hashcheck == 0:
+	sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
+	
 
 #query to grab all active groups
 cur.execute("SELECT DISTINCT name, last_record FROM groups WHERE active = 1")

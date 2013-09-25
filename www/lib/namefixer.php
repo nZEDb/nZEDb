@@ -185,12 +185,17 @@ class Namefixer
 
 		if (count($relres) > 0)
 		{
+			$db = new DB();
+			$nzbcontents = new NZBcontents($this->echooutput);
+			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
 			{
-				$nzbcontents = new NZBcontents();
-				$nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], true);
+				if ($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp) === true)
+				{
+					echo ".";
+					$this->fixed++;
+				}
 				$this->checked++;
-				echo ".";
 				if ($this->checked % 500 == 0)
 					echo $this->checked." files processed.\n\n";
 			}

@@ -41,9 +41,12 @@ datas = cur.fetchall()
 if len(datas) == 0:
 	sys.exit("No Active Groups")
 
-#get threads for update_binaries
-cur.execute("SELECT value FROM site WHERE setting = 'binarythreads'")
-run_threads = cur.fetchone()
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'hashcheck') AS b")
+dbgrab = cur.fetchall()
+run_threads = int(dbgrab[0][0])
+hashcheck = int(dbgrab[0][1])
+if hashcheck == 0:
+    sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
 
 #close connection to mysql
 cur.close()
@@ -77,7 +80,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads[0], "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -87,7 +90,7 @@ def main():
 
 	if True:
 		#spawn a pool of worker threads
-		for i in range(int(run_threads[0])):
+		for i in range(run_threads):
 			p = queue_runner(my_queue)
 			#p.setDaemon(False)
 			p.start()

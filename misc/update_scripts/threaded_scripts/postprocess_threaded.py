@@ -129,6 +129,7 @@ class queue_runner(threading.Thread):
 					return
 			else:
 				if my_id:
+					#print(os.getloadavg())
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_new.php", ""+my_id])
 					time.sleep(.05)

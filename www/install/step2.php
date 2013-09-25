@@ -67,9 +67,6 @@ if  ($page->isPostBack())
 
 	$dbtype = $cfg->DB_SYSTEM;
 
-// While we work on postgresql make it fail so people can't use it. If you are a dev comment out the 2 lines.
-if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } if (!$cfg->error) { /* this line */
-
 	if (strtolower($dbtype) == 'mysql')
 	{
 		if (isset($cfg->DB_PORT))
@@ -106,8 +103,6 @@ if (strtolower($dbtype) == 'pgsql') { $cfg->dbPG = false; $cfg->error = true; } 
 
 		$cfg->dbNameCheck = true;
 	}
-
-} /* this line */
 
 	if (!$cfg->error && $dbtype == "mysql")
 	{
