@@ -56,9 +56,9 @@ Class Predb
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 		}
-		//$matched = $this->matchPredb();
-		//if ($matched > 0 && $this->echooutput)
-		//	echo 'Matched '.$matched." predDB titles to release search names.\n";
+		$matched = $this->matchPredb();
+		if ($matched > 0 && $this->echooutput)
+			echo 'Matched '.$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
 			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
@@ -411,9 +411,9 @@ Class Predb
 		$db = new DB();
 		$nfos = 0;
 		if($this->echooutput)
-			echo "Matching up predb NFOs with releases missing an NFO.\n";
+			echo "\nMatching up predb NFOs with releases missing an NFO.\n";
 
-		$res = $db->prepare('SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100');
+		$res = $db->prepare('SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 1000');
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)
