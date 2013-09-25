@@ -6,6 +6,12 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/site.php");
 
+function command_exist($cmd)
+{
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
+}
+
 // Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
 {
@@ -65,7 +71,39 @@ function SplitSQL($file, $delimiter = ';')
 		return false;
 }
 
+function BackupDatabase()
+{
+	$db = new DB();
+	$returnvar = NULL;
+	$output = NULL;
+	$DIR = MISC_DIR;
+	
+	if (command_exist("php5"))
+		$PHP = "php5";
+	else
+		$PHP = "php";
+	
+	//Backup based on database system
+	if($db->dbSystem() == "mysql")
+	{
+		system("$PHP ${DIR}testing/DB_scripts/mysqldump_tables.php db dump ../../../");
+	}
+	else if($db->dbSystem() == "pgsql")
+	{
+		exit("Currently not supported on this platform.");
+	}
+}
+
 $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
+
+if(isset($argv[1]) && $argv[1] == "safe")
+{
+	$safeupgrade = true;
+}
+else 
+{
+	$safeupgrade = false;
+}
 
 if (isset($os) && $os == "unix")
 {
@@ -74,7 +112,8 @@ if (isset($os) && $os == "unix")
 	$currentversion = $site->sqlpatch;
 	$patched = 0;
 	$patches = array();
-	$db = new DB;
+	$db = new DB();
+	$backedup = false;
 
 	if ($db->dbSystem() == "mysql")
 		$path = '/../../../db/mysql_patches';
@@ -109,6 +148,11 @@ if (isset($os) && $os == "unix")
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{
+					if($safeupgrade == true && $backedup == false)
+					{
+						BackupDatabase();
+						$backedup = true;
+					}
 					SplitSQL($filepath);
 					$patched++;
 				}
@@ -126,7 +170,7 @@ else if (isset($os) && $os == "windows")
 
 	// Open the patch folder.
 	if (!isset($argv[1]))
-		exit("You must suply the directory to the patches.\n");
+		exit("You must supply the directory to the patches.\n");
 	if ($handle = @opendir($argv[1]))
 	{
 		while (false !== ($patch = readdir($handle)))
@@ -150,6 +194,11 @@ else if (isset($os) && $os == "windows")
 			{
 				if ($patchnumber['1'] > $currentversion)
 				{
+					if($safeupgrade == true && $backedup == false)
+					{
+						BackupDatabase();
+						$backedup = true;
+					}
 					SplitSQL($filepath);
 					$patched++;
 				}
