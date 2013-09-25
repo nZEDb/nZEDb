@@ -8,9 +8,50 @@ $db = new DB();
 if ($db->dbSystem() == "pgsql")
 	exit("This script is only for mysql.\n");
 
+$exportopts = "";
+$mysqlplatform = "";
+
+//determine mysql platform (oracle, percona, mariadb etc)
+if($db->dbSystem() == "mysql")
+{
+	$mysqlplatform = mysql_get_client_info();
+	if(strpos($mysqlplatform, "Percona"))
+	{
+		//Percona only has --innodb-optimize-keys
+		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
+	}
+	else 
+	{
+		//generic (or unknown) instance of MySQL
+		$exportopts = "--opt --complete-insert --skip-quick";
+	}
+}
+
 function newname($filename)
 {
 	rename($filename, dirname($filename)."/".basename($filename,".gz")."_".date("Y_m_d_His", filemtime($filename)).".gz");
+}
+
+function builddefaultsfile()
+{
+	//generate file contents
+	$filetext = "[mysqldump]"
+				."\r\n\r\n"
+				."user = " . DB_USER
+				."\r\n\r\n"
+				."password = " . DB_PASSWORD;
+	
+	$filehandle = fopen("mysql-defaults.txt", "w+");
+	if(!$filehandle)
+	{
+		exit("Unable to write mysql defaults file! Exiting");
+	}
+	else 
+	{
+		fwrite($filehandle, $filetext);
+		fclose($filehandle);
+		chmod("mysql-defaults.txt", 0600);
+	}
 }
 
 $dbhost = DB_HOST;
@@ -19,13 +60,17 @@ $dbuser = DB_USER;
 $dbpass = DB_PASSWORD;
 $dbname = DB_NAME;
 
+if($db->dbSystem() == "mysql")
+	//generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
+	builddefaultsfile();
+
 if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$filename = $argv[3]."/".$dbname.".gz";
 	printf("Dumping $dbname\n");
 	if (file_exists($filename))
 		newname($filename);
-	$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname | gzip -9 > $filename";
+	$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname | gzip -9 > $filename";
 	system($command);
 }
 elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
@@ -34,7 +79,7 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 	if (file_exists($filename))
 	{
 		printf("Restoring $dbname\n");
-		$command = "gunzip < $filename | mysql -h$dbhost -P$dbport -u$dbuser -p$dbpass $dbname";
+		$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 		system($command);
     }
 }
@@ -49,7 +94,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		printf("Dumping $tbl\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
@@ -64,7 +109,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$command = "gunzip < $filename | mysql -h$dbhost -P$dbport -u$dbuser -p$dbpass $dbname";
+			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
@@ -78,7 +123,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		printf("Dumping $tbl.\n");
 		if (file_exists($filename))
 			newname($filename);
-		$command = "mysqldump --opt --innodb-optimize-keys --complete-insert --skip-quick -h$dbhost -P$dbport -u$dbuser -p$dbpass "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 }
@@ -91,7 +136,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		if (file_exists($filename))
 		{
 			printf("Restoring $tbl\n");
-			$command = "gunzip < $filename | mysql -h$dbhost -P$dbport -u$dbuser -p$dbpass $dbname";
+			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
@@ -156,4 +201,8 @@ else
 	."To restore all tables, using INFILE run: php mysqldump_tables.php all infile /path/where/saved\n\n\033[0m"
 	."To dump the predb table, clean, using OUTFILE run: php mysqldump_tables.php predb outfile /path/to/save/to\n";
 }
+
+if(file_exists("mysql-defaults.txt"))
+	unlink("mysql-defaults.txt");
+
 ?>
