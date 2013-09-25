@@ -15,7 +15,7 @@ function command_exist($cmd)
 	return (empty($returnVal) ? false : true);
 }
 
-if(isset($argv[1]) && $argv[1] == "true")
+if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
 {
 	$tmux = new Tmux();
 	$running = $tmux->get()->RUNNING;
@@ -47,7 +47,17 @@ if(isset($argv[1]) && $argv[1] == "true")
 		$PHP = "php";
 
 	echo "Patching database - $dbname\n";
-	system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
+	
+	if($argv[1] == "safe")
+	{
+		system("$PHP ${DIR}testing/DB_scripts/patchDB.php safe");
+	}
+	else 
+	{
+		system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
+	}
+	
+	
 	if ($restart == "true")
 	{
 		echo "Starting tmux scripts\n";
@@ -55,6 +65,6 @@ if(isset($argv[1]) && $argv[1] == "true")
 	}
 }
 else
-	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php autopatcher.php true\n");
+	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php autopatcher.php true\nIf you want to run a backup of your database and then update, type php autopatcher.php safe\n");
 
 ?>
