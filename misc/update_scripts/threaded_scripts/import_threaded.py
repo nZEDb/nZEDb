@@ -35,7 +35,7 @@ print("\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strft
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-#get valuse from db
+#get values from db
 cur.execute("SELECT value FROM tmux WHERE setting = 'IMPORT'")
 use_true = cur.fetchone()
 cur.execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'NZBS') AS b, (SELECT value FROM tmux WHERE setting = 'IMPORT_BULK') AS c")

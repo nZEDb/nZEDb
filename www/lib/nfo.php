@@ -79,12 +79,12 @@ class Nfo
 			require_once(WWW_DIR.'lib/getid3/getid3/getid3.php');
 			$getid3 = new getid3;
 			// getid3 works with files, so save to disk
-			$tmpPath = $this->tmpPath;
-			$this->tmpPath = $tmpPath.$guid.".nfo";
-			file_put_contents($this->tmpPath, $possibleNFO);
-			$check = $getid3->analyze($this->tmpPath);
+			$tmpPath = $this->tmpPath.$guid.'.nfo';
+			file_put_contents($tmpPath, $possibleNFO);
+			$check = $getid3->analyze($tmpPath);
 			unset($getid3);
-			@unlink($this->tmpPath);
+			@unlink($tmpPath);
+			unset($tmpPath);
 			if (isset($check['error']))
 			{
 				// Check if it's a par2.
