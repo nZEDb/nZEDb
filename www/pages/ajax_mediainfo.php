@@ -2,15 +2,15 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-if (!isset($_REQUEST["id"]))
+if (!isset($_REQUEST['id']))
 	$page->show404();
 
-require_once(WWW_DIR."/lib/releaseextra.php");
+require_once(WWW_DIR.'/lib/releaseextra.php');
 $re = new ReleaseExtra();
-$redata = $re->getBriefByGuid($_REQUEST["id"]);
+$redata = $re->getBriefByGuid($_REQUEST['id']);
 
 if (!$redata)
-	print "No media info";
+	print 'No media info';
 else
 {
 	print "<table>\n";
