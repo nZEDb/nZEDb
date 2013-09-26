@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3702";
+$version="0.1r3712";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -831,7 +831,7 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
 			}
 
-			if ( $post == 1 && ( $work_remaining_now + pc_remaining_now + pron_remaining_now ) > 0 )
+			if ( $post == 1 && ( $work_remaining_now + $pc_releases_proc + $pron_remaining_now ) > 0 )
 			{
 				//run postprocess_releases additional
 				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -866,7 +866,7 @@ while( $i > 0 )
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now + pc_remaining_now + pron_remaining_now > 0)))
+			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0)))
 			{
 				//run postprocess_releases additional
 				$history = str_replace( " ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'` );
@@ -894,7 +894,7 @@ while( $i > 0 )
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
-			elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now + pc_remaining_now + pron_remaining_now == 0 ))
+			elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0 ))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
