@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/category.php");
+require_once(WWW_DIR.'/lib/movie.php');
+require_once(WWW_DIR.'/lib/category.php');
 
 $movie = new Movie;
 $cat = new Category;
@@ -15,8 +15,8 @@ foreach($moviecats as $mcat)
 	$mtmp[$mcat['id']] = $mcat;
 }
 $category = Category::CAT_PARENT_MOVIE;
-if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $mtmp))
-	$category = $_REQUEST["t"] + 0;
+if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp))
+	$category = $_REQUEST['t'] + 0;
 
 $catarray = array();
 $catarray[] = $category;
@@ -24,14 +24,14 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $movie->getMovieCount($catarray, -1, $page->userdata["categoryexclusions"]);
+$browsecount = $movie->getMovieCount($catarray, -1, $page->userdata['categoryexclusions']);
 
-$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
+$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $movie->getMovieOrdering();
-$orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
+$orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
 $results = $movies = array();
-$results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
 foreach($results as $result)
 {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
@@ -85,7 +85,7 @@ else
 	$cat = new Category();
 	$cdata = $cat->getById($category);
 	if ($cdata)
-		$page->smarty->assign('catname',$cdata["title"]);
+		$page->smarty->assign('catname',$cdata['title']);
 	else
 		$page->show404();
 }
