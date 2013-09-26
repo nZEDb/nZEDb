@@ -41,8 +41,7 @@
 </table>
 
 <br/><br/>
-
-{if $isadmin}
+{if $isadmin and $loggingon}
 <h2>Top Failed Logins and IP's</h2>
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
     <tr>
