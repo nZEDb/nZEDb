@@ -46,7 +46,7 @@ cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
 perrun = cur.fetchone()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 6, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):

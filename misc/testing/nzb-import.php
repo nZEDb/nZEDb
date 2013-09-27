@@ -240,7 +240,7 @@ else
 		}
 		if (!$importfailed)
 		{
-			$relguid = sha1(uniqid().mt_rand());
+			$relguid = sha1(uniqid(true).mt_rand());
 			$nzb = new NZB();
 			$propername = false;
 			$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3712";
+$version="0.1r3713";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -35,8 +35,8 @@ $proc_work = "SELECT
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 5000 AND rageid = -1 ) AS tv,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.id IN ( 3010, 3040, 3050 ) AND r.musicinfoid IS NULL AND r.relnamestatus != 0 ) AS audio,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 ) AS console,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 8000 AND bookinfoid IS NULL ) AS book,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 AND consoleinfoid IS NULL ) AS console,
+	( SELECT COUNT(*) FROM releases WHERE categoryid = 8010 AND bookinfoid IS NULL ) AS book,
 	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
@@ -394,7 +394,6 @@ while( $i > 0 )
 	}
 
 	//get values from $proc
-	if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
 	if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
 	if ( $proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc = $proc_work_result[0]['movies']; }
 	if ( $proc_work_result[0]['audio'] != NULL ) { $music_releases_proc = $proc_work_result[0]['audio']; }
