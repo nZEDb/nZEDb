@@ -36,7 +36,7 @@ $proc_work = "SELECT
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.id IN ( 3010, 3040, 3050 ) AND r.musicinfoid IS NULL AND r.relnamestatus != 0 ) AS audio,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 and consoleinfoID IS NULL ) AS console,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 8000 AND bookinfoid IS NULL ) AS book,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = 8010 AND bookinfoid IS NULL ) AS book,
 	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
