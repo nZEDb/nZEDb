@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3716";
+$version="0.1r3718";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -34,7 +34,7 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 $proc_work = "SELECT
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 5000 AND rageid = -1 ) AS tv,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.id IN ( 3010, 3040, 3050 ) AND r.musicinfoid IS NULL AND r.relnamestatus != 0 ) AS audio,
+	( SELECT COUNT(*) FROM releases WHERE categoryid IN ( 3010, 3040, 3050 ) AND musicinfoid IS NULL AND relnamestatus != 0 ) AS audio,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 AND consoleinfoid IS NULL ) AS console,
 	( SELECT COUNT(*) FROM releases WHERE categoryid = 8010 AND bookinfoid IS NULL ) AS book,
 	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
