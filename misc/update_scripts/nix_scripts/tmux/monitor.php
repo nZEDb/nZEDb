@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3719";
+$version="0.1r3720";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -78,7 +78,7 @@ elseif ($dbtype == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestname,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestname,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -457,6 +457,8 @@ while( $i > 0 )
 	if ( $split_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $split_result[0]['oldestcollection']; }
 	if ( $split_result[0]['backfill_groups_days'] != NULL ) { $backfill_groups_days = $split_result[0]['backfill_groups_days']; }
 	if ( $split_result[0]['backfill_groups_date'] != NULL ) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
+    if ( $split_result[0]['newestadd'] ) { $newestadd = $split_result[0]['newestadd']; }
+
 
 	//reset monitor paths before query
 	$monitor_path = "";
