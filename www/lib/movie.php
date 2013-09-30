@@ -516,7 +516,7 @@ class Movie
 			if ($service == 'nfo')
 				$this->service = 'nfo';
 			if ($this->echooutput && $this->service != '')
-				echo $service.' found IMDBid: tt'.$imdbId."\n";
+				echo "\n".$service.' found IMDBid: tt'.$imdbId."\n";
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
 

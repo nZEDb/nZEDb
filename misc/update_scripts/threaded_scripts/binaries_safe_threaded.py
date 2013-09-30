@@ -10,7 +10,6 @@ except ImportError:
 import subprocess
 import string
 import signal
-#import lib.nntplib as nntplib
 import datetime
 import math
 

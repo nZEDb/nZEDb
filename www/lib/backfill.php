@@ -519,6 +519,6 @@ class Backfill
 		else
 			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $first, $groupArr['id']));
 
-		echo $type.' Safe Threaded on '.$group." completed.\n\n";
+		echo $type.' Safe Threaded for '.$group." completed.\n";
 	}
 }

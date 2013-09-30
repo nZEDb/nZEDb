@@ -99,7 +99,7 @@ class DB
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==22001)
+			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[1]==22001)
             {
                 //echo "\nError: Too large to fit column length\n";
                 return false;
