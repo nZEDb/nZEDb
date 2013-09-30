@@ -229,7 +229,7 @@ if (!empty($argc) || $page->isPostBack() )
 
 			if (!$importfailed)
 			{
-				$relguid = sha1(uniqid().mt_rand());
+				$relguid = sha1(uniqid(true).mt_rand());
 				$nzb = new NZB();
 				$propername = false;
 				// Removes everything after yEnc in subject.

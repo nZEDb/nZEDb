@@ -37,7 +37,7 @@ class Binaries
 	{
 		if ($this->hashcheck == 0)
 		{
-			echo "We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type yes, else type no to see how to run manually.\n";
+			echo "We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n";
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes')
 				exit("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n");
 			$relss = new Releases(true);
@@ -370,7 +370,7 @@ class Binaries
 					if($site->grabnzbs != 0 && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
-						if (!$ckmsg)
+						if (!isset($ckmsg['message_id']))
 						{
 							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));

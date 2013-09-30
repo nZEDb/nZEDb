@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3712";
+$version="0.1r3722";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -34,9 +34,9 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 $proc_work = "SELECT
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 5000 AND rageid = -1 ) AS tv,
 	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.id IN ( 3010, 3040, 3050 ) AND r.musicinfoid IS NULL AND r.relnamestatus != 0 ) AS audio,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 ) AS console,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 8000 AND bookinfoid IS NULL ) AS book,
+	( SELECT COUNT(*) FROM releases WHERE categoryid IN ( 3010, 3040, 3050 ) AND musicinfoid IS NULL AND relnamestatus != 0 ) AS audio,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 AND consoleinfoid IS NULL ) AS console,
+	( SELECT COUNT(*) FROM releases WHERE categoryid = 8010 AND bookinfoid IS NULL ) AS book,
 	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus = 1 ) AS nfo,
 	( SELECT COUNT(*) FROM releases WHERE nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
@@ -78,7 +78,7 @@ elseif ($dbtype == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestname,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestname,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
@@ -395,7 +395,6 @@ while( $i > 0 )
 
 	//get values from $proc
 	if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
-	if ( $proc_work_result[0]['console'] != NULL ) { $console_releases_proc = $proc_work_result[0]['console']; }
 	if ( $proc_work_result[0]['movies'] != NULL ) { $movie_releases_proc = $proc_work_result[0]['movies']; }
 	if ( $proc_work_result[0]['audio'] != NULL ) { $music_releases_proc = $proc_work_result[0]['audio']; }
 	if ( $proc_work_result2[0]['pc'] != NULL ) { $pc_releases_proc = $proc_work_result2[0]['pc']; }
@@ -458,6 +457,8 @@ while( $i > 0 )
 	if ( $split_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $split_result[0]['oldestcollection']; }
 	if ( $split_result[0]['backfill_groups_days'] != NULL ) { $backfill_groups_days = $split_result[0]['backfill_groups_days']; }
 	if ( $split_result[0]['backfill_groups_date'] != NULL ) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
+    if ( $split_result[0]['newestadd'] ) { $newestadd = $split_result[0]['newestadd']; }
+
 
 	//reset monitor paths before query
 	$monitor_path = "";

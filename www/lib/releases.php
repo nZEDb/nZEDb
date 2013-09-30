@@ -1195,18 +1195,18 @@ class Releases
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				$relguid = sha1(uniqid().mt_rand());
-				if ($propername != false)
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
-				else
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
-
-				// Mark dupes filecheck = 5, so they will be deleted
-				if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+				$relguid = sha1(uniqid(true).mt_rand());
+				$ckid = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name= %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($cleanRelName), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), $rowcol['groupid']));
+				if (isset($ckid['id']))
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
-				elseif (isset($relid->errorInfo[1]))
-					continue;
 				else
+				{
+					if ($propername != false)
+						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					else
+						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+				}
+				if (isset($relid) && $relid)
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1396,7 +1396,7 @@ class Releases
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						$consoletools->overWrite('Creating NZBs:'.$consoletools->percentString($nzbcount, $total));
+						$consoletools->overWrite('Creating NZBs: '.$consoletools->percentString($nzbcount, $total));
 				}
 			}
 		}
@@ -1721,7 +1721,9 @@ class Releases
 		echo 'Query 9 took '.(TIME() - $timer9)." seconds (crossposted releases).\n";
 		// Releases below completion %.
 		$timer10 = TIME();
-		if($this->completion > 0)
+		if ($this->completion > 100)
+			echo "You have an invalid setting for completion\n";
+		if ($this->completion > 0 && $this->completion < 100)
 		{
 			$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
 			if(count($resrel) > 0)
