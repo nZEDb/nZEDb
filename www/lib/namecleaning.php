@@ -362,7 +362,7 @@ class nameCleaning
 			return $match[1];//return array('hash' => $match[1], 'subject' => $match[3], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//>>>  20,36 MB   "Winamp.Pro.v5.70.3392.Incl.Keygen-FFF.par2"   552 B yEnc
 		//..:[DoAsYouLike]:..    9,64 MB    "Snooper 1.39.5.par2"    468 B yEnc
-		else if (preg_match('/^.+?\s{2,}\d+[,.]\d+ [mMkKgG]([bB]\s{2,}"(.+?_)'.$this->e0.'\s{2,}(\d+ B|\d+[,.]\d+ [mMkKgG][bB]) yEnc$/', $this->subject, $match))
+		else if (preg_match('/^.+?\s{2,}\d+[,.]\d+ [mMkKgG][bB]\s{2,}"(.+?_)'.$this->e0.'\s{2,}(\d+ B|\d+[,.]\d+ [mMkKgG][bB]) yEnc$/', $this->subject, $match))
 			return$match[1];//return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_NEW, 'cat' => Category::CAT_MISC);
 		//(MKV - DVD - Rip - German - English - Italiano) - "CALIGULA (1982) UNCUT.sfv" yEnc
 		else if (preg_match('/^(\(.+?\) - "(.+?))'.$this->e1, $this->subject, $match))

@@ -1197,7 +1197,7 @@ class Releases
 				}
 				$relguid = sha1(uniqid(true).mt_rand());
 				$ckid = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name= %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($cleanRelName), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), $rowcol['groupid']));
-				if (count($ckid) > 0)
+				if (isset($ckid['id']))
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
 				else
 				{

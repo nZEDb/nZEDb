@@ -25,7 +25,7 @@ class ReleaseFiles
 	{
 		$db = new DB();
 		$ckname = $db->queryOneRow(sprintf('SELECT name FROM releasefiles WHERE name = %s', $db->escapeString(utf8_encode($name))));
-		if (!$ckname)
+		if (!isset($ckname['name']))
 		{
 			$sql = sprintf("INSERT INTO releasefiles (releaseid, name, size, createddate, passworded) VALUES (%d, %s, %s, %s, %d)", $id, $db->escapeString(utf8_encode($name)), $db->escapeString($size), $db->from_unixtime($createddate), $passworded );
 			return $db->queryInsert($sql);

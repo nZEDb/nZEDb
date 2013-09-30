@@ -12,6 +12,7 @@ class TvRage
 
 	function TvRage($echooutput=false)
 	{
+		$this->db = new DB();
 		$s = new Sites();
 		$site = $s->get();
 		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
@@ -27,58 +28,65 @@ class TvRage
 
 	public function getByID($id)
 	{
-		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM tvrage WHERE id = %d", $id));
+		return $this->db->queryOneRow(sprintf("SELECT * FROM tvrage WHERE id = %d", $id));
 	}
 
 	public function getByRageID($id)
 	{
-		$db = new DB();
-		return $db->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $id));
+		return $this->db->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $id));
 	}
 
 	public function getByTitle($title)
 	{
 		// Check if we already have an entry for this show.
-		$db = new DB();
-		$res = $db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $db->escapeString($title)));
-		if ($res)
-			return $res["rageid"];
+		$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title)));
+		if (isset($res['rageid']))
+			return $res['rageid'];
 
 		$title2 = str_replace(' and ', ' & ', $title);
-		$res = $db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $db->escapeString($title2)));
-		if ($res)
-			return $res["rageid"];
+		$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title2)));
+		if (isset($res['rageid']))
+			return $res['rageid'];
 
 		return false;
+	}
+
+	public function countryCode($country)
+	{
+		if (!is_array($country) && strlen($country) > 2)
+		{
+			$code = $this->db->queryOneRow('SELECT code FROM country WHERE LOWER(name) = LOWER('.$this->db->escapeString($country).')');
+			if (isset($code['code']))
+				return $code['code'];
+		}
+		return $country;
 	}
 
 	public function add($rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$releasename = str_replace(array('.','_'), array(' ',' '), $releasename);
-		$db = new DB();
-		if (strlen($country) > 2)
+		$country = $this->countryCode($country);
+
+		if ($rageid != -2)
+			$ckid = $this->db->queryOneRow('SELECT id FROM tvrage WHERE rageid = '.$rageid);
+		else
+			$ckid = $this->db->queryOneRow('SELECT id FROM tvrage WHERE releasetitle = '.$this->db->escapeString($releasename));
+
+		if ($this->db->dbSystem() == 'mysql')
 		{
-			$code = $db->queryOneRow('SELECT code FROM country WHERE LOWER(name) = LOWER('.$db->escapeString($country).')');
-			if (isset($code['code']))
-				$country = $code['code'];
-		}
-		$ckmsg = $db->queryOneRow('SELECT id FROM tvrage WHERE rageid = '.$rageid);
-		if ($db->dbSystem() == 'mysql')
-		{
-			if ($ckmsg === false)
-				$db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $db->escapeString($releasename), $db->escapeString(substr($desc, 0, 10000)), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes)));
+			if (!isset($ckid['id']) && $rageid == -2)
+				$this->db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes)));
 			else
-				$db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes), $ckmsg['id']));
+				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes), $rageid));
 		}
 		else
 		{
-			if ($ckmsg === false)
-				$id = $db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country)));
+			if (!isset($ckid['id']) || $rageid == -2)
+				$id = $this->db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country)));
 			else
 			{
-				$id = $ckmsg['id'];
-				$db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $ckmsg['id']));
+				$id = $ckid['id'];
+				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $rageid));
 			}
 			if ($imgbytes != '')
 			{
@@ -88,7 +96,7 @@ class TvRage
 				$check = file_put_contents($path, $imgbytes);
 				if ($check !== false)
 				{
-					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
+					$this->db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
 					chmod($path, 0755);
 				}
 			}
@@ -97,17 +105,17 @@ class TvRage
 
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
-		$db = new DB();
-		if ($db->dbSystem() == 'mysql')
+		$country = $this->countryCode($country);
+		if ($this->db->dbSystem() == 'mysql')
 		{
 			if ($imgbytes != '')
-				$imgbytes = ', imgdata = '.$db->escapeString($imgbytes);
+				$imgbytes = ', imgdata = '.$this->db->escapeString($imgbytes);
 
-			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $imgbytes, $id ));
+			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString($genre), $this->db->escapeString($country), $imgbytes, $id ));
 		}
 		else
 		{
-			$db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $db->escapeString($releasename), $db->escapeString($desc), $db->escapeString($genre), $db->escapeString($country), $id ));
+			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString($genre), $this->db->escapeString($country), $id ));
 			if ($imgbytes != '')
 			{
 				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
@@ -116,7 +124,7 @@ class TvRage
 				$check = file_put_contents($path, $imgbytes);
 				if ($check !== false)
 				{
-					$db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
+					$this->db->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = ".$id);
 					chmod($path, 0755);
 				}
 			}
@@ -125,14 +133,11 @@ class TvRage
 
 	public function delete($id)
 	{
-		$db = new DB();
-		return $db->queryExec(sprintf("DELETE FROM tvrage WHERE id = %d", $id));
+		return $this->db->queryExec(sprintf("DELETE FROM tvrage WHERE id = %d", $id));
 	}
 
 	public function getRange($start, $num, $ragename="")
 	{
-		$db = new DB();
-
 		if ($start === false)
 			$limit = "";
 		else
@@ -142,71 +147,64 @@ class TvRage
 		if ($ragename != "")
 		{
 			$like = 'ILIKE';
-			if ($db->dbSystem() == 'mysql')
+			if ($this->db->dbSystem() == 'mysql')
 				$like = 'LIKE';
-			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $db->escapeString("%".$ragename."%"));
+			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->db->escapeString("%".$ragename."%"));
 		}
 
-		return $db->query(sprintf("SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC".$limit, $rsql));
+		return $this->db->query(sprintf("SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC".$limit, $rsql));
 	}
 
 	public function getCount($ragename="")
 	{
-		$db = new DB();
-
 		$rsql = '';
 		if ($ragename != "")
 		{
 			$like = 'ILIKE';
-			if ($db->dbSystem() == 'mysql')
+			if ($this->db->dbSystem() == 'mysql')
 				$like = 'LIKE';
-			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $db->escapeString("%".$ragename."%"));
+			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->db->escapeString("%".$ragename."%"));
 		}
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM tvrage WHERE 1=1 %s", $rsql));
+		$res = $this->db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM tvrage WHERE 1=1 %s", $rsql));
 		return $res["num"];
 	}
 
 	public function getCalendar($date = "")
 	{
-		$db = new DB();
 		if(!preg_match('/\d{4}-\d{2}-\d{2}/',$date))
 			$date = date("Y-m-d");
-		$sql = sprintf("SELECT * FROM tvrageepisodes WHERE DATE(airdate) = %s ORDER BY airdate ASC", $db->escapeString($date));
-		return $db->query($sql);
+		$sql = sprintf("SELECT * FROM tvrageepisodes WHERE DATE(airdate) = %s ORDER BY airdate ASC", $this->db->escapeString($date));
+		return $this->db->query($sql);
 	}
 
 	public function getSeriesList($uid, $letter="", $ragename="")
 	{
-		$db = new DB();
-
 		$rsql = '';
 		if ($letter != "")
 		{
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			if ($db->dbSystem() == "mysql")
-				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $db->escapeString('^'.$letter));
+			if ($this->db->dbSystem() == "mysql")
+				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $this->db->escapeString('^'.$letter));
 			else
-				$rsql .= sprintf("AND tvrage.releasetitle ~ %s", $db->escapeString('^'.$letter));
+				$rsql .= sprintf("AND tvrage.releasetitle ~ %s", $this->db->escapeString('^'.$letter));
 		}
 		$tsql = '';
 		if ($ragename != '')
-			$tsql .= sprintf("AND tvrage.releasetitle LIKE %s", $db->escapeString("%".$ragename."%"));
+			$tsql .= sprintf("AND tvrage.releasetitle LIKE %s", $this->db->escapeString("%".$ragename."%"));
 
-		if ($db->dbSystem() == 'mysql')
-			return $db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
+		if ($this->db->dbSystem() == 'mysql')
+			return $this->db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
 		else
-			return $db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid, tvrage.id, userseries.id ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
+			return $this->db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid, tvrage.id, userseries.id ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
 	}
 
 	public function updateSchedule()
 	{
-		$db = new DB();
-
-		$countries = $db->query("SELECT DISTINCT(country) AS country FROM tvrage WHERE country != ''");
-		$showsindb = $db->query("SELECT DISTINCT(rageid) AS rageid FROM tvrage");
+		$countries = $this->db->query("SELECT DISTINCT(country) AS country FROM tvrage WHERE country != ''");
+		$showsindb = $this->db->query("SELECT DISTINCT(rageid) AS rageid FROM tvrage");
 		$showarray = array();
 		foreach($showsindb as $show)
 		{
@@ -249,15 +247,15 @@ class TvRage
 							// Only stick current shows and new shows in there.
 							if(in_array($currShowId,$showarray))
 							{
-								if ($db->dbSystem() == 'mysql')
-									$db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $db->escapeString($currShowName)));
-								else if ($db->dbSystem() == 'pgsql')
+								if ($this->db->dbSystem() == 'mysql')
+									$this->db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $this->db->escapeString($currShowName), $this->db->escapeString($sShow->ep), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title), $this->db->escapeString($currShowName)));
+								else if ($this->db->dbSystem() == 'pgsql')
 								{
-									$check = $db->queryOneRow(sprintf('SELECT id FROM tvrageepisodes WHERE rageid = %d', $sShow->sid));
+									$check = $this->db->queryOneRow(sprintf('SELECT id FROM tvrageepisodes WHERE rageid = %d', $sShow->sid));
 									if ($check === false)
-										$db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s)", $sShow->sid, $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title)));
+										$this->db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s)", $sShow->sid, $this->db->escapeString($currShowName), $this->db->escapeString($sShow->ep), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title)));
 									else
-										$db->queryExec(sprintf('UPDATE tvrageepisodes SET showtitle = %s, fullep = %s, airdate = %s, link = %s, eptitle = %s WHERE id = %d', $db->escapeString($currShowName), $db->escapeString($sShow->ep), $db->escapeString(date("Y-m-d H:i:s", $day_time)), $db->escapeString($sShow->link), $db->escapeString($sShow->title), $check['id']));
+										$this->db->queryExec(sprintf('UPDATE tvrageepisodes SET showtitle = %s, fullep = %s, airdate = %s, link = %s, eptitle = %s WHERE id = %d', $this->db->escapeString($currShowName), $this->db->escapeString($sShow->ep), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title), $check['id']));
 								}
 							}
 						}
@@ -266,7 +264,7 @@ class TvRage
 				// Update series info.
 				foreach ($xmlSchedule as $showId=>$epInfo)
 				{
-					$res = $db->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $showId));
+					$res = $this->db->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $showId));
 					if (sizeof($res) > 0)
 					{
 						foreach ($res as $arr)
@@ -278,7 +276,7 @@ class TvRage
 							if (isset($epInfo['prev']) && $epInfo['prev']['episode'] != '')
 							{
 								$prev_ep = $epInfo['prev']['episode'].', "'.$epInfo['prev']['title'].'"';
-								$query[] = sprintf("prevdate = %s, previnfo = %s", $db->from_unixtime($epInfo['prev']['day_time']), $db->escapeString($prev_ep));
+								$query[] = sprintf("prevdate = %s, previnfo = %s", $this->db->from_unixtime($epInfo['prev']['day_time']), $this->db->escapeString($prev_ep));
 							}
 
 							// Next episode.
@@ -286,11 +284,11 @@ class TvRage
 							{
 								if ($prev_ep == "" && $arr['nextinfo'] != '' && $epInfo['next']['day_time'] > strtotime($arr["nextdate"]) && strtotime(date('Y-m-d', strtotime($arr["nextdate"]))) < $yesterday)
 								{
-									$db->queryExec(sprintf("UPDATE tvrage SET prevdate = nextdate, previnfo = nextinfo WHERE id = %d", $arr['id']));
+									$this->db->queryExec(sprintf("UPDATE tvrage SET prevdate = nextdate, previnfo = nextinfo WHERE id = %d", $arr['id']));
 									$prev_ep = "SWAPPED with: ".$arr['nextinfo']." - ".date("r", strtotime($arr["nextdate"]));
 								}
 								$next_ep = $epInfo['next']['episode'].', "'.$epInfo['next']['title'].'"';
-								$query[] = sprintf("nextdate = %s, nextinfo = %s", $db->from_unixtime($epInfo['next']['day_time']), $db->escapeString($next_ep));
+								$query[] = sprintf("nextdate = %s, nextinfo = %s", $this->db->from_unixtime($epInfo['next']['day_time']), $this->db->escapeString($next_ep));
 							}
 							else
 								$query[] = "nextdate = NULL, nextinfo = NULL";
@@ -311,7 +309,7 @@ class TvRage
 							{
 								$sql = join(", ", $query);
 								$sql = sprintf("UPDATE tvrage SET {$sql} WHERE id = %d", $arr['id']);
-								$db->queryExec($sql);
+								$this->db->queryExec($sql);
 							}
 						}
 					}
@@ -398,6 +396,7 @@ class TvRage
 			{
 				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
+				$result = $this->countryCode($result);
 				return $result;
 			}
 			return false;
@@ -408,41 +407,39 @@ class TvRage
 	//Convert 2012-24-07 to 2012-07-24, there is probably a better way
 	public function checkDate($date)
 	{
-		if (!empty($date))
+		if (!empty($date) && $date != NULL)
 		{
 			$chk = explode(" ", $date);
 			$chkd = explode("-", $chk[0]);
 			if ($chkd[1] > 12)
-				$date = date('Y-m-d', strtotime($chkd[1]." ".$chkd[2]." ".$chkd[0]))." ".$chk[1];
+				$date = date('Y-m-d H:i:s', strtotime($chkd[1]." ".$chkd[2]." ".$chkd[0]));
+			return $date;
 		}
-		return $date;
+		return NULL;
 	}
 
 	public function updateEpInfo($show, $relid)
 	{
-		$db = new DB();
 		if ($this->echooutput)
 			echo "TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
 
-		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $db->escapeString($this->checkDate($show['airdate'])) : "NULL";
-		$db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $db->escapeString($show['seriesfull']), $db->escapeString($show['season']), $db->escapeString($show['episode']), $tvairdate, $relid));
+		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
+		$this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
 	}
 
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
-		$db = new DB();
-
 		// Try and get the episode specific info from tvrage.
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
 		if ($epinfo !== false)
 		{
-			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
-			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
+			$tvairdate = (!empty($epinfo['airdate'])) ? $this->db->escapeString($epinfo['airdate']) : "NULL";
+			$tvtitle = (!empty($epinfo['title'])) ? $this->db->escapeString($epinfo['title']) : "NULL";
 
-			$db->queryExec(sprintf("UPDATE releases set tvtitle = %s, tvairdate = %s, rageid = %d where id = %d", $db->escapeString(trim($tvtitle)), $tvairdate, $tvrShow['showid'], $relid));
+			$this->db->queryExec(sprintf("UPDATE releases set tvtitle = %s, tvairdate = %s, rageid = %d where id = %d", $this->db->escapeString(trim($tvtitle)), $tvairdate, $tvrShow['showid'], $relid));
 		}
 		else
-			$db->queryExec(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $tvrShow['showid'], $relid));
+			$this->db->queryExec(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $tvrShow['showid'], $relid));
 
 		$genre = '';
 		if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres']))
@@ -455,7 +452,7 @@ class TvRage
 
 		$country = '';
 		if (isset($tvrShow['country']) && !empty($tvrShow['country']))
-			$country = $tvrShow['country'];
+			$country = $this->countryCode($tvrShow['country']);
 
 		$rInfo = $this->getRageInfoFromPage($rageid);
 		$desc = '';
@@ -478,18 +475,16 @@ class TvRage
 
 	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
 	{
-		$db = new DB();
-
 		// Try and get the episode specific info from tvrage.
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
 		if ($epinfo !== false)
 		{
-			$tvairdate = (!empty($epinfo['airdate'])) ? $db->escapeString($epinfo['airdate']) : "null";
-			$tvtitle = (!empty($epinfo['title'])) ? $db->escapeString($epinfo['title']) : "null";
-			$db->queryExec(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)), $tvairdate, $traktArray['show']['tvrage_id'], $relid));
+			$tvairdate = (!empty($epinfo['airdate'])) ? $this->db->escapeString($epinfo['airdate']) : "NULL";
+			$tvtitle = (!empty($epinfo['title'])) ? $this->db->escapeString($epinfo['title']) : "NULL";
+			$this->db->queryExec(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $this->db->escapeString(trim($tvtitle)), $tvairdate, $traktArray['show']['tvrage_id'], $relid));
 		}
 		else
-			$db->queryExec(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $traktArray['show']['tvrage_id'], $relid));
+			$this->db->queryExec(sprintf("UPDATE releases SET rageid = %d WHERE id = %d", $traktArray['show']['tvrage_id'], $relid));
 
 		$genre = '';
 		if (isset($traktArray['show']['genres']) && is_array($traktArray['show']['genres']) && !empty($traktArray['show']['genres']))
@@ -497,7 +492,7 @@ class TvRage
 
 		$country = '';
 		if (isset($traktArray['show']['country']) && !empty($traktArray['show']['country']))
-			$country = $traktArray['show']['country'];
+			$country = $this->countryCode($traktArray['show']['country']);
 
 		$rInfo = $this->getRageInfoFromPage($rageid);
 		$desc = '';
@@ -522,14 +517,13 @@ class TvRage
 	public function processTvReleases($releaseToWork = '', $lookupTvRage=true)
 	{
 		$ret = 0;
-		$db = new DB();
 		$trakt = new Trakttv();
 		$site = new Sites();
 
 		// Get all releases without a rageid which are in a tv category.
 		if ($releaseToWork == '')
 		{
-			$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
+			$res = $this->db->query(sprintf("SELECT searchname, id FROM releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
 			$tvcount = count($res);
 		}
 		else
@@ -594,7 +588,7 @@ class TvRage
 				}
 				elseif ($id > 0)
 				{
-					$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $db->escapeString($this->checkDate($show['airdate'])) : "NULL";
+					$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
 					$tvtitle = "NULL";
 
 					if ($lookupTvRage)
@@ -602,22 +596,25 @@ class TvRage
 						$epinfo = $this->getEpisodeInfo($id, $show['season'], $show['episode']);
 						if ($epinfo !== false)
 						{
-							if (isset($epinfo['airdate']) && !empty($epinfo['airdate']))
-								$tvairdate = $db->escapeString($this->checkDate($epinfo['airdate']));
+							if (isset($epinfo['airdate']))
+								$tvairdate = $this->db->escapeString($this->checkDate($epinfo['airdate']));
 
 							if (!empty($epinfo['title']))
-								$tvtitle = $db->escapeString($epinfo['title']);
+								$tvtitle = $this->db->escapeString(trim($epinfo['title']));
 						}
 					}
-					$db->queryExec(sprintf("UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d", $db->escapeString(trim($tvtitle)), $tvairdate, $id, $arr["id"]));
+					if ($tvairdate == "NULL")
+						$this->db->queryExec(sprintf('UPDATE releases SET tvtitle = %s, rageid = %d WHERE id = %d', $tvtitle, $id, $arr['id']));
+					else
+						$this->db->queryExec(sprintf('UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d', $tvtitle, $tvairdate, $id, $arr['id']));
 				}
 				// Cant find rageid, so set rageid to n/a.
 				else
-					$db->queryExec(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
+					$this->db->queryExec(sprintf('UPDATE releases SET rageid = -2 WHERE id = %d', $arr['id']));
 			}
 			// Not a tv episode, so set rageid to n/a.
 			else
-				$db->queryExec(sprintf("UPDATE releases SET rageid = -2 WHERE id = %d", $arr["id"]));
+				$this->db->queryExec(sprintf('UPDATE releases SET rageid = -2 WHERE id = %d', $arr['id']));
 			$ret++;
 		}
 		return $ret;
@@ -631,7 +628,7 @@ class TvRage
 		if ($xml !== false)
 		{
 			$arrXml = objectsIntoArray(simplexml_load_string($xml));
-			if (isset($arrXml['show']) && is_array($arrXml['show']))
+			if (isset($arrXml['show']) && is_array($arrXml))
 			{
 				// We got a valid xml response
 				$titleMatches = $urlMatches = $akaMatches = array();
@@ -652,7 +649,7 @@ class TvRage
 					// Get a match percentage based on our name and the name returned from tvr.
 					$titlepct = $this->checkMatch($title, $arr['name']);
 					if ($titlepct !== false)
-						$titleMatches[$titlepct][] = array('title'=>$arr['name'], 'showid'=>$arr['showid'], 'country'=>$arr['country'], 'genres'=>$arr['genres'], 'tvr'=>$arr);
+						$titleMatches[$titlepct][] = array('title'=>$arr['name'], 'showid'=>$arr['showid'], 'country'=>$this->countryCode($arr['country']), 'genres'=>$arr['genres'], 'tvr'=>$arr);
 
 					// Get a match percentage based on our name and the url returned from tvr.
 					if (isset($arr['link']) && preg_match('/tvrage\.com\/((?!shows)[^\/]*)$/i', $arr['link'], $tvrlink))
@@ -660,7 +657,7 @@ class TvRage
 						$urltitle = str_replace('_', ' ', $tvrlink[1]);
 						$urlpct = $this->checkMatch($title, $urltitle);
 						if ($urlpct !== false)
-							$urlMatches[$urlpct][] = array('title'=>$urltitle, 'showid'=>$arr['showid'], 'country'=>$arr['country'], 'genres'=>$arr['genres'], 'tvr'=>$arr);
+							$urlMatches[$urlpct][] = array('title'=>$urltitle, 'showid'=>$arr['showid'], 'country'=>$this->countryCode($arr['country']), 'genres'=>$arr['genres'], 'tvr'=>$arr);
 					}
 
 					// Check if there are any akas for this result and get a match percentage for them too.
@@ -673,7 +670,7 @@ class TvRage
 							{
 								$akapct = $this->checkMatch($title, $aka);
 								if ($akapct !== false)
-									$akaMatches[$akapct][] = array('title'=>$aka, 'showid'=>$arr['showid'], 'country'=>$arr['country'], 'genres'=>$arr['genres'], 'tvr'=>$arr);
+									$akaMatches[$akapct][] = array('title'=>$aka, 'showid'=>$arr['showid'], 'country'=>$this->countryCode($arr['country']), 'genres'=>$arr['genres'], 'tvr'=>$arr);
 							}
 						}
 						else
@@ -681,7 +678,7 @@ class TvRage
 							// One aka.
 							$akapct = $this->checkMatch($title, $arr['akas']['aka']);
 							if ($akapct !== false)
-								$akaMatches[$akapct][] = array('title'=>$arr['akas']['aka'], 'showid'=>$arr['showid'], 'country'=>$arr['country'], 'genres'=>$arr['genres'], 'tvr'=>$arr);
+								$akaMatches[$akapct][] = array('title'=>$arr['akas']['aka'], 'showid'=>$arr['showid'], 'country'=>$this->countryCode($arr['country']), 'genres'=>$arr['genres'], 'tvr'=>$arr);
 						}
 					}
 				}
@@ -741,13 +738,13 @@ class TvRage
 				}
 
 				if ($this->echooutput)
-					echo 'No match found on TVRage, trying Trakt.'."\n";
+					echo 'No match found on TVRage trying Trakt.'."\n";
 				return false;
 			}
 			else
 			{
 				if ($this->echooutput)
-					echo 'Nothing returned from tvrage.'."\n";
+					echo 'Nothing returned from tvrage.'.".\n";
 				return false;
 			}
 		}
@@ -755,7 +752,7 @@ class TvRage
 			return -1;
 
 		if ($this->echooutput)
-			echo 'No match found online.\n';
+			echo 'No match found online.'.".\n";
 		return false;
 	}
 
@@ -960,14 +957,16 @@ class TvRage
 		if (!empty($showInfo['name']))
 		{
 			// Country or origin matching.
-			if (preg_match('/[\._ ](US|UK|AU|NZ|CA|NL|Canada|Australia|America)/', $showInfo['name'], $countryMatch))
+			if (preg_match('/[\._ ](US|UK|AU|NZ|CA|NL|Canada|Australia|America|United States|United Kingdom)/', $showInfo['name'], $countryMatch))
 			{
 				if (strtolower($countryMatch[1]) == 'canada')
 					$showInfo['country'] = 'CA';
 				elseif (strtolower($countryMatch[1]) == 'australia')
 					$showInfo['country'] = 'AU';
-				elseif (strtolower($countryMatch[1]) == 'america')
+				elseif (strtolower($countryMatch[1]) == 'america' || strtolower($countryMatch[1]) == 'united states')
 					$showInfo['country'] = 'US';
+				elseif (strtolower($countryMatch[1]) == 'united kingdom')
+					$showInfo['country'] = 'UK';
 				else
 					$showInfo['country'] = strtoupper($countryMatch[1]);
 			}

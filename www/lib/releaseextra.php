@@ -164,7 +164,7 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releasevideo WHERE releaseid = %s', $releaseID));
-		if (!$ckid)
+		if (!isset($ckid['releaseid']))
 			return $db->queryExec(sprintf('INSERT INTO releasevideo (releaseid, containerformat, overallbitrate, videoduration, videoformat, videocodec, videowidth, videoheight, videoaspect, videoframerate, videolibrary) VALUES (%d, %s, %s, %s, %s, %s, %d, %d, %s, %d, %s)', $releaseID, $db->escapeString($containerformat), $db->escapeString($overallbitrate),	$db->escapeString($videoduration), $db->escapeString($videoformat), $db->escapeString($videocodec), $videowidth,$videoheight, $db->escapeString($videoaspect), $videoframerate, $db->escapeString(substr($videolibrary, 0, 50))));
 	}
 
@@ -172,7 +172,7 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releaseaudio WHERE releaseid = %s', $releaseID));
-		if (!$ckid)
+		if (!isset($ckid['releaseid']))
 			return $db->queryExec(sprintf('INSERT INTO releaseaudio (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary ,audiolanguage, audiotitle) VALUES (%d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s)', $releaseID, $audioID,$db->escapeString($audioformat),$db->escapeString($audiomode), $db->escapeString($audiobitratemode), $db->escapeString(substr($audiobitrate, 0, 10)), $db->escapeString($audiochannels),$db->escapeString(substr($audiosamplerate, 0, 25)), $db->escapeString(substr($audiolibrary, 0, 50)),$db->escapeString($audiolanguage),$db->escapeString(substr($audiotitle, 0, 50))));
 	}
 
@@ -180,7 +180,7 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releasesubs WHERE releaseid = %s', $releaseID));
-		if (!$ckid)
+		if (!isset($ckid['releaseid']))
 			return $db->queryExec(sprintf('INSERT INTO releasesubs (releaseid, subsid, subslanguage) VALUES (%d, %d, %s)', $releaseID, $subsID, $db->escapeString($subslanguage)));
 	}
 
@@ -200,7 +200,7 @@ class ReleaseExtra
 	{
 		$db = new DB();
 		$ckid = $db->queryOneRow(sprintf('SELECT releaseid FROM releaseextrafull WHERE releaseid = %s', $id));
-		if (!$ckid)
+		if (!isset($ckid['releaseid']))
 			return $db->queryExec(sprintf('INSERT INTO releaseextrafull (releaseid, mediainfo) VALUES (%d, %s)', $id, $db->escapeString($xml)));
 	}
 }

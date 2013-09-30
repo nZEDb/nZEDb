@@ -121,7 +121,7 @@ class Nfo
 				$nc = $db->escapeString(utf8_encode($nfo));
 			}
 			$ckreleaseid = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
-			if ($ckreleaseid == false)
+			if (!isset($ckreleaseid['id']))
 				$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$compress.', %d)', $nc, $release['id']));
 			$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $release['id']));
 			if (!isset($release['completion']))
@@ -190,7 +190,7 @@ class Nfo
 						$nc = $db->escapeString(utf8_encode($fetchedBinary));
 					}
 					$ckreleaseid = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $arr['id']));
-					if ($ckreleaseid == false)
+					if (!isset($ckreleaseid['id']))
 						$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$cp.', %d)', $nc, $arr['id']));
 					$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
