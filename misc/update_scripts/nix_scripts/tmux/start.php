@@ -92,6 +92,7 @@ if ($run)
 $run = $db->queryExec("update nzbs set dateadded = now()");
 if ($run)
 	echo $run->rowCount()." nzbs reset\n";
+sleep(2);
 
 function start_apps($tmux_session)
 {

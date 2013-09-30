@@ -10,7 +10,7 @@ except ImportError:
 import subprocess
 import string
 import signal
-import lib.nntplib as nntplib
+#import lib.nntplib as nntplib
 import datetime
 import math
 
@@ -48,10 +48,13 @@ hashcheck = int(dbgrab[0][2])
 if hashcheck == 0:
 	sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
 	
+#before we get the groups, lets update allgroups
+subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
-cur.execute("SELECT DISTINCT name, last_record FROM groups WHERE active = 1")
+cur.execute("SELECT g.name AS groupname, g.last_record AS our_last, MAX(a.last_record) AS thier_last FROM groups g INNER JOIN allgroups a ON g.active = 1 AND g.name = a.name GROUP BY g.name ORDER BY a.last_record DESC")
 datas = cur.fetchall()
+
 if not datas:
 	print("No Groups activated")
 	sys.exit()
@@ -99,35 +102,24 @@ def main():
 			p.start()
 
 	#now load some arbitrary jobs into the queue
-	time.sleep(0.1)
-	print("Connectiong to USP")
-	s = nntplib.connect(conf['NNTP_SERVER'], conf['NNTP_PORT'], conf['NNTP_SSLENABLED'], conf['NNTP_USERNAME'], conf['NNTP_PASSWORD'])
-	time.sleep(0.1)
 	run = 0
 	finals = []
 	groups = []
-	name = ""
+	s = name = ""
 	for group in datas:
-		try:
-			resp, count, first, last, name = s.group(group[0])
-			time.sleep(0.1)
-		except nntplib.NNTPError:
-			print("\033[38;5;9m{} not found, skipping.\033[0m\n".format(group[0]))
-		if name:
-			if group[1] == 0:
-				count = 0
-			else:
-				count = last - group[1]
-			#start new groups using binaries.php
-			if group[1] == 0:
-				run += 1
-				my_queue.put("binupdate %s" % (group[0]))
+		#start new groups using binaries.php, no need to check nntp
+		if group[1] == 0:
+			run += 1
+			my_queue.put("binupdate %s" % (group[0]))
+			time.sleep(0.01)
+		elif group[1] != 0:
+			count = group[2] - group[1]
 			#run small groups using binaries.php
-			elif count != 0 and count <= maxmssgs * 3:
+			if count <= maxmssgs * 2:
 				run += 1
 				my_queue.put("binupdate %s" % (group[0]))
 			#thread large groups using backfill.php
-			elif count > maxmssgs:
+			else:
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
@@ -136,11 +128,12 @@ def main():
 				run += 1
 				my_queue.put("%s %s %s %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 				groups.append(group[0])
-				finals.append(int(last))
+				finals.append(int(group[2]))
 	my_queue.join()
-	resp = s.quit
+	if s != "":
+		resp = s.quit
 	for group in list(zip(groups, finals)):
-		final = ("{} {} Binary".format(mdb.escape_string(group[0]), group[1]))
+		final = ("{} {} Binary".format(group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
 	print("\nUpdate Binaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))

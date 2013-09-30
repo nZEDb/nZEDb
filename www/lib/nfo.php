@@ -194,7 +194,7 @@ class Nfo
 						$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES ('.$cp.', %d)', $nc, $arr['id']));
 					$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
-					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $db, $processImdb);
+					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1)
