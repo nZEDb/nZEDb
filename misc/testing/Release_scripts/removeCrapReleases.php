@@ -1,25 +1,16 @@
 <?php
-
-/*
- * This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details.
- */
-
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/releases.php");
-require_once(FS_ROOT."/../../../www/lib/site.php");
+/* This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details. */
 
 if (!isset($argv[1]) && !isset($argv[2]))
 {
-	exit("Run fixReleaseNames.php first to attempt to fix release names.\n"
+	exit("Run fixReleaseNames.php first to attempt to fix release names. This will miss some releases if you have not set fixReleaseNames to set the release as checked.\n"
 		."To see an explanation of what this script does, type php removeCrapReleases.php false\n"
 		."If you are sure you want to run this script, type php removeCrapReleases.php true full\n"
 		."The second mandatory argument is the time in hours(ex: 12) to go back, or you can type full.\n"
 		."You can pass 1 optional third argument:\n"
 		."blacklist | executable | gibberish | hashed | installbin | passworded | passwordurl | sample | scr | short | size\n");
 }
-else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
+else if (isset($argv[1]) && $argv[1] == 'false' && !isset($argv[2]))
 {
 	exit("blacklist deletes releases after applying the configured blacklist regexes.\n"
 		."executable deletes releases not in other misc or the apps sections and contain an .exe file\n"
@@ -36,43 +27,51 @@ else if (isset($argv[1]) && $argv[1] == "false" && !isset($argv[2]))
 		."php removeCrapReleases.php true full gibberish runs only this type\n");
 }
 
-if (isset($argv[1]) && !is_numeric($argv[1]) && isset($argv[2]) && $argv[2] == "full")
+define('FS_ROOT', realpath(dirname(__FILE__)));
+require_once(FS_ROOT.'/../../../www/config.php');
+require_once(FS_ROOT.'/../../../www/lib/framework/db.php');
+require_once(FS_ROOT.'/../../../www/lib/releases.php');
+require_once(FS_ROOT.'/../../../www/lib/site.php');
+
+if (isset($argv[1]) && !is_numeric($argv[1]) && isset($argv[2]) && $argv[2] == 'full')
 {
 	echo "Removing crap releases - no time limit.\n";
-	$and = "";
+	$and = '';
 }
 else if (isset($argv[1]) && isset($argv[2]) && is_numeric($argv[2]))
 {
-	echo "Removing crap releases from the past ".$argv[2]." hour(s).\n";
-	$and = " and adddate > (now() - interval ".$argv[2]." hour) order by ID asc";
+	echo 'Removing crap releases from the past '.$argv[2]." hour(s).\n";
+	$db = new DB();
+	if ($db->dbSystem() == 'mysql')
+		$and = ' AND adddate > (NOW() - INTERVAL '.$argv[2].' HOUR) ORDER BY id ASC';
+	else
+		$and = " AND adddate > (NOW() - INTERVAL '".$argv[2]." HOURS') ORDER BY id ASC";
 }
-else if (!isset($argv[2]) || $argv[2] !== "full" || !is_numeric($argv[2]))
+else if (!isset($argv[2]) || $argv[2] !== 'full' || !is_numeric($argv[2]))
 	exit("ERROR: Wrong second argument.\n");
 
 $delete = 0;
-if (isset($argv[1]) && $argv[1] == "true")
-        $delete = 1;
-
+if (isset($argv[1]) && $argv[1] == 'true')
 {
+	$delete = 1;
+
 	function deleteReleases($sql, $type)
 	{
-	        global $delete;
+		global $delete;
 		$releases = new Releases();
 		$s = new Sites();
 		$site = $s->get();
-		
+
 		$delcount = 0;
 		foreach ($sql as $rel)
 		{
-		  if ($delete == 1)
-		        {
-        			echo "Deleting: ".$type.": ".$rel['searchname']."\n";
-			        $releases->fastDelete($rel['ID'], $rel['guid'], $site);
+			if ($delete == 1)
+			{
+				echo 'Deleting: '.$type.': '.$rel['searchname']."\n";
+				$releases->fastDelete($rel['id'], $rel['guid'], $site);
 			}
 			else
-			{
-			        echo "Would be deleting: ".$type.": ".$rel['searchname']."\n";
-			}
+				echo 'Would be deleting: '.$type.': '.$rel['searchname']."\n";
 			$delcount++;
 		}
 		return $delcount;
@@ -81,147 +80,192 @@ if (isset($argv[1]) && $argv[1] == "true")
 	// 15 or more letters or numbers, nothing else.
 	function deleteGibberish($and)
 	{
-		$type = "Gibberish";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{15,}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
-		$delcount = deleteReleases($sql, $type);
+		if ($db->dbSystem() == 'mysql')
+			$regex = "searchname REGEXP '^[a-zA-Z0-9]{15,}$'";
+		else
+			$regex = "searchname ~ '^[a-zA-Z0-9]{15,}$'";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$delcount = deleteReleases($sql, 'Gibberish');
 		return $delcount;
 	}
-	
+
 	// 25 or more letters/numbers, probably hashed.
 	function deleteHashed($and)
 	{
-		$type = "Hashed";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '[a-zA-Z0-9]{25,}' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
-		$delcount = deleteReleases($sql, $type);
+		if ($db->dbSystem() == 'mysql')
+			$regex = "searchname REGEXP '[a-zA-Z0-9]{25,}'";
+		else
+			$regex = "searchname ~ '[a-zA-Z0-9]{25,}'";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$delcount = deleteReleases($sql, 'Hashed');
 		return $delcount;
 	}
-	
+
 	// 5 or less letters/numbers.
 	function deleteShort($and)
 	{
-		$type = "Short";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '^[a-zA-Z0-9]{0,5}$' and nfostatus = 0 and relnamestatus = 2 and rarinnerfilecount = 0".$and);
-		$delcount = deleteReleases($sql, $type);
+		if ($db->dbSystem() == 'mysql')
+			$regex = "searchname REGEXP '^[a-zA-Z0-9]{0,5}$'";
+		else
+			$regex = "searchname ~ '^[a-zA-Z0-9]{0,5}$'";
+
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$delcount = deleteReleases($sql, 'Short');
 		return $delcount;
 	}
-	
+
 	// Anything with an exe not in other misc or pc apps/games.
 	function deleteExecutable($and)
 	{
-		$type = "Executable";
 		$db = new DB();
-		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%.exe%" and r.categoryID not in (4000, 4010, 4020, 4050, 7010)'.$and);
-		$delcount = deleteReleases($sql, $type);
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%.exe%' AND r.categoryid NOT IN (4000, 4010, 4020, 4050, 7010)".$and);
+		$delcount = deleteReleases($sql, 'Executable');
 		return $delcount;
 	}
-	
+
 	// Anything with an install.bin file.
 	function deleteInstallBin($and)
 	{
-		$type = "install.bin";
 		$db = new DB();
-		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%install.bin%"'.$and);
-		$delcount = deleteReleases($sql, $type);
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%install.bin%'".$and);
+		$delcount = deleteReleases($sql, 'install.bin');
 		return $delcount;
 	}
-	
+
 	// Anything with a password.url file.
 	function deletePasswordURL($and)
 	{
-		$type = "PasswordURL";
 		$db = new DB();
-		$sql = $db->query('select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where rf.name like "%password.url%"'.$and);
-		$delcount = deleteReleases($sql, $type);
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%password.url%'".$and);
+		$delcount = deleteReleases($sql, 'PasswordURL');
 		return $delcount;
 	}
-	
+
 	// Password in the searchname
 	function deletePassworded($and)
 	{
-		$type = "Passworded";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where searchname REGEXP '/passworded|password protect|password/i' and nzbstatus in (1, 2)".$and);
-		$delcount = deleteReleases($sql, $type);
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE ( searchname ".$like." '%passworded%' OR searchname ".$like." '%password protect%' OR searchname ".$like." '%password%' OR searchname ".$like." '%passwort%' ) AND searchname NOT ".$like." '%no password%' AND searchname NOT ".$like." '%not passworded%' AND searchname NOT ".$like." '%unlocker%' AND searchname NOT ".$like." '%reset%' AND searchname NOT ".$like." '%recovery%' AND searchname NOT ".$like." '%keygen%' and searchname NOT ".$like." '%advanced%' AND nzbstatus IN (1, 2) AND categoryid NOT IN (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)".$and);
+		$delcount = deleteReleases($sql, 'Passworded');
 		return $delcount;
 	}
-	
+
 	// Anything that is 1 part and smaller than 1MB and not in MP3/books.
 	function deleteSize($and)
 	{
-		$type = "Size";
 		$db = new DB();
-		$sql = $db->query("select ID, guid, searchname from releases where totalPart = 1 and size < 1000000 and categoryID not in (8000, 8010, 8020, 8030, 8040, 8050, 8060, 3010)".$and);
-		$delcount = deleteReleases($sql, $type);
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE totalpart = 1 AND size < 1000000 AND categoryid NOT IN (8000, 8010, 8020, 8030, 8040, 8050, 8060, 3010)".$and);
+		$delcount = deleteReleases($sql, 'Size');
 		return $delcount;
 	}
-	
+
 	// More than 1 part, less than 40MB, sample in name. TV/Movie sections.
 	function deleteSample($and)
 	{
-		$type = "Sample";
 		$db = new DB();
-		$sql = $db->query('select ID, guid, searchname from releases where totalPart > 1 and name like "%sample%" and size < 40000000 and categoryID in (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)'.$and);
-		$delcount = deleteReleases($sql, $type);
+		$db = new DB();
+		$like = 'ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE totalpart > 1 AND name ".$like." '%sample%' AND size < 40000000 AND categoryid IN (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)".$and);
+		$delcount = deleteReleases($sql, 'Sample');
 		return $delcount;
 	}
-	
+
 	// Anything with a scr file in the filename/subject.
 	function deleteScr($and)
 	{
-		$type = ".scr";
 		$db = new DB();
-		$sql = $db->query("select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where (rf.name REGEXP '\.scr$' or r.name REGEXP '\.scr($| |\")')".$and);
-		$delcount = deleteReleases($sql, $type);
+		if ($db->dbSystem() == 'mysql')
+			$regex = "(rf.name REGEXP '[.]scr$' OR r.name REGEXP '[.]scr[$ \"]')";
+		else
+			$regex = "(rf.name ~ '[.]scr$' OR r.name ~ '[.]scr[$ \"]')";
+
+		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regex}".$and);
+		$delcount = deleteReleases($sql, '.scr');
 		return $delcount;
 	}
 
 	// Use the site blacklists to delete releases.
 	function deleteBlacklist($and)
 	{
-		$type = "Blacklist";
 		$db = new DB();
-		$regexes = $db->query('select regex from binaryblacklist where status = 1');
+		$regexes = $db->query('SELECT regex FROM binaryblacklist WHERE status = 1');
 		$delcount = 0;
 		if(sizeof($regexes > 0))
 		{
 			foreach ($regexes as $regex)
 			{
-				$sql = $db->query("select r.ID, r.guid, r.searchname from releases r left join releasefiles rf on rf.releaseID = r.ID where (rf.name REGEXP".$db->escapeString($regex["regex"])." or r.name REGEXP".$db->escapeString($regex["regex"]).")".$and);
-				$delcount += deleteReleases($sql, $type);
+				if ($db->dbSystem() == 'mysql')
+					$regexsql = '(rf.name REGEXP '.$db->escapeString($regex['regex']).' OR r.name REGEXP '.$db->escapeString($regex['regex']).')';
+				else
+					$regexsql = '(rf.name ~ '.$db->escapeString($regex['regex']).' OR r.name ~ '.$db->escapeString($regex['regex']).')';
+				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} ".$and);
+				$delcount += deleteReleases($sql, 'Blacklist');
 			}
 		}
 		return $delcount;
 	}
 
 	$totalDeleted = $gibberishDeleted = $hashedDeleted = $shortDeleted = $executableDeleted = $installBinDeleted = $PURLDeleted = $PassDeleted = $sizeDeleted = $sampleDeleted = $scrDeleted = $blacklistDeleted = 0;
-	
+
 	if (isset($argv[3]))
 	{
-		if (isset($argv[3]) && $argv[3] == "gibberish")
-			$gibberishDeleted = deleteGibberish($and);
-		if (isset($argv[3]) && $argv[3] == "hashed")
-			$hashedDeleted = deleteHashed($and);
-		if (isset($argv[3]) && $argv[3] == "short")
-			$shortDeleted = deleteShort($and);
-		if (isset($argv[3]) && $argv[3] == "executable")
-			$executableDeleted = deleteExecutable($and);
-		if (isset($argv[3]) && $argv[3] == "installbin")
-			$installBinDeleted = deleteInstallBin($and);
-		if (isset($argv[3]) && $argv[3] == "passwordurl")
-			$PURLDeleted = deletePasswordURL($and);
-		if (isset($argv[3]) && $argv[3] == "passworded")
-			$PURLDeleted = deletePassworded($and);
-		if (isset($argv[3]) && $argv[3] == "size")
-			$sizeDeleted = deleteSize($and);
-		if (isset($argv[3]) && $argv[3] == "sample")
-			$sampleDeleted = deleteSample($and);
-		if (isset($argv[3]) && $argv[3] == "scr")
-			$scrDeleted = deleteScr($and);
-		if (isset($argv[3]) && $argv[3] == "blacklist")
-			$blacklistDeleted = deleteBlacklist($and);
+		switch ($argv[3])
+		{
+			case 'gibberish':
+				$gibberishDeleted = deleteGibberish($and);
+				break;
+			case 'hashed':
+				$hashedDeleted = deleteHashed($and);
+				break;
+			case 'short':
+				$shortDeleted = deleteShort($and);
+				break;
+			case 'executable':
+				$executableDeleted = deleteExecutable($and);
+				break;
+			case 'installbin':
+				$installBinDeleted = deleteInstallBin($and);
+				break;
+			case 'passwordurl':
+				$PURLDeleted = deletePasswordURL($and);
+				break;
+			case 'passworded':
+				$PURLDeleted = deletePassworded($and);
+				break;
+			case 'size':
+				$sizeDeleted = deleteSize($and);
+				break;
+			case 'sample':
+				$sampleDeleted = deleteSample($and);
+				break;
+			case 'scr':
+				$scrDeleted = deleteScr($and);
+				break;
+			case 'blacklist':
+				$blacklistDeleted = deleteBlacklist($and);
+				break;
+			default:
+				exit("Wrong third argument.\n");
+			}
 	}
 	else
 	{
@@ -239,7 +283,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	}
 
 	$totalDeleted = $totalDeleted+$gibberishDeleted+$hashedDeleted+$shortDeleted+$executableDeleted+$installBinDeleted+$PURLDeleted+$PassDeleted+$sizeDeleted+$sampleDeleted+$scrDeleted+$blacklistDeleted;
-	
+
 	if ($totalDeleted > 0)
 	{
 		echo "Total Removed: ".$totalDeleted."\n";

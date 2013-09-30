@@ -34,7 +34,7 @@
   <div class="form-group">
     <label for="category" class="col-lg-2 control-label">Category:</label>
     <div class="col-lg-10">
-      {html_options id="category" class="form-control" name=category options=$catlist selected=$release.categoryID}
+      {html_options id="category" class="form-control" name=category options=$catlist selected=$release.categoryid}
     </div>
   </div>
   <div class="form-group">
@@ -46,13 +46,13 @@
   <div class="form-group">
     <label for="rageID" class="col-lg-2 control-label">Tv Rage Id:</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control short" id="rageID" name="rageID" value="{$release.rageID}">
+      <input type="text" class="form-control short" id="rageID" name="rageID" value="{$release.rageid}">
     </div>
   </div>
   <div class="form-group">
     <label for="anidbID" class="col-lg-2 control-label">AniDB Id:</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control short" id="anidbID" name="anidbID" value="{$release.anidbID}">
+      <input type="text" class="form-control short" id="anidbID" name="anidbID" value="{$release.anidbid}">
     </div>
   </div>
   <div class="form-group">
@@ -70,7 +70,7 @@
   <div class="form-group">
     <label for="imdbID" class="col-lg-2 control-label">IMDB Id:</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control short" id="imdbID" name="imdbID" value="{$release.imdbID}">
+      <input type="text" class="form-control short" id="imdbID" name="imdbID" value="{$release.imdbid}">
     </div>
   </div>
 <input type="submit" class="btn btn-default" value="Save" id="save">

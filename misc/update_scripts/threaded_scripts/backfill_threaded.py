@@ -8,29 +8,35 @@ try:
 	import queue
 except ImportError:
 	import Queue as queue
-try:
-	import cymysql as mdb
-except ImportError:
-	sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 import subprocess
 import string
-import lib.info as info
 import signal
 import datetime
 
-print("\nBackfill Threaded Started at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
+import lib.info as info
+conf = info.readConfig()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg2 as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
+
+print("\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
-
-#create the connection to mysql
-con = None
-con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-cur = con.cursor()
 
 #get values from db
-cur.execute("select (select value from site where setting = 'backfillthreads') as a, (select value from tmux where setting = 'BACKFILL') as c, (select value from tmux where setting = 'BACKFILL_GROUPS') as d, (select value from tmux where setting = 'BACKFILL_ORDER') as e, (select value from tmux where setting = 'BACKFILL_DAYS') as f")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'BACKFILL') as c, (SELECT value FROM tmux WHERE setting = 'BACKFILL_GROUPS') as d, (SELECT value FROM tmux WHERE setting = 'BACKFILL_ORDER') as e, (SELECT value FROM tmux WHERE setting = 'BACKFILL_DAYS') as f")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 type = int(dbgrab[0][1])
@@ -56,13 +62,19 @@ else:
 if intbackfilltype == 1:
 	backfilldays = "backfill_target"
 elif intbackfilltype == 2:
-	backfilldays = "datediff(curdate(),(select value from site where setting = 'safebackfilldate'))"
+	backfilldays = "datediff(curdate(),(SELECT value FROM site WHERE setting = 'safebackfilldate'))"
 
 #query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
-	cur.execute("%s %s" % ("SELECT name, first_record from groups where first_record IS NOT NULL and backfill = 1 ", group))
+	# Using string formatting is not the correct way to do this, but using +group is even worse
+	# removing the % before the variables at the end of the query adds quotes/escapes strings
+	cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND backfill = 1 %s" % (group,))
 else:
-	cur.execute("%s %s %s %s %s %d" % ("SELECT name, first_record from groups where first_record IS NOT NULL and first_record_postdate IS NOT NULL and backfill = 1 and first_record_postdate != '2000-00-00 00:00:00' and (now() - interval", backfilldays, " day) < first_record_postdate ", group, " limit ", groups))
+	if conf['DB_SYSTEM'] == "mysql":
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, group,))
+	elif conf['DB_SYSTEM'] == "pgsql":
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, group,))
+
 datas = cur.fetchall()
 if not datas:
 	print("No Groups enabled for backfill")
@@ -96,14 +108,14 @@ class queue_runner(threading.Thread):
 						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+my_id])
 					else:
 						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+my_id])
-					time.sleep(.5)
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of %s threads, a queue of %s groups" % (run_threads, "{:,}".format(len(datas))))
+	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -124,8 +136,8 @@ def main(args):
 
 	my_queue.join()
 
-	print("\nBackfill Threaded Completed at %s" % (datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: %s" % (str(datetime.timedelta(seconds=time.time() - start_time))))
+	print("\nBackfill Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

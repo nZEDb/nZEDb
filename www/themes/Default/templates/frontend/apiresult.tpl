@@ -9,7 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{if $site->style != "" && $site->style != "/"}{$serverroot}templates/{$site->style}/images/logo.png{else}{$serverroot}templates/Default/images/logo.png{/if}</url>
+	<url>{if $site->style != "" && $site->style != "/"}{$serverroot}themes/{$site->style}/images/logo.png{else}{$serverroot}themes/Default/images/logo.png{/if}</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -37,13 +37,13 @@
 {/if}
 {if $release.episode != ""}	<newznab:attr name="episode" value="{$release.episode}" />
 {/if}
-{if $release.rageID != "-1" && $release.rageID != "-2"}	<newznab:attr name="rageid" value="{$release.rageID}" />
+{if $release.rageid != "-1" && $release.rageid != "-2"}	<newznab:attr name="rageid" value="{$release.rageid}" />
 {/if}
 {if $release.tvtitle != ""}	<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
 {/if}
 {if $release.tvairdate != ""}	<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
 {/if}
-{if $release.imdbID != ""}	<newznab:attr name="imdb" value="{$release.imdbID}" />
+{if $release.imdbid != ""}	<newznab:attr name="imdb" value="{$release.imdbid}" />
 {/if}
 	<newznab:attr name="grabs" value="{$release.grabs}" />
 	<newznab:attr name="comments" value="{$release.comments}" />

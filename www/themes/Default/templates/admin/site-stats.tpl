@@ -11,7 +11,7 @@
 
 	{foreach from=$topgrabs item=result}
 		<tr class="{cycle values=",alt"}">
-			<td width="75%"><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$result.ID}">{$result.username}</a></td>
+			<td width="75%"><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$result.id}">{$result.username}</a></td>
 			<td>{$result.grabs}</td>
 		</tr>
 	{/foreach}
@@ -32,7 +32,7 @@
 	{foreach from=$topdownloads item=result}
 		<tr class="{cycle values=",alt"}">
 			<td width="75%"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
-			{if $isadmin}<a href="{$smarty.const.WWW_TOP}/release-edit.php?id={$result.ID}">[Edit]</a>{/if}</td>
+			{if $isadmin}<a href="{$smarty.const.WWW_TOP}/release-edit.php?id={$result.id}">[Edit]</a>{/if}</td>
 			<td>{$result.grabs}</td>
 			<td>{$result.adddate|timeago}</td>
 		</tr>
@@ -41,8 +41,7 @@
 </table>
 
 <br/><br/>
-
-{if $isadmin}
+{if $isadmin and $loggingon}
 <h2>Top Failed Logins and IP's</h2>
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
     <tr>

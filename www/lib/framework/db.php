@@ -1,37 +1,43 @@
 <?php
 
+/*
+* Class for handling connection to MySQL and PostgreSQL database using PDO.
+* Exceptions are caught and displayed to the user.
+*/
+
 class DB
 {
-	//
-	// the element relstatus of table releases is used to hold the status of the release
-	// The variable is a bitwise AND of status
-	// List of processed constants - used in releases table. Constants need to be powers of 2: 1, 2, 4, 8, 16 etc...
-	const NFO_PROCESSED_NAMEFIXER     = 1;  // We have processed the release against its .nfo file in the namefixer
-	const PREDB_PROCESSED_NAMEFIXER   = 2;  // We have processed the release against a predb name
-
 	private static $initialized = false;
-	private static $mysqli = null;
+	private static $pdo = null;
 
-	function DB()
+	// Start a connection to the DB.
+	public function DB()
 	{
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+			$this->dbsystem = strtolower(DB_SYSTEM);
+		else
+			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
 		if (DB::$initialized === false)
 		{
-			// initialize db connection
-			if (defined("DB_PORT"))
-				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
-			else
-				DB::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+			$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+			if (defined('DB_PORT'))
+				$pdos .= ';port='.DB_PORT;
 
-			if (DB::$mysqli->connect_errno) 
-			{
-				printf("Failed to connect to MySQL: (" . DB::$mysqli->connect_errno . ") " . DB::$mysqli->connect_error);
-				exit();
+			if ($this->dbsystem == 'mysql')
+				$pdos .= ';charset=utf8';
+
+			try {
+				if ($this->dbsystem == 'mysql')
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
+				else
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+
+				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
+				// For backwards compatibility, no need for a patch.
+				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+			} catch (PDOException $e) {
+				exit("Connection to the SQL server failed, error follows: (".$e->getMessage().")");
 			}
-
-			if (!DB::$mysqli->set_charset('utf8'))
-				printf(DB::$mysqli->error);
-			else
-				DB::$mysqli->character_set_name();
 
 			DB::$initialized = true;
 		}
@@ -40,177 +46,290 @@ class DB
 			$this->memcached = MEMCACHE_ENABLED;
 	}
 
-	// Returns the MYSQL version.
-	public function mysqlversion()
+	// Return string; mysql or pgsql.
+	public function dbSystem()
 	{
-		return substr(DB::$mysqli->client_info, 0, 3);
+		return $this->dbsystem;
 	}
 
-	// Checks whether the connection to the server is working. Optionally kills connection.
-	public function ping($kill=false)
-	{
-		if (DB::$mysqli->ping() === false)
-		{
-			printf ("Error: %s\n", DB::$mysqli->error());
-			DB::$mysqli->close();
-			return false;
-		}
-		if ($kill === true)
-			$this->kill();
-		return true;
-	}
-
-	//This function is used to ask the server to kill a MySQL thread specified by the processid parameter. This value must be retrieved by calling the mysqli_thread_id() function. 
-	public function kill()
-	{
-		DB::$mysqli->kill(DB::$mysqli->thread_id);
-		DB::$mysqli->close();
-	}
-
+	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
 	public function escapeString($str)
 	{
-		if (is_null($str)){
-			return "NULL";
-		} else {
-			return "'".DB::$mysqli->real_escape_string($str)."'";
+		if (is_null($str))
+			return 'NULL';
+
+		return DB::$pdo->quote($str);
+	}
+
+	// For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
+	public function queryInsert($query)
+	{
+		if ($query == '')
+			return false;
+
+		try
+		{
+			if ($this->dbsystem() == 'mysql')
+			{
+				$ins = DB::$pdo->prepare($query);
+				$ins->execute();
+				return DB::$pdo->lastInsertId();
+			}
+			else
+			{
+				$p = DB::$pdo->prepare($query.' RETURNING id');
+				$p->execute();
+				$r = $p->fetch(PDO::FETCH_ASSOC);
+				return $r['id'];
+			}
+		} catch (PDOException $e) {
+			// Deadlock or lock wait timeout, try 10 times.
+			$i = 1;
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
+			{
+				sleep($i * $i);
+				$ins = DB::$pdo->prepare($query);
+				$ins->execute();
+				return DB::$pdo->lastInsertId();
+				$i++;
+			}
+			//printf($e);
+			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			{
+				//echo "\nError: Insert would create duplicate row, skipping\n";
+				return false;
+			}
+			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[1]==22001)
+            {
+                //echo "\nError: Too large to fit column length\n";
+                return false;
+            }
+			else
+				printf($e);
+			return false;
+
 		}
 	}
 
-	public function makeLookupTable($rows, $keycol)
+	// Used for deleting, updating (and inserting without needing the last insert id).
+	public function queryExec($query)
 	{
-		$arr = array();
-		foreach($rows as $row)
-			$arr[$row[$keycol]] = $row;
-		return $arr;
-	}
-
-	public function queryInsert($query, $returnlastid=true)
-	{
-		if ($query=="")
+		if ($query == '')
 			return false;
 
-		$result = DB::$mysqli->query($query);
-		return ($returnlastid) ? DB::$mysqli->insert_id : $result;
+		try {
+			$run = DB::$pdo->prepare($query);
+			$run->execute();
+			return $run;
+		} catch (PDOException $e) {
+			// Deadlock or lock wait timeout, try 10 times.
+			$i = 1;
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
+			{
+				sleep($i * $i);
+				$run = DB::$pdo->prepare($query);
+				$run->execute();
+				return $run;
+				$i++;
+			}
+			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			{
+				//echo "\nError: Update would create duplicate row, skipping\n";
+				return false;
+			}
+			else
+				printf($e);
+			return false;
+		}
 	}
 
-	public function getInsertID()
+	// Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	public function Exec($query)
 	{
-		return DB::$mysqli->insert_id;
-	}
-
-	public function getAffectedRows()
-	{
-		return DB::$mysqli->affected_rows;
-	}
-
-	public function queryOneRow($query)
-	{
-		$rows = $this->query($query);
-
-		if (!$rows)
+		if ($query == '')
 			return false;
 
-		return ($rows) ? $rows[0] : $rows;
+		try {
+			return DB::$pdo->exec($query);
+		} catch (PDOException $e) {
+			printf($e);
+			return false;
+		}
 	}
 
+
+	// Return an array of rows, an empty array if no results.
+	// Optional: Pass true to cache the result with memcache.
 	public function query($query, $memcache=false)
 	{
-		if ($query=="")
+		if ($query == '')
 			return false;
 
-		if ($this->memcached === true && $memcache === true)
+		if ($memcache === true && $this->memcached === true)
 		{
-			$memcached = new Mcached();
-			if ($memcached !== false)
-			{
-				$crows = $memcached->get($query);
-				if ($crows !== false)
-					return $crows;
+			try {
+				$memcached = new Mcached();
+				if ($memcached !== false)
+				{
+					$crows = $memcached->get($query);
+					if ($crows !== false)
+						return $crows;
+				}
+			} catch (Exception $er) {
+					printf ($er);
 			}
 		}
 
-		$result = DB::$mysqli->query($query);
+		try {
+			$result = DB::$pdo->query($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$result = false;
+		}
 
-		if ($result === false || $result === true)
+		if ($result === false)
 			return array();
 
 		$rows = array();
-
-		while ($row = $this->fetchAssoc($result))
+		foreach ($result as $row)
+		{
 			$rows[] = $row;
+		}
 
-		$result->free_result();
-
-		$error = $this->Error();
-		if ($error != '')
-			echo "MySql error: $error\n";
-
-		if ($this->memcached === true && $memcache === true)
+		if ($memcache === true && $this->memcached === true)
 			$memcached->add($query, $rows);
 
 		return $rows;
 	}
 
+	// Returns the first row of the query.
+	public function queryOneRow($query)
+	{
+		$rows = $this->query($query);
+
+		if (!$rows || count($rows) == 0)
+			return false;
+
+		return ($rows) ? $rows[0] : $rows;
+	}
+
+	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	public function queryDirect($query)
 	{
-		return ($query=="") ? false : DB::$mysqli->query($query);
-	}
+		if ($query == '')
+			return false;
 
-	public function fetchAssoc($result)
-	{
-		return (is_null($result) ? null : $result->fetch_assoc());
-	}
-
-	public function fetchArray($result)
-	{
-		return (is_null($result) ? null : $result->fetch_array());
-	}
-
-	public function optimise()
-	{
-		$alltables = $this->query("show table status where Data_free > 0");
-		$tablecnt = sizeof($alltables);
-
-		foreach ($alltables as $tablename)
-		{
-			$ret[] = $tablename['Name'];
-			echo "Optimizing table: ".$tablename['Name'].".\n";
-			if (strtolower($tablename['Engine']) == "myisam")
-				$this->queryDirect("REPAIR TABLE `".$tablename['Name']."`");
-			$this->queryDirect("OPTIMIZE TABLE `".$tablename['Name']."`");
+		try {
+			$result = DB::$pdo->query($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$result = false;
 		}
-		$this->queryDirect("FLUSH TABLES");
+		return $result;
+	}
+
+	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
+	public function optimise($admin=false)
+	{
+		$tablecnt = 0;
+		if ($this->dbsystem == 'mysql')
+		{
+			$alltables = $this->query('SHOW table status WHERE Data_free > 0');
+			$tablecnt = count($alltables);
+			foreach ($alltables as $table)
+			{
+				if ($admin === false)
+					echo 'Optimizing table: '.$table['name'].".\n";
+				if (strtolower($table['engine']) == 'myisam')
+					$this->queryDirect('REPAIR TABLE `'.$table['name'].'`');
+				$this->queryDirect('OPTIMIZE TABLE `'.$table['name'].'`');
+			}
+			$this->queryDirect('FLUSH TABLES');
+		}
+		else if ($this->dbsystem == 'pgsql')
+		{
+			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
+			$tablecnt = count($alltables);
+			foreach ($alltables as $table)
+			{
+				if ($admin === false)
+					echo 'Vacuuming table: '.$table['name'].".\n";
+				$this->query('VACUUM (ANALYZE) '.$table['name']);
+			}
+		}
 		return $tablecnt;
 	}
 
-	public function getNumRows($result)
-	{
-		return (!isset($result->num_rows)) ? 0 : $result->num_rows;
-	}
-
+	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{
-		return DB::$mysqli->prepare($query);
+		try {
+			$stat = DB::$pdo->prepare($query);
+		} catch (PDOException $e) {
+			printf($e);
+			$stat = false;
+		}
+		return $stat;
 	}
 
-	public function Error()
+	// Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
+	public function beginTransaction()
 	{
-		return DB::$mysqli->error;
+		return DB::$pdo->beginTransaction();
 	}
 
-	public function setAutoCommit($enabled)
-	{
-		return DB::$mysqli->autocommit($enabled);
-	}
-
+	// Commits a transaction. http://www.php.net/manual/en/pdo.commit.php
 	public function Commit()
 	{
-		return DB::$mysqli->commit();
+		return DB::$pdo->commit();
 	}
 
+	// Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php
 	public function Rollback()
 	{
-		return DB::$mysqli->rollback();
+		return DB::$pdo->rollBack();
+	}
+
+	public function from_unixtime($utime, $escape=true)
+	{
+		if ($escape === true)
+		{
+			if ($this->dbsystem == 'mysql')
+				return 'FROM_UNIXTIME('.$utime.')';
+			else if ($this->dbsystem == 'pgsql')
+				return 'TO_TIMESTAMP('.$utime.')::TIMESTAMP';
+		}
+		else
+			return date('Y-m-d h:i:s', $utime);
+	}
+
+	// Date to unix time.
+	// (substitute for mysql's UNIX_TIMESTAMP() function)
+	public function unix_timestamp($date)
+	{
+		return strtotime($date);
+	}
+
+	// Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959
+	// (substitute for mysql's UUID() function)
+	public function uuid()
+	{
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+	}
+
+	// Checks whether the connection to the server is working. Optionally start a new connection.
+	public function ping($restart = false)
+	{
+		try {
+			return (bool) DB::$pdo->query('SELECT 1+1');
+		} catch (PDOException $e) {
+			if ($restart = true)
+			{
+				DB::$initialized = false;
+				$this->DB();
+			}
+			return false;
+		}
 	}
 }
 
@@ -218,35 +337,29 @@ class DB
 class Mcached
 {
 	// Make a connection to memcached server.
-	function Mcached()
+	public function Mcached()
 	{
-		if (!defined("MEMCACHE_HOST"))
-			define('MEMCACHE_HOST', '127.0.0.1');
-		if (!defined("MEMCACHE_PORT"))
-			define('MEMCACHE_PORT', '11211');
 		if (extension_loaded('memcache'))
 		{
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false)
-				return false;
+				throw new Exception('Unable to connect to the memcached server.');
 		}
 		else
-			return false;
+			throw new Exception('Extension "memcache" not loaded.');
 
-		// Amount of time for the query to expire from memcached server.
-		$this->expiry = 900;
-		if (defined("MEMCACHE_EXPIRY"))
-			$this->expiry = MEMCACHE_EXPIRY;
+		$this->expiry = MEMCACHE_EXPIRY;
 
-		// Uses more CPU but less RAM.
 		$this->compression = MEMCACHE_COMPRESSED;
-		if (defined("MEMCACHE_COMPRESSION"))
+		if (defined('MEMCACHE_COMPRESSION'))
+		{
 			if (MEMCACHE_COMPRESSION === false)
 				$this->compression = false;
+		}
 	}
 
 	// Return a SHA1 hash of the query, used for the key.
-	function key($query)
+	public function key($query)
 	{
 		return sha1($query);
 	}

@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/tmux.php");
@@ -9,27 +8,24 @@ $page = new AdminPage();
 $tmux = new Tmux();
 $id = 0;
 
-// set the current action
+// Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 switch($action)
 {
 	case 'submit':
-
 		$error = "";
 		$ret = $tmux->update($_POST);
 		$page->title = "Tmux Settings Edit";
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
-
 		break;
+
 	case 'view':
 	default:
-
 		$page->title = "Tmux Settings Edit";
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
-
 		break;
 }
 
@@ -52,6 +48,8 @@ $page->smarty->assign('fix_crap_ids', array('Disabled', 'All', 'blacklist', 'exe
 $page->smarty->assign('fix_crap_names', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
 $page->smarty->assign('sequential_ids', array(0,1,2));
 $page->smarty->assign('sequential_names', array('Disabled', 'Basic Sequential', 'Complete Sequential'));
+$page->smarty->assign('binaries_ids', array(0,1,2));
+$page->smarty->assign('binaries_names', array('Disabled', 'Simple Threaded Update', 'Complete Threaded Update'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

@@ -1,5 +1,4 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/releases.php");
@@ -17,12 +16,8 @@ $rel = new Releases();
 
 if (!empty($argc) || $page->isPostBack() )
 {
-	$retval = "";
+	$retval = $postto = $postfrom = $group = $path = "";
 	$strTerminator = "<br />";
-	$postfrom = "";
-	$postto = "";
-	$group = "";
-	$path = "";
 
 	if (!empty($argc))
 	{
@@ -76,34 +71,28 @@ if (!empty($argc) || $page->isPostBack() )
 			$nzbCount++;
 
 			if ($nzbCount % 10 == 0)
-				echo "Exported ".$nzbCount." of ".$total." nzbs\n";			
+				echo "Exported ".$nzbCount." of ".$total." nzbs\n";
 		}
-		
+
 		$retval.= 'Processed '.$nzbCount.' nzbs';
-	
+
 		if (!empty($argc))
-		{
-			echo 'Processed '.$nzbCount.' nzbs';
-			die();
-		}
+			exit('Processed '.$nzbCount.' nzbs.');
 	}
 	else
-	{
-		echo 'No export path specified.';
-		die();
-	}
+		exit('No export path specified.');
 
-	$page->smarty->assign('folder', $path);	
-	$page->smarty->assign('output', $retval);	
-	$page->smarty->assign('fromdate', $postfrom);	
-	$page->smarty->assign('todate', $postto);	
-	$page->smarty->assign('group', $group);	
+	$page->smarty->assign('folder', $path);
+	$page->smarty->assign('output', $retval);
+	$page->smarty->assign('fromdate', $postfrom);
+	$page->smarty->assign('todate', $postto);
+	$page->smarty->assign('group', $group);
 
 }
 else
 {
-	$page->smarty->assign('fromdate', $rel->getEarliestUsenetPostDate());	
-	$page->smarty->assign('todate', $rel->getLatestUsenetPostDate());	
+	$page->smarty->assign('fromdate', $rel->getEarliestUsenetPostDate());
+	$page->smarty->assign('todate', $rel->getLatestUsenetPostDate());
 }
 
 $page->title = "Export Nzbs";

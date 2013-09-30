@@ -16,6 +16,7 @@ $tmux = new Tmux();
 $tmux_session = $tmux->get()->TMUX_SESSION;
 $seq = $tmux->get()->SEQUENTIAL;
 $powerline = $tmux->get()->POWERLINE;
+$colors = $tmux->get()->COLORS;
 
 $site = new Sites();
 $patch = $site->get()->sqlpatch;
@@ -51,10 +52,10 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '111' )
+if ( $patch < '127' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
-	echo "php ${DIR}testing/DB_scripts/patchmysql.php\033[0m\n";
+	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
 	exit(1);
 }
 
@@ -85,12 +86,13 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$db->query("update collections set dateadded = now()");
-if ( $db->getAffectedRows() > 0 )
-	echo $db->getAffectedRows()." collections reset\n";
-$db->query("update nzbs set dateadded = now()");
-if ( $db->getAffectedRows() > 0 )
-    echo $db->getAffectedRows()." nzbs reset\n";
+$run = $db->queryExec("update collections set dateadded = now()");
+if ($run)
+	echo $run->rowCount()." collections reset\n";
+$run = $db->queryExec("update nzbs set dateadded = now()");
+if ($run)
+	echo $run->rowCount()." nzbs reset\n";
+sleep(2);
 
 function start_apps($tmux_session)
 {
@@ -150,6 +152,17 @@ function window_utilities($tmux_session)
 	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
+function window_colors($tmux_session)
+{
+	echo "WTF";
+	exec("tmux new-window -t $tmux_session -n colors 'printf \"\033]2;tmux_colors\033\"'");
+}
+
+function window_stripped_utilities($tmux_session)
+{
+    exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
+}
+
 function window_post($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
@@ -195,6 +208,8 @@ if ( $seq == 1 )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	if ($colors == "TRUE")
+		window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
@@ -204,6 +219,9 @@ elseif ( $seq == 2 )
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
+	window_stripped_utilities($tmux_session);
+	if ($colors == "TRUE")
+		window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
@@ -217,6 +235,8 @@ else
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	if ($colors == "TRUE")
+		window_colors($tmux_session);
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }

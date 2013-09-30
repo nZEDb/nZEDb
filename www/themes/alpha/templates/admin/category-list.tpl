@@ -8,7 +8,7 @@
 <table style="margin-top:10px;" class="data Sortable highlight">
 
 	<tr>
-		<th>id</th>
+		<th>ID</th>
 		<th>title</th>
 		<th>parent</th>
 		<th>active</th>
@@ -18,10 +18,10 @@
 	
 	{foreach from=$categorylist item=category}
 	<tr class="{cycle values=",alt"}">
-		<td>{$category.ID}</td>
-		<td><a href="{$smarty.const.WWW_TOP}/category-edit.php?id={$category.ID}">{$category.title}</a></td>
+		<td>{$category.id}</td>
+		<td><a href="{$smarty.const.WWW_TOP}/category-edit.php?id={$category.id}">{$category.title}</a></td>
 		<td>
-			{if $category.parentID != null}
+			{if $category.parentid != null}
 				{$category.parentName}
 			{else}
 				n/a

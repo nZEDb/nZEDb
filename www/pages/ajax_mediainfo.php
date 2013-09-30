@@ -1,20 +1,18 @@
 <?php
-require_once(WWW_DIR."/lib/releaseextra.php");
-
 if (!$users->isLoggedIn())
 	$page->show403();
 
-if (!isset($_REQUEST["id"]))
+if (!isset($_REQUEST['id']))
 	$page->show404();
 
+require_once(WWW_DIR.'/lib/releaseextra.php');
 $re = new ReleaseExtra();
-$redata = $re->getBriefByGuid($_REQUEST["id"]);
+$redata = $re->getBriefByGuid($_REQUEST['id']);
 
 if (!$redata)
-	print "No media info";
+	print 'No media info';
 else
 {
-	//print "<h3 class=\"tooltiphead\">extended media info...</h3>\n";
 	print "<table>\n";
 	if ($redata["videocodec"] != "" && $redata["containerformat"] != "") 
 	{
@@ -29,7 +27,9 @@ else
 		print "<tr><th>Aspect Ratio:</th><td>".htmlentities($redata["videoaspect"], ENT_QUOTES)."</td></tr>\n";
 	if ($redata["audio"] != "" && $redata["audio"] != ", ")
 		print "<tr><th>Audio Languages:</th><td>".htmlentities($redata["audio"], ENT_QUOTES)."</td></tr>\n";
+    if ($redata["audioformat"] != "" && $redata["audioformat"] != ", ")
+        print "<tr><th>Audio Format:</th><td>".htmlentities($redata["audioformat"], ENT_QUOTES)."</td></tr>\n";
 	if ($redata["subs"] != "")
 		print "<tr><th>Subtitles:</th><td>".htmlentities($redata["subs"], ENT_QUOTES)."</td></tr>\n";
 	print "</table>";
-}	
+}

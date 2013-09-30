@@ -3,6 +3,12 @@ Some common mistakes/errors people encounter.
 Q: Pages (like localhost/movies) are giving 404 errors with apache 2.4.
 A: In apache2.conf change the setting AllowOverride None for <Directory /var/www/> to AllowOverride All
 
+Q: Help, I get empty NZB files in sabnzbd.
+A: If you are browsing the site using localhost, the sabnzbd server must be on the same machine. Try browsing from the IP address instead.
+
+Q: Sabnzbd says I have problems with extra lines in the NZB.
+A: There is a script in misc/testing/Dev_testing to fix those NZB files.
+
 Q: Sabnzbd is not working.
 A: Make sure you have the sabnzbd/ in the url.
 
@@ -27,9 +33,6 @@ A: Use blacklists. removeCrapReleases script, size settings for groups etc..
 Q: The scripts and my site is slow.
 A: You will need to tune MYSQL, there are many guides for this online, look at tools like mysqltuner.
    If your hardware is not powerful enough it will be slow regardless.
-
-Q: Sabnzbd says I have problems with extra lines in the NZB.
-A: There is a script in misc/testing/Dev_testing to fix those NZB files.
 
 Q: I'm getting many releases with unusable names.
 A: There is a script in misc/testing/Release_scripts called fixReleaseNames.php
@@ -61,9 +64,6 @@ A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
 
 Q: I'm having issues with the PREDB backfill script.
 A: https://github.com/nZEDb/pre-info
-
-Q: Can I have some information on collections/binaries/parts?
-A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
 
 Q: I'm missing the memcache stuff in my config.php file.
 A: Add the following under define('NNTP_SSLENABLED_A', false);

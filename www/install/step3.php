@@ -7,7 +7,8 @@ $page->title = "News Server Setup";
 
 $cfg = new Install();
 
-if (!$cfg->isInitialized()) {
+if (!$cfg->isInitialized())
+{
 	header("Location: index.php");
 	die();
 }
@@ -32,16 +33,17 @@ if  ($page->isPostBack())
 		$enc = "ssl";
 
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
-	if(PEAR::isError($cfg->nntpCheck)){
+	if(PEAR::isError($cfg->nntpCheck))
 		$cfg->error = true;
-	} elseif ($cfg->NNTP_USERNAME != "") {
+	elseif ($cfg->NNTP_USERNAME != "")
+	{
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
-		if(PEAR::isError($cfg->nntpCheck)){
+		if(PEAR::isError($cfg->nntpCheck))
 			$cfg->error = true;
-		}
 	}
 
-	if (!$cfg->error) {
+	if (!$cfg->error)
+	{
 		$cfg->setSession();
 		header("Location: ?success");
 		die();
@@ -49,7 +51,6 @@ if  ($page->isPostBack())
 }
 
 $page->smarty->assign('cfg', $cfg);
-
 $page->smarty->assign('page', $page);
 
 $page->content = $page->smarty->fetch('step3.tpl');

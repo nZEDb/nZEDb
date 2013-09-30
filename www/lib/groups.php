@@ -11,13 +11,7 @@ class Groups
 	public function getAll()
 	{
 		$db = new DB();
-
-		return $db->query("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
-							FROM groups
-							LEFT OUTER JOIN
-							(
-							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
-							) rel ON rel.groupID = groups.ID ORDER BY groups.name");
+		return $db->query("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases group by groupid) rel ON rel.groupid = groups.id ORDER BY groups.name");
 	}
 
 	public function getGroupsForSelect()
@@ -37,7 +31,7 @@ class Groups
 	public function getByID($id)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from groups where ID = %d ", $id));
+		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE id = %d ", $id));
 	}
 
 	public function getActive()
@@ -61,34 +55,34 @@ class Groups
 	public function getActiveIDs()
 	{
 		$db = new DB();
-		return $db->query("SELECT ID FROM groups WHERE active = 1 ORDER BY name");
+		return $db->query("SELECT id FROM groups WHERE active = 1 ORDER BY name");
 	}
 
 	public function getByName($grp)
 	{
 		$db = new DB();
-		return $db->queryOneRow(sprintf("select * from groups where name = '%s' ", $grp));
+		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $db->escapeString($grp)));
 	}
 
 	public function getByNameByID($id)
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select name from groups where ID = %d ", $id));
+		$res = $db->queryOneRow(sprintf("SELECT name FROM groups WHERE id = %d ", $id));
 		return $res["name"];
 	}
 
 	public function getIDByName($name)
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf("select ID from groups where name = %s", $name));
-		return $res["ID"];
+		$res = $db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s", $db->escapeString($name)));
+		return $res["id"];
 	}
 
 	// Set the backfill to 0 when the group is backfilled to max.
 	public function disableForPost($name)
 	{
 		$db = new DB();
-		$db->queryOneRow(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $db->escapeString($name)));
+		$db->queryExec(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $db->escapeString($name)));
 	}
 
 	public function getCount($groupname="")
@@ -97,9 +91,14 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s", $grpsql));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s", $grpsql));
 		return $res["num"];
 	}
 
@@ -109,9 +108,14 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s and active = 1", $grpsql));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s AND active = 1", $grpsql));
 		return $res["num"];
 	}
 
@@ -121,9 +125,14 @@ class Groups
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$res = $db->queryOneRow(sprintf("select count(ID) as num from groups where 1=1 %s and active = 0", $grpsql));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM groups WHERE 1 = 1 %s AND active = 0", $grpsql));
 		return $res["num"];
 	}
 
@@ -134,18 +143,18 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
-							FROM groups
-							LEFT OUTER JOIN
-							(
-							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
-							) rel ON rel.groupID = groups.ID WHERE 1=1 %s ORDER BY groups.name ".$limit, $grpsql);
+		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
 	}
 
@@ -156,18 +165,18 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
-							FROM groups
-							LEFT OUTER JOIN
-							(
-							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
-							) rel ON rel.groupID = groups.ID WHERE 1=1 %s and active = 1 ORDER BY groups.name ".$limit, $grpsql);
+		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases group by groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s AND active = 1 ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
 	}
 
@@ -178,18 +187,18 @@ class Groups
 		if ($start === false)
 			$limit = "";
 		else
-			$limit = " LIMIT ".$start.",".$num;
+			$limit = " LIMIT ".$num." OFFSET ".$start;
 
 		$grpsql = '';
 		if ($groupname != "")
-			$grpsql .= sprintf("and groups.name like %s ", $db->escapeString("%".$groupname."%"));
+		{
+			$like = 'ILIKE';
+			if ($db->dbSystem() == 'mysql')
+				$like = 'LIKE';
+			$grpsql .= sprintf("AND groups.name %s %s ", $like, $db->escapeString("%".$groupname."%"));
+		}
 
-		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
-							FROM groups
-							LEFT OUTER JOIN
-							(
-							SELECT groupID, COUNT(ID) AS num FROM releases group by groupID
-							) rel ON rel.groupID = groups.ID WHERE 1=1 %s and active = 0 ORDER BY groups.name ".$limit, $grpsql);
+		$sql = sprintf("SELECT groups.*, COALESCE(rel.num, 0) AS num_releases FROM groups LEFT OUTER JOIN (SELECT groupid, COUNT(id) AS num FROM releases group by groupid) rel ON rel.groupid = groups.id WHERE 1 = 1 %s AND active = 0 ORDER BY groups.name ".$limit, $grpsql);
 		return $db->query($sql);
 	}
 
@@ -198,38 +207,38 @@ class Groups
 		$db = new DB();
 
 		if ($group["minfilestoformrelease"] == "" || $group["minfilestoformrelease"] == "0")
-			$minfiles = 'null';
+			$minfiles = 'NULL';
 		else
 			$minfiles = $group["minfilestoformrelease"] + 0;
 
 		if ($group["minsizetoformrelease"] == "" || $group["minsizetoformrelease"] == "0")
-			$minsizetoformrelease = 'null';
+			$minsizetoformrelease = 'NULL';
 		else
 			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
 
 		$first = (isset($group["first_record"]) ? $group["first_record"] : "0");
 		$last = (isset($group["last_record"]) ? $group["last_record"] : "0");
 
-		$sql = sprintf("insert into groups (name, description, first_record, last_record, last_updated, active, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %s, %s, null, %d, %s, %s) ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($first), $db->escapeString($last), $group["active"], $minfiles, $minsizetoformrelease);
+		$sql = sprintf("INSERT INTO groups (name, description, first_record, last_record, last_updated, active, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %s, %s, NULL, %d, %s, %s) ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($first), $db->escapeString($last), $group["active"], $minfiles, $minsizetoformrelease);
 		return $db->queryInsert($sql);
 	}
 
 	public function delete($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("delete from groups where ID = %d", $id));
+		return $db->queryExec(sprintf("DELETE FROM groups WHERE id = %d", $id));
 	}
 
 	public function reset($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, active = 0, last_updated=null where ID = %d", $id));
+		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
 	}
 
 	public function resetall()
 	{
 		$db = new DB();
-		return $db->query("update groups set backfill_target=0, first_record=0, first_record_postdate=null, last_record=0, last_record_postdate=null, last_updated=null, active = 0");
+		return $db->queryExec("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL, active = 0");
 	}
 
 	public function purge($id)
@@ -240,13 +249,13 @@ class Groups
 
 		$this->reset($id);
 
-		$rels = $db->query(sprintf("select ID from releases where groupID = %d", $id));
+		$rels = $db->query(sprintf("SELECT id FROM releases WHERE groupid = %d", $id));
 		foreach ($rels as $rel)
-			$releases->delete($rel["ID"]);
+			$releases->delete($rel["id"]);
 
-		$cols = $db->query(sprintf("select ID from collections where groupID = %d", $id));
+		$cols = $db->query(sprintf("SELECT id FROM collections WHERE groupid = %d", $id));
 		foreach ($cols as $col)
-			$binaries->delete($col["ID"]);
+			$binaries->delete($col["id"]);
 	}
 
 	public function purgeall()
@@ -257,13 +266,13 @@ class Groups
 
 		$this->resetall();
 
-		$rels = $db->query("select ID from releases");
+		$rels = $db->query("SELECT id FROM releases");
 		foreach ($rels as $rel)
-			$releases->delete($rel["ID"]);
+			$releases->delete($rel["id"]);
 
-		$cols = $db->query("select ID from collections");
+		$cols = $db->query("SELECT id FROM collections");
 		foreach ($cols as $col)
-			$binaries->delete($col["ID"]);
+			$binaries->delete($col["id"]);
 	}
 
 	public function update($group)
@@ -271,16 +280,16 @@ class Groups
 		$db = new DB();
 
 		if ($group["minfilestoformrelease"] == "" || $group["minfilestoformrelease"] == "0")
-			$minfiles = 'null';
+			$minfiles = 'NULL';
 		else
 			$minfiles = $group["minfilestoformrelease"] + 0;
 
 		if ($group["minsizetoformrelease"] == "" || $group["minsizetoformrelease"] == "0")
-			$minsizetoformrelease = 'null';
+			$minsizetoformrelease = 'NULL';
 		else
 			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
 
-		return $db->query(sprintf("update groups set name=%s, description = %s, backfill_target = %s , active=%d, backfill=%d, minfilestoformrelease=%s, minsizetoformrelease=%s where ID = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));
+		return $db->queryExec(sprintf("UPDATE groups SET name = %s, description = %s, backfill_target = %s , active = %d, backfill = %d, minfilestoformrelease = %s, minsizetoformrelease = %s where id = %d ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]),$group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease, $group["id"] ));
 	}
 
 	//
@@ -308,11 +317,11 @@ class Groups
 			{
 				if (preg_match ($regfilter, $group['group']) > 0)
 				{
-					$res = $db->queryOneRow(sprintf("SELECT ID FROM groups WHERE name = %s ", $db->escapeString($group['group'])));
+					$res = $db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s ", $db->escapeString($group['group'])));
 					if($res)
 					{
 
-						$db->query(sprintf("UPDATE groups SET active = %d where ID = %d", $active, $res["ID"]));
+						$db->queryExec(sprintf("UPDATE groups SET active = %d where id = %d", $active, $res["id"]));
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Updated');
 					}
 					else
@@ -330,7 +339,7 @@ class Groups
 	public function updateGroupStatus($id, $status = 0)
 	{
 		$db = new DB();
-		$db->query(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
+		$db->queryExec(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
 		$status = ($status == 0) ? 'deactivated' : 'activated';
 		return "Group $id has been $status.";
 	}
@@ -338,7 +347,7 @@ class Groups
 	public function updateBackfillStatus($id, $status = 0)
 	{
 		$db = new DB();
-		$db->query(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
+		$db->queryExec(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
 		$status = ($status == 0) ? 'deactivated' : 'activated';
 		return "Group $id has been $status.";
 	}

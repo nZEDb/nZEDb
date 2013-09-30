@@ -17,7 +17,7 @@ class Sites
 
 	public function version()
 	{
-		return "0.0.2";
+		return "0.0.3";
 	}
 
 	public function update($form)
@@ -56,7 +56,7 @@ class Sites
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$db->query(sprintf("UPDATE site SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$db->queryExec(sprintf("UPDATE site SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $site;
 	}
@@ -64,7 +64,7 @@ class Sites
 	public function get()
 	{
 		$db = new DB();
-		$rows = $db->query("select * from site");
+		$rows = $db->query("SELECT * FROM site");
 
 		if ($rows === false)
 			return false;

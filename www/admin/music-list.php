@@ -1,11 +1,9 @@
 <?php
-
 require_once("config.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 require_once(WWW_DIR."/lib/music.php");
 
 $page = new AdminPage();
-
 $m = new Music();
 
 $page->title = "Music List";
@@ -22,7 +20,7 @@ $page->smarty->assign('pager', $pager);
 
 $musiclist = $m->getRange($offset, ITEMS_PER_PAGE);
 
-$page->smarty->assign('musiclist',$musiclist);	
+$page->smarty->assign('musiclist',$musiclist);
 
 $page->content = $page->smarty->fetch('music-list.tpl');
 $page->render();

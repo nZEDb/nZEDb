@@ -4,8 +4,10 @@ export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export HELP_PATH="/var/www/nZEDb/misc/update_scripts/nix_scripts/screen/threaded"
 export THREAD_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
 export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
+
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
-export PYTHON="$(which python)"
+command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }
+
 export SCREEN="$(which screen)"
 export NZEDB_SLEEP_TIME="60"
 	   LASTOPTIMIZE=`date +%s`
@@ -27,15 +29,15 @@ do
 	if ! $SCREEN -list | grep -q "POSTP"; then
 		cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true
 	fi
-	
+
 	cd ${THREAD_PATH}
-	$PYTHON -OO ${THREAD_PATH}/binaries_threaded.py
-	
+	$PYTHON -OOu ${THREAD_PATH}/binaries_threaded.py
+
 	cd ${HELP_PATH}
 	if ! $SCREEN -list | grep -q "RELEASES"; then
 		cd $HELP_PATH && $SCREEN -dmS RELEASES $SCREEN sh $HELP_PATH/helper.sh
 	fi
-	
+
 	cd ${TEST_PATH}
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 	if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
@@ -46,7 +48,7 @@ do
 		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
 		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
 	fi
-	
+
 	cd ${NZEDB_PATH}
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE1))
 	if [ "$DIFF" -gt 7200 ] || [ "$DIFF" -lt 1 ]

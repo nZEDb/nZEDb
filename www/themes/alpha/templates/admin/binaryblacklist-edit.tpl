@@ -13,7 +13,7 @@
 <tr>
 	<td>Group:</td>
 	<td>
-		<input type="hidden" name="id" value="{$regex.ID}" />
+		<input type="hidden" name="id" value="{$regex.id}" />
 		<input type="text" id="groupname" name="groupname" value="{$regex.groupname|escape:html}" />
 		<div class="hint">The full name of a valid newsgroup. (Wildcard in the format 'alt.binaries.*')</div>		
 	</td>

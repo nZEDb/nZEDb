@@ -9,4 +9,3 @@ if (isset($argv[1]))
 	$import->GrabNZBs($argv[1]);
 else
 	$import->GrabNZBs($hash='');
-

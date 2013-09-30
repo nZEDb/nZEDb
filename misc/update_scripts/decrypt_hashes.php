@@ -6,40 +6,69 @@ require_once(WWW_DIR."lib/nfo.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 
-preName();
+if (!isset($argv[1]))
+	exit ("This script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\nphp decrypt_hashes.php true to limit 1000.\nphp decrypt_hashes.php full to run on full database.\n");
 
-function preName()
+echo "\nDecrypt Hashes Started at ".date("g:i:s")."\nMatching predb MD5 to md5(releases.name or releases.searchname)\n";
+preName($argv);
+
+function preName($argv)
 {
 	$db = new DB();
-	$consoletools = new ConsoleTools();
-	$counter = 0;
-	$loops = 1;
-	$reset = 0;
-	//$db->queryDirect("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
+	$timestart = TIME();
+	$limit = ($argv[1] == "full") ? "" : " LIMIT 1000";
 
-	$db->query("update releases set dehashstatus = -1 where dehashstatus = 0 and searchname REGEXP '[a-fA-F0-9]{32}'");
-	if($res = $db->queryDirect("select ID, searchname from releases where dehashstatus between -6 and -1 and searchname REGEXP '[a-fA-F0-9]{32}'"))
+	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND hashed = true".$limit);
+	$total = $res->rowCount();
+	$counter = 0;
+	$show = '';
+	if($total > 0)
 	{
+		$consoletools = new ConsoleTools();
+		$category = new Category();
+		$reset = 0;
+		$loops = 1;
+		$n = "\n";
 		foreach ($res as $row)
 		{
 			$success = false;
-			if (preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match))
+			if (preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match))
 			{
-				if($res1 = $db->queryOneRow(sprintf("select title from predb where md5 = %s", $db->escapeString($match[1]))))
+				$pre = $db->queryOneRow(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($match[1])));
+				if ($pre !== false)
 				{
-					$db->query(sprintf("update releases set dehashstatus = 1, relnamestatus = 6, searchname = %s where ID = %d", $db->escapeString($res1['title']), $row['ID']));
-					if ($db->getAffectedRows() >= 1)
+					$determinedcat = $category->determineCategory($pre['title'], $row["groupid"]);
+					$result = $db->prepare(sprintf("UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['id']));
+					$result->execute();
+					if (count($result) > 0)
 					{
-						echo "Renamed hashed release: ".$res1['title']."\n";
+						$groups = new Groups();
+						$groupname = $groups->getByNameByID($row["groupid"]);
+						$oldcatname = $category->getNameByID($row["categoryid"]);
+						$newcatname = $category->getNameByID($determinedcat);
+
+						echo	$n."New name:  ".$pre['title'].$n.
+							"Old name:  ".$row["searchname"].$n.
+							"New cat:   ".$newcatname.$n.
+							"Old cat:   ".$oldcatname.$n.
+							"Group:     ".$groupname.$n.
+							"Method:    "."predb md5 release name: ".$pre["source"].$n.
+							"ReleaseID: ". $row["id"].$n;
+
 						$success = true;
 						$counter++;
 					}
 				}
 			}
 			if ($success == false)
-				$db->query(sprintf("update releases set dehashstatus = dehashstatus - 1 where ID = %d", $row['ID']));
-			$consoletools->overWrite("Renaming hashed releases:".$consoletools->percentString($loops++,mysqli_num_rows($res)));
+			{
+				$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
+				$fail->execute();
+			}
 		}
 	}
-	echo "\n".$counter. " release(s) names changed.\n";
+	if ($total > 0)
+		echo "\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart)."\n";
+	else
+		echo "\nNothing to do.\n";
 }

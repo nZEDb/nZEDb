@@ -26,7 +26,7 @@ else
 		if (!$res)
 			$page->show403();
 	}
-	$uid = $res["ID"];
+	$uid = $res["id"];
 	$maxdls = $res["downloadrequests"];
 }
 
