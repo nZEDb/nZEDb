@@ -93,10 +93,21 @@ class DB
 				return DB::$pdo->lastInsertId();
 				$i++;
 			}
-			printf($e);
+			//printf($e);
 			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
+				return false;
+			}
+			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[1]==22001)
+            {
+                //echo "\nError: Too large to fit column length\n";
+                return false;
+            }
+			else
+				printf($e);
 			return false;
+
 		}
 	}
 
@@ -121,9 +132,13 @@ class DB
 				return $run;
 				$i++;
 			}
-			printf($e);
-			//if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
+				return false;
+			}
+			else
+				printf($e);
 			return false;
 		}
 	}

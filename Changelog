@@ -1,6 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
-09302103 -> jonnyboy -> fixed many bugs
+09302103 -> jonnyboy -> fixed binaries_safe_threaded.py
+                        fixed many bugs
 09252013 -> jonnyboy -> added table for country codes, tvrage does not always return an abbreviation
                         added yesterdays patch to schema, correct patch for pgsql
 09242013 -> jonnyboy -> numerous changes queries, improved query speed, fixed some bugs

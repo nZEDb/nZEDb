@@ -218,7 +218,7 @@ class Binaries
 			echo $data['group'].' processed in '.$timeGroup." seconds.\n\n";
 		}
 		else
-			echo 'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n\n";
+			echo 'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n";
 	}
 
 	public function scan($nntp, $groupArr, $first, $last, $type='update')
