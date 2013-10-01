@@ -158,8 +158,8 @@ class NZB
 			$result[$i]['size'] = $filesize;
 
 			// File completion.
-			preg_match('/(\d+)\)$/', $title, $parts);
-			$result[$i]['partstotal'] = $parts[1];
+			if (preg_match('/(\d+)\)$/', $title, $parts))
+				$result[$i]['partstotal'] = $parts[1];
 			$result[$i]['partsactual'] = $numsegs;
 
 			if (!isset($result[$i]['groups']))

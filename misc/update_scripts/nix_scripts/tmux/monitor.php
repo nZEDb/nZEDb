@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3727";
+$version="0.1r3748";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -304,12 +304,7 @@ if ( $show_query == "TRUE" )
 	printf($mask, "Query Block", "Time", "Cumulative");
 	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
-	printf($mask, "Tmux Site", "0",  "0");
-	printf($mask, "Split", "0",  "0");
-	printf($mask, "Initial", "0",  "0");
-	printf($mask, "In Process 1", "0",  "0");
-	printf($mask, "In Process 2", "0",  "0");
-    printf($mask, "In Process 3", "0",  "0");
+	printf($mask, "Combined", "0",  "0");
 }
 
 $monitor = 30;
@@ -664,12 +659,7 @@ while( $i > 0 )
 		printf($mask, "Query Block", "Time", "Cumulative");
 		printf($mask, "==============================", "=========================", "==============================");
 		printf("\033[38;5;214m");
-		printf($mask, "Tmux Site", $tmux_time, $tmux_time);
-		printf($mask, "Split", $split_time, $split1_time);
-		printf($mask, "Initial", $init_time, $init1_time);
-		printf($mask, "In Process 1", $proc1_time, $proc11_time);
-		printf($mask, "In Process 2", $proc2_time, $proc21_time);
-		printf($mask, "In Process 3", $proc3_time, $proc31_time);
+		printf($mask, "Combined", $tmux_time.", ".$split_time.", ".$init_time.", ".$proc1_time.", ".$proc2_time.", ".$proc3_time, $tmux_time.", ".$split1_time.", ".$init1_time.", ".$proc11_time.", ".$proc21_time.", ".$proc31_time);
 	}
 
 	//get list of panes by name
