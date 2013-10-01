@@ -5,9 +5,13 @@ require_once(WWW_DIR."lib/nntp.php");
 
 $nntp = new Nntp();
 $nntp->doConnect();
+
+echo "Getting first/last for all active groups\n";
 $data = $nntp->getGroups();
+
 $nntp->doQuit();
 
+echo "Inserting new values into allgroups table\n";
 $db = new DB();
 foreach ($data as $newgroup)
 {
