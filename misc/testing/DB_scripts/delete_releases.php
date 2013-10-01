@@ -13,14 +13,19 @@ $site = $s->get();
 $timestart = TIME();
 $relcount = 0;
 
-//	This script removes all releases and nzb files based on poster, searchname, name, groupid, or guid.
+//	This script removes all releases and nzb files based on poster, searchname, name, groupname, or guid.
 if (sizeof($argv) == 4)
 {
-	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname" || $argv[1] == "groupid"))
+	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
 		$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3])));
 		printf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
+    elseif ($argv[2] == "equals" && ($argv[1] == "groupname"))
+    {
+        $relids = $db->query(sprintf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3])));
+        printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3]));
+    }
 	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
 		$like = ' ILIKE';
@@ -29,8 +34,16 @@ if (sizeof($argv) == 4)
 		$relids = $db->query("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
 		printf("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
 	}
+    elseif ($argv[2] == "like" && ($argv[1] == "groupname"))
+    {
+        $like = ' ILIKE';
+        if ($db->dbSystem() == 'mysql')
+            $like = ' LIKE';
+        $relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
+        printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
+    }
 	else
-		exit("This script removes all releases and nzb files from a poster or by searchname, name, groupid, or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupid, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, guid ] like [ name/guid ]\n");
+		exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n");
 
 	echo "\nDeleting ".sizeof($relids)." releases and NZB's for ".$argv[3]."\n";
 
@@ -49,4 +62,4 @@ if (sizeof($argv) == 4)
 	echo ".\n";
 }
 else
-	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupid, or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupid, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, guid ] like [ name/guid ]\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, or guid.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid ] equals [ name/guid ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n");
