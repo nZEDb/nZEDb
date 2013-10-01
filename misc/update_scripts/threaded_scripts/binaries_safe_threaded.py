@@ -50,6 +50,24 @@ if hashcheck == 0:
 #before we get the groups, lets update allgroups
 subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
+#create new db connection, to get current values
+cur.close()
+con.close()
+con = None
+if conf['DB_SYSTEM'] == "mysql":
+	try:
+		import cymysql as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+	except ImportError:
+		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+elif conf['DB_SYSTEM'] == "pgsql":
+	try:
+		import psycopg2 as mdb
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+	except ImportError:
+		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+cur = con.cursor()
+
 #query to grab all active groups
 cur.execute("SELECT g.name AS groupname, g.last_record AS our_last, MAX(a.last_record) AS thier_last FROM groups g INNER JOIN allgroups a ON g.active = 1 AND g.name = a.name GROUP BY g.name ORDER BY a.last_record DESC")
 datas = cur.fetchall()
