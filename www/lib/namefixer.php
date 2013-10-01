@@ -314,13 +314,12 @@ class Namefixer
 							"ReleaseID: ". $release["id"].$n.$n;
 					}
 					$matching++;
+					if ($namestatus == 1 && $this->matched === false)
+					{
+						$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
+						$fail->execute();
+					}
 				}
-			if ($namestatus == 1 && $this->matched === false)
-			{
-				$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
-				$fail->execute();
-			}
-				
 			}
 		}
 		return $matching;
