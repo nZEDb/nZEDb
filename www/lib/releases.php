@@ -1156,7 +1156,7 @@ class Releases
 
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
 		if ($this->echooutput && $delcount > 0)
-				echo 'Deleted '.$delcount." collections smaller/larger than group/site settings.\n";
+				echo 'Deleted '.number_format($delcount)." collections smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage3);
 	}
@@ -1219,7 +1219,7 @@ class Releases
 		}
 
 		if ($this->echooutput)
-			echo $retcount.' Releases added in '.$consoletools->convertTime(TIME() - $stage4).'.';
+			echo number_format($retcount).' Releases added in '.$consoletools->convertTime(TIME() - $stage4).'.';
 		return $retcount;
 	}
 
@@ -1240,11 +1240,14 @@ class Releases
 		$catresrel = $db->query('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel)
 		{
-			$resrel = $db->query(sprintf('SELECT r.id, r.guid FROM releases r WHERE'.$where.'r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
-			foreach ($resrel as $rowrel)
+			if ($catrowrel['minsize'] > 0)
 			{
-				$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
-				$catminsizecount ++;
+				$resrel = $db->query(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
+				foreach ($resrel as $rowrel)
+				{
+					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$catminsizecount ++;
+				}
 			}
 		}
 
@@ -1361,7 +1364,7 @@ class Releases
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
 		if ($this->echooutput && $delcount > 0)
-				echo 'Deleted '.$delcount." releases smaller/larger than group/site settings.\n";
+				echo 'Deleted '.number_format($delcount)." releases smaller/larger than group/site settings.\n";
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage4dot5);
 	}
@@ -1403,7 +1406,7 @@ class Releases
 
 		$timing = $consoletools->convertTime(TIME() - $stage5);
 		if ($this->echooutput && $nzbcount > 0)
-			echo "\n".$nzbcount.' NZBs created in '. $timing.'.';
+			echo "\n".number_format($nzbcount).' NZBs created in '. $timing.'.';
 		elseif ($this->echooutput)
 			echo $timing;
 		return $nzbcount;
@@ -1504,7 +1507,7 @@ class Releases
 			}
 
 			if ($this->echooutput)
-				echo "\n".$iFoundcnt.' Releases updated in '.$consoletools->convertTime(TIME() - $stage8).'.';
+				echo "\n".number_format($iFoundcnt).' Releases updated in '.$consoletools->convertTime(TIME() - $stage8).'.';
 		}
 	}
 
@@ -1545,7 +1548,7 @@ class Releases
 		$n = "\n";
 		$reccount = 0;
 
-		$where = (!empty($groupID)) ? ' AND collections.groupid = '.$groupID : '';
+		$where = (!empty($groupID)) ? ' collections.groupid = '.$groupID.' AND ' : ' ';
 		$delq = 0;
 
 		// Delete old releases and finished collections.
@@ -1556,7 +1559,7 @@ class Releases
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql')
 		{
-			$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.filecheck = 5'.$where));
+			$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE'.$where.'collections.filecheck = 5'));
 			$delq->execute();
 			$reccount = $delq->rowCount();
 		}
@@ -1580,7 +1583,7 @@ class Releases
 			}
 		}
 		if ($this->echooutput)
-				echo 'Removed '.$reccount.' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage7);
+				echo 'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage7);
 	}
 
 	public function processReleasesStage7b($groupID, $echooutput=false)
