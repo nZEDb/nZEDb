@@ -1165,13 +1165,15 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$retcount = 0;
+		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
 		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE'.$where.'filecheck = 3 AND filesize > 0 LIMIT '.$this->stage5limit);
+		echo $rescol->rowCount()." Collections ready to be converted to releases.\n";
+		
 		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
@@ -1196,9 +1198,12 @@ class Releases
 					$propername = $cleanerName['properlynamed'];
 				}
 				$relguid = sha1(uniqid(true).mt_rand());
-				$ckid = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name= %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($cleanRelName), $db->escapeString($rowcol['fromname']), $db->escapeString($rowcol['filesize']), $rowcol['groupid']));
+				$ckid = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name = %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($cleanRelName), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], $rowcol['groupid']));
 				if (isset($ckid['id']))
+				{
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
+					$duplicate++;
+				}
 				else
 				{
 					if ($propername != false)
@@ -1206,7 +1211,7 @@ class Releases
 					else
 						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
 				}
-				if (isset($relid) && $relid)
+				if (isset($relid) && $relid != false)
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1219,7 +1224,7 @@ class Releases
 		}
 
 		if ($this->echooutput)
-			echo number_format($retcount).' Releases added in '.$consoletools->convertTime(TIME() - $stage4).'.';
+			echo number_format($retcount).' Releases added and '.$duplicate.' marked for deletion in '.$consoletools->convertTime(TIME() - $stage4).'.';
 		return $retcount;
 	}
 
