@@ -73,7 +73,6 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../update_binaries.php", ""+my_id])
-					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():

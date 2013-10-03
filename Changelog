@@ -1,5 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 
+10032193 -> jonnyboy -> fixed a couple bugs in python scripts
 09302103 -> jonnyboy -> fixed binaries_safe_threaded.py
                         fixed many bugs
 09252013 -> jonnyboy -> added table for country codes, tvrage does not always return an abbreviation

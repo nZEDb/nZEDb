@@ -22,6 +22,11 @@ if (isset($argv[1]))
 		$backfill = new Backfill();
 		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
 	}
+	elseif (isset($pieces[2]) && $pieces[2] == "BackfillAll")
+	{
+		$backfill = new Backfill();
+		$backfill->backfillPostAllGroups($pieces[0], $pieces[1]);
+	}
 	elseif (isset($pieces[3]))
 	{
 		$backfill = new Backfill();

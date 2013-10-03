@@ -974,31 +974,31 @@ class Releases
 		if ($this->echooutput)
 			echo "\033[1;33mStage 1 -> Try to find complete collections.\033[0m\n";
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID : '';
+		$where = (!empty($groupID)) ? ' c.groupid = '.$groupID.' AND ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id '.$where.' GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ');
+		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ');
 		//$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$db->queryExec('UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE b.collectionid = c.id AND b.filenumber = 0 '.$where.' GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
+		$db->queryExec('UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$db->queryExec('UPDATE collections c SET filecheck = 15 WHERE filecheck = 1'.$where);
+		$db->queryExec('UPDATE collections c SET filecheck = 15 WHERE'.$where.'filecheck = 1');
 
 		// If we have all the parts set partcheck to 1.
 		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid '.$where.' GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
 		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid '.$where.' GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
 
 		// Set filecheck to 2 if partcheck = 1.
-		$db->queryExec('UPDATE collections c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE c.id = b.collectionid AND b.partcheck = 1 '.$where.' GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ');
+		$db->queryExec('UPDATE collections c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'c.id = b.collectionid AND b.partcheck = 1 GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ');
 		// Set filecheck to 1 if we don't have all the parts.
-		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE filecheck in (15, 16) '.$where);
+		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE'.$where.'filecheck in (15, 16)');
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		if ($db->dbSystem() == 'mysql')
-			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10) ".$where, $this->delaytimet));
+			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
 		else
-			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10) ".$where, $this->delaytimet));
+			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
 
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage1);
@@ -1008,13 +1008,13 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$where = (!empty($groupID)) ? ' AND groupid = ' . $groupID : '';
+		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 2 -> Get the size in bytes of the collection.\033[0m\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$db->queryExec('UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0 '.$where);
+		$db->queryExec('UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
 		if ($this->echooutput)
 			echo $consoletools->convertTime(TIME() - $stage2);
 	}
@@ -1036,7 +1036,7 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0');
+				$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID['id']);
 				if (count($res) > 0)
 				{
 					$minsizecount = 0;
@@ -1096,7 +1096,7 @@ class Releases
 		}
 		else
 		{
-			$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0');
+			$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID);
 			if(count($res) > 0)
 			{
 				$minsizecount = 0;
@@ -1166,12 +1166,12 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$retcount = 0;
-		$where = (!empty($groupID)) ? ' AND groupid = ' . $groupID : '';
+		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4 -> Create releases.\033[0m\n";
 		$stage4 = TIME();
-		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE filecheck = 3 AND filesize > 0 '. $where.' LIMIT '.$this->stage5limit);
+		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE'.$where.'filecheck = 3 AND filesize > 0 LIMIT '.$this->stage5limit);
 		if($rescol->rowCount() > 0)
 		{
 			$namecleaning = new nameCleaning();
@@ -1231,7 +1231,7 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
-		$where = (!empty($groupID)) ? ' AND groupid = ' . $groupID : '';
+		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\033[0m\n";
@@ -1240,7 +1240,7 @@ class Releases
 		$catresrel = $db->query('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel)
 		{
-			$resrel = $db->query(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d'.$where, $catrowrel['id'], $catrowrel['minsize']));
+			$resrel = $db->query(sprintf('SELECT r.id, r.guid FROM releases r WHERE'.$where.'r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
 			foreach ($resrel as $rowrel)
 			{
 				$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
@@ -1371,13 +1371,13 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$nzbcount = 0;
-		$where = (!empty($groupID)) ? ' AND r.groupid = ' . $groupID : '';
+		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID.' AND ' : ' ';
 
 		// Create NZB.
 		if ($this->echooutput)
 			echo "\n\033[1;33mStage 5 -> Create the NZB, mark collections as ready for deletion.\033[0m\n";
 		$stage5 = TIME();
-		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE r.nzbstatus = 0 ".$where);
+		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE".$where."r.nzbstatus = 0");
 		$total = count($resrel);
 		if ($total > 0)
 		{
@@ -1419,25 +1419,25 @@ class Releases
 			$category = new Category();
 			$groups = new Groups();
 			$iFoundcnt = 0;
-			$where = (!empty($groupID)) ? ' AND groupid = '.$groupID : '';
+			$where = (!empty($groupID)) ? ' groupid = '.$groupID.' AND ' : ' ';
 			$stage8 = TIME();
 			$n = "\n";
 
 			if ($this->echooutput)
 				echo "\n\033[1;33mStage 5b -> Request ID lookup.\033[0m";
 
-			// Look for records that potentially have regex titles.
+			// Look for records that potentially have requestID titles.
 			if ($db->dbSystem() == 'mysql')
 			{
-				// Mark records that don't have regex titles.
+				// Mark records that don't have requestID titles.
 				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[0-9]+\\]' LIMIT 100".$where);
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[0-9]+\\]' LIMIT 100");
 			}
 			else
 			{
-				// Mark records that don't have regex titles.
+				// Mark records that don't have requestID titles.
 				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name ~ '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name ~ '^\\[[0-9]+\\]' LIMIT 100".$where);
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."( relnamestatus in (0, 1, 20, 21, 22) OR categoryid BETWEEN 7000 and 7999 ) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name ~ '^\\[[0-9]+\\]' LIMIT 100");
 			}
 
 			if (count($resrel) > 0)
