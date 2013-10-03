@@ -133,7 +133,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -240,7 +240,7 @@ class Backfill
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
 			$nntp->doQuit();
-			echo 'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n";
+			echo 'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n\n";
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
@@ -291,7 +291,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -432,25 +432,37 @@ class Backfill
 		{
 			if ($st === true)
 				$nntp->doQuit();
-			echo 'WARNING: Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article ('.date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n";
+			echo "WARNING: Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n";
 			return $data['first'];
 		}
 		elseif ($goaldate > $lastDate)
 		{
 			if ($st === true)
 				$nntp->doQuit();
-			echo 'ERROR: Backfill target of '.$days.' day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least '.ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n";
+			echo 'ERROR: Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n";
 			return '';
 		}
 
+		$mask1 = "%-25s %15s %-30s\n";
+		$mask2 = "%-25s %15s\n";
+		$mask3 = "%-10s %30s\n";
 		if ($debug)
-			echo "DEBUG: Searching for postdate.\nGoaldate: ".$goaldate.' ('.date('r', $goaldate).").\nFirstdate: ".$firstDate.' ('.((is_int($firstDate))?date('r', $firstDate):'n/a').").\nLastdate: ".$lastDate.' ('.date('r', $lastDate).").\n";
+		{
+			printf($mask3, 'DEBUG:', 'Searching for postdate.');
+			printf($mask1, 'Goaldate:', $goaldate, '('.date('r', $goaldate).')');
+			printf($mask1, 'Firstdate:', $firstDate, '('.((is_int($firstDate))?date('r', $firstDate):'n/a').')');
+			printf($mask1, 'Lastdate:', $lastDate, '('.date('r', $lastDate).')');
+		}
 
 		$interval = floor(($upperbound - $lowerbound) * 0.5);
 		$dateofnextone = $templowered = '';
 
 		if ($debug)
-			echo 'Start: '.$data['first']."\nEnd: ".$data['last']."\nInterval: ".$interval."\n";
+		{
+			printf($mask2, 'First Post:', number_format($data['first']));
+			printf($mask2, 'Last Post:', number_format($data['last']));
+			printf($mask2, 'Posts Available:', number_format($interval*2));
+		}
 
 		$dateofnextone = $lastDate;
 		// Match on days not timestamp to speed things up.
@@ -460,14 +472,14 @@ class Backfill
 			{
 				$upperbound = $upperbound - $interval;
 				if ($debug)
-					echo 'New upperbound ('.$upperbound.') is '.$this->daysOld($tmpDate)." days old.\n";
+					printf($mask1, 'New upperbound:', number_format($upperbound), 'is '.$this->daysOld($tmpDate).' days old.');
 			}
 
 			if(!$templowered)
 			{
 				$interval = ceil(($interval/2));
 				if ($debug)
-					echo 'Set interval to '.$interval." articles.\n";
+					printf($mask1, 'Checking interval at:', number_format($interval), 'articles.');
 		 	}
 		 	$dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group);
 			while(!$dateofnextone)
@@ -475,7 +487,7 @@ class Backfill
 	 	}
 	 	if ($st === true)
 				$nntp->doQuit();
-		echo 'Determined to be article $upperbound which is '.$this->daysOld($dateofnextone).' days old ('.date('r', $dateofnextone).").\n";
+		printf($mask1, 'Determined to be article:', number_format($upperbound), 'which is '.$this->daysOld($dateofnextone).' days old ('.date('r', $dateofnextone).')');
 		return $upperbound;
 	}
 
@@ -515,9 +527,9 @@ class Backfill
 		}
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 		else
-			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 
 		echo $type.' Safe Threaded for '.$group." completed.\n";
 	}

@@ -29,7 +29,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-threads = 3
+threads = 10
 print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
@@ -66,7 +66,6 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+my_id])
-					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():

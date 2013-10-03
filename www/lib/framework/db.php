@@ -85,7 +85,7 @@ class DB
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
+			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
 				sleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
@@ -93,17 +93,16 @@ class DB
 				return DB::$pdo->lastInsertId();
 				$i++;
 			}
-			//printf($e);
-			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			if ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[1]==22001)
-            {
-                //echo "\nError: Too large to fit column length\n";
-                return false;
-            }
+			elseif ($e->errorInfo[0]==1406 || $e->errorInfo[0]==22001)
+			{
+				//echo "\nError: Too large to fit column length\n";
+				return false;
+			}
 			else
 				printf($e);
 			return false;
@@ -124,7 +123,7 @@ class DB
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) && $i <= 10)
+			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
 				sleep($i * $i);
 				$run = DB::$pdo->prepare($query);
@@ -132,9 +131,14 @@ class DB
 				return $run;
 				$i++;
 			}
-			if ($e->errorInfo[1]==1062 || $e->errorInfo[1]==23000)
+			if ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
+				return false;
+			}
+			elseif ($e->errorInfo[0]==1406 || $e->errorInfo[0]==22001)
+			{
+				//echo "\nError: Too large to fit column length\n";
 				return false;
 			}
 			else
