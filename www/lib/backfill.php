@@ -133,7 +133,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -291,7 +291,7 @@ class Backfill
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $db->escapeString($first), $groupArr['id']));
 			if($first==$targetpost)
 				$done = true;
 			else
@@ -527,9 +527,9 @@ class Backfill
 		}
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($postsdate), $db->escapeString($first), $groupArr['id']));
 		else
-			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $first, $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($postsdate), $db->escapeString($first), $groupArr['id']));
 
 		echo $type.' Safe Threaded for '.$group." completed.\n";
 	}
