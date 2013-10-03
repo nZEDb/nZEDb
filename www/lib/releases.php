@@ -1203,6 +1203,7 @@ class Releases
 				{
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
 					$duplicate++;
+					continue;
 				}
 				else
 				{

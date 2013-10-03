@@ -527,9 +527,9 @@ class Backfill
 		}
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($postsdate), $db->escapeString($first), $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 		else
-			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($postsdate), $db->escapeString($first), $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 
 		echo $type.' Safe Threaded for '.$group." completed.\n";
 	}
