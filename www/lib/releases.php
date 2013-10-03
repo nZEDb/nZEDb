@@ -1224,7 +1224,7 @@ class Releases
 		}
 
 		if ($this->echooutput)
-			echo number_format($retcount).' Releases added and '.$duplicate.' marked for deletion in '.$consoletools->convertTime(TIME() - $stage4).'.';
+			echo number_format($retcount).' Releases added and '.number_format($duplicate).' marked for deletion in '.$consoletools->convertTime(TIME() - $stage4).'.';
 		return $retcount;
 	}
 
@@ -1648,8 +1648,13 @@ class Releases
 		echo 'Query 2 took '.(TIME() - $timer2)." seconds (binaries/parts with no collections).\n";
 		// Parts that somehow have no binaries.
 		$timer3 = TIME();
-		$db->queryExec('DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)');
-		echo 'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
+		if (mt_rand(1, 100) % 3 == 0)
+		{
+			$db->queryExec('DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)');
+			echo 'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
+		}
+		else
+			echo 'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
 		// Binaries that somehow have no collection.
 		$timer4 = TIME();
 		$db->queryExec('DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c)');
