@@ -1183,7 +1183,7 @@ class Releases
 			foreach ($rescol as $rowcol)
 			{
 				$propername = $dupe = false;
-				$cleanName = $err = '';
+				$cleanName = $err = $relid = '';
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
 				$cleanerName = $namecleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
 				/*$ncarr = $namecleaning->collectionsCleaner($subject, $rowcol['gname']);
