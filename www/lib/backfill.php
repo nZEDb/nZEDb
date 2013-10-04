@@ -285,7 +285,7 @@ class Backfill
 			echo "\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. \033[1;33m(".(number_format($first-$targetpost))." articles in queue).\033[0m\n";
 			flush();
 
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$binaries->scan(null, $groupArr, $first, $last, 'backfill');
 
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
