@@ -95,6 +95,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
+		time.sleep(.1)
 		my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
 
 	my_queue.join()
