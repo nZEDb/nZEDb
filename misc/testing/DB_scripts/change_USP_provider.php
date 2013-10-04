@@ -4,19 +4,22 @@ require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/backfill.php");
 require_once(FS_ROOT."/../../../www/lib/nntp.php");
+require_once(FS_ROOT."/../../../www/lib/ColorCLI.php");
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
 It will also truncate the parts, binaries, collections, and partsrepair tables.
 */
 // TODO: Make this threaded so it goes faster.
 
+$c = New ColorCLI;
+$db = New DB();
+
 if (!isset($argv[1]) || $argv[1] != 'true')
 {
-    printf("\033[0;33mThis script is used when you have switched UseNet Providers(USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you \033[1;31mDO NOT\033[0;33m have any update or postprocess scripts running when running this script!\n\n\033[0;36mUsage: php change_USP_provider true\n");
+    printf($c->setColor('bold', 'yellow')."This script is used when you have switched UseNet Providers(USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you ".$c->setColor('bold', 'red')."DO NOT".$c->setcolor('bold', 'yellow')." have any update or postprocess scripts running when running this script!\n\n".$c->setColor('norm', 'cyan')."Usage: php change_USP_provider true\n");
     exit();
 }
 
-$db = New DB();
 
 $groups = $db->query("SELECT id, name, first_record_postdate, last_record_postdate FROM groups WHERE active = 1");
 $numofgroups = count($groups);
@@ -34,14 +37,14 @@ foreach ($groups as $group)
     $bfdays = daysOldstr($group['first_record_postdate']);
     $currdays = daysOldstr($group['last_record_postdate']);
     $bfartnum = daytopost($nntp, $group['name'], $bfdays, true, true);
-    echo "Our Current backfill postdate was: \033[1;33m".date('r', strtotime($group['first_record_postdate']))."\033[0;37m\n";
+    echo "Our Current backfill postdate was: ".$c->setcolor('bold', 'yellow').date('r', strtotime($group['first_record_postdate'])).$c->rsetcolor()."\n";
     $currartnum = daytopost($nntp, $group['name'], $currdays, true, false);
-    echo "Our Current current postdate was: \033[1;33m".date('r', strtotime($group['last_record_postdate']))."\033[0;37m\n";
+    echo "Our Current current postdate was: ".$c->setcolor('bold', 'yellow').date('r', strtotime($group['last_record_postdate'])).$c->rsetcolor()."\n";
     $db->queryExec(sprintf("UPDATE groups SET first_record = %s, last_record = %s WHERE id = %d", $db->escapeString($bfartnum), $db->escapeString($currartnum), $group['id']));
     $endtime = microtime(true);
-    echo "\033[2;37mThis group took ".gmdate("H:i:s",$endtime-$starttime)." to process.\n";
+    echo $c->setColor('dim', 'gray')."This group took ".gmdate("H:i:s",$endtime-$starttime)." to process.\n";
     $numofgroups--;
-    echo "There are ".$numofgroups." left to process.\n\n\033[0;37m";
+    echo "There are ".$numofgroups." left to process.\n\n".$c->rsetcolor()."";
 }
 
 $totalend = microtime(true);
@@ -72,6 +75,7 @@ function daysOld($timestamp)
 // This function taken from lib/backfill.php, and modified to fit our needs.
 function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 {
+    $c = New ColorCLI;
     $backfill = New Backfill();
     // DEBUG every postdate call?!?!
     $pddebug = $st = false;
@@ -151,9 +155,9 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
     if ($st === true)
         $nntp->doQuit();
     if ($bfcheck)
-        echo "\nBackfill article determined to be ".$upperbound." \033[1;33m(".date('r', $dateofnextone).")\033[0;37m\n"; // which is '.daysOld($dateofnextone)." days old.\n";
+        echo "\nBackfill article determined to be ".$upperbound." ".$c->setcolor('bold', 'yellow')."(".date('r', $dateofnextone).")".$c->rsetcolor()."\n"; // which is '.daysOld($dateofnextone)." days old.\n";
     else
-        echo 'Current article determined to be '.$upperbound." \033[1;33m(".date('r', $dateofnextone).")\033[0;37m\n"; // which is '.daysOld($dateofnextone)." days old.\n";
+        echo 'Current article determined to be '.$upperbound." ".$c->setcolor('bold', 'yellow')."(".date('r', $dateofnextone).")".$c->rsetcolor()."\n"; // which is '.daysOld($dateofnextone)." days old.\n";
     return $upperbound;
 }
 
