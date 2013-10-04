@@ -62,10 +62,13 @@ if( isset($argv[1]) )
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table)
 		{
-			echo "Optimizing table: ".$table['name'].".\n";
-			if (strtolower($table['engine']) == "myisam")
-				$db->queryDirect("REPAIR TABLE `".$table['name']."`");
-			$db->queryDirect("OPTIMIZE TABLE `".$table['name']."`");
+			if ($table['name']!='predb')
+			{
+				echo "Optimizing table: ".$table['name'].".\n";
+				if (strtolower($table['engine']) == "myisam")
+					$db->queryDirect("REPAIR TABLE `".$table['name']."`");
+				$db->queryDirect("OPTIMIZE TABLE `".$table['name']."`");
+			}
 		}
 		$db->queryDirect("FLUSH TABLES");
 	}

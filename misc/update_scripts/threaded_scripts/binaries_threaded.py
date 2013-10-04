@@ -96,6 +96,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
+		time.sleep(.5)
 		my_queue.put(gnames[0])
 
 	my_queue.join()
