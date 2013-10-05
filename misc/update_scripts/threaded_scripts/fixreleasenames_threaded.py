@@ -46,20 +46,20 @@ cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
 perrun = cur.fetchone()
 
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 6, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 6, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 20, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus in (0, 1, 6, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+	run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 6, 20, 21) AND id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21) AND id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
@@ -117,15 +117,19 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 
 	my_queue.join()

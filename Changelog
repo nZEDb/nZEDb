@@ -1,6 +1,12 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
-
-09302103 -> jonnyboy -> fixed binaries_safe_threaded.py
+10052103 -> jonnyboy -> added my rename script, would be better that these reges were part of namefixer/namecleaner
+10032013 -> ThePeePs -> Added Script to update article numbers for groups when changing USP's rather than resetting all groups.
+10032013 -> jonnyboy -> changed update/insert queries with last_record and first_record from dec to string
+                        stage 7b query 3 not needed to run every loop, it is slow, so added check to only run sometimes
+                        fixed bug in releases.php not catching duplicates properly
+                        hide getid3.php line 1641 errors
+                        fixed a couple bugs in python scripts
+09302013 -> jonnyboy -> fixed binaries_safe_threaded.py
                         fixed many bugs
 09252013 -> jonnyboy -> added table for country codes, tvrage does not always return an abbreviation
                         added yesterdays patch to schema, correct patch for pgsql

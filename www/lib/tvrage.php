@@ -1,9 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/trakttv.php");
-require_once(WWW_DIR."/lib/site.php");
+require_once(WWW_DIR.'lib/util.php');
+require_once(WWW_DIR.'lib/category.php');
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/trakttv.php');
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class TvRage
 {
@@ -17,6 +18,8 @@ class TvRage
 		$site = $s->get();
 		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
 		$this->echooutput = $echooutput;
+		$this->c = new ColorCLI;
+		$this->primary = 'purple';
 
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
 		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid=";
@@ -77,16 +80,16 @@ class TvRage
 			if (!isset($ckid['id']) && $rageid == -2)
 				$this->db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes)));
 			else
-				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes), $rageid));
+				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes), $rageid));
 		}
 		else
 		{
 			if (!isset($ckid['id']) || $rageid == -2)
-				$id = $this->db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country)));
+				$id = $this->db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country)));
 			else
 			{
 				$id = $ckid['id'];
-				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $rageid));
+				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $rageid));
 			}
 			if ($imgbytes != '')
 			{
@@ -111,11 +114,11 @@ class TvRage
 			if ($imgbytes != '')
 				$imgbytes = ', imgdata = '.$this->db->escapeString($imgbytes);
 
-			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString($genre), $this->db->escapeString($country), $imgbytes, $id ));
+			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString($genre), $this->db->escapeString($country), $imgbytes, $id ));
 		}
 		else
 		{
-			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString($desc), $this->db->escapeString($genre), $this->db->escapeString($country), $id ));
+			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString($genre), $this->db->escapeString($country), $id ));
 			if ($imgbytes != '')
 			{
 				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
@@ -421,7 +424,7 @@ class TvRage
 	public function updateEpInfo($show, $relid)
 	{
 		if ($this->echooutput)
-			echo "TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n";
+			echo $this->c->setcolor('bold', $this->primary)."TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n".$this->c->rsetcolor();
 
 		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
 		$this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
@@ -534,7 +537,7 @@ class TvRage
 		}
 
 		if ($this->echooutput && $tvcount > 1)
-			echo "Processing TV for ".$tvcount." release(s).\n";
+			echo $this->c->setcolor('bold', $this->primary)."Processing TV for ".$tvcount." release(s).\n".$this->c->rsetcolor();
 
 		foreach ($res as $arr)
 		{
@@ -551,7 +554,7 @@ class TvRage
 				{
 					// If it doesnt exist locally and lookups are allowed lets try to get it.
 					if ($this->echooutput)
-						echo "TVRage ID for '".$show['cleanname']."' not found in local db, checking web.\n";
+						echo $this->c->setcolor('bold', $this->primary)."TVRage ID for ".$show['cleanname']." not found in local db, checking web.\n".$this->c->rsetcolor();
 
 					$tvrShow = $this->getRageMatch($show);
 					if ($tvrShow !== false && is_array($tvrShow))
@@ -568,7 +571,7 @@ class TvRage
 							if(isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0)
 							{
 								if ($this->echooutput)
-									echo 'Found TVRage ID on trakt :'.$traktArray['show']['tvrage_id']."\n";
+									echo $this->c->setcolor('bold', $this->primary).'Found TVRage ID on trakt:'.$traktArray['show']['tvrage_id']."\n".$this->c->rsetcolor();
 								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['id']);
 							}
 							// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
@@ -692,7 +695,7 @@ class TvRage
 				if (isset($titleMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% match: "'.$titleMatches[100][0]['title'].'"'.".\n";
+						echo $this->c->setcolor('bold', $this->primary).'Found 100% match: "'.$titleMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $titleMatches[100][0];
 				}
 
@@ -700,7 +703,7 @@ class TvRage
 				if (isset($urlMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'.".\n";
+						echo $this->c->setcolor('bold', $this->primary).'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $urlMatches[100][0];
 				}
 
@@ -708,7 +711,7 @@ class TvRage
 				if (isset($akaMatches[100]))
 				{
 					if ($this->echooutput)
-						echo 'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'.".\n";
+						echo $this->c->setcolor('bold', $this->primary).'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $akaMatches[100][0];
 				}
 
@@ -721,7 +724,7 @@ class TvRage
 							continue;
 
 					if ($this->echooutput)
-						echo 'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'.".\n";
+						echo $this->c->setcolor('bold', $this->primary).'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $titleMatches[$mk][0];
 				}
 
@@ -733,18 +736,18 @@ class TvRage
 							continue;
 
 					if ($this->echooutput)
-						echo 'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'.".\n";
+						echo $this->c->setcolor('bold', $this->primary).'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $akaMatches[$ak][0];
 				}
 
 				if ($this->echooutput)
-					echo 'No match found on TVRage trying Trakt.'."\n";
+					echo $this->c->setcolor('bold', $this->primary).'No match found on TVRage trying Trakt.'."\n".$this->c->rsetcolor();
 				return false;
 			}
 			else
 			{
 				if ($this->echooutput)
-					echo 'Nothing returned from tvrage.'.".\n";
+					echo $this->c->setcolor('bold', $this->primary).'Nothing returned from tvrage.'.".\n".$this->c->rsetcolor();
 				return false;
 			}
 		}
@@ -752,7 +755,7 @@ class TvRage
 			return -1;
 
 		if ($this->echooutput)
-			echo 'No match found online.'.".\n";
+			echo $this->c->setcolor('bold', $this->primary).'No match found online.'.".\n".$this->c->rsetcolor();
 		return false;
 	}
 

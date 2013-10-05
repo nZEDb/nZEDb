@@ -192,7 +192,7 @@ class BasePage
 	public function show403($from_admin = false)
 	{
 		$redirect_path = ($from_admin) ? str_replace('/admin', '', WWW_TOP) : WWW_TOP;
-		header('Location: $redirect_path/login?redirect='.urlencode($_SERVER['REQUEST_URI']));
+		header('Location: '.$redirect_path.'/login?redirect='.urlencode($_SERVER['REQUEST_URI']));
 		die();
 	}
 

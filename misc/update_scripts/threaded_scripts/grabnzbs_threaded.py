@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 import sys, os, time
 import threading
 try:
@@ -12,51 +11,63 @@ import subprocess
 import string
 import signal
 import datetime
+import math
 
 import lib.info as info
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
-cur = con.cursor()
 
-print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+def connect():
+	con = None
+	if conf['DB_SYSTEM'] == "mysql":
+		try:
+			import cymysql as mdb
+			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+		except ImportError:
+			sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+	elif conf['DB_SYSTEM'] == "pgsql":
+		try:
+			import psycopg2 as mdb
+			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+		except ImportError:
+			sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+	cur = con.cursor()
+	return cur, con
+
+def disconnect(cur, con):
+	con.close()
+	con = None
+	cur.close()
+	cur = None
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+
 #get array of collectionhash
-cur.execute("SELECT value FROM site WHERE setting = 'grabnzbs'")
-grab = cur.fetchone()
+cur = connect()
+cur[0].execute("SELECT value FROM site WHERE setting = 'grabnzbs'")
+grab = cur[0].fetchone()
 if int(grab[0]) == 0:
 	sys.exit("GrabNZBs is disabled")
-cur.execute("SELECT value FROM site WHERE setting = 'delaytime'")
-delay = cur.fetchone()
-cur.execute("SELECT COUNT(*) FROM collections")
-collstart = cur.fetchone()
+cur[0].execute("SELECT value FROM site WHERE setting = 'delaytime'")
+delay = cur[0].fetchone()
+cur[0].execute("SELECT COUNT(*) FROM collections")
+collstart = cur[0].fetchone()
 
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
 elif conf['DB_SYSTEM'] == "pgsql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL '%s HOURS'"
-cur.execute(run, (int(delay[0])))
-datas = cur.fetchall()
+cur[0].execute(run, (int(delay[0])))
+datas = cur[0].fetchall()
 if len(datas) == 0:
 	sys.exit("No NZBs to Grab")
 
 #get threads for update_binaries
-cur.execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
-run_threads = cur.fetchone()
+cur[0].execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
+run_threads = cur[0].fetchone()
+disconnect(cur[0], cur[1])
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -104,6 +115,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
+		time.sleep(.1)
 		my_queue.put(gnames[0])
 
 	my_queue.join()
@@ -112,13 +124,11 @@ def main():
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
 	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
-	cur.execute("SELECT COUNT(*) FROM collections")
-	collend = cur.fetchone()
+	cur = connect()
+	cur[0].execute("SELECT COUNT(*) FROM collections")
+	collend = cur[0].fetchone()
 	print("{} duplicate Collections were deleted during this process.\n\n".format("{:,}".format(collstart[0]-collend[0])))
-
-	#close connection to mysql
-	cur.close()
-	con.close()
-
+	disconnect(cur[0], cur[1])
+	
 if __name__ == '__main__':
 	main()

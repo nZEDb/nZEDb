@@ -51,7 +51,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 else if (isset($argv[1]) && $argv[1] == "limited")
 {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus IN (0, 1, 20)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE relnamestatus IN (0, 1, 20, 21, 22)");
 
 	if (count($res) > 0)
 	{
@@ -73,8 +73,8 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		echo "\n".$done." releases renamed in ".$timenc.".\nNow the releases will be recategorized.\n";
 
 		$releases = new Releases();
-		$releases->resetCategorize("WHERE relnamestatus IN (0, 1, 20)");
-		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus IN (0, 1, 20)", true);
+		$releases->resetCategorize("WHERE relnamestatus IN (0, 1, 20, 21, 22)");
+		$categorized = $releases->categorizeRelease("name", "WHERE relnamestatus IN (0, 1, 20, 21, 22)", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 

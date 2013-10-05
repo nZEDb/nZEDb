@@ -1155,7 +1155,7 @@ class PostProcess
 						$this->debug("Error: {$file['error']} (in: {$file['source']})");
 						continue;
 					}
-					if ($file['pass'] == true)
+					if (isset($file['pass']) && $file['pass'] == true)
 					{
 						$this->password = true;
 						break;
@@ -1327,7 +1327,7 @@ class PostProcess
 
 				foreach ($files as $file)
 				{
-					if ($file['pass'])
+					if (isset($file['pass']) && $file['pass'])
 					{
 						$this->password = true;
 						break;
