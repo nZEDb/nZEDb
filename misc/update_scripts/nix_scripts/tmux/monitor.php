@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3777";
+$version="0.1r3780";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -48,7 +48,7 @@ $proc_work2 = "SELECT
 	( SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table";
 
 $proc_work3 = "SELECT
-	( SELECT COUNT(*) FROM releases WHERE relnamestatus IN (6, 20, 21, 22) AND reqidstatus IN (0, -1) AND name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
+	( SELECT COUNT(*) FROM releases WHERE relnamestatus IN (20, 21, 22) AND reqidstatus IN (0, -1) AND name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
 	( SELECT COUNT(*) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched,
 	( SELECT COUNT(*) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table";

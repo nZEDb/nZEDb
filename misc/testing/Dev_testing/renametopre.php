@@ -29,9 +29,9 @@ function preName($argv)
 		echo $tot." Releases had no searchname\n";
 	echo "Getting work\n";
 	if (isset($argv[1]) && $argv[1]=="full")
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 7, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1");
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1");
 	elseif (isset($argv[1]) && is_numeric($argv[1]))
-		$res = $db->prepare(sprintf("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 7, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1 and adddate > NOW() - INTERVAL %d HOUR", $argv[1]));
+		$res = $db->prepare(sprintf("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1 and adddate > NOW() - INTERVAL %d HOUR", $argv[1]));
 	$res->execute();
 	$total = $res->rowCount();
 	if ($total > 0)
@@ -653,7 +653,14 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//[united-forums.co.uk] NDS Roms 0501-0750 [039/262] - "0537 - Kirarin x Revolution - Kira Kira Idol Audition (J) -WWW.UNITED-FORUMS.CO.UK-.7z" yEnc
-	elseif (preg_match('/^\[united-forums.co.uk\].+?\[\d+\/\d+\][ -]{0,3}("|#34;)?(.+?)( -WWW.UNITED-FORUMS.CO.UK)?(\.|-|_)+(rar|zip|7z)("|#34;)? yEnc$/', $subject, $match))
+	elseif (preg_match('/^\[united-forums.co.uk\].+?\[\d+\/\d+\][ -]{0,3}("|#34;)?(?P<title>.+?)( -WWW.UNITED-FORUMS.CO.UK)?(\.|-|_)+(rar|zip|7z)("|#34;)? yEnc$/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+	elseif (preg_match(' /^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
