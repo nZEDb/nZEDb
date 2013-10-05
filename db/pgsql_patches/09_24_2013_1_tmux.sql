@@ -8,10 +8,10 @@ SELECT pg_catalog.setval('allgroups_id_seq', 1, true);
 -- Table: allgroups
 DROP TABLE IF EXISTS "allgroups" CASCADE;
 CREATE TABLE "allgroups" (
-  "id" int(11) NOT NULL AUTO_INCREMENT,
-  "name" varchar(255) NOT NULL DEFAULT "",
-  "first_record" bigint UNSIGNED NOT NULL DEFAULT "0",
-  "last_record" bigint UNSIGNED NOT NULL DEFAULT "0",
+  "id" bigint DEFAULT nextval('allgroups_id_seq'::regclass) NOT NULL,
+  "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "first_record" bigint DEFAULT 0 NOT NULL,
+  "last_record" bigint DEFAULT 0 NOT NULL,
   "updated" timestamp without time zone NOT NULL
 )
 WITHOUT OIDS;

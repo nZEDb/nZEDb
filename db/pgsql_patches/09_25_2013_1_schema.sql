@@ -6,9 +6,9 @@ SELECT pg_catalog.setval('country_id_seq', 1, true);
 -- Table: country
 DROP TABLE IF EXISTS "country" CASCADE;
 CREATE TABLE "country" (
-  "id" int(11) NOT NULL AUTO_INCREMENT,
-  "name" varchar(255) NOT NULL DEFAULT "",
-  "code" char(2) NOT NULL DEFAULT "",
+  "id" bigint DEFAULT nextval('country_id_seq'::regclass) NOT NULL,
+  "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "country" character varying(2) NOT NULL,
 )
 WITHOUT OIDS;
 

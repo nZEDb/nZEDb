@@ -117,15 +117,19 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
+			time.sleep(.1)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 
 	my_queue.join()
