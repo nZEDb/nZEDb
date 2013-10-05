@@ -130,7 +130,7 @@ class Binaries
 
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($first_record_postdate), $groupArr['id']));
+			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 		}
 		else
 			$first = $groupArr['last_record'];
