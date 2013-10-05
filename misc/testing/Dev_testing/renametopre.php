@@ -659,6 +659,13 @@ function releaseCleaner($subject, $groupid, $id)
 		if (!empty($cleanerName))
 			return $cleanerName;
 	}
+	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+	elseif (preg_match(' /^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
 	//Digitalmagazin.info.2011.01.25.GERMAN.RETAiL.eBOOk-sUppLeX.rar
 	//no match is spaces
 	elseif (strlen($subject) > 20 && !preg_match('/\s/', $subject) && preg_match('/(?P<title>[\w-\._]*)\.(rar|par|par2|part\d+)$/', $subject, $match))
