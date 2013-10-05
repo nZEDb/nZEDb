@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3776";
+$version="0.1r3777";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -249,6 +249,7 @@ $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2t
 $collections_table = $parts_table = $binaries_table = 0;
 $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = 0;
+$last_history = "";
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
 $mask2 = "\033[1;33m%-20s \033[38;5;214m%-33.33s \n";
