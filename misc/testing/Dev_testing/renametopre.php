@@ -653,7 +653,7 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//[united-forums.co.uk] NDS Roms 0501-0750 [039/262] - "0537 - Kirarin x Revolution - Kira Kira Idol Audition (J) -WWW.UNITED-FORUMS.CO.UK-.7z" yEnc
-	elseif (preg_match('/^\[united-forums.co.uk\].+?\[\d+\/\d+\][ -]{0,3}("|#34;)?(.+?)( -WWW.UNITED-FORUMS.CO.UK)?(\.|-|_)+(rar|zip|7z)("|#34;)? yEnc$/', $subject, $match))
+	elseif (preg_match('/^\[united-forums.co.uk\].+?\[\d+\/\d+\][ -]{0,3}("|#34;)?(?P<title>.+?)( -WWW.UNITED-FORUMS.CO.UK)?(\.|-|_)+(rar|zip|7z)("|#34;)? yEnc$/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
