@@ -3,6 +3,7 @@ require_once(WWW_DIR.'lib/binaries.php');
 require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/site.php');
 require_once(WWW_DIR.'lib/Net_NNTP/NNTP/Client.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 /*
 * Class for connecting to the usenet, retrieving articles and article headers, decoding yEnc articles, decompressing article headers.
@@ -11,6 +12,15 @@ require_once(WWW_DIR.'lib/Net_NNTP/NNTP/Client.php');
 class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
+
+	public function Nntp()
+	{
+		$this->c = new ColorCLI;
+		$this->primary = 'green';
+		$this->warning = 'red';
+		$this->header = 'yellow';
+	}
+
 
 	// Make an NNTP connection.
 	public function doConnect($compression=true)
@@ -41,7 +51,7 @@ class Nntp extends Net_NNTP_Client
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
-					echo '\033[38;5;9mCannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().'\033[0m';
+					echo $this->c->setcolor('bold', $this->warning).'Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().$this->c->rsetcolor();
 			}
 			else
 				$connected = true;
@@ -56,7 +66,7 @@ class Nntp extends Net_NNTP_Client
 					if(PEAR::isError($ret2))
 					{
 						if ($retries < 1)
-							echo '\033[38;5;9mCannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')\033[0m';
+							echo $this->c->setcolor('bold', $this->warning).'Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')'.$this->c->rsetcolor();
 					}
 					else
 						$authent = true;
@@ -102,7 +112,7 @@ class Nntp extends Net_NNTP_Client
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
-					echo '\033[38;5;9mCannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().'\033[0m';
+					echo $this->c->setcolor('bold', $this->warning).'Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().$this->c->rsetcolor();
 			}
 			else
 				$connected = true;
@@ -117,7 +127,7 @@ class Nntp extends Net_NNTP_Client
 					if(PEAR::isError($ret2))
 					{
 						if ($retries < 1)
-							echo '\033[38;5;9mCannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')\033[0m';
+							echo $this->c->setcolor('bold', $this->warning).'Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')'.$this->c->setcolor();
 					}
 					else
 						$authent = true;
@@ -275,7 +285,7 @@ class Nntp extends Net_NNTP_Client
 
 			// If the buffer is zero it's zero, return error.
 			if ($bytesreceived === 0)
-				return $this->throwError('The NNTP server has returned no data.', 1000);
+				return $this->throwError($this->c->setcolor('bold', $this->warning).'The NNTP server has returned no data.'.$this->c->rsetcolor(), 1000);
 
 			// Keep going if no errors.
 			if ($errorcode === 0)
@@ -288,7 +298,7 @@ class Nntp extends Net_NNTP_Client
 
 				// Show bytes recieved
 				if ($totalbytesreceived > 10240 && $totalbytesreceived%128 == 0)
-					echo 'Receiving '.round($totalbytesreceived / 1024).'KB from '.$this->group().".\r";
+					echo $this->c->setcolor('bold', $this->primary).'Receiving '.round($totalbytesreceived / 1024).'KB from '.$this->group().".\r".$this->c->rsetcolor();
 
 				// Check to see if we have the magic terminator on the byte stream.
 				$b1 = null;
@@ -301,7 +311,7 @@ class Nntp extends Net_NNTP_Client
 						{
 							// Compare the data to the empty string if the data is a compressed empty string. If it is, throw an error.
 							if ($data === $er1 || $data === $er2 || $data === $er3 || $data === $er4)
-								return $this->throwError('The NNTP server has returned an empty article. This is normal, the article is probably missing/removed.', 1000);
+								return $this->throwError($this->c->setcolor('bold', $this->warning).'The NNTP server has returned an empty article. This is normal, the article is probably missing/removed.'.$this->c->rsetcolor(), 1000);
 						}
 						// We found the terminator.
 						else
@@ -322,7 +332,7 @@ class Nntp extends Net_NNTP_Client
 				if (ord($data[0]) == 0x78 && in_array(ord($data[1]), array(0x01, 0x5e, 0x9c, 0xda)))
 					$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
 				else
-					return $this->throwError('Unable to decompress the data, the header on the gzip stream is invalid.', 1000);
+					return $this->throwError($this->c->setcolor('bold', $this->warning).'Unable to decompress the data, the header on the gzip stream is invalid.'.$this->c->rsetcolor(), 1000);
 
 				// Split the string of headers into and array of individual headers, then return it.
 				if ($decomp != false)
@@ -331,7 +341,7 @@ class Nntp extends Net_NNTP_Client
 				{
 					// Try 5 times to decompress.
 					if ($tries++ > 5)
-						return $this->throwError('Decompression Failed after 5 tries, connection closed.', 1000);
+						return $this->throwError($this->c->setcolor('bold', $this->warning).'Decompression Failed after 5 tries, connection closed.'.$this->c->rsetcolor(), 1000);
 				}
 			}
 		}
@@ -339,7 +349,7 @@ class Nntp extends Net_NNTP_Client
 		if (!feof($this->_socket))
 			return "Error: Could not find the end-of-file pointer on the gzip stream.\n";
 
-		return $this->throwError('Decompression Failed, connection closed.', 1000);
+		return $this->throwError($this->c->setcolor('bold', $this->warning).'Decompression Failed, connection closed.'.$this->c->rsetcolor(), 1000);
 	}
 
 
@@ -353,7 +363,7 @@ class Nntp extends Net_NNTP_Client
 		$data = $nntp->selectGroup($group);
 		if (PEAR::isError($data))
 		{
-			echo "Error {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+			echo $this->c->setcolor('bold', $this->warning)."Error {$data->code}: {$data->message}\nSkipping group: {$group}\n".$this->c->rsetcolor();
 			$nntp->doQuit();
 			return false;
 		}
