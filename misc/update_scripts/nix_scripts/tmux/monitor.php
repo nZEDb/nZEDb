@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3771";
+$version="0.1r3772";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -50,7 +50,7 @@ $proc_work2 = "SELECT
 $proc_work3 = "SELECT
 	( SELECT COUNT(*) FROM releases WHERE relnamestatus IN (6, 20, 21, 22) AND reqidstatus IN (0, -1) AND name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
 	( SELECT COUNT(*) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched,
-	( SELECT COUNT(*) FROM releases WHERE preid IS NOT NULL ) AS predb_matched, 
+	( SELECT COUNT(*) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table";
 
 if ($dbtype == 'mysql')
@@ -333,19 +333,19 @@ while( $i > 0 )
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
 		$time02 = TIME();
-		$split_result = $db->query($split_query, true);
+		$split_result = $db->query($split_query, false);
 		$split_time = ( TIME() - $time02 );
 		$split1_time = ( TIME() - $time01 );
 		$time03 = TIME();
-		$initquery = $db->query($qry, true);
+		$initquery = $db->query($qry, false);
 		$init_time = ( TIME() - $time03 );
 		$init1_time = ( TIME() - $time01 );
 		$time04 = TIME();
-		$proc_work_result = $db->query($proc_work, true);
+		$proc_work_result = $db->query($proc_work, false);
 		$proc1_time = ( TIME() - $time04 );
 		$proc11_time = ( TIME() - $time01 );
 		$time05 = TIME();
-		$proc_work_result2 = $db->query($proc_work2, true);
+		$proc_work_result2 = $db->query($proc_work2, false);
 		$proc2_time = ( TIME() - $time05 );
 		$proc21_time = ( TIME() - $time01 );
         $time06 = TIME();
