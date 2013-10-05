@@ -70,7 +70,7 @@ function preName($argv)
 	if (isset($argv[1]) && $argv[1]=="full")
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010", true);
 	else
-		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL 12 HOUR", true);
+		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL ".$argv[1]." HOUR", true);
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.\n";
@@ -80,7 +80,7 @@ function preName($argv)
 	if (isset($argv[1]) && $argv[1]=="full")
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010", true);
 	else
-		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL 12 HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL ".$argv[1]." HOUR", true);
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the searchname.\n";
