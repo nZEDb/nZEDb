@@ -3,6 +3,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/groups.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/binaries.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class Backfill
 {
@@ -13,13 +14,17 @@ class Backfill
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
+		$this->c = new ColorCLI;
+		$this->primary = 'green';
+		$this->warning = 'red';
+		$this->header = 'yellow';
 	}
 
 	// Backfill groups using user specified time/date.
 	public function backfillAllGroups($groupName='')
 	{
 		if ($this->hashcheck == 0)
-			exit("\033[38;5;9mYou must run update_binaries.php to update your collectionhash.\033[0m\n");
+			exit($this->c->setcolor('bold', $this->warning)."You must run update_binaries.php to update your collectionhash.".$this->c->rsetcolor());
 		$groups = new Groups();
 
 		if ($groupName != '')
@@ -38,13 +43,13 @@ class Backfill
 			$nntpc = new Nntp;
 			foreach($res as $groupArr)
 			{
-				echo "\nStarting group ".$counter.' of '.sizeof($res).".\n";
+				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetcolor();
 				$this->backfillGroup($nntp, $nntpc, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
 		}
 		else
-			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
+			echo $this->c->setcolor('bold', $this->primary)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
 	// Backfill 1 group using time.
@@ -77,7 +82,7 @@ class Backfill
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
 		{
 			$nntp->doQuit();
-			echo 'Group '.$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?\n";
+			echo $this->c->setcolor('bold', $this->warning).'Group '.$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?\n".$this->c->rsetcolor();
 			return;
 		}
 
@@ -85,7 +90,7 @@ class Backfill
 		if($groupArr['first_record'] <= ($data['first'] + 50000))
 		{
 			$nntp->doQuit();
-			echo 'We have hit the maximum we can backfill for this '.$groupArr['name'].", disabling it.\n\n";
+			echo $this->c->setcolor('bold', $this->warning).'We have hit the maximum we can backfill for this '.$groupArr['name'].", disabling it.\n\n".$this->c->rsetcolor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
@@ -94,15 +99,15 @@ class Backfill
 		if($targetpost >= $groupArr['first_record'])
 		{
 			$nntp->doQuit();
-			echo "Nothing to do, we already have the target post\n\n";
+			echo $this->c->setcolor('bold', $this->warning)."Nothing to do, we already have the target post\n\n".$this->c->rsetcolor();
 			return '';
 		}
 
-		echo 'Group '.$data['group'].': server has '.number_format($data['first']).' - '.number_format($data['last']).', or ~'.
+		echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].': server has '.number_format($data['first']).' - '.number_format($data['last']).', or ~'.
 				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
 				" days.\nLocal first = ".number_format($groupArr['first_record']).' ('.
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
-				' days).  Backfill target of '.$groupArr['backfill_target'].' days is post '.$targetpost."\n";
+				' days).  Backfill target of '.$groupArr['backfill_target'].' days is post '.$targetpost."\n".$this->c->rsetcolor();
 
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
@@ -125,7 +130,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "Getting ".(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. \033[1;33m(".(number_format($first-$targetpost))." articles in queue).\033[0m\n";
+			echo $this->c->setcolor('bold', $this->primary).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetcolor();
 			flush();
 			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
 
@@ -150,7 +155,7 @@ class Backfill
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-		echo 'Group processed in '.$timeGroup." seconds.\n";
+		echo $this->c->setcolor('bold', $this->primary).'Group processed in '.$timeGroup." seconds.\n".$this->c->rsetcolor();
 	}
 
 	// Safe backfill using posts. Going back to a date specified by the user on the site settings.
@@ -195,13 +200,13 @@ class Backfill
 			$counter = 1;
 			foreach($res as $groupArr)
 			{
-				echo "\nStarting group ".$counter.' of '.sizeof($res).".\n";
+				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetcolor();
 				$this->backfillPostGroup($groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}
 		}
 		else
-			echo "No groups specified. Ensure groups are added to nZEDb's database for updating.\n";
+			echo $this->c->setcolor('bold', $this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
 	public function backfillPostGroup($groupArr, $articles='', $left)
@@ -211,7 +216,7 @@ class Backfill
 		$nntp = new Nntp();
 		$this->startGroup = microtime(true);
 
-		echo 'Processing '.$groupArr['name']."\n";
+		echo $this->c->setcolor('bold', $this->header).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
 
 		if ($nntp->doConnectNC() === false)
 			return;
@@ -232,7 +237,7 @@ class Backfill
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
 			$nntp->doQuit();
-			echo 'You need to run update_binaries on the '.$data['group'].". Otherwise the group is dead, you must disable it.\n";
+			echo $this->c->setcolor('bold', $this->warning).'You need to run update_binaries on the '.$data['group'].". Otherwise the group is dead, you must disable it.\n".$this->c->rsetcolor();
 			return '';
 		}
 
@@ -240,7 +245,7 @@ class Backfill
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
 			$nntp->doQuit();
-			echo 'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n\n";
+			echo $this->c->setcolor('bold', $this->warning).'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n\n".$this->c->rsetcolor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
@@ -250,16 +255,16 @@ class Backfill
 		if($targetpost >= $groupArr['first_record'])
 		{
 			$nntp->doQuit();
-			echo "Nothing to do, we already have the target post.\n\n";
+			echo $this->c->setcolor('bold', $this->warning)."Nothing to do, we already have the target post.\n\n".$this->c->rsetcolor();
 			return '';
 		}
 
-		echo 'Group '.$data['group']."'s oldest article is ".number_format($data['first']).', newest is '.number_format($data['last']).'. The groups retention is: '.
+		echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group']."'s oldest article is ".number_format($data['first']).', newest is '.number_format($data['last']).'. The groups retention is: '.
 				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
 				" days.\nOur oldest article is: ".number_format($groupArr['first_record']).' which is ('.
 				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
 				' days old). Our backfill target is article '.number_format($targetpost).' which is ('.((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).
-				"\n days old).\n";
+				"\n days old).\n".$this->c->rsetcolor();
 
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
@@ -282,7 +287,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo "\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. \033[1;33m(".(number_format($first-$targetpost))." articles in queue).\033[0m\n";
+			echo $this->c->setcolor('bold', $this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetcolor();
 			flush();
 
 			$binaries->scan(null, $groupArr, $first, $last, 'backfill');
@@ -309,7 +314,7 @@ class Backfill
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-		echo $data['group'].' processed in '.$timeGroup." seconds.\n";
+		echo $this->c->setcolor('bold', $this->header).$data['group'].' processed in '.$timeGroup." seconds.\n".$this->c->rsetcolor();
 	}
 
 	// Returns a single timestamp from a local article number. If the article is missing, you can pass $old as true to return false (then use the last known date).
@@ -346,7 +351,7 @@ class Backfill
 				$msgs = $nntp->getOverview($post."-".$post,true,false);
 				if (PEAR::isError($msgs))
 				{
-					echo "\033[38;5;9mError {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.\033[0m\n";
+					echo $this->c->setcolor('bold', $this->warning)."Error {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.".$this->c->rsetcolor();
 					$nntp->doQuit();
 					if ($old === true)
 						return false;
@@ -368,7 +373,7 @@ class Backfill
 			}
 
 			if ($debug && $attempts > 0)
-				echo 'Retried '.$attempts." time(s).\n";
+				echo $this->c->setcolor('bold', $this->warning).'Retried '.$attempts." time(s).\n".$this->c->rsetcolor();
 
 			$attempts++;
 		} while ($attempts <= 10 && $success === false);
@@ -380,11 +385,11 @@ class Backfill
 			return false;
 
 		if ($debug)
-			echo 'DEBUG: postdate for post: '.$post.' came back '.$date.' (';
+			echo $this->c->setcolor('bold', $this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetcolor();
 		$date = strtotime($date);
 
 		if ($debug)
-			echo $date.' seconds unixtime or '.$this->daysOld($date)." days)\n";
+			echo $this->c->setcolor('bold', $this->primary).$date.' seconds unixtime or '.$this->daysOld($date)." days)\n".$this->c->rsetcolor();
 		return $date;
 	}
 
@@ -394,7 +399,7 @@ class Backfill
 		// DEBUG every postdate call?!?!
 		$pddebug = $st = false;
 		if ($debug)
-			echo 'INFO: Finding article for '.$group.' '.$days." days back.\n";
+			echo $this->c->setcolor('bold', $this->primary).'INFO: Finding article for '.$group.' '.$days." days back.\n".$this->c->rsetcolor();
 
 		if (!isset($nntp))
 		{
@@ -420,10 +425,10 @@ class Backfill
 		$lowerbound = $data['first'];
 
 		if ($debug)
-			echo 'Total Articles: '.number_format($totalnumberofarticles).' Newest: '.number_format($upperbound).' Oldest: '.number_format($lowerbound)."\nGoal: ".date('r', $goaldate)." ({$goaldate}).\n";
+			echo $this->c->setcolor('bold', $this->primary).'Total Articles: '.number_format($totalnumberofarticles).' Newest: '.number_format($upperbound).' Oldest: '.number_format($lowerbound)."\nGoal: ".date('r', $goaldate)." ({$goaldate}).\n".$this->c->rsetcolor();
 
 		if ($data['last'] == PHP_INT_MAX)
-			exit("ERROR: Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n");
+			exit($this->c->setcolor('bold', $this->warning)."ERROR: Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n");
 
 		$firstDate = $this->postdate($nntp, $data['first'], $pddebug, $group);
 		$lastDate = $this->postdate($nntp, $data['last'], $pddebug, $group);
@@ -432,14 +437,14 @@ class Backfill
 		{
 			if ($st === true)
 				$nntp->doQuit();
-			echo "WARNING: Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n";
+			echo $this->c->setcolor('bold', $this->warning)."WARNING: Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n".$this->c->rsetcolor();
 			return $data['first'];
 		}
 		elseif ($goaldate > $lastDate)
 		{
 			if ($st === true)
 				$nntp->doQuit();
-			echo 'ERROR: Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n";
+			echo $this->c->setcolor('bold', $this->warning).'ERROR: Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n".$this->c->rsetcolor();
 			return '';
 		}
 
@@ -505,7 +510,7 @@ class Backfill
 		$binaries = new Binaries();
 		$groupArr = $groups->getByName($group);
 
-		echo 'Processing '.$groupArr['name'].(($this->compressedHeaders)?' Using Compression':' Not UsingCompression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n";
+		echo $this->c->setcolor('bold', $this->primary).'Processing '.$groupArr['name'].(($this->compressedHeaders)?' Using Compression':' Not UsingCompression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetcolor();
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
@@ -523,7 +528,7 @@ class Backfill
 		while ($postsdate <= 1)
 		{
 			$postsdate = $this->postdate(null,$first,false,$group,true);
-			//echo "Trying to get postdate on ".$first."\n";
+			//echo $this->c->setcolor('bold', $this->primary)."Trying to get postdate on ".$first."\n".$this->c->rsetcolor();
 		}
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')
@@ -531,6 +536,6 @@ class Backfill
 		else
 			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 
-		echo $type.' Safe Threaded for '.$group." completed.\n";
+		echo $this->c->setcolor('bold', $this->primary).$type.' Safe Threaded for '.$group." completed.\n".$this->c->rsetcolor();
 	}
 }
