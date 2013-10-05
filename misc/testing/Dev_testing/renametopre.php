@@ -8,7 +8,7 @@ require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/releases.php");
 
 if (!(isset($argv[1]) && ($argv[1]=="full" || is_numeric($argv[1]))))
-	exit("To run this script on full db:\nphp renametopredb.php full\n\nTo run against last x(where x is numeric) hours:\nphp renametopre.php x\n");
+	exit("To run this script on full db:\nphp renametopre.php full\n\nTo run against last x(where x is numeric) hours:\nphp renametopre.php x\n");
 
 preName($argv);
 
