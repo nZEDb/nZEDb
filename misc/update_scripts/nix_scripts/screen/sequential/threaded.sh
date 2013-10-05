@@ -44,7 +44,7 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
-#	$PHP ${TEST_PATH}/renametopre.php 4
+#	$PHP ${DEV_PATH}/renametopre.php 4
 #	$PYTHON -OOu ${THREADED_PATH}/testing_only/releases_threaded.py
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
