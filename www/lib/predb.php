@@ -473,7 +473,7 @@ Class Predb
 		else if ($db->dbSystem() == 'pgsql')
 			$regex = "AND (r.name ~ '[a-fA-F0-9]{32}' OR rf.name ~ '[a-fA-F0-9]{32}')";
 
-		$res = $db->query(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
+		$res = $db->query(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.\relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
 		if (count($res) > 0)
 		{
 			foreach ($res as $row)
