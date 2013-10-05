@@ -42,7 +42,7 @@ class Releases
 		$this->delaytimet = (isset($this->site->delaytime)) ? $this->site->delaytime : 2;
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->c = new ColorCLI;
-		$this->primary = 'cyan';
+		$this->primary = 'neongreen';
 		$this->warning = 'red';
 		$this->header = 'yellow';
 	}
