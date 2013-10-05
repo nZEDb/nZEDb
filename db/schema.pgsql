@@ -1404,7 +1404,7 @@ INSERT INTO site
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('request_url', 'http://predbirc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
@@ -1415,7 +1415,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','127');
+	('sqlpatch','128');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
