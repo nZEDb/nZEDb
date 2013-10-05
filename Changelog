@@ -1,4 +1,5 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+10052103 -> jonnyboy -> added my rename script, would be better that these reges were part of namefixer/namecleaner
 10032013 -> ThePeePs -> Added Script to update article numbers for groups when changing USP's rather than resetting all groups.
 10032013 -> jonnyboy -> changed update/insert queries with last_record and first_record from dec to string
                         stage 7b query 3 not needed to run every loop, it is slow, so added check to only run sometimes
