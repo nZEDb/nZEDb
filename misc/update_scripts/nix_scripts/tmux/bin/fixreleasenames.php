@@ -57,9 +57,9 @@ if (isset($argv[1]))
 		if ($res = $db->queryOneRow(sprintf("SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d", $release)))
 		{
 			if (preg_match("/[a-f0-9]{32}/i", $res["name"], $matches))
-				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
+				$namefixer->matchPredbMD5($matches[0], $res, $echo=1, $namestatus=1, $echooutput=true);
 			elseif (preg_match("/[a-f0-9]{32}/i", $res["filename"], $matches))
-				$namefixer->matchPredbMD5($matches[0], $res, $echo="1", $namestatus="1", $echooutput=true);
+				$namefixer->matchPredbMD5($matches[0], $res, $echo=1, $namestatus=1, $echooutput=true);
 			echo ".";
 		}
 	}

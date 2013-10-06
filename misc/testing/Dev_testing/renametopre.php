@@ -176,7 +176,7 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//Same as above without leading [
-	if (preg_match('/^\d*\][- ]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}\[[- #@\.\w]+\][- ]{0,3}|\[[- #@\.\w]+\][- ]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}|\[.+?efnet\][- ]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3})(\[(FULL|REPOST)\])?[- ]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,}) ?(\])?[- ]{0,3}(\[)? ?(REPOST|REPACK|SCENE|EXTRA PARS|REAL)? ?(\])?[- ]{0,3}?(\[\d+[-\/~]\d+\])?[- ]{0,3}["|#34;]*.+["|#34;]* ?[yEnc]{0,4}/i', $subject, $match))
+	elseif (preg_match('/^\d*\][- ]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}\[[- #@\.\w]+\][- ]{0,3}|\[[- #@\.\w]+\][- ]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}|\[.+?efnet\][- ]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3})(\[(FULL|REPOST)\])?[- ]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,}) ?(\])?[- ]{0,3}(\[)? ?(REPOST|REPACK|SCENE|EXTRA PARS|REAL)? ?(\])?[- ]{0,3}?(\[\d+[-\/~]\d+\])?[- ]{0,3}["|#34;]*.+["|#34;]* ?[yEnc]{0,4}/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
@@ -660,7 +660,14 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
-	elseif (preg_match(' /^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
+	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//[ nEwZ[NZB].iNFO ] - [ lttm.13.05.31.tilly.and.pepper.tied.and.tickeled ] - File [01/52]: "lttm.13.05.31.tilly.and.pepper.tied.and.tickeled.r00" yEnc
+	elseif (preg_match('/^\[ ?nEwZ\[NZB\]\.iNFO ?\][ -]{0,3}\[ ?(?P<title>.*? ?)\][ -]{0,3}.*?\[\d+\/\d+\][ -:]{0,3}("|#34;).+?("|#34;) yEnc$/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
