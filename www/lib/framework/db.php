@@ -93,7 +93,12 @@ class DB
 				return DB::$pdo->lastInsertId();
 				$i++;
 			}
-			if ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
+			if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205)
+			{
+				//echo "Error: Deadlock or lock wait timeout.";
+				return false;
+			}
+			elseif ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
@@ -131,7 +136,12 @@ class DB
 				return $run;
 				$i++;
 			}
-			if ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
+			if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205)
+			{
+				//echo "Error: Deadlock or lock wait timeout.";
+				return false;
+			}
+			elseif ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
 				return false;
