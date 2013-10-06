@@ -1415,7 +1415,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','128');
+	('sqlpatch','129');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
@@ -11930,6 +11930,8 @@ DROP INDEX IF EXISTS "releases_consoleinfoid" CASCADE;
 CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
 DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
 CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
+DROP INDEX IF EXISTS "releases_mergedreleases" CASCADE;
+CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passswordstatus");
 DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
 CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "releasesubs_releaseID_subsid" CASCADE;
