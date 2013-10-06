@@ -107,6 +107,7 @@ CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview ON releases (haspreview ASC) USING HASH;
 CREATE INDEX ix_releases_hashed on releases(hashed);
+CREATE INDEX ix_releases_mergedreleases on releases(dehashstatus, relnamestatus, passwordstatus);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
@@ -1058,7 +1059,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','128');
+	('sqlpatch','129');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
