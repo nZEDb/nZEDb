@@ -1404,7 +1404,7 @@ INSERT INTO site
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('request_url', 'http://predbirc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
@@ -1415,7 +1415,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','127');
+	('sqlpatch','129');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
@@ -11930,6 +11930,8 @@ DROP INDEX IF EXISTS "releases_consoleinfoid" CASCADE;
 CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
 DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
 CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
+DROP INDEX IF EXISTS "releases_mergedreleases" CASCADE;
+CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passswordstatus");
 DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
 CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "releasesubs_releaseID_subsid" CASCADE;
