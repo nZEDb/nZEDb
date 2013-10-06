@@ -660,7 +660,7 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
-	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
+	elseif (preg_match('/^New ([eE][bB]ooks).+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
@@ -683,6 +683,29 @@ function releaseCleaner($subject, $groupid, $id)
 			if (!empty($cleanerName))
 				return $cleanerName;
 		}
+	}
+	//[NEW DOX] The.King.of.Fighters.XIII.Update.v1.1c-RELOADED [1/6] - "The.King.of.Fighters.XIII.Update.v1.1c-RELOADED.par2"
+	elseif (preg_match('/^\[NEW DOX\] (?P<title>.+?) \[\d+\/\d+\] - ".+?"/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//http://nzbroyalty.com - UK Top 40 Compilation Charts 21.08.11 - [01/10] - "39 - American Anthems.par2"
+	//http://nzbroyalty.com - UK Top 40 Solo Artist Charts 21.08.11 - [1/6] - "34 - Jedward - Victory.par2" yEnc
+	elseif (preg_match('/^http:\/\/nzbroyalty\.com - UK Top 40 (Solo Artist|Compilation) Charts .+? - \[\d+\/\d+\] - "\d+ - (?P<title>.+?)\.(par|vol|rar|nfo).*?"/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//http://nzbroyalty.com - UK Top 40 Compilation Charts 21.08.11 - [001/118] - "UK Top 40 Comps Charts 21.08.11.par2"
+	//http://nzbroyalty.com - UK Top 40 Solo Artist Charts 21.08.11 - [01/96] - "UK Top 40 Solo Charts 21.08.11.par2" yEnc
+	elseif (preg_match('/^http:\/\/nzbroyalty\.com - UK Top 40 (Solo Artist|Compilation) Charts .+? - \[\d+\/\d+\] - "(?P<title>.+?)\.(par|vol|rar|nfo).*?"/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
 	}
 	else
 	{
