@@ -19,6 +19,7 @@ elseif (isset($pieces[3]))
 elseif (isset($pieces[2]))
 {
     $postprocess->processMovies($argv[1]);
+	echo ".";
 }
 elseif (isset($pieces[1]))
 {

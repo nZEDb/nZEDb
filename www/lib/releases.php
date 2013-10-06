@@ -1202,20 +1202,12 @@ class Releases
 					$propername = $cleanerName['properlynamed'];
 				}
 				$relguid = sha1(uniqid(true).mt_rand());
-				$ckid = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name = %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($cleanRelName), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], $rowcol['groupid']));
-				if (isset($ckid['id']))
-				{
-					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
-					$duplicate++;
-					continue;
-				}
+
+				if ($propername != false)
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
 				else
-				{
-					if ($propername != false)
-						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
-					else
-						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
-				}
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+
 				if (isset($relid) && $relid)
 				{
 					$predb->matchPre($cleanRelName, $relid);
@@ -1224,6 +1216,11 @@ class Releases
 					$retcount ++;
 					if ($this->echooutput)
 						echo $this->c->set256($this->primary).'Added release '.$cleanName."\n";
+				}
+				elseif (isset($relid) && $relid == false)
+				{
+					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
+					$duplicate++;
 				}
 			}
 		}
