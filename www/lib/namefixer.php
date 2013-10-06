@@ -289,6 +289,7 @@ class Namefixer
 		{
 			foreach ($res as $row)
 			{
+				echo "here";
 				if ($row["title"] !== $release["searchname"])
 				{
 					$determinedcat = $category->determineCategory($row["title"], $release["groupid"]);
@@ -314,13 +315,13 @@ class Namefixer
 							"ReleaseID: ". $release["id"].$n.$n;
 					}
 					$matching++;
-					if ($namestatus == 1 && $this->matched === false)
-					{
-						$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $row['id']));
-						$fail->execute();
-					}
 				}
 			}
+		}
+		else
+		{
+			$fail = $db->prepare(sprintf("UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d", $release['id']));
+			$fail->execute();
 		}
 		return $matching;
 	}

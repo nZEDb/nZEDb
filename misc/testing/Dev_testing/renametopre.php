@@ -29,9 +29,9 @@ function preName($argv)
 		echo $tot." Releases had no searchname\n";
 	echo "Getting work\n";
 	if (isset($argv[1]) && $argv[1]=="full")
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1");
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1");
 	elseif (isset($argv[1]) && is_numeric($argv[1]))
-		$res = $db->prepare(sprintf("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1 and adddate > NOW() - INTERVAL %d HOUR", $argv[1]));
+		$res = $db->prepare(sprintf("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1 and adddate > NOW() - INTERVAL %d HOUR", $argv[1]));
 	$res->execute();
 	$total = $res->rowCount();
 	if ($total > 0)
