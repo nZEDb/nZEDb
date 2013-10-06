@@ -45,6 +45,9 @@ run_threads = cur.fetchone()
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
 perrun = cur.fetchone()
 
+datas = []
+maxtries = 0
+
 if len(sys.argv) > 1 and (sys.argv[1] == "nfo"):
 	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND rel.relnamestatus in (0, 1, 21, 22) AND rel.id IN (SELECT rel.id FROM releases rel ORDER BY postdate DESC ) LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
@@ -54,9 +57,11 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	datas = cur.fetchall()
+	while len(datas) < (int(perrun[0]) * int(run_threads[0])) and maxtries >= -6:
+		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.dehashstatus <= 0 AND rel.dehashstatus >= %s AND rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.name REGEXP'[a-fA-F0-9]{32}' OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
+		datas = cur.fetchall()
+		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
 	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21) AND id IN (SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
