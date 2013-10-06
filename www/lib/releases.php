@@ -981,7 +981,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' c.groupid = '.$groupID.' AND ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0 ');
+		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
 		//$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryExec('UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
@@ -1216,7 +1216,7 @@ class Releases
 					else
 						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($rowcol['fromname']), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
 				}
-				if (isset($relid) && $relid != false)
+				if (isset($relid) && $relid)
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
@@ -1383,7 +1383,7 @@ class Releases
 	{
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$nzbcount = 0;
+		$nzbcount = $reccount = 0;
 		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID.' AND ' : ' ';
 
 		// Create NZB.
@@ -1406,6 +1406,31 @@ class Releases
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
 				if($nzb_create === true)
 				{
+					if ($db->dbSystem() == 'mysql')
+					{
+						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $rowrel['id']));
+						$delq->execute();
+						$reccount = $delq->rowCount();
+					}
+					else
+					{
+						$idr = $db->query(sprintf('SELECT id FROM collections WHERE releaseid = %s', $rowrel['id']));
+						if (count($idr) > 0)
+						{
+							foreach ($idr as $id)
+							{
+								$delqa = $db->prepare(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+								$delqa->execute();
+								$reccount += $delqa->rowCount();
+								$delqb = $db->prepare(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+								$delqb->execute();
+								$reccount += $delqb->rowCount();
+							}
+							$delqc = $db->prepare('DELETE FROM collections WHERE filecheck = 5 '.$where);
+							$delqc->execute();
+							$reccount += $delqc->rowCount();
+						}
+					}
 					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
@@ -1419,6 +1444,8 @@ class Releases
 			echo $this->c->set256($this->primary)."\n".number_format($nzbcount).' NZBs created in '. $timing.'.';
 		elseif ($this->echooutput)
 			echo $timing;
+		if ($this->echooutput)
+			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage5);
 		return $nzbcount;
 	}
 
