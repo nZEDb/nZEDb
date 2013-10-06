@@ -289,7 +289,6 @@ class Namefixer
 		{
 			foreach ($res as $row)
 			{
-				echo "here";
 				if ($row["title"] !== $release["searchname"])
 				{
 					$determinedcat = $category->determineCategory($row["title"], $release["groupid"]);
