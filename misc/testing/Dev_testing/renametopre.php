@@ -707,6 +707,13 @@ function releaseCleaner($subject, $groupid, $id)
 		if (!empty($cleanerName))
 			return $cleanerName;
 	}
+	//Dutch: Updates & NIEUW maand juni 2013 [NMS] [256/256] - "Young, Donna - Levensgevaarlijk Geheim.epub"
+	elseif (preg_match('/^\Dutch: Updates & NIEUW maand.+? \[NMS\] \[\d+\/\d+\][ -]{0,3} ("|#34;)(?P<title>.+?)("|#34;)/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
 	else
 	{
 		$db = new DB();
