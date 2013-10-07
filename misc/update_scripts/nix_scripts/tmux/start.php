@@ -52,7 +52,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '129' )
+if ( $patch < '130' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";

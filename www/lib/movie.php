@@ -577,8 +577,10 @@ class Movie
 						$year = true;
 						$moviename .= ' ('.$parsed['year'].')';
 					}
-					if ($this->echooutput)
+					if ($this->echooutput && $releaseToWork == '')
 						echo 'Looking up: '.$moviename."\n";
+					else
+						 echo "\n".'Looking up: '.$moviename."\n";
 
 					// Check locally first.
 					if ($year === true)
