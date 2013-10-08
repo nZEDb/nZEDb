@@ -160,7 +160,8 @@ function releaseCleaner($subject, $groupid, $id)
 	
 	if ($groupName === "alt.binaries.e-book")
 	{
-		if (preg_match('/^\d+\/\d+ (?P<title>.+?)\.(epub|mobi|html).*? yEnc$/', $subject, $match))
+	//292/450  Covert.One.4.-.The.Altman.Code.-.Ludlum_.Robert.epub  yEnc	
+	if (preg_match('/^\d+\/\d+ (?P<title>.+?)\.(epub|mobi|html).*? yEnc$/', $subject, $match))
 		{
 			$cleanerName = $match['title'];
 			if (!empty($cleanerName))
