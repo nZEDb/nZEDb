@@ -157,6 +157,17 @@ function releaseCleaner($subject, $groupid, $id)
 		}
 
 	}
+	
+	if ($groupName === "alt.binaries.e-book")
+	{
+		if (preg_match('/^\d+\/\d+ (?P<title>.+?)\.(epub|mobi|html).*? yEnc$/', $subject, $match))
+		{
+			$cleanerName = $match['title'];
+			if (!empty($cleanerName))
+				return $cleanerName;
+		}
+	}
+
 	//[39975]-[FULL]-[#a.b.foreign@EFNet]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - "epz-the.cape.s01e10-sample.avi" yEnc
 	//[39975]-[FULL]-[#a.b.foreign@EFNet]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - #34;epz-the.cape.s01e10-sample.avi#34; yEnc
 	//[39975]-[#a.b.foreign@EFNet]-[FULL]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - "epz-the.cape.s01e10-sample.avi" yEnc
@@ -660,7 +671,7 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
-	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)*(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)*/i', $subject, $match))
+	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
