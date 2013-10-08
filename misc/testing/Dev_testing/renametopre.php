@@ -157,6 +157,18 @@ function releaseCleaner($subject, $groupid, $id)
 		}
 
 	}
+	
+	if ($groupName === "alt.binaries.e-book")
+	{
+	//292/450  Covert.One.4.-.The.Altman.Code.-.Ludlum_.Robert.epub  yEnc	
+	if (preg_match('/^\d+\/\d+ (?P<title>.+?)\.(epub|mobi|html).*? yEnc$/', $subject, $match))
+		{
+			$cleanerName = $match['title'];
+			if (!empty($cleanerName))
+				return $cleanerName;
+		}
+	}
+
 	//[39975]-[FULL]-[#a.b.foreign@EFNet]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - "epz-the.cape.s01e10-sample.avi" yEnc
 	//[39975]-[FULL]-[#a.b.foreign@EFNet]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - #34;epz-the.cape.s01e10-sample.avi#34; yEnc
 	//[39975]-[#a.b.foreign@EFNet]-[FULL]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[01/34] - "epz-the.cape.s01e10-sample.avi" yEnc
@@ -660,7 +672,7 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
-	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)*(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)*/i', $subject, $match))
+	elseif (preg_match('/^New eBooks.+?[ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
@@ -702,6 +714,13 @@ function releaseCleaner($subject, $groupid, $id)
 	//http://nzbroyalty.com - UK Top 40 Compilation Charts 21.08.11 - [001/118] - "UK Top 40 Comps Charts 21.08.11.par2"
 	//http://nzbroyalty.com - UK Top 40 Solo Artist Charts 21.08.11 - [01/96] - "UK Top 40 Solo Charts 21.08.11.par2" yEnc
 	elseif (preg_match('/^http:\/\/nzbroyalty\.com[ -]{0,3}UK Top 40 (Solo Artist|Compilation) Charts .+?[ -]{0,3}\[\d+\/\d+\][ -]{0,3}("|#34;)*(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)*/', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//Dutch: Updates & NIEUW maand juni 2013 [NMS] [256/256] - "Young, Donna - Levensgevaarlijk Geheim.epub"
+	elseif (preg_match('/^\Dutch: Updates & NIEUW maand.+? \[NMS\] \[\d+\/\d+\][ -]{0,3} ("|#34;)(?P<title>.+?)("|#34;)/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
