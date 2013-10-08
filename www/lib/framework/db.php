@@ -87,6 +87,7 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
+				echo "Sleeping\n";
 				sleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
 				$ins->execute();
@@ -130,6 +131,7 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
+				echo "Sleeping\n";
 				sleep($i * $i);
 				$run = DB::$pdo->prepare($query);
 				$run->execute();
