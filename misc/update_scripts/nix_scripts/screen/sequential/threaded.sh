@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #	This is a simple sequential script the uses many of the threaded scripts
 #	Just set the variables and uncomment what you would like to run.
