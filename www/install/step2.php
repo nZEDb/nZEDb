@@ -69,10 +69,13 @@ if  ($page->isPostBack())
 
 	if (strtolower($dbtype) == 'mysql')
 	{
-		if (isset($cfg->DB_PORT))
-			$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';charset=utf8';
+		if (isset($cfg->DB_SOCKET))
+			$pdos = $dbtype.':unix_socket='.$cfg->DB_SOCKET.';charset=utf8';
 		else
-			$pdos = $dbtype.':host='.$cfg->DB_HOST.';charset=utf8';
+			if (isset($cfg->DB_PORT))
+				$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';charset=utf8';
+			else
+				$pdos = $dbtype.':host='.$cfg->DB_HOST.';charset=utf8';
 
 		$cfg->dbConnCheck = true;
 		try {
