@@ -1406,7 +1406,7 @@ class Releases
 				{
 					if ($db->dbSystem() == 'mysql')
 					{
-						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $db->escapString($rowrel['id'])));
+						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $db->escapeString($rowrel['id'])));
 						$delq->execute();
 						$reccount = $delq->rowCount();
 					}
