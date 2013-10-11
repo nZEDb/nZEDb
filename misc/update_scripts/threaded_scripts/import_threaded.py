@@ -110,14 +110,14 @@ def main(args):
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
 				time.sleep(.1)
-				my_queue.put("%s %s" % (os.path.join(nzbs,gnames), "true"))
+				my_queue.put("{} {}" % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if int(use_true[0]) == 1:
 			time.sleep(.1)
 			my_queue.put(nzbs)
 		elif int(use_true[0]) == 2 or sys.argv[1] == "true":
 			time.sleep(.1)
-			my_queue.put("%s $s".format(nzbs, "true"))
+			my_queue.put("{} {}".format(nzbs, "true"))
 
 	my_queue.join()
 
