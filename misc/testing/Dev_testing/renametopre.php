@@ -57,8 +57,8 @@ function preName($argv)
 					$updated++;
 				}
 			}
-			//if ( $cleanerName == $row['name'])
-				//$db->queryExec(sprintf("UPDATE releases set relnamestatus = 16 where id = %d", $row['id']));
+			if ( $cleanerName == $row['name'])
+				$db->queryExec(sprintf("UPDATE releases set relnamestatus = 16 where id = %d", $row['id']));
 			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString($counter++,$total));
 		}
 	}
