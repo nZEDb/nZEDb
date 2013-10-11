@@ -209,8 +209,9 @@ function releaseCleaner($subject, $groupid, $id)
 			return $cleanerName;
 	}
 	//<TOWN><www.town.ag > <partner of www.ssl-news.info > [06/13] - "Grojband.S01E23E24.HDTV.x264-W4F.part04.rar" - 129,94 MB yEnc
+	//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ] [01/18] - "The.Big.Bang.Theory.S07E04.720p.HDTV.X264-DIMENSION.par2" - 618,80 MB yEnc
 	//42745 out of 3733698 Releases renamed
-	elseif (preg_match('/^<TOWN><www.town.ag > <partner of www.ssl-news.info > \[\d+\/\d+\][ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;)[ -]{0,3}.+? yEnc$/', $subject, $match))
+	elseif (preg_match('/^[ <\[]{0,2}TOWN[ >\]]{0,2}[ -]{0,3}[ <\[]{0,2}www.town.ag[ >\]]{0,2}[ -]{0,3}[ <\[]{0,2}partner of www.ssl-news.info[ >\]]{0,2}[ -]{0,3}\[\d+\/\d+\][ -]{0,3}("|#34;)(?P<title>.+?)\.(par|vol|rar|nfo).*?("|#34;).+?yEnc$/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))
@@ -621,13 +622,6 @@ function releaseCleaner($subject, $groupid, $id)
 	//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ PR0N ] [17/21] - "SexVideoCasting.13.09.30.Judy.Smile.XXX.1080p.MP4-SEXORS.vol00+1.par2" - 732,59 MB yEnc
 	//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ MUSIC ] [04/26] - "VA_-_Top_30_Dance_Club_Play-2013-SL.part02.rar" - 325,10 MB yEnc
 	elseif (preg_match('/^\[ TOWN \][ -]{0,3}\[ www\.town\.ag \][ -]{0,3}\[ partner of www\.ssl-news\.info \][ -]{0,3}\[ .*? \] \[\d+\/\d+\][ -]{0,3}("|#34;)(?P<title>.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|")[ -]{0,3}/', $subject, $match))
-	{
-		$cleanerName = $match['title'];
-		if (!empty($cleanerName))
-			return $cleanerName;
-	}
-	//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ] [21/21] - "CzechCasting.13.09.23.Edita.1446.XXX.720p.MP4-SEXORS.vol3+3.par2" - 242,32 MB yEnc
-	elseif (preg_match('/^\[ TOWN \][ -]{0,3}\[ www\.town\.ag \][ -]{0,3}\[ partner of www\.ssl-news\.info \][ -]{0,3}\[\d+\/\d+\][ -]{0,3}("|#34;)(?P<title>.+?)(\.part\d+)?(\.(par2|(vol.+?))"|\.[a-z0-9]{3}"|")[ -]{0,3}.+? yEnc$/', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))

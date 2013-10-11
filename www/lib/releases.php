@@ -1401,11 +1401,12 @@ class Releases
 			foreach ($resrel as $rowrel)
 			{
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
+				$stage5a = TIME();
 				if($nzb_create === true)
 				{
 					if ($db->dbSystem() == 'mysql')
 					{
-						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $rowrel['id']));
+						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $db->escapString($rowrel['id'])));
 						$delq->execute();
 						$reccount = $delq->rowCount();
 					}
@@ -1442,7 +1443,7 @@ class Releases
 		elseif ($this->echooutput)
 			echo $timing;
 		if ($this->echooutput)
-			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage5);
+			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage5a);
 		return $nzbcount;
 	}
 
