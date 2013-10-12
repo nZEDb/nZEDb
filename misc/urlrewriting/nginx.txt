@@ -14,6 +14,10 @@ server {
 	root /home/www/example.com/public_html/;
 	index index.html index.htm index.php;
 
+	location ~ /(?:\.|lib|pages) {
+		deny all;
+	}
+
 	location ~* \.(?:css|jpe?g|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg) { 
 		expires max;
 		add_header Pragma public;
