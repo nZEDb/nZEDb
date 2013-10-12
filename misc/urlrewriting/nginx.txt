@@ -2,7 +2,7 @@ server {
   #move the server_name 'www.' to rewrite
   #if you prefer www.example.com
   server_name  www.example.com;
-  rewrite ^ http://example.com$request_uri? permanent;
+  return 301 $scheme://example.com$request_uri;
 }
 server {
 	listen 80 default_server;
