@@ -14,7 +14,7 @@ server {
 	root /home/www/example.com/public_html/;
 	index index.html index.htm index.php;
 
-	location ~* \.(?:ico|css|js|gif|inc|txt|gz|xml|png|jpe?g) { 
+	location ~* \.(?:css|jpe?g|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg) { 
 		expires max;
 		add_header Pragma public;
 		add_header Cache-Control "public, must-revalidate, proxy-revalidate";
