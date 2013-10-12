@@ -12,7 +12,7 @@ server {
 	error_log /home/www/example.com/logs/error.log;
 
 	root /home/www/example.com/public_html/;
-	index index.html index.htm index.php;
+	index index.php;
 
 	location ~ /(?:\.|lib|pages) {
 		deny all;
