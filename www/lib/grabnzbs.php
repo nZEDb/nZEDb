@@ -104,6 +104,7 @@ class Import
 		$nzbpath = $site->nzbpath;
 		$version = $site->version;
 		$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+		$namecleaning = new nameCleaning();
 
 		$groups = $db->query("SELECT id, name FROM groups");
 		foreach ($groups as $group)
@@ -139,7 +140,6 @@ class Import
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
-				$namecleaning = new nameCleaning();
 
 				// Make a fake message object to use to check the blacklist.
 				$msg = array('Subject' => $firstname['0'], 'From' => $fromname, 'Message-ID' => '');

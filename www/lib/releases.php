@@ -271,7 +271,7 @@ class Releases
 
 		$rage = ($rageid > -1) ? sprintf(' AND releases.rageid = %d ', $rageid) : '';
 		$anidb = ($anidbid > -1) ? sprintf(' AND releases.anidbid = %d ', $anidbid) : '';
-		if ($db->dbSystem == 'mysql')
+		if ($db->dbSystem() == 'mysql')
 			$airdate = ($airdate > -1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		else
 			$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
@@ -289,7 +289,7 @@ class Releases
 			$exccatlist = ' AND releases.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$usql = $this->uSQL($db->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
-		if ($db->dbSystem == 'mysql')
+		if ($db->dbSystem() == 'mysql')
 			$airdate = ($airdate > -1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		else
 			$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
@@ -1339,7 +1339,7 @@ class Releases
 			$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0)
 			{
-				$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND filesize > %s', $groupID, $db->escapeString($maxfilesizeres['value'])));
+				$resrel = $db->query(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %s', $groupID, $db->escapeString($maxfilesizeres['value'])));
 				if (count($resrel) > 0)
 				{
 					foreach ($resrel as $rowrel)
@@ -1405,7 +1405,7 @@ class Releases
 				{
 					if ($db->dbSystem() == 'mysql')
 					{
-						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $rowrel['id']));
+						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $db->escapeString($rowrel['id'])));
 						$delq->execute();
 						$reccount = $delq->rowCount();
 					}
