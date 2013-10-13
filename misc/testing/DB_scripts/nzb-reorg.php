@@ -49,6 +49,7 @@ foreach($objects as $filestoprocess => $nzbFile)
 	$consoleTools->overWrite("Reorganized ".$iFilesProcessed."/".$iFilesCounted."(".$perc."%) - est. ".$est." minutes  ");
 }
 
+$db = new DB();
 $db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
 exit("Processed ".$iFilesProcessed." nzbs in ".relativeTime($time)."\n");
 
