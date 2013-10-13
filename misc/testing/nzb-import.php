@@ -19,9 +19,10 @@ $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 $namecleaning = new nameCleaning();
 
+var_dump($argv);
 if (!isset($argv[2]))
 {
-	$pieces = explode(" ", $argv[1]);
+	$pieces = explode("   ", $argv[1]);
 	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
 	$path = $pieces[0];
 }
@@ -93,6 +94,7 @@ else
 	//iterate over all nzb files in all folders and subfolders
 	if(!file_exists($path))
 	{
+		echo $path."\n";
 		echo "ERROR: Unable to access the specified path. Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
 		return;
 	}

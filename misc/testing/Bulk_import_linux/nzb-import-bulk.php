@@ -24,7 +24,7 @@ if (!isset($argv[1]))
 
 if (!isset($argv[2]))
 {
-	$pieces = explode(" ", $argv[1]);
+	$pieces = explode("   ", $argv[1]);
 	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
 	$path = $pieces[0];
 }
