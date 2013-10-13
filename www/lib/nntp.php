@@ -329,13 +329,13 @@ class Nntp extends Net_NNTP_Client
 			if ($completed === true)
 			{
 				// Check if the header is valid for a gzip stream, then decompress it.
-				if (ord($data[0]) == 0x78 && in_array(ord($data[1]), array(0x01, 0x5e, 0x9c, 0xda)))
+				//if (ord($data[0]) == 0x78 && in_array(ord($data[1]), array(0x01, 0x5e, 0x9c, 0xda)))
 					$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
-				else
-					return $this->throwError($this->c->setcolor('bold', $this->warning).'Unable to decompress the data, the header on the gzip stream is invalid.'.$this->c->rsetcolor(), 1000);
+				//else
+					//return $this->throwError($this->c->setcolor('bold', $this->warning).'Unable to decompress the data, the header on the gzip stream is invalid.'.$this->c->rsetcolor(), 1000);
 
 				// Split the string of headers into and array of individual headers, then return it.
-				if ($decomp != false)
+				if (!empty($decomp) && $decomp != false)
 					return explode("\r\n", trim($decomp));
 				else
 				{
@@ -351,7 +351,6 @@ class Nntp extends Net_NNTP_Client
 
 		return $this->throwError($this->c->setcolor('bold', $this->warning).'Decompression Failed, connection closed.'.$this->c->rsetcolor(), 1000);
 	}
-
 
 	// If there is an error with selectGroup(), try to restart the connection, else show the error. Send a 3rd argument, false, for a connection with no compression.
 	public function dataError($nntp, $group, $comp=true)
