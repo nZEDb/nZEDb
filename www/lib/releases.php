@@ -1401,7 +1401,6 @@ class Releases
 			foreach ($resrel as $rowrel)
 			{
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
-				$stage5a = TIME();
 				if($nzb_create === true)
 				{
 					if ($db->dbSystem() == 'mysql')
@@ -1443,7 +1442,7 @@ class Releases
 		elseif ($this->echooutput)
 			echo $timing;
 		if ($this->echooutput)
-			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage5a);
+			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$consoletools->convertTime(TIME() - $stage5);
 		return $nzbcount;
 	}
 

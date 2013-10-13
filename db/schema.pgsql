@@ -626,7 +626,7 @@ DROP TABLE IF EXISTS "country" CASCADE;
 CREATE TABLE "country" (
   "id" bigint DEFAULT nextval('country_id_seq'::regclass) NOT NULL,
   "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "country" character varying(2) NOT NULL,
+  "code" character varying(2) NOT NULL
 )
 WITHOUT OIDS;
 
@@ -11616,7 +11616,7 @@ INSERT INTO country (code, name) VALUES ( 'AF', 'Afghanistan' ),
 	( 'CG', 'Congo the' ),
 	( 'CK', 'Cook Islands' ),
 	( 'CR', 'Costa Rica' ),
-	( 'CI', 'Cote d\'Ivoire' ),
+	( 'CI', 'Cote d''Ivoire' ),
 	( 'HR', 'Croatia' ),
 	( 'CU', 'Cuba' ),
 	( 'CY', 'Cyprus' ),
@@ -11931,7 +11931,7 @@ CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
 DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
 CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
 DROP INDEX IF EXISTS "releases_mergedreleases" CASCADE;
-CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passswordstatus");
+CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passwordstatus");
 DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
 CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "releasesubs_releaseID_subsid" CASCADE;
