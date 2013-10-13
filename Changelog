@@ -1,5 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
-10132013 -> jonnyboy -> fixed a few bugs in pgsql schema, added some regexes to renametopre.php
+10132013 -> jonnyboy -> added new db connection to nzb-reog
+                        fixed a few bugs in pgsql schema, added some regexes to renametopre.php
 10112013 -> jonnyboy -> fixed a few bugs(kaibosh)
 10062013 -> jonnyboy -> reverted my previous patch
                         removed check for dupe before release creation

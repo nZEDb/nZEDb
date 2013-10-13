@@ -19,26 +19,20 @@ class DB
 			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
 		if (DB::$initialized === false)
 		{
-                        if ($this->dbsystem == 'mysql')
-                        {
-                                if (defined('DB_SOCKET'))
-                                {
-                                        $pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
-                                }
-                                else
-                                {
-                                        $pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-                                        if (defined('DB_PORT'))
-                                        {
-                                                $pdos .= ';port='.DB_PORT;
-                                        }
-                                $pdos .= ';charset=utf8';
-                                }
-                        }
-                        else
-                        {
-                                $pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-                        }
+			if ($this->dbsystem == 'mysql')
+			{
+				if (defined('DB_SOCKET'))
+					$pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
+				else
+				{
+					$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+					if (defined('DB_PORT'))
+						$pdos .= ';port='.DB_PORT;
+					$pdos .= ';charset=utf8';
+				}
+			}
+			else
+				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			try {
 				if ($this->dbsystem == 'mysql')
