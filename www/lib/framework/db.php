@@ -21,7 +21,7 @@ class DB
 		{
 			if ($this->dbsystem == 'mysql')
 			{
-				if (defined('DB_SOCKET'))
+				if (defined('DB_SOCKET') && DB_SOCKET != '')
 					$pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
 				else
 				{
