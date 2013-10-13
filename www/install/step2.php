@@ -69,7 +69,7 @@ if  ($page->isPostBack())
 
 	if (strtolower($dbtype) == 'mysql')
 	{
-		if (isset($cfg->DB_SOCKET))
+		if (isset($cfg->DB_SOCKET) && !empty($cfg->DB_SOCKET))
 			$pdos = $dbtype.':unix_socket='.$cfg->DB_SOCKET.';charset=utf8';
 		else
 			if (isset($cfg->DB_PORT))
