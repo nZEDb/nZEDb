@@ -32,7 +32,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		echo number_format($affected->rowCount())." rageID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL WHERE bookinfoid IN (-2, 0)");
 		echo number_format($affected->rowCount())." bookinfoID's reset.\n";
-		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus != 1");
+		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus < -1");
 		echo number_format($affected->rowCount())." nfos reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE haspreview = 0");
 		echo number_format($affected->rowCount())." releases reset.\n";
@@ -111,7 +111,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 	if (isset($argv[2]) && $argv[2] === "true")
 		$db->queryExec("TRUNCATE TABLE releasenfo");
 	else
-		$where = " WHERE nfostatus != 1";
+		$where = " WHERE nfostatus < -1";
 
 	$affected = $db->queryExec("UPDATE releases SET nfostatus = -1".$where);
 	echo number_format($affected->rowCount())." nfos reset.\n";

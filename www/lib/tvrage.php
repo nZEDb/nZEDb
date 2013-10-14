@@ -630,7 +630,7 @@ class TvRage
 		$xml = getUrl($this->xmlFullSearchUrl.urlencode(strtolower($title)));
 		if ($xml !== false)
 		{
-			$arrXml = objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = @objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml))
 			{
 				// We got a valid xml response
