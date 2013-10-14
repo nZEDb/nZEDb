@@ -16,8 +16,9 @@ if (isset($argv[1]) && $argv[1] === "all")
 		$db->queryExec("TRUNCATE TABLE bookinfo");
 		$db->queryExec("TRUNCATE TABLE releasenfo");
 		$db->queryExec("TRUNCATE TABLE releaseextrafull");
+		// never truncate animdb tabe as thats asking for a ban
 		echo "Resetting all postprocessing\n";
-		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
+		$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL, anidbid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1");
 		echo number_format($affected->rowCount())." releases reset.\n";
 	}
 	else
@@ -34,6 +35,8 @@ if (isset($argv[1]) && $argv[1] === "all")
 		echo number_format($affected->rowCount())." bookinfoID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus != 1");
 		echo number_format($affected->rowCount())." nfos reset.\n";
+		$affected = $db->queryExec("UPDATE releases SET anidbid = NULL WHERE anidbid IN (-2, 0)");
+		echo number_format($affected->rowCount())." aniDBID's's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE haspreview = 0");
 		echo number_format($affected->rowCount())." releases reset.\n";
 	}
@@ -105,6 +108,32 @@ elseif (isset($argv[1]) && $argv[1] === "books")
 	$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." bookinfoID's reset.\n";
 }
+elseif (isset($argv[1]) && $argv[1] === "anime")
+{
+	// never truncate the anidb table as that leads to bans
+
+	// in the case of anime never clear AniTtile or the anidb table
+	$where = " WHERE anidbid IN (-2, 0) AND categoryid = 5070";
+
+	$affected = $db->queryExec("UPDATE releases SET anidbid = NULL" . $where);
+	echo number_format($affected->rowCount())." anidbID's reset.\n";
+}
+elseif (isset($argv[1]) && $argv[1] === "xxx")
+{
+	// in the case of anime never clear XXX
+	$where = " FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid=6000 AND r.preid is NULL AND r.nfostatus != 1 AND rageid = -2";
+
+	$affected = $db->queryExec("UPDATE releases SET r.rageid = -1 " . $where);
+	echo number_format($affected->rowCount())." XXX's Releases reset.\n";
+}
+elseif (isset($argv[1]) && $argv[1] === "pc")
+{
+	// in the case of anime never clear PC
+	$where = " FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid=4000 AND r.preid is NULL AND r.nfostatus != 1 AND rageid = -2";
+
+	$affected = $db->queryExec("UPDATE releases SET r.rageid = -1" . $where);
+	echo number_format($affected->rowCount())." PC's Releases reset.\n";
+}
 elseif (isset($argv[1]) && $argv[1] === "nfos")
 {
 	$where = "";
@@ -124,6 +153,9 @@ else
 		."To reset misc, run php reset_postprocessing.php misc true\n"
 		."To reset tv, run php reset_postprocessing.php tv true\n"
 		."To reset books, run php reset_postprocessing.php books true\n"
+		."To reset anime, run php reset_postprocessing.php anime\n"
+		."To reset xxx, run php reset_postprocessing.php xxx\n"
+		."To reset pc, run php reset_postprocessing.php pc\n"
 		."To reset nfos, run php reset_postprocessing.php nfos true\n"
 		."To reset everything, run php reset_postprocessing.php all true\n"
 		."To reset only those without covers or previews use second argument false\033[m\n");
