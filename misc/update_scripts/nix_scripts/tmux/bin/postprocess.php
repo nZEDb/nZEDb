@@ -24,4 +24,6 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	$postprocess->processGames($argv[1]);
 	$postprocess->processAnime($argv[1]);
 	$postprocess->processTV($argv[1]);
+	$postprocess->processXXX($argv[1]);
+	$postprocess->processPC($argv[1]);
 }
