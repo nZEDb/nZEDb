@@ -727,7 +727,7 @@ class Binaries
 	public function getForReleaseId($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf('SELEC binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
+		return $db->query(sprintf('SELECT binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
 	}
 
 	public function getById($id)
