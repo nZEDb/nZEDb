@@ -1,5 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
-10142013 -> jonnyboy -> fixed a few bugs
+10142013 -> jonnyboy -> added update to nzbstatus
+                        fixed a few bugs
 10132013 -> jonnyboy -> allow requestid to work with relnamestatus 0 and 1
                         added new db connection to nzb-reog
                         fixed a few bugs in pgsql schema, added some regexes to renametopre.php

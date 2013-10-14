@@ -27,13 +27,15 @@ if (isset($argv[1]) && $argv[1] === "true")
 		{
 			if (preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid))
 			{
-				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
+				$res = $db->queryOneRow(sprintf("SELECT id, guid, nzbstatus FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false)
 				{
 					$releases->fastDelete("NULL", $guid[1], $site);
 					//echo "\nDeleted NZB: ".$filePath."\n";
 					$deleted++;
 				}
+				elseif ( isset($res) && $res['nzbstatus'] != 1 )
+					$db->queryExec("UPDATE releases SET nzbstatus = 1);
 				$time = $consoletools->convertTime(TIME() - $timestart);
 				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." deleted from disk,  Running time: ".$time);
 			}
