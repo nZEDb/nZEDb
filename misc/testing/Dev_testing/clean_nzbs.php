@@ -27,13 +27,15 @@ if (isset($argv[1]) && $argv[1] === "true")
 		{
 			if (preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid))
 			{
-				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
+				$res = $db->queryOneRow(sprintf("SELECT id, guid, nzbstatus FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false)
 				{
 					$releases->fastDelete("NULL", $guid[1], $site);
 					//echo "\nDeleted NZB: ".$filePath."\n";
 					$deleted++;
 				}
+				elseif ( isset($res) && $res['nzbstatus'] != 1 )
+					$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
 				$time = $consoletools->convertTime(TIME() - $timestart);
 				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." deleted from disk,  Running time: ".$time);
 			}
@@ -45,8 +47,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 	$checked = $deleted = 0;
 	echo "\nGetting List of releases to check against nzbs.\n";
 	$consoletools = new ConsoleTools();
-	$res = $db->query('SELECT id, guid FROM releases');
-	if (count($res) > 0)
+	$res = $db->prepare('SELECT id, guid, nzbstatus FROM releases');
+	$res->execute();
+	if ($res->rowCount() > 0)
 	{
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
@@ -58,6 +61,9 @@ if (isset($argv[1]) && $argv[1] === "true")
 				$releases->fastDelete($row['id'], $row['guid'], $site);
 				$deleted++;
 			}
+			elseif (file_exists($nzbpath) && isset($row) && $row['nzbstatus'] != 1)
+				$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $row['id']));
+
 			$time = $consoletools->convertTime(TIME() - $timestart);
 			$consoletools->overWrite("Checking Releases: ".$deleted." of ".++$checked." deleted from db,  Running time: ".$time);
 		}
