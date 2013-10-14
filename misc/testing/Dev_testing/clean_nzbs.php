@@ -35,7 +35,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 					$deleted++;
 				}
 				elseif ( isset($res) && $res['nzbstatus'] != 1 )
-					$db->queryExec("UPDATE releases SET nzbstatus = 1);
+					$db->queryExec("UPDATE releases SET nzbstatus = 1");
 				$time = $consoletools->convertTime(TIME() - $timestart);
 				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." deleted from disk,  Running time: ".$time);
 			}
