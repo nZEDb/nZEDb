@@ -34,4 +34,6 @@ define('MEMCACHE_EXPIRY', '900');
 // To compress the queries using zlib or not (more cpu usage and less ram usage if set to true, inverse for false);
 define('MEMCACHE_COMPRESSION', true);
 
+define('FORCE_SSL', false);
+
 require("automated.config.php");

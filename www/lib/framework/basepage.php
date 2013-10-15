@@ -29,7 +29,14 @@ class BasePage
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
 			$secure_cookie = '1';
 		else
-			$secure_cookie = '0';
+			if( defined('FORCE_SSL') && FORCE_SSL === true )
+			{
+				header("HTTP/1.1 301 Moved Permanently");
+				header("Location: https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+				exit();
+			}
+			else
+				$secure_cookie = '0';
 
 		session_set_cookie_params(0, '/', '', $secure_cookie, 'true');
 		@session_start();
