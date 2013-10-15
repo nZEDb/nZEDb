@@ -72,10 +72,10 @@ maxtries = -1
 if sys.argv[1] == "additional":
 	while len(datas) < (run_threads * ppperrun) and maxtries >= -6:
 		if maxsizeck == 0:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
 		else:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
@@ -158,7 +158,7 @@ def main(args):
 	if sys.argv[1] == "additional":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)

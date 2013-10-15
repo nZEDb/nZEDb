@@ -362,7 +362,7 @@ class PostProcess
 			else
 			{
 				$pieces = explode('           =+=            ', $releaseToWork);
-				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6]));
+				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6], 'categoryid' => $pieces[7]));
 			}
 		}
 
@@ -525,7 +525,7 @@ class PostProcess
 				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
 				{
 					$this->debug(' skipping book flood');
-					if (substr($rel['categoryid'], 0, 1) == 8)
+					if (isset($rel['categoryid']) && substr($rel['categoryid'], 0, 1) == 8)
 						$this->db->queryExec(sprintf('UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d', $rel['id']));
 					$flood = true;
 				}
