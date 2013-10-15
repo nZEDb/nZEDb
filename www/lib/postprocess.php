@@ -620,9 +620,10 @@ class PostProcess
 					// Starting to look for content.
 					if (is_dir($this->tmpPath))
 					{
-						$files = scandir($this->tmpPath);
+						$files = '';
+						$files = @scandir($this->tmpPath);
 						$rar = new ArchiveInfo();
-						if (count($files) > 0)
+						if (!empty($files) && count($files) > 0)
 						{
 							foreach($files as $file)
 							{
@@ -962,7 +963,7 @@ class PostProcess
 				$xmlObj = @simplexml_load_string($xmlarray);
 				$arrXml = objectsIntoArray($xmlObj);
 				if (!isset($arrXml['File']['track'][0]))
-					unlink($file);
+					@unlink($file);
 			}
 		}
 	}
@@ -1292,7 +1293,8 @@ class PostProcess
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
-				file_put_contents($rarfile, $fetchedBinary);
+				if(!@file_put_contents($rarfile, $fetchedBinary))
+					continue;
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
 				$output = runCmd($execstring, false, true);
 				if (isset($files[0]['name']))

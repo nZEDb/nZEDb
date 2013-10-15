@@ -41,7 +41,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 			}
 		}
 	}
-	echo number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs deleted.\n";
+	echo "\n".number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs deleted.\n";
 
 	$timestart = TIME();
 	$checked = $deleted = 0;
@@ -68,7 +68,7 @@ if (isset($argv[1]) && $argv[1] === "true")
 			$consoletools->overWrite("Checking Releases: ".$deleted." of ".++$checked." deleted from db,  Running time: ".$time);
 		}
 	}
-	echo number_format($checked)." releases checked, ".number_format($deleted)." releases deleted.\n";
+	echo "\n".number_format($checked)." releases checked, ".number_format($deleted)." releases deleted.\n";
 }
 else
 	exit("This script removes all nzbs not found in the db.\nIf you are sure you want to run it, type php clean_nzbs.php true\n");

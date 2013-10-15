@@ -216,10 +216,12 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				// This only creates a release if there is not a match on name, poster, size and group
-				$ckmsg = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name= %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($subject), $db->escapeString($postername['0']), $totalsize, $groupID));
 				// If a release exists, delete the nzb/collection/binaries/parts
-				if (isset($ckmsg['id']))
+				if ($propername === true)
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				else
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				if ($relid == false)
 				{
 					if ($db->dbSystem() == "mysql")
 						$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
@@ -240,11 +242,7 @@ class Import
 					echo "!";
 					return;
 				}
-				if ($propername === true)
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				else
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				if (count($relid) > 0)
+				elseif (count($relid) > 0)
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
