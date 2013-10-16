@@ -215,7 +215,7 @@ else
 			if (isset($relid) && $relid == false)
 			{
 				//echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
-				echo "\033[38;5;".$color_skipped."m!\033[0m";
+				//echo "\033[38;5;".$color_skipped."m!\033[0m";
 				@unlink($nzbFile);
 				flush();
 				continue;

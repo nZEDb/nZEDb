@@ -42,7 +42,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print("\nBinary Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 count = 0
 
@@ -146,7 +146,7 @@ def main():
 		final = ("{} {} Binary".format(group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
-	print("\nUpdate Binaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nBinaries Threaded Safe Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

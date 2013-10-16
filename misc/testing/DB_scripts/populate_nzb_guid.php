@@ -40,8 +40,9 @@ function create_guids($live)
 			if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid'])))
 			{
 				$nzbpath = 'compress.zlib://'.$nzbpath;
-				$nzbfile = simplexml_load_file($nzbpath);
-
+				$nzbfile = @simplexml_load_file($nzbpath);
+				if (!$nzbfile)
+					continue;
 				$binary_names = array();
 				foreach($nzbfile->file as $file)
 				{
@@ -61,7 +62,7 @@ function create_guids($live)
 
 						$db->queryExec("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
 						$relcount++;
-						$consoletools->overWrite("Updating:".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
 				}
