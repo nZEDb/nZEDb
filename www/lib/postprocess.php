@@ -343,7 +343,7 @@ class PostProcess
 
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
-			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
+			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
 		else
 		{
 			$result = 0;
@@ -353,7 +353,7 @@ class PostProcess
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
 					$i--;
@@ -362,7 +362,7 @@ class PostProcess
 			else
 			{
 				$pieces = explode('           =+=            ', $releaseToWork);
-				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6]));
+				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6], 'categoryid' => $pieces[7]));
 			}
 		}
 
@@ -525,7 +525,7 @@ class PostProcess
 				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
 				{
 					$this->debug(' skipping book flood');
-					if (substr($rel['categoryid'], 0, 1) == 8)
+					if (isset($rel['categoryid']) && substr($rel['categoryid'], 0, 1) == 8)
 						$this->db->queryExec(sprintf('UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d', $rel['id']));
 					$flood = true;
 				}
@@ -620,9 +620,10 @@ class PostProcess
 					// Starting to look for content.
 					if (is_dir($this->tmpPath))
 					{
-						$files = scandir($this->tmpPath);
+						$files = '';
+						$files = @scandir($this->tmpPath);
 						$rar = new ArchiveInfo();
-						if (count($files) > 0)
+						if (!empty($files) && count($files) > 0)
 						{
 							foreach($files as $file)
 							{
@@ -962,7 +963,7 @@ class PostProcess
 				$xmlObj = @simplexml_load_string($xmlarray);
 				$arrXml = objectsIntoArray($xmlObj);
 				if (!isset($arrXml['File']['track'][0]))
-					unlink($file);
+					@unlink($file);
 			}
 		}
 	}
@@ -1292,7 +1293,8 @@ class PostProcess
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
-				file_put_contents($rarfile, $fetchedBinary);
+				if(!@file_put_contents($rarfile, $fetchedBinary))
+					continue;
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
 				$output = runCmd($execstring, false, true);
 				if (isset($files[0]['name']))

@@ -74,7 +74,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 	$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." musicinfoID's reset.\n";
 }
-elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2] === "true"))
+elseif (isset($argv[1]) && $argv[1] === "misc")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 		$where = "";
