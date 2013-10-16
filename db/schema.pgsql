@@ -372,6 +372,22 @@ CREATE TABLE "allgroups" (
 ) 
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "shortgroups_id_seq" CASCADE;
+CREATE SEQUENCE "shortgroups_id_seq" INCREMENT BY 1
+                                  NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('shortgroups_id_seq', 1, true);
+
+-- Table: shortgroups
+DROP TABLE IF EXISTS "shortgroups" CASCADE;
+CREATE TABLE "shortgroups" (
+  "id" bigint DEFAULT nextval('shortgroups_id_seq'::regclass) NOT NULL,
+  "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "first_record" bigint DEFAULT 0 NOT NULL,
+  "last_record" bigint DEFAULT 0 NOT NULL,
+  "updated" timestamp without time zone NOT NULL
+)
+WITHOUT OIDS;
+
 DROP SEQUENCE IF EXISTS "partrepair_id_seq" CASCADE;
 CREATE SEQUENCE "partrepair_id_seq" INCREMENT BY 1
                                   NO MAXVALUE NO MINVALUE CACHE 1;
@@ -1415,7 +1431,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','129');
+	('sqlpatch','131');
 
 
 INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
@@ -11972,3 +11988,8 @@ DROP INDEX IF EXISTS "ix_allgroups_name" CASCADE;
 CREATE INDEX ix_allgroups_name ON allgroups(name);
 DROP INDEX IF EXISTS "ix_country_name" CASCADE;
 CREATE INDEX ix_country_name ON country(name);
+DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
+CREATE INDEX ix_shortgroups_id ON shortgroups(id);
+DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
+CREATE INDEX ix_shortgroups_name ON shortgroups(name);
+
