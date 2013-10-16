@@ -162,7 +162,7 @@ def main(args):
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put("%s%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.1)

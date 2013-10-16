@@ -343,7 +343,7 @@ class PostProcess
 
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
-			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
+			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
 		else
 		{
 			$result = 0;
@@ -353,7 +353,7 @@ class PostProcess
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
 					$i--;

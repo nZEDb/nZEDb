@@ -1,4 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+10162013 -> jonnyboy -> changed guid creation to improve speed
+                        changed import scripts dupe detection, was copying nzbs even if release not added
+                        fixed a couple of bugs in releases
 10152013 -> jonnyboy -> updated python script for category in pp additional
 10142013 -> jonnyboy -> added update to nzbstatus
                         fixed a few bugs
