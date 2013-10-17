@@ -45,11 +45,11 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 print("\nBinary Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 cur = connect()
-cur[0].execute("SELECT name FROM allgroups")
+cur[0].execute("SELECT name FROM shortgroups")
 dorun = cur[0].fetchone()
 disconnect(cur[0], cur[1])
 if not dorun:
-	#before we get the groups, lets update allgroups
+	#before we get the groups, lets update shortgroups
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
 count = 0
@@ -91,12 +91,12 @@ while count < 10000:
 	#query to grab backfill groups
 	if len(sys.argv) == 1:
 		if conf['DB_SYSTEM'] == "mysql":
-			cur[0].execute("SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN allgroups a ON g.name = a.name WHERE g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL %s DAY) < g.first_record_postdate AND g.name NOT IN (%s) GROUP BY a.name %s LIMIT 1" % (backfilldays, previous, group))
+			cur[0].execute("SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL %s DAY) < g.first_record_postdate AND g.name NOT IN (%s) GROUP BY a.name %s LIMIT 1" % (backfilldays, previous, group))
 		elif conf['DB_SYSTEM'] == "pgsql":
-			cur[0].execute("SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN allgroups a ON g.name = a.name WHERE g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL '%s DAYS') < g.first_record_postdate GROUP BY a.name %s LIMIT 1" % (backfilldays, group, groups))
+			cur[0].execute("SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL '%s DAYS') < g.first_record_postdate GROUP BY a.name %s LIMIT 1" % (backfilldays, group, groups))
 		datas = cur[0].fetchone()
 	else:
-		run = "SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN allgroups a ON g.name = a.name WHERE name = %s AND g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00000' LIMIT 1"
+		run = "SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE name = %s AND g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00000' LIMIT 1"
 		cur[0].execute(run, (sys.argv[1]))
 		datas = cur.fetchone()
 	if not datas:

@@ -1,5 +1,7 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
-10162013 -> jonnyboy -> changed guid creation to improve speed
+10162013 -> jonnyboy -> created new table for safe scripts
+                        improved output for check_usenet_groups.php
+                        changed guid creation to improve speed
                         changed import scripts dupe detection, was copying nzbs even if release not added
                         fixed a couple of bugs in releases
 10152013 -> jonnyboy -> updated python script for category in pp additional
