@@ -30,12 +30,13 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-if len(sys.argv) == 3 and sys.argv[2] == "clean":
-	print("\nPostProcess Clean Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-else:
-	print("\nPostProcess Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+if len(sys.argv) == 3 and sys.argv[2] == "clean":
+	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+else:
+    print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+
 if sys.argv[1] == "additional":
 	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
 	print("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
@@ -162,7 +163,7 @@ def main(args):
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.1)
