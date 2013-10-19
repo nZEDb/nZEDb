@@ -101,8 +101,6 @@ class Binaries
 			echo $this->c->setcolor('bold', $this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
 
 		// Get first and last part numbers from newsgroup.
-		$last = $grouplast = $data['last'];
-
 		$backfill = new Backfill();
 		$db = new DB();
 		// For new newsgroups - determine here how far you want to go back.
@@ -140,6 +138,18 @@ class Binaries
 		else
 			$first = $groupArr['last_record'];
 
+		// Leave up 50% of the new articles on the server for next run (allow server enough time to actually make parts available).
+		$newcount = $data['last'] - $first;
+		if ($newcount > $this->messagebuffer)
+		{
+			$remainingcount = $newcount % $this->messagebuffer;
+			$last = $grouplast = ($data['last'] - ((int)($remainingcount/2)));
+		}
+		else
+		{
+			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
+		}
+
 		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
 		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == 'NULL' || $groupArr['last_record'] == '0')
 			$lastr_postdate = time();
@@ -169,11 +179,12 @@ class Binaries
 
 		// Calculate total number of parts.
 		$total = $grouplast - $first;
+		$realtotal = $data['last'] - $first;
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
 		{
-			echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].' has '.number_format($total)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
+			echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
 
 			if ($groupArr['last_record'] == 0)
 				echo $this->c->setcolor('bold', $this->primary).'New group starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\n".$this->c->rsetcolor();
@@ -191,6 +202,7 @@ class Binaries
 					else
 						$last = $first + $this->messagebuffer;
 				}
+
 				$first++;
 				echo $this->c->setcolor('bold', $this->primary)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." - (".number_format($grouplast - $last)." articles in queue).\n".$this->c->rsetcolor();
 				flush();
@@ -198,17 +210,15 @@ class Binaries
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
 				$lastId = $this->scan(null, $groupArr, $first, $last);
 				// Scan failed - skip group.
-				if ($lastId != false)
-					$lastId = $last;
-				else
+				if ($lastId == false)
 				{
 					$nntp->doQuit();
 					return;
 				}
 
-				$newdatek = $backfill->postdate($nntp, $last, false, $groupArr['name'], true);
+				$newdatek = $backfill->postdate($nntp, $lastId, false, $groupArr['name'], true);
 				if ($newdatek !== false)
-					$lastr_date = $newdatek;
+					$lastr_postdate = $newdatek;
 
 				$db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($lastId), $db->from_unixtime($lastr_postdate), $groupArr['id']));
 				if ($this->debug)
@@ -218,13 +228,13 @@ class Binaries
 					$done = true;
 				else
 				{
-					$last = $lastId;
+					//$last = $lastId;
 					$first = $last;
 				}
 			}
 			$nntp->doQuit();
 			// Set group's last postdate.
-			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($lastr_postdate), $groupArr['id']));
+			//$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($lastr_postdate), $groupArr['id']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $this->c->setcolor('bold', $this->primary).$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
 		}
@@ -232,7 +242,7 @@ class Binaries
 			echo $this->c->setcolor('bold', $this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
 	}
 
-	public function scan($nntp, $groupArr, $first, $last, $type='update')
+	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
 		$namecleaning = new nameCleaning();
 		$s = new Sites;
@@ -277,7 +287,8 @@ class Binaries
 				return;
 			}
 		}
-		$nntp->doQuit();
+		if($type != 'partrepair') // Use same connection when doing partRepair
+			$nntp->doQuit();
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
 
 		$this->startCleaning = microtime(true);
@@ -295,6 +306,18 @@ class Binaries
 			{
 				if (!isset($msg['Number']))
 					continue;
+
+				// If set we are running in partRepair mode
+				if (isset($missingParts))
+				{
+					if (!in_array($msg['Number'], $missingParts)) // If article isn't one that is missing skip it.
+						continue;
+					else // We got the part this time. Remove article from partrepair.
+					{
+						$sql = sprintf('DELETE FROM partrepair WHERE numberid = %d AND groupid = %d', $msg['Number'], $groupArr['id']);
+						$db->queryExec($sql);
+					}
+				}
 
 				if (isset($msg['Bytes']))
 					$bytes = $msg['Bytes'];
@@ -420,6 +443,8 @@ class Binaries
 						// Don't add missing articles.
 						break;
 					case 'partrepair':
+						// Don't add here. Bulk update in partRepair
+						break;
 					case 'update':
 					default:
 						if ($this->DoPartRepair)
@@ -561,62 +586,66 @@ class Binaries
 			if ($partID == '')
 				echo $this->c->setcolor('bold', $this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
 
-			// Loop through each part to group into ranges.
+			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
-			$lastnum = $lastpart = 0;
+			$partlist = array();
+			$firstpart = $lastnum = $missingParts[0]['numberid'];
 			foreach($missingParts as $part)
 			{
-				if (($lastnum+1) == $part['numberid'])
-					$ranges[$lastpart] = $part['numberid'];
-				else
+				if (($part['numberid'] - $firstpart) > ($this->messagebuffer/4))
 				{
-					$lastpart = $part['numberid'];
-					$ranges[$lastpart] = $part['numberid'];
+					$ranges[] = array('partfrom' => $firstpart, 'partto' => $lastnum, 'partlist' => $partlist);
+					$firstpart = $part['numberid'];
+					$partlist = array();
 				}
+				$partlist[] = $part['numberid'];
 				$lastnum = $part['numberid'];
 			}
+			$ranges[] = array('partfrom' => $firstpart, 'partto' => $lastnum, 'partlist' => $partlist);
 
 			$num_attempted = 0;
 			$consoleTools = new ConsoleTools();
 
 			// Download missing parts in ranges.
-			foreach($ranges as $partfrom=>$partto)
+			foreach($ranges as $range)
 			{
 				$this->startLoop = microtime(true);
 
-				$num_attempted += $partto - $partfrom + 1;
+				$partfrom = $range['partfrom'];
+				$partto = $range['partto'];
+				$partlist = $range['partlist'];
+				$count = sizeof($range['partlist']);
+
+				$num_attempted += $count;
+
 				if ($partID == '')
 				{
 					echo "\n";
-					$consoleTools->overWrite('Attempting repair: '.$consoleTools->percentString($num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+					$consoleTools->overWrite('Attempting repair: '.$consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 				}
 				else
 					echo $this->c->setcolor('bold', $this->primary).'Attempting repair: '.$partfrom."\n".$this->c->rsetcolor();
 
 				// Get article from newsgroup.
-				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair');
+				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
+			}
 
-				// Check if the articles were added.
-				$articles = implode(',', range($partfrom, $partto));
-				$sql = sprintf('SELECT pr.id, pr.numberid, p.number from partrepair pr LEFT JOIN parts p ON p.number = pr.numberid WHERE pr.groupid=%d AND pr.numberid IN (%s) ORDER BY pr.numberid ASC', $groupArr['id'], $articles);
+			// Calculate parts repaired
+			$sql = sprintf('SELECT COUNT(id) AS num FROM partrepair WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+			$result = $db->queryOneRow($sql);
+			if (isset($result['num']))
+			{
+				$partsRepaired = (sizeof($missingParts)) - $result['num'];
+			}
 
-				$result = $db->query($sql);
-				foreach ($result as $r)
+			// Update attempts on remaining parts for active group
+			if (isset($missingParts[sizeof($missingParts)-1]['id']))
+			{
+				$sql = sprintf('UPDATE partrepair SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+				$result = $db->queryExec($sql);
+				if ($result)
 				{
-					if (isset($r['number']) && $r['number'] == $r['numberid'])
-					{
-						$partsRepaired++;
-
-						// Article was added, delete from partrepair.
-						$db->queryExec(sprintf('DELETE FROM partrepair WHERE id=%d', $r['id']));
-					}
-					else
-					{
-						$partsFailed++;
-
-						// Article was not added, increment attempts.
-						$db->queryExec(sprintf('UPDATE partrepair SET attempts=attempts+1 WHERE id=%d', $r['id']));
-					}
+					$partsFailed = $result->rowCount();
 				}
 			}
 
