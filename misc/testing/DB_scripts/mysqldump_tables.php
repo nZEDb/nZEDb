@@ -40,7 +40,7 @@ function builddefaultsfile()
 				."user = " . DB_USER
 				."\n"
 				."password = " . DB_PASSWORD
-				."[mysql]"
+				."\n[mysql]"
 				."\n"
 				."user = " . DB_USER
 				."\n"
@@ -206,6 +206,6 @@ else
 }
 
 if(file_exists("mysql-defaults.txt"))
-	unlink("mysql-defaults.txt");
+	@unlink("mysql-defaults.txt");
 
 ?>
