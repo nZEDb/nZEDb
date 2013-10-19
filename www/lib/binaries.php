@@ -159,6 +159,8 @@ class Binaries
 			$newdatel = $backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
 			if ($groupArr['last_record'] != 0 && $newdatel !== false)
 				$lastr_postdate = $newdatel;
+			else
+				$lastr_postdate = time();
 		}
 
 		// Generate postdates for first records, for those that upgraded.
@@ -170,6 +172,8 @@ class Binaries
 			$newdate = $backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
 			if ($groupArr['first_record'] != 0 && $newdate !== false)
 				$first_record_postdate = $newdate;
+			else
+				$first_record_postdate = time();
 		}
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
 
@@ -756,7 +760,7 @@ class Binaries
 	public function getForReleaseId($id)
 	{
 		$db = new DB();
-		return $db->query(sprintf('SELEC binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
+		return $db->query(sprintf('SELECT binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
 	}
 
 	public function getById($id)
