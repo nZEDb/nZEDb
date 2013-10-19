@@ -107,8 +107,6 @@ CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview ON releases (haspreview ASC) USING HASH;
 CREATE INDEX ix_releases_hashed on releases(hashed);
 CREATE INDEX ix_releases_mergedreleases on releases(dehashstatus, relnamestatus, passwordstatus);
-CREATE UNIQUE INDEX ix_releases_multi_name_fromname_groupid_size (name, fromname, groupid, size);
-CREATE UNIQUE INDEX ix_releases_guid ON releases (guid);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
