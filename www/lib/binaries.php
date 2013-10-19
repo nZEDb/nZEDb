@@ -286,6 +286,8 @@ class Binaries
 		$db = new DB();
 		if (is_array($msgs))
 		{
+			var_dump($msgs);
+
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
 			if ($this->debug)
 				$colnames = $orignames = $notyenc = array();

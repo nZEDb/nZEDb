@@ -11992,4 +11992,7 @@ DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
 CREATE INDEX ix_shortgroups_id ON shortgroups(id);
 DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
 CREATE INDEX ix_shortgroups_name ON shortgroups(name);
-
+DROP INDEX IF EXISTS "ix_releases_multi_name_fromname_groupid_size" CASCADE;
+CREATE UNIQUE INDEX ix_releases_multi_name_fromname_groupid_size (name, fromname, groupid, size);
+DROP INDEX IF EXISTS "ix_releases_guid" CASCADE;
+CREATE UNIQUE INDEX ix_releases_guid ON releases (guid);
