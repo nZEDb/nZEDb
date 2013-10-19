@@ -106,6 +106,11 @@ if  ($page->isPostBack())
 
 		$cfg->dbNameCheck = true;
 	}
+	else
+	{
+		printf("Error, invalid database system [mysql, pgsql]: ".$dbtype);
+		exit();
+	}
 
 	if (!$cfg->error && $dbtype == "mysql")
 	{
