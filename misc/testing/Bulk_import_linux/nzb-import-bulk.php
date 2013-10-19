@@ -111,8 +111,13 @@ else
 			$nzba = file_get_contents($nzbc);
 			$compressed = true;
 		}
+		else
+			continue;
 
 		$xml = @simplexml_load_string($nzba);
+		// delete invalid nzb
+		if (!$xml)
+			@unlink($nzbfile);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 			continue;
 

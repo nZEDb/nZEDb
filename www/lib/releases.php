@@ -895,7 +895,7 @@ class Releases
 	public function removeRageIdFromReleases($rageid)
 	{
 		$db = new DB();
-		$res = $db->queryOneRow(sprintf('SELECT COUNT (id) AS num FROM releases WHERE rageid = %d', $rageid));
+		$res = $db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE rageid = %d', $rageid));
 		$ret = $res['num'];
 		$res = $db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
 		return $ret;
@@ -1506,7 +1506,7 @@ class Releases
 						}
 						else
 						{
-							$db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowel['id']));
+							$db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
 							if ($this->echooutput)
 								echo $this->c->set256($this->primary).'.';
 						}

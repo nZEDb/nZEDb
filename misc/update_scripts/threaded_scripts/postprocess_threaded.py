@@ -68,11 +68,10 @@ postnon = dbgrab[0][8]
 maxsize = (int(maxsizeck * 1073741824))
 
 datas = []
-maxtries = 0
+maxtries = -1
 
 if sys.argv[1] == "additional":
-	while len(datas) < (run_threads * ppperrun) and maxtries >= -6:
-		maxtries = maxtries - 1
+	while len(datas) <= (run_threads * ppperrun) and maxtries >= -6:
 		if maxsizeck == 0:
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
@@ -80,12 +79,13 @@ if sys.argv[1] == "additional":
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
-elif sys.argv[1] == "nfo":
-	while len(datas) < (run_threads * nfoperrun) and maxtries >= -6:
 		maxtries = maxtries - 1
+elif sys.argv[1] == "nfo":
+	while len(datas) <= (run_threads * nfoperrun) and maxtries >= -6:
 		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
+		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
 		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
@@ -137,7 +137,7 @@ def main(args):
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
-		print("We will be using a max of {} threads, a queue of {} {} releases. Query range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries))
+		print("We will be using a max of {} threads, a queue of {} {} releases. Query range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries+1))
 	else:
 		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)

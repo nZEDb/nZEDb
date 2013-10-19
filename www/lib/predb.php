@@ -388,7 +388,7 @@ Class Predb
 		if($this->echooutput)
 			echo 'Querying DB for matches in preDB titles with release searchnames.';
 
-		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
+		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.id IN (SELECT id FROM releases WHERE preid IS NULL)');
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)

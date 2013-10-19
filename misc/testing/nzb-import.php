@@ -1,4 +1,3 @@
-
 <?php
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.\n");
@@ -93,8 +92,7 @@ else
 	//iterate over all nzb files in all folders and subfolders
 	if(!file_exists($path))
 	{
-		echo $path."\n";
-		echo "ERROR: Unable to access the specified path. Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
+		echo "ERROR: Unable to access ".$path."  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
 		return;
 	}
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
@@ -104,7 +102,7 @@ else
 			continue;
 
 		$compressed = $isBlackListed = $importfailed = $skipCheck = false;
-		
+
 		if ($nzbFile->getExtension() == "nzb")
 		{
 			$nzba = file_get_contents($nzbFile);
@@ -116,8 +114,13 @@ else
 			$nzba = file_get_contents($nzbc);
 			$compressed = true;
 		}
+		else
+			continue;
 
 		$xml = @simplexml_load_string($nzba);
+		// delete invalid nzbs
+		if (!$xml)
+			@unlink($nzbFile);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 			continue;
 
@@ -214,7 +217,7 @@ else
 
 			if (isset($relid) && $relid == false)
 			{
-				//echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
+				echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
 				//echo "\033[38;5;".$color_skipped."m!\033[0m";
 				@unlink($nzbFile);
 				flush();
