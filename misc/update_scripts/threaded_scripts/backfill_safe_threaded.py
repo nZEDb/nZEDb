@@ -59,7 +59,7 @@ previous = "'alt.binaries.crap'"
 while count < 10000:
 	#get values from db
 	cur = connect()
-	cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'BACKFILL_QTY') AS b, (SELECT value FROM tmux WHERE setting = 'BACKFILL') AS c, (SELECT value FROM tmux WHERE setting = 'BACKFILL_ORDER') AS e, (SELECT value FROM tmux WHERE setting = 'BACKFILL_DAYS') AS f, (SELECT value FROM site WHERE setting = 'maxmssgs') AS g")
+	cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS b, (SELECT value FROM tmux WHERE setting = 'backfill') AS c, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS e, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS f, (SELECT value FROM site WHERE setting = 'maxmssgs') AS g")
 	dbgrab = cur[0].fetchall()
 	run_threads = int(dbgrab[0][0])
 	backfill_qty = int(dbgrab[0][1])

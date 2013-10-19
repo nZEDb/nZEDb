@@ -23,8 +23,7 @@ class Binaries
 		$this->NewGroupScanByDays = ($site->newgroupscanmethod == '1') ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($site->newgroupmsgstoscan)) ? $site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan)) ? $site->newgroupdaystoscan : 3;
-		$this->DoPartRepair = ($site->partrepair == '0' || $site->partrepair == '2') ? false : true;
-		$this->DoPartRepairMsg = ($site->partrepair == '2') ? false : true;
+		$this->DoPartRepair = ($site->partrepair == '0') ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->debug = ($site->debuginfo == '0') ? false : true;
@@ -97,10 +96,12 @@ class Binaries
 			echo $this->c->setcolor('bold', $this->primary)."Part repair enabled. Checking for missing parts.\n".$this->c->rsetcolor();
 			$this->partRepair($nntp, $groupArr);
 		}
-		else if ($this->DoPartRepairMsg)
+		else
 			echo $this->c->setcolor('bold', $this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
 
 		// Get first and last part numbers from newsgroup.
+		//$last = $grouplast = $data['last'];
+
 		$backfill = new Backfill();
 		$db = new DB();
 		// For new newsgroups - determine here how far you want to go back.
@@ -138,15 +139,27 @@ class Binaries
 		else
 			$first = $groupArr['last_record'];
 
-		// Leave up 50% of the new articles on the server for next run (allow server enough time to actually make parts available).
+		// Leave upto 50% of the new articles on the server for next run (allow server enough time to actually make parts available).
 		$newcount = $data['last'] - $first;
+		$left = 0;
 		if ($newcount > $this->messagebuffer)
 		{
+			// Drop the remaining plus $this->messagebuffer, pick them up on next run
 			$remainingcount = $newcount % $this->messagebuffer;
-			$last = $grouplast = ($data['last'] - ((int)($remainingcount/2)));
+			if ($newcount < (2 * $this->messagebuffer))
+			{
+				$left = $newcount - ((int)($newcount/2));
+				$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
+			}
+			else
+			{
+				$left = $remainingcount + $this->messagebuffer;
+				$last = $grouplast = ($data['last'] - $left);
+			}
 		}
 		else
 		{
+			$left = $newcount - ((int)($newcount/2));
 			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
 		}
 
@@ -202,9 +215,8 @@ class Binaries
 					else
 						$last = $first + $this->messagebuffer;
 				}
-
 				$first++;
-				echo $this->c->setcolor('bold', $this->primary)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." - (".number_format($grouplast - $last)." articles in queue).\n".$this->c->rsetcolor();
+				echo $this->c->setcolor('bold', $this->primary)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab

@@ -1,4 +1,8 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+10192013 -> jonnyboy -> updated threaded scripts to process all of -1 before processing any -2
+                        removed part repair threaded, it was slower than non threaded
+                        removed nzb-import-bulk.php, it does not function properly with duplicates and pdo
+						added changes to part repair by Whitelighter
 10162013 -> jonnyboy -> created new table for safe scripts
                         improved output for check_usenet_groups.php
                         changed guid creation to improve speed

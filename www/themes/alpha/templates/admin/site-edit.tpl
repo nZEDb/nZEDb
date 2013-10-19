@@ -709,10 +709,8 @@
 <tr>
 	<td><label for="partrepair">Part Repair:</label></td>
 	<td>
-		{html_options class="partrepair" id="partrepair" name='partrepair' values=$partrepair_ids output=$partrepair_names selected=$fsite->partrepair}
-		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.<br />
-		If you use Part Repair Threaded, then is uses the number of threads assigned to 'Update Binaries' times 'Maximum repair per run' to get the work load. This puts all parts into a queue and assigns 1 part to each thread.<br />
-		The overall speed of this could be improved by creating a range in the python script and feeding that back to binaries.php.</div>
+		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
+		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 	</td>
 </tr>
 
