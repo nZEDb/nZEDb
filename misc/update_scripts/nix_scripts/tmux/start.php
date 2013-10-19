@@ -13,10 +13,10 @@ if ( isset($argv['1']) && $argv['1'] == "limited" )
 	$limited = true;
 
 $tmux = new Tmux();
-$tmux_session = $tmux->get()->TMUX_SESSION;
-$seq = $tmux->get()->SEQUENTIAL;
-$powerline = $tmux->get()->POWERLINE;
-$colors = $tmux->get()->COLORS;
+$tmux_session = $tmux->get()->tmux_session;
+$seq = $tmux->get()->sequential;
+$powerline = $tmux->get()->powerline;
+$colors = $tmux->get()->colors;
 
 $site = new Sites();
 $patch = $site->get()->sqlpatch;
@@ -34,7 +34,7 @@ function writelog( $pane )
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
 	$tmux = new Tmux();
-	$logs = $tmux->get()->WRITE_LOGS;
+	$logs = $tmux->get()->write_logs;
 	if ( $logs == "TRUE" )
 	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
@@ -96,16 +96,16 @@ sleep(2);
 
 function start_apps($tmux_session)
 {
-	$tmux = new Tmux();
-	$htop = $tmux->get()->HTOP;
-	$vnstat = $tmux->get()->VNSTAT;
-	$vnstat_args = $tmux->get()->VNSTAT_ARGS;
-	$tcptrack = $tmux->get()->TCPTRACK;
-	$tcptrack_args = $tmux->get()->TCPTRACK_ARGS;
-	$nmon = $tmux->get()->NMON;
-	$bwmng = $tmux->get()->BWMNG;
-	$mytop = $tmux->get()->MYTOP;
-	$console_bash = $tmux->get()->CONSOLE;
+	$tmux = new tmux();
+	$htop = $tmux->get()->htop;
+	$vnstat = $tmux->get()->vnstat;
+	$vnstat_args = $tmux->get()->vnstat_args;
+	$tcptrack = $tmux->get()->tcptrack;
+	$tcptrack_args = $tmux->get()->tcptrack_args;
+	$nmon = $tmux->get()->nmon;
+	$bwmng = $tmux->get()->bwmng;
+	$mytop = $tmux->get()->mytop;
+	$console_bash = $tmux->get()->console;
 
 	if (( $htop == "TRUE" ) && (command_exist("htop")))
 	{

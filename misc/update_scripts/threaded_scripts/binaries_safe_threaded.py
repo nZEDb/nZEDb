@@ -123,7 +123,8 @@ def main():
 			my_queue.put("binupdate %s" % (group[0]))
 			time.sleep(0.01)
 		elif group[1] != 0:
-			count = group[2] - group[1]
+			#only process if more that 20k headers available and skip the first 20k
+			count = group[2] - group[1] - 20000
 			#run small groups using binaries.php
 			if count <= maxmssgs * 2:
 				run += 1

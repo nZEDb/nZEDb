@@ -22,9 +22,9 @@ else
 if( isset($argv[1]) )
 {
 	$tmux = new Tmux();
-	$running = $tmux->get()->RUNNING;
-	$delay = $tmux->get()->MONITOR_DELAY;
-	$patch = $tmux->get()->PATCHDB;
+	$running = $tmux->get()->running;
+	$delay = $tmux->get()->monitor_delay;
+	$patch = $tmux->get()->patchdb;
 	$restart = "false";
 
 	if ( $running == "TRUE" && $argv[1] == "true" )
