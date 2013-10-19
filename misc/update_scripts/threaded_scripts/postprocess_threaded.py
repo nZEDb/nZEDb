@@ -81,7 +81,7 @@ if sys.argv[1] == "additional":
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
-	while len(datas) <= (run_threads * nfoperrun) and maxtries >= -3:
+	while len(datas) <= (run_threads * nfoperrun) and maxtries >= -6:
 		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()

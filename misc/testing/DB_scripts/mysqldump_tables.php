@@ -36,16 +36,19 @@ function builddefaultsfile()
 {
 	//generate file contents
 	$filetext = "[mysqldump]"
-				."\r\n\r\n"
+				."\n"
 				."user = " . DB_USER
-				."\r\n\r\n"
+				."\n"
+				."password = " . DB_PASSWORD
+				."[mysql]"
+				."\n"
+				."user = " . DB_USER
+				."\n"
 				."password = " . DB_PASSWORD;
 	
 	$filehandle = fopen("mysql-defaults.txt", "w+");
 	if(!$filehandle)
-	{
 		exit("Unable to write mysql defaults file! Exiting");
-	}
 	else 
 	{
 		fwrite($filehandle, $filetext);
