@@ -71,7 +71,7 @@ datas = []
 maxtries = -1
 
 if sys.argv[1] == "additional":
-	while len(datas) <= (run_threads * ppperrun) and maxtries >= -6:
+	while len(datas) == 0 and maxtries >= -6:
 		if maxsizeck == 0:
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
@@ -81,8 +81,8 @@ if sys.argv[1] == "additional":
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
-	while len(datas) <= (run_threads * nfoperrun) and maxtries >= -1:
-		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+	while len(datas) == 0 and maxtries >= -6:
+		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC, nfostatus DESC ) LIMIT %s"
 		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
