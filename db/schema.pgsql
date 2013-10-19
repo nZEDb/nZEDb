@@ -11992,4 +11992,3 @@ DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
 CREATE INDEX ix_shortgroups_id ON shortgroups(id);
 DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
 CREATE INDEX ix_shortgroups_name ON shortgroups(name);
-

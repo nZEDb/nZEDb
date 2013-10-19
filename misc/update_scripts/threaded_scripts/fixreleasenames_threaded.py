@@ -30,12 +30,12 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-print("\nfixReleasesNames Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
-
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2":
 	sys.exit("\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
+
+print("\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+if len(sys.argv) == 1:
+	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -139,7 +139,7 @@ def main():
 
 	my_queue.join()
 
-	print("\nfixReleaseNames Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nfixReleaseNames {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

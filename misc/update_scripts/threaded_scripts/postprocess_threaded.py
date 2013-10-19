@@ -30,12 +30,13 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-if len(sys.argv) == 3 and sys.argv[2] == "clean":
-	print("\nPostProcess Clean Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-else:
-	print("\nPostProcess Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+if len(sys.argv) == 3 and sys.argv[2] == "clean":
+	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+else:
+    print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+
 if sys.argv[1] == "additional":
 	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
 	print("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
@@ -70,7 +71,7 @@ datas = []
 maxtries = -1
 
 if sys.argv[1] == "additional":
-	while len(datas) < (run_threads * ppperrun) and maxtries >= -6:
+	while len(datas) <= (run_threads * ppperrun) and maxtries >= -6:
 		if maxsizeck == 0:
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
@@ -80,13 +81,9 @@ if sys.argv[1] == "additional":
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
-	while len(datas) < (run_threads * nfoperrun) and maxtries >= -6:
-		if maxsizeck == 0:
-			run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
-			cur.execute(run, (maxtries, run_threads * nfoperrun))
-		else:
-			run = "SELECT r.id, r.guid, r.groupid, r.name FROM releases r WHERE r.size < %s AND r.nfostatus BETWEEN %s AND -1 AND r.nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
-			cur.execute(run, (maxsize, maxtries, run_threads * nfoperrun))
+	while len(datas) <= (run_threads * nfoperrun) and maxtries >= -6:
+		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
@@ -139,7 +136,10 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} {} releases".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+	if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
+		print("We will be using a max of {} threads, a queue of {} {} releases. Query range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries+1))
+	else:
+		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -162,7 +162,7 @@ def main(args):
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.1)
