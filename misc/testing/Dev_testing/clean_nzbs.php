@@ -30,8 +30,8 @@ if (isset($argv[1]) && $argv[1] === "true")
 				$res = $db->queryOneRow(sprintf("SELECT id, guid, nzbstatus FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false)
 				{
-					$releases->fastDelete("NULL", $guid[1], $site);
-					//echo "\nDeleted NZB: ".$filePath."\n";
+					if ($argv[1] == 'delete')
+						$releases->fastDelete("NULL", $guid[1], $site);
 					$deleted++;
 				}
 				elseif ( isset($res) && $res['nzbstatus'] != 1 )
@@ -57,8 +57,8 @@ if (isset($argv[1]) && $argv[1] === "true")
 			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
 			if (!file_exists($nzbpath))
 			{
-				//echo "Deleting ".$row['guid']."\n";
-				$releases->fastDelete($row['id'], $row['guid'], $site);
+				if ($argv[1] == 'delete')
+					$releases->fastDelete($row['id'], $row['guid'], $site);
 				$deleted++;
 			}
 			elseif (file_exists($nzbpath) && isset($row) && $row['nzbstatus'] != 1)
@@ -71,5 +71,5 @@ if (isset($argv[1]) && $argv[1] === "true")
 	echo "\n".number_format($checked)." releases checked, ".number_format($deleted)." releases deleted.\n";
 }
 else
-	exit("This script removes all nzbs not found in the db.\nIf you are sure you want to run it, type php clean_nzbs.php true\n");
+	exit("This script removes all nzbs not found in the db and releases with no nzbs found.\nFor a dry run, to see how many would be deleted, run:\nphp clean_nzbs.php true\nTo delete all affected, run:\nphp clean_nzbs.php delete");
 ?>
