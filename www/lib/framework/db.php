@@ -292,11 +292,22 @@ class DB
 			DB::$pdo->query('SELECT * FROM collections_'.$grpid.' LIMIT 1');
 			$collections = true;
 		} catch (PDOException $e) {
-			if ($this->queryExec('CREATE TABLE collections_'.$grpid.' LIKE files') !== false)
+			if ($this->queryExec('CREATE TABLE collections_'.$grpid.' LIKE collections') !== false)
 				$collections = true;
 		}
 
 		if ($collections === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
+				$parts = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE binaires_'.$grpid.' LIKE binaries') !== false)
+					$parts = true;
+			}
+		}
+
+		if ($parts === true)
 		{
 			try {
 				DB::$pdo->query('SELECT * FROM parts_'.$grpid.' LIMIT 1');
@@ -309,20 +320,6 @@ class DB
 				if ($this->queryExec('UPDATE groups SET tstatus = 1 WHERE id = '.$grpid) !== false)
 					return true;
 		}
-
-        if ($parts === true)
-        {
-            try {
-                DB::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
-                $parts = true;
-            } catch (PDOException $e) {
-                if ($this->queryExec('CREATE TABLE binaires_'.$grpid.' LIKE parts') !== false)
-                    $parts = true;
-            }
-            if ($parts === true)
-                if ($this->queryExec('UPDATE groups SET tstatus = 1 WHERE id = '.$grpid) !== false)
-                    return true;
-        }
 
 		return false;
 	}
