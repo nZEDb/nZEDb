@@ -8,7 +8,7 @@
     },
     "proxy": {
         "host": "localhost",
-        "port": 9991,
+        "port": 9991
     },
     "pool": {
         "size": 5
