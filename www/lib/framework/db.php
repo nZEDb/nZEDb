@@ -300,14 +300,14 @@ class DB
 		{
 			try {
 				DB::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
-				$parts = true;
+				$binaries = true;
 			} catch (PDOException $e) {
-				if ($this->queryExec('CREATE TABLE binaires_'.$grpid.' LIKE binaries') !== false)
-					$parts = true;
+				if ($this->queryExec('CREATE TABLE binaries_'.$grpid.' LIKE binaries') !== false)
+					$binaries = true;
 			}
 		}
 
-		if ($parts === true)
+		if ($binaries === true)
 		{
 			try {
 				DB::$pdo->query('SELECT * FROM parts_'.$grpid.' LIMIT 1');
@@ -316,12 +316,11 @@ class DB
 				if ($this->queryExec('CREATE TABLE parts_'.$grpid.' LIKE parts') !== false)
 					$parts = true;
 			}
-			if ($parts === true)
-				if ($this->queryExec('UPDATE groups SET tstatus = 1 WHERE id = '.$grpid) !== false)
-					return true;
 		}
-
-		return false;
+		if ($parts === true && $binaries = true && $collections = true)
+			return true;
+		else
+			return false;
 	}
 
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php

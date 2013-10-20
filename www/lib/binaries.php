@@ -256,6 +256,7 @@ class Binaries
 
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
+		$db = new DB();
 		$namecleaning = new nameCleaning();
 		$s = new Sites;
 		$site = $s->get();
@@ -266,6 +267,11 @@ class Binaries
 
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
+
+		// Check that tables exist, create if they do not
+		//if ($db->newtables($groupArr['id']) === false)
+			//exit ("There is a problem creating new parts/files tables for this group.\n");
+		
 
 		// Select the group.
 		if (!isset($nntp))
