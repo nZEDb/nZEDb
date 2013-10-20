@@ -474,6 +474,14 @@
 					<div class="hint">Choose to use the Powerline tmux status bar. To make this pretty, you need to install a patched font. This can be found on <a href="https://github.com/jonnyboy/powerline-fonts">my fork</a> or <a href="https://github.com/Lokaltog/powerline-fonts">the original git</a><br \>You will need to copy the default theme located at powerline/powerline/themes/default.sh to powerline/powerline/themes/tmux.sh and edit that file for what is displayed, colors, etc.</div>
 				</td>
 			</tr>
+
+			<tr>
+				<td style="width:160px;"><label for="NNTPPROXY">NNTP Proxy:</label></td>
+				<td>
+					{html_radios id="NNTPPROXY" name='NNTPPROXY' values=$truefalse_names output=$truefalse_names selected=$ftmux->NNTPPROXY separator='<br />'}
+					<div class="hint">Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (pip install pynntp) and socketpool (pip install socketpool) and edit the configuration file (nntpproxy.conf) in the tmux scripts directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Turn off the use compressed headers option in your site preferences too (the proxy uses compressed headers by default and passes on decompressed data).</div>
+				</td>
+			</tr>
 		</table>
 </fieldset>
 
