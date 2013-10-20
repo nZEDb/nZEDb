@@ -259,12 +259,6 @@ class Nntp extends Net_NNTP_Client
 		$tries = $bytesreceived = $totalbytesreceived = 0;
 		$completed = false;
 		$data = null;
-		// Build a binary array that represents zero results, basically a compressed empty string terminated with .(period) char(13) char(10)
-		$erend	= chr(0x03).chr(0x00).chr(0x00).chr(0x00).chr(0x00).chr(0x01).chr(0x2e).chr(0x0d).chr(0x0a);
-		$er1	= chr(0x78).chr(0x9C).$erend;
-		$er2	= chr(0x78).chr(0x01).$erend;
-		$er3	= chr(0x78).chr(0x5e).$erend;
-		$er4	= chr(0x78).chr(0xda).$erend;
 
 		while (!feof($this->_socket))
 		{
@@ -273,6 +267,7 @@ class Nntp extends Net_NNTP_Client
 			$buffer = fgets($this->_socket);
 			// Get byte count.
 			$bytesreceived = strlen($buffer);
+
 			// If we got no bytes at all try one more time to pull data.
 			if ($bytesreceived == 0)
 			{
@@ -301,25 +296,15 @@ class Nntp extends Net_NNTP_Client
 					echo $this->c->setcolor('bold', $this->primary).'Receiving '.round($totalbytesreceived / 1024).'KB from '.$this->group().".\r".$this->c->rsetcolor();
 
 				// Check to see if we have the magic terminator on the byte stream.
-				$b1 = null;
 				if ($bytesreceived > 2)
 				{
 					if (ord($buffer[$bytesreceived-3]) == 0x2e && ord($buffer[$bytesreceived-2]) == 0x0d && ord($buffer[$bytesreceived-1]) == 0x0a)
 					{
-						// Check if the returned binary string is 11 bytes long, generally an indicator of a compressed empty string.
-						if ($totalbytesreceived == 11)
-						{
-							// Compare the data to the empty string if the data is a compressed empty string. If it is, throw an error.
-							if ($data === $er1 || $data === $er2 || $data === $er3 || $data === $er4)
-								return $this->throwError($this->c->setcolor('bold', $this->warning).'The NNTP server has returned an empty article. This is normal, the article is probably missing/removed.'.$this->c->rsetcolor(), 1000);
-						}
 						// We found the terminator.
-						else
-						{
-							if ($totalbytesreceived > 10240)
-								echo "\n";
-							$completed = true;
-						}
+						if ($totalbytesreceived > 10240)
+							echo "\n";
+
+						$completed = true;
 					}
 				}
 			 }
@@ -328,14 +313,9 @@ class Nntp extends Net_NNTP_Client
 
 			if ($completed === true)
 			{
-				// Check if the header is valid for a gzip stream, then decompress it.
-				//if (ord($data[0]) == 0x78 && in_array(ord($data[1]), array(0x01, 0x5e, 0x9c, 0xda)))
-					$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
-				//else
-					//return $this->throwError($this->c->setcolor('bold', $this->warning).'Unable to decompress the data, the header on the gzip stream is invalid.'.$this->c->rsetcolor(), 1000);
-
+				$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
 				// Split the string of headers into and array of individual headers, then return it.
-				if (!empty($decomp) && $decomp != false)
+				if (!empty($decomp))
 					return explode("\r\n", trim($decomp));
 				else
 				{
