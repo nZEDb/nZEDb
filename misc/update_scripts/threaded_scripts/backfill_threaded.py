@@ -36,7 +36,7 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 #get values from db
-cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'BACKFILL') as c, (SELECT value FROM tmux WHERE setting = 'BACKFILL_GROUPS') as d, (SELECT value FROM tmux WHERE setting = 'BACKFILL_ORDER') as e, (SELECT value FROM tmux WHERE setting = 'BACKFILL_DAYS') as f")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'backfill') as c, (SELECT value FROM tmux WHERE setting = 'backfill_groups') as d, (SELECT value FROM tmux WHERE setting = 'backfill_order') as e, (SELECT value FROM tmux WHERE setting = 'backfill_days') as f")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 type = int(dbgrab[0][1])

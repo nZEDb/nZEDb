@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3874";
+$version="0.1r3879";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -18,9 +18,9 @@ else
 	$limited = false;
 
 $tmux = new Tmux();
-$seq = $tmux->get()->SEQUENTIAL;
-$powerline = $tmux->get()->POWERLINE;
-$colors = $tmux->get()->COLORS;
+$seq = $tmux->get()->sequential;
+$powerline = $tmux->get()->powerline;
+$colors = $tmux->get()->colors;
 
 $s = new Sites();
 $site = $s->get();
@@ -62,7 +62,7 @@ if ($dbtype == 'mysql')
 		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
 		( SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
-		( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
+		( SELECT UNIX_TIMESTAMP(postdate) FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestadd,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb";
 }
 elseif ($dbtype == 'pgsql')
@@ -80,56 +80,56 @@ elseif ($dbtype == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestname,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_DELAY' ) AS monitor,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'TMUX_SESSION' ) AS tmux_session,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'NICENESS' ) AS niceness,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'BINARIES' ) AS binaries_run,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'BACKFILL' ) AS backfill,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'IMPORT' ) AS import,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'NZBS' ) AS nzbs,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST' ) AS post,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'RELEASES' ) AS releases_run,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'RELEASES_THREADED' ) AS releases_threaded,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_NAMES' ) AS fix_names,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'SEQ_TIMER' ) AS seq_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'BINS_TIMER' ) AS bins_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'BACK_TIMER' ) AS back_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'IMPORT_TIMER' ) AS import_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'REL_TIMER' ) AS rel_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_TIMER' ) AS fix_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER' ) AS post_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'COLLECTIONS_KILL' ) AS collections_kill,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POSTPROCESS_KILL' ) AS postprocess_kill,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'CRAP_TIMER' ) AS crap_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'FIX_CRAP' ) AS fix_crap,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'TV_TIMER' ) AS tv_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'UPDATE_TV' ) AS update_tv,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_KILL_TIMER' ) AS post_kill_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH' ) AS monitor_path,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH_A' ) AS monitor_path_a,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'MONITOR_PATH_B' ) AS monitor_path_b,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'SORTER' ) AS sorter,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'SORTER_TIMER' ) AS sorter_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'PROGRESSIVE' ) AS progressive,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'DEHASH' ) AS dehash,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'DEHASH_TIMER' ) AS dehash_timer,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'BACKFILL_DAYS' ) AS backfilldays,
-	( SELECT VALUE FROM site WHERE SETTING = 'debuginfo' ) AS debug,
-	( SELECT VALUE FROM site WHERE SETTING = 'lookupbooks' ) AS processbooks,
-	( SELECT VALUE FROM site WHERE SETTING = 'lookupmusic' ) AS processmusic,
-	( SELECT VALUE FROM site WHERE SETTING = 'lookupgames' ) AS processgames,
-	( SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath' ) AS tmpunrar,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_AMAZON' ) AS post_amazon,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_AMAZON' ) AS post_timer_amazon,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_NON' ) AS post_non,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'POST_TIMER_NON' ) AS post_timer_non,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestname,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay' ) AS monitor,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session' ) AS tmux_session,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'niceness' ) AS niceness,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'binaries' ) AS binaries_run,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'backfill' ) AS backfill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'import' ) AS import,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'nzbs' ) AS nzbs,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post' ) AS post,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'releases' ) AS releases_run,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'releases_threaded' ) AS releases_threaded,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'fix_names' ) as fix_names,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'seq_timer' ) as seq_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'bins_timer' ) as bins_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'back_timer' ) as back_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'import_timer' ) as import_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'rel_timer' ) as rel_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'fix_timer' ) as fix_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_timer' ) as post_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'collections_kill' ) as collections_kill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'postprocess_kill' ) as postprocess_kill,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'crap_timer' ) as crap_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap' ) as fix_crap,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'tv_timer' ) as tv_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'update_tv' ) as update_tv,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_kill_timer' ) as post_kill_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path' ) as monitor_path,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_a' ) as monitor_path_a,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_b' ) as monitor_path_b,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'sorter' ) as sorter,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'sorter_timer' ) as sorter_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'progressive' ) as progressive,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'dehash' ) as dehash,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer' ) as dehash_timer,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days' ) as backfilldays,
+	( SELECT VALUE FROM site WHERE SETTING = 'debuginfo' ) as debug,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupbooks' ) as processbooks,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupmusic' ) as processmusic,
+	( SELECT VALUE FROM site WHERE SETTING = 'lookupgames' ) as processgames,
+	( SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath' ) as tmpunrar,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon' ) as post_amazon,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon' ) as post_timer_amazon,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_non' ) as post_non,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_non' ) as post_timer_non,
 	( SELECT COUNT(*) FROM groups WHERE active = 1 ) AS active_groups,
 	( SELECT COUNT(*) FROM groups WHERE name IS NOT NULL ) AS all_groups,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_START' ) AS colors_start,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_END' ) AS colors_end,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'COLORS_EXC' ) AS colors_exc,
-	( SELECT VALUE FROM tmux WHERE SETTING = 'SHOWQUERY' ) AS show_query,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'colors_start' ) AS colors_start,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'colors_end' ) AS colors_end,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc' ) AS colors_exc,
+	( SELECT VALUE FROM tmux WHERE SETTING = 'showquery' ) AS show_query,
 	( SELECT COUNT( DISTINCT( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
 	( SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
 	( SELECT COUNT(*) FROM ( SELECT id FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
@@ -154,7 +154,7 @@ function writelog( $pane )
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
 	$tmux = new Tmux();
-	$logs = $tmux->get()->WRITE_LOGS;
+	$logs = $tmux->get()->write_logs;
 	if ( $logs == "TRUE" )
 	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
@@ -330,7 +330,7 @@ while( $i > 0 )
 	$tmux_time = ( TIME() - $time01 );
 
 	//run queries only after time exceeded, these queries can take awhile
-	$running = $tmux->get()->RUNNING;
+	$running = $tmux->get()->running;
 	if (((( TIME() - $time1 ) >= $monitor ) && ( $running == "TRUE" ) && !$limited ) || ( $i == 1 ))
 	{
 		$time02 = TIME();
@@ -737,17 +737,9 @@ while( $i > 0 )
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
-			}
-			elseif ( $fix_names == "TRUE" )
-			{
-				$log = writelog($panes1[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}testing/Dev_testing/renametopre.php 24 \
+						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py md5 \
+						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -959,7 +951,7 @@ while( $i > 0 )
 
 		if ( $seq == 1 )
 		{
-			//run import-nzb-bulk
+			//run nzb-import
 			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
 				$log = writelog($panes0[1]);
@@ -1075,7 +1067,7 @@ while( $i > 0 )
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							echo \"binaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 
 			}
@@ -1110,7 +1102,7 @@ while( $i > 0 )
 			if ($colors = "TRUE")
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 
-			//run import-nzb-bulk
+			//run nzb-import
 			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
 				$log = writelog($panes0[1]);
@@ -1208,7 +1200,7 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} has been disabled/terminated by Backfill\"'");
 			}
 
-			//run import-nzb-bulk
+			//run nzb-import
 			if (( $import != "0" ) && ( $kill_pp == "FALSE" ))
 			{
 				$log = writelog($panes0[1]);

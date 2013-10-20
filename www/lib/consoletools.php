@@ -9,29 +9,37 @@ class ConsoleTools
 
 	function overWrite($message, $reset=False)
 	{
-			if ($reset)
-				$this->lastMessageLength = 0;
+		if ($reset)
+			$this->lastMessageLength = 0;
 
-			echo str_repeat(chr(8), $this->lastMessageLength);
-			echo str_repeat(" ", $this->lastMessageLength);
-			echo str_repeat(chr(8), $this->lastMessageLength);
+		echo str_repeat(chr(8), $this->lastMessageLength);
+		echo str_repeat(" ", $this->lastMessageLength);
+		echo str_repeat(chr(8), $this->lastMessageLength);
 
-			$this->lastMessageLength = strlen($message);
-			echo $message;
+		$this->lastMessageLength = strlen($message);
+		echo $message;
 	}
 
 	function appendWrite($message)
 	{
-			echo $message;
-
-			$this->lastMessageLength = $this->lastMessageLength + strlen($message);
+		echo $message;
+		$this->lastMessageLength = $this->lastMessageLength + strlen($message);
 	}
 
 	function percentString($cur, $total)
 	{
-			$percent = 100 * $cur / $total;
-			$formatString = "% ".strlen($total)."d/%d (% 2d%%)";
-			return sprintf($formatString, $cur, $total, $percent);
+		$percent = 100 * $cur / $total;
+		$formatString = "% ".strlen($total)."d/%d (% 2d%%)";
+		return sprintf($formatString, $cur, $total, $percent);
+	}
+
+	function percentString2($first, $last, $total)
+	{
+		$percent1 = 100 * ($first-1) / $total;
+		$percent2 = 100 * $last / $total;
+		$formatString = "% ".strlen($total)."d-% ".strlen($total)."d/%d (% 2d%%-% 3d%%)";
+		//$formatString = "% ".(strlen($total)*2)."d-%d/%d (% 2d%%)";
+		return sprintf($formatString, $first, $last, $total, $percent1, $percent2);
 	}
 
 	//

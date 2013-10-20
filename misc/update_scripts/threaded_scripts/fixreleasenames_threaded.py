@@ -57,7 +57,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	while len(datas) < (int(perrun[0]) * int(run_threads[0])) and maxtries >= -6:
+	while len(datas) == 0 and maxtries >= -5:
 		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE rel.dehashstatus <= 0 AND rel.dehashstatus >= %s AND rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') AND rel.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()

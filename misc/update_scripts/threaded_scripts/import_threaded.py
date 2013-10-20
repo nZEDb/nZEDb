@@ -36,13 +36,12 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 #get values from db
-cur.execute("SELECT value FROM tmux WHERE setting = 'IMPORT'")
+cur.execute("SELECT value FROM tmux WHERE setting = 'import'")
 use_true = cur.fetchone()
-cur.execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'NZBS') AS b, (SELECT value FROM tmux WHERE setting = 'IMPORT_BULK') AS c")
+cur.execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'nzbs') AS b")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
-bulk = dbgrab[0][2]
 
 if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 	print("We will be using filename as searchname")
@@ -73,10 +72,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					if bulk == 'FALSE':
-						subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
-					else:
-						subprocess.call(["php", pathname+"/../../testing/Bulk_import_linux/nzb-import-bulk.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 
