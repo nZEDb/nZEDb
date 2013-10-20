@@ -52,7 +52,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '130' )
+if ( $patch < '131' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -106,6 +106,7 @@ function start_apps($tmux_session)
 	$bwmng = $tmux->get()->BWMNG;
 	$mytop = $tmux->get()->MYTOP;
 	$console_bash = $tmux->get()->CONSOLE;
+    $nntpproxy = $tmux->get()->NNTPPROXY;
 
 	if (( $htop == "TRUE" ) && (command_exist("htop")))
 	{
@@ -140,6 +141,11 @@ function start_apps($tmux_session)
 	if ( $console_bash == "TRUE" )
 	{
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
+	}
+
+	if ( $nntpproxy == "TRUE" )
+	{
+		exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python nntpproxy.py'");
 	}
 }
 
