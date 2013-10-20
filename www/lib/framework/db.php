@@ -284,6 +284,49 @@ class DB
 		return $tablecnt;
 	}
 
+	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	public function newtables($grpid)
+	{
+		$binaries = $parts = $collections = false;
+		try {
+			DB::$pdo->query('SELECT * FROM collections_'.$grpid.' LIMIT 1');
+			$collections = true;
+		} catch (PDOException $e) {
+			if ($this->queryExec('CREATE TABLE collections_'.$grpid.' LIKE files') !== false)
+				$collections = true;
+		}
+
+		if ($collections === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM parts_'.$grpid.' LIMIT 1');
+				$parts = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE parts_'.$grpid.' LIKE parts') !== false)
+					$parts = true;
+			}
+			if ($parts === true)
+				if ($this->queryExec('UPDATE groups SET tstatus = 1 WHERE id = '.$grpid) !== false)
+					return true;
+		}
+
+        if ($parts === true)
+        {
+            try {
+                DB::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
+                $parts = true;
+            } catch (PDOException $e) {
+                if ($this->queryExec('CREATE TABLE binaires_'.$grpid.' LIKE parts') !== false)
+                    $parts = true;
+            }
+            if ($parts === true)
+                if ($this->queryExec('UPDATE groups SET tstatus = 1 WHERE id = '.$grpid) !== false)
+                    return true;
+        }
+
+		return false;
+	}
+
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{

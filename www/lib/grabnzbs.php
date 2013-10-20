@@ -12,12 +12,17 @@ class Import
 	{
 		$db = new DB();
 		$cat = new Category();
-		$relres = $db->query("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
-		foreach ($relres as $relrow)
+		$relres = $db->prepare("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
+		$relres->execute();
+		$tot = $relres->rowCount();
+		if ($tot > 0)
 		{
-			$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-			if ($relrow['groupid'] != 7010)
-				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", $catID, $relrow['id']));
+			foreach ($relres as $relrow)
+			{
+				$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
+				if ($relrow['groupid'] != 7010)
+					$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", $catID, $relrow['id']));
+			}
 		}
 	}
 

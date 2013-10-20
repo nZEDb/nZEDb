@@ -187,7 +187,7 @@ def main(args):
 	cur.close()
 	con.close()
 
-	print("\nPostProcess Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':
