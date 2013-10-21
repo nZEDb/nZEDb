@@ -1431,7 +1431,8 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','131');
+	('nntpproxy', 0),
+	('sqlpatch','133');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
