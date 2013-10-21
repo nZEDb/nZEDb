@@ -36,7 +36,7 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
 
-cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid) DESC")
+cur.execute("SELECT id FROM groups")
 datas = cur.fetchall()
 
 if not datas:

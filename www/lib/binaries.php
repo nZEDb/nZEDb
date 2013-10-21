@@ -26,6 +26,7 @@ class Binaries
 		$this->DoPartRepair = ($site->partrepair == '0') ? false : true;
 		$this->partrepairlimit = (!empty($site->maxpartrepair)) ? $site->maxpartrepair : 15000;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
+		$this->tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 		$this->debug = ($site->debuginfo == '0') ? false : true;
 		$this->c = new ColorCLI;
 		$this->primary = 'green';
@@ -269,9 +270,21 @@ class Binaries
 		$this->startLoop = microtime(true);
 
 		// Check that tables exist, create if they do not
-		//if ($db->newtables($groupArr['id']) === false)
-			//exit ("There is a problem creating new parts/files tables for this group.\n");
-		
+		if ($this->tablepergroup == 1)
+		{
+			if ($db->newtables($groupArr['id']) === false)
+				exit ("There is a problem creating new parts/files tables for this group.\n");
+			$group['cname'] = $groupArr['id'].'_collections';
+			$group['bname'] = $groupArr['id'].'_binaries';
+			$group['pname'] = $groupArr['id'].'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
+
 
 		// Select the group.
 		if (!isset($nntp))
@@ -479,7 +492,7 @@ class Binaries
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				if ($insPartsStmt = $db->Prepare('INSERT INTO parts (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)'))
+				if ($insPartsStmt = $db->Prepare('INSERT INTO '.$group['pname'].' (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)'))
 				{
 					$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 					$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
@@ -507,18 +520,18 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+							$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if(!$cres)
 							{
 								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-								$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+								$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 								$collectionID = $db->queryInsert($csql);
 							}
 							else
 							{
 								$collectionID = $cres['id'];
 								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-								$db->queryExec(sprintf('UPDATE collections set dateadded = NOW() WHERE id = %s', $collectionID));
+								$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
 							}
 
 							$lastCollectionID = $collectionID;
@@ -531,10 +544,10 @@ class Binaries
 						{
 							$lastBinaryHash = $binaryHash;
 
-							$bres = $db->queryOneRow(sprintf('SELECT id FROM binaries WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+							$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
 							if(!$bres)
 							{
-								$bsql = sprintf('INSERT INTO binaries (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+								$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 								$binaryID = $db->queryInsert($bsql);
 							}
 							else

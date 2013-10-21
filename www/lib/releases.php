@@ -41,6 +41,7 @@ class Releases
 		$this->hashcheck = (isset($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->delaytimet = (isset($this->site->delaytime)) ? $this->site->delaytime : 2;
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
+		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
 		$this->primary = 'neongreen';
 		$this->warning = 'red';
@@ -975,34 +976,50 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
+
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."Stage 1 -> Try to find complete collections.\n";
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? ' c.groupid = '.$groupID.' AND ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
-		//$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM binaries b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
+		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$db->queryExec('UPDATE collections c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$db->queryExec('UPDATE collections c SET filecheck = 15 WHERE'.$where.'filecheck = 1');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 15 WHERE'.$where.'filecheck = 1');
 
 		// If we have all the parts set partcheck to 1.
 		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
 		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$db->queryExec('UPDATE binaries b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM parts p, collections c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
 
 		// Set filecheck to 2 if partcheck = 1.
-		$db->queryExec('UPDATE collections c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM binaries b WHERE'.$where.'c.id = b.collectionid AND b.partcheck = 1 GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'c.id = b.collectionid AND b.partcheck = 1 GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ');
 		// Set filecheck to 1 if we don't have all the parts.
-		$db->queryExec('UPDATE collections c SET filecheck = 1 WHERE'.$where.'filecheck in (15, 16)');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE'.$where.'filecheck in (15, 16)');
 		// If a collection has not been updated in 2 hours, set filecheck to 2.
 		if ($db->dbSystem() == 'mysql')
-			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
+			$db->queryExec(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
 		else
-			$db->queryExec(sprintf("UPDATE collections c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM binaries b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
+			$db->queryExec(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->primary).$consoletools->convertTime(TIME() - $stage1);
@@ -1014,11 +1031,27 @@ class Releases
 		$consoletools = new ConsoleTools();
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
+
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 2 -> Get the size in bytes of the collection.\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$db->queryExec('UPDATE collections c SET filesize = (SELECT SUM(size) FROM parts p LEFT JOIN binaries b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
 		if ($this->echooutput)
 			echo $this->c->set256($this->primary).$consoletools->convertTime(TIME() - $stage2);
 	}
@@ -1028,6 +1061,22 @@ class Releases
 		$db = new DB();
 		$consoletools = new ConsoleTools();
 		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
+
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\n";
@@ -1040,13 +1089,13 @@ class Releases
 
 			foreach ($groupIDs as $groupID)
 			{
-				$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID['id']);
+				$res = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID['id']);
 				if (count($res) > 0)
 				{
 					$minsizecount = 0;
 					if ($db->dbSystem() == 'mysql')
 					{
-						$mscq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID['id']);
+						$mscq = $db->prepare("UPDATE ".$group['cname']." c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID['id']);
 						$mscq->execute();
 						$minsizecount = $mscq->rowCount();
 					}
@@ -1055,7 +1104,7 @@ class Releases
 						$s = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = ".$groupID['id']);
 						if ($s['size'] > 0)
 						{
-							$mscq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID['id'], $s['size']));
+							$mscq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID['id'], $s['size']));
 							$mscq->execute();
 							$minsizecount = $mscq->rowCount();
 						}
@@ -1067,7 +1116,7 @@ class Releases
 					$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0)
 					{
-						$mascq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND groupid = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']));
+						$mascq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND groupid = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']));
 						$mascq->execute();
 						$maxsizecount = $mascq->rowCount();
 						if ($maxsizecount < 1)
@@ -1078,7 +1127,7 @@ class Releases
 					$minfilecount = 0;
 					if ($db->dbSystem() == 'mysql')
 					{
-						$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = ".$groupID['id']);
+						$mifcq = $db->prepare("UPDATE ".$group['cname']." c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = ".$groupID['id']);
 						$mifcq->execute();
 						$minfilecount = $mifcq->rowCount();
 					}
@@ -1087,7 +1136,7 @@ class Releases
 						$f = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = ".$groupID['id']);
 						if ($f['files'] > 0)
 						{
-							$mifcq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID['id'], $s['size']));
+							$mifcq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID['id'], $s['size']));
 							$mifcq->execute();
 							$minfilecount = $mifcq->rowCount();
 						}
@@ -1100,13 +1149,13 @@ class Releases
 		}
 		else
 		{
-			$res = $db->query('SELECT id FROM collections WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID);
+			$res = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID);
 			if(count($res) > 0)
 			{
 				$minsizecount = 0;
 				if ($db->dbSystem() == 'mysql')
 				{
-					$mscq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID);
+					$mscq = $db->prepare("UPDATE ".$group['cname']." c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = ".$groupID);
 					$mscq->execute();
 					$minsizecount = $mscq->rowCount();
 				}
@@ -1115,7 +1164,7 @@ class Releases
 					$s = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = ".$groupID);
 					if ($s['size'] > 0)
 					{
-						$mscq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID, $s['size']));
+						$mscq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID, $s['size']));
 						$mscq->execute();
 						$minsizecount = $mscq->rowCount();
 					}
@@ -1127,7 +1176,7 @@ class Releases
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					$mascq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ' . $where, $maxfilesizeres['value']));
+					$mascq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ' . $where, $maxfilesizeres['value']));
 					$mascq->execute();
 					$maxsizecount = $mascq->rowCount();
 					if ($maxsizecount < 0)
@@ -1138,7 +1187,7 @@ class Releases
 				$minfilecount = 0;
 				if ($db->dbSystem() == 'mysql')
 				{
-					$mifcq = $db->prepare("UPDATE collections c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = ".$groupID);
+					$mifcq = $db->prepare("UPDATE ".$group['cname']." c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = ".$groupID);
 					$mifcq->execute();
 					$minfilecount = $mifcq->rowCount();
 				}
@@ -1147,7 +1196,7 @@ class Releases
 					$f = $db->queryOneRow("SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = ".$groupID);
 					if ($f['files'] > 0)
 					{
-						$mifcq = $db->prepare(sprintf('UPDATE collections SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID, $s['size']));
+						$mifcq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = '.$groupID, $s['size']));
 						$mifcq->execute();
 						$minfilecount = $mifcq->rowCount();
 					}
@@ -1172,10 +1221,27 @@ class Releases
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
+
+
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 4 -> Create releases.\n".$this->c->rsetColor();
 		$stage4 = TIME();
-		$rescol = $db->queryDirect('SELECT collections.*, groups.name AS gname FROM collections INNER JOIN groups ON collections.groupid = groups.id WHERE'.$where.'filecheck = 3 AND filesize > 0 LIMIT '.$this->stage5limit);
+		$rescol = $db->queryDirect('SELECT '.$group['cname'].'.*, groups.name AS gname FROM '.$group['cname'].' INNER JOIN groups ON '.$group['cname'].'.groupid = groups.id WHERE'.$where.'filecheck = 3 AND filesize > 0 LIMIT '.$this->stage5limit);
 		echo $this->c->set256($this->primary).$rescol->rowCount()." Collections ready to be converted to releases.\n";
 
 		if($rescol->rowCount() > 0)
@@ -1212,14 +1278,14 @@ class Releases
 				{
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
-					$db->queryExec(sprintf('UPDATE collections SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']));
+					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']));
 					$retcount ++;
 					if ($this->echooutput)
 						echo $this->c->set256($this->primary).'Added release '.$cleanName."\n";
 				}
 				elseif (isset($relid) && $relid == false)
 				{
-					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
+					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
 					$duplicate++;
 				}
 			}
@@ -1383,6 +1449,22 @@ class Releases
 		$nzbcount = $reccount = 0;
 		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID.' AND ' : ' ';
 
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
+
 		// Create NZB.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 5 -> Create the NZB, mark collections as ready for deletion.\n".$this->c->rsetColor();
@@ -1405,30 +1487,30 @@ class Releases
 				{
 					if ($db->dbSystem() == 'mysql')
 					{
-						$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE releaseid = %s', $db->escapeString($rowrel['id'])));
+						$delq = $db->prepare(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' INNER JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid INNER JOIN '.$group['pname'].' on '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE releaseid = %s', $db->escapeString($rowrel['id'])));
 						$delq->execute();
 						$reccount = $delq->rowCount();
 					}
 					else
 					{
-						$idr = $db->query(sprintf('SELECT id FROM collections WHERE releaseid = %s', $rowrel['id']));
+						$idr = $db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE releaseid = %s', $rowrel['id']));
 						if (count($idr) > 0)
 						{
 							foreach ($idr as $id)
 							{
-								$delqa = $db->prepare(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+								$delqa = $db->prepare(sprintf('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id['id']));
 								$delqa->execute();
 								$reccount += $delqa->rowCount();
-								$delqb = $db->prepare(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+								$delqb = $db->prepare(sprintf('DELETE FROM '.$group['bname'].' WHERE collectionid = %d',  $id['id']));
 								$delqb->execute();
 								$reccount += $delqb->rowCount();
 							}
-							$delqc = $db->prepare('DELETE FROM collections WHERE filecheck = 5 '.$where);
+							$delqc = $db->prepare('DELETE FROM '.$group['cname'].' WHERE filecheck = 5 '.$where);
 							$delqc->execute();
 							$reccount += $delqc->rowCount();
 						}
 					}
-					$db->queryExec(sprintf('UPDATE collections SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
+					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
 						echo $this->c->set256($this->primary).$consoletools->overWrite('Creating NZBs: '.$consoletools->percentString($nzbcount, $total));
@@ -1585,6 +1667,22 @@ class Releases
 		$where = (!empty($groupID)) ? ' collections.groupid = '.$groupID.' AND ' : ' ';
 		$delq = 0;
 
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
+
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header).$n."Stage 7a -> Delete finished collections.".$n;
@@ -1630,6 +1728,22 @@ class Releases
 		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
 		$where = (!empty($groupID)) ? ' AND collections.groupid = '.$groupID : '';
+
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($groupID == '')
+                exit("You must use releases_threaded.py\n");
+            $group['cname'] = $groupID.'_collections';
+            $group['bname'] = $groupID.'_binaries';
+            $group['pname'] = $groupID.'_parts';
+        }
+        else
+        {
+            $group['cname'] = 'collections';
+            $group['bname'] = 'binaries';
+            $group['pname'] = 'parts';
+        }
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput)

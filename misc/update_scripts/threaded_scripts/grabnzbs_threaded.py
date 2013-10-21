@@ -120,7 +120,7 @@ def main():
 
 	my_queue.join()
 
-	final = "true"
+	final = "limited"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
 	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
