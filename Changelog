@@ -1,4 +1,5 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+10212103 -> jonnyboy -> begin - adding option to use table per group
 10192013 -> jonnyboy -> added dry run option to clean_nzbs.php
                         begin using threaded fixreleasenames in tmux
                         changed monitor newest release to newest release posted, not newest release added

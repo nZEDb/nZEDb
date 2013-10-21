@@ -448,7 +448,8 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					//Not needed if using table per group
+					if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
