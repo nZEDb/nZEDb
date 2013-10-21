@@ -38,7 +38,6 @@ class ConsoleTools
 		$percent1 = 100 * ($first-1) / $total;
 		$percent2 = 100 * $last / $total;
 		$formatString = "% ".strlen($total)."d-% ".strlen($total)."d/%d (% 2d%%-% 3d%%)";
-		//$formatString = "% ".(strlen($total)*2)."d-%d/%d (% 2d%%)";
 		return sprintf($formatString, $first, $last, $total, $percent1, $percent2);
 	}
 
