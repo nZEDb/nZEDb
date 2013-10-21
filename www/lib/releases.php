@@ -999,7 +999,7 @@ class Releases
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
-		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, collections c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
+		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
@@ -1662,10 +1662,7 @@ class Releases
 		$genres = new Genres();
 		$consoletools = new ConsoleTools();
 		$n = "\n";
-		$reccount = 0;
-
-		$where = (!empty($groupID)) ? ' collections.groupid = '.$groupID.' AND ' : ' ';
-		$delq = 0;
+		$reccount = $delq = 0;
 
         // Check that tables exist, create if they do not
         if ($this->tablepergroup == 1)
@@ -1683,6 +1680,8 @@ class Releases
             $group['pname'] = 'parts';
         }
 
+		$where = (!empty($groupID)) ? ' '.$group['cname'].'.groupid = '.$groupID.' AND ' : ' ';
+
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header).$n."Stage 7a -> Delete finished collections.".$n;
@@ -1691,25 +1690,25 @@ class Releases
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql')
 		{
-			$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE'.$where.'collections.filecheck = 5'));
+			$delq = $db->prepare(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' INNER JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid INNER JOIN '.$group['pname'].' on '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE'.$where.''.$group['cname'].'.filecheck = 5'));
 			$delq->execute();
 			$reccount = $delq->rowCount();
 		}
 		else
 		{
-			$idr = $db->query('SELECT id FROM collections WHERE filecheck = 5 '.$where);
+			$idr = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 5 '.$where);
 			if (count($idr) > 0)
 			{
 				foreach ($idr as $id)
 				{
-					$delqa = $db->prepare(sprintf('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)', $id['id']));
+					$delqa = $db->prepare(sprintf('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id['id']));
 					$delqa->execute();
 					$reccount += $delqa->rowCount();
-					$delqb = $db->prepare(sprintf('DELETE FROM binaries WHERE collectionid = %d',  $id['id']));
+					$delqb = $db->prepare(sprintf('DELETE FROM '.$group['bname'].' WHERE collectionid = %d',  $id['id']));
 					$delqb->execute();
 					$reccount += $delqb->rowCount();
 				}
-				$delqc = $db->prepare('DELETE FROM collections WHERE filecheck = 5 '.$where);
+				$delqc = $db->prepare('DELETE FROM '.$group['cname'].' WHERE filecheck = 5 '.$where);
 				$delqc->execute();
 				$reccount += $delqc->rowCount();
 			}
@@ -1727,8 +1726,6 @@ class Releases
 		$consoletools = new ConsoleTools();
 		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
-		$where = (!empty($groupID)) ? ' AND collections.groupid = '.$groupID : '';
-
         // Check that tables exist, create if they do not
         if ($this->tablepergroup == 1)
         {
@@ -1745,6 +1742,8 @@ class Releases
             $group['pname'] = 'parts';
         }
 
+		$where = (!empty($groupID)) ? ' AND '.$group['cname'].'.groupid = '.$groupID : '';
+
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 7b -> Delete old releases and passworded releases.\n".$this->c->rsetColor();
@@ -1754,13 +1753,13 @@ class Releases
 		$timer1 = TIME();
 		if ($db->dbSystem() == 'mysql')
 		{
-			$delq = $db->prepare(sprintf('DELETE collections, binaries, parts FROM collections INNER JOIN binaries ON collections.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE collections.dateadded < (NOW() - INTERVAL %d HOUR) '.$where, $page->site->partretentionhours));
+			$delq = $db->prepare(sprintf('DELETE '.$group['cname'].', binaries, parts FROM '.$group['cname'].' INNER JOIN binaries ON '.$group['cname'].'.id = binaries.collectionid INNER JOIN parts on binaries.id = parts.binaryid WHERE '.$group['cname'].'.dateadded < (NOW() - INTERVAL %d HOUR) '.$where, $page->site->partretentionhours));
 			$delq->execute();
 			$reccount = $delq->rowCount();
 		}
 		else
 		{
-			$idr = $db->query(sprintf("SELECT id FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
+			$idr = $db->query(sprintf("SELECT id FROM ".$group['cname']." WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
 			if (count($idr) > 0)
 			{
 				foreach ($idr as $id)
@@ -1773,7 +1772,7 @@ class Releases
 					$reccount += $delqb->rowCount();
 				}
 			}
-			$delqc = $db->prepare(sprintf("DELETE FROM collections WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
+			$delqc = $db->prepare(sprintf("DELETE FROM ".$group['cname']." WHERE dateadded < (NOW() - INTERVAL '%d HOURS')".$where, $page->site->partretentionhours));
 			$delqc->execute();
 			$reccount += $delqc->rowCount();
 		}
@@ -1800,11 +1799,11 @@ class Releases
 			echo $this->c->set256($this->primary).'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
 		// Binaries that somehow have no collection.
 		$timer4 = TIME();
-		$db->queryExec('DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM collections c)');
+		$db->queryExec('DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM '.$group['cname'].' c)');
 		echo $this->c->set256($this->primary).'Query 4 took '.(TIME() - $timer4)." seconds (binaries with no collections).\n";
 		// Collections that somehow have no binaries.
 		$timer5 = TIME();
-		$db->queryExec('DELETE FROM collections WHERE collections.id NOT IN (SELECT binaries.collectionid FROM binaries) '.$where);
+		$db->queryExec('DELETE FROM '.$group['cname'].' WHERE '.$group['cname'].'.id NOT IN (SELECT binaries.collectionid FROM binaries) '.$where);
 		echo 'Query 5 took '.(TIME() - $timer5)." seconds (collections with no binaries).\n";
 
 		// Releases past retention.
@@ -2044,7 +2043,7 @@ class Releases
 
 		//Print amount of added releases and time it took.
 		if ($this->echooutput)
-			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
+			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM '.$group['cname'].' ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
 		return $releasesAdded;
 	}
 

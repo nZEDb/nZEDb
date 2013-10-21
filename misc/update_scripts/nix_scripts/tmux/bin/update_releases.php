@@ -16,14 +16,26 @@ $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
 $consoletools = new ConsoleTools();
 $binaries = new Binaries();
+$db = new DB();
 
 if ($pieces[0] != "Stage7b" && $pieces[0] != "Stage1")
 {
 	if ($releases->hashcheck == 0)
 		exit("You must run update_binaries.php to update your collectionhash.\n");
+}
+
+try {
+	$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections LIMIT 1');
+	$test->execute();
+} catch (PDOException $e) {
+	//No collections available
+	//exit($groupname." has no collections to process\n");
+	exit();
+}
 
 //update_binaries per group
 if ($pieces[0] != "Stage7b")
+{
 	$releases->processReleases = microtime(true);
 	echo "\n\nStarting release update process on ".$groupname." (".date("Y-m-d H:i:s").")\n";
 	$releases->processReleasesStage1($groupid, $echooutput=true);

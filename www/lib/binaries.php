@@ -57,13 +57,23 @@ class Binaries
 			$alltime = microtime(true);
 			echo $this->c->setcolor('bold', $this->header)."\nUpdating: ".sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No')."\n".$this->c->rsetcolor();
 
+			// Connect to usenet.
+			$nntp = new Nntp();
+			if ($nntp->doConnect() === false)
+			{
+				echo "Error connecting to usenet.\n";
+				return;
+			}
+
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
 				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res)."\n".$this->c->rsetcolor();
-				$this->updateGroup($groupArr);
+				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
+			// Quit usenet.
+			$nntp->doQuit();
 
 			echo $this->c->setcolor('bold', $this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
 		}
@@ -71,16 +81,12 @@ class Binaries
 			echo $this->c->setcolor('bold', $this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
-	public function updateGroup($groupArr)
+	public function updateGroup($groupArr, $nntp)
 	{
 		$this->startGroup = microtime(true);
 		echo $this->c->setcolor('bold', $this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
 
 		// Select the group.
-		$nntp = new Nntp();
-		if ($nntp->doConnect() === false)
-			return;
-
 		$data = $nntp->selectGroup($groupArr['name']);
 
 		// Attempt to reconnect if there is an error.
@@ -113,7 +119,6 @@ class Binaries
 				$first = $backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
 				if ($first == '')
 				{
-					$nntp->doQuit();
 					echo $this->c->setcolor('bold', $this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
 					return;
 				}
@@ -125,6 +130,7 @@ class Binaries
 				else
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
+
 			// In case postdate doesn't get a date.
 			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL')
 				$first_record_postdate = time();
@@ -132,9 +138,9 @@ class Binaries
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 
 			$newdate = $backfill->postdate($nntp, $first, false, $groupArr['name'], true);
-
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
+
 			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 		}
 		else
@@ -221,13 +227,11 @@ class Binaries
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
-				$lastId = $this->scan(null, $groupArr, $first, $last);
+				$lastId = $this->scan($nntp, $groupArr, $first, $last);
+
 				// Scan failed - skip group.
 				if ($lastId == false)
-				{
-					$nntp->doQuit();
 					return;
-				}
 
 				$newdatek = $backfill->postdate($nntp, $lastId, false, $groupArr['name'], true);
 				if ($newdatek !== false)
@@ -245,7 +249,6 @@ class Binaries
 					$first = $last;
 				}
 			}
-			$nntp->doQuit();
 			// Set group's last postdate.
 			//$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($lastr_postdate), $groupArr['id']));
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
@@ -285,13 +288,17 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// If NNTP is null, connect.
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp();
+			if ($nntp->doConnect() === false)
+				return;
+		}
 
 		// Select the group.
-		if (!isset($nntp))
-			$nntp = new Nntp();
-		if ($nntp->doConnect() === false)
-			return;
 		$data = $nntp->selectGroup($groupArr['name']);
+
 		// Attempt to reconnect if there is an error.
 		if(PEAR::isError($data))
 		{
@@ -313,13 +320,10 @@ class Binaries
 			$msgs = $nntp->getOverview($first.'-'.$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				$nntp->doQuit();
 				echo $this->c->setcolor('bold', $this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
 				return;
 			}
 		}
-		if($type != 'partrepair') // Use same connection when doing partRepair
-			$nntp->doQuit();
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
 
 		$this->startCleaning = microtime(true);
