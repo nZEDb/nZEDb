@@ -80,10 +80,17 @@ class Binaries
 			echo $this->c->setcolor('bold', $this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
-	public function updateGroup($groupArr, $nntp)
+	public function updateGroup($groupArr, $nntp=null)
 	{
 		$this->startGroup = microtime(true);
 		echo $this->c->setcolor('bold', $this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
+
+		if (!isset($nntp))
+		{
+			$nntp = new Nntp;
+			if ($nntp->doConnect() === false)
+				return;
+		}
 
 		// Select the group.
 		$data = $nntp->selectGroup($groupArr['name']);
