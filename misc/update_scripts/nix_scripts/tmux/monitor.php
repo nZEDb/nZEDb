@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3877";
+$version="0.1r3882";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -62,7 +62,7 @@ if ($dbtype == 'mysql')
 		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
 		( SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
-		( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
+		( SELECT UNIX_TIMESTAMP(postdate) FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestadd,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb";
 }
 elseif ($dbtype == 'pgsql')
@@ -80,7 +80,7 @@ elseif ($dbtype == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestname,
+	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestname,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'niceness' ) AS niceness,
@@ -737,17 +737,9 @@ while( $i > 0 )
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 2 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 4 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 6 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
-			}
-			elseif ( $fix_names == "TRUE" )
-			{
-				$log = writelog($panes1[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 1 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 3 true all yes $log; \
-						$_phpn ${DIR}testing/Release_scripts/fixReleaseNames.php 5 true all yes $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}testing/Dev_testing/renametopre.php 24 \
+						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py md5 \
+						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
