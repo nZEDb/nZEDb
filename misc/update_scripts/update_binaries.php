@@ -13,7 +13,7 @@ if (isset($argv[1]))
 	$grp = new Groups();
 	$group = $grp->getByName($groupName);
 
-	$binaries->updateGroup($group);
+	$binaries->updateGroup($group, NULL);
 }
 else
 	$binaries->updateAllGroups();

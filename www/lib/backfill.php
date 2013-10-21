@@ -7,10 +7,13 @@ require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class Backfill
 {
-	public function Backfill()
+	public function Backfill($site=null)
 	{
-		$s = new Sites();
-		$site = $s->get();
+		if (!isset($site))
+		{
+			$s = new Sites();
+			$site = $s->get();
+		}
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
