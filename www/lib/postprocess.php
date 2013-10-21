@@ -179,11 +179,14 @@ class PostProcess
 		if (!in_array($quer['relnamestatus'], array(0, 1, 6, 20, 21)) || $quer['relnamestatus'] === 7 || $quer['categoryid'] != Category::CAT_MISC)
 			return false;
 
+		$st = false;
 		if (!isset($nntp))
 		{
+			$st = true;
 			$nntp = new Nntp();
 			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 		}
+
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
@@ -193,11 +196,14 @@ class PostProcess
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 			if ($par2 === false || PEAR::isError($par2))
 			{
-				$nntp->doQuit();
+				if ($st)
+					$nntp->doQuit();
 				return false;
 			}
 		}
-		$nntp->doQuit();
+		if ($st)
+			$nntp->doQuit();
+
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
 		if ($par2info->error)
