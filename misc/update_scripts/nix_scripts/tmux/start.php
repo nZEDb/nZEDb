@@ -75,8 +75,8 @@ function command_exist($cmd) {
 }
 
 function python_module_exist($module) {
-	$returnVal = exec("python -c \"import $module\"");
-	return (empty($returnVal) ? true : false);
+	exec("python -c \"import $module\"", $output, $returnCode);
+	return ($returnCode == 0 ? true : false);
 }
 
 //check for apps
@@ -96,7 +96,7 @@ if ($nntpproxy == '1')
 	foreach ($modules as &$value)
 	{
 		if (!python_module_exist($value)) {
-			echo "I require ".$value." python module but it's not installed. Aborting.\n";
+			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
 			exit(1);
 		}
 	}
@@ -160,8 +160,11 @@ function start_apps($tmux_session)
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
 	}
 
+    $site = new Sites();
+    $nntpproxy = $site->get()->nntpproxy;
 	if ( $nntpproxy == '1' )
 	{
+        $DIR = MISC_DIR;
 		$nntpproxypy = $DIR."update_scripts/nntpproxy/nntpproxy.py";
 		$nntpproxyconf = $DIR."update_scripts/nntpproxy/nntpproxy.conf";
 		exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");

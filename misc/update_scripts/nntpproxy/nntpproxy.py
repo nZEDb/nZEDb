@@ -14,6 +14,7 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
         if backend_mod.Socket != socket.socket:
             raise ValueError("Bad backend")
         nntp.NNTPClient.__init__(self, host, port, username, password, timeout=timeout, use_ssl=use_ssl)
+        self.xfeature_compress_gzip()
         self.host = host
         self.port = port
         self.backend_mod = backend_mod

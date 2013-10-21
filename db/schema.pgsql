@@ -1431,7 +1431,7 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('nntpproxy', '0'),
+	('nntpproxy', 0),
 	('sqlpatch','133');
 
 
