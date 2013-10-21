@@ -1420,7 +1420,7 @@ INSERT INTO site
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('request_url', 'http://predbirc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
@@ -1431,7 +1431,8 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','131');
+	('tablepergroup', '0'),	
+	('sqlpatch','133');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -11878,10 +11879,14 @@ DROP INDEX IF EXISTS "partrepair_numberID_groupid" CASCADE;
 CREATE UNIQUE INDEX "partrepair_numberID_groupid" ON "partrepair" ("numberid", "groupid");
 DROP INDEX IF EXISTS "partrepair_attempts" CASCADE;
 CREATE INDEX "partrepair_attempts" ON "partrepair" ("attempts");ALTER TABLE "parts" ADD CONSTRAINT "parts_id_pkey" PRIMARY KEY("id");
+
 DROP INDEX IF EXISTS "parts_binaryid" CASCADE;
 CREATE INDEX "parts_binaryid" ON "parts" ("binaryid");
 DROP INDEX IF EXISTS "parts_number" CASCADE;
-CREATE INDEX "parts_number" ON "parts" ("number");ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "parts_number" ON "parts" ("number");
+DROP INDEX IF EXISTS "parts_messageid" CASCADE;
+CREATE INDEX "parts_messageid" ON "parts" ("messageid");
+ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "predb_title" CASCADE;
 CREATE INDEX "predb_title" ON "predb" ("title");
 DROP INDEX IF EXISTS "predb_nfo" CASCADE;

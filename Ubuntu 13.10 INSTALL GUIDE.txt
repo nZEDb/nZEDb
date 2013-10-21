@@ -25,6 +25,7 @@ Most of this guide is done from the command line (terminal).
 		# -or-
 			sudo pip-3.3 install cymysql
 			pip-3.3 list
+		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
 	# Or the Python psycopg module for PostgreSQL
 		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
@@ -47,6 +48,8 @@ Most of this guide is done from the command line (terminal).
 			pip-3.2 list
 			-or-
 			pip-3.3 list
+		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
+
 
 1. Update and upgrade the operating system.
 
