@@ -979,8 +979,8 @@ class Releases
         // Check that tables exist, create if they do not
         if ($this->tablepergroup == 1)
         {
-			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+			//if ($groupID == '')
+			//	exit("You must use releases_threaded.py\n");
             $group['cname'] = $groupID.'_collections';
             $group['bname'] = $groupID.'_binaries';
             $group['pname'] = $groupID.'_parts';
