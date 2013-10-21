@@ -92,7 +92,7 @@ foreach ($apps as &$value)
 $nntpproxy = $site->get()->nntpproxy;
 if ($nntpproxy == '1')
 {
-    $modules = array("nntp", "socketpool");
+	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value)
 	{
 		if (!python_module_exist($value)) {
@@ -160,11 +160,11 @@ function start_apps($tmux_session)
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
 	}
 
-    $site = new Sites();
-    $nntpproxy = $site->get()->nntpproxy;
+	$site = new Sites();
+	$nntpproxy = $site->get()->nntpproxy;
 	if ( $nntpproxy == '1' )
 	{
-        $DIR = MISC_DIR;
+		$DIR = MISC_DIR;
 		$nntpproxypy = $DIR."update_scripts/nntpproxy/nntpproxy.py";
 		$nntpproxyconf = $DIR."update_scripts/nntpproxy/nntpproxy.conf";
 		exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
