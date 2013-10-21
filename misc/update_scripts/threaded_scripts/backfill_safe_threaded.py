@@ -96,10 +96,10 @@ while count < 10000:
 			cur[0].execute("SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - INTERVAL '%s DAYS') < g.first_record_postdate GROUP BY a.name %s LIMIT 1" % (backfilldays, group, groups))
 		datas = cur[0].fetchone()
 	else:
-		run = "SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE name = %s AND g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00000' LIMIT 1"
+		run = "SELECT g.name, g.first_record AS our_first, MAX(a.first_record) AS thier_first, MAX(a.last_record) AS their_last FROM groups g INNER JOIN shortgroups a ON g.name = a.name WHERE g.name = %s AND g.first_record IS NOT NULL AND g.first_record_postdate IS NOT NULL AND g.backfill = 1 AND g.first_record_postdate != '2000-00-00 00:00000' LIMIT 1"
 		cur[0].execute(run, (sys.argv[1]))
-		datas = cur.fetchone()
-	if not datas:
+		datas = cur[0].fetchone()
+	if not datas or datas[0] is None:
 		print("No Groups enabled for backfill")
 		disconnect(cur[0], cur[1])
 		sys.exit()
@@ -109,9 +109,20 @@ while count < 10000:
 	count = datas[1] - datas[2]
 	if count < 0:
 		print("USP returned an invalid first_post for {}, skipping it.".format(datas[0]))
+		if len(sys.argv) == 2:
+			sys.exit()
 
 	if count == 0:
-		print("We have hit the maximum we can backfill for {}, skipping it".format(datas[0]))
+		if len(sys.argv) == 2:
+			print("We have hit the maximum we can backfill for {}, disabling it".format(datas[0]))
+			remove = "UPDATE groups SET backfill = 0 WHERE name = %s"
+			cur = connect()
+			cur[0].execute(remove, (sys.argv[1]))
+			cur[1].autocommit(True)
+			disconnect(cur[0], cur[1])
+			sys.exit()
+		else:
+			print("We have hit the maximum we can backfill for {}, skipping it".format(datas[0]))
 	
 	if count < 10000 and count > 0:
 		print("Group {} has {} articles, in the range {} to {}".format(datas[0], "{:,}".format(count), "{:,}".format(datas[2]), "{:,}".format(datas[3])))

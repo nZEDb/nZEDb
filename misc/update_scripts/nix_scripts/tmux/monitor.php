@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3879";
+$version="0.1r3882";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -737,7 +737,7 @@ while( $i > 0 )
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_python ${DIR}testing/Dev_testing/renametopre.php 24 \
+						$_php ${DIR}testing/Dev_testing/renametopre.php 24 \
 						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py md5 \
 						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
