@@ -304,24 +304,26 @@ class Binaries
 			$nntp = new Nntp();
 			if ($nntp->doConnect() === false)
 				return;
-		}
 
-		// Select the group.
-		$data = $nntp->selectGroup($groupArr['name']);
+			// Select the group.
+			$data = $nntp->selectGroup($groupArr['name']);
 
-		// Attempt to reconnect if there is an error.
-		if(PEAR::isError($data))
-		{
-			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false)
-				return;
+			// Attempt to reconnect if there is an error.
+			if(PEAR::isError($data))
+			{
+				$data = $nntp->dataError($nntp, $groupArr['name']);
+				if ($data === false)
+					return;
+			}
 		}
 
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
+
+		// If there ware an error, try to reconnect.
 		if($type != 'partrepair' && PEAR::isError($msgs))
 		{
-			// This is usually a compression error, so lets try disabling compression.
+			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
 			if ($nntp->doConnectNC() === false)
 				return;
