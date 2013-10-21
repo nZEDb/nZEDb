@@ -152,10 +152,8 @@ Class NZBcontents
 				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
-				{
-					$nntp->doQuit();
 					$fetchedBinary = false;
-				}
+
 			}
 			if ($nfo->isNFO($fetchedBinary, $guid) === true)
 			{
