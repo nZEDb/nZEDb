@@ -1680,7 +1680,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		{
 			$delq = $db->prepare(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' INNER JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid INNER JOIN '.$group['pname'].' on '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['cname'].'.dateadded < (NOW() - INTERVAL %d HOUR) '.$where1, $page->site->partretentionhours));
 			$delq->execute();
-			$reccount = $delq->rowCount();
+			$reccount += $delq->rowCount();
 		}
 		else
 		{
@@ -1704,22 +1704,38 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 
 		// Binaries/parts that somehow have no collection.
 		if ($db->dbSystem() == 'mysql')
-			$db->queryExec('DELETE '.$group['bname'].', '.$group['pname'].' FROM '.$group['bname'].' LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['bname'].'.collectionid = 0');
+		{
+			$delqd = $db->prepare('DELETE '.$group['bname'].', '.$group['pname'].' FROM '.$group['bname'].' LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['bname'].'.collectionid = 0');
+			$delqd->execute();
+			$reccount += $delqd->rowCount();
+		}
 		else
 		{
-			$db->queryExec('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = 0)');
-			$db->queryExec('DELETE FROM '.$group['bname'].' WHERE collectionid = 0');
+			$delqe = $db->prepare('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = 0)');
+			$delqe->execute();
+			$reccount += $delqe->rowCount();
+			$delqf = $db->prepare('DELETE FROM '.$group['bname'].' WHERE collectionid = 0');
+			$delqf->execute();
+			$reccount += $delqf->rowCount();
 		}
 
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0)
-			$db->queryExec('DELETE FROM '.$group['pname'].' WHERE binaryid NOT IN (SELECT b.id FROM '.$group['bname'].' b)');
+		{
+			$delqg = $db->prepare('DELETE FROM '.$group['pname'].' WHERE binaryid NOT IN (SELECT b.id FROM '.$group['bname'].' b)');
+			$delqg->execute();
+			$reccount += $delqg->rowCount();
+		}
 
 		// Binaries that somehow have no collection.
-		$db->queryExec('DELETE FROM '.$group['bname'].' WHERE collectionid NOT IN (SELECT c.id FROM '.$group['cname'].' c)');
+		$delqh = $db->prepare('DELETE FROM '.$group['bname'].' WHERE collectionid NOT IN (SELECT c.id FROM '.$group['cname'].' c)');
+		$delqh->execute();
+		$reccount += $delqh->rowCount();
 
 		// Collections that somehow have no binaries.
-		$db->queryExec('DELETE FROM '.$group['cname'].' WHERE '.$group['cname'].'.id NOT IN (SELECT '.$group['bname'].'.collectionid FROM '.$group['bname'].') '.$where1);
+		$delqi = $db->prepare('DELETE FROM '.$group['cname'].' WHERE '.$group['cname'].'.id NOT IN (SELECT '.$group['bname'].'.collectionid FROM '.$group['bname'].') '.$where1);
+		$delqi->execute();
+		$reccount += $delqi->rowCount();
 
 		if ($this->echooutput)
 				echo $this->c->set256($this->primary)."\nRemoved ".number_format($reccount).' parts/binaries/collection rows in '.$this->consoleTools->convertTime(TIME() - $stage7);
