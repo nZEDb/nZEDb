@@ -7,10 +7,13 @@ require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class Backfill
 {
-	public function Backfill()
+	public function Backfill($site=null)
 	{
-		$s = new Sites();
-		$site = $s->get();
+		if (!isset($site))
+		{
+			$s = new Sites();
+			$site = $s->get();
+		}
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : 2012-06-24;
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
@@ -36,36 +39,43 @@ class Backfill
 		else
 			$res = $groups->getActiveBackfill();
 
-		$counter = 1;
+
 		if (@$res)
 		{
 			$nntp = new Nntp;
-			$nntpc = new Nntp;
+			// Connect to usenet.
+			if ($nntp->doConnect() === false)
+			{
+				echo "Error connecting to usenet.\n";
+				return;
+			}
+
+			$counter = 1;
+			$db = new DB();
+			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
 				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetcolor();
-				$this->backfillGroup($nntp, $nntpc, $groupArr, sizeof($res)-$counter);
+				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
+			$nntp->doQuit();
 		}
 		else
 			echo $this->c->setcolor('bold', $this->primary)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
 	// Backfill 1 group using time.
-	public function backfillGroup($nntp, $nntpc, $groupArr, $left)
+	public function backfillGroup($nntp, $db, $binaries, $groupArr, $left)
 	{
-		$db = new DB();
-		$binaries = new Binaries();
 		$this->startGroup = microtime(true);
 
 		if (!isset($nntp))
+		{
 			$nntp = new Nntp;
-		if (!isset($nntpc))
-			$nntpc = new Nntp;
-		// No compression.
-		if ($nntp->doConnectNC() === false)
-			return;
+			if ($nntp->doConnect() === false)
+				return;
+		}
 
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
@@ -79,9 +89,9 @@ class Backfill
 		$targetpost = $this->daytopost($nntp, $groupArr['name'], $groupArr['backfill_target'], true);
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
+
 		if($groupArr['first_record'] == 0 || $groupArr['backfill_target'] == 0)
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning).'Group '.$groupArr['name']." has invalid numbers. Have you run update on it? Have you set the backfill days amount?\n".$this->c->rsetcolor();
 			return;
 		}
@@ -89,16 +99,15 @@ class Backfill
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= ($data['first'] + 50000))
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning).'We have hit the maximum we can backfill for this '.$groupArr['name'].", disabling it.\n\n".$this->c->rsetcolor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
 		}
+
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning)."Nothing to do, we already have the target post\n\n".$this->c->rsetcolor();
 			return '';
 		}
@@ -116,6 +125,7 @@ class Backfill
 		$last = $groupArr['first_record'] - 1;
 		// Set the initial "chunk".
 		$first = $last - $binaries->messagebuffer + 1;
+
 		// Just in case this is the last chunk we needed.
 		if($targetpost > $first)
 			$first = $targetpost;
@@ -132,7 +142,7 @@ class Backfill
 
 			echo $this->c->setcolor('bold', $this->primary).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetcolor();
 			flush();
-			$binaries->scan($nntpc, $groupArr, $first, $last, 'backfill');
+			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
@@ -150,7 +160,6 @@ class Backfill
 					$first = $targetpost;
 			}
 		}
-		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
 
@@ -197,29 +206,34 @@ class Backfill
 
 		if (@$res)
 		{
+			$nntp = new Nntp;
+			// Connect to usenet.
+			if ($nntp->doConnect() === false)
+			{
+				echo "Error connecting to usenet.\n";
+				return;
+			}
+
 			$counter = 1;
+			$db = new DB();
+			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
 				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetcolor();
-				$this->backfillPostGroup($groupArr, $articles, sizeof($res)-$counter);
+				$this->backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}
+			$nntp->doQuit();
 		}
 		else
 			echo $this->c->setcolor('bold', $this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
-	public function backfillPostGroup($groupArr, $articles='', $left)
+	public function backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles='', $left)
 	{
-		$db = new DB();
-		$binaries = new Binaries();
-		$nntp = new Nntp();
 		$this->startGroup = microtime(true);
 
 		echo $this->c->setcolor('bold', $this->header).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
-
-		if ($nntp->doConnectNC() === false)
-			return;
 
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
@@ -236,7 +250,6 @@ class Backfill
 
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning).'You need to run update_binaries on the '.$data['group'].". Otherwise the group is dead, you must disable it.\n".$this->c->rsetcolor();
 			return '';
 		}
@@ -244,7 +257,6 @@ class Backfill
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning).'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n\n".$this->c->rsetcolor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
@@ -254,7 +266,6 @@ class Backfill
 		// If our estimate comes back with stuff we already have, finish.
 		if($targetpost >= $groupArr['first_record'])
 		{
-			$nntp->doQuit();
 			echo $this->c->setcolor('bold', $this->warning)."Nothing to do, we already have the target post.\n\n".$this->c->rsetcolor();
 			return '';
 		}
@@ -290,7 +301,7 @@ class Backfill
 			echo $this->c->setcolor('bold', $this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetcolor();
 			flush();
 
-			$binaries->scan(null, $groupArr, $first, $last, 'backfill');
+			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
@@ -309,7 +320,6 @@ class Backfill
 
 			}
 		}
-		$nntp->doQuit();
 		// Set group's first postdate.
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->from_unixtime($firstr_date), $groupArr['id']));
 
@@ -352,7 +362,6 @@ class Backfill
 				if (PEAR::isError($msgs))
 				{
 					echo $this->c->setcolor('bold', $this->warning)."Error {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.".$this->c->rsetcolor();
-					$nntp->doQuit();
 					if ($old === true)
 						return false;
 					else
@@ -491,7 +500,8 @@ class Backfill
 			{  $dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group); }
 	 	}
 	 	if ($st === true)
-				$nntp->doQuit();
+			$nntp->doQuit();
+
 		printf($mask1, 'Determined to be article:', number_format($upperbound), 'which is '.$this->daysOld($dateofnextone).' days old ('.date('r', $dateofnextone).')');
 		return $upperbound;
 	}

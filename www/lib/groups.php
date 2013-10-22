@@ -8,6 +8,11 @@ require_once(WWW_DIR."/lib/binaries.php");
 
 class Groups
 {
+	public function Groups($db=null)
+	{
+		$this->db = $db;
+	}
+
 	public function getAll()
 	{
 		$db = new DB();
@@ -30,13 +35,19 @@ class Groups
 
 	public function getByID($id)
 	{
-		$db = new DB();
+		if (isset($this->db))
+			$db = $this->db;
+		else
+			$db = new DB();
 		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE id = %d ", $id));
 	}
 
 	public function getActive()
 	{
-		$db = new DB();
+		if (isset($db))
+			$db = $this->db;
+		else
+			$db = new DB();
 		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
 	}
 

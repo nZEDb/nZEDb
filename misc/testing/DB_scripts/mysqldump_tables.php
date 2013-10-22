@@ -45,7 +45,7 @@ function builddefaultsfile()
 				."user = " . DB_USER
 				."\n"
 				."password = " . DB_PASSWORD;
-	
+
 	$filehandle = fopen("mysql-defaults.txt", "w+");
 	if(!$filehandle)
 		exit("Unable to write mysql defaults file! Exiting");
