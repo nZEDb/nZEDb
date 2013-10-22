@@ -33,7 +33,7 @@ class Binaries
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
-		$this->tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
+		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
 		$this->primary = 'green';
 		$this->warning = 'red';
@@ -290,6 +290,12 @@ class Binaries
 			$group['cname'] = $groupArr['id'].'_collections';
 			$group['bname'] = $groupArr['id'].'_binaries';
 			$group['pname'] = $groupArr['id'].'_parts';
+
+			// Check tables for content
+			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
+			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
+			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
+
 		}
 		else
 		{

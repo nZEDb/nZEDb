@@ -30,7 +30,7 @@ class Releases
 
 	function Releases($echooutput=false)
 	{
-		$this->echooutput = $echooutput;
+		//$this->echooutput = $echooutput;
 		$this->db = new DB();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
@@ -976,11 +976,11 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 	{
 		$db = $this->db;
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
-			//if ($groupID == '')
-			//	exit("You must use releases_threaded.py\n");
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
             $group['cname'] = $groupID.'_collections';
             $group['bname'] = $groupID.'_binaries';
             $group['pname'] = $groupID.'_parts';
@@ -992,7 +992,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
             $group['pname'] = 'parts';
         }
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."Stage 1 -> Try to find complete collections.\n";
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? ' c.groupid = '.$groupID.' AND ' : ' ';
@@ -1021,7 +1021,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		else
 			$db->queryExec(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage1);
 	}
 
@@ -1030,7 +1030,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$db = $this->db;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1046,12 +1046,12 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
             $group['pname'] = 'parts';
         }
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 2 -> Get the size in bytes of the collection.\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$db->queryExec('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage2);
 	}
 
@@ -1060,7 +1060,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$db = $this->db;
 		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1076,7 +1076,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
             $group['pname'] = 'parts';
         }
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\n";
 		$stage3 = TIME();
 
@@ -1205,9 +1205,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		}
 
 		$delcount = $minsizecounts+$maxsizecounts+$minfilecounts;
-		if ($this->echooutput && $delcount > 0)
+		if ($echooutput && $delcount > 0)
 				echo $this->c->set256($this->primary).'Deleted '.number_format($delcount)." collections smaller/larger than group/site settings.\n";
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage3);
 	}
 
@@ -1217,7 +1217,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1234,11 +1234,12 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
         }
 
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 4 -> Create releases.\n".$this->c->rsetColor();
 		$stage4 = TIME();
 		$rescol = $db->queryDirect('SELECT '.$group['cname'].'.*, groups.name AS gname FROM '.$group['cname'].' INNER JOIN groups ON '.$group['cname'].'.groupid = groups.id WHERE'.$where.'filecheck = 3 AND filesize > 0 LIMIT '.$this->stage5limit);
-		echo $this->c->set256($this->primary).$rescol->rowCount()." Collections ready to be converted to releases.\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).$rescol->rowCount()." Collections ready to be converted to releases.\n";
 
 		if($rescol->rowCount() > 0)
 		{
@@ -1275,7 +1276,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 					// Update collections table to say we inserted the release.
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']));
 					$retcount ++;
-					if ($this->echooutput)
+					if ($echooutput)
 						echo $this->c->set256($this->primary).'Added release '.$cleanName."\n";
 				}
 				elseif (isset($relid) && $relid == false)
@@ -1286,7 +1287,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			}
 		}
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).number_format($retcount).' Releases added and '.number_format($duplicate).' marked for deletion in '.$this->consoleTools->convertTime(TIME() - $stage4).'.';
 		return $retcount;
 	}
@@ -1300,7 +1301,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.\n";
 		$stage4dot5 = TIME();
 
@@ -1429,9 +1430,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		}
 
 		$delcount = $minsizecount+$maxsizecount+$minfilecount+$catminsizecount;
-		if ($this->echooutput && $delcount > 0)
+		if ($echooutput && $delcount > 0)
 				echo $this->c->set256($this->primary).'Deleted '.number_format($delcount)." releases smaller/larger than group/site settings.\n";
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage4dot5);
 	}
 
@@ -1441,7 +1442,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$nzbcount = $reccount = 0;
 		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID.' AND ' : ' ';
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1458,7 +1459,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
         }
 
 		// Create NZB.
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 5 -> Create the NZB, mark collections as ready for deletion.\n".$this->c->rsetColor();
 		$stage5 = TIME();
 		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE".$where."r.nzbstatus = 0");
@@ -1502,18 +1503,18 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 					}
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
-					if ($this->echooutput)
+					if ($echooutput)
 						echo $this->c->set256($this->primary).$this->consoleTools->overWrite('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total));
 				}
 			}
 		}
 
 		$timing = $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage5);
-		if ($this->echooutput && $nzbcount > 0)
+		if ($echooutput && $nzbcount > 0)
 			echo $this->c->set256($this->primary)."\n".number_format($nzbcount).' NZBs created in '. $timing.'.';
-		elseif ($this->echooutput)
+		elseif ($echooutput)
 			echo $timing;
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary)."\n".'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$this->consoleTools->convertTime(TIME() - $stage5);
 		return $nzbcount;
 	}
@@ -1530,7 +1531,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$stage8 = TIME();
 			$n = "\n";
 
-			if ($this->echooutput)
+			if ($echooutput)
 				echo $this->c->set256($this->header)."\nStage 5b -> Request ID lookup.";
 
 			// Look for records that potentially have requestID titles.
@@ -1577,7 +1578,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 						else
 						{
 							$db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
-							if ($this->echooutput)
+							if ($echooutput)
 								echo $this->c->set256($this->primary).'.';
 						}
 					}
@@ -1588,7 +1589,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 						$run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
 						$run->execute();
 						$newcatname = $category->getNameByID($determinedcat);
-						if ($this->echooutput)
+						if ($echooutput)
 						{
 							echo	$this->c->set256($this->primary)."\n\n".'New name:  '.$newTitle.
 								"\nOld name:  ".$rowrel['searchname'].
@@ -1602,15 +1603,15 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 					else
 					{
 						$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = '.$rowrel['id']);
-						if ($this->echooutput)
+						if ($echooutput)
 							echo $this->c->set256($this->primary).'.';
 					}
 				}
-				if ($this->echooutput && $bFound)
+				if ($echooutput && $bFound)
 					echo "\n";
 			}
 
-			if ($this->echooutput)
+			if ($echooutput)
 				echo $this->c->set256($this->primary)."\n".number_format($iFoundcnt).' Releases updated in '.$this->consoleTools->convertTime(TIME() - $stage8).'.';
 		}
 	}
@@ -1621,7 +1622,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$where = (!empty($groupID)) ? 'WHERE relnamestatus = 0 AND groupid = '.$groupID : 'WHERE relnamestatus = 0';
 
 		// Categorize releases.
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 6 -> Categorize and post process releases.\n";
 		$stage6 = TIME();
 		if ($categorize == 1)
@@ -1634,10 +1635,10 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		}
 		else
 		{
-			if ($this->echooutput)
+			if ($echooutput)
 				echo $this->c->set256($this->primary)."Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.\n";
 		}
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage6).'.';
 	}
 
@@ -1650,7 +1651,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$n = "\n";
 		$reccount = $delq = 0;
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1669,7 +1670,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$where = (!empty($groupID)) ? ' '.$group['cname'].'.groupid = '.$groupID.' AND ' : ' ';
 
 		// Delete old releases and finished collections.
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header).$n."Stage 7a -> Delete finished collections.".$n;
 		$stage7 = TIME();;
 
@@ -1699,7 +1700,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				$reccount += $delqc->rowCount();
 			}
 		}
-		if ($this->echooutput)
+		if ($echooutput)
 				echo $this->c->set256($this->primary).'Removed '.number_format($reccount).' parts/binaries/collection rows in '.$this->consoleTools->convertTime(TIME() - $stage7);
 	}
 
@@ -1711,7 +1712,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$genres = new Genres();
 		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
-        // Check that tables exist, create if they do not
+        // Set table names
         if ($this->tablepergroup == 1)
         {
             if ($groupID == '')
@@ -1730,7 +1731,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$where = (!empty($groupID)) ? ' AND '.$group['cname'].'.groupid = '.$groupID : '';
 
 		// Delete old releases and finished collections.
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStage 7b -> Delete old releases and passworded releases.\n".$this->c->rsetColor();
 		$stage7 = TIME();
 
@@ -1761,7 +1762,8 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$delqc->execute();
 			$reccount += $delqc->rowCount();
 		}
-		echo $this->c->set256($this->primary).'Query 1 took '.(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 1 took '.(TIME() - $timer1)." seconds (old collections that were somehow missed).\n";
 
 		// Binaries/parts that somehow have no collection.
 		$timer2 = TIME();
@@ -1772,24 +1774,34 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$db->queryExec('DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = 0)');
 			$db->queryExec('DELETE FROM binaries WHERE collectionid = 0');
 		}
-		echo $this->c->set256($this->primary).'Query 2 took '.(TIME() - $timer2)." seconds (binaries/parts with no collections).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 2 took '.(TIME() - $timer2)." seconds (binaries/parts with no collections).\n";
+
 		// Parts that somehow have no binaries.
 		$timer3 = TIME();
 		if (mt_rand(1, 100) % 3 == 0)
 		{
 			$db->queryExec('DELETE FROM parts WHERE binaryid NOT IN (SELECT b.id FROM binaries b)');
-			echo 'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
+			if ($echooutput)
+				echo 'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
 		}
 		else
-			echo $this->c->set256($this->primary).'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
+		{
+			if ($echooutput)
+				echo $this->c->set256($this->primary).'Query 3 took '.(TIME() - $timer3)." seconds (parts with no binaries).\n";
+		}
+
 		// Binaries that somehow have no collection.
 		$timer4 = TIME();
 		$db->queryExec('DELETE FROM binaries WHERE collectionid NOT IN (SELECT c.id FROM '.$group['cname'].' c)');
-		echo $this->c->set256($this->primary).'Query 4 took '.(TIME() - $timer4)." seconds (binaries with no collections).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 4 took '.(TIME() - $timer4)." seconds (binaries with no collections).\n";
+
 		// Collections that somehow have no binaries.
 		$timer5 = TIME();
 		$db->queryExec('DELETE FROM '.$group['cname'].' WHERE '.$group['cname'].'.id NOT IN (SELECT binaries.collectionid FROM binaries) '.$where);
-		echo 'Query 5 took '.(TIME() - $timer5)." seconds (collections with no binaries).\n";
+		if ($echooutput)
+			echo 'Query 5 took '.(TIME() - $timer5)." seconds (collections with no binaries).\n";
 
 		// Releases past retention.
 		$timer6 = TIME();
@@ -1805,7 +1817,8 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				$remcount ++;
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 6 took '.(TIME() - $timer6)." seconds (releases past retention).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 6 took '.(TIME() - $timer6)." seconds (releases past retention).\n";
 
 		// Passworded releases.
 		$timer7 = TIME();
@@ -1821,7 +1834,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 7 took '.(TIME() - $timer7)." seconds (passworded releases).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 7 took '.(TIME() - $timer7)." seconds (passworded releases).\n";
+
 		// Possibly passworded releases.
 		$timer8 = TIME();
 		if($page->site->deletepossiblerelease == 1)
@@ -1836,7 +1851,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 8 took '.(TIME() - $timer8)." seconds (possible passworded releases).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 8 took '.(TIME() - $timer8)." seconds (possible passworded releases).\n";
+
 		// Crossposted releases.
 		$timer9 = TIME();
 		do
@@ -1858,7 +1875,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		} while ($total > 0);
-		echo $this->c->set256($this->primary).'Query 9 took '.(TIME() - $timer9)." seconds (crossposted releases).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 9 took '.(TIME() - $timer9)." seconds (crossposted releases).\n";
+
 		// Releases below completion %.
 		$timer10 = TIME();
 		if ($this->completion > 100)
@@ -1875,7 +1894,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 10 took '.(TIME() - $timer10)." seconds (releases under completion).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 10 took '.(TIME() - $timer10)." seconds (releases under completion).\n";
+
 		// Disabled categories.
 		$catlist = $category->getDisabledIDs();
 		$timer11 = TIME();
@@ -1894,7 +1915,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 11 took '.(TIME() - $timer11)." seconds (releases in disabled categories).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 11 took '.(TIME() - $timer11)." seconds (releases in disabled categories).\n";
+
 		// Disabled music genres.
 		$genrelist = $genres->getDisabledIDs();
 		$timer12 = TIME();
@@ -1913,7 +1936,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 12 took '.(TIME() - $timer12)." seconds (releases in disabled music genres).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 12 took '.(TIME() - $timer12)." seconds (releases in disabled music genres).\n";
+
 		// Misc other.
 		$timer13 = TIME();
 		if ($page->site->miscotherretentionhours > 0)
@@ -1931,24 +1956,28 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				}
 			}
 		}
-		echo $this->c->set256($this->primary).'Query 13 took '.(TIME() - $timer13)." seconds (misc other retention).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 13 took '.(TIME() - $timer13)." seconds (misc other retention).\n";
+
 		$timer14 = TIME();
 		if ($db->dbSystem() == 'mysql')
 			$db->queryExec(sprintf('DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)', $page->site->partretentionhours));
 		else
 			$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $page->site->partretentionhours));
-		echo $this->c->set256($this->primary).'Query 14 took '.(TIME() - $timer14)." seconds (old nzbs).\n";
+		if ($echooutput)
+			echo $this->c->set256($this->primary).'Query 14 took '.(TIME() - $timer14)." seconds (old nzbs).\n";
 
-		echo 'Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other';
-		if ($this->echooutput && $this->completion > 0)
+		if ($echooutput)
+			echo 'Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other';
+		if ($echooutput && $this->completion > 0)
 			echo ', '.number_format($completioncount).' under '.$this->completion.'% completion. Removed '.number_format($reccount)." parts/binaries/collection rows.\n";
 		else
 		{
-			if ($this->echooutput)
+			if ($echooutput)
 				echo $this->c->set256($this->primary).". \nRemoved ".number_format($reccount)." parts/binaries/collection rows.\n";
 		}
 
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage7).".\n".$this->c->rsetColor();
 	}
 
@@ -1972,10 +2001,10 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			elseif ($this->requestids == '2')
 			{
 				$stage8 = TIME();
-				if ($this->echooutput)
+				if ($echooutput)
 					echo $this->c->set256($this->header)."Stage 5b -> Request ID Threaded lookup.\n".$this->c->rsetColor();
 				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
-				if ($this->echooutput)
+				if ($echooutput)
 					echo $this->c->set256($this->primary)."\nReleases updated in ".$this->consoleTools->convertTime(TIME() - $stage8).'.'.$this->c->rsetColor();
 			}
 
@@ -2004,12 +2033,12 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		}
 
 		$this->processReleases = microtime(true);
-		if ($this->echooutput)
+		if ($echooutput)
 			echo $this->c->set256($this->header)."\nStarting release update process (".date('Y-m-d H:i:s').")\n";
 
 		if (!file_exists($page->site->nzbpath))
 		{
-			if ($this->echooutput)
+			if ($echooutput)
 				echo $this->c->set256($this->warning).'Bad or missing nzb directory - '.$page->site->nzbpath;
 			return;
 		}
@@ -2024,11 +2053,8 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$where = (!empty($groupID)) ? ' WHERE groupid = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.
-		if ($this->echooutput)
-			if ($this->tablepergroup == 1)
-				echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM '.$group['cname'].' ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
-			else
-				echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
+		if ($echooutput && $this->tablepergroup == 0)
+			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
 		return $releasesAdded;
 	}
 
@@ -2040,7 +2066,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		if(count($res) > 0)
 		{
 			$timestart = TIME();
-			if ($this->echooutput)
+			if ($echooutput)
 				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
 			// Reset the collectionhash.
 			$db->queryExec('UPDATE collections SET collectionhash = 0');
@@ -2062,7 +2088,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 					$cIDS[] = $row['id'];
 					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $db->escapeString($row['bname']), $db->escapeString($row['fromname']), $db->escapeString($row['date']), $db->escapeString($row['xref']), $row['groupid'], $db->escapeString($row['totalfiles']), $db->escapeString($newSHA1));
 					$collectionID = $db->queryInsert($csql);
-					if ($this->echooutput)
+					if ($echooutput)
 						$this->consoleTools->overWrite('Recreated: '.count($cIDS).' collections. Time:'.$this->consoleTools->convertTimer(TIME() - $timestart));
 				}
 				else
@@ -2072,14 +2098,14 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			}
 			//Remove the old collections.
 			$delstart = TIME();
-			if ($this->echooutput)
+			if ($echooutput)
 				echo "\n";
 			$totalcIDS = count($cIDS);
 			foreach ($cIDS as $cID)
 			{
 				$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $cID));
 				$delcount++;
-				if ($this->echooutput)
+				if ($echooutput)
 					$this->consoleTools->overWrite('Deleting old collections:'.$this->consoleTools->percentString($delcount,$totalcIDS).' Time:'.$this->consoleTools->convertTimer(TIME() - $delstart));
 			}
 			// Delete previous failed attempts.
@@ -2087,7 +2113,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 
 			if ($this->hashcheck == 0)
 				$db->queryExec("UPDATE site SET value = 1 WHERE setting = 'hashcheck'");
-			if ($this->echooutput)
+			if ($echooutput)
 				echo "\nRemade ".count($cIDS).' collections in '.$this->consoleTools->convertTime(TIME() - $timestart)."\n";
 		}
 		else
