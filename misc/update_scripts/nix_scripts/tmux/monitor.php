@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3918";
+$version="0.1r3920";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -731,8 +731,6 @@ while( $i > 0 )
 	{
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 	}
 
 	if (command_exist("php5"))
