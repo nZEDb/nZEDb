@@ -36,6 +36,12 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
 
+cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
+allowed = cur.fetchone()
+if allowed[0] == 0:
+	sys.exit("Table per group not enabled")
+
+
 cur.execute("SELECT id FROM groups WHERE active = 1")
 datas = cur.fetchall()
 
