@@ -38,7 +38,6 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
     def handle_exception(self, exception):
         print(str(exception))
         self.release()
-        self.invalidate()
 
     def get_lifetime(self):
         return self._life
