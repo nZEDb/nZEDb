@@ -138,7 +138,7 @@
 			<tr>
 				<td><label for="backfill">Backfill:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="backfill" name='backfill' values=$backfill_ids output=$backfill_names selected=$ftmux->backfill}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_ORDER" name='backfill_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->backfill_ORDER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_DAYS" name='backfill_DAYS' values=$backfill_days_ids output=$backfill_days selected=$ftmux->backfill_DAYS}
+					{html_options class="siteeditstyle" id="backfill" name='backfill' values=$backfill_ids output=$backfill_names selected=$ftmux->backfill}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_ORDER" name='backfill_ORDER' values=$backfill_group_ids output=$backfill_group selected=$ftmux->backfill_ORDER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_DAYS" name='backfill_DAYS' values=$backfill_days_ids output=$backfill_days selected=$ftmux->backfill_days}
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
 						Safe - Backfills 1 group by backfill days (set in admin-view groups), using the number of threads set in admin. This downloads Backfill Quantity times the Backfill Threads, each loop.<br \>

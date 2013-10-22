@@ -1928,7 +1928,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 
 	public function processReleases($categorize, $postproc, $groupName, $echooutput=false)
 	{
-		$this->echooutput = $this->echooutput;
+		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0)
 			exit($this->c->set256($this->warning)."You must run update_binaries.php to update your collectionhash.\n".$this->c->rsetColor());
 		$db = $this->db;

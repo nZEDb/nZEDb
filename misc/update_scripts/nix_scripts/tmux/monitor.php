@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3916";
+$version="0.1r3917";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -719,9 +719,12 @@ while( $i > 0 )
 	{
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
+	}
+	if ( $seq == 0 )
+	{
+		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 		$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
 	}
 	if ( $seq == 2 )
@@ -778,7 +781,7 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 
 			//fix names
-			if ( $fix_names == "TRUE"  &&  $i == 1 )
+			if ( $fix_names == "TRUE" )
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
