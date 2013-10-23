@@ -284,13 +284,52 @@ class DB
 		return $tablecnt;
 	}
 
+	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	public function newtables($grpid)
+	{
+		$binaries = $parts = $collections = false;
+		try {
+			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+			$collections = true;
+		} catch (PDOException $e) {
+			if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+				$collections = true;
+		}
+
+		if ($collections === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+				$binaries = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+					$binaries = true;
+			}
+		}
+
+		if ($binaries === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+				$parts = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+					$parts = true;
+			}
+		}
+		if ($parts === true && $binaries = true && $collections = true)
+			return true;
+		else
+			return false;
+	}
+
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{
 		try {
 			$stat = DB::$pdo->prepare($query);
 		} catch (PDOException $e) {
-			printf($e);
+			//printf($e);
 			$stat = false;
 		}
 		return $stat;

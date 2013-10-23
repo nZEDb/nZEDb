@@ -33,7 +33,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		echo number_format($affected->rowCount())." rageID's reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL WHERE bookinfoid IN (-2, 0)");
 		echo number_format($affected->rowCount())." bookinfoID's reset.\n";
-		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus != 1");
+		$affected = $db->queryExec("UPDATE releases SET nfostatus = -1 WHERE nfostatus < -1");
 		echo number_format($affected->rowCount())." nfos reset.\n";
 		$affected = $db->queryExec("UPDATE releases SET anidbid = NULL WHERE anidbid IN (-2, 0)");
 		echo number_format($affected->rowCount())." aniDBID's's reset.\n";
@@ -77,7 +77,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 	$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." musicinfoID's reset.\n";
 }
-elseif ((isset($argv[1]) && $argv[1] === "misc") && (isset($argv[2]) && $argv[2] === "true"))
+elseif (isset($argv[1]) && $argv[1] === "misc")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 		$where = "";
@@ -140,7 +140,7 @@ elseif (isset($argv[1]) && $argv[1] === "nfos")
 	if (isset($argv[2]) && $argv[2] === "true")
 		$db->queryExec("TRUNCATE TABLE releasenfo");
 	else
-		$where = " WHERE nfostatus != 1";
+		$where = " WHERE nfostatus < -1";
 
 	$affected = $db->queryExec("UPDATE releases SET nfostatus = -1".$where);
 	echo number_format($affected->rowCount())." nfos reset.\n";

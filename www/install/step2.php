@@ -106,6 +106,11 @@ if  ($page->isPostBack())
 
 		$cfg->dbNameCheck = true;
 	}
+	else
+	{
+		printf("Error, invalid database system [mysql, pgsql]: ".$dbtype);
+		exit();
+	}
 
 	if (!$cfg->error && $dbtype == "mysql")
 	{
@@ -200,7 +205,7 @@ if  ($page->isPostBack())
 
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM category");
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM country");
 			if ($reschk === false)
 			{
 				$cfg->dbCreateCheck = false;

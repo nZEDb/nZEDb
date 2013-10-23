@@ -1,4 +1,20 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+10212103 -> jonnyboy -> begin - adding option to use table per group
+10192013 -> jonnyboy -> added dry run option to clean_nzbs.php
+                        begin using threaded fixreleasenames in tmux
+                        changed monitor newest release to newest release posted, not newest release added
+                        updated threaded scripts to process all of -1 before processing any -2
+                        removed part repair threaded, it was slower than non threaded
+                        removed nzb-import-bulk.php, it does not function properly with duplicates and pdo
+                        added changes to part repair by Whitelighter
+10162013 -> jonnyboy -> created new table for safe scripts
+                        improved output for check_usenet_groups.php
+                        changed guid creation to improve speed
+                        changed import scripts dupe detection, was copying nzbs even if release not added
+                        fixed a couple of bugs in releases
+10152013 -> jonnyboy -> updated python script for category in pp additional
+10142013 -> jonnyboy -> added update to nzbstatus
+                        fixed a few bugs
 10132013 -> jonnyboy -> allow requestid to work with relnamestatus 0 and 1
                         added new db connection to nzb-reog
                         fixed a few bugs in pgsql schema, added some regexes to renametopre.php

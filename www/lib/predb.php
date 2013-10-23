@@ -388,7 +388,7 @@ Class Predb
 		if($this->echooutput)
 			echo 'Querying DB for matches in preDB titles with release searchnames.';
 
-		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
+		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.id IN (SELECT id FROM releases WHERE preid IS NULL)');
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)
@@ -473,8 +473,9 @@ Class Predb
 		else if ($db->dbSystem() == 'pgsql')
 			$regex = "AND (r.hashed = true OR rf.name ~ '[a-fA-F0-9]{32}')";
 
-		$res = $db->query(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
-		if (count($res) > 0)
+		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
+		$res->execute();
+		if ($res->rowCount() > 0)
 		{
 			foreach ($res as $row)
 			{

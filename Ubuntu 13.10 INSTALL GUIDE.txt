@@ -25,6 +25,7 @@ Most of this guide is done from the command line (terminal).
 		# -or-
 			sudo pip-3.3 install cymysql
 			pip-3.3 list
+		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
 	# Or the Python psycopg module for PostgreSQL
 		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
@@ -47,6 +48,8 @@ Most of this guide is done from the command line (terminal).
 			pip-3.2 list
 			-or-
 			pip-3.3 list
+		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
+
 
 1. Update and upgrade the operating system.
 
@@ -62,11 +65,13 @@ Most of this guide is done from the command line (terminal).
 
 	# (OPTIONAL) Add a repository to get apache 2.4 and php 5.5
 		sudo add-apt-repository ppa:ondrej/php5
+		# Ubuntu 13.10 (ondrej as not added saucy yet, so you will have to use raring)
+			sudo nano /etc/apt/sources.list.d/ondrej-php5-saucy.list
+			# Change the words called saucy to raring (at the end left of main)
 		sudo apt-get update
 
 	# Install PHP and the required extensions:
 		sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl
-
 3. Install MySQL OR PostgreSQL.
 
 	# MySQL:
@@ -155,12 +160,6 @@ Most of this guide is done from the command line (terminal).
 	sudo a2enmod rewrite
 	sudo service apache2 restart
 
-	*****If you get the following error:**********
-	(Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName)
-
-	sudo sh -c 'echo "ServerName localhost" >> /etc/apache2/conf.d/name' && sudo service apache2 restart
-	**********************************************
-
 5. Install unrar / ffmpeg / mediainfo / lame.
 
 	sudo apt-get install software-properties-common
@@ -175,18 +174,20 @@ Most of this guide is done from the command line (terminal).
 	sudo apt-get update
 	sudo apt-get install mediainfo ffmpeg x264
 
-	####################
-	## Ubuntu 13.04 : ##
-	####################
+	############################
+	## Ubuntu 13.04 & 13.10 : ##
+	############################
 
-	# Read the following to compile/install x264 and ffmpeg :
-	# http://ffmpeg.org/trac/ffmpeg/wiki/UbuntuCompilationGuide
+	# X264 & FFMPEG:
+		sudo add-apt-repository ppa:jon-severinsson/ffmpeg
+		sudo apt-get update
+		sudo apt-get install ffmpeg x264
 
 	# For mediainfo:
 		sudo add-apt-repository ppa:shiki/mediainfo
-		sudo nano /etc/apt/sources.list.d/shiki-mediainfo-raring.list
+		sudo nano /etc/apt/sources.list.d/shiki-mediainfo-*
 
-	# Change the 2 raring words to quantal, save and exit nano.
+	# Change the 2 raring or saucy words to quantal, save and exit nano.
 
 	# Install mediainfo:
 		sudo apt-get update

@@ -18,7 +18,7 @@ function preName($argv)
 	$timestart = TIME();
 	$limit = ($argv[1] == "full") ? "" : " LIMIT 1000";
 
-	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE dehashstatus BETWEEN -5 AND 0 AND hashed = true".$limit);
+	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0".$limit);
 	$total = $res->rowCount();
 	$counter = 0;
 	$show = '';

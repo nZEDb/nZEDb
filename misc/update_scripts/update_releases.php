@@ -39,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relcount = $releases->categorizeRelease("searchname", "", true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
-		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";	
+		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";
 	}
 	else if ($argv[1] == 6 && $argv[2] == "false")
 	{

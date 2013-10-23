@@ -122,9 +122,10 @@ function categorizeRelease($type, $where="", $echooutput=false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	$resrel = $db->query("SELECT id, ".$type.", groupid FROM releases ".$where);
-	$total = count($resrel);
-	if (count($resrel) > 0)
+	$resrel = $db->prepare("SELECT id, ".$type.", groupid FROM releases ".$where);
+	$resrel->execute();
+	$total = $resrel->rowCount();
+	if ($total > 0)
 	{
 		foreach ($resrel as $rowrel)
 		{
