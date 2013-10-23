@@ -4,7 +4,7 @@ require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/site.php");
 
-if(isset($argv[1]) && $argv[1] == "true")
+if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 {
 	$db = new DB();
 	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
@@ -37,8 +37,16 @@ if(isset($argv[1]) && $argv[1] == "true")
 			$tbl = $row['tables_in_'.DB_NAME];
 			if (preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl))
 			{
-				$db->queryDirect(sprintf('DROP TABLE %s', $tbl));
-				printf("DROP TABLE %s;\n", $tbl);
+				if ($argv[1] == "drop")
+				{
+					$db->queryDirect(sprintf('DROP TABLE %s', $tbl));
+					printf("DROP TABLE %s;\n", $tbl);
+				}
+				else
+				{
+					$db->queryDirect(sprintf('TRUNCATE TABLE %s', $tbl));
+					printf("TRUNCATE TABLE %s;\n", $tbl);
+				}
 			}
 		}
 	}

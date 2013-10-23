@@ -915,6 +915,7 @@ class PostProcess
 				}
 				@rmdir($this->tmpPath);
 			}
+			$nntp->doQuit();
 			if ($this->echooutput)
 				echo "\n";
 		}

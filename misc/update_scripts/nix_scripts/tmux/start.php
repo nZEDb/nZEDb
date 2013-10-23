@@ -21,6 +21,7 @@ $colors = $tmux->get()->colors;
 $site = new Sites();
 $patch = $site->get()->sqlpatch;
 $hashcheck = $site->get()->hashcheck;
+$tablepergroup = (!empty($site->get()->tablepergroup)) ? $site->get()->tablepergroup : 0;
 
 //check if session exists
 $session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
@@ -86,12 +87,31 @@ foreach ($apps as &$value)
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$run = $db->queryExec("update collections set dateadded = now()");
-if ($run)
-	echo $run->rowCount()." collections reset\n";
+if ($tablepergroup == 1)
+{
+	$sql = "SHOW tables";
+	$tables = $db->query($sql);
+	$ran = 0;
+	foreach($tables as $row)
+	{
+		$tbl = $row['tables_in_'.DB_NAME];
+		if (preg_match('/\d+_collections/',$tbl))
+		{
+			$run = $db->queryExec(sprintf('UPDATE %s set dateadded = now()', $tbl));
+			$ran += $run->rowCount();
+		}
+	}
+	echo $ran." collections reset\n";
+}
+else
+{
+	$run = $db->queryExec("update collections set dateadded = now()");
+	if ($run)
+    	echo $run->rowCount()." collections reset\n";
+}
 $run = $db->queryExec("update nzbs set dateadded = now()");
 if ($run)
-	echo $run->rowCount()." nzbs reset\n";
+    echo $run->rowCount()." nzbs reset\n";
 sleep(2);
 
 function start_apps($tmux_session)
