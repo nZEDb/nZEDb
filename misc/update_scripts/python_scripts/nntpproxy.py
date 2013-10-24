@@ -1,10 +1,14 @@
-#! /usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import json
 import time
 import random
 import socket
-import SocketServer
+try:
+	import SocketServer
+except ImportError:
+	import socketserver as SocketServer
 import socketpool
 import nntp
 
