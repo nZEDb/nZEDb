@@ -17,7 +17,7 @@ class Nntp extends Net_NNTP_Client
 		$this->primary = 'green';
 		$this->warning = 'red';
 		$this->header = 'yellow';
-		// Cach the group name for article/body.
+		// Cache the group name for article/body.
 		$this->articlegroup = '';
 	}
 
@@ -354,7 +354,6 @@ class Nntp extends Net_NNTP_Client
 			$nntp->doQuit();
 			return false;
 		}
-		else
-			return $data;
+		return $data;
 	}
 }
