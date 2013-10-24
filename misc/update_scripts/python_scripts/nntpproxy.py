@@ -144,3 +144,4 @@ if __name__ == "__main__":
 
     sys.stdout.write("NNTPProxy listening on %s:%d\n" % addr)
     proxy.serve_forever()
+

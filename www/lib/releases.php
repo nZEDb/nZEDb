@@ -1932,7 +1932,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				$stage8 = TIME();
 				if ($this->echooutput)
 					echo $this->c->set256($this->header)."Stage 5b -> Request ID Threaded lookup.\n".$this->c->rsetColor();
-				passthru("$PYTHON ${DIR}update_scripts/threaded_scripts/requestid_threaded.py");
+				passthru("$PYTHON ${DIR}update_scripts/python_scripts/requestid_threaded.py");
 				if ($this->echooutput)
 					echo $this->c->set256($this->primary)."\nReleases updated in ".$this->consoleTools->convertTime(TIME() - $stage8).'.'.$this->c->rsetColor();
 			}
