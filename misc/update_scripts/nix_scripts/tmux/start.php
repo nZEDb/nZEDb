@@ -186,8 +186,11 @@ function start_apps($tmux_session)
 	{
 		$DIR = MISC_DIR;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
-		$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy.conf";
-		exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+		if(file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy.conf"))
+		{
+			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy.conf";
+			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+		}
 	}
 	$alternate_nntp = $site->get()->alternate_nntp;
 	$grabnzbs = $site->get()->grabnzbs;
@@ -195,8 +198,11 @@ function start_apps($tmux_session)
     {
         $DIR = MISC_DIR;
         $nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
-        $nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf";
-        exec("tmux new-window -t $tmux_session -n nntpproxy_alt 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+        if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
+		{
+			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf";
+        	exec("tmux new-window -t $tmux_session -n nntpproxy_alt 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+		}
     }
 }
 
