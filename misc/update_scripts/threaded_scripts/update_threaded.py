@@ -38,9 +38,8 @@ conf = info.readConfig()
 
 cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
 allowed = cur.fetchone()
-if allowed[0] == 0:
+if int(allowed[0]) == 0:
 	sys.exit("Table per group not enabled")
-
 
 cur.execute("SELECT id FROM groups WHERE active = 1")
 datas = cur.fetchall()

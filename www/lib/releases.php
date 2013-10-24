@@ -1050,9 +1050,13 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			echo $this->c->set256($this->header)."\nStage 2 -> Get the size in bytes of the collection.\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
+		$checked = $db->prepare('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
+		$checked->execute();
 		if ($this->echooutput)
+		{
+			echo $checked->rowCount()." collections set to filecheck = 3\n";
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage2);
+		}
 	}
 
 	public function processReleasesStage3($groupID, $echooutput=false)

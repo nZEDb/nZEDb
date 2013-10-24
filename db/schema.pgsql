@@ -1432,7 +1432,8 @@ INSERT INTO site
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
 	('tablepergroup', '0'),	
-	('sqlpatch','133');
+	('nntpproxy', 0),
+	('sqlpatch','134');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

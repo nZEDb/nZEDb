@@ -42,7 +42,7 @@ class Backfill
 
 		if (@$res)
 		{
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			// Connect to usenet.
 			if ($nntp->doConnect() === false)
 			{
@@ -72,7 +72,7 @@ class Backfill
 
 		if (!isset($nntp))
 		{
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			if ($nntp->doConnect() === false)
 				return;
 		}
@@ -112,12 +112,12 @@ class Backfill
 			return '';
 		}
 
-		echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].': server has '.number_format($data['first']).' - '.number_format($data['last']).', or ~'.
-				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
+/*		echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].': server has '.number_format($data['first']).' - '.number_format($data['last']).', or ~'.
+				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name']) - $this->postdate($nntp,$data['first'],false,$groupArr['name']))/86400)).
 				" days.\nLocal first = ".number_format($groupArr['first_record']).' ('.
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name']))/86400)).
 				' days).  Backfill target of '.$groupArr['backfill_target'].' days is post '.$targetpost."\n".$this->c->rsetcolor();
-
+*/
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -143,7 +143,6 @@ class Backfill
 			echo $this->c->setcolor('bold', $this->primary).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetcolor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
-
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
 				$firstr_date = $newdate;
@@ -206,7 +205,7 @@ class Backfill
 
 		if (@$res)
 		{
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			// Connect to usenet.
 			if ($nntp->doConnect() === false)
 			{
@@ -269,14 +268,14 @@ class Backfill
 			echo $this->c->setcolor('bold', $this->warning)."Nothing to do, we already have the target post.\n\n".$this->c->rsetcolor();
 			return '';
 		}
-
+/*
 		echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group']."'s oldest article is ".number_format($data['first']).', newest is '.number_format($data['last']).'. The groups retention is: '.
-				((int) (($this->postdate($nntp,$data['last'],FALSE,$groupArr['name']) - $this->postdate($nntp,$data['first'],FALSE,$groupArr['name']))/86400)).
+				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name']) - $this->postdate($nntp,$data['first'],false,$groupArr['name']))/86400)).
 				" days.\nOur oldest article is: ".number_format($groupArr['first_record']).' which is ('.
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],FALSE,$groupArr['name']))/86400)).
-				' days old). Our backfill target is article '.number_format($targetpost).' which is ('.((int) ((date('U') - $this->postdate($nntp,$targetpost,FALSE,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name']))/86400)).
+				' days old). Our backfill target is article '.number_format($targetpost).' which is ('.((int) ((date('U') - $this->postdate($nntp,$targetpost,false,$groupArr['name']))/86400)).
 				"\n days old).\n".$this->c->rsetcolor();
-
+*/
 		// Calculate total number of parts.
 		$total = $groupArr['first_record'] - $targetpost;
 		$done = false;
@@ -300,7 +299,6 @@ class Backfill
 
 			echo $this->c->setcolor('bold', $this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetcolor();
 			flush();
-
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
@@ -331,14 +329,13 @@ class Backfill
 	public function postdate($nntp, $post, $debug=true, $group, $old=false)
 	{
 		$st = false;
-		if (!isset($nntp))
+		if (!isset($nntp) || $nntp->doConnect() === false)
 		{
-			$nntp = new Nntp;
-			if ($nntp->doConnectNC() === false)
+			$nntp = new Nntp();
+			if ($nntp->doConnect() === false)
 				return;
 			$st = true;
 		}
-
 		$attempts=0;
 		$success = false;
 		do
@@ -346,19 +343,19 @@ class Backfill
 			$data = $nntp->selectGroup($group);
 			if (PEAR::isError($data))
 			{
-				$data = $nntp->dataError($nntp, $group, false);
+				$data = $nntp->dataError($nntp, $group);
 				if ($data === false)
 					return;
 			}
-			$msgs = $nntp->getOverview($post."-".$post,true,false);
+			$msgs = $nntp->getOverview($post."-".$post, true, false);
 			if (PEAR::isError($msgs))
 			{
 				$nntp->doQuit();
-				if ($nntp->doConnectNC() === false)
+				if ($nntp->doConnect() === false)
 					return;
 
 				$nntp->selectGroup($group);
-				$msgs = $nntp->getOverview($post."-".$post,true,false);
+				$msgs = $nntp->getOverview($post."-".$post, true, false);
 				if (PEAR::isError($msgs))
 				{
 					echo $this->c->setcolor('bold', $this->warning)."Error {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.".$this->c->rsetcolor();
@@ -371,7 +368,7 @@ class Backfill
 
 			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
 			{
-				$post = $post + MT_RAND(0,100);
+				$post = ($post + MT_RAND(0,100));
 				$success = false;
 			}
 			else
@@ -386,13 +383,10 @@ class Backfill
 
 			$attempts++;
 		} while ($attempts <= 10 && $success === false);
-
 		if ($st === true)
 			$nntp->doQuit();
-
 		if ($success === false)
 			return false;
-
 		if ($debug)
 			echo $this->c->setcolor('bold', $this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetcolor();
 		$date = strtotime($date);
@@ -412,7 +406,7 @@ class Backfill
 
 		if (!isset($nntp))
 		{
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			if ($nntp->doConnectNC() === false)
 				return;
 
@@ -422,7 +416,7 @@ class Backfill
 		$data = $nntp->selectGroup($group);
 		if (PEAR::isError($data))
 		{
-			$data = $nntp->dataError($nntp, $group, false);
+			$data = $nntp->dataError($nntp, $group);
 			if ($data === false)
 				return;
 		}
@@ -524,9 +518,9 @@ class Backfill
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
-		// Scan failed - skip group.
+		// Scan failed - retry once
 		if ($lastId === false)
-			return;
+			$binaries->scan(null, $groupArr, $last, $first, 'backfill');
 	}
 
 	function getFinal($group, $first, $type)

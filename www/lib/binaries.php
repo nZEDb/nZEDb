@@ -94,7 +94,7 @@ class Binaries
 		$st = false;
 		if (!isset($nntp))
 		{
-			$nntp = new Nntp;
+			$nntp = new Nntp();
 			if ($nntp->doConnect() === false)
 				return;
 			$st = true;
@@ -209,7 +209,6 @@ class Binaries
 				$first_record_postdate = time();
 		}
 		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
-
 		// Calculate total number of parts.
 		$total = $grouplast - $first;
 		$realtotal = $data['last'] - $first;
@@ -278,7 +277,6 @@ class Binaries
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
 		$db = $this->db;
-
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
 
@@ -303,7 +301,6 @@ class Binaries
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
 		}
-
 		// If NNTP is null, connect.
 		if (!isset($nntp))
 		{
@@ -322,10 +319,8 @@ class Binaries
 					return;
 			}
 		}
-
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
-
 		// If there ware an error, try to reconnect.
 		if($type != 'partrepair' && PEAR::isError($msgs))
 		{
@@ -347,7 +342,6 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
-		$db = $this->db;
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.

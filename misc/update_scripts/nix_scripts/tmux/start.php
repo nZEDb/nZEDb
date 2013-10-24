@@ -53,7 +53,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '132' )
+if ( $patch < '133' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -75,6 +75,11 @@ function command_exist($cmd) {
 	return (empty($returnVal) ? false : true);
 }
 
+function python_module_exist($module) {
+	exec("python -c \"import $module\"", $output, $returnCode);
+	return ($returnCode == 0 ? true : false);
+}
+
 //check for apps
 $apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
@@ -82,6 +87,19 @@ foreach ($apps as &$value)
 	if (!command_exist($value)) {
 		echo "I require ".$value." but it's not installed. Aborting.\n";
 		exit(1);
+	}
+}
+
+$nntpproxy = $site->get()->nntpproxy;
+if ($nntpproxy == '1')
+{
+	$modules = array("nntp", "socketpool");
+	foreach ($modules as &$value)
+	{
+		if (!python_module_exist($value)) {
+			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
+			exit(1);
+		}
 	}
 }
 
@@ -160,6 +178,16 @@ function start_apps($tmux_session)
 	if ( $console_bash == "TRUE" )
 	{
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
+	}
+
+	$site = new Sites();
+	$nntpproxy = $site->get()->nntpproxy;
+	if ( $nntpproxy == '1' )
+	{
+		$DIR = MISC_DIR;
+		$nntpproxypy = $DIR."update_scripts/nntpproxy/nntpproxy.py";
+		$nntpproxyconf = $DIR."update_scripts/nntpproxy/nntpproxy.conf";
+		exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 	}
 }
 
