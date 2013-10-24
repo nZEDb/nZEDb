@@ -36,8 +36,9 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
         return False
 
     def handle_exception(self, exception):
-        print('got an exception')
         print(str(exception))
+        self.release()
+        self.invalidate()
 
     def get_lifetime(self):
         return self._life
@@ -100,6 +101,18 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
                     self.wfile.write("215 Order of fields in overview database.\r\n")
                     fmt = "\r\n".join(["%s:%s" % (f[0], "full" if f[1] else "") for f in fmt]) + "\r\n" 
                     self.wfile.write(fmt)
+                    self.wfile.write(".\r\n")
+                elif data == "LIST":
+                    list_gen = nntp_client.list_gen()
+                    self.wfile.write("215 list of newsgroups follows\r\n")
+                    for entry in list_gen:
+                        self.wfile.write("%s %d %d %s\r\n" % entry)
+                    self.wfile.write(".\r\n")
+                elif data.startswith("LIST ACTIVE") and not data.startswith("LIST ACTIVE.TIMES"):
+                    pattern = data[11:].strip() or None
+                    active_gen = nntp_client.list_active_gen(pattern)
+                    for entry in active_gen:
+                        self.wfile.write("%s %d %d %s\r\n" % entry)
                     self.wfile.write(".\r\n")
                 elif data.startswith("QUIT"):
                     break
