@@ -300,7 +300,6 @@ class Backfill
 			echo $this->c->setcolor('bold', $this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetcolor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
-
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
 			if ($newdate !== false)
 				$firstr_date = $newdate;
