@@ -18,8 +18,7 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 	$nzb = new NZB(true);
 	$timestart = TIME();
 	$checked = $deleted = 0;
-	$couldbe = "";
-        if ($argv[1] === "true") $couldbe = "could be ";
+	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "";
 	echo "Getting List of nzbs to check against db.\n";
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);

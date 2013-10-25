@@ -1084,7 +1084,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			echo $this->c->set256($this->header)."\nStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\n";
 		$stage3 = TIME();
 
-		if ($groupID == '')
+		if ($groupID == '' || $this->tablepergroup == 1)
 		{
 			$groupIDs = $this->groups->getActiveIDs();
 
@@ -1177,7 +1177,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 				$maxfilesizeres = $db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0)
 				{
-					$mascq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ' . $where, $maxfilesizeres['value']));
+					$mascq = $db->prepare(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']));
 					$mascq->execute();
 					$maxsizecount = $mascq->rowCount();
 					if ($maxsizecount < 0)

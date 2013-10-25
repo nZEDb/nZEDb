@@ -9,7 +9,7 @@ require_once(WWW_DIR."lib/releases.php");
 
 
 /*
- * 
+ *
  * This was added because I starting writing this before
  * all of the regexes were converted to by group in namecleaning.php
  * and I do not want to convert these regexes to run per group.
@@ -17,7 +17,7 @@ require_once(WWW_DIR."lib/releases.php");
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
- * 
+ *
 */
 
 if (!(isset($argv[1]) && ($argv[1]=="full" || is_numeric($argv[1]))))
@@ -32,17 +32,20 @@ function preName($argv)
 	$category = new Category();
 	$updated = 0;
 	$cleaned = 0;
-	$counter=1;
+	$counter=0;
 	$n = "\n";
+	$what = $argv[1]=='full' ? '' : ' AND adddate > NOW() - INTERVAL '.$argv[1].' HOUR';
+	$where = isset($argv[3]) ? ' AND groupid = '.$argv[3] : '';
+	$where = (isset($argv[2]) && !isset($argv[3])) ? ' AND groupid = '.$argv[2] : '';
 	resetSearchnames();
 	echo "Getting work\n";
-	if (isset($argv[1]) && $argv[1]=="full" && !isset($argv[2]))
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1");
-	elseif (isset($argv[1]) && is_numeric($argv[1]) && !isset($argv[2]))
-		$res = $db->prepare(sprintf("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1 and adddate > NOW() - INTERVAL %d HOUR", $argv[1]));
+	if (!isset($argv[2]))
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1".$what);
+	elseif (isset($argv[2]) && is_numeric($argv[2]))
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1".$what.$where);
 	elseif (isset($argv[1]) && $argv[1]=="full" && isset($argv[2]) && $argv[2] == "all")
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1");
-
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1".$where);
+	
 	$res->execute();
 	$total = $res->rowCount();
 	if ($total > 0)
@@ -50,7 +53,8 @@ function preName($argv)
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-		   if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'])))
+			$groupname = $groups->getByNameByID($row["groupid"]);
+			if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname)))
 			{
 				if ( $cleanerName != $row['name'] && $cleanerName != '' )
 				{
@@ -75,7 +79,7 @@ function preName($argv)
 
 			if ( $cleanerName == $row['name'])
 				$db->queryExec(sprintf("UPDATE releases set relnamestatus = 16 where id = %d", $db->escapeString($row['id'])));
-			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString($counter++,$total));
+			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
 		}
 	}
 	echo "\n".number_format($updated)." out of ".number_format($total)."\n";
@@ -141,11 +145,34 @@ function categorizeRelease($type, $where="", $echooutput=false)
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $id)
+function releaseCleaner($subject, $groupid, $id, $groupname)
 {
 	$groups = new Groups();
 	$groupName = $groups->getByNameByID($groupid);
-
+	$db = new DB();
+	$namecleaning = new nameCleaning();
+	$propername = true;
+	$cleanName = '';
+	$category = new Category();
+	if ($cleanerName = $namecleaning->releaseCleaner($subject, $groupname))
+	{
+		if (!is_array($cleanerName))
+			$cleanName = $cleanerName;
+		else
+		{
+			$cleanName = $cleanerName['cleansubject'];
+			$propername = $cleanerName['properlynamed'];
+		}
+		if ($cleanName != '')
+		{
+			$determinedcat = $category->determineCategory($cleanName, $groupid);
+			if (!empty($cleanName) && $cleanName != $subject && $propername != false)
+			{
+				$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 6, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
+				return;
+			}
+		}
+	}
 	if ($groupName === "alt.binaries.classic.tv.shows")
 	{
 		if (preg_match('/^(?P<title>.+\d+x\d+.+)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;)[ _-]{0,3}(yEnc|rar|par2)$/i', $subject, $match))
@@ -732,35 +759,35 @@ function releaseCleaner($subject, $groupid, $id)
 		if (!empty($cleanerName))
 			return $cleanerName;
 	}
-    //(UHQ)(Bambi.2.2006.German.DTS.DL.1080p.BluRay.x264-RSG) [01/46] - #34;rsg-bambi2-1080p-sample.mkv#34; yEnc
-    elseif (preg_match('/\(UHQ\)\((?P<title>.+)\)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
-    {
-        $cleanerName = $match['title'];
-        if (!empty($cleanerName))
-            return $cleanerName;
-    }
-    //!!www.usenet4all.eu!! - Failure.To.Launch.2006.1080p.BD9.x264-IGUANA[01/92] - #34;iguana-ftl.1080p.bd9.nfo#34; yEnc
-    elseif (preg_match('/^!!www.usenet4all.eu!![ _-]{0,3}(?P<title>.+)\[\d+\/\d+\][ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
-    {
-        $cleanerName = $match['title'];
-        if (!empty($cleanerName))
-            return $cleanerName;
-    }
-    //)ghost-of-usenet.org)Final.Destination.2.2003.German.AC3D.1080p.BluRay.x264-CDD(have fun((03/84) #34;cdd-fd2_ger_ac3d_1080p_bluray.r00#34; yEnc
-    elseif (preg_match('/\)ghost-of-usenet\.org\)(?P<title>.+)\(.+?\(\(\d+\/\d+\)[ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
-    {
-        $cleanerName = $match['title'];
-        if (!empty($cleanerName))
-            return $cleanerName;
-    }
-    //0-Day Apps Flood - [www.united-forums.co.uk] - (239/408) #34;Plants.vs.Zombies.v1.2.0.1065.PLUS.10.TRAINER-BReWErS - [www.united-forums.co.uk] -.rar#34; yEnc
-    elseif (preg_match('/^0-Day Apps Flood[ _-]{0,3}\[www\.united-forums\.co\.uk\][ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}("|#34;)(?P<title>.+)[ _-]{0,3}\[.+\][ _-]{0,3}.+?("|#34;) yEnc$/i', $subject, $match))
-    {
-        $cleanerName = $match['title'];
-        if (!empty($cleanerName))
-            return $cleanerName;
-    }
-    //This one should remain last
+	//(UHQ)(Bambi.2.2006.German.DTS.DL.1080p.BluRay.x264-RSG) [01/46] - #34;rsg-bambi2-1080p-sample.mkv#34; yEnc
+	elseif (preg_match('/\(UHQ\)\((?P<title>.+)\)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//!!www.usenet4all.eu!! - Failure.To.Launch.2006.1080p.BD9.x264-IGUANA[01/92] - #34;iguana-ftl.1080p.bd9.nfo#34; yEnc
+	elseif (preg_match('/^!!www.usenet4all.eu!![ _-]{0,3}(?P<title>.+)\[\d+\/\d+\][ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//)ghost-of-usenet.org)Final.Destination.2.2003.German.AC3D.1080p.BluRay.x264-CDD(have fun((03/84) #34;cdd-fd2_ger_ac3d_1080p_bluray.r00#34; yEnc
+	elseif (preg_match('/\)ghost-of-usenet\.org\)(?P<title>.+)\(.+?\(\(\d+\/\d+\)[ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//0-Day Apps Flood - [www.united-forums.co.uk] - (239/408) #34;Plants.vs.Zombies.v1.2.0.1065.PLUS.10.TRAINER-BReWErS - [www.united-forums.co.uk] -.rar#34; yEnc
+	elseif (preg_match('/^0-Day Apps Flood[ _-]{0,3}\[www\.united-forums\.co\.uk\][ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}("|#34;)(?P<title>.+)[ _-]{0,3}\[.+\][ _-]{0,3}.+?("|#34;) yEnc$/i', $subject, $match))
+	{
+		$cleanerName = $match['title'];
+		if (!empty($cleanerName))
+			return $cleanerName;
+	}
+	//This one should remain last
 	//Digitalmagazin.info.2011.01.25.GERMAN.RETAiL.eBOOk-sUppLeX.rar
 	//no match is spaces
 	elseif (strlen($subject) > 20 && !preg_match('/\s/i', $subject) && preg_match('/(?P<title>[\w-\._]*)\.(rar|par|par2|part\d+)$/i', $subject, $match))
@@ -772,30 +799,5 @@ function releaseCleaner($subject, $groupid, $id)
 				return $cleanerName;
 		}
 	}
-	else
-	{
-		$db = new DB();
-		$namecleaning = new nameCleaning();
-		$propername = true;
-		$cleanName = '';
-		$category = new Category();
-		if ($cleanerName = $namecleaning->releaseCleaner($subject, $groupid))
-		{
-			if (!is_array($cleanerName))
-				$cleanName = $cleanerName;
-			else
-			{
-				$cleanName = $cleanerName['cleansubject'];
-				$propername = $cleanerName['properlynamed'];
-			}
-			if ($cleanName != '')
-			{
-				$determinedcat = $category->determineCategory($cleanName, $groupid);
-				if (!empty($cleanName) && $cleanName != $subject && $propername === true)
-					$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 6, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
-				elseif (!empty($cleanName) && $cleanName != $subject && $propername === false)
-					$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
-			}
-		}
-	}
 }
+

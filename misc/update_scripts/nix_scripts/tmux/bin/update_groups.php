@@ -8,7 +8,6 @@ $nntp->doConnect();
 
 echo "Getting first/last for all active groups\n";
 $data = $nntp->getGroups();
-
 $nntp->doQuit();
 
 echo "Inserting new values into shortgroups table\n";

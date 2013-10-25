@@ -9,7 +9,7 @@ if (!isset($argv[1]))
 $nntp = new Nntp();
 $nntp->doConnect();
 $data = $nntp->getGroups();
-
+var_dump($data);
 $db = new DB();
 $res = $db->query("SELECT name FROM groups");
 $counter = 0;
@@ -17,8 +17,11 @@ $minvalue = $argv[1];
 
 foreach ($data as $newgroup)
 {
-	if (strstr($newgroup["group"], ".bin") != false && MyInArray($res, $newgroup["group"], "name") == false && ($newgroup["last"] - $newgroup["first"]) > 1000000)
-		$db->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $db->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
+	if (isset($newgroup["group"]))
+	{
+		if (strstr($newgroup["group"], ".bin") != false && MyInArray($res, $newgroup["group"], "name") == false && ($newgroup["last"] - $newgroup["first"]) > 1000000)
+			$db->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $db->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
+	}
 }
 
 $grps = $db->query("SELECT DISTINCT name FROM allgroups WHERE name NOT IN (SELECT name FROM groups)");
