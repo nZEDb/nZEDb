@@ -976,21 +976,21 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 	{
 		$db = $this->db;
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
 			if ($groupID == '')
 				exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 1 -> Try to find complete collections.\n";
@@ -1030,21 +1030,21 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$db = $this->db;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
-            if ($groupID == '')
-                exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 2 -> Get the size in bytes of the collection.\n";
@@ -1064,30 +1064,29 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$db = $this->db;
 		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
-            if ($groupID == '')
-                exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\n";
 		$stage3 = TIME();
 
-		if ($groupID == '' || $this->tablepergroup == 1)
+		if ($groupID == '')
 		{
 			$groupIDs = $this->groups->getActiveIDs();
-
 			foreach ($groupIDs as $groupID)
 			{
 				$res = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID['id']);
@@ -1221,21 +1220,21 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
-            if ($groupID == '')
-                exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 
 		if ($this->echooutput)
@@ -1446,21 +1445,21 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$nzbcount = $reccount = 0;
 		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID.' AND ' : ' ';
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
-            if ($groupID == '')
-                exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 		// Create NZB.
 		if ($this->echooutput)
@@ -1477,7 +1476,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
 			foreach ($resrel as $rowrel)
 			{
-				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title']);
+				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title'], $groupID);
 				if($nzb_create != false)
 				{
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
@@ -1628,21 +1627,21 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$n = "\n";
 		$reccount = $delq = 0;
 
-        // Set table names
-        if ($this->tablepergroup == 1)
-        {
-            if ($groupID == '')
-                exit("You must use releases_threaded.py\n");
-            $group['cname'] = $groupID.'_collections';
-            $group['bname'] = $groupID.'_binaries';
-            $group['pname'] = $groupID.'_parts';
-        }
-        else
-        {
-            $group['cname'] = 'collections';
-            $group['bname'] = 'binaries';
-            $group['pname'] = 'parts';
-        }
+		// Set table names
+		if ($this->tablepergroup == 1)
+		{
+			if ($groupID == '')
+				exit("You must use releases_threaded.py\n");
+			$group['cname'] = $groupID.'_collections';
+			$group['bname'] = $groupID.'_binaries';
+			$group['pname'] = $groupID.'_parts';
+		}
+		else
+		{
+			$group['cname'] = 'collections';
+			$group['bname'] = 'binaries';
+			$group['pname'] = 'parts';
+		}
 
 		$where = (!empty($groupID)) ? ' '.$group['cname'].'.groupid = '.$groupID.' AND ' : ' ';
 		$where1 = (!empty($groupID)) ? ' AND '.$group['cname'].'.groupid = '.$groupID : '';

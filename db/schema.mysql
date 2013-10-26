@@ -1050,7 +1050,7 @@ INSERT INTO site
   ('fixnamethreads', '1'),
   ('fixnamesperrun', '10'),
   ('tablepergroup', '0'),
-  ('nntproxy', 0),
+  ('nntpproxy', 0),
   ('sqlpatch','134');
 
 DROP TABLE IF EXISTS logging;
