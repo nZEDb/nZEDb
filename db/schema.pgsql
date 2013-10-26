@@ -372,6 +372,22 @@ CREATE TABLE "allgroups" (
 ) 
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "shortgroups_id_seq" CASCADE;
+CREATE SEQUENCE "shortgroups_id_seq" INCREMENT BY 1
+                                  NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('shortgroups_id_seq', 1, true);
+
+-- Table: shortgroups
+DROP TABLE IF EXISTS "shortgroups" CASCADE;
+CREATE TABLE "shortgroups" (
+  "id" bigint DEFAULT nextval('shortgroups_id_seq'::regclass) NOT NULL,
+  "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
+  "first_record" bigint DEFAULT 0 NOT NULL,
+  "last_record" bigint DEFAULT 0 NOT NULL,
+  "updated" timestamp without time zone NOT NULL
+)
+WITHOUT OIDS;
+
 DROP SEQUENCE IF EXISTS "partrepair_id_seq" CASCADE;
 CREATE SEQUENCE "partrepair_id_seq" INCREMENT BY 1
                                   NO MAXVALUE NO MINVALUE CACHE 1;
@@ -626,7 +642,7 @@ DROP TABLE IF EXISTS "country" CASCADE;
 CREATE TABLE "country" (
   "id" bigint DEFAULT nextval('country_id_seq'::regclass) NOT NULL,
   "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "country" character varying(2) NOT NULL,
+  "code" character varying(2) NOT NULL
 )
 WITHOUT OIDS;
 
@@ -1404,7 +1420,7 @@ INSERT INTO site
 	('segmentstodownload', '2'),
 	('ffmpeg_duration', '5'),
 	('ffmpeg_image_time', '5'),
-	('request_url', 'http://predbirc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
+	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
@@ -1415,74 +1431,76 @@ INSERT INTO site
 	('addpar2', '0'),
 	('fixnamethreads', '1'),
 	('fixnamesperrun', '10'),
-	('sqlpatch','129');
+	('tablepergroup', '0'),	
+	('nntpproxy', 0),
+	('sqlpatch','134');
 
 
-INSERT INTO tmux (setting, value) values ('DEFRAG_CACHE','900'),
-	('MONITOR_DELAY','30'),
-	('TMUX_SESSION','nZEDb'),
-	('NICENESS','19'),
-	('BINARIES','0'),
-	('BACKFILL','0'),
-	('IMPORT','0'),
-	('NZBS','/path/to/nzbs'),
-	('RUNNING','FALSE'),
-	('SEQUENTIAL','0'),
-	('NFOS','FALSE'),
-	('POST','0'),
-	('RELEASES','FALSE'),
-	('RELEASES_THREADED','FALSE'),
-	('FIX_NAMES','FALSE'),
-	('SEQ_TIMER','30'),
-	('BINS_TIMER','30'),
-	('BACK_TIMER','30'),
-	('IMPORT_TIMER','30'),
-	('REL_TIMER','30'),
-	('FIX_TIMER','30'),
-	('POST_TIMER','30'),
-	('IMPORT_BULK','FALSE'),
-	('BACKFILL_QTY','100000'),
-	('COLLECTIONS_KILL','0'),
-	('POSTPROCESS_KILL','0'),
-	('CRAP_TIMER','30'),
-	('FIX_CRAP','0'),
-	('TV_TIMER','43200'),
-	('UPDATE_TV','FALSE'),
-	('HTOP','FALSE'),
-	('NMON','FALSE'),
-	('BWMNG','FALSE'),
-	('MYTOP','FALSE'),
-	('CONSOLE','FALSE'),
-	('VNSTAT','FALSE'),
-	('VNSTAT_ARGS',NULL),
-	('TCPTRACK','FALSE'),
-	('TCPTRACK_ARGS','-i eth0 port 443'),
-	('BACKFILL_GROUPS','4'),
-	('POST_KILL_TIMER','300'),
-	('OPTIMIZE','FALSE'),
-	('OPTIMIZE_TIMER','86400'),
-	('MONITOR_PATH', NULL),
-	('WRITE_LOGS','FALSE'),
-	('SORTER','FALSE'),
-	('SORTER_TIMER', 30),
-	('POWERLINE','FALSE'),
-	('PATCHDB','FALSE'),
-	('PATCHDB_TIMER','21600'),
-	('PROGRESSIVE','FALSE'),
-	('DEHASH', '0'),
-	('DEHASH_TIMER','30'),
-	('BACKFILL_ORDER','2'),
-	('BACKFILL_DAYS', '1'),
-	('POST_AMAZON', 'FALSE'),
-	('POST_NON', 'FALSE'), 
-	('POST_TIMER_AMAZON', '30'),
-	('POST_TIMER_NON', '30'),
-	('COLORS_START', '1'),
-	('COLORS_END', '250'),
-	('COLORS_EXC', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
-	('MONITOR_PATH_A', NULL),
-	('MONITOR_PATH_B', NULL),
-	('COLORS', 'FALSE');
+INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
+	('monitor_delay','30'),
+	('tmux_session','nZEDb'),
+	('niceness','19'),
+	('binaries','0'),
+	('backfill','0'),
+	('import','0'),
+	('nzbs','/path/to/nzbs'),
+	('running','FALSE'),
+	('sequential','0'),
+	('nfos','FALSE'),
+	('post','0'),
+	('releases','FALSE'),
+	('releases_threaded','FALSE'),
+	('fix_names','FALSE'),
+	('seq_timer','30'),
+	('bins_timer','30'),
+	('back_timer','30'),
+	('import_timer','30'),
+	('rel_timer','30'),
+	('fix_timer','30'),
+	('post_timer','30'),
+	('import_bulk','FALSE'),
+	('backfill_qty','100000'),
+	('collections_kill','0'),
+	('postprocess_kill','0'),
+	('crap_timer','30'),
+	('fix_crap','0'),
+	('tv_timer','43200'),
+	('update_tv','FALSE'),
+	('htop','FALSE'),
+	('nmon','FALSE'),
+	('bwmng','FALSE'),
+	('mytop','FALSE'),
+	('console','FALSE'),
+	('vnstat','FALSE'),
+	('vnstat_args',NULL),
+	('tcptrack','FALSE'),
+	('tcptrack_args','-i eth0 port 443'),
+	('backfill_groups','4'),
+	('post_kill_timer','300'),
+	('optimize','FALSE'),
+	('optimize_timer','86400'),
+	('monitor_path', NULL),
+	('write_logs','FALSE'),
+	('sorter','FALSE'),
+	('sorter_timer', 30),
+	('powerline','FALSE'),
+	('patchdb','FALSE'),
+	('patchdb_timer','21600'),
+	('progressive','FALSE'),
+	('dehash', '0'),
+	('dehash_timer','30'),
+	('backfill_order','2'),
+	('backfill_days', '1'),
+	('post_amazon', 'FALSE'),
+	('post_non', 'FALSE'), 
+	('post_timer_amazon', '30'),
+	('post_timer_non', '30'),
+	('colors_start', '1'),
+	('colors_end', '250'),
+	('colors_exc', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
+	('monitor_path_a', NULL),
+	('monitor_path_b', NULL),
+	('colors', 'FALSE');
 
 
 INSERT INTO tvrage (id, rageid, releasetitle, description, createddate, imgdata, tvdbid)
@@ -11616,7 +11634,7 @@ INSERT INTO country (code, name) VALUES ( 'AF', 'Afghanistan' ),
 	( 'CG', 'Congo the' ),
 	( 'CK', 'Cook Islands' ),
 	( 'CR', 'Costa Rica' ),
-	( 'CI', 'Cote d\'Ivoire' ),
+	( 'CI', 'Cote d''Ivoire' ),
 	( 'HR', 'Croatia' ),
 	( 'CU', 'Cuba' ),
 	( 'CY', 'Cyprus' ),
@@ -11862,10 +11880,14 @@ DROP INDEX IF EXISTS "partrepair_numberID_groupid" CASCADE;
 CREATE UNIQUE INDEX "partrepair_numberID_groupid" ON "partrepair" ("numberid", "groupid");
 DROP INDEX IF EXISTS "partrepair_attempts" CASCADE;
 CREATE INDEX "partrepair_attempts" ON "partrepair" ("attempts");ALTER TABLE "parts" ADD CONSTRAINT "parts_id_pkey" PRIMARY KEY("id");
+
 DROP INDEX IF EXISTS "parts_binaryid" CASCADE;
 CREATE INDEX "parts_binaryid" ON "parts" ("binaryid");
 DROP INDEX IF EXISTS "parts_number" CASCADE;
-CREATE INDEX "parts_number" ON "parts" ("number");ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "parts_number" ON "parts" ("number");
+DROP INDEX IF EXISTS "parts_messageid" CASCADE;
+CREATE INDEX "parts_messageid" ON "parts" ("messageid");
+ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "predb_title" CASCADE;
 CREATE INDEX "predb_title" ON "predb" ("title");
 DROP INDEX IF EXISTS "predb_nfo" CASCADE;
@@ -11931,7 +11953,7 @@ CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
 DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
 CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
 DROP INDEX IF EXISTS "releases_mergedreleases" CASCADE;
-CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passswordstatus");
+CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passwordstatus");
 DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
 CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "releasesubs_releaseID_subsid" CASCADE;
@@ -11972,3 +11994,7 @@ DROP INDEX IF EXISTS "ix_allgroups_name" CASCADE;
 CREATE INDEX ix_allgroups_name ON allgroups(name);
 DROP INDEX IF EXISTS "ix_country_name" CASCADE;
 CREATE INDEX ix_country_name ON country(name);
+DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
+CREATE INDEX ix_shortgroups_id ON shortgroups(id);
+DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
+CREATE INDEX ix_shortgroups_name ON shortgroups(name);

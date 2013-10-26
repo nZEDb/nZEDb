@@ -8,36 +8,44 @@ require_once(WWW_DIR."lib/site.php");
 
 class Import
 {
+	function Import()
+	{
+		$this->db = new DB();
+		$s = new Sites();
+		$this->site = $s->get();
+	}
+
 	function categorize()
 	{
-		$db = new DB();
 		$cat = new Category();
-		$relres = $db->query("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
-		foreach ($relres as $relrow)
+		$relres = $this->db->prepare("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
+		$relres->execute();
+		$tot = $relres->rowCount();
+		if ($tot > 0)
 		{
-			$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-			if ($relrow['groupid'] != 7010)
-				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", $catID, $relrow['id']));
+			foreach ($relres as $relrow)
+			{
+				$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
+				if ($relrow['groupid'] != 7010)
+					$this->db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", $catID, $relrow['id']));
+			}
 		}
 	}
 
 	public function GrabNZBs($hash='')
 	{
-		$db = new DB();
 		$nntp = new Nntp();
 		$nzb = array();
-		$s = new Sites();
-		$site = $s->get();
-		$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
+		$this->site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 
 		if ($hash == '')
 		{
-			$hashes = $db->query("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts");
+			$hashes = $this->db->query("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts");
 			if (count($hashes) > 0)
 			{
 				foreach ($hashes as $hash)
 				{
-					$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapeString($hash['collectionhash'])));
+					$rel = $this->db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $this->db->escapeString($hash['collectionhash'])));
 					$arr = '';
 					foreach ($rel as $nzb)
 					{
@@ -50,7 +58,7 @@ class Import
 		}
 		else
 		{
-			$rel = $db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $db->escapestring($hash)));
+			$rel = $this->db->query(sprintf("SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber", $this->db->escapestring($hash)));
 			$arr = '';
 			foreach ($rel as $nzb)
 			{
@@ -59,14 +67,14 @@ class Import
 		}
 		if($nzb && array_key_exists('groupname', $nzb))
 		{
-			$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
+			$this->site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 			if (sizeof($arr) > 10)
 				echo "\nGetting ".sizeof($arr)." articles for ".$hash."\n";
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
 			if ($article === false || PEAR::isError($article))
 			{
 				$nntp->doQuit();
-				$site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->grabnzbs == "2" ? $nntp->doConnect_A() : $nntp->doConnect();
 				$article = $nntp->getArticles($nzb['groupname'], $arr);
 				if ($article === false || PEAR::isError($article))
 				{
@@ -80,7 +88,7 @@ class Import
 				$this->processGrabNZBs($article, $hash);
 			else
 			{
-				$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+				$this->db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $this->db->escapeString($hash)));
 				echo "-";
 				return;
 			}
@@ -94,18 +102,16 @@ class Import
 	{
 		if(!$article)
 			return;
-		$db = new DB();
 		$binaries = new Binaries();
 		$page = new Page();
 		$n = "\n";
-		$s = new Sites();
-		$site = $s->get();
-		$nzbsplitlevel = $site->nzbsplitlevel;
-		$nzbpath = $site->nzbpath;
-		$version = $site->version;
-		$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+		$nzbsplitlevel = $this->site->nzbsplitlevel;
+		$nzbpath = $this->site->nzbpath;
+		$version = $this->site->version;
+		$crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
+		$namecleaning = new nameCleaning();
 
-		$groups = $db->query("SELECT id, name FROM groups");
+		$groups = $this->db->query("SELECT id, name FROM groups");
 		foreach ($groups as $group)
 			$siteGroups[$group["name"]] = $group["id"];
 
@@ -114,7 +120,7 @@ class Import
 		// If article is not a valid xml, delete from nzbs
 		if (!$xml)
 		{
-			$db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $db->escapeString($hash)));
+			$this->db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $this->db->escapeString($hash)));
 			echo "-";
 			return;
 		}
@@ -139,7 +145,6 @@ class Import
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
-				$namecleaning = new nameCleaning();
 
 				// Make a fake message object to use to check the blacklist.
 				$msg = array('Subject' => $firstname['0'], 'From' => $fromname, 'Message-ID' => '');
@@ -147,12 +152,12 @@ class Import
 				// If the release is in our DB already then don't bother importing it.
 				if ($skipCheck !== true)
 				{
-					$usename = $db->escapeString($name);
-					if ($db->dbSystem() == 'mysql')
-						$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s', $db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					else if ($db->dbSystem() == 'pgsql')
-						$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($firstname['0']),$db->escapeString($fromname), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					$res = $db->queryOneRow($dupeCheckSql);
+					$usename = $this->db->escapeString($name);
+					if ($this->db->dbSystem() == 'mysql')
+						$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s', $this->db->escapeString($firstname['0']),$this->db->escapeString($fromname), $crosspostt, $this->db->escapeString($date), $crosspostt, $this->db->escapeString($date));
+					else if ($this->db->dbSystem() == 'pgsql')
+						$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND fromname = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $this->db->escapeString($firstname['0']),$this->db->escapeString($fromname), $crosspostt, $this->db->escapeString($date), $crosspostt, $this->db->escapeString($date));
+					$res = $this->db->queryOneRow($dupeCheckSql);
 
 					// Only check one binary per nzb, they should all be in the same release anyway.
 					$skipCheck = true;
@@ -201,7 +206,7 @@ class Import
 
 			if (!$importfailed)
 			{
-				$relguid = sha1(uniqid(true).mt_rand());
+				$relguid = sha1(uniqid('',true).mt_rand());
 				$nzb = new NZB();
 				$propername = false;
 				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
@@ -216,35 +221,33 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				// This only creates a release if there is not a match on name, poster, size and group
-				$ckmsg = $db->queryOneRow(sprintf('SELECT id FROM releases WHERE name= %s AND fromname = %s AND size = %d AND groupid = %d', $db->escapeString($subject), $db->escapeString($postername['0']), $totalsize, $groupID));
 				// If a release exists, delete the nzb/collection/binaries/parts
-				if (isset($ckmsg['id']))
+				if ($propername === true)
+					$relid = $this->db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				else
+					$relid = $this->db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				if ($relid == false)
 				{
-					if ($db->dbSystem() == "mysql")
-						$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
-					elseif ($db->dbSystem() == "pgsql")
+					if ($this->db->dbSystem() == "mysql")
+						$this->db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $this->db->escapeString($hash)));
+					elseif ($this->db->dbSystem() == "pgsql")
 					{
-						$idr = $db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($hash)));
+						$idr = $this->db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $this->db->escapeString($hash)));
 						if (count($idr) > 0)
 						{
 							foreach ($idr as $id)
 							{
-								$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
-								$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+								$reccount = $this->db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+								$reccount += $this->db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
 							}
-							$reccount += $db->queryExec("DELETE FROM collections WHERE collectionshash = ", $db->escapeString($hash));
+							$reccount += $this->db->queryExec("DELETE FROM collections WHERE collectionshash = ", $this->db->escapeString($hash));
 						}
 					}
-					$db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+					$this->db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $this->db->escapeString($hash)));
 					echo "!";
 					return;
 				}
-				if ($propername === true)
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				else
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
-				if (count($relid) > 0)
+				elseif (count($relid) > 0)
 				{
 					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w6');
@@ -255,29 +258,29 @@ class Import
 						if (file_exists($path))
 						{
 							chmod($path, 0777);
-							$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relid));
-							if ($db->dbSystem() == "mysql")
-								$db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $db->escapeString($hash)));
-							elseif ($db->dbSystem() == "pgsql")
+							$this->db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relid));
+							if ($this->db->dbSystem() == "mysql")
+								$this->db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $this->db->escapeString($hash)));
+							elseif ($this->db->dbSystem() == "pgsql")
 							{
-								$idr = $db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $db->escapeString($hash)));
+								$idr = $this->db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $this->db->escapeString($hash)));
 								if (count($idr) > 0)
 								{
 									foreach ($idr as $id)
 									{
-										$reccount = $db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
-										$reccount += $db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+										$reccount = $this->db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
+										$reccount += $this->db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
 									}
-									$reccount += $db->queryExec("DELETE FROM collections WHERE collectionshash = ", $db->escapeString($hash));
+									$reccount += $this->db->queryExec("DELETE FROM collections WHERE collectionshash = ", $this->db->escapeString($hash));
 								}
 							}
-							$db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $db->escapeString($hash)));
+							$this->db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $this->db->escapeString($hash)));
 							$this->categorize();
 							echo "+";
 						}
 						else
 						{
-							$db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relid));
+							$this->db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relid));
 							$importfailed = true;
 							echo "-";
 						}

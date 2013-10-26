@@ -69,10 +69,13 @@ if  ($page->isPostBack())
 
 	if (strtolower($dbtype) == 'mysql')
 	{
-		if (isset($cfg->DB_PORT))
-			$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';charset=utf8';
+		if (isset($cfg->DB_SOCKET) && !empty($cfg->DB_SOCKET))
+			$pdos = $dbtype.':unix_socket='.$cfg->DB_SOCKET.';charset=utf8';
 		else
-			$pdos = $dbtype.':host='.$cfg->DB_HOST.';charset=utf8';
+			if (isset($cfg->DB_PORT))
+				$pdos = $dbtype.':host='.$cfg->DB_HOST.';port='.$cfg->DB_PORT.';charset=utf8';
+			else
+				$pdos = $dbtype.':host='.$cfg->DB_HOST.';charset=utf8';
 
 		$cfg->dbConnCheck = true;
 		try {
@@ -102,6 +105,11 @@ if  ($page->isPostBack())
 		}
 
 		$cfg->dbNameCheck = true;
+	}
+	else
+	{
+		printf("Error, invalid database system [mysql, pgsql]: ".$dbtype);
+		exit();
 	}
 
 	if (!$cfg->error && $dbtype == "mysql")
@@ -197,7 +205,7 @@ if  ($page->isPostBack())
 
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM category");
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM country");
 			if ($reschk === false)
 			{
 				$cfg->dbCreateCheck = false;

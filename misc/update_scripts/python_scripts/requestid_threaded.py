@@ -1,16 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys, os, time
 import threading
-try:
-	import queue
-except ImportError:
-	import Queue as queue
 import subprocess
 import string
 import signal
 import datetime
+import re
+try:
+	import queue
+except ImportError:
+	import Queue as queue
 
 import lib.info as info
 conf = info.readConfig()
@@ -23,27 +25,30 @@ if conf['DB_SYSTEM'] == "mysql":
 		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
-		import psycopg as mdb
+		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+con.autocommit(True)
 cur = con.cursor()
 
-threads = 10
-print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
+threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
 
-cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid) DESC")
+#cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus in (0, 1, 20, 21, 22) AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 100")
 datas = cur.fetchall()
 
 if not datas:
 	print("No Work to Process")
-	cur.close()
-	con.close()
 	sys.exit()
+
+#close connection to mysql
+cur.close()
+con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -65,15 +70,13 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/requestID.php", ""+my_id])
+					time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
-
-	print("We will be using a max of {} threads, a queue of {} groups".format(threads, "{:,}".format(len(datas))))
-	time.sleep(2)
 
 	def signal_handler(signal, frame):
 		sys.exit(0)
@@ -81,6 +84,9 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
+		print("We will be using a max of {} threads, a queue of {} items".format(threads, "{:,}".format(len(datas))))
+		time.sleep(2)
+
 		#spawn a pool of place worker threads
 		for i in range(threads):
 			p = queue_runner(my_queue)
@@ -88,20 +94,13 @@ def main():
 			p.start()
 
 	#now load some arbitrary jobs into the queue
-	count = 0
 	for release in datas:
-		if count >= threads:
-			count = 0
-		count += 1
-		my_queue.put("%s  %s" % (str(release[0]), count))
+		time.sleep(.1)
+		my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
 
 	my_queue.join()
 
-	#stage7b
-	final = "Stage7b"
-	subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+str(final)])
-
-	print("\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nRequestID Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

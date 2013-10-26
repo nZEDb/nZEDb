@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #	This is a simple sequential script the uses many of the threaded scripts
 #	Just set the variables and uncomment what you would like to run.
@@ -8,7 +8,7 @@ export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
 export DEV_PATH="/var/www/nZEDb/misc/testing/Dev_testing"
 export DB_PATH="/var/www/nZEDb/misc/testing/DB_scripts"
-export THREADED_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
+export THREADED_PATH="/var/www/nZEDb/misc/update_scripts/python_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
@@ -30,6 +30,14 @@ fi
 loop=1
 while [ $loop -ge 1 ]
 do
+echo
+echo
+#The process that I use is get binaries, create releases, rename, post process
+#I only use the threaded scripts with the exception of decrypt_hashes.php and I do not use removeCrapReleases.php
+#decrypt hashes and fixReleasenames md5 are very similar, decrypt hashes should be run first, because it is faster
+#but fixReleasenames also looks at release files for a match, which is a plus, so both should be run
+#jonnyboy
+
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full passwordurl
@@ -44,6 +52,7 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
+#	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
 #	$PHP ${DEV_PATH}/renametopre.php 4
 #	$PYTHON -OOu ${THREADED_PATH}/testing_only/releases_threaded.py
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes
@@ -52,7 +61,6 @@ do
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
-#	$PHP ${NZEDB_PATH}/decrypt_hashes.php true
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
 #	$PHP ${DEV_PATH}/test_misc_sorter.php

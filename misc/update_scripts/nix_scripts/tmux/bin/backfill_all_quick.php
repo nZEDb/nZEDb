@@ -5,4 +5,4 @@ require_once(WWW_DIR."lib/backfill.php");
 
 $pieces = explode(" ", $argv[1]);
 $backfill = new Backfill();
-$backfill->backfillPostAllGroups($pieces[0], 10000, "normal");
+$backfill->backfillPostAllGroups($pieces[0], 10000, 'normal');

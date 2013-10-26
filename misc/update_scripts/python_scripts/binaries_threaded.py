@@ -30,7 +30,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-print("\nUpdate Binaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBinaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -101,7 +101,7 @@ def main():
 
 	my_queue.join()
 
-	print("\nUpdate Binaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nBinaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

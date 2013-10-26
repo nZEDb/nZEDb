@@ -19,12 +19,20 @@ class DB
 			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
 		if (DB::$initialized === false)
 		{
-			$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-			if (defined('DB_PORT'))
-				$pdos .= ';port='.DB_PORT;
-
 			if ($this->dbsystem == 'mysql')
-				$pdos .= ';charset=utf8';
+			{
+				if (defined('DB_SOCKET') && DB_SOCKET != '')
+					$pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
+				else
+				{
+					$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+					if (defined('DB_PORT'))
+						$pdos .= ';port='.DB_PORT;
+					$pdos .= ';charset=utf8';
+				}
+			}
+			else
+				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			try {
 				if ($this->dbsystem == 'mysql')
@@ -87,6 +95,7 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
+				echo "Sleeping\n";
 				sleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
 				$ins->execute();
@@ -130,6 +139,7 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
+				echo "Sleeping\n";
 				sleep($i * $i);
 				$run = DB::$pdo->prepare($query);
 				$run->execute();
@@ -274,13 +284,52 @@ class DB
 		return $tablecnt;
 	}
 
+	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	public function newtables($grpid)
+	{
+		$binaries = $parts = $collections = false;
+		try {
+			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+			$collections = true;
+		} catch (PDOException $e) {
+			if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+				$collections = true;
+		}
+
+		if ($collections === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+				$binaries = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+					$binaries = true;
+			}
+		}
+
+		if ($binaries === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+				$parts = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+					$parts = true;
+			}
+		}
+		if ($parts === true && $binaries = true && $collections = true)
+			return true;
+		else
+			return false;
+	}
+
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{
 		try {
 			$stat = DB::$pdo->prepare($query);
 		} catch (PDOException $e) {
-			printf($e);
+			//printf($e);
 			$stat = false;
 		}
 		return $stat;

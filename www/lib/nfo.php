@@ -225,7 +225,7 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->query('SELECT id FROM releases WHERE nfostatus <= -6');
+			$relres = $db->query('SELECT id FROM releases WHERE nfostatus < -6');
 			foreach ($relres as $relrow)
 				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
 

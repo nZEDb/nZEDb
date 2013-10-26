@@ -30,12 +30,13 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-if len(sys.argv) == 3 and sys.argv[2] == "clean":
-	print("\nPostProcess Clean Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-else:
-	print("\nPostProcess Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 if len(sys.argv) == 1:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+if len(sys.argv) == 3 and sys.argv[2] == "clean":
+	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+else:
+    print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+
 if sys.argv[1] == "additional":
 	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
 	print("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
@@ -47,10 +48,10 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
-	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'POST') AS h, (SELECT value FROM tmux WHERE setting = 'POST_NON') AS i")
+	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
-	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'POST') AS h, (SELECT value FROM tmux WHERE setting = 'POST_NON') AS i")
+	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
 else:
 	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
@@ -70,23 +71,19 @@ datas = []
 maxtries = -1
 
 if sys.argv[1] == "additional":
-	while len(datas) < (run_threads * ppperrun) and maxtries >= -6:
+	while len(datas) == 0 and maxtries >= -6:
 		if maxsizeck == 0:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
 		else:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
-	while len(datas) < (run_threads * nfoperrun) and maxtries >= -6:
-		if maxsizeck == 0:
-			run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
-			cur.execute(run, (maxtries, run_threads * nfoperrun))
-		else:
-			run = "SELECT r.id, r.guid, r.groupid, r.name FROM releases r WHERE r.size < %s AND r.nfostatus BETWEEN %s AND -1 AND r.nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
-			cur.execute(run, (maxsize, maxtries, run_threads * nfoperrun))
+	while len(datas) == 0 and maxtries >= -6:
+		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC, nfostatus DESC ) LIMIT %s"
+		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
@@ -139,7 +136,10 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} {} releases".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+	if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
+		print("We will be using a max of {} threads, a queue of {} {} releases. Query range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries+1))
+	else:
+		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -158,7 +158,7 @@ def main(args):
 	if sys.argv[1] == "additional":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6]))
+			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
@@ -187,7 +187,7 @@ def main(args):
 	cur.close()
 	con.close()
 
-	print("\nPostProcess Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

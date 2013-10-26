@@ -1,4 +1,3 @@
-
 <?php
 if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.\n");
@@ -21,7 +20,7 @@ $namecleaning = new nameCleaning();
 
 if (!isset($argv[2]))
 {
-	$pieces = explode(" ", $argv[1]);
+	$pieces = explode("   ", $argv[1]);
 	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
 	$path = $pieces[0];
 }
@@ -93,7 +92,7 @@ else
 	//iterate over all nzb files in all folders and subfolders
 	if(!file_exists($path))
 	{
-		echo "ERROR: Unable to access the specified path. Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
+		echo "ERROR: Unable to access ".$path."  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
 		return;
 	}
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
@@ -103,6 +102,7 @@ else
 			continue;
 
 		$compressed = $isBlackListed = $importfailed = $skipCheck = false;
+
 		if ($nzbFile->getExtension() == "nzb")
 		{
 			$nzba = file_get_contents($nzbFile);
@@ -114,8 +114,13 @@ else
 			$nzba = file_get_contents($nzbc);
 			$compressed = true;
 		}
+		else
+			continue;
 
 		$xml = @simplexml_load_string($nzba);
+		// delete invalid nzbs
+		if (!$xml)
+			@unlink($nzbFile);
 		if (!$xml || strtolower($xml->getName()) != 'nzb')
 			continue;
 
@@ -143,60 +148,6 @@ else
 			// Make a fake message object to use to check the blacklist.
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
 
-			// If the release is in our DB already then don't bother importing it.
-			if ($usenzbname && $skipCheck !== true)
-			{
-				$usename = str_replace(array('.nzb', '.gz'), '', basename($nzbFile));
-				if ($db->dbSystem() == 'mysql')
-				{
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					$res = $db->queryOneRow($dupeCheckSql);
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					$res1 = $db->queryOneRow($dupeCheckSql);
-				}
-				else if ($db->dbSystem() == 'pgsql')
-				{
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($usename), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					$res = $db->queryOneRow($dupeCheckSql);
-					$dupeCheckSql = sprintf("SELECT * FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-					$res1 = $db->queryOneRow($dupeCheckSql);
-				}
-
-				// Only check one binary per nzb, they should all be in the same release anyway.
-				$skipCheck = true;
-
-				// If the release is in the DB already then just skip this whole procedure.
-				if ($res !== false || $res1 !== false)
-				{
-					echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m";
-					@unlink($nzbFile);
-					flush();
-					$importfailed = true;
-					break;
-				}
-			}
-			if (!$usenzbname && $skipCheck !== true)
-			{
-				$usename = $db->escapeString($name);
-				if ($db->dbSystem() == 'mysql')
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL %d HOUR <= %s AND postdate + INTERVAL %d HOUR > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				else if ($db->dbSystem() == 'pgsql')
-					$dupeCheckSql = sprintf("SELECT name FROM releases WHERE name = %s AND postdate - INTERVAL '%d HOURS' <= %s AND postdate + INTERVAL '%d HOURS' > %s", $db->escapeString($subject), $crosspostt, $db->escapeString($date), $crosspostt, $db->escapeString($date));
-				$res = $db->queryOneRow($dupeCheckSql);
-
-				// Only check one binary per nzb, they should all be in the same release anyway.
-				$skipCheck = true;
-
-				// If the release is in the DB already then just skip this whole procedure.
-				if ($res !== false)
-				{
-					echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
-					@unlink($nzbFile);
-					flush();
-					$importfailed = true;
-					break;
-				}
-			}
 			// Groups.
 			$groupArr = array();
 			foreach($file->groups->group as $group)
@@ -240,7 +191,7 @@ else
 		}
 		if (!$importfailed)
 		{
-			$relguid = sha1(uniqid(true).mt_rand());
+			$relguid = sha1(uniqid('',true).mt_rand());
 			$nzb = new NZB();
 			$propername = false;
 			$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
@@ -251,40 +202,55 @@ else
 				$cleanName = $cleanerName['cleansubject'];
 				$propername = $cleanerName['properlynamed'];
 			}
-			if ($propername === true)
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+			if (empty($postername[0]))
+				$poster = '';
 			else
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($postdate['0']), $db->escapeString($postername['0']), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				$poster = $postername[0];
+			if (empty($postdate[0]))
+				$posteddate = $date = date("Y-m-d H:i:s");
+			else
+				$posteddate = $postdate[0];
+			if ($propername === true)
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+			else
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 
-			if (isset($relid->errorInfo[1]) && ($relid->errorInfo[1]==1062 || $e->errorInfo[1]==23000))
+			if (isset($relid) && $relid == false)
 			{
-				$db->queryExec(sprintf("DELETE FROM releases WHERE postdate = %s AND size = %d", $db->escapeString($postdate['0']), $db->escapeString($totalsize)));
-				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
-				$importfailed = true;
+				echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
+				//echo "\033[38;5;".$color_skipped."m!\033[0m";
+				@unlink($nzbFile);
+				flush();
+				continue;
+			}
+			if ($nzb->copyNZBforImport($relguid, $nzba))
+			{
+				$nzbCount++;
+				if ( $nzbCount % 100 == 0)
+				{
+					$seconds = TIME() - $time;
+					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
+					{
+						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
+						echo "\n\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m\n";
+					}
+					else
+					{
+						categorize();
+						echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
+					}
+				}
+				else
+					echo ".";
+				@unlink($nzbFile);
 			}
 			else
 			{
-				if($nzb->copyNZBforImport($relguid, $nzba))
-				{
-					if ( $nzbCount % 100 == 0)
-					{
-						$seconds = TIME() - $time;
-						if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 ))
-						{
-							$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
-							echo "\n\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m\n";
-						}
-						else
-						{
-							categorize();
-							echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
-						}
-					}
-					else
-						echo ".";
-				}
-				$nzbCount++;
+				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
+				echo "\033[38;5;".$color_write_error."mFailed copying NZB, deleting release from DB.\033[0m\n";
 				@unlink($nzbFile);
+				flush();
+				$importfailed = true;
 			}
 		}
 	}

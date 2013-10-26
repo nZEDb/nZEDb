@@ -179,11 +179,14 @@ class PostProcess
 		if (!in_array($quer['relnamestatus'], array(0, 1, 6, 20, 21)) || $quer['relnamestatus'] === 7 || $quer['categoryid'] != Category::CAT_MISC)
 			return false;
 
+		$st = false;
 		if (!isset($nntp))
 		{
+			$st = true;
 			$nntp = new Nntp();
 			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 		}
+
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($par2 === false || PEAR::isError($par2))
@@ -193,11 +196,14 @@ class PostProcess
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 			if ($par2 === false || PEAR::isError($par2))
 			{
-				$nntp->doQuit();
+				if ($st)
+					$nntp->doQuit();
 				return false;
 			}
 		}
-		$nntp->doQuit();
+		if ($st)
+			$nntp->doQuit();
+
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
 		if ($par2info->error)
@@ -343,7 +349,7 @@ class PostProcess
 
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
-			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
+			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
 		else
 		{
 			$result = 0;
@@ -353,7 +359,7 @@ class PostProcess
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
 					$i--;
@@ -362,7 +368,7 @@ class PostProcess
 			else
 			{
 				$pieces = explode('           =+=            ', $releaseToWork);
-				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6]));
+				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6], 'categoryid' => $pieces[7]));
 			}
 		}
 
@@ -388,6 +394,7 @@ class PostProcess
 			$processJPGSample = ($this->site->processjpg == '0') ? false : true;
 			$processPasswords = ($this->site->unrarpath != '') ? true : false;
 			$tmpPath = $this->tmpPath;
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -525,7 +532,7 @@ class PostProcess
 				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
 				{
 					$this->debug(' skipping book flood');
-					if (substr($rel['categoryid'], 0, 1) == 8)
+					if (isset($rel['categoryid']) && substr($rel['categoryid'], 0, 1) == 8)
 						$this->db->queryExec(sprintf('UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d', $rel['id']));
 					$flood = true;
 				}
@@ -573,7 +580,6 @@ class PostProcess
 							{
 								$mid = array_slice((array)$rarFile['segments'], 0, $this->segmentstodownload);
 								$bingroup = $groupName;
-								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 								{
@@ -581,12 +587,9 @@ class PostProcess
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 									if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
-									{
-										$nntp->doQuit();
 										$fetchedBinary = false;
-									}
 								}
-								$nntp->doQuit();
+
 								if ($fetchedBinary !== false)
 								{
 									$this->debug("\nProcessing ".$rarFile['title']);
@@ -620,9 +623,10 @@ class PostProcess
 					// Starting to look for content.
 					if (is_dir($this->tmpPath))
 					{
-						$files = scandir($this->tmpPath);
+						$files = '';
+						$files = @scandir($this->tmpPath);
 						$rar = new ArchiveInfo();
-						if (count($files) > 0)
+						if (!empty($files) && count($files) > 0)
 						{
 							foreach($files as $file)
 							{
@@ -721,7 +725,6 @@ class PostProcess
 					{
 						if (!empty($samplemsgid))
 						{
-							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 							if ($sampleBinary === false || PEAR::isError($sampleBinary))
 							{
@@ -729,12 +732,9 @@ class PostProcess
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 								if ($sampleBinary === false || PEAR::isError($sampleBinary))
-								{
-									$nntp->doQuit();
 									$sampleBinary = false;
-								}
 							}
-							$nntp->doQuit();
+
 							if ($sampleBinary !== false)
 							{
 								if ($this->echooutput)
@@ -765,7 +765,6 @@ class PostProcess
 					{
 						if (!empty($mediamsgid))
 						{
-							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 							if ($mediaBinary === false || PEAR::isError($mediaBinary))
 							{
@@ -773,12 +772,8 @@ class PostProcess
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 								if ($mediaBinary === false || PEAR::isError($mediaBinary))
-								{
-									$nntp->doQuit();
 									$mediaBinary = false;
-								}
 							}
-							$nntp->doQuit();
 							if ($mediaBinary !== false)
 							{
 								if ($this->echooutput)
@@ -807,7 +802,6 @@ class PostProcess
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
 				{
-					$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 					if ($audioBinary === false || PEAR::isError($audioBinary))
 					{
@@ -815,12 +809,8 @@ class PostProcess
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 						if ($audioBinary === false || PEAR::isError($audioBinary))
-						{
-							$nntp->doQuit();
 							$audioBinary = false;
-						}
 					}
-					$nntp->doQuit();
 					if ($audioBinary !== false)
 					{
 						if ($this->echooutput)
@@ -842,7 +832,6 @@ class PostProcess
 				// Download JPG file.
 				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
 				{
-					$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 					if ($jpgBinary === false || PEAR::isError($jpgBinary))
 					{
@@ -850,12 +839,8 @@ class PostProcess
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 						if ($jpgBinary === false || PEAR::isError($jpgBinary))
-						{
-							$nntp->doQuit();
 							$jpgBinary = false;
-						}
 					}
-					$nntp->doQuit();
 					if ($jpgBinary !== false)
 					{
 						if ($this->echooutput)
@@ -930,6 +915,7 @@ class PostProcess
 				}
 				@rmdir($this->tmpPath);
 			}
+			$nntp->doQuit();
 			if ($this->echooutput)
 				echo "\n";
 		}
@@ -962,7 +948,7 @@ class PostProcess
 				$xmlObj = @simplexml_load_string($xmlarray);
 				$arrXml = objectsIntoArray($xmlObj);
 				if (!isset($arrXml['File']['track'][0]))
-					unlink($file);
+					@unlink($file);
 			}
 		}
 	}
@@ -1292,7 +1278,8 @@ class PostProcess
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
-				file_put_contents($rarfile, $fetchedBinary);
+				if(!@file_put_contents($rarfile, $fetchedBinary))
+					continue;
 				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
 				$output = runCmd($execstring, false, true);
 				if (isset($files[0]['name']))

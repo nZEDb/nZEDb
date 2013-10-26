@@ -18,8 +18,8 @@ function command_exist($cmd)
 if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
 {
 	$tmux = new Tmux();
-	$running = $tmux->get()->RUNNING;
-	$delay = $tmux->get()->MONITOR_DELAY;
+	$running = $tmux->get()->running;
+	$delay = $tmux->get()->monitor_delay;
 
 	if ( $running == "TRUE" )
 	{

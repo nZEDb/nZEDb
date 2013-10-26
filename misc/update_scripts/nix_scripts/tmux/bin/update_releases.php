@@ -16,35 +16,46 @@ $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
 $consoletools = new ConsoleTools();
 $binaries = new Binaries();
+$db = new DB();
 
-if ($pieces[0] != "Stage7b" && $pieces[0] != "Stage1")
-{
-	if ($releases->hashcheck == 0)
-		exit("You must run update_binaries.php to update your collectionhash.\n");
+if ($releases->hashcheck == 0)
+	exit("You must run update_binaries.php to update your collectionhash.\n");
 
-//update_binaries per group
 if ($pieces[0] != "Stage7b")
-	$releases->processReleases = microtime(true);
-	echo "\n\nStarting release update process on ".$groupname." (".date("Y-m-d H:i:s").")\n";
-	$releases->processReleasesStage1($groupid, $echooutput=true);
-	$releases->processReleasesStage2($groupid, $echooutput=true);
-	$releases->processReleasesStage3($groupid, $echooutput=true);
-	$retcount = $releases->processReleasesStage4($groupid, $echooutput=true);
-	$releases->processReleasesStage4dot5($groupid, $echooutput=true);
-	$nzbcount = $releases->processReleasesStage5($groupid, $echooutput=true);
+{
+	try {
+		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
+		$test->execute();
+		// Don't even process the group if no collections
+		//if ($test->rowCount() == 0)
+		//{
+			//$mask = "%-30.30s has %s collections, skipping.\n";
+			//printf($mask, str_replace('alt.binaries', 'a.b', $groupname), number_format($test->rowCount()));
+			//exit();
+		//}
+	} catch (PDOException $e) {
+		//No collections available
+		//exit($groupname." has no collections to process\n");
+		exit();
+	}
 
-	//too slow because of first update query, would loop of every release on each thread
-	//better to run as separate script
-	//$releases->processReleasesStage5b($groupid, $echooutput=true);
-
-	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid, $echooutput=true);
-	$releases->processReleasesStage7a($groupid, $echooutput=true);
+	// Runs function that are per group
+	$releases->processReleasesStage1($groupid, false);
+	$releases->processReleasesStage2($groupid, true);
+	$releases->processReleasesStage3($groupid, true);
+	$retcount = $releases->processReleasesStage4($groupid, true);
+	$releases->processReleasesStage5($groupid, true);
+	$releases->processReleasesStage7a($groupid, true);
+//	$mask = "%-30.30s added %s releases.\n";
+//	$first = number_format($retcount);
+//	if($retcount > 0)
+//		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 }
 elseif ($pieces[0] == "Stage7b")
 {
-	//$releases->processReleasesStage4dot5($groupid, $echooutput=true);
-	$deletedCount = $releases->processReleasesStage7b($groupid="", $echooutput=true);
-
-	$db = new DB();
-	echo number_format(array_shift($db->queryOneRow("SELECT COUNT(id) FROM collections")))." collections waiting to be created (still incomplete or in queue for creation).\n";
+	// Runs functions that run on releases table after all others completed
+	$releases->processReleasesStage4dot5($groupid='', true);
+	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true);
+	$releases->processReleasesStage7b($groupid='', true);
+	//echo "Deleted ".number_format($deleted)." collections/binaries/parts.\n";
 }

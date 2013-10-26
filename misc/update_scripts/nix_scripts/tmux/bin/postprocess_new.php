@@ -4,7 +4,7 @@ require_once(WWW_DIR."lib/postprocess.php");
 require_once(WWW_DIR."lib/tmux.php");
 
 $tmux = new Tmux;
-$torun = $tmux->get()->POST;
+$torun = $tmux->get()->post;
 
 $pieces = explode("           =+=            ", $argv[1]);
 $postprocess = new PostProcess(true);
