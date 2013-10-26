@@ -1084,10 +1084,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			echo $this->c->set256($this->header)."\nStage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.\n";
 		$stage3 = TIME();
 
-		if ($groupID == '' || $this->tablepergroup == 1)
+		if ($groupID == '')
 		{
 			$groupIDs = $this->groups->getActiveIDs();
-
 			foreach ($groupIDs as $groupID)
 			{
 				$res = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID['id']);
