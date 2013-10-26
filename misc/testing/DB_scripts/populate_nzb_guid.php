@@ -12,7 +12,7 @@ require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 if (isset($argv[1]))
 	create_guids($argv[1]);
 else
-	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\n");
+	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\nTo delete invalid nzbs and releases, run php populate_nzb_guid.php true delete\n");
 
 function create_guids($live)
 {
@@ -43,7 +43,11 @@ function create_guids($live)
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile)
 				{
-					echo $nzb->NZBPath($relrec['guid'])." appears invalid\n";
+					if ($argv[2] == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
 					continue;
 				}
 				$binary_names = array();
@@ -53,8 +57,11 @@ function create_guids($live)
 				}
 				if (count($binary_names) == 0)
 				{
-					echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
-					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					if ($argv[2] == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
 					continue;
 				}
 
@@ -75,7 +82,13 @@ function create_guids($live)
 				}
 			}
 			else
-				echo $nzb->NZBPath($relrec['guid'])." appears to be missing\n";
+			{
+				if ($argv[2] == 'delete')
+				{
+					echo $nzb->$relrec['guid']." does not have an nzb, deleting.\n";
+					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+				}
+			}
 		}
 
 		if ($relcount > 0)
