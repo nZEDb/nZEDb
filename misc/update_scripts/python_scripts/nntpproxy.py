@@ -11,16 +11,19 @@ import nntp
 class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 
     def __init__(self, host, port, backend_mod, pool=None, username="anonymous", password="anonymous", timeout=30, use_ssl=False):
-        if backend_mod.Socket != socket.socket:
-            raise ValueError("Bad backend")
-        nntp.NNTPClient.__init__(self, host, port, username, password, timeout=timeout, use_ssl=use_ssl)
-        self.xfeature_compress_gzip()
         self.host = host
         self.port = port
         self.backend_mod = backend_mod
-        self._connected = True
-        self._life = time.time() - random.randint(0, 10)
         self._pool = pool
+        self._connected = False
+        self._life = time.time() - random.randint(0, 10)
+        if backend_mod.Socket != socket.socket:
+            raise ValueError("Bad backend")
+        nntp.NNTPClient.__init__(self, self.host, self.port, username, password, timeout=timeout, use_ssl=use_ssl)
+        self.id = self.socket.getsockname()[1]
+        print("%5d NEW CONNECTION" % self.id)
+        self._connected = True
+        self.xfeature_compress_gzip()
 
     def __del__(self):
         self.release()
@@ -38,6 +41,7 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
     def handle_exception(self, exception):
         print(str(exception))
         self.release()
+        self.invalidate()
 
     def get_lifetime(self):
         return self._life
@@ -66,7 +70,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
                 if len(data) == 0:
                     break;
                 data = data.strip()
-                print(data)
+                print("%5d %s" % (nntp_client.id, data))
                 if data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
                     self.wfile.write("281 Ok\r\n")
                 elif data.startswith("XFEATURE"):
@@ -110,6 +114,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
                 elif data.startswith("LIST ACTIVE") and not data.startswith("LIST ACTIVE.TIMES"):
                     pattern = data[11:].strip() or None
                     active_gen = nntp_client.list_active_gen(pattern)
+                    self.wfile.write("215 list of newsgroups follows\r\n")
                     for entry in active_gen:
                         self.wfile.write("%s %d %d %s\r\n" % entry)
                     self.wfile.write(".\r\n")
@@ -119,12 +124,12 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
                     self.wfile.write("500 What?\r\n")
 
 # NNTP proxy server for nZEDb
-class NNTPProxyServer(SocketServer.ThreadingTCPServer):
+class NNTPProxyServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
     allow_reuse_address = True
 
     def __init__(self, server_address, RequestHandlerClass, nntp_client_pool, bind_and_activate=True):
-        SocketServer.ThreadingTCPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate=bind_and_activate)
+        SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate=bind_and_activate)
         self.nntp_client_pool = nntp_client_pool
 
 if __name__ == "__main__":
