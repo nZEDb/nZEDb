@@ -163,8 +163,9 @@ if __name__ == "__main__":
 
 	addr = (config["proxy"]["host"], config["proxy"]["port"])
 	proxy = NNTPProxyServer(addr, NNTPProxyRequestHandler, nntp_client_pool)
-
+	remote = (config["usenet"]["host"], config["usenet"]["port"])
 	sys.stdout.write("NNTPProxy listening on %s:%d\n" % addr)
+	sys.stdout.write("NNTPProxy connected to %s:%d\n" % remote)
 	proxy.serve_forever()
 
 
