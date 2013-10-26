@@ -115,7 +115,7 @@ if ($tablepergroup == 1)
 		$tbl = $row['tables_in_'.DB_NAME];
 		if (preg_match('/\d+_collections/',$tbl))
 		{
-			$run = $db->queryExec(sprintf('UPDATE %s set dateadded = now()', $tbl));
+			$run = $db->queryExec('UPDATE '.$tbl.' SET dateadded = now()');
 			$ran += $run->rowCount();
 		}
 	}
@@ -124,12 +124,11 @@ if ($tablepergroup == 1)
 else
 {
 	$run = $db->queryExec("update collections set dateadded = now()");
-	if ($run)
-    	echo $run->rowCount()." collections reset\n";
+	echo $run->rowCount()." collections reset\n";
 }
+
 $run = $db->queryExec("update nzbs set dateadded = now()");
-if ($run)
-    echo $run->rowCount()." nzbs reset\n";
+echo $run->rowCount()." nzbs reset\n";
 sleep(2);
 
 function start_apps($tmux_session)
