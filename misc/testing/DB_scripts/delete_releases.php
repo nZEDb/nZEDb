@@ -42,17 +42,17 @@ if (sizeof($argv) == 4)
         $relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
         printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
     }
-    elseif ($argv[2] == "equals" && $argv[1] == "adddate" && isset($argv[3]) && is_numeric($argv[3]))
+    elseif ($argv[2] == "equals" && ($argv[1] == "adddate" || $argv[1] == "postdate") && isset($argv[3]) && is_numeric($argv[3]))
     {
 		if ($db->dbSystem() == 'mysql')
 		{
-			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.adddate > NOW() - INTERVAL ".$argv[3]." DAY");
-			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.adddate > NOW() - INTERVAL ".$argv[3]." DAY");
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
 		}
 		else
 		{
-			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.adddate > NOW() - INTERVAL '".$argv[3]." DAYS'");
-			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.adddate > NOW() - INTERVAL '".$argv[3]." DAYS'");
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
 		}
 	}
 	else
@@ -78,4 +78,4 @@ if (sizeof($argv) == 4)
 	echo ".\n";
 }
 else
-	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid or newer than x adddate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, adddate ] equals [ name, guid, days(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid or newer than x adddate/postdate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, adddate/postdate ] equals [ name, guid, days(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n");

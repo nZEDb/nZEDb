@@ -42,14 +42,21 @@ function create_guids($live)
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile)
+				{
+					echo $nzb->NZBPath($relrec['guid'])." appears invalid\n";
 					continue;
+				}
 				$binary_names = array();
 				foreach($nzbfile->file as $file)
 				{
 					$binary_names[] = $file["subject"];
 				}
 				if (count($binary_names) == 0)
+				{
+					echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
+					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
 					continue;
+				}
 
 				asort($binary_names);
 				$segment = "";
@@ -67,6 +74,8 @@ function create_guids($live)
 					}
 				}
 			}
+			else
+				echo $nzb->NZBPath($relrec['guid'])." appears to be missing\n";
 		}
 
 		if ($relcount > 0)
