@@ -192,7 +192,6 @@ function start_apps($tmux_session)
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
-	/*
 	$alternate_nntp = $site->get()->alternate_nntp;
 	$grabnzbs = $site->get()->grabnzbs;
     if ( $nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
@@ -205,7 +204,7 @@ function start_apps($tmux_session)
         	exec("tmux new-window -t $tmux_session -n nntpproxy_alt 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
     }
-	*/
+
 }
 
 function window_utilities($tmux_session)
