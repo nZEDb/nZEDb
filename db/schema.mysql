@@ -1049,8 +1049,8 @@ INSERT INTO site
   ('addpar2', '0'),
   ('fixnamethreads', '1'),
   ('fixnamesperrun', '10'),
-  ('nntpproxy', 0),
   ('tablepergroup', '0'),
+  ('nntpproxy', 0),
   ('sqlpatch','134');
 
 DROP TABLE IF EXISTS logging;
