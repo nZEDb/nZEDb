@@ -70,19 +70,24 @@ maxsize = (int(maxsizeck * 1073741824))
 datas = []
 maxtries = -1
 
+if len(sys.argv) == 3 and sys.argv[2].isdigit():
+	groupID = 'AND groupid = '+sys.argv[2]
+else:
+	groupID = ''
+
 if sys.argv[1] == "additional":
 	while len(datas) == 0 and maxtries >= -6:
 		if maxsizeck == 0:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
 		else:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" AND r.id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %s"
 			cur.execute(run, (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
 	while len(datas) == 0 and maxtries >= -6:
-		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 AND id IN ( SELECT id FROM releases ORDER BY postdate DESC, nfostatus DESC ) LIMIT %s"
+		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 "+groupID+" AND id IN ( SELECT id FROM releases ORDER BY postdate DESC, nfostatus DESC ) LIMIT %s"
 		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1

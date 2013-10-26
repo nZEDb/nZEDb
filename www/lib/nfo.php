@@ -138,17 +138,18 @@ class Nfo
 	}
 
 	// Loop through releases, look for NFO's in the NZB file.
-	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1)
+	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='')
 	{
 		$db = new DB();
 		$nfocount = $ret = 0;
-
+		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
+		
 		if ($releaseToWork == '')
 		{
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s '.$groupid.' AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}

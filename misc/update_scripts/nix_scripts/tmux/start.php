@@ -86,8 +86,8 @@ foreach ($apps as &$value)
 }
 
 function python_module_exist($module) {
-    exec("python -c \"import $module\"", $output, $returnCode);
-    return ($returnCode == 0 ? true : false);
+	exec("python -c \"import $module\"", $output, $returnCode);
+	return ($returnCode == 0 ? true : false);
 }
 
 $nntpproxy = $site->get()->nntpproxy;
@@ -178,7 +178,10 @@ function start_apps($tmux_session)
 	{
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
 	}
+}
 
+function window_proxy($tmux_session, $window)
+{
 	$site = new Sites();
 	$nntpproxy = $site->get()->nntpproxy;
 	if ( $nntpproxy == '1' )
@@ -193,16 +196,16 @@ function start_apps($tmux_session)
 	}
 	$alternate_nntp = $site->get()->alternate_nntp;
 	$grabnzbs = $site->get()->grabnzbs;
-    if ( $nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
-    {
-        $DIR = MISC_DIR;
-        $nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
-        if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
+	if ( $nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
+	{
+		$DIR = MISC_DIR;
+		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
+		if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
 		{
 			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf";
-        	exec("tmux new-window -t $tmux_session -n nntpproxy_alt 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+			exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
-    }
+	}
 
 }
 
@@ -223,7 +226,7 @@ function window_colors($tmux_session)
 
 function window_stripped_utilities($tmux_session)
 {
-    exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
+	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
 }
 
 function window_post($tmux_session)
@@ -271,6 +274,7 @@ if ( $seq == 1 )
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_proxy($tmux_session, 3);
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);
@@ -283,6 +287,7 @@ elseif ( $seq == 2 )
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
 
 	window_stripped_utilities($tmux_session);
+	window_proxy($tmux_session, 2);
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);
@@ -298,6 +303,8 @@ else
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_proxy($tmux_session, 3);
+
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);
