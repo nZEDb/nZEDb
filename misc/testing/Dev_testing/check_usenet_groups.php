@@ -9,7 +9,7 @@ if (!isset($argv[1]))
 $nntp = new Nntp();
 $nntp->doConnect();
 $data = $nntp->getGroups();
-echo $data."\n";
+
 $db = new DB();
 $res = $db->query("SELECT name FROM groups");
 $counter = 0;
