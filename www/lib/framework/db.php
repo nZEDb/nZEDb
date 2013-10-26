@@ -289,20 +289,20 @@ class DB
 	{
 		$binaries = $parts = $collections = false;
 		try {
-			DB::$pdo->query('SELECT * FROM collections_'.$grpid.' LIMIT 1');
+			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
 			$collections = true;
 		} catch (PDOException $e) {
-			if ($this->queryExec('CREATE TABLE collections_'.$grpid.' LIKE collections') !== false)
+			if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
 				$collections = true;
 		}
 
 		if ($collections === true)
 		{
 			try {
-				DB::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
 				$binaries = true;
 			} catch (PDOException $e) {
-				if ($this->queryExec('CREATE TABLE binaries_'.$grpid.' LIKE binaries') !== false)
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
 					$binaries = true;
 			}
 		}
@@ -310,10 +310,10 @@ class DB
 		if ($binaries === true)
 		{
 			try {
-				DB::$pdo->query('SELECT * FROM parts_'.$grpid.' LIMIT 1');
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
 				$parts = true;
 			} catch (PDOException $e) {
-				if ($this->queryExec('CREATE TABLE parts_'.$grpid.' LIKE parts') !== false)
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
 					$parts = true;
 			}
 		}
@@ -329,7 +329,7 @@ class DB
 		try {
 			$stat = DB::$pdo->prepare($query);
 		} catch (PDOException $e) {
-			printf($e);
+			//printf($e);
 			$stat = false;
 		}
 		return $stat;

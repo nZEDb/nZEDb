@@ -29,14 +29,19 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-threads = 10
-print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+threads = 8
+print("\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 conf = info.readConfig()
 
-cur.execute("SELECT groupid FROM collections GROUP BY groupid ORDER BY count(groupid) DESC")
+cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
+allowed = cur.fetchone()
+if int(allowed[0]) == 0:
+	sys.exit("Table per group not enabled")
+
+cur.execute("SELECT id FROM groups WHERE active = 1")
 datas = cur.fetchall()
 
 if not datas:
@@ -65,7 +70,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_per_group.php", ""+my_id])
 					self.my_queue.task_done()
 
 def main():
@@ -96,10 +101,12 @@ def main():
 		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
+	cur.close()
+	con.close()
 
 	#stage7b
 	final = "Stage7b"
-	subprocess.call(["php", pathname+"/../../nix_scripts/tmux/bin/update_releases.php", ""+str(final)])
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_releases.php", ""+str(final)])
 
 	print("\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))

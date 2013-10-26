@@ -17,6 +17,8 @@ class Nntp extends Net_NNTP_Client
 		$this->primary = 'green';
 		$this->warning = 'red';
 		$this->header = 'yellow';
+		// Cache the group name for article/body.
+		$this->articlegroup = '';
 	}
 
 
@@ -158,9 +160,13 @@ class Nntp extends Net_NNTP_Client
 	// Get only the body of an article (no header).
 	public function getMessage($groupname, $partMsgId)
 	{
-		$summary = $this->selectGroup($groupname);
-		if (PEAR::isError($summary))
-			return false;
+		if ($this->articlegroup != $groupname)
+		{
+			$this->articlegroup = $groupname;
+			$summary = $this->selectGroup($groupname);
+			if (PEAR::isError($summary))
+				return false;
+		}
 
 		$body = $this->getBody('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
@@ -187,9 +193,13 @@ class Nntp extends Net_NNTP_Client
 	// Get a full article (body + header).
 	public function get_Article($groupname, $partMsgId)
 	{
-		$summary = $this->selectGroup($groupname);
-		if (PEAR::isError($summary))
-			return false;
+		if ($this->articlegroup != $groupname)
+		{
+			$this->articlegroup = $groupname;
+			$summary = $this->selectGroup($groupname);
+			if (PEAR::isError($summary))
+				return false;
+		}
 
 		$body = $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
@@ -344,7 +354,6 @@ class Nntp extends Net_NNTP_Client
 			$nntp->doQuit();
 			return false;
 		}
-		else
-			return $data;
+		return $data;
 	}
 }

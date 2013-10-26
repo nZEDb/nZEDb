@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3882";
+$version="0.1r3936";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -26,6 +26,7 @@ $s = new Sites();
 $site = $s->get();
 $alternate_nntp_provider = $site->alternate_nntp;
 $patch = $site->sqlpatch;
+$tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 
 //totals per category in db, results by parentID
 $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
@@ -62,7 +63,7 @@ if ($dbtype == 'mysql')
 		( SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1 ) AS oldestcollection,
 		( SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1 ) AS newestpre,
-		( SELECT UNIX_TIMESTAMP(postdate) FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestadd,
+		( SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1 ) AS newestadd,
 		( SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1 ) AS oldestnzb";
 }
 elseif ($dbtype == 'pgsql')
@@ -264,21 +265,28 @@ if ($alternate_nntp_provider == "1")
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
-printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
-printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
+if ($tablepergroup == 0)
+{
+	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
+}
 
 $mask = "%-16.16s %25.25s %25.25s\n";
-printf("\033[1;33m\n");
-printf($mask, "Collections", "Binaries", "Parts");
-printf($mask, "==============================", "=========================", "==============================");
-printf("\033[38;5;214m");
-printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+if ($tablepergroup == 0)
+{
+	printf("\033[1;33m\n");
+	printf($mask, "Collections", "Binaries", "Parts");
+	printf($mask, "==============================", "=========================", "==============================");
+	printf("\033[38;5;214m");
+	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+}
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "==============================", "=========================", "==============================");
 printf("\033[38;5;214m");
-printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
+if ($tablepergroup == 0)
+	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 printf($mask, "requestID",$requestid_inprogress."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
@@ -355,6 +363,33 @@ while( $i > 0 )
         $proc31_time = ( TIME() - $time01 );
 		$time1 = TIME();
 		$runloop = "true";
+
+/*		if ($tablepergroup == 1)
+		{
+			$sql = "SHOW tables";
+			$tables = $db->query($sql);
+			$collections_table = $binaries_table = $parts_table = 0;
+			foreach($tables as $row)
+			{
+				$tbl = $row['tables_in_'.DB_NAME];
+				if (preg_match('/\d+_collections/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$collections_table += $run[0];
+				}
+				elseif (preg_match('/\d+_binaries/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$binaries_table += $run[0];
+				}
+				elseif (preg_match('/\d+_parts/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$parts_table += $run[0];
+				}
+			}
+		}
+*/
 	}
 	else
 		$runloop = "false";
@@ -403,13 +438,16 @@ while( $i > 0 )
 	if ( $proc_work_result[0]['releases'] != NULL ) { $releases_loop = $proc_work_result[0]['releases']; }
 	if ( $proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
 	if ( $proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
-	if ( $proc_work_result2[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result2[0]['collections_table']; }
-	
-	if ( $proc_work_result3[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
-	
-	if ( $split_result[0]['parts_table'] != NULL ) { $parts_table = $split_result[0]['parts_table']; }
+
+	if ($tablepergroup == 0)
+	{
+		if ( $proc_work_result3[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
+		if ( $split_result[0]['parts_table'] != NULL ) { $parts_table = $split_result[0]['parts_table']; }
+		if ( $proc_work_result2[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result2[0]['collections_table']; }
+	}
+
 	if ( $split_result[0]['predb'] != NULL ) { $predb = $split_result[0]['predb']; }
-	
+
 	if ( $proc_work_result3[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
 	if ( $proc_work_result3[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress = $proc_work_result3[0]['requestid_inprogress']; }
 	if ( $proc_work_result3[0]['requestid_matched'] != NULL ) { $requestid_matched = $proc_work_result3[0]['requestid_matched']; }
@@ -580,18 +618,24 @@ while( $i > 0 )
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
-	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
-	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
+	if ($tablepergroup == 0)
+	{
+		printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
+	}
 	if ( $post == "1" || $post == "3" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
 	}
 
-	printf("\033[1;33m\n");
-	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "==============================", "=========================", "==============================");
-	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+	if ($tablepergroup == 0)
+	{
+		printf("\033[1;33m\n");
+		printf($mask, "Collections", "Binaries", "Parts");
+		printf($mask, "==============================", "=========================", "==============================");
+		printf("\033[38;5;214m");
+		printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+	}
 
 	if ((( isset( $monitor_path )) && ( file_exists( $monitor_path ))) || (( isset( $monitor_path_a )) && ( file_exists( $monitor_path_a ))) || (( isset( $monitor_path_b )) && ( file_exists( $monitor_path_b ))))
 	{
@@ -635,7 +679,8 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
-	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
+	if ($tablepergroup == 0)
+		printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb", number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",number_format($requestid_inprogress)."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
@@ -674,17 +719,18 @@ while( $i > 0 )
 	{
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
+	}
+	if ( $seq == 0 )
+	{
+		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
 		$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
 	}
 	if ( $seq == 2 )
 	{
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 	}
 
 	if (command_exist("php5"))
@@ -717,9 +763,9 @@ while( $i > 0 )
 		$kill_coll = "FALSE";
 
 	if ($binaries != 0)
-		$which_bins = "$_python ${DIR}update_scripts/threaded_scripts/binaries_threaded.py";
+		$which_bins = "$_python ${DIR}update_scripts/python_scripts/binaries_threaded.py";
 	elseif ($binaries == 2)
-		$which_bins = "$_python ${DIR}update_scripts/threaded_scripts/binaries_safe_threaded.py";
+		$which_bins = "$_python ${DIR}update_scripts/python_scripts/binaries_safe_threaded.py";
 
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
@@ -733,13 +779,13 @@ while( $i > 0 )
 				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 
 			//fix names
-			if ( $fix_names == "TRUE"  &&  $i == 1 )
+			if ( $fix_names == "TRUE" )
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_php ${DIR}testing/Dev_testing/renametopre.php 24 \
-						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py md5 \
-						$_python ${DIR}update_scripts/threaded_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}testing/Dev_testing/renametopre.php 24 $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -838,14 +884,14 @@ while( $i > 0 )
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
 						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
 			elseif ( $post == 2 && $nfo_remaining_now > 0)
 			{
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $post == "3" ) && (( $nfo_remaining_now > 0) || ( $work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0)))
 			{
@@ -872,8 +918,8 @@ while( $i > 0 )
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py additional $log; \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py additional $log; \
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $post != "0" ) && ( $nfo_remaining_now == 0) && ( $work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0 ))
 			{
@@ -891,8 +937,8 @@ while( $i > 0 )
 				//run postprocess_releases non amazon
 				$log = writelog($panes2[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.1 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py tv $log; \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_threaded.py movie $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py tv $log; \
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py movie $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
 			}
 			elseif (( $post_non == "TRUE" ) && ( $movie_releases_proc == 0 ) && ( $tvrage_releases_proc == 0 ))
 			{
@@ -910,7 +956,7 @@ while( $i > 0 )
 				//run postprocess_releases amazon
 				$log = writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
 			}
 			elseif (( $post_amazon == "TRUE" ) && ( $processbooks == 0 ) && ( $processmusic == 0 ) && ( $processgames == 0 ))
 			{
@@ -956,7 +1002,7 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -972,91 +1018,85 @@ while( $i > 0 )
 				if (( $binaries != 0 ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs all less than 4800
 				elseif (( $binaries != 0 ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back/safe less than 4800
 				elseif (( $binaries != 0 ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; \
 							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back less than 4800
 				elseif (( $binaries != 0 ) && ( $backfill != "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe/rel less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/rel less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill != "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/rel less than 4800
 				elseif (( $binaries != 0 ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin less than 4800
 				elseif (( $binaries != 0 ) && ( $backfill == "0" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 							$which_bins $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "4" ) && ( $releases_run != "TRUE" ))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
+							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs rel less than 4800
 				elseif (( $binaries != "TRUE" ) && ( $backfill == "0" ) && ( $releases_run == "TRUE" ))
@@ -1077,8 +1117,8 @@ while( $i > 0 )
 				if ( $backfill != "0" )
 				{
 					shell_exec("tmux respawnp -k -t${tmux_session}:0.2 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log; \
-						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py all $log; \
+						$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 					$time6 = TIME();
 				}
 				$time6 = TIME();
@@ -1107,7 +1147,7 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
@@ -1149,9 +1189,8 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/partrepair_threaded.py $log; \
 						$which_bins $log; \
-						$_python ${DIR}update_scripts/threaded_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
 			{
@@ -1174,19 +1213,19 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 <= 4800 ))
 			{
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 			}
 			elseif (( $backfill != "0" ) && ( $kill_coll == "FALSE" ) && ( $kill_pp == "FALSE" ) && ( TIME() - $time6 >= 4800 ))
 			{
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
 				$time6 = TIME();
 			}
 			elseif (( $kill_coll == "TRUE" ) || ( $kill_pp == "TRUE" ))
@@ -1205,7 +1244,7 @@ while( $i > 0 )
 			{
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/threaded_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
 			}
 			elseif ( $kill_pp == "TRUE" )
 			{
