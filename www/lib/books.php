@@ -245,58 +245,188 @@ require_once(WWW_DIR.'lib/site.php');
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
-		if (count($res) > 0)
-		{
-			if ($this->echooutput)
-				echo 'Processing '.count($res)." book releases.\n";
-
-			foreach ($res as $arr)
+		// currently this could be upto 4x what bookinfo is set to, but for now that should be ok
+		
+		$resarray['ebooks']          = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		
+		$resarray['audiobooks']  = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 3030 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		
+		$resarray['Technical']       = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8040 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		
+		$resarray['Foreign']         = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8060 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+	
+		// I see no reason to extend this to also check magazines, since these are unlikely to have more than a cover, and even then matching is very unlikely unless changes are made to regexes, or for Others since mostly junk ends up there
+		
+		foreach($resarray as $res) {
+			if (count($res) > 0)
 			{
-				$bookInfo = $this->parseTitle($arr['searchname'], $arr['id']);
-				if ($bookInfo !== false)
+				if ($this->echooutput)
+					echo 'Processing '.count($res)." book releases.\n";
+
+				foreach ($res as $arr)
 				{
-					if ($this->echooutput)
-						echo 'Looking up: '.$bookInfo."\n";
+					// detrime if this is an ebook or an audiobook
+					$category = $db->query(sprintf('SELECT categoryid FROM releases where id = %s', $arr['id']));
 
-					$bookId = $this->updateBookInfo($bookInfo);
-					if ($bookId === false)
-						$bookId = -2;
+					if($category[0]['categoryid'] == '3030') 
+					{
+						// audiobook
+						$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "audiobook");
+					}
+					else
+					{
+						// ebook
+						$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "ebook");
+					}
 
-					// Update release.
-					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
-				}
-				// Could not parse release title.
-				else
-					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
-				// Sleep to not flood amazon.
-				usleep($this->sleeptime*1000);
-			}
-		}
+					// update the search title
+					$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($bookInfo), $arr['id']));
+
+
+					if ($bookInfo !== false)
+					{
+						if ($this->echooutput)
+							echo 'Looking up: '.$bookInfo."\n";
+
+						$bookId = $this->updateBookInfo($bookInfo);
+						if ($bookId === false)
+							$bookId = -2;
+
+						// Update release.
+						$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
+					}
+					// Could not parse release title.
+					else
+						$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
+					// Sleep to not flood amazon.
+					usleep($this->sleeptime*1000);
+				}	// foreach
+			}	// if
+		}	// foreach
 	}
 
-	public function parseTitle($releasename, $releaseID)
+	public function parseTitle($releasename, $releaseID, $releasetype)
 	{
-		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
+		// extra cleanup to get a morevalid title
+		// save the year as we may want need it later	
+		$year = "";
+		preg_match('/(19|20)\d\d/', $releasename, $year);
+		if($year) $year = $year[0];
+		else $year = "";
+		// next if the year is prefixed by a moth or shortened month replace it with XXXXXXXX, which we can later replace back to year
+		$releasename = preg_replace('/(January|Febuary|March|April|May|June|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jly|Aug|Sept|Oct|Nov|Dec)(\s|_|.)' . $year . '/i', '$1 XXXXXXXX', $releasename);
+		// handle german as well
+		$releasename = preg_replace('/(Januar|Februar|Marz|Aprill|Mai|Juni|September|Oktober|November|Dezember)(\s|_|.)' . $year . '/i', '$1 XXXXXXXX', $releasename);
+		// remove anything part0...
+ 		$releasename = preg_replace('/(part\d+|part\.)/i', '', $releasename);
+		// extra cleanup to get a more valid title		
+ 		
+ 		// existing regexes
+		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|CHM|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
 		$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 		$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
+		
+		// extra cleanup to get a more valid title
+		// extract the part of the string in quotes (normally teh name)
+		$namematch = "";
+		preg_match('/".*?"/', $releasename, $namematch);
 
-		if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
+		// if "'s are not present then just continue
+		if(!isset($namematch[0]))
+			$namematch[0] = $releasename;
+
+		// remove the extention
+		$releasename = preg_replace('/(\.par2|\.rar|\.zip|\.pdf|\.chm|\.mobi\.html|\.rtf|\.txt|\.lit|\.doc|\.nfo|\.sfv)"/i', '"', $namematch[0]);
+		// run twice to catch .rar.par2 type encodings
+		$releasename = preg_replace('/(\.par2|\.rar|\.zip|\.pdf|\.chm|\.mobi\.html|\.rtf|\.txt|\.lit|\.doc|\.nfo|\.sfv)"/i', '"', $releasename);
+		// remove the ', )' with ')' if present 
+		$releasename = preg_replace('/, \)/', '\)', $releasename);
+		// remove the Vol0+1 if present 
+		$releasename = preg_replace('/Vol0(|\+\d+)/i', '', $releasename);
+		// remove the encoding
+		$releasename = preg_replace('/yEnc/', '', $releasename);
+		// remove the READNFO if present
+		$releasename = preg_replace('/READNFO/', '', $releasename);
+		// replace PLS READ with nothing
+		$releasename = preg_replace('/PLS READ/i', '', $releasename);
+		// remove and "'s that surround the name
+		$releasename = trim($releasename, "\x22");
+		// replace any trailing '-' or ' -' with nothing
+		$releasename = preg_replace('/(-| -)$/i', ' ', $releasename);
+		// remove any spaces surrounding it
+		$releasename = trim($releasename);
+		// replace . and _ with a space
+		$releasename = preg_replace('/[.|_]/i', ' ', $releasename);
+		// replace those ending with ' WW' is nothing
+		$releasename = preg_replace('/ WW$|\[eCV\]$/i', '', $releasename);
+		// remove the '\)$' with ')' if present 
+		// removed as \\\) is not valid, but php says it should be:
+		$releasename = preg_replace('/\\\\\)$/', ')', $releasename);
+		// replace [] with nothing
+		$releasename = preg_replace('/\[\]/i', '', $releasename);
+		// replace () with nothing
+		$releasename = preg_replace('/\(\)/i', '', $releasename);
+		// remove any spaces surrounding it
+		$releasename = trim($releasename);
+		// replace the year in the release title if it was previously present
+		$releasename = preg_replace('/XXXXXXXX/', $year, $releasename);
+ 		// extra cleanup to get a more valid title
+		
+		if($releasetype == 'ebook')
 		{
-			echo "Changing category to misc books: ".$releasename."\n";
-			$db = new DB();
-			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
-			return false;
+			// for ebooks see if it is a magazine or an unknown type
+			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|art-of-use net|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
+			{
+				// change cateogory
+				echo "Changing category to misc books: ".$releasename."\n";
+				$db = new DB();
+				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, searchname = %s WHERE id = %d", 8050, $db->escapeString($releasename), $releaseID));
+				return false;
+			}
+			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename))
+			{
+				// extra regex for magazines 
+				$releasename = preg_replace('/(| Eroti(c|k)) Magazin(|e)/i', '', $releasename);
+
+				// change cateogory
+				echo "Changing category to magazines: ".$releasename."\n";
+				$db = new DB();
+				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, searchname = %s WHERE id = %d", 8030, $db->escapeString($releasename), $releaseID));
+				return false;
+			}
+			// since the previous sometimes missed magazines with MOTH YEAR this will handle those cases 
+			else if (preg_match('/(Jan( |unar)|Feb( |ruary)|Mar( |ch)|Apr( |il)|May(?![a-z0-9])|Jun( |e)|Jul( |y)|Aug( |ust)|Sep( |tember)|O(c|k)t( |ober)|Nov( |ember)|De(c|z)( |ember)) '. $year . '/', $releasename)) 
+			{
+				// extra regex for magazines 
+				$releasename = preg_replace('/(| Eroti(c|k)) Magazin(|e)/i', '', $releasename);
+				
+				// change cateogory
+				echo "Changing category to magazines: ".$releasename."\n";
+				$db = new DB();
+				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, searchname = %s WHERE id = %d", 8030, $db->escapeString($releasename), $releaseID));
+				return false;
+			}
+			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+			{
+				$db = new DB();
+				$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($releasename), $releaseID));
+				return $releasename;
+			}
+			else
+				return false;
 		}
-		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
+		else if($releasetype == 'audiobook')
 		{
-			echo "Changing category to magazines: ".$releasename."\n";
-			$db = new DB();
-			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
-			return false;
+			// we can skip category for audiobooks, since we already know it
+			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+			{
+				$db = new DB();
+				$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($releasename), $releaseID));
+				return $releasename;
+			}
+			else
+				return false;
 		}
-		else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
-			return $releasename;
 		else
 			return false;
 	}

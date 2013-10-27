@@ -169,6 +169,14 @@ class nameCleaning
 				return $this->sounds_lossless();
 			case 'alt.binaries.sounds.mp3':
 				return $this->sounds_mp3();
+			case 'alt.binaries.mp3.audiobooks':
+				return $this->sounds_audiobooks();
+			case 'alt.binaries.sound.audiobooks':
+				return $this->sounds_audiobooks();
+			case 'alt.binaries.sounds.audiobooks.repost':
+				return $this->sounds_audiobooks();
+			case 'alt.binaries.sounds.mp3.audiobooks':
+				return $this->sounds_audiobooks();			
 			case 'alt.binaries.teevee':
 				return $this->teevee();
 			case 'alt.binaries.town':
@@ -1174,6 +1182,28 @@ class nameCleaning
 			return $this->generic();
 	}
 
+
+	// a.b.sounds.mp3.audiobooks
+	public function sounds_audiobooks()
+	{
+		// currently these are teh same as mp3, but in the future these should be modified to be unique to audiobooks
+		
+		//(dream-of-usenet.info) - [04/15] - "Enya-And_Winter_Came...-2008.part2.rar" yEnc
+		if (preg_match('/^\(dream-of-usenet\.info\) - \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
+			return $match[1];
+		//http://dream-of-usenet.org empfehlen newsconnection.eu - [02/32] - "Adam_Ant-Manners_and_Physique-(MCAD-6315)-CD-FLAC-1989-2Eleven.par2" yEnc
+		else if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
+			return $match[1];
+		//>>> CREATIVE COMMONS NZB <<< "dexter romweber duo-lookout" - File 1 of 9: "creative_commons_nzb_dexter_romweber_duo-lookout.rar" yEnc
+		else if (preg_match('/^(>>> CREATIVE COMMONS NZB <<< ".+?" - File )\d+ of \d+: ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];
+		//<<<usenet-space-cowboys.info>>>  <<<Powered by https://secretusenet.com>< "Justin_Bieber-Believe_Acoustic-2013-pLAN9_usenet-space-cowbys.info.rar" >< 4/6 (78.65 MB) >< 60.84 MB > yEnc
+		else if (preg_match('/^(.+?usenet-space.+?Powered by.+? ".+?)'.$this->e0.'.+? \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) .+? \d+[.,]\d+ [kKmMgG][bB] .+?yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+		  return $this->generic();
+	}
+	
 	// a.b.sounds.mp3
 	public function sounds_mp3()
 	{
@@ -1305,7 +1335,7 @@ class nameCleaning
 		$nofiles = $this->nofiles;
 
 		// For non music groups.
-		if (!preg_match('/\.(flac|lossless|mp3|music|sounds)/', $groupName))
+		if (!preg_match('/\.(flac|lossless|mp3|music|sounds|audiobooks)/', $groupName))
 		{
 			// File/part count.
 			$cleansubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\)|\(|\[|\s)\d{1,5}(\/|(\s|_)of(\s|_)|-)\d{1,5}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|[^\d]{4}-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $subject);
@@ -1340,8 +1370,17 @@ class nameCleaning
 				$cleansubject = preg_replace('/\d{1,3}(,|\.|\/)\d{1,3}\s(k|m|g)b|(\])?\s\d+KB\s(yENC)?|"?\s\d+\sbytes?|[- ]?\d+[.,]?\d+\s(g|k|m)?B\s-?(\s?yenc)?|\s\(d{1,3},\d{1,3}\s{K,M,G}B\)\s|yEnc \d+k$|{\d+ yEnc bytes}|yEnc \d+ |\(\d+ ?(k|m|g)?b(ytes)?\) yEnc/i', ' ', $cleansubject);
 				// Random stuff.
 				$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
+				// remove - -, and replace with -, general all mp3 releases
+				$cleansubject = preg_replace('/\s+\-\s+\-\s+/', ' - ', $cleansubject);
+				// remove Unab Unabridged or to Unabridged, for audiobooks
+				$cleansubject = preg_replace('/ (unabridged|unab) /i', ' ', $cleansubject);
+				// remove NMR, for audiobooks
+				$cleansubject = preg_replace('/ (\s+NMR\s) /i', ' ', $cleansubject);
+
 				// Multi spaces.
 				$cleansubject = utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
+
+				
 
 				// If the subject is too similar to another because it is so short, try to extract info from the subject.
 				if (strlen($cleansubject) <= 10 || preg_match('/^[-a-z0-9$ ]{1,7}yEnc$/i', $cleansubject))

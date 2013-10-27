@@ -1,5 +1,7 @@
 <?php
 require_once(WWW_DIR.'lib/anidb.php');
+require_once(WWW_DIR.'lib/xxx.php');
+require_once(WWW_DIR.'lib/pc.php');
 require_once(WWW_DIR.'lib/books.php');
 require_once(WWW_DIR.'lib/category.php');
 require_once(WWW_DIR.'lib/console.php');
@@ -82,18 +84,52 @@ class PostProcess
 		$this->processAnime($threads);
 		$this->processTv($releaseToWork);
 		$this->processBooks($threads);
+		$this->processXXX($threads);
+		$this->processPC($threads);
 	}
 
-	// Lookup anidb if enabled - always run before tvrage.
-	public function processAnime($threads=1)
-	{
-		if ($this->site->lookupanidb == 1)
-		{
-			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate($threads);
-			$anidb->processAnimeReleases($threads);
-		}
+        // Lookup anidb if enabled - always run before tvrage.
+        public function processAnime($threads=1, $hours=0)
+        {
+                if ($this->site->lookupanidb == 1)
+                {
+                        $anidb = new AniDB($this->echooutput);
+                        $anidb->animetitlesUpdate($threads);
+                        $anidb->processAnimeReleases($threads, $hours);
+                }
 	}
+ 
+        // Lookup anidb lookup of a single Release
+        public function processSingleAnime($releaseToWork='')
+        {
+                if ($this->site->lookupanidb == 1)
+                {
+                        $anidb = new AniDB($this->echooutput);
+                        $anidb->processSingleAnime($releaseToWork);
+                }
+	}
+ 
+        // Lookup anidb check if a release is anime
+        public function checkIfAnime($releaseToWork='')
+        {
+                $anidb = new AniDB($this->echooutput);
+                return $anidb->checkIfAnime($releaseToWork);
+ 	}
+ 
+	// Process XXX group
+	public function processXXX($threads=1, $hours=0)
+	{
+		$xxx = new XXX($this->echooutput);
+		$xxx->processXXXReleases($threads, 0);
+	}
+
+	// Process PC
+	public function processPC($threads=1, $hours=0)
+	{
+		$pc = new PC($this->echooutput);
+		$pc->processPCReleases($threads, 0);
+	}
+
 
 	// Process books using amazon.com.
 	public function processBooks($threads=1)
