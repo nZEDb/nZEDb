@@ -1,9 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__)."/../../../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require_once(dirname(__FILE__).'/../../../../../www/config.php');
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $db = new DB();
+$s = new Sites();
+$site = $s->get();
+$tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
