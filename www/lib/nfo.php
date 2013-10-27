@@ -6,6 +6,7 @@ require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/nzbcontents.php');
 require_once(WWW_DIR.'lib/site.php');
 require_once(WWW_DIR.'lib/tvrage.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 /*
  * Class for handling fetching/storing of NFO files.
@@ -22,6 +23,10 @@ class Nfo
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
+		$this->c = new ColorCLI;
+		$this->primary = 'green';
+		$this->warning = 'red';
+		$this->header = 'yellow';
 	}
 
 	public function addReleaseNfo($relid)
@@ -143,7 +148,7 @@ class Nfo
 		$db = new DB();
 		$nfocount = $ret = 0;
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
-		
+
 		if ($releaseToWork == '')
 		{
 			$i = -1;
@@ -165,8 +170,7 @@ class Nfo
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput && $releaseToWork == '')
-				echo 'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n";
-
+				echo $this->c->set256($this->primary).'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n".$this->c->rsetcolor();
 			$nntp = new Nntp();
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
@@ -219,8 +223,8 @@ class Nfo
 						}
 					}
 				}
-				$nntp->doQuit();
 			}
+			$nntp->doQuit();
 		}
 
 		// Remove nfo that we cant fetch after 5 attempts.

@@ -153,7 +153,6 @@ Class NZBcontents
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
 					$fetchedBinary = false;
-
 			}
 			if ($nfo->isNFO($fetchedBinary, $guid) === true)
 			{

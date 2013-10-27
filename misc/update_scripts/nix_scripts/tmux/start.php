@@ -17,7 +17,7 @@ $tmux_session = $tmux->get()->tmux_session;
 $seq = $tmux->get()->sequential;
 $powerline = $tmux->get()->powerline;
 $colors = $tmux->get()->colors;
-
+$import = $tmux->get()->import;
 $site = new Sites();
 $patch = $site->get()->sqlpatch;
 $hashcheck = $site->get()->hashcheck;
@@ -115,7 +115,8 @@ if ($tablepergroup == 1)
 		$tbl = $row['tables_in_'.DB_NAME];
 		if (preg_match('/\d+_collections/',$tbl))
 		{
-			$run = $db->queryExec('UPDATE '.$tbl.' SET dateadded = now()');
+			$run = $db->prepare('UPDATE '.$tbl.' SET dateadded = now()');
+			$run->execute();
 			$ran += $run->rowCount();
 		}
 	}
@@ -123,11 +124,13 @@ if ($tablepergroup == 1)
 }
 else
 {
-	$run = $db->queryExec("update collections set dateadded = now()");
+	$run = $db->prepare("update collections set dateadded = now()");
+	$run->execute();
 	echo $run->rowCount()." collections reset\n";
 }
 
-$run = $db->queryExec("update nzbs set dateadded = now()");
+$run = $db->prepare("update nzbs set dateadded = now()");
+$run->execute();
 echo $run->rowCount()." nzbs reset\n";
 sleep(2);
 
@@ -270,7 +273,10 @@ if ( $seq == 1 )
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
@@ -284,7 +290,10 @@ elseif ( $seq == 2 )
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 
 	window_stripped_utilities($tmux_session);
 	window_proxy($tmux_session, 2);
@@ -297,7 +306,10 @@ else
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 	exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
 	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
 

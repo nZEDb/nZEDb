@@ -10,7 +10,7 @@ import nntp
 
 class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 
-	def __init__(self, host, port, backend_mod, pool=None, username="anonymous", password="anonymous", timeout=30, use_ssl=False):
+	def __init__(self, host, port, backend_mod, pool=None, username="anonymous", password="anonymous", timeout=60, use_ssl=False):
 		self.host = host
 		self.port = port
 		self.backend_mod = backend_mod
