@@ -235,7 +235,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				$first++;
-				echo $this->c->set256($this->primary)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->header)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.str_replace('alt.binaries', 'a.b', $data['group'])." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab

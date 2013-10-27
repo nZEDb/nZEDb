@@ -515,9 +515,9 @@ class Backfill
 		$groupArr = $groups->getByName($group);
 
 		if ($this->nntpproxy == 0)
-			echo $this->c->set256($this->primary).'Processing '.$groupArr['name'].(($this->compressedHeaders)?' Using Compression':' Not Using Compression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).(($this->compressedHeaders)?' Using Compression':' Not Using Compression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		else
-			echo $this->c->set256($this->primary).'Processing '.$groupArr['name'].' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
