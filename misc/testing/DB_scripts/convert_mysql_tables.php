@@ -46,7 +46,7 @@ else if (isset($argv[1]) && $argv[1] == "collections")
 	$arr = array("parts", "binaries", "collections");
 	foreach($arr as $row)
 	{
-		$tbl = $row['name'];
+		$tbl = $row;
 		printf("Converting $tbl\n");
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
 	}
@@ -70,9 +70,9 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 else
 {
 	exit("\nERROR: Wrong argument.\n\n"
-		."php convert_mysql_tables.php myisam	...: Converts all the tables to Myisam Dynamic.\n"
-		."php convert_mysql_tables.php dinnodb	...: Converts all the tables to InnoDB Dynamic.\n"
-		."php convert_mysql_tables.php cinnodb	...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php collections : Converts collections, binaries, parts to MyIsam.\n"
-		."php convert_mysql_tables.php tokudb	...: Converts all the tables to Tokutek DB.\n\n");
+		."php convert_mysql_tables.php myisam		...: Converts all the tables to Myisam Dynamic.\n"
+		."php convert_mysql_tables.php dinnodb		...: Converts all the tables to InnoDB Dynamic.\n"
+		."php convert_mysql_tables.php cinnodb		...: Converts all the tables to InnoDB Compressed.\n"
+		."php convert_mysql_tables.php collections	...: Converts collections, binaries, parts to MyIsam.\n"
+		."php convert_mysql_tables.php tokudb		...: Converts all the tables to Tokutek DB.\n\n");
 }
