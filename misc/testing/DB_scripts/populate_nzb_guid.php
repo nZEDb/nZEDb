@@ -10,7 +10,12 @@ require_once(FS_ROOT."/../../../www/lib/site.php");
 require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 if (isset($argv[1]))
-	create_guids($argv[1], $argv[2]);
+{
+	$del = false;
+	if (isset($argv[2]))
+		$del = $argv[2];
+	create_guids($argv[1], $del);
+}
 else
 	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\nTo delete invalid nzbs and releases, run php populate_nzb_guid.php true delete\n");
 
