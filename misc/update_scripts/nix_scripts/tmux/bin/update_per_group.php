@@ -6,6 +6,8 @@ require_once(WWW_DIR."lib/groups.php");
 require_once(WWW_DIR."lib/consoletools.php");
 require_once(WWW_DIR."lib/binaries.php");
 require_once(WWW_DIR."lib/backfill.php");
+require_once(WWW_DIR."lib/postprocess.php");
+require_once(WWW_DIR.'lib/nfo.php');
 
 $pieces = explode("  ", $argv[1]);
 $groupid = $pieces[0];
@@ -64,6 +66,11 @@ if ($pieces[0] != "Stage7b")
 //	$first = number_format($retcount);
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
+	
+	$postprocess = new PostProcess(true);
+	$postprocess->processAdditional(null, null, null, $groupid);
+	$nfopostprocess = new Nfo(true);
+	$nfopostprocess->processNfoFiles(null, null, null, $groupid);
 }
 elseif ($pieces[0] == "Stage7b")
 {

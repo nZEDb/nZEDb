@@ -10,6 +10,14 @@ $nntp = new Nntp();
 $nntp->doConnect();
 $data = $nntp->getGroups();
 
+if (PEAR::isError($data))
+    exit("Failed to getGroups() from nntp server.\n");
+
+if (!isset($data['group']))
+    exit("Failed to getGroups() from nntp server.\n");
+
+$nntp->doQuit();
+
 $db = new DB();
 $res = $db->query("SELECT name FROM groups");
 $counter = 0;

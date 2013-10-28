@@ -10,11 +10,16 @@ require_once(FS_ROOT."/../../../www/lib/site.php");
 require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 if (isset($argv[1]))
-	create_guids($argv[1]);
+{
+	$del = false;
+	if (isset($argv[2]))
+		$del = $argv[2];
+	create_guids($argv[1], $del);
+}
 else
-	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\n");
+	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\nTo delete invalid nzbs and releases, run php populate_nzb_guid.php true delete\n");
 
-function create_guids($live)
+function create_guids($live, $delete = false)
 {
 	$db = new Db;
 	$s = new Sites();
@@ -42,14 +47,28 @@ function create_guids($live)
 				$nzbpath = 'compress.zlib://'.$nzbpath;
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile)
+				{
+                    if (isset($delete) && $delete == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
 					continue;
+				}
 				$binary_names = array();
 				foreach($nzbfile->file as $file)
 				{
 					$binary_names[] = $file["subject"];
 				}
 				if (count($binary_names) == 0)
+				{
+                    if (isset($delete) && $delete == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
 					continue;
+				}
 
 				asort($binary_names);
 				$segment = "";
@@ -65,6 +84,14 @@ function create_guids($live)
 						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
+				}
+			}
+			else
+			{
+                if (isset($delete) && $delete == 'delete')
+				{
+					echo $nzb->$relrec['guid']." does not have an nzb, deleting.\n";
+					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
 				}
 			}
 		}

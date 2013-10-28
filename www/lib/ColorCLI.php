@@ -17,9 +17,10 @@ class ColorCLI {
 
     // Feel free to add any other colors that you like here.
     static $colors256 = array(
-        'neongreen'    => '082',    'orange'     => '172',
-        'yellow'       => '226',    'pink'       => '201',
-        'purple'       => '092',    'turquoise'  => '039'
+        'green'        => '119',    'orange'     => '172',
+        'yellow'       => '011',    'pink'       => '201',
+        'purple'       => '092',    'turquoise'  => '039',
+        'blue'         => '027',    'red'        => '001'
     );
 
     static $background_colors = array(

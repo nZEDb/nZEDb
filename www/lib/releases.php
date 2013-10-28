@@ -47,7 +47,7 @@ class Releases
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
-		$this->primary = 'neongreen';
+		$this->primary = 'green';
 		$this->warning = 'red';
 		$this->header = 'yellow';
 	}

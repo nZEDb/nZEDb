@@ -71,7 +71,6 @@ if not datas:
 	print("No Groups activated")
 	sys.exit()
 
-
 my_queue = queue.Queue()
 time_of_last_run = time.time()
 

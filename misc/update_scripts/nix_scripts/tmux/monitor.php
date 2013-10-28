@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3949";
+$version="0.1r3959";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -27,6 +27,48 @@ $site = $s->get();
 $alternate_nntp_provider = $site->alternate_nntp;
 $patch = $site->sqlpatch;
 $tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
+$nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
+if ($nntpproxy == 0)
+{
+	$port = NNTP_PORT;
+	$host = NNTP_SERVER;
+	$port_a = NNTP_PORT_A;
+	$host_a = NNTP_SERVER_A;
+    $ip = gethostbyname($host);
+    $ip_a = gethostbyname($host_a);
+}
+else
+{
+	$filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy.conf";
+	$fp = fopen( $filename, "r" ) or die("Couldn't open $filename");
+	while ( ! feof( $fp ) )
+	{
+		$line = fgets( $fp );
+    	if (preg_match('/"host": "(.+)",$/', $line, $match))
+        	$host = $match[1];
+		if (preg_match('/"port": (.+),$/', $line, $match))
+		{
+			$port = $match[1];
+			break;
+		}
+	}
+
+    $filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
+    $fp = fopen( $filename, "r" ) or die("Couldn't open $filename");
+    while ( ! feof( $fp ) )
+    {
+        $line = fgets( $fp );
+        if (preg_match('/"host": "(.+)",$/', $line, $match))
+            $host_a = $match[1];
+        if (preg_match('/"port": (.+),$/', $line, $match))
+        {
+            $port_a = $match[1];
+            break;
+        }
+    }
+	$ip = gethostbyname($host);
+	$ip_a = gethostbyname($host_a);
+}
 
 //totals per category in db, results by parentID
 $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
@@ -223,6 +265,7 @@ $time3 = TIME();
 $time4 = TIME();
 $time5 = TIME();
 $time6 = TIME();
+$time7 = TIME();
 
 // variables
 $newestadd = TIME();
@@ -259,9 +302,9 @@ $mask2 = "\033[1;33m%-20s \033[38;5;214m%-33.33s \n";
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
-printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
+printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
 if ($alternate_nntp_provider == "1")
-	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
+	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp_provider == "1") ? $host_a.":".$port_a : "n/a" ));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
@@ -272,14 +315,11 @@ if ($tablepergroup == 0)
 }
 
 $mask = "%-16.16s %25.25s %25.25s\n";
-if ($tablepergroup == 0)
-{
-	printf("\033[1;33m\n");
-	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "==============================", "=========================", "==============================");
-	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
-}
+printf("\033[1;33m\n");
+printf($mask, "Collections", "Binaries", "Parts");
+printf($mask, "==============================", "=========================", "==============================");
+printf("\033[38;5;214m");
+printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
@@ -364,7 +404,33 @@ while( $i > 0 )
 		$time1 = TIME();
 		$runloop = "true";
 
-/*		if ($tablepergroup == 1)
+		$myisam = $db->query('SHOW TABLE STATUS WHERE Engine = "MyIsam" AND name LIKE "%_collections"');
+		if (count($myisam) > 0 && $tablepergroup == 1)
+		{
+            $sql = "SHOW tables";
+            $tables = $db->query($sql);
+            $collections_table = $binaries_table = $parts_table = 0;
+            foreach($tables as $row)
+            {
+                $tbl = $row['tables_in_'.DB_NAME];
+                if (preg_match('/\d+_collections/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $collections_table += $run[0];
+                }
+                elseif (preg_match('/\d+_binaries/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $binaries_table += $run[0];
+                }
+                elseif (preg_match('/\d+_parts/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $parts_table += $run[0];
+                }
+            }
+		}
+		elseif ( $tablepergroup == 1 && (( TIME() - $time7 ) >= $monitor * 3 || ( $i == 1 )))
 		{
 			$sql = "SHOW tables";
 			$tables = $db->query($sql);
@@ -388,8 +454,8 @@ while( $i > 0 )
 					$parts_table += $run[0];
 				}
 			}
+			$time7 = TIME();
 		}
-*/
 	}
 	else
 		$runloop = "false";
@@ -597,23 +663,44 @@ while( $i > 0 )
 	//get usenet connections
 	if ($alternate_nntp_provider == "1")
 	{
-		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER.":".NNTP_PORT." | grep -c ESTAB"));
-		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER.":".NNTP_PORT.""));
-		$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".NNTP_SERVER_A.":".NNTP_PORT_A." | grep -c ESTAB"));
-		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".NNTP_SERVER_A.":".NNTP_PORT_A.""));
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
+		$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host_a.":".$port_a." | grep -c ESTAB"));
+		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host_a.":".$port_a.""));
+		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0)
+		{
+	        $usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
+    	    $usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
+        	$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip_a.":".$port_a." | grep -c ESTAB"));
+	        $usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip_a.":".$port_a.""));
+		}
+        if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a)
+        {
+            $usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port." | grep -c ESTAB"));
+            $usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port.""));
+            $usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port_a." | grep -c ESTAB"));
+            $usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port_a.""));
+        }
+
+
 	} else {
 
-		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n | grep :".NNTP_PORT." | grep -c ESTAB"));
-		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n | grep -c :".NNTP_PORT.""));
+		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
+		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
+		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0)
+		{
+			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
+			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
+		}
 	}
 
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
-	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total used) - ".NNTP_SERVER);
+	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
 	if ($alternate_nntp_provider == "1")
-		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total used) - ".( ($alternate_nntp_provider == "1") ? NNTP_SERVER_A : "n/a" ));
+		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp_provider == "1") ? $host_a.":".$port_a : "n/a" ));
 
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
@@ -628,14 +715,11 @@ while( $i > 0 )
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
 	}
 
-	if ($tablepergroup == 0)
-	{
-		printf("\033[1;33m\n");
-		printf($mask, "Collections", "Binaries", "Parts");
-		printf($mask, "==============================", "=========================", "==============================");
-		printf("\033[38;5;214m");
-		printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
-	}
+	printf("\033[1;33m\n");
+	printf($mask, "Collections", "Binaries", "Parts");
+	printf($mask, "==============================", "=========================", "==============================");
+	printf("\033[38;5;214m");
+	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 	if ((( isset( $monitor_path )) && ( file_exists( $monitor_path ))) || (( isset( $monitor_path_a )) && ( file_exists( $monitor_path_a ))) || (( isset( $monitor_path_b )) && ( file_exists( $monitor_path_b ))))
 	{
@@ -711,7 +795,6 @@ while( $i > 0 )
 		printf("\033[38;5;214m");
 		printf($mask, "Combined", $tmux_time.", ".$split_time.", ".$init_time.", ".$proc1_time.", ".$proc2_time.", ".$proc3_time, $tmux_time.", ".$split1_time.", ".$init1_time.", ".$proc11_time.", ".$proc21_time.", ".$proc31_time);
 	}
-
 	//get list of panes by name
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
@@ -1317,6 +1400,6 @@ while( $i > 0 )
 	}
 
 	$i++;
-	sleep(5);
+	sleep(2);
 }
 ?>
