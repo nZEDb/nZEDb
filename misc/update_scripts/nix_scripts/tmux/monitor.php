@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3958";
+$version="0.1r3959";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -404,7 +404,33 @@ while( $i > 0 )
 		$time1 = TIME();
 		$runloop = "true";
 
-		if ( $tablepergroup == 1 && (( TIME() - $time7 ) >= $monitor * 3 || ( $i == 1 )))
+		$myisam = $db->query('SHOW TABLE STATUS WHERE Engine = "MyIsam" AND name LIKE "%_collections"');
+		if (count($myisam) > 0 && $tablepergroup == 1)
+		{
+            $sql = "SHOW tables";
+            $tables = $db->query($sql);
+            $collections_table = $binaries_table = $parts_table = 0;
+            foreach($tables as $row)
+            {
+                $tbl = $row['tables_in_'.DB_NAME];
+                if (preg_match('/\d+_collections/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $collections_table += $run[0];
+                }
+                elseif (preg_match('/\d+_binaries/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $binaries_table += $run[0];
+                }
+                elseif (preg_match('/\d+_parts/',$tbl))
+                {
+                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+                    $parts_table += $run[0];
+                }
+            }
+		}
+		elseif ( $tablepergroup == 1 && (( TIME() - $time7 ) >= $monitor * 3 || ( $i == 1 )))
 		{
 			$sql = "SHOW tables";
 			$tables = $db->query($sql);
@@ -430,7 +456,6 @@ while( $i > 0 )
 			}
 			$time7 = TIME();
 		}
-
 	}
 	else
 		$runloop = "false";

@@ -12,7 +12,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "myisam")
 {
 	$tbl = $argv[1];
 	printf("Converting $tbl\n");
-	$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
+	$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 }
 else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb")
 {
@@ -28,13 +28,13 @@ else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dinnodb")
 }
 else if (isset($argv[1]) && $argv[1] == "myisam")
 {
-	$sql = 'SHOW table status WHERE Engine != "MyIsam"';
+	$sql = 'SHOW table status WHERE Engine != "MyIsam" ||  Row_format != "FIXED"';
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
 		printf("Converting $tbl\n");
-		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
+		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "dinnodb")
@@ -66,7 +66,7 @@ else if (isset($argv[1]) && $argv[1] == "collections")
 	{
 		$tbl = $row;
 		printf("Converting $tbl\n");
-		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM");
+		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "tokudb")
