@@ -1,5 +1,5 @@
 <?php
-/* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */ 
+/* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */
 /*
 require_once("/var/www/nZEDb/www/config.php");
 require_once("/var/www/nZEDb/www/lib/framework/db.php");

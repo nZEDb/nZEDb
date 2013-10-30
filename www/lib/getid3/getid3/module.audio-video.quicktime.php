@@ -1561,7 +1561,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 			Because the language codes specified by ISO 639-2/T are three characters long, they must be packed to fit into a 16-bit field.
 			The packing algorithm must map each of the three characters, which are always lowercase, into a 5-bit integer and then concatenate
 			these integers into the least significant 15 bits of a 16-bit integer, leaving the 16-bit integer's most significant bit set to zero.
-			
+
 			One algorithm for performing this packing is to treat each ISO character as a 16-bit integer. Subtract 0x60 from the first character
 			and multiply by 2^10 (0x400), subtract 0x60 from the second character and multiply by 2^5 (0x20), subtract 0x60 from the third character,
 			and add the three 16-bit values. This will result in a single 16-bit value with the three codes correctly packed into the 15 least

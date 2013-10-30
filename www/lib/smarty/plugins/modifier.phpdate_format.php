@@ -36,11 +36,11 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
            $_win_to   = array ('%#d', '%H:%M:%S', '%m/%d/%y');
            $format = str_replace($_win_from, $_win_to, $format);
     }*/
-    
+
 
     if (substr($format,0,5)=='DATE_'){
     	switch ($format){
-    	
+
     		case 'DATE_ATOM': $nformat=DATE_ATOM; break;
     		case 'DATE_COOKIE': $nformat=DATE_COOKIE; break;
     		case 'DATE_ISO8601': $nformat=DATE_ISO8601; break;
@@ -52,11 +52,11 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
     		case 'DATE_RFC3339': $nformat=DATE_RFC3339; break;
     		case 'DATE_RSS': $nformat="D, d M Y H:i:s O"; break; //as rfc822 ...
     		case 'DATE_W3C': $nformat=DATE_W3C; break;
-    		
-    	
+
+
     	}
-    	
-    
+
+
     } else {
     	$nformat=$format;
     }

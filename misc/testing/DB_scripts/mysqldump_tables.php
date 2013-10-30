@@ -20,7 +20,7 @@ if($db->dbSystem() == "mysql")
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
 	}
-	else 
+	else
 	{
 		//generic (or unknown) instance of MySQL
 		$exportopts = "--opt --complete-insert --skip-quick";
@@ -40,13 +40,13 @@ function builddefaultsfile()
 				."user = " . DB_USER
 				."\r\n\r\n"
 				."password = " . DB_PASSWORD;
-	
+
 	$filehandle = fopen("mysql-defaults.txt", "w+");
 	if(!$filehandle)
 	{
 		exit("Unable to write mysql defaults file! Exiting");
 	}
-	else 
+	else
 	{
 		fwrite($filehandle, $filetext);
 		fclose($filehandle);

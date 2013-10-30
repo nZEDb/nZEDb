@@ -9,7 +9,7 @@ require_once(WWW_DIR."lib/releases.php");
 
 
 /*
- * 
+ *
  * This was added because I starting writing this before
  * all of the regexes were converted to by group in namecleaning.php
  * and I do not want to convert these regexes to run per group.
@@ -17,7 +17,7 @@ require_once(WWW_DIR."lib/releases.php");
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
- * 
+ *
 */
 
 if (!(isset($argv[1]) && ($argv[1]=="full" || is_numeric($argv[1]))))

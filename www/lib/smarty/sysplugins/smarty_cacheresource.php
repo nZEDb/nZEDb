@@ -153,7 +153,7 @@ abstract class Smarty_CacheResource {
         if (isset($smarty->_cacheresource_handlers[$type])) {
             return $smarty->_cacheresource_handlers[$type];
         }
-        
+
         // try registered resource
         if (isset($smarty->registered_cache_resources[$type])) {
             // do not cache these instances as they may vary from instance to instance

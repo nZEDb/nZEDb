@@ -14,7 +14,7 @@ if (!$redata)
 else
 {
 	print "<table>\n";
-	if ($redata["videocodec"] != "" && $redata["containerformat"] != "") 
+	if ($redata["videocodec"] != "" && $redata["containerformat"] != "")
 	{
 		$redata["videocodec"] = $re->makeCodecPretty($redata["videocodec"]);
 		print "<tr><th>Format:</th><td>".htmlentities($redata["videocodec"], ENT_QUOTES)." - ".htmlentities($redata["containerformat"], ENT_QUOTES)."</td></tr>\n";
