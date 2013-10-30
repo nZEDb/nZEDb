@@ -11,12 +11,13 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	public function DB()
+	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
+
 		if (DB::$initialized === false)
 		{
 			if ($this->dbsystem == 'mysql')
