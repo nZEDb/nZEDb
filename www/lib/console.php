@@ -479,9 +479,9 @@ class Console
 		$threads--;
 		$db = new DB();
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND consoleinfoid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid = -2 AND relnamestatus NOT IN (0, 1, 20) AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND consoleinfoid = -2 AND relnamestatus NOT IN (0, 1, 20) AND categoryid IN (SELECT id FROM category WHERE parentid = %d ) ORDER BY postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)

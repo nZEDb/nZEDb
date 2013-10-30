@@ -292,8 +292,16 @@ class DB
 			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
 			$collections = true;
 		} catch (PDOException $e) {
-			if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
-				$collections = true;
+			try {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+				{
+					$collections = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
+			} catch (PDOException $e) {
+				return false;
+			}
 		}
 
 		if ($collections === true)
@@ -303,7 +311,11 @@ class DB
 				$binaries = true;
 			} catch (PDOException $e) {
 				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+				{
 					$binaries = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
 			}
 		}
 
@@ -314,7 +326,11 @@ class DB
 				$parts = true;
 			} catch (PDOException $e) {
 				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+				{
 					$parts = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
 			}
 		}
 		if ($parts === true && $binaries = true && $collections = true)
