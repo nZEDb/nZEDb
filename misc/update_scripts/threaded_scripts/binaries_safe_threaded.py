@@ -51,7 +51,9 @@ cur = connect()
 cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b, (SELECT value FROM site WHERE setting = 'hashcheck') AS c")
 dbgrab = cur[0].fetchall()
 disconnect(cur[0], cur[1])
-run_threads = int(dbgrab[0][0])-1
+thread_count = int(dbgrab[0][0])-1 
+run_threads = count if count > 0 else 1
+
 maxmssgs = int(dbgrab[0][1])
 hashcheck = int(dbgrab[0][2])
 
