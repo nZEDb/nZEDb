@@ -245,7 +245,7 @@ require_once(WWW_DIR.'lib/site.php');
 		$ret = 0;
 		$db = new DB();
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE  nzbstatus = 1 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)

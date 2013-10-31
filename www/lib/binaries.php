@@ -190,7 +190,7 @@ class Binaries
 		{
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
 			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
-			if ($groupArr['last_record'] != 0 && $newdatel !== false)
+			if ($groupArr['last_record'] != 0 && $newdatel !== false && strtotime($newdatel))
 				$lastr_postdate = $newdatel;
 			else
 				$lastr_postdate = time();

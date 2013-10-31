@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3959";
+$version="0.1r3963";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -24,10 +24,11 @@ $colors = $tmux->get()->colors;
 
 $s = new Sites();
 $site = $s->get();
-$alternate_nntp_provider = $site->alternate_nntp;
+$alternate_nntp = $site->alternate_nntp;
 $patch = $site->sqlpatch;
 $tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
+
 if ($nntpproxy == 0)
 {
 	$port = NNTP_PORT;
@@ -303,8 +304,8 @@ passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
 printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
-if ($alternate_nntp_provider == "1")
-	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp_provider == "1") ? $host_a.":".$port_a : "n/a" ));
+if ($alternate_nntp == "1")
+	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp == "1") ? $host_a.":".$port_a : "n/a" ));
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
@@ -661,7 +662,7 @@ while( $i > 0 )
 	}
 
 	//get usenet connections
-	if ($alternate_nntp_provider == "1")
+	if ($alternate_nntp == "1")
 	{
 		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
 		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
@@ -699,8 +700,8 @@ while( $i > 0 )
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
 	printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
 	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
-	if ($alternate_nntp_provider == "1")
-		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp_provider == "1") ? $host_a.":".$port_a : "n/a" ));
+	if ($alternate_nntp == "1")
+		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".( ($alternate_nntp == "1") ? $host_a.":".$port_a : "n/a" ));
 
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");

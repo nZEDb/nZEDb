@@ -71,19 +71,30 @@ else if (isset($argv[1]) && $argv[1] == "collections")
 }
 else if (isset($argv[1]) && $argv[1] == "tokudb")
 {
-	$sql = 'SHOW table status WHERE Engine != "TokuDB"';
-	$tables = $db->query($sql);
-	foreach($tables as $row)
-	{
-		$tbl = $row['name'];
-		printf("Converting $tbl\n");
-		if ($tbl != "parts" && $tbl != "binaries" && $tbl != "collections")
-			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
-		else
-			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
-		$db->queryExec($sql);
-		$db->queryExec("OPTIMIZE TABLE $tbl");
-	}
+/*	try {
+		$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR ROW_FORMAT=tokudb_quicklz');
+		foreach($tables as $row)
+		{
+			$tbl = $row['name'];
+			printf("Converting $tbl\n");
+			if ($tbl != "parts" && $tbl != "binaries" && $tbl != "collections")
+				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
+			else
+				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
+			$db->queryExec($sql);
+			$db->queryExec("OPTIMIZE TABLE $tbl");
+		}
+	} catch (PDOException $e) {*/
+		$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
+		foreach($tables as $row)
+		{
+			$tbl = $row['name'];
+			printf("Converting $tbl\n");
+			$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
+			$db->queryExec($sql);
+			$db->queryExec("OPTIMIZE TABLE $tbl");
+		}
+	//}
 }
 else
 {
