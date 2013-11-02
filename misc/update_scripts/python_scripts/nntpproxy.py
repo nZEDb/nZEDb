@@ -84,7 +84,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 						self.wfile.write("\t".join(entry) + "\r\n")
 					self.wfile.write(".\r\n")
 				elif data.startswith("ARTICLE"):
-					msgid = request.split(None, 1)[1]
+					msgid = data.split(None, 1)[1]
 					head, body = nntp_client.article(msgid)
 					self.wfile.write("220 0 %s\r\n" % (msgid))
 					head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
@@ -124,6 +124,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 						self.wfile.write("%s %d %d %s\r\n" % entry)
 					self.wfile.write(".\r\n")
 				elif data.startswith("QUIT"):
+					self.wfile.write("205 Connection closing\r\n")
 					break
 				else:
 					self.wfile.write("500 What?\r\n")
