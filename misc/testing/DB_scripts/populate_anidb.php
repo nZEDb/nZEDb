@@ -87,22 +87,60 @@ class AniDBstandAlone
 		// loop counter
 		$i = 0;
 		
-		// remove anything that has not been updated in 42 days as we can assume this are too old to be valid
+		// remove anything that has not been updated in 60 days as we can assume this are too old to be valid or in progress after 7
 		foreach($animetitles as $value) {
 
 			$anidbid = (int)$value['anidbid'];
 
 			// get the information on the anime title as stored in the DB
 			$AniDBAPIArrayOld = $this->getAnimeInfo($anidbid);
-			
-			if($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 3628800)
-			{
+			if($AniDBAPIArrayOld == False) {
+				// entry is not present, report it in debug, but do nothing else with it
 				if ($this->echooutput)
-				    echo "Removing OLD DB record ", $anidbid, "\n";
-				    
-				    $this->deleteTitle($anidbid);			
+				    echo "AnimeTitle Record ", $anidbid, " is not present in anidb table yet, skipping\n";
+				
 			}
-		}		
+			else {
+				if ($this->echooutput)
+				    echo "AnimeTitle Record ", $anidbid, " is present in anidb table yet, processing for possible removal\n";
+
+				    $AniDBAPIArrayOld['AnimeInProgress'] = False;
+
+				// get start and end dates in unix time
+				$anidbstartdate = strtotime($AniDBAPIArrayOld['startdate']);
+				$anidbenddate = strtotime($AniDBAPIArrayOld['enddate']);
+
+				// if the current time is less than the endtime or the endtime is 0 then the show likely has not finsihed.
+				if($anidbstartdate == 0 && $anidbenddate == 0) {
+					// ignore as there is no start date or end date listed, assume not in progress
+					$AniDBAPIArrayOld['AnimeInProgress'] = False;
+				}
+				else if($anidbstartdate > time()) {
+					// start date in the future thus it is not in progress as it has not started yet
+					$AniDBAPIArrayOld['AnimeInProgress'] = False;
+				}
+				else if($anidbstartdate != 0 && $anidbenddate == 0) {
+					// in this case anime may not have a end date and should be considered in progress as teh end date is just unknown
+					$AniDBAPIArrayOld['AnimeInProgress'] = True;
+				}
+				else if($anidbenddate > time()) {
+					// anime has end date in the future, is considered in progress
+					$AniDBAPIArrayOld['AnimeInProgress'] = True;
+				}
+
+				// determine if we need to remove the record from the list
+				  // first if the record is over 60 days old replace it no matter what
+				  // second if in progress and the record is over 7 days old then replace it,sine new information is likely availiable 
+				if( ($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) || 
+				    ($AniDBAPIArrayOld['AnimeInProgress'] == True && (time() - $AniDBAPIArrayOld['unixtime']) > 604800) )
+				{			
+					if ($this->echooutput)
+					    echo "Removing OLD DB record ", $anidbid, "\n";
+					    
+					    $this->deleteTitle($anidbid);			
+				}
+			} 	// else defined
+		}
 			
 		// now add and update shoows as needed
 		foreach($animetitles as $value) {
