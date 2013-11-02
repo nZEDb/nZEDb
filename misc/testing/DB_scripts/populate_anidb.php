@@ -209,7 +209,7 @@ class AniDBstandAlone
 
 					// update the stored information with updated data
 					$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'], 	
-					    $AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'], $AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'], $AniDBAPIArray['airdates'], $AniDBAPIArrayNew['episodetitles']);
+					    $AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'], $AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'], $AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
 
 					$image_file = $this->imgSavePath . $anidbid;
 
