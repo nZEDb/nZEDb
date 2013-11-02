@@ -243,6 +243,7 @@ class Groups
 	public function reset($id)
 	{
 		$db = new DB();
+		$db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
 		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
 	}
 
