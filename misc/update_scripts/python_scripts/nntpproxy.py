@@ -65,11 +65,8 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		with self.server.nntp_client_pool.connection() as nntp_client:
 			self.wfile.write("200 localhost NNRP Service Ready.\r\n")
-			while True:
-				data = self.rfile.readline()
-				if len(data) == 0:
-					break;
-				data = data.strip()
+			for line in self.rfile:
+				data = line.strip()
 				print("%5d %s" % (nntp_client.id, data))
 				if data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
 					self.wfile.write("281 Ok\r\n")
@@ -85,6 +82,14 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 					self.wfile.write("224 data follows\r\n")
 					for entry in xover_gen:
 						self.wfile.write("\t".join(entry) + "\r\n")
+					self.wfile.write(".\r\n")
+				elif data.startswith("ARTICLE"):
+					msgid = request.split(None, 1)[1]
+					head, body = nntp_client.article(msgid)
+					self.wfile.write("220 0 %s\r\n" % (msgid))
+					head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
+					self.wfile.write(head)
+					self.wfile.write(body)
 					self.wfile.write(".\r\n")
 				elif data.startswith("HEAD"):
 					msgid = data.split(None, 1)[1]
@@ -167,5 +172,3 @@ if __name__ == "__main__":
 	sys.stdout.write("NNTPProxy listening on %s:%d\n" % addr)
 	sys.stdout.write("NNTPProxy connected to %s:%d\n" % remote)
 	proxy.serve_forever()
-
-
