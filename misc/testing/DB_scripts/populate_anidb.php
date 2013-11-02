@@ -130,13 +130,14 @@ class AniDBstandAlone
 
 				// determine if we need to remove the record from the list
 				  // first if the record is over 60 days old replace it no matter what
-				  // second if in progress and the record is over 7 days old then replace it,sine new information is likely availiable 
+				  // second if in progress and the record is over 7 days old then replace it,since new information is likely availiable 
 				if( ($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) || 
 				    ($AniDBAPIArrayOld['AnimeInProgress'] == True && (time() - $AniDBAPIArrayOld['unixtime']) > 604800) )
 				{			
 					if ($this->echooutput)
 					    echo "Removing OLD DB record ", $anidbid, "\n";
 					    
+					    // this means in teh next section we only need to deal with new entries
 					    $this->deleteTitle($anidbid);			
 				}
 			} 	// else defined
@@ -175,7 +176,8 @@ class AniDBstandAlone
 					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'],
 					    $this->imgSavePath);
 				}	    
-			}
+			}	// if new (AKA not present)
+/* Holding on to this in case we want it again as it has some uses, but currently we mange this in the first foreach statement, so there is no need for it any longer			
 			else 
 			{
 				if ($this->echooutput)
@@ -229,12 +231,11 @@ class AniDBstandAlone
 					if ($this->echooutput)
 					    echo "\t\tAniDB ", $anidbid, " no update required existiung record is under 21 days old\n";
 				}
-
-				
 			}
+Holding on to this in case we want it again as it has some uses, but currently we mange this in the first foreach statement, so there is no need for it any longer */
 
-			// every 20 records sleep for 4 minutes before continuing
-			if($i % 20 == 0 && $i != 0)
+			// every 10 records sleep for 4 minutes before continuing
+			if($i % 10 == 0 && $i != 0)
 			      sleep(180 + rand(30, 90));
 			      
 			// using exitcount if this number of API calls is reached exit

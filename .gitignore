@@ -2,6 +2,10 @@
 config.php
 error_log
 failed-login.log
+.idea
+git_cmds
+misc/update_scripts/fix_categories.php
+.gitignore
 
 # Editor temp files
 *#
