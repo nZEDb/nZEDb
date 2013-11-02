@@ -4,17 +4,17 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/nntp.php");
 
 if (!isset($argv[1]))
-    exit("This script gets all binary groups from usenet and compares against yours.\nTo run: \ncheck_usenet_groups.php 1000000\n");
+	exit("This script gets all binary groups from usenet and compares against yours.\nTo run: \ncheck_usenet_groups.php 1000000\n");
 
 $nntp = new Nntp();
 $nntp->doConnect();
 $data = $nntp->getGroups();
 
 if (PEAR::isError($data))
-    exit("Failed to getGroups() from nntp server.\n");
+	exit("Failed to getGroups() from nntp server.\n");
 
 if (!isset($data['group']))
-    exit("Failed to getGroups() from nntp server.\n");
+	exit("Failed to getGroups() from nntp server.\n");
 
 $nntp->doQuit();
 
@@ -35,17 +35,17 @@ foreach ($data as $newgroup)
 $grps = $db->query("SELECT DISTINCT name FROM allgroups WHERE name NOT IN (SELECT name FROM groups)");
 foreach ($grps as $grp)
 {
-	if (!MyInArray($res, $grp, "name"))
+	if (!myInArray($res, $grp, "name"))
 	{
-	    $data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(MAX(updated)-MIN(updated)) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
-    	if (floor($data["per_second"]*3600) >= $minvalue)
-    	{
+		$data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(MAX(updated)-MIN(updated)) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
+		if (floor($data["per_second"]*3600) >= $minvalue)
+		{
 			echo "\n".$grp["name"]."\n"
 				."Available Post Count: ".number_format($data["count"])."\n"
 				."Date First Checked:   ".$data["firstchecked"]."\n"
 				."Posts Since First:    ".number_format($data["tracked"])."\n"
 				."Average Per Hour:     ".number_format(floor($data["per_second"]*3600))."\n";
-        	$counter++;
+			$counter++;
 		}
 	}
 }

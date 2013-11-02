@@ -29,7 +29,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
-threads = 20
+threads = 4
 print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 start_time = time.time()
@@ -39,7 +39,7 @@ conf = info.readConfig()
 cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
 allowed = cur.fetchone()
 if int(allowed[0]) == 0:
-    sys.exit("Table per group not enabled")
+	sys.exit("Table per group not enabled")
 
 cur.execute("SELECT id FROM groups")
 datas = cur.fetchall()

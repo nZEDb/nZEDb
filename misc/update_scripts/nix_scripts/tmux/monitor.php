@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r3963";
+$version="0.1r3967";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -35,8 +35,8 @@ if ($nntpproxy == 0)
 	$host = NNTP_SERVER;
 	$port_a = NNTP_PORT_A;
 	$host_a = NNTP_SERVER_A;
-    $ip = gethostbyname($host);
-    $ip_a = gethostbyname($host_a);
+	$ip = gethostbyname($host);
+	$ip_a = gethostbyname($host_a);
 }
 else
 {
@@ -45,8 +45,8 @@ else
 	while ( ! feof( $fp ) )
 	{
 		$line = fgets( $fp );
-    	if (preg_match('/"host": "(.+)",$/', $line, $match))
-        	$host = $match[1];
+		if (preg_match('/"host": "(.+)",$/', $line, $match))
+			$host = $match[1];
 		if (preg_match('/"port": (.+),$/', $line, $match))
 		{
 			$port = $match[1];
@@ -54,19 +54,19 @@ else
 		}
 	}
 
-    $filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
-    $fp = fopen( $filename, "r" ) or die("Couldn't open $filename");
-    while ( ! feof( $fp ) )
-    {
-        $line = fgets( $fp );
-        if (preg_match('/"host": "(.+)",$/', $line, $match))
-            $host_a = $match[1];
-        if (preg_match('/"port": (.+),$/', $line, $match))
-        {
-            $port_a = $match[1];
-            break;
-        }
-    }
+	$filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
+	$fp = fopen( $filename, "r" ) or die("Couldn't open $filename");
+	while ( ! feof( $fp ) )
+	{
+		$line = fgets( $fp );
+		if (preg_match('/"host": "(.+)",$/', $line, $match))
+			$host_a = $match[1];
+		if (preg_match('/"port": (.+),$/', $line, $match))
+		{
+			$port_a = $match[1];
+			break;
+		}
+	}
 	$ip = gethostbyname($host);
 	$ip_a = gethostbyname($host_a);
 }
@@ -76,25 +76,25 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 5000 AND rageid = -1 ) AS tv,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
-	( SELECT COUNT(*) FROM releases WHERE categoryid IN ( 3010, 3040, 3050 ) AND musicinfoid IS NULL AND relnamestatus != 0 ) AS audio,
-	( SELECT COUNT(*) FROM releases r, category c WHERE r.categoryid = c.id AND c.parentid = 1000 AND consoleinfoid IS NULL ) AS console,
-	( SELECT COUNT(*) FROM releases WHERE categoryid = 8010 AND bookinfoid IS NULL ) AS book,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 5000 AND rageid = -1 ) AS tv,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 2000 AND r.imdbid IS NULL ) AS movies,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN ( 3010, 3040, 3050 ) AND musicinfoid IS NULL AND relnamestatus != 0 ) AS audio,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 1000 AND consoleinfoid IS NULL ) AS console,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 8010 AND bookinfoid IS NULL ) AS book,
 	( SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1 ) AS releases,
-	( SELECT COUNT(*) FROM releases WHERE nfostatus = 1 ) AS nfo,
-	( SELECT COUNT(*) FROM releases WHERE nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1 ) AS nfo,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus IN ( -6, -5, -4, -3, -2, -1 )) AS nforemains";
 
 $proc_work2 = "SELECT
-	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pc,
-	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pron,
-	( SELECT COUNT(*) FROM releases r, category c WHERE c.id = r.categoryid AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS work,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pc,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS pron,
+	( SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus IN ( -6, -5, -4, -3, -2, -1 ) AND r.haspreview = -1 AND c.disablepreview = 0 ) AS work,
 	( SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL ) AS collections_table";
 
 $proc_work3 = "SELECT
-	( SELECT COUNT(*) FROM releases WHERE relnamestatus IN (0, 1, 20, 21, 22) AND reqidstatus IN (0, -1) AND name REGEXP '^\\[[[:digit:]]+\\]' = 1 ) AS requestid_inprogress,
-	( SELECT COUNT(*) FROM releases WHERE reqidstatus = 1 ) AS requestid_matched,
-	( SELECT COUNT(*) FROM releases WHERE preid IS NOT NULL ) AS predb_matched,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND relnamestatus IN (0, 1, 20, 21, 22) AND reqidstatus IN (0, -1) AND request = true ) AS requestid_inprogress,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1 ) AS requestid_matched,
+	( SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid IS NOT NULL ) AS predb_matched,
 	( SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL ) AS binaries_table";
 
 if ($dbtype == 'mysql')
@@ -124,7 +124,7 @@ elseif ($dbtype == 'pgsql')
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	( SELECT name FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC LIMIT 1 ) AS newestname,
+	( SELECT searchname FROM releases ORDER BY postdate DESC LIMIT 1 ) AS newestname,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay' ) AS monitor,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session' ) AS tmux_session,
 	( SELECT VALUE FROM tmux WHERE SETTING = 'niceness' ) AS niceness,
@@ -176,7 +176,8 @@ $proc_tmux = "SELECT
 	( SELECT VALUE FROM tmux WHERE SETTING = 'showquery' ) AS show_query,
 	( SELECT COUNT( DISTINCT( collectionhash )) FROM nzbs WHERE collectionhash IS NOT NULL ) AS distinctnzbs,
 	( SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL ) AS totalnzbs,
-	( SELECT COUNT(*) FROM ( SELECT id FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs";
+	( SELECT COUNT(*) FROM ( SELECT id FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts ) AS count) AS pendingnzbs,
+	( SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs";
 
 
 //get microtime
@@ -292,8 +293,9 @@ $total_work_now = $work_diff = $work_remaining_now = 0;
 $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 0;
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
 $collections_table = $parts_table = $binaries_table = 0;
-$totalnzbs = $distinctnzbs = $pendingnzbs = 0;
-$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = 0;
+$grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
+$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = $init1_time = $proc11_time = $proc21_time = $proc31_time = 0;
+
 $last_history = "";
 
 $mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
@@ -310,10 +312,9 @@ printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 if ($tablepergroup == 0)
-{
 	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+if ($grabnzbs != 0)
 	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
-}
 
 $mask = "%-16.16s %25.25s %25.25s\n";
 printf("\033[1;33m\n");
@@ -326,8 +327,7 @@ printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
 printf($mask, "==============================", "=========================", "==============================");
 printf("\033[38;5;214m");
-if ($tablepergroup == 0)
-	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
+printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 printf($mask, "requestID",$requestid_inprogress."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
 printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
@@ -386,50 +386,55 @@ while( $i > 0 )
 		$split_result = $db->query($split_query, false);
 		$split_time = ( TIME() - $time02 );
 		$split1_time = ( TIME() - $time01 );
+
 		$time03 = TIME();
 		$initquery = $db->query($qry, false);
 		$init_time = ( TIME() - $time03 );
 		$init1_time = ( TIME() - $time01 );
+
 		$time04 = TIME();
 		$proc_work_result = $db->query($proc_work, false);
 		$proc1_time = ( TIME() - $time04 );
 		$proc11_time = ( TIME() - $time01 );
+
 		$time05 = TIME();
 		$proc_work_result2 = $db->query($proc_work2, false);
 		$proc2_time = ( TIME() - $time05 );
 		$proc21_time = ( TIME() - $time01 );
-        $time06 = TIME();
-        $proc_work_result3 = $db->query($proc_work3, true);
-        $proc3_time = ( TIME() - $time06 );
-        $proc31_time = ( TIME() - $time01 );
+
+		$time06 = TIME();
+		$proc_work_result3 = $db->query($proc_work3, false);
+		$proc3_time = ( TIME() - $time06 );
+		$proc31_time = ( TIME() - $time01 );
+
 		$time1 = TIME();
 		$runloop = "true";
 
-		$myisam = $db->query('SHOW TABLE STATUS WHERE Engine = "MyIsam" AND name LIKE "%_collections"');
+		$myisam = $db->query('SHOW TABLE STATUS WHERE Engine = "MyIsam" OR Engine = "TokuDB" AND name LIKE "%_collections"');
 		if (count($myisam) > 0 && $tablepergroup == 1)
 		{
-            $sql = "SHOW tables";
-            $tables = $db->query($sql);
-            $collections_table = $binaries_table = $parts_table = 0;
-            foreach($tables as $row)
-            {
-                $tbl = $row['tables_in_'.DB_NAME];
-                if (preg_match('/\d+_collections/',$tbl))
-                {
-                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
-                    $collections_table += $run[0];
-                }
-                elseif (preg_match('/\d+_binaries/',$tbl))
-                {
-                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
-                    $binaries_table += $run[0];
-                }
-                elseif (preg_match('/\d+_parts/',$tbl))
-                {
-                    $run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
-                    $parts_table += $run[0];
-                }
-            }
+			$sql = "SHOW tables";
+			$tables = $db->query($sql);
+			$collections_table = $binaries_table = $parts_table = 0;
+			foreach($tables as $row)
+			{
+				$tbl = $row['tables_in_'.DB_NAME];
+				if (preg_match('/\d+_collections/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$collections_table += $run[0];
+				}
+				elseif (preg_match('/\d+_binaries/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$binaries_table += $run[0];
+				}
+				elseif (preg_match('/\d+_parts/',$tbl))
+				{
+					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$parts_table += $run[0];
+				}
+			}
 		}
 		elseif ( $tablepergroup == 1 && (( TIME() - $time7 ) >= $monitor * 3 || ( $i == 1 )))
 		{
@@ -523,12 +528,13 @@ while( $i > 0 )
 	if ( $proc_tmux_result[0]['postprocess_kill'] != NULL ) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
 	if ( $proc_tmux_result[0]['backfilldays'] != NULL ) { $backfilldays = $proc_tmux_result[0]['backfilldays']; }
 	if ( $proc_tmux_result[0]['tmpunrar'] != NULL ) { $tmpunrar = $proc_tmux_result[0]['tmpunrar']; }
-    if ( $proc_tmux_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_tmux_result[0]['distinctnzbs']; }
-    if ( $proc_tmux_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_tmux_result[0]['totalnzbs']; }
-    if ( $proc_tmux_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_tmux_result[0]['pendingnzbs']; }
+	if ( $proc_tmux_result[0]['distinctnzbs'] != NULL ) { $distinctnzbs = $proc_tmux_result[0]['distinctnzbs']; }
+	if ( $proc_tmux_result[0]['totalnzbs'] != NULL ) { $totalnzbs = $proc_tmux_result[0]['totalnzbs']; }
+	if ( $proc_tmux_result[0]['pendingnzbs'] != NULL ) { $pendingnzbs = $proc_tmux_result[0]['pendingnzbs']; }
 
 	if ( $proc_tmux_result[0]['active_groups'] != NULL ) { $active_groups = $proc_tmux_result[0]['active_groups']; }
 	if ( $proc_tmux_result[0]['all_groups'] != NULL ) { $all_groups = $proc_tmux_result[0]['all_groups']; }
+	if ( $proc_tmux_result[0]['grabnzbs'] != NULL ) { $grabnzbs = $proc_tmux_result[0]['grabnzbs']; }
 
 	if ( $proc_tmux_result[0]['colors_start'] != NULL ) { $colors_start = $proc_tmux_result[0]['colors_start']; }
 	if ( $proc_tmux_result[0]['colors_end'] != NULL ) { $colors_end = $proc_tmux_result[0]['colors_end']; }
@@ -562,7 +568,7 @@ while( $i > 0 )
 	if ( $split_result[0]['oldestcollection'] != NULL ) { $oldestcollection = $split_result[0]['oldestcollection']; }
 	if ( $split_result[0]['backfill_groups_days'] != NULL ) { $backfill_groups_days = $split_result[0]['backfill_groups_days']; }
 	if ( $split_result[0]['backfill_groups_date'] != NULL ) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
-    if ( $split_result[0]['newestadd'] ) { $newestadd = $split_result[0]['newestadd']; }
+	if ( $split_result[0]['newestadd'] ) { $newestadd = $split_result[0]['newestadd']; }
 
 
 	//reset monitor paths before query
@@ -670,21 +676,21 @@ while( $i > 0 )
 		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host_a.":".$port_a.""));
 		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0)
 		{
-	        $usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
-    	    $usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
-        	$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip_a.":".$port_a." | grep -c ESTAB"));
-	        $usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip_a.":".$port_a.""));
+			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
+			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
+			$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip_a.":".$port_a." | grep -c ESTAB"));
+			$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip_a.":".$port_a.""));
 		}
-        if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a)
-        {
-            $usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port." | grep -c ESTAB"));
-            $usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port.""));
-            $usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port_a." | grep -c ESTAB"));
-            $usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port_a.""));
-        }
-
-
-	} else {
+		elseif ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a)
+		{
+			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port." | grep -c ESTAB"));
+			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port.""));
+			$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port_a." | grep -c ESTAB"));
+			$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port_a.""));
+		}
+	}
+	else
+	{
 
 		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
 		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
@@ -707,10 +713,9 @@ while( $i > 0 )
 	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
 	if ($tablepergroup == 0)
-	{
 		printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
+	if ($grabnzbs != 0)
 		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
-	}
 	if ( $post == "1" || $post == "3" )
 	{
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
@@ -764,8 +769,7 @@ while( $i > 0 )
 	printf($mask, "Category", "In Process", "In Database");
 	printf($mask, "==============================", "=========================", "==============================");
 	printf("\033[38;5;214m");
-	if ($tablepergroup == 0)
-		printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
+	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb", number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
 	printf($mask, "requestID",number_format($requestid_inprogress)."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
 	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");

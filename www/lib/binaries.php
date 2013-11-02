@@ -449,7 +449,8 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 					//Not needed if using table per group
-					if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					//if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -458,7 +459,6 @@ class Binaries
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
-
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
 				}

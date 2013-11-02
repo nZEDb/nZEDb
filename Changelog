@@ -1,4 +1,6 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+11022013 -> jonnyboy -> added some indexes, added to the trigger, both to improve query performance, once I'm done going through the queries, some indexes will be removed
+                        you may need to run the patch manually if something fails.
 10252013 -> jonnyboy -> changed renametopre.php to use releaseCleaner before added regexes
 10242013 -> jonnyboy -> begin importing nntpproxy by greenbender
 10212013 -> jonnyboy -> begin - adding option to use table per group

@@ -71,6 +71,8 @@ class Import
 			if (sizeof($arr) > 10)
 				echo "\nGetting ".sizeof($arr)." articles for ".$hash."\n";
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
+			//var_dump($article);
+			//exit();
 			if ($article === false || PEAR::isError($article))
 			{
 				$nntp->doQuit();
@@ -226,24 +228,41 @@ class Import
 					$relid = $this->db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
 				else
 					$relid = $this->db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)", $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+
+				// Set table names
+				if ($this->tablepergroup == 1)
+				{
+					if ($groupID == '')
+						exit("You must use releases_threaded.py\n");
+					$group['cname'] = $groupID.'_collections';
+					$group['bname'] = $groupID.'_binaries';
+					$group['pname'] = $groupID.'_parts';
+				}
+				else
+				{
+					$group['cname'] = 'collections';
+					$group['bname'] = 'binaries';
+					$group['pname'] = 'parts';
+				}
+
 				if ($relid == false)
 				{
 					if ($this->db->dbSystem() == "mysql")
-						$this->db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $this->db->escapeString($hash)));
+						$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON binaries.id = parts.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
 					elseif ($this->db->dbSystem() == "pgsql")
 					{
-						$idr = $this->db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $this->db->escapeString($hash)));
+						$idr = $this->db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
 						if (count($idr) > 0)
 						{
 							foreach ($idr as $id)
 							{
-								$reccount = $this->db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
-								$reccount += $this->db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+								$reccount = $this->db->queryExec(sprintf('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id["id"]));
+								$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['bname'].' WHERE collectionid = %d', $id["id"]));
 							}
-							$reccount += $this->db->queryExec("DELETE FROM collections WHERE collectionshash = ", $this->db->escapeString($hash));
+							$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['cname'].' WHERE collectionshash = %s', $this->db->escapeString($hash)));
 						}
 					}
-					$this->db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $this->db->escapeString($hash)));
+					$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
 					echo "!";
 					return;
 				}
@@ -260,27 +279,27 @@ class Import
 							chmod($path, 0777);
 							$this->db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $relid));
 							if ($this->db->dbSystem() == "mysql")
-								$this->db->queryExec(sprintf("DELETE collections, binaries, parts FROM collections LEFT JOIN binaries ON collections.id = binaries.collectionid LEFT JOIN parts ON binaries.id = parts.binaryid WHERE collections.collectionhash = %s", $this->db->escapeString($hash)));
+								$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
 							elseif ($this->db->dbSystem() == "pgsql")
 							{
-								$idr = $this->db->query(sprintf("SELECT id FROM collections WHERE collectionhash = %s", $this->db->escapeString($hash)));
+								$idr = $this->db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
 								if (count($idr) > 0)
 								{
 									foreach ($idr as $id)
 									{
-										$reccount = $this->db->queryExec(sprintf("DELETE FROM parts WHERE EXISTS (SELECT id FROM binaries WHERE binaries.id = parts.binaryid AND binaries.collectionid = %d)", $id["id"]));
-										$reccount += $this->db->queryExec(sprintf("DELETE FROM binaries WHERE collectionid = %d", $id["id"]));
+										$reccount = $this->db->queryExec(sprintf('DELETE FROM '.$group['cname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id['id']));
+										$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['bname'].' WHERE collectionid = %d', $id['id']));
 									}
-									$reccount += $this->db->queryExec("DELETE FROM collections WHERE collectionshash = ", $this->db->escapeString($hash));
+									$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['cname'].' WHERE collectionshash = %s', $this->db->escapeString($hash)));
 								}
 							}
-							$this->db->queryExec(sprintf("DELETE from nzbs where collectionhash = %s", $this->db->escapeString($hash)));
+							$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
 							$this->categorize();
 							echo "+";
 						}
 						else
 						{
-							$this->db->queryExec(sprintf("DELETE FROM releases WHERE id = %d", $relid));
+							$this->db->queryExec(sprintf('DELETE FROM releases WHERE id = %d', $relid));
 							$importfailed = true;
 							echo "-";
 						}
