@@ -85,8 +85,13 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 					self.wfile.write(".\r\n")
 				elif data.startswith("ARTICLE"):
 					msgid = data.split(None, 1)[1]
-					head, body = nntp_client.article(msgid)
-					self.wfile.write("220 0 %s\r\n" % (msgid))
+					article = nntp_client.article(msgid, False)
+					# check no of return values for compatibility with pynntp<=0.8.3
+					if len(article) == 2:
+						articleno, head, body = 0, article[0], article[1]
+					else:
+						articleno, head, body = article
+					self.wfile.write("220 %d %s\r\n" % (articleno, msgid))
 					head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
 					self.wfile.write(head)
 					self.wfile.write(body)
