@@ -341,7 +341,7 @@ class Binaries
 
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
@@ -361,8 +361,7 @@ class Binaries
 						continue;
 					else // We got the part this time. Remove article from partrepair.
 					{
-						$sql = sprintf('DELETE FROM partrepair WHERE numberid = %d AND groupid = %d', $msg['Number'], $groupArr['id']);
-						$db->queryExec($sql);
+						$msgrepaired[] = $msg['Number'];
 					}
 				}
 
@@ -483,6 +482,11 @@ class Binaries
 			if ($type != 'partrepair')
 				echo $this->c->set256($this->primary).'Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.\n".$this->c->rsetcolor();
 
+			if (sizeof($msgrepaired) > 0)
+			{
+				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
+			}
+
 			if (sizeof($rangenotreceived) > 0)
 			{
 				switch($type)
@@ -520,6 +524,7 @@ class Binaries
 				else
 					exit("Couldn't prepare parts insert statement!\n");
 
+				$collectionHashes = $binaryHashes = array();
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
@@ -537,18 +542,27 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
-							if(!$cres)
+							if (array_key_exists($collectionHash, $collectionHashes))
 							{
-								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-								$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
-								$collectionID = $db->queryInsert($csql);
+								$collectionID = $collectionHashes[$collectionHash];
 							}
 							else
 							{
-								$collectionID = $cres['id'];
-								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-								$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+								if(!$cres)
+								{
+									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
+									$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$collectionID = $db->queryInsert($csql);
+								}
+								else
+								{
+									$collectionID = $cres['id'];
+									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
+									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								}
+
+								$collectionHashes[$collectionHash] = $collectionID;
 							}
 
 							$lastCollectionID = $collectionID;
@@ -559,17 +573,25 @@ class Binaries
 							$binaryID = $lastBinaryID;
 						else
 						{
-							$lastBinaryHash = $binaryHash;
-
-							$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
-							if(!$bres)
+							if (array_key_exists($binaryHash, $binaryHashes))
 							{
-								$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
-								$binaryID = $db->queryInsert($bsql);
+								$binaryID = $binaryHashes[$binaryHash];
 							}
 							else
-								$binaryID = $bres['id'];
+							{
+								$lastBinaryHash = $binaryHash;
 
+								$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+								if(!$bres)
+								{
+									$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+									$binaryID = $db->queryInsert($bsql);
+								}
+								else
+									$binaryID = $bres['id'];
+
+								$binaryHashes[$binaryHash] = $binaryID;
+							}
 							$lastBinaryID = $binaryID;
 						}
 
@@ -728,6 +750,17 @@ class Binaries
 			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = '.$id);
 			return $id;
 		}
+	}
+
+	private function removeRepairedParts($numbers, $groupID)
+	{
+		$db = $this->db;
+		$sql = 'DELETE FROM partrepair WHERE numberid in (';
+		foreach($numbers as $number)
+			$sql .= sprintf('%d, ', $number);
+		$sql = substr($sql, 0, -2);
+		$sql .= sprintf(') AND groupid = %d', $groupID);
+		$db->queryExec($sql);
 	}
 
 	public function retrieveBlackList()
