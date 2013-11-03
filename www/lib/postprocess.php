@@ -393,7 +393,7 @@ class PostProcess
 			foreach ($result as $rel)
 			{
 				if ($this->echooutput)
-					echo '['.$startCount--.']';
+					echo "\r                        \r[" . $startCount-- . "]";
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
 				if (!is_dir($this->tmpPath))
