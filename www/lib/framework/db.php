@@ -11,7 +11,7 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	public function DB()
+	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
