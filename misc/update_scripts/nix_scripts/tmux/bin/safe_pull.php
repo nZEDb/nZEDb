@@ -20,7 +20,7 @@ if (isset($argv[1]))
 	elseif (isset($pieces[2]) && ($pieces[2] == "Binary" || $pieces[2] == "Backfill"))
 	{
 		$backfill = new Backfill();
-		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
+		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2], $pieces[3]);
 	}
 	elseif (isset($pieces[2]) && $pieces[2] == "BackfillAll")
 	{
