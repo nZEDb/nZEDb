@@ -30,24 +30,24 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 	if ($searchtype == "basic")
 	{
 		$searchStr = (string) $_REQUEST["id"];
-	
+
 		$categoryId = array();
 		if (isset($_REQUEST["t"]))
 			$categoryId = explode(",",$_REQUEST["t"]);
 		else
 			$categoryId[] = -1;
-	
-		foreach($ordering as $ordertype) 
+
+		foreach($ordering as $ordertype)
 		{
 			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$ordertype);
 		}
-		
+
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
 		$page->smarty->assign('search', $searchStr);
 		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 	}
-	
+
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
 	if (sizeof($results) > 0)
 		$totalRows = $results[0]['_totalrows'];
@@ -58,7 +58,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 	$page->smarty->assign('pageroffset',$offset);
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
-	
+
 	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 
@@ -73,18 +73,18 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 	if ($searchtype == "basic")
 	{
 		$searchStr = (string) $_REQUEST["subject"];
-	
+
 		$categoryId = array();
 		if (isset($_REQUEST["t"]))
 			$categoryId = explode(",",$_REQUEST["t"]);
 		else
 			$categoryId[] = -1;
-	
-		foreach($ordering as $ordertype) 
+
+		foreach($ordering as $ordertype)
 		{
 			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$ordertype);
 		}
-		
+
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search/".htmlentities($searchStr)."?t=".(implode(',',$categoryId))."&amp;ob=".$orderby."&amp;offset=");
 		$page->smarty->assign('subject', $searchStr);
@@ -101,7 +101,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 	$page->smarty->assign('pageroffset',$offset);
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
-	
+
 	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 }
@@ -114,7 +114,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 
 	if ($searchtype !== "basic")
 	{
-		
+
 		$searchSearchName = (string) $_REQUEST["searchadvr"];
 		$searchUsenetName = (string) $_REQUEST["searchadvsubject"];
 		$searchPoster = (string) $_REQUEST["searchadvposter"];
@@ -126,7 +126,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		$searchSizeTo = (string) $_REQUEST["searchadvsizeto"];
 		$searchHasNFO = (string) $_REQUEST["searchadvhasnfo"];
 		$searchHascomments = (string) $_REQUEST["searchadvhascomments"];
-			
+
 		$page->smarty->assign('searchadvr', $searchSearchName);
 		$page->smarty->assign('searchadvsubject', $searchUsenetName);
 		$page->smarty->assign('searchadvposter', $searchPoster);
@@ -138,11 +138,11 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		$page->smarty->assign('selectedsizeto', $searchSizeTo);
 		$page->smarty->assign('searchadvhasnfo', $searchHasNFO);
 		$page->smarty->assign('searchadvhascomments', $searchHascomments);
-		foreach($ordering as $ordertype) 
+		foreach($ordering as $ordertype)
 		{
 			$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysnew=".htmlentities($searchdaysnew)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$ordertype);
 		}
-		
+
 		$page->smarty->assign('pagerquerybase', WWW_TOP."/search?searchadvr=".htmlentities($searchSearchName)."&searchadvsubject=".htmlentities($searchUsenetName)."&searchadvposter=".htmlentities($searchPoster)."&searchadvdaysnew=".htmlentities($searchdaysnew)."&searchadvdaysold=".htmlentities($searchdaysold)."&searchadvgroups=".htmlentities($searchGroups)."&searchadvcat=".htmlentities($searchCat)."&searchadvsizefrom=".htmlentities($searchSizeFrom)."&searchadvsizeto=".htmlentities($searchSizeTo)."&searchadvhasnfo=".htmlentities($searchHasNFO)."&searchadvhascomments=".htmlentities($searchHascomments)."&search_type=adv"."&amp;ob=".$orderby."&amp;offset=");
 		if ($_REQUEST["searchadvr"] == "")
 			$searchSearchName = -1;
@@ -169,25 +169,25 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 	$page->smarty->assign('pageroffset',$offset);
 	$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
 	$page->smarty->assign('pagerquerysuffix', "#results");
-	
+
 	$pager = $page->smarty->fetch("pager.tpl");
 	$page->smarty->assign('pager', $pager);
 }
 
 $grouplist = $grp->getGroupsForSelect();
-$page->smarty->assign('grouplist', $grouplist);	
+$page->smarty->assign('grouplist', $grouplist);
 
 $catlist = $c->getForSelect();
-$page->smarty->assign('catlist', $catlist);	
+$page->smarty->assign('catlist', $catlist);
 
 $sizelist = array( -1 => '--Select--',
 					1 => '100MB',
 					2 => '250MB',
 					3 => '500MB',
 					4 => '1GB',
-					5 => '2GB', 
-					6 => '3GB',	
-					7 => '4GB',	
+					5 => '2GB',
+					6 => '3GB',
+					7 => '4GB',
 					8 => '8GB',
 					9 => '16GB',
 					10 => '32GB',

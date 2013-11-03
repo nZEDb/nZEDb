@@ -27,7 +27,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
     if ($_double_encode === null) {
         $_double_encode = version_compare(PHP_VERSION, '5.2.3', '>=');
     }
-    
+
     if (!$char_set) {
         $char_set = Smarty::$_CHARSET;
     }
@@ -68,7 +68,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
                         return $string;
                     }
                 }
-                
+
                 // htmlentities() won't convert everything, so use mb_convert_encoding
                 return mb_convert_encoding($string, 'HTML-ENTITIES', $char_set);
             }

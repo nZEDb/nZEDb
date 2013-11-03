@@ -91,7 +91,7 @@ function smarty_function_mailto($params, $template)
     if ($mail_parms) {
         $address .= '?' . join('&', $mail_parms);
     }
-    
+
     $encode = (empty($params['encode'])) ? 'none' : $params['encode'];
     if (!isset($_allowed_encoding[$encode])) {
         trigger_error("mailto: 'encode' parameter must be none, javascript, javascript_charcode or hex", E_USER_WARNING);

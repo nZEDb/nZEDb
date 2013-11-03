@@ -7,7 +7,7 @@ $forum = new Forum;
 
 if ($page->isPostBack())
 {
-	$forum->add(0, $users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]); 
+	$forum->add(0, $users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]);
 	header("Location:".WWW_TOP."/forum");
 	die();
 }

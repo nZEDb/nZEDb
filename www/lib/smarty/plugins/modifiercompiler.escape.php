@@ -29,7 +29,7 @@ function smarty_modifiercompiler_escape($params, $compiler)
     if ($_double_encode === null) {
         $_double_encode = version_compare(PHP_VERSION, '5.2.3', '>=');
     }
-    
+
     try {
         $esc_type = smarty_literal_compiler_param($params, 1, 'html');
         $char_set = smarty_literal_compiler_param($params, 2, Smarty::$_CHARSET);

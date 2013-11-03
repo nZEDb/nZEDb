@@ -176,7 +176,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource {
             if ($tpl->source->exists) {
                 $uid = $tpl->source->uid;
             }
-            
+
             // remove from template cache
             if ($smarty->allow_ambiguous_resources) {
                 $_templateId = $tpl->source->unique_resource . $tpl->cache_id . $tpl->compile_id;
@@ -321,7 +321,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource {
         if (!($_cid = $this->listInvalidationKeys($cid, $resource_name, $cache_id, $compile_id, $resource_uid))) {
             return 0;
         }
-        
+
         // there are no InValidationKeys
         if (!($values = $this->read($_cid))) {
             return 0;
