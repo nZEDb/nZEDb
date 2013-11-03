@@ -523,26 +523,46 @@ class Backfill
 		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
 		// Scan failed - retry once
 		if ($lastId === false)
-			$binaries->scan(null, $groupArr, $last, $first, 'backfill');
+            $lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
+
+        return $lastId;
 	}
 
-	function getFinal($group, $first, $type)
-	{
-		$db = new DB();
-		$groups = new Groups();
-		$groupArr = $groups->getByName($group);
-		$postsdate = 0;
-		while ($postsdate <= 1)
-		{
-			$postsdate = $this->postdate(null,$first,false,$group,true);
-			//echo $this->c->set256($this->primary)."Trying to get postdate on ".$first."\n".$this->c->rsetColor();
-		}
-		$postsdate = $db->from_unixtime($postsdate);
-		if ($type == 'Backfill')
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
-		else
-			$db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 
-		echo $this->c->set256($this->primary).$type.' Safe Threaded for '.$group." completed.\n".$this->c->rsetColor();
-	}
+    function getFinal($group, $first, $type, $maxmsgs=20000)
+    {
+        $db = new DB();
+        $groups = new Groups();
+        $groupArr = $groups->getByName($group);
+        $postsdate = 0;
+        $lastId = 0;
+        $last = $first - $maxmsgs + 1;
+
+        while ($lastId <= 1)
+        {
+            echo $this->c->set256($this->primary)."Getting final range from ".$first." to ".$last."\n".$this->c->rsetcolor();
+
+            $lastId = $this->getRange($group, $first, $last, 0);
+
+            if ($lastId == false)
+            {
+                echo $this->c->set256($this->primary)."Failed to get last post time, were no articles returned?".$this->c->rsetcolor();
+                $first = $last - 1;
+                $last = $first - $maxmsgs;
+            }
+            else
+            {
+                echo $this->c->set256($this->primary)."Trying to get postdate on ".$lastId."\n".$this->c->rsetcolor();
+                $postsdate = $this->postdate(null, $lastId, false, $group, true);
+            }
+        }
+
+        $postsdate = $db->from_unixtime($postsdate);
+        if ($type == 'Backfill')
+            $db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
+        else
+            $db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
+
+        echo $this->c->set256($this->primary).$type.' Safe Threaded for '.$group." completed.\n".$this->c->rsetcolor();
+    }
 }

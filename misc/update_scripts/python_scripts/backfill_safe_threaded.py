@@ -42,7 +42,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print("\nBinary Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 cur = connect()
 cur[0].execute("SELECT name FROM shortgroups")
@@ -165,7 +165,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} and grabbing {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+	print("We will be using a max of {} threads, a queue of {} and grabbing {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format((geteach * maxmssgs) + maxmssgs)))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -187,15 +187,15 @@ def main(args):
 	my_queue.join()
 
 	#get postdate
-	final = ("{} {} Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
+	final = ("{} {} Backfill {}".format(datas[0], int(datas[1] - (maxmssgs * geteach) - 1), maxmssgs))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
 	#group = ("{} {}".format(datas[0], 1000))
 	#subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
-		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format((geteach * maxmssgs) + maxmssgs)))
 	else:
-		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
+		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format((geteach * maxmssgs) + maxmssgs)))
 
 	print("\nBackfill Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
