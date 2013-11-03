@@ -11,7 +11,7 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	public function DB()
+	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
@@ -35,10 +35,9 @@ class DB
 				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			try {
+				$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
-				else
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+					$options = array( PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
 
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.

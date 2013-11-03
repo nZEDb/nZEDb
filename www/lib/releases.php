@@ -1929,8 +1929,15 @@ class Releases
 		$where = (!empty($groupID)) ? ' WHERE groupid = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.
-		if ($this->echooutput)
-			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$consoletools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
+		if ($this->echooutput) {
+			$countID = $db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
+			echo $this->c->set256($this->primary) .
+				'Completed adding ' . number_format($releasesAdded) . ' releases in ' .
+				$consoletools->convertTime(number_format(microtime(true) -
+					$this->processReleases, 2)) . '. ' . number_format(array_shift($countID)) .
+				" collections waiting to be created (still incomplete or in queue for creation).\n" .
+				$this->c->rsetColor();
+		}
 		return $releasesAdded;
 	}
 
