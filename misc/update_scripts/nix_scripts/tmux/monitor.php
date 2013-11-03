@@ -404,12 +404,12 @@ while( $i > 0 )
 	if ( $proc_work_result[0]['nforemains'] != NULL ) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
 	if ( $proc_work_result[0]['nfo'] != NULL ) { $nfo_now = $proc_work_result[0]['nfo']; }
 	if ( $proc_work_result2[0]['collections_table'] != NULL ) { $collections_table = $proc_work_result2[0]['collections_table']; }
-	
+
 	if ( $proc_work_result3[0]['binaries_table'] != NULL ) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
-	
+
 	if ( $split_result[0]['parts_table'] != NULL ) { $parts_table = $split_result[0]['parts_table']; }
 	if ( $split_result[0]['predb'] != NULL ) { $predb = $split_result[0]['predb']; }
-	
+
 	if ( $proc_work_result3[0]['predb_matched'] != NULL ) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
 	if ( $proc_work_result3[0]['requestid_inprogress'] != NULL ) { $requestid_inprogress = $proc_work_result3[0]['requestid_inprogress']; }
 	if ( $proc_work_result3[0]['requestid_matched'] != NULL ) { $requestid_matched = $proc_work_result3[0]['requestid_matched']; }

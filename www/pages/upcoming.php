@@ -4,7 +4,7 @@ if (!$users->isLoggedIn())
 
 require_once(WWW_DIR."/lib/movie.php");
 $m = new Movie();
-	
+
 if (!isset($_GET["id"]))
 	$_GET["id"] = 1;
 
@@ -38,7 +38,7 @@ else
 	$page->meta_title = "View upcoming theatre releases";
 	$page->meta_keywords = "view,series,theatre,dvd";
 	$page->meta_description = "View upcoming theatre releases";
-	
+
 }
 $page->content = $page->smarty->fetch('upcoming.tpl');
 $page->render();

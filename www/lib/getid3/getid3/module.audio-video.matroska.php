@@ -539,7 +539,7 @@ class getid3_matroska extends getid3_handler
 							default:
 								$this->unhandledElement('header', __LINE__, $element_data);
 						}
-						
+
 						unset($element_data['offset'], $element_data['end']);
 						$info['matroska']['header']['elements'][] = $element_data;
 					}

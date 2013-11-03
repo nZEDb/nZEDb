@@ -10,7 +10,7 @@ if($db->dbSystem() == "pgsql")
 	exit("Currently only for mysql.\n");
 
 if (isset($argv[1]) && $argv[1] == "myisam")
-{ 
+{
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -20,7 +20,7 @@ if (isset($argv[1]) && $argv[1] == "myisam")
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "dinnodb")
-{ 
+{
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{
@@ -30,7 +30,7 @@ else if (isset($argv[1]) && $argv[1] == "dinnodb")
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "cinnodb")
-{ 
+{
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{

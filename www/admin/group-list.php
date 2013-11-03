@@ -27,7 +27,7 @@ $page->smarty->assign('pager', $pager);
 
 $grouplist = $groups->getRange($offset, ITEMS_PER_PAGE, $gname);
 
-$page->smarty->assign('grouplist',$grouplist);	
+$page->smarty->assign('grouplist',$grouplist);
 
 $page->title = "Group List";
 

@@ -77,12 +77,12 @@ function BackupDatabase()
 	$returnvar = NULL;
 	$output = NULL;
 	$DIR = MISC_DIR;
-	
+
 	if (command_exist("php5"))
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	
+
 	//Backup based on database system
 	if($db->dbSystem() == "mysql")
 	{
@@ -98,7 +98,7 @@ $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
 
 if(isset($argv[1]) && $argv[1] == "safe")
 	$safeupgrade = true;
-else 
+else
 	$safeupgrade = false;
 
 if (isset($os) && $os == "unix")
@@ -115,7 +115,6 @@ if (isset($os) && $os == "unix")
 		$path = '/../../../db/mysql_patches';
 	else if ($db->dbSystem() == "pgsql")
 		$path = '/../../../db/pgsql_patches';
-
 	// Open the patch folder.
 	if ($handle = @opendir(FS_ROOT.$path))
 	{
@@ -127,7 +126,6 @@ if (isset($os) && $os == "unix")
 	}
 	else
 		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
-
 	if ($db->dbSystem() == "mysql")
 		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', FS_ROOT);
 	else if ($db->dbSystem() == "pgsql")

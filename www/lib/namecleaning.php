@@ -22,11 +22,11 @@ class nameCleaning
 	/**
 	* Cleans a usenet subject returning a string that can be used to "merge" files together, a pretty subject, a categoryID and the name status.
 	*
-	* 
+	*
 	*	Usage Example:
-	*		$subject = 
+	*		$subject =
 	*			[134787]-[FULL]-[#a.b.moovee]-[ Trance.2013.DVDRiP.XViD-SML ]-[01/46] - "tranceb-xvid-sml.par2" yEnc
-	*		$groupName = 
+	*		$groupName =
 	*			alt.binaries.moovee
 	*		$nofiles =
 	*			false
@@ -52,7 +52,7 @@ class nameCleaning
 	*	@param string		$groupName				The name of the usenet group for the article.
 	*	@param bool		$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
 	*
-	* 
+	*
 	*	@return
 	*	- (array)	'hash'		string	Unique parts of the $subject string.
 	*				'subject'	string	Nice looking part of the $suject string.
@@ -2422,7 +2422,7 @@ class nameCleaning
 		}
 		/*else if ($groupName === "alt.binaries.tun")
 		{
-			* Leaving here to show that you can get the names from these. 
+			* Leaving here to show that you can get the names from these.
 			* Useless since all these are passworded and if there is a backlog in post proc, sickbeard will pull these and they will fail since they are passworded.
 			//[ nEwZ[NZB].iNFO - [ QmlnTW91dGhmdWxzLjEzLjA3LjA4LkNocmlzc3kuR3JlZW5lLlhYWC43MjBwLk1QNC1LVFI= ] - File [06/48]: "b582519da4d849df003559fc4ae45219.nfo" yEnc
 			if (preg_match('/^\[ nEwZ\[NZB\]\.iNFO - \[ ([a-z0-9A-Z]{3,}=) \] - File \[\d+\/\d+\]: ".+?" yEnc$/', $subject, $match))

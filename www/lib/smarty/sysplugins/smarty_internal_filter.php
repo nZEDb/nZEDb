@@ -2,11 +2,11 @@
 
 /**
  * Smarty Internal Plugin Filter
- * 
+ *
  * External Smarty filter methods
- * 
+ *
  * @package Smarty
- * @author Uwe Tews 
+ * @author Uwe Tews
  */
 
 /**
@@ -17,12 +17,12 @@ class Smarty_Internal_Filter {
     function __construct($smarty)
     {
         $this->smarty = $smarty;
-    } 
+    }
     /**
      * Registers a filter function
-     * 
+     *
      * @param string $type filter type
-     * @param callback $callback 
+     * @param callback $callback
      */
 	public function registerFilter($type, $callback)
 	{
@@ -31,9 +31,9 @@ class Smarty_Internal_Filter {
 
     /**
      * Unregisters a filter function
-     * 
+     *
      * @param string $type filter type
-     * @param callback $callback 
+     * @param callback $callback
      */
 	public function unregisterFilter($type, $callback)
 	{
@@ -46,8 +46,8 @@ class Smarty_Internal_Filter {
 
     /**
      * Return internal filter name
-     * 
-     * @param callback $function_name 
+     *
+     * @param callback $function_name
      */
     public function _get_filter_name($function_name)
     {
@@ -57,16 +57,16 @@ class Smarty_Internal_Filter {
             return $_class_name . '_' . $function_name[1];
         } else {
             return $function_name;
-        } 
-    } 
+        }
+    }
 
 
     /**
      * load a filter of specified type and name
-     * 
+     *
      * @param string $type filter type
      * @param string $name filter name
-     * @return bool 
+     * @return bool
      */
     function loadFilter($type, $name)
     {
@@ -75,14 +75,14 @@ class Smarty_Internal_Filter {
         if ($this->smarty->loadPlugin($_plugin)) {
             if (class_exists($_plugin, false)) {
                 $_plugin = array($_plugin, 'execute');
-            } 
+            }
             if (is_callable($_plugin)) {
                 return $this->smarty->registered_filters[$type][$_filter_name] = $_plugin;
-            } 
-        } 
+            }
+        }
         throw new SmartyException("{$type}filter \"{$name}\" not callable");
         return false;
-    } 
+    }
 
 
 }
