@@ -42,7 +42,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print("\nBinary Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print("\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 
 cur = connect()
 cur[0].execute("SELECT name FROM allgroups")
@@ -112,7 +112,7 @@ while count < 10000:
 
 	if count == 0:
 		print("We have hit the maximum we can backfill for {}, skipping it".format(datas[0]))
-	
+
 	if count < 10000 and count > 0:
 		print("Group {} has {} articles, in the range {} to {}".format(datas[0], "{:,}".format(count), "{:,}".format(datas[2]), "{:,}".format(datas[3])))
 		print("Our oldest post is: {}".format("{:,}".format(datas[1])))
