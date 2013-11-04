@@ -1999,6 +1999,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		//Print amount of added releases and time it took.
 		if ($this->echooutput && $this->tablepergroup == 0)
 		{
+			$consoletools = new ConsoleTools();
 			$countID = $db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
 			echo $this->c->set256($this->primary) .
 				'Completed adding ' . number_format($releasesAdded) . ' releases in ' . $consoletools->convertTime(number_format(microtime(true) - 	$this->processReleases, 2)) . '. ' . number_format(array_shift($countID)) .
