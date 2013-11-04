@@ -251,7 +251,7 @@ class Sharing
 		{
 			$m = json_decode($message, true);
 			{
-				if (!isset($m["SITE"];
+				if (!isset($m["SITE"]))
 					return false;
 				else
 				{
