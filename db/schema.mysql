@@ -106,7 +106,6 @@ CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview ON releases (haspreview ASC) USING HASH;
 CREATE INDEX ix_releases_hashed on releases(hashed);
 CREATE INDEX ix_releases_status ON releases (nzbstatus, id, nfostatus, relnamestatus, passwordstatus, dehashstatus, reqidstatus, musicinfoID, consoleinfoID, bookinfoID, haspreview, hashed, request, categoryid);
-CREATE INDEX ix_releases_postdate ON releases (name, searchname, id, postdate);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 

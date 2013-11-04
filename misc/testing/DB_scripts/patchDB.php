@@ -47,9 +47,13 @@ function SplitSQL($file, $delimiter = ';')
 							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
 						else if ($e->errorInfo[1] == 1061)
 							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1062)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1071)
+							echo "Error: ".$e->errorInfo[2]." - Assuming MyIsam, Not Fatal.\n";
 						else
 						{
-							//echo $e;
+							echo $e;
 							exit("Error: ".$query." Failed\n");
 						}
 					}

@@ -3,6 +3,7 @@ NOTE: If you submit a pull request, please update this file with what you change
 
 
 11042013 -> jonnyboy -> updated patchDB to handle errors and ignore certain errors
+                        fixed schema.mysql and bad patches
 11032013 -> jonnyboy -> added some of the changes presented by niel
                         added option to set update releases threads when using tablepergroup
                         hopefully a fix for postdate, error found by tuxeh
