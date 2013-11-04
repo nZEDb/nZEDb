@@ -2,8 +2,8 @@ DROP INDEX ix_releases_mergedreleases ON releases;
 DROP INDEX ix_releases_postdate ON releases;
 DROP INDEX ix_releases_nzbstatus ON releases;
 
-DROP TRIGGER check_insert;
-DROP TRIGGER check_update;
+DROP TRIGGER IF EXISTS check_insert;
+DROP TRIGGER IF EXISTS check_update;
 
 ALTER TABLE releases ADD request BOOL DEFAULT false;
 
