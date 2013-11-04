@@ -566,7 +566,8 @@ CREATE TABLE "releases" (
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
   "nzb_guid" character varying(50),
-  "hashed" bool DEFAULT false
+  "hashed" bool DEFAULT false,
+  "request" bool DEFAULT false
 )
 WITHOUT OIDS;
 
