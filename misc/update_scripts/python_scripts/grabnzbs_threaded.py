@@ -129,6 +129,6 @@ def main():
 	collend = cur[0].fetchone()
 	print("{} duplicate Collections were deleted during this process.\n\n".format("{:,}".format(collstart[0]-collend[0])))
 	disconnect(cur[0], cur[1])
-	
+
 if __name__ == '__main__':
 	main()

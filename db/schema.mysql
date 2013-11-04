@@ -1052,7 +1052,8 @@ INSERT INTO site
   ('fixnamesperrun', '10'),
   ('tablepergroup', '0'),
   ('nntpproxy', 0),
-  ('sqlpatch','134');
+  ('releasesthreads', '1'),
+  ('sqlpatch','135');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (

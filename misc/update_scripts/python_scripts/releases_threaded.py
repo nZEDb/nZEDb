@@ -14,40 +14,48 @@ import datetime
 
 import lib.info as info
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
-	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
-cur = con.cursor()
+def connect():
+    con = None
+    if conf['DB_SYSTEM'] == "mysql":
+        try:
+            import cymysql as mdb
+            con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+        except ImportError:
+            sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+    elif conf['DB_SYSTEM'] == "pgsql":
+        try:
+            import psycopg2 as mdb
+            con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
+        except ImportError:
+            sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+    cur = con.cursor()
+    return cur, con
 
-threads = 4
-print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+def disconnect(cur, con):
+    con.close()
+    con = None
+    cur.close()
+    cur = None
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
 
-cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
-allowed = cur.fetchone()
-if int(allowed[0]) == 0:
+print("\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+
+cur = connect()
+cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'tablepergroup') AS a, (SELECT value FROM site WHERE setting = 'releasesthreads') AS b")
+dbgrab = cur[0].fetchall()
+allowed = int(dbgrab[0][0])
+threads = int(dbgrab[0][1])
+if allowed == 0:
 	sys.exit("Table per group not enabled")
 
-cur.execute("SELECT id FROM groups")
-datas = cur.fetchall()
+cur[0].execute("SELECT id FROM groups")
+datas = cur[0].fetchall()
+disconnect(cur[0], cur[1])
 
 if not datas:
 	print("No Work to Process")
-	cur.close()
-	con.close()
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -101,8 +109,6 @@ def main():
 		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
-	cur.close()
-	con.close()
 
 	#stage7b
 	final = "Stage7b"

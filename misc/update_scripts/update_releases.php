@@ -48,7 +48,7 @@ if (isset($argv[1]) && isset($argv[2]))
 		$relcount = $releases->categorizeRelease("searchname", "WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)", true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
-		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";	
+		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";
 	}
 	else
 		exit("Wrong argument, type php update_releases.php to see a list of valid arguments.\n");

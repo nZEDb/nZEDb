@@ -18,7 +18,7 @@ class Movie
 	const SRC_UPCOMING = 4;
 	const SRC_DVD = 5;
 
-	function Movie($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$this->db = new DB();

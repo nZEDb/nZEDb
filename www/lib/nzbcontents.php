@@ -8,7 +8,7 @@ require_once(WWW_DIR.'lib/nfo.php');
  */
 Class NZBcontents
 {
-	public function NZBcontents($echooutput=false)
+	public function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();

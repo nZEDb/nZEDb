@@ -28,7 +28,7 @@ class Releases
 	const BAD_FILE = 2;			// Possibly broken RAR/ZIP.
 	const PASSWD_RAR = 10;		// Definately passworded.
 
-	function Releases($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$this->db = new DB();
@@ -281,7 +281,7 @@ class Releases
 		else
 			$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 
-		$sql = sprintf("SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors, g.name as group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, concat(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid, mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, co.publisher AS co_publisher, co.releasedate AS co_releasedate, co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != '' LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid LEFT OUTER JOIN genres mug ON mug.id = mu.genreid 
+		$sql = sprintf("SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors, g.name as group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, concat(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid, mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, co.publisher AS co_publisher, co.releasedate AS co_releasedate, co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != '' LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
 LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s", $cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit);
 		return $db->query($sql);
 	}
@@ -1033,7 +1033,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
 			$query1->execute();
 		}
-		
+
 		if ($this->echooutput)
 		{
 			echo $this->c->set256($this->primary).($query->rowCount()+$query1->rowCount())." collections set to filecheck = 2 (complete).\n";
@@ -1045,7 +1045,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 	{
 		$db = $this->db;
 		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID : ' ';
-		
+
 		// Set table names
 		if ($this->tablepergroup == 1)
 		{
@@ -1998,7 +1998,12 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 
 		//Print amount of added releases and time it took.
 		if ($this->echooutput && $this->tablepergroup == 0)
-			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
+		{
+			$countID = $db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
+			echo $this->c->set256($this->primary) .
+				'Completed adding ' . number_format($releasesAdded) . ' releases in ' . $consoletools->convertTime(number_format(microtime(true) - 	$this->processReleases, 2)) . '. ' . number_format(array_shift($countID)) .
+				' collections waiting to be created (still incomplete or in queue for creation)'."\n" . $this->c->rsetColor();
+		}
 		return $releasesAdded;
 	}
 

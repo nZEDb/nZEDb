@@ -10,7 +10,7 @@ class AniDB
 	const CLIENT	= 'newznab';
 	const CLIENTVER = 1;
 
-	function AniDB($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$site = $s->get();

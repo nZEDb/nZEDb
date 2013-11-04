@@ -13,7 +13,7 @@ require_once(WWW_DIR.'lib/ColorCLI.php');
  */
 class Nfo
 {
-	public function Nfo($echooutput=false)
+	public function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();

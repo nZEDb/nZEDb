@@ -27,7 +27,7 @@ class SABnzbd
 	const PRIORITY_LOW = -1;
 	const PRIORITY_PAUSED = -2;
 
-	function SABnzbd(&$page)
+	function __construct(&$page)
 	{
 		$this->uid = $page->userdata['id'];
 		$this->rsstoken = $page->userdata['rsstoken'];
@@ -87,7 +87,7 @@ class SABnzbd
 		return getUrl($queueUrl);
 	}
 
-	public function delFromQueue($id) 
+	public function delFromQueue($id)
 	{
 		$delUrl = $this->url."api?mode=queue&name=delete&value=".$id."&apikey=".$this->apikey;
 		return getUrl($delUrl);

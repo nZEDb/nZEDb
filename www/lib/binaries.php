@@ -14,7 +14,7 @@ class Binaries
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
-	public function Binaries()
+	public function __construct()
 	{
 		$this->db = new DB();
 		$s = new Sites();
@@ -144,16 +144,16 @@ class Binaries
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
 
-			// In case postdate doesn't get a date.
-			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL')
+			// In case postdate doesn't get a date. If theis is a new groupt, set oldest post to now()
+			if (is_null($groupArr['first_record_postdate']))
 				$first_record_postdate = time();
 			else
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 
-			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true);
+			// get postdate for oldest post recorded
+			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-
 			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 		}
 		else
@@ -183,26 +183,29 @@ class Binaries
 			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
 		}
 
+		// For new groups, we updated the group, so we need to get an updated group array
+		$tempArr = $groupArr;
+		$groupArr = $db->queryOneRow("SELECT * FROM groups WHERE name = '".$tempArr['name']."'");
+
 		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
 		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == 'NULL' || $groupArr['last_record'] == '0')
 			$lastr_postdate = time();
 		else
 		{
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
-			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
+			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true, 'newest');
 			if ($groupArr['last_record'] != 0 && $newdatel !== false && strtotime($newdatel))
 				$lastr_postdate = $newdatel;
 			else
 				$lastr_postdate = time();
 		}
-
 		// Generate postdates for first records, for those that upgraded.
-		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL' || $groupArr['first_record'] == '0')
+		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
 			$first_record_postdate = time();
 		else
 		{
 			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
+			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
 			if ($groupArr['first_record'] != 0 && $newdate !== false)
 				$first_record_postdate = $newdate;
 			else
@@ -249,7 +252,7 @@ class Binaries
 					return;
 				}
 
-				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true);
+				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true, 'newest');
 				if ($newdatek !== false)
 					$lastr_postdate = $newdatek;
 
@@ -293,7 +296,6 @@ class Binaries
 			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
 			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
 			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
-
 		}
 		else
 		{
@@ -693,10 +695,10 @@ class Binaries
 				if ($partID == '')
 				{
 					echo "\n";
-					$this->consoleTools->overWrite('Attempting repair: '.$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+					$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 				}
 				else
-					echo $this->c->set256($this->primary).'Attempting repair: '.$partfrom."\n".$this->c->rsetcolor();
+					echo $this->c->set256($this->primary)."\nAttempting repair: ".$partfrom."\n".$this->c->rsetcolor();
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);

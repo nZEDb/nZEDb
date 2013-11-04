@@ -11,7 +11,7 @@ class Nntp extends Net_NNTP_Client
 {
 	public $Compression = false;
 
-	public function Nntp()
+	public function __construct()
 	{
 		$this->c = new ColorCLI;
 		$this->primary = 'green';

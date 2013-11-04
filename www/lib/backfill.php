@@ -7,7 +7,7 @@ require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class Backfill
 {
-	public function Backfill($site=null)
+	public function __construct($site=null)
 	{
 		if (!isset($site))
 		{
@@ -18,6 +18,7 @@ class Backfill
 		$this->hashcheck = (!empty($site->hashcheck)) ? $site->hashcheck : 0;
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
 		$this->nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
+		$this->tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 		$this->c = new ColorCLI;
 		$this->primary = 'green';
 		$this->warning = 'red';
@@ -114,9 +115,9 @@ class Backfill
 		}
 
 		echo $this->c->set256($this->primary).'Group '.$data['group'].': server has '.number_format($data['first']).' - '.number_format($data['last']).', or ~'.
-				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name']) - $this->postdate($nntp,$data['first'],false,$groupArr['name']))/86400)).
+				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name'],false,'oldest') - $this->postdate($nntp,$data['first'],false,$groupArr['name'],false,'oldest'))/86400)).
 				" days.\nLocal first = ".number_format($groupArr['first_record']).' ('.
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'],false,'oldest'))/86400)).
 				' days).  Backfill target of '.$groupArr['backfill_target'].' days is post '.$targetpost."\n".$this->c->rsetColor();
 
 		// Calculate total number of parts.
@@ -144,7 +145,7 @@ class Backfill
 			echo $this->c->set256($this->primary).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
-			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
+			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
@@ -271,10 +272,10 @@ class Backfill
 		}
 
 		echo $this->c->set256($this->primary).'Group '.$data['group']."'s oldest article is ".number_format($data['first']).', newest is '.number_format($data['last']).'. The groups retention is: '.
-				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name']) - $this->postdate($nntp,$data['first'],false,$groupArr['name']))/86400)).
+				((int) (($this->postdate($nntp,$data['last'],false,$groupArr['name'],false,'oldest') - $this->postdate($nntp,$data['first'],false,$groupArr['name'],false,'oldest'))/86400)).
 				" days.\nOur oldest article is: ".number_format($groupArr['first_record']).' which is ('.
-				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name']))/86400)).
-				' days old). Our backfill target is article '.number_format($targetpost).' which is ('.((int) ((date('U') - $this->postdate($nntp,$targetpost,false,$groupArr['name']))/86400)).
+				((int) ((date('U') - $this->postdate($nntp,$groupArr['first_record'],false,$groupArr['name'],false,'oldest'))/86400)).
+				' days old). Our backfill target is article '.number_format($targetpost).' which is ('.((int) ((date('U') - $this->postdate($nntp,$targetpost,false,$groupArr['name'],false,'oldest'))/86400)).
 				"\n days old).\n".$this->c->rsetColor();
 
 		// Calculate total number of parts.
@@ -301,7 +302,7 @@ class Backfill
 			echo $this->c->set256($this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
-			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true);
+			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
 
@@ -326,9 +327,11 @@ class Backfill
 	}
 
 	// Returns a single timestamp from a local article number. If the article is missing, you can pass $old as true to return false (then use the last known date).
-	public function postdate($nntp, $post, $debug=true, $group, $old=false)
+	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type='newest')
 	{
+		$db = new DB();
 		$st = false;
+		$keeppost = $post;
 		if (!isset($nntp) || $nntp->doConnect() === false)
 		{
 			$nntp = new Nntp();
@@ -337,7 +340,7 @@ class Backfill
 			$st = true;
 		}
 		$attempts=0;
-		$success = false;
+		$success = $record = false;
 		do
 		{
 			$data = $nntp->selectGroup($group);
@@ -365,13 +368,67 @@ class Backfill
 						return;
 				}
 			}
+			// Set table names
+			$groups = new Groups();
+			$groupID = $groups->getIDByName($group);
+			if ($this->tablepergroup == 1)
+			{
+				if ($db->newtables($groupID) === false)
+					exit ("There is a problem creating new parts/files tables for this group.\n");
+				$groupa = array();
+				$groupa['cname'] = $groupID.'_collections';
+				$groupa['bname'] = $groupID.'_binaries';
+				$groupa['pname'] = $groupID.'_parts';
+			}
+			else
+			{
+				$groupa = array();
+				$groupa['cname'] = 'collections';
+				$groupa['bname'] = 'binaries';
+				$groupa['pname'] = 'parts';
+			}
 
 			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
 			{
-				$post = ($post + MT_RAND(0,100));
-				$success = false;
+				$old_post = $post;
+				if ($attempts == 0)
+				{
+					if ($type == 'newest')
+					{
+						$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
+						if (isset($res['namber']))
+						{
+							$post = $res['number'];
+							echo $this->c->set256($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
+							$record = true;
+						}
+					}
+					else
+					{
+						$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
+						if (isset($res['namber']))
+						{
+							$post = $res['number'];
+							echo $this->c->set256($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n".$this->c->rsetColor();
+							$record = true;
+						}
+					}
+					$success = false;
+				}
+				if ($record === false)
+				{
+					$old_post = $post;
+					// for random, backfill will increase into range that we have and binary will decrease into the range that we have
+					if ($type == 'newest')
+						$post = ($post - MT_RAND(100,500));
+					else
+						$post = ($post + MT_RAND(100,500));
+					echo $this->c->set256($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with article '.$post.".\n".$this->c->rsetColor();
+					$success = false;
+					$record = false;
+				}
 			}
-			else
+			else if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '')
 			{
 				$date = $msgs[0]['Date'];
 				if (strlen($date) > 0)
@@ -382,11 +439,47 @@ class Backfill
 				echo $this->c->set256($this->warning).'Retried '.$attempts." time(s).\n".$this->c->rsetColor();
 
 			$attempts++;
-		} while ($attempts <= 10 && $success === false);
+		} while ($attempts <= 20 && $success === false);
+
 		if ($st === true)
 			$nntp->doQuit();
-		if ($success === false)
+		if ($success === false && $old === true)
+		{
+			if ($type == 'oldest')
+			{
+				$res = $db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
+				if (array_key_exists('first_record_postdate', $res))
+				{
+					echo $this->c->set256($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.$group.'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n".$this->c->rsetColor();
+					return strtotime($res['first_record_postdate']);
+				}
+				else
+					return false;
+			}
+			else
+			{
+				$res = $db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
+				if (array_key_exists('last_record_postdate', $res))
+				{
+					echo $this->c->set256($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.$group.'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n".$this->c->rsetColor();
+					return strtotime($res['last_record_postdate']);
+				}
+				else
+					return false;
+			}
+		}
+		else if($success === false)
 			return false;
+
+		if ($record === true)
+		{
+			$db = new DB();
+			if ($type = 'newest')
+				$db->queryExec('UPDATE groups set first_record = '.$post);
+			else
+				$db->queryExec('UPDATE groups set last_record = '.$post);
+		}
+
 		if ($debug)
 			echo $this->c->set256($this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetColor();
 		$date = strtotime($date);
@@ -433,8 +526,8 @@ class Backfill
 		if ($data['last'] == PHP_INT_MAX)
 			exit($this->c->set256($this->warning)."ERROR: Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n");
 
-		$firstDate = $this->postdate($nntp, $data['first'], $pddebug, $group);
-		$lastDate = $this->postdate($nntp, $data['last'], $pddebug, $group);
+		$firstDate = $this->postdate($nntp, $data['first'], $pddebug, $group, false, 'oldest');
+		$lastDate = $this->postdate($nntp, $data['last'], $pddebug, $group, false, 'oldest');
 
 		if ($goaldate < $firstDate)
 		{
@@ -476,7 +569,7 @@ class Backfill
 		// Match on days not timestamp to speed things up.
 		while($this->daysOld($dateofnextone) < $days)
 		{
-			while(($tmpDate = $this->postdate($nntp,($upperbound-$interval),$pddebug,$group))>$goaldate)
+			while(($tmpDate = $this->postdate($nntp,($upperbound-$interval),$pddebug,$group,false,'oldest'))>$goaldate)
 			{
 				$upperbound = $upperbound - $interval;
 				if ($debug)
@@ -489,9 +582,9 @@ class Backfill
 				if ($debug)
 					printf($mask1, 'Checking interval at:', number_format($interval), 'articles.');
 		 	}
-		 	$dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group);
+		 	$dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group,false,'oldest');
 			while(!$dateofnextone)
-			{  $dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group); }
+			{  $dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group,false,'oldest'); }
 	 	}
 	 	if ($st === true)
 			$nntp->doQuit();
@@ -531,12 +624,11 @@ class Backfill
 		$db = new DB();
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
-		$postsdate = 0;
-		while ($postsdate <= 1)
-		{
-			$postsdate = $this->postdate(null,$first,false,$group,true);
-			//echo $this->c->set256($this->primary)."Trying to get postdate on ".$first."\n".$this->c->rsetColor();
-		}
+		if ($type == 'Backfill')
+			$postsdate = $this->postdate(null,$first,false,$group,true,'oldest');
+		else
+			$postsdate = $this->postdate(null,$first,false,$group,true,'newest');
+
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')
 			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));

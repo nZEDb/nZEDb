@@ -25,8 +25,8 @@ $time = TIME();
 
 foreach($objects as $filestoprocess => $nzbFile)
 {
-    if($nzbFile->getExtension() != "gz")
-        continue;
+	if($nzbFile->getExtension() != "gz")
+		continue;
 	$consoleTools->overWrite("Getting filecount: ".$iFilesCounted++." nzbs  ");
 }
 $time1 = TIME();

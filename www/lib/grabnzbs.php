@@ -8,11 +8,12 @@ require_once(WWW_DIR."lib/site.php");
 
 class Import
 {
-	function Import()
+	function __construct()
 	{
 		$this->db = new DB();
 		$s = new Sites();
 		$this->site = $s->get();
+		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 	}
 
 	function categorize()
@@ -71,8 +72,6 @@ class Import
 			if (sizeof($arr) > 10)
 				echo "\nGetting ".sizeof($arr)." articles for ".$hash."\n";
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
-			//var_dump($article);
-			//exit();
 			if ($article === false || PEAR::isError($article))
 			{
 				$nntp->doQuit();
@@ -232,6 +231,7 @@ class Import
 				// Set table names
 				if ($this->tablepergroup == 1)
 				{
+					$group = array();
 					if ($groupID == '')
 						exit("You must use releases_threaded.py\n");
 					$group['cname'] = $groupID.'_collections';
@@ -240,6 +240,7 @@ class Import
 				}
 				else
 				{
+					$group = array();
 					$group['cname'] = 'collections';
 					$group['bname'] = 'binaries';
 					$group['pname'] = 'parts';
@@ -248,7 +249,7 @@ class Import
 				if ($relid == false)
 				{
 					if ($this->db->dbSystem() == "mysql")
-						$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON binaries.id = parts.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
+						$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
 					elseif ($this->db->dbSystem() == "pgsql")
 					{
 						$idr = $this->db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));

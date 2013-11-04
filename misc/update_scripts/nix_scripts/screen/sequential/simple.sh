@@ -20,7 +20,7 @@ while :
 CURRTIME=`date +%s`
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
-$PHP ${NZEDB_PATH}/update_releases.php 1 true 
+$PHP ${NZEDB_PATH}/update_releases.php 1 true
 
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))

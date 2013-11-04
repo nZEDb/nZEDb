@@ -66,7 +66,7 @@ if ($pieces[0] != "Stage7b")
 //	$first = number_format($retcount);
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
-	
+
 	$postprocess = new PostProcess(true);
 	$postprocess->processAdditional(null, null, null, $groupid);
 	$nfopostprocess = new Nfo(true);

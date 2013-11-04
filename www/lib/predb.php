@@ -13,7 +13,7 @@ require_once(WWW_DIR.'lib/consoletools.php');
 
 Class Predb
 {
-	function Predb($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();

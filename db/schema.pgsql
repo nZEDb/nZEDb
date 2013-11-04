@@ -1433,6 +1433,7 @@ INSERT INTO site
 	('fixnamesperrun', '10'),
 	('tablepergroup', '0'),	
 	('nntpproxy', 0),
+	('releasesthreads', '1'),
 	('sqlpatch','134');
 
 

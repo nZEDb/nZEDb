@@ -6,7 +6,7 @@ require_once(WWW_DIR."/lib/site.php");
 */
 Class Trakttv
 {
-	function Trakttv()
+	function __construct()
 	{
 		$s = new Sites();
 		$site = $s->get();

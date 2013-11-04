@@ -10,7 +10,7 @@ require_once(WWW_DIR.'/lib/predb.php');
 
 class nameCleaning
 {
-	function nameCleaning()
+	function __construct()
 	{
 		// Extensions.
 		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';

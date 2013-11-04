@@ -9,7 +9,7 @@ require_once(WWW_DIR."/lib/releaseimage.php");
 
 class Music
 {
-	function Music($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();

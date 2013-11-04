@@ -48,7 +48,7 @@ function create_guids($live, $delete = false)
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile)
 				{
-                    if (isset($delete) && $delete == 'delete')
+					if (isset($delete) && $delete == 'delete')
 					{
 						echo $nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
 						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
@@ -62,7 +62,7 @@ function create_guids($live, $delete = false)
 				}
 				if (count($binary_names) == 0)
 				{
-                    if (isset($delete) && $delete == 'delete')
+					if (isset($delete) && $delete == 'delete')
 					{
 						echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
 						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
@@ -88,7 +88,7 @@ function create_guids($live, $delete = false)
 			}
 			else
 			{
-                if (isset($delete) && $delete == 'delete')
+				if (isset($delete) && $delete == 'delete')
 				{
 					echo $nzb->$relrec['guid']." does not have an nzb, deleting.\n";
 					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
