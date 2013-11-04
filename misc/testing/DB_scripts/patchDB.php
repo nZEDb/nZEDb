@@ -30,26 +30,28 @@ function SplitSQL($file, $delimiter = ';')
 			while (feof($file) === false)
 			{
 				$query[] = fgets($file);
-
 				if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1)
 				{
 					$query = trim(implode('', $query));
 
 					if ($dbsys == "pgsql")
 						$query = str_replace(array("`", chr(96)), '', $query);
-					if (preg_match('/ALTER|UPDATE|INSERT|DELETE|DROP|CREATE/i', $query))
-					{
-						if ($db->queryExec($query) === false)
-							exit("Error: ".$query." Failed\n");
+					try {
+						$qry = $db->prepare($query);
+						$qry->execute();
+						echo 'SUCCESS: '.$query."\n";
+					} catch (PDOException $e) {
+						if ($e->errorInfo[1] == 1091)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1060)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1061)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
 						else
-							echo 'SUCCESS: '.$query."\n";
-					}
-					else
-					{
-						if ($db->query($query) === false)
+						{
+							//echo $e;
 							exit("Error: ".$query." Failed\n");
-						else
-							echo 'SUCCESS: '.$query."\n";
+						}
 					}
 
 					while (ob_get_level() > 0)

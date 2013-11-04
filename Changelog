@@ -2,6 +2,7 @@ NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 NOTE: If you submit a pull request, please update this file with what you changed
 
 
+11042013 -> jonnyboy -> updated patchDB to handle errors and ignore certain errors
 11032013 -> jonnyboy -> added some of the changes presented by niel
                         added option to set update releases threads when using tablepergroup
                         hopefully a fix for postdate, error found by tuxeh
