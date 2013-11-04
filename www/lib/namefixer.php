@@ -25,7 +25,7 @@ class Namefixer
 	const NF_NFO_FILES_F = 21;		// Checked by namefixer filename but no name was found.
 	const NF_NF_PAR2_F = 22;		// Checked by namefixer par2 but no name was found.
 
-	function Namefixer($echooutput=true)
+	function __construct($echooutput=true)
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;

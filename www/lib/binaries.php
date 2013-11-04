@@ -14,7 +14,7 @@ class Binaries
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
-	public function Binaries()
+	public function __construct()
 	{
 		$this->db = new DB();
 		$s = new Sites();
@@ -144,16 +144,16 @@ class Binaries
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
 
-			// In case postdate doesn't get a date.
-			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL')
+			// In case postdate doesn't get a date. If theis is a new groupt, set oldest post to now()
+			if (is_null($groupArr['first_record_postdate']))
 				$first_record_postdate = time();
 			else
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 
-			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true);
+			// get postdate for oldest post recorded
+			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-
 			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 		}
 		else
@@ -183,26 +183,29 @@ class Binaries
 			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
 		}
 
+		// For new groups, we updated the group, so we need to get an updated group array
+		$tempArr = $groupArr;
+		$groupArr = $db->queryOneRow("SELECT * FROM groups WHERE name = '".$tempArr['name']."'");
+
 		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
 		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == 'NULL' || $groupArr['last_record'] == '0')
 			$lastr_postdate = time();
 		else
 		{
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
-			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
+			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true, 'newest');
 			if ($groupArr['last_record'] != 0 && $newdatel !== false && strtotime($newdatel))
 				$lastr_postdate = $newdatel;
 			else
 				$lastr_postdate = time();
 		}
-
 		// Generate postdates for first records, for those that upgraded.
-		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL' || $groupArr['first_record'] == '0')
+		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
 			$first_record_postdate = time();
 		else
 		{
 			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
+			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
 			if ($groupArr['first_record'] != 0 && $newdate !== false)
 				$first_record_postdate = $newdate;
 			else
@@ -249,7 +252,7 @@ class Binaries
 					return;
 				}
 
-				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true);
+				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true, 'newest');
 				if ($newdatek !== false)
 					$lastr_postdate = $newdatek;
 
@@ -293,7 +296,6 @@ class Binaries
 			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
 			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
 			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
-
 		}
 		else
 		{
@@ -341,7 +343,7 @@ class Binaries
 
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
@@ -361,8 +363,7 @@ class Binaries
 						continue;
 					else // We got the part this time. Remove article from partrepair.
 					{
-						$sql = sprintf('DELETE FROM partrepair WHERE numberid = %d AND groupid = %d', $msg['Number'], $groupArr['id']);
-						$db->queryExec($sql);
+						$msgrepaired[] = $msg['Number'];
 					}
 				}
 
@@ -449,7 +450,8 @@ class Binaries
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 					//Not needed if using table per group
-					if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					//if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -458,7 +460,6 @@ class Binaries
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
-
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
 				}
@@ -482,6 +483,11 @@ class Binaries
 
 			if ($type != 'partrepair')
 				echo $this->c->set256($this->primary).'Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.\n".$this->c->rsetcolor();
+
+			if (sizeof($msgrepaired) > 0)
+			{
+				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
+			}
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -520,6 +526,7 @@ class Binaries
 				else
 					exit("Couldn't prepare parts insert statement!\n");
 
+				$collectionHashes = $binaryHashes = array();
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
@@ -537,18 +544,27 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
-							if(!$cres)
+							if (array_key_exists($collectionHash, $collectionHashes))
 							{
-								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-								$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
-								$collectionID = $db->queryInsert($csql);
+								$collectionID = $collectionHashes[$collectionHash];
 							}
 							else
 							{
-								$collectionID = $cres['id'];
-								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-								$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+								if(!$cres)
+								{
+									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
+									$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$collectionID = $db->queryInsert($csql);
+								}
+								else
+								{
+									$collectionID = $cres['id'];
+									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
+									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								}
+
+								$collectionHashes[$collectionHash] = $collectionID;
 							}
 
 							$lastCollectionID = $collectionID;
@@ -559,17 +575,25 @@ class Binaries
 							$binaryID = $lastBinaryID;
 						else
 						{
-							$lastBinaryHash = $binaryHash;
-
-							$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
-							if(!$bres)
+							if (array_key_exists($binaryHash, $binaryHashes))
 							{
-								$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
-								$binaryID = $db->queryInsert($bsql);
+								$binaryID = $binaryHashes[$binaryHash];
 							}
 							else
-								$binaryID = $bres['id'];
+							{
+								$lastBinaryHash = $binaryHash;
 
+								$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+								if(!$bres)
+								{
+									$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+									$binaryID = $db->queryInsert($bsql);
+								}
+								else
+									$binaryID = $bres['id'];
+
+								$binaryHashes[$binaryHash] = $binaryID;
+							}
 							$lastBinaryID = $binaryID;
 						}
 
@@ -671,10 +695,10 @@ class Binaries
 				if ($partID == '')
 				{
 					echo "\n";
-					$this->consoleTools->overWrite('Attempting repair: '.$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+					$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 				}
 				else
-					echo $this->c->set256($this->primary).'Attempting repair: '.$partfrom."\n".$this->c->rsetcolor();
+					echo $this->c->set256($this->primary)."\nAttempting repair: ".$partfrom."\n".$this->c->rsetcolor();
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
@@ -728,6 +752,17 @@ class Binaries
 			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = '.$id);
 			return $id;
 		}
+	}
+
+	private function removeRepairedParts($numbers, $groupID)
+	{
+		$db = $this->db;
+		$sql = 'DELETE FROM partrepair WHERE numberid in (';
+		foreach($numbers as $number)
+			$sql .= sprintf('%d, ', $number);
+		$sql = substr($sql, 0, -2);
+		$sql .= sprintf(') AND groupid = %d', $groupID);
+		$db->queryExec($sql);
 	}
 
 	public function retrieveBlackList()

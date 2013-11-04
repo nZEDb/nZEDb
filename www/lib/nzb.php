@@ -4,13 +4,13 @@ require_once(WWW_DIR.'lib/site.php');
 
 class NZB
 {
-	public function NZB()
+	public function __construct()
 	{
 		$this->s = new Sites();
 		$this->site = $this->s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 	}
-	
+
 	// Writes out the nzb when processing releases. Moved out of smarty due to memory issue of holding all parts in an array.
 	public function writeNZBforReleaseId($relid, $relguid, $name, $path, $db, $version, $date, $ctitle, $groupID)
 	{

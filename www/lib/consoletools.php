@@ -3,7 +3,7 @@
 class ConsoleTools
 {
 
-	function ConsoleTools(){
+	function __construct(){
 		$this->lastMessageLength = 0;
 	}
 

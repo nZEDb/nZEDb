@@ -566,7 +566,8 @@ CREATE TABLE "releases" (
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
   "nzb_guid" character varying(50),
-  "hashed" bool DEFAULT false
+  "hashed" bool DEFAULT false,
+  "request" bool DEFAULT false
 )
 WITHOUT OIDS;
 
@@ -1433,6 +1434,7 @@ INSERT INTO site
 	('fixnamesperrun', '10'),
 	('tablepergroup', '0'),	
 	('nntpproxy', 0),
+	('releasesthreads', '1'),
 	('sqlpatch','134');
 
 
@@ -1500,7 +1502,8 @@ INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
 	('colors_exc', '4, 8, 9, 11, 15, 16, 17, 18, 19, 46, 47, 48, 49, 50, 51, 52, 53, 59, 60'),
 	('monitor_path_a', NULL),
 	('monitor_path_b', NULL),
-	('colors', 'FALSE');
+	('colors', 'FALSE'),
+	('showquery', 'FALSE');
 
 
 INSERT INTO tvrage (id, rageid, releasetitle, description, createddate, imgdata, tvdbid)
@@ -11952,8 +11955,6 @@ DROP INDEX IF EXISTS "releases_consoleinfoid" CASCADE;
 CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
 DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
 CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
-DROP INDEX IF EXISTS "releases_mergedreleases" CASCADE;
-CREATE INDEX "releases_mergedreleases" ON "releases" ("dehashstatus", "relnamestatus", "passwordstatus");
 DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
 CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "releasesubs_releaseID_subsid" CASCADE;
@@ -11998,3 +11999,11 @@ DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
 CREATE INDEX ix_shortgroups_id ON shortgroups(id);
 DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
 CREATE INDEX ix_shortgroups_name ON shortgroups(name);
+DROP INDEX IF EXISTS "ix_releases_status" CASCADE;
+CREATE INDEX ix_releases_status ON releases (nzbstatus, id, nfostatus, relnamestatus, passwordstatus, dehashstatus, reqidstatus, musicinfoID, consoleinfoID, bookinfoID, haspreview, hashed, request, categoryid);
+DROP INDEX IF EXISTS "ix_releases_postdate" CASCADE;
+CREATE INDEX ix_releases_postdate ON releases (name, searchname, id, postdate);
+DROP INDEX IF EXISTS "ix_releases_postdate_searchname" CASCADE;
+CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
+DROP INDEX IF EXISTS "ix_releases_postdate_name" CASCADE;
+CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);

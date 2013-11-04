@@ -77,12 +77,12 @@ function BackupDatabase()
 	$returnvar = NULL;
 	$output = NULL;
 	$DIR = MISC_DIR;
-	
+
 	if (command_exist("php5"))
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	
+
 	//Backup based on database system
 	if($db->dbSystem() == "mysql")
 	{
@@ -98,7 +98,7 @@ $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
 
 if(isset($argv[1]) && $argv[1] == "safe")
 	$safeupgrade = true;
-else 
+else
 	$safeupgrade = false;
 
 if (isset($os) && $os == "unix")

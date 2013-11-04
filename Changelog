@@ -1,4 +1,14 @@
 NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
+NOTE: If you submit a pull request, please update this file with what you changed
+
+
+11032013 -> jonnyboy -> added some of the changes presented by niel
+                        added option to set update releases threads when using tablepergroup
+                        hopefully a fix for postdate, error found by tuxeh
+                        added more regexes and groups to release cleaner
+                        added missing lines to schema
+                        added some indexes, added to the trigger, both to improve query performance, once I'm done going through the queries, some indexes will be removed
+                        you may need to run the patch manually if something fails, the patch may not work with pgsql. I will try to set up a vm for pgsql to test the schema and all queries.
 10252013 -> jonnyboy -> changed renametopre.php to use releaseCleaner before added regexes
 10242013 -> jonnyboy -> begin importing nntpproxy by greenbender
 10212013 -> jonnyboy -> begin - adding option to use table per group

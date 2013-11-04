@@ -35,7 +35,7 @@ if len(sys.argv) == 1:
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
 else:
-    print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
 
 if sys.argv[1] == "additional":
 	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");

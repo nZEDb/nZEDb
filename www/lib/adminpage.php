@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/users.php');
 
 class AdminPage extends BasePage
 {
-	function AdminPage($allowmod = false)
+	function __construct($allowmod = false)
 	{
 		parent::BasePage();
 

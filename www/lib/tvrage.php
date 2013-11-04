@@ -11,7 +11,7 @@ class TvRage
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
 
-	function TvRage($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->db = new DB();
 		$s = new Sites();

@@ -25,7 +25,7 @@ require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
 
 class PostProcess
 {
-	public function PostProcess($echooutput=false)
+	public function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();

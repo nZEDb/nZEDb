@@ -28,7 +28,7 @@ class Releases
 	const BAD_FILE = 2;			// Possibly broken RAR/ZIP.
 	const PASSWD_RAR = 10;		// Definately passworded.
 
-	function Releases($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$this->db = new DB();
@@ -281,7 +281,7 @@ class Releases
 		else
 			$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 
-		$sql = sprintf("SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors, g.name as group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, concat(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid, mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, co.publisher AS co_publisher, co.releasedate AS co_releasedate, co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != '' LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid LEFT OUTER JOIN genres mug ON mug.id = mu.genreid 
+		$sql = sprintf("SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors, g.name as group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, concat(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid, mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, co.publisher AS co_publisher, co.releasedate AS co_releasedate, co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != '' LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
 LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s", $cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit);
 		return $db->query($sql);
 	}
@@ -995,40 +995,56 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 1 -> Try to find complete collections.\n";
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? ' c.groupid = '.$groupID.' AND ' : ' ';
+		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID.' ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE b.collectionid = c.id'.$where.'GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
+
 		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
+
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'b.collectionid = c.id AND b.filenumber = 0 GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE b.collectionid = c.id AND b.filenumber = 0'.$where.'GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
+
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 15 WHERE'.$where.'filecheck = 1');
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 15 WHERE filecheck = 1'.$where);
 
 		// If we have all the parts set partcheck to 1.
 		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid'.$where.'GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
+
 		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE'.$where.'p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid'.$where.'GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
 
 		// Set filecheck to 2 if partcheck = 1.
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE'.$where.'c.id = b.collectionid AND b.partcheck = 1 GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16) ');
+		$query = $db->prepare('UPDATE '.$group['cname'].' c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE c.id = b.collectionid AND b.partcheck = 1'.$where.'GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16)');
+		$query->execute();
+
 		// Set filecheck to 1 if we don't have all the parts.
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE'.$where.'filecheck in (15, 16)');
-		// If a collection has not been updated in 2 hours, set filecheck to 2.
+		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE filecheck in (15, 16)'.$where);
+
+		// If a collection has not been updated in X hours, set filecheck to 2.
 		if ($db->dbSystem() == 'mysql')
-			$db->queryExec(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
+		{
+			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
+			$query1->execute();
+		}
 		else
-			$db->queryExec(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE".$where."c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)", $this->delaytimet));
+		{
+			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
+			$query1->execute();
+		}
 
 		if ($this->echooutput)
+		{
+			echo $this->c->set256($this->primary).($query->rowCount()+$query1->rowCount())." collections set to filecheck = 2 (complete).\n";
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage1);
+		}
 	}
 
 	public function processReleasesStage2($groupID, $echooutput=false)
 	{
 		$db = $this->db;
-		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
+		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID : ' ';
 
 		// Set table names
 		if ($this->tablepergroup == 1)
@@ -1050,11 +1066,11 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			echo $this->c->set256($this->header)."\nStage 2 -> Get the size in bytes of the collection.\n";
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$checked = $db->prepare('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE'.$where.'c.filecheck = 2 AND c.filesize = 0');
+		$checked = $db->prepare('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0'.$where);
 		$checked->execute();
 		if ($this->echooutput)
 		{
-			echo $checked->rowCount()." collections set to filecheck = 3\n";
+			echo $this->c->set256($this->primary).$checked->rowCount()." collections set to filecheck = 3(size calculated).\n";
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage2);
 		}
 	}
@@ -1149,8 +1165,9 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		}
 		else
 		{
-			$res = $db->query('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID);
-			if(count($res) > 0)
+			$res = $db->prepare('SELECT id FROM '.$group['cname'].' WHERE filecheck = 3 AND filesize > 0 AND groupid = '.$groupID);
+			$res->execute();
+			if($res->rowCount() > 0)
 			{
 				$minsizecount = 0;
 				if ($db->dbSystem() == 'mysql')
@@ -1235,7 +1252,6 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
 		}
-
 
 		if ($this->echooutput)
 			echo $this->c->set256($this->header)."\nStage 4 -> Create releases.\n".$this->c->rsetColor();
@@ -1515,13 +1531,13 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			{
 				// Mark records that don't have requestID titles.
 				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[0-9]+\\]' LIMIT 100");
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
 			}
 			else
 			{
 				// Mark records that don't have requestID titles.
 				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name ~ '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name ~ '^\\[[0-9]+\\]' LIMIT 100");
+				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.requst = true LIMIT 100");
 			}
 
 			if (count($resrel) > 0)
@@ -1741,7 +1757,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$reccount += $delqi->rowCount();
 
 		if ($this->echooutput)
-				echo $this->c->set256($this->primary)."\nRemoved ".number_format($reccount).' parts/binaries/collection rows in '.$this->consoleTools->convertTime(TIME() - $stage7);
+			echo $this->c->set256($this->primary)."Removed ".number_format($reccount).' parts/binaries/collection rows in '.$this->consoleTools->convertTime(TIME() - $stage7);
 	}
 
 	// Queries that are not per group
@@ -1896,7 +1912,7 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 			$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $page->site->partretentionhours));
 
 		if ($this->echooutput)
-			echo 'Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other';
+			echo $this->c->set256($this->primary).'Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other';
 		if ($this->echooutput && $this->completion > 0)
 			echo ', '.number_format($completioncount).' under '.$this->completion.'% completion. Removed '.number_format($reccount)." parts/binaries/collection rows.\n";
 		else
@@ -1982,7 +1998,13 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 
 		//Print amount of added releases and time it took.
 		if ($this->echooutput && $this->tablepergroup == 0)
-			echo $this->c->set256($this->primary).'Completed adding '.number_format($releasesAdded).' releases in '.$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)).'. '.number_format(array_shift($db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where)))." collections waiting to be created (still incomplete or in queue for creation).\n".$this->c->rsetColor();
+		{
+			$consoletools = new ConsoleTools();
+			$countID = $db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
+			echo $this->c->set256($this->primary) .
+				'Completed adding ' . number_format($releasesAdded) . ' releases in ' . $consoletools->convertTime(number_format(microtime(true) - 	$this->processReleases, 2)) . '. ' . number_format(array_shift($countID)) .
+				' collections waiting to be created (still incomplete or in queue for creation)'."\n" . $this->c->rsetColor();
+		}
 		return $releasesAdded;
 	}
 
@@ -2093,5 +2115,4 @@ LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid LEFT OUTER JOIN
 		$returnVal = shell_exec("which {$cmd} 2>/dev/null");
 		return (empty($returnVal) ? false : true);
 	}
-
 }

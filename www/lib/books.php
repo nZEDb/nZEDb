@@ -11,7 +11,7 @@ require_once(WWW_DIR.'lib/site.php');
 
  class Books
  {
-	 function Books($echooutput=false)
+	 function __construct($echooutput=false)
 	 {
 		$this->echooutput = $echooutput;
 		$s = new Sites();

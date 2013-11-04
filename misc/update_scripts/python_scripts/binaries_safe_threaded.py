@@ -59,7 +59,7 @@ if hashcheck == 0:
 	sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
 
 #before we get the groups, lets update shortgroups
-subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+#subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
 cur = connect()
@@ -146,7 +146,7 @@ def main():
 		final = ("{} {} Binary".format(group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
-	print("\nBinaries Threaded Safe Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

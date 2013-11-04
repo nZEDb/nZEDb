@@ -16,9 +16,9 @@ else
 	$first = '555313070';
 
 if (isset($argv[1]))
-    $group = $argv[1];
+	$group = $argv[1];
 else
-    $group = 'alt.binaries.teevee';
+	$group = 'alt.binaries.teevee';
 
 // Select a group.
 $groupArr = $nntp->selectGroup($group);

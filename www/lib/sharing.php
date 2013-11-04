@@ -9,10 +9,10 @@ require_once(WWW_DIR."/lib/site.php");
 require_once(WWW_DIR."/lib/yenc.php");
 
 /* TODO:
- * 
+ *
  * Create sharing table.
  * 		see function initSite()
- * 
+ *
  * Create column shared in releasecomments.
  * 		shared = wether we shared the comment previously.
  * Create column shareid in releasecomments.
@@ -21,19 +21,19 @@ require_once(WWW_DIR."/lib/yenc.php");
  * 		username = the name of the user who posted the comment
  * Create column nzb_guid in releasecomments.
  * 		nzb_guid = the md5 hash of the first message-id in a nzb file
- * 
+ *
  * Add site settings to DB.
  * 		something to toggle on and off the whole sharing system.
  * 		option to hide usernames
  * 		option to auto enable sites
- * 
+ *
  * Add a backfill function.
- * 
+ *
  */
 
 class Sharing
 {
-	function Sharing($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
@@ -70,7 +70,7 @@ class Sharing
 		 * firstarticle	= our oldest fetched article #
 		 * firstdate	= the unixtime of the first article
 		 */
-		
+
 		$db = new DB;
 		$t = $db->queryExec(sprintf("INSERT INTO sharing (updatetime, backfill, name, local, status, lasteen, comments, firstseen, f_comments, p_comments, lastpushtime, lasthash, lastarticle, lastdate, firsthash, firstarticle, firstdate) VALUES (NOW(), 0, %s, 1, 0, 0, NULL, NULL, NULL, NULL, NULL))", $db->escapeString(uniqid("nZEDb.", true))));
 		if ($t !== false)
@@ -129,7 +129,7 @@ class Sharing
 	public function shareAll()
 	{
 		$db = new DB;
-		
+
 		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
 		if ($settings === false)
 		{
@@ -194,14 +194,14 @@ class Sharing
 		$yenc = new yenc;
 		$nntp = new Nntp;
 		$nntp->doConnect();
-								// group(s),                   subject                          ,            body                           , poster
+		// group(s),                   subject                          ,            body                           , poster
 		$success = $nntp->post($this->group, $row['nzb_guid'].' - [1/1] "'.time().'" (1/1) yEnc', $yenc->encode(gzdeflate($body, 4), uniqid), "nZEDb");
 		$nntp->doQuit();
 		if ($success == false)
 			return false;
 		else
 			return true;
-		
+
 	}
 
 	// Create a message containing the details we want to upload.
@@ -251,7 +251,7 @@ class Sharing
 		{
 			$m = json_decode($message, true);
 			{
-				if (!isset($m["SITE"];
+				if (!isset($m["SITE"]))
 					return false;
 				else
 				{

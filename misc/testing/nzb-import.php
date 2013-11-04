@@ -142,7 +142,7 @@ else
 			//removes everything after yEnc in subject
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
-            $subject = utf8_encode(trim($partless));
+			$subject = utf8_encode(trim($partless));
 			$namecleaning = new nameCleaning();
 
 			// Make a fake message object to use to check the blacklist.

@@ -9,7 +9,7 @@ require_once(WWW_DIR."/lib/releaseimage.php");
 
 class Console
 {
-	function Console($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();
