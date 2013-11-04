@@ -13,44 +13,47 @@ $site = $s->get();
 $timestart = TIME();
 $relcount = 0;
 
-//	This script removes all releases and nzb files based on poster, searchname, name, groupname, or guid.
-if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
+if (isset($argv[3]))
 {
-	$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3])));
-	printf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3]));
-}
-elseif ($argv[2] == "equals" && ($argv[1] == "groupname"))
-{
-	$relids = $db->query(sprintf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3])));
-	printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3]));
-}
-elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
-{
-	$like = ' ILIKE';
-	if ($db->dbSystem() == 'mysql')
-		$like = ' LIKE';
-	$relids = $db->query("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
-	printf("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
-}
-elseif ($argv[2] == "like" && $argv[1] == "groupname")
-{
-	$like = ' ILIKE';
-	if ($db->dbSystem() == 'mysql')
-		$like = ' LIKE';
-	$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
-	printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
-}
-elseif ($argv[2] == "equals" && ($argv[1] == "adddate" || $argv[1] == "postdate") && isset($argv[3]) && is_numeric($argv[3]))
-{
-	if ($db->dbSystem() == 'mysql')
+	//	This script removes all releases and nzb files based on poster, searchname, name, groupname, or guid.
+	if ($argv[2] == "equals" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
-		$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
-		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
+		$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3])));
+		printf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
-	else
+	elseif ($argv[2] == "equals" && ($argv[1] == "groupname"))
 	{
-		$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
-		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
+		$relids = $db->query(sprintf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3])));
+		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3]));
+	}
+	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
+	{
+		$like = ' ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE';
+		$relids = $db->query("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
+		printf("SELECT id, guid FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
+	}
+	elseif ($argv[2] == "like" && $argv[1] == "groupname")
+	{
+		$like = ' ILIKE';
+		if ($db->dbSystem() == 'mysql')
+			$like = ' LIKE';
+		$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
+		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
+	}
+	elseif ($argv[2] == "equals" && ($argv[1] == "adddate" || $argv[1] == "postdate") && isset($argv[3]) && is_numeric($argv[3]))
+	{
+		if ($db->dbSystem() == 'mysql')
+		{
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
+		}
+		else
+		{
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
+		}
 	}
 }
 else
