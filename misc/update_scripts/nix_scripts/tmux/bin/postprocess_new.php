@@ -14,14 +14,17 @@ if (isset($pieces[6]))
 }
 elseif (isset($pieces[3]))
 {
-	$postprocess->processNfos($argv[1]);
+    $postprocess->processNfos($argv[1]);
 }
 elseif (isset($pieces[2]))
 {
-	$postprocess->processMovies($argv[1]);
+    $postprocess->processMovies($argv[1]);
 	echo ".";
 }
 elseif (isset($pieces[1]))
 {
-	$postprocess->processTv($argv[1]);
+    if($postprocess->checkIfAnime($argv[1]))
+	    $postprocess->processSingleAnime($argv[1]);
+    else	
+	    $postprocess->processTv($argv[1]);
 }
