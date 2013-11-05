@@ -10,6 +10,7 @@ $test_str = $argv[1];
 
 $e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 $e1 = $e0.' yEnc$/';
+$groupName = '';
 
 if ($handle)
 {
@@ -17,13 +18,21 @@ if ($handle)
 	{
 		$line = preg_replace('/\$this->e0/', $e0, $line);
 		$line = preg_replace('/\$this->e1/', $e1, $line);
-		if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match))
+		if (preg_match('/if \(\$groupName === "(.+)"\)/', $line, $matchName))
+			$groupName = $matchName[1];
+		else if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match))
 		{
 			$regex = $match[1];
 			if (preg_match($regex, $test_str, $match1))
 			{
+				if ($groupName != '')
+					echo "Group regex => ".$groupName."\n";
 				echo $match[1]."\n";
-				echo $match1[1]."\n\n";
+				if (isset($match1[1]))
+					echo $match1[1]."\n";
+				if (isset($match1[2]))
+					echo $match1[2]."\n";
+				echo "\n";
 			}
 		}
     }

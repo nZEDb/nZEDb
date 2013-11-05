@@ -2550,7 +2550,7 @@ class nameCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
-		else if ($groupName === "alt.binaries.wii")
+		else if ($groupName === "alt.binaries.games.wii")
 		{
 			//"National.Geographic.Challenge.USA.WII-dumpTruck__www.realmom.info__.jpg" (003/111) 4,81 GB yEnc
 			if (preg_match('/^"(.+)__www.realmom.info__.+" \(\d+\/\d+\) \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
@@ -2562,8 +2562,44 @@ class nameCleaning
 			//4300 1695.World.Sports.Competition.USA.VC.Wii-OneUp....... AmigaOS4.1 RULEZ [0/9] - "4300.nzb" yEnc
 			else if (preg_match('/^\d+ (\d+\.)?(.+-OneUp).+ \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
 				return $match[2];
+			//6717 - Baseball.Stars.2.PAL.VC.NG.Wii-OneUp - 01/11 - "1u-baseball-stars-2-pal.nfo" yEnc
+			else if (preg_match('/^\d+ - (.+-OneUp).+ \d+\/\d+ - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
 			//[2103]-[abgx.net] Harvey_Birdman_Attorney_At_Law-USA-WII [000/104] - "Harvey_Birdman_Attorney_At_Law-USA-WII.nzb" yEnc
 			else if (preg_match('/^\[\d+\]-\[abgx.net\] (.+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//[REQ# 7134] Full 105 Cocoto_Magic_Circus_PAL_Wii-OE PAL "oe-magic.r00" 4.57 GB yEnc
+			else if (preg_match('/^\[REQ# \d+\] Full \d+ (.+) PAL ("|#34;).+("|#34;) \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			//[11614]-[#a.b.g.wii@efnet]-[ EA.Sports.Active.NFL.Training.Camp.USA.WII-ProCiSiON ]-[01/95] - "xxx-nflt.nfo" yEnc
+			else if (preg_match('/\[[\d#]+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[8524]-[#a.b.g.wii@EFNet]-[FULL]-[Fantastic_Four_Rise_Of_The_Silver_Surfer_NTSC_Wii-VORTEX]-[001/104] - "vortex-ffrotss.wii.nfo" yEnc
+			else if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/', $subject, $match))
+				return $match[1];
+			//[13118]-[abgx]-[FULL]-[Doods_Big_Adventure_PAL_WII-PLAYME]-po0p?!-[000/103] - "13118.nzb" yEnc
+			else if (preg_match('/^\[\d+]-\[abgx\]-\[FULL\]-\[(.+)-PLAYME\]-po0p.+-\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//[13208]-[#ab@EFNet]-[FULL]-[Calvin_Tuckers_Farm_Animal_Racing_PAL_Wii-WiiERD]-po0p!-[072/112] - "w-ctfar.r68" yEnc
+			else if (preg_match('/^\[\d+]-\[#ab@EFNet\]-\[FULL\]-\[(.+)-WiiERD\]-po0p.+-\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//(www.Thunder-News.org) >Winter.Stars.USA.WII-dumpTruck< <Sponsored by AstiNews> - (001/112) - "dumptruck-winterstars.par2" yEnc
+			else if (preg_match('/^\(www\.Thunder-News\.org\) ?>(?P<title>.+)< ?<Sponsored.+>[ _-]{0,3}(\(\d+\/\d+\)|\[\d+\/\d+\])?[ _-]{0,5}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
+				return $match[1];
+			//[9987]-[#a.b.g.wii@efnet]-[ Tales.of.Elastic.Boy.Mission.1.USA.WiiWare.Wii-OneUp ]-[01/12] - #34;1u-tales-of-elastic-boy-mission-1.nfo#34; yEnc
+			else if (preg_match('/^\[\d+]-\[#a\.b\.g\.wii@efnet\]-\[ ?(.+) ?\]-\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//[2207] Swing_Golf_Pangya_JPN_Wii-Caravan NTSC-J DVD5 [001/102] - "cvn-sgp.nfo" yEnc
+			else if (preg_match('/^\[\d+\] (.+) NTSC-J DVD5 \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//[3867] FaceBreaker.K.O.Party.PAL.Wii-RANT <>000/110<> "3867.nzb" yEnc
+			else if (preg_match('/^\[\d+\] (.+) <>\d+\/\d+<> ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//[COMPRESSED] Family_Feud_2010_Edition_USA_Wii-QwiiF [01/26] - "Family_Feud_2010_Edition_USA_Wii-QwiiF.par2" yEnc
+			else if (preg_match('/^\[COMPRESSED\] (.+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//WII4U - thinkSMART.Family.USA.WII-dumpTruck - [01/15] - "dumptruck-tf.par2" yEnc
+			else if (preg_match('/^WII4U - (.+) - \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
