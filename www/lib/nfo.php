@@ -24,9 +24,9 @@ class Nfo
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
 		$this->c = new ColorCLI;
-		$this->primary = 'green';
-		$this->warning = 'red';
-		$this->header = 'yellow';
+		$this->primary = 'Green';
+		$this->warning = 'Red';
+		$this->header = 'Yellow';
 	}
 
 	public function addReleaseNfo($relid)
