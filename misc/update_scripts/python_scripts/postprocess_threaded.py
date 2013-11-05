@@ -79,7 +79,6 @@ if sys.argv[1] == "additional":
 	while len(datas) == 0 and maxtries >= -6:
 		if maxsizeck == 0:
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
 		else:
 			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
