@@ -2483,11 +2483,11 @@ class nameCleaning
 			else if (preg_match('/^([a-zA-Z0-9]+ .+? - S\d+E\d+ - .+?) \[\d+\/\d+\] - ".+?\..+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//(www.Thunder-News.org) >Robin.Hood.S02E04.Der.Todesengel.German.WS.DVDRip.XviD-GTVG< <Sponsored by Secretusenet> -  "gtvg-rh.xvid.s02e04.jpg" yEnc
-			else if (preg_match('/^\(www\.Thunder-News\.org\) ?>(?P<title>.+)< ?<Sponsored.+>[ _-]{0,3}(\(\d+\/\d+\)|\[\d+\/\d+\])?[ _-]{0,5}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
-				return $match['title'];
+			else if (preg_match('/^\(www\.Thunder-News\.org\) ?>(.+)< ?<Sponsored.+>[ _-]{0,3}(\(\d+\/\d+\)|\[\d+\/\d+\])?[ _-]{0,5}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
+				return $match[1];
 			//.: Breaking.Bad.S04E10.Prost.German.WS.DVDRip.XviD-GTVG :. - .:www.thunder-news.org:. - .:sponsored by secretusenet.com:. - "gtvg-bb.xvid.s04e10_poster.jpg" yEnc
-			else if (preg_match('/\.: (?P<title>.+):. - .:www\.thunder-news\.org:. - .:sponsored by secretusenet\.com:\. - ("|#34;).+("|#34;).+yEnc/', $subject, $match))
-				return $match['title'];
+			else if (preg_match('/\.: (.+):. - .:www\.thunder-news\.org:. - .:sponsored by secretusenet\.com:\. - ("|#34;).+("|#34;).+yEnc/', $subject, $match))
+				return $match[1];
 			//[FULL]-[#a.b.teevee@EFNet] - Celemony Melodyne Studio Edition 3.2 (MAC OSX).rar
 			else if (preg_match('/\[FULL\]-\[.+.EFNet\] - (.+)\.rar$/', $subject, $match))
 				return $match[1];
@@ -2584,7 +2584,7 @@ class nameCleaning
 			else if (preg_match('/^\[\d+]-\[#ab@EFNet\]-\[FULL\]-\[(.+)-WiiERD\]-po0p.+-\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
 				return $match[1];
 			//(www.Thunder-News.org) >Winter.Stars.USA.WII-dumpTruck< <Sponsored by AstiNews> - (001/112) - "dumptruck-winterstars.par2" yEnc
-			else if (preg_match('/^\(www\.Thunder-News\.org\) ?>(?P<title>.+)< ?<Sponsored.+>[ _-]{0,3}(\(\d+\/\d+\)|\[\d+\/\d+\])?[ _-]{0,5}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
+			else if (preg_match('/^\(www\.Thunder-News\.org\) ?>(.+)< ?<Sponsored.+>[ _-]{0,3}(\(\d+\/\d+\)|\[\d+\/\d+\])?[ _-]{0,5}("|#34;).+("|#34;) yEnc$/i', $subject, $match))
 				return $match[1];
 			//[9987]-[#a.b.g.wii@efnet]-[ Tales.of.Elastic.Boy.Mission.1.USA.WiiWare.Wii-OneUp ]-[01/12] - #34;1u-tales-of-elastic-boy-mission-1.nfo#34; yEnc
 			else if (preg_match('/^\[\d+]-\[#a\.b\.g\.wii@efnet\]-\[ ?(.+) ?\]-\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
