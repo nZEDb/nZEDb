@@ -108,6 +108,7 @@ CREATE INDEX ix_releases_hashed on releases(hashed);
 CREATE INDEX ix_releases_status ON releases (nzbstatus, id, nfostatus, relnamestatus, passwordstatus, dehashstatus, reqidstatus, musicinfoID, consoleinfoID, bookinfoID, haspreview, hashed, request, categoryid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
+CREATE INDEX ix_releases_nzb_guid ON releases (nzbstatus, nzb_guid);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
@@ -1053,7 +1054,7 @@ INSERT INTO site
   ('tablepergroup', '0'),
   ('nntpproxy', 0),
   ('releasesthreads', '1'),
-  ('sqlpatch','135');
+  ('sqlpatch','136');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (

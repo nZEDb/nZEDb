@@ -1435,7 +1435,7 @@ INSERT INTO site
 	('tablepergroup', '0'),	
 	('nntpproxy', 0),
 	('releasesthreads', '1'),
-	('sqlpatch','134');
+	('sqlpatch','136');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -12007,3 +12007,5 @@ DROP INDEX IF EXISTS "ix_releases_postdate_searchname" CASCADE;
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 DROP INDEX IF EXISTS "ix_releases_postdate_name" CASCADE;
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
+DROP INDEX IF EXISTS "ix_releases_nzb_guid" CASCADE;
+CREATE INDEX ix_releases_nzb_guid ON releases (nzbstatus, nzb_guid);
