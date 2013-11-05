@@ -165,9 +165,9 @@ class ColorCLI {
 
 	public static function setColor ($fg, $opt = "None", $bg = "None")
 	{
-		$colored_string = "\033[".self::$options[$opt];
-		if (isset(self::$foreground_colors[$fg]))
-			$colored_string .= ";".self::$foreground_colors[$fg];
+		$colored_string = "\033[".self::$foreground_colors[$fg];
+		if (isset(self::$options[$opt]))
+			$colored_string .= ";".self::$options[$opt];
 		if (isset(self::$background_colors[$bg]))
 			$colored_string .= ";".self::$background_colors[$bg];
 		$colored_string .= "m";
