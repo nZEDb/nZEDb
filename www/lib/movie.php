@@ -542,7 +542,7 @@ class Movie
 
 		if ($releaseToWork == '')
 		{
-			$res = $this->db->query(sprintf("SELECT searchname AS name, id FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+			$res = $this->db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND c.parentid = %d LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 			$moviecount = count($res);
 		}
 		else
