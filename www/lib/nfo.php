@@ -154,7 +154,7 @@ class Nfo
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s '.$groupid.' AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s '.$groupid.' LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
