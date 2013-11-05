@@ -105,7 +105,7 @@ class Music
 		if (count($excludedcats) > 0)
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -163,7 +163,7 @@ class Music
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getMusicOrder($orderby);
-		$sql = sprintf(" SELECT r.*, r.id AS releaseid, m.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = m.genreid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+		$sql = sprintf(" SELECT r.*, r.id AS releaseid, m.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = m.genreid WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		return $db->query($sql);
 	}
 
