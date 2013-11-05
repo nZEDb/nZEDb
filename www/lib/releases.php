@@ -47,9 +47,9 @@ class Releases
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
-		$this->primary = 'green';
-		$this->warning = 'red';
-		$this->header = 'yellow';
+		$this->primary = 'Green';
+		$this->warning = 'Red';
+		$this->header = 'Yellow';
 	}
 
 	public function get()
@@ -1973,7 +1973,7 @@ class Releases
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0)
-			exit($this->c->set256($this->warning)."You must run update_binaries.php to update your collectionhash.\n".$this->c->rsetColor());
+			exit($this->c->setColor($this->warning)."You must run update_binaries.php to update your collectionhash.\n".$this->c->rsetColor());
 		$db = $this->db;
 		$page = new Page();
 		$groupID = '';
@@ -1991,7 +1991,7 @@ class Releases
 		if (!file_exists($page->site->nzbpath))
 		{
 			if ($this->echooutput)
-				echo $this->c->set256($this->warning).'Bad or missing nzb directory - '.$page->site->nzbpath;
+				echo $this->c->setColor($this->warning).'Bad or missing nzb directory - '.$page->site->nzbpath;
 			return;
 		}
 
