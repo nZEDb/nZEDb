@@ -1,5 +1,7 @@
 <?php
 require_once(WWW_DIR.'lib/anidb.php');
+require_once(WWW_DIR.'lib/xxx.php');
+require_once(WWW_DIR.'lib/pc.php');
 require_once(WWW_DIR.'lib/books.php');
 require_once(WWW_DIR.'lib/category.php');
 require_once(WWW_DIR.'lib/console.php');
@@ -25,7 +27,7 @@ require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
 
 class PostProcess
 {
-	public function __construct($echooutput=false)
+	public function PostProcess($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
@@ -82,18 +84,52 @@ class PostProcess
 		$this->processAnime($threads);
 		$this->processTv($releaseToWork);
 		$this->processBooks($threads);
+		$this->processXXX($threads);
+		$this->processPC($threads);
 	}
 
-	// Lookup anidb if enabled - always run before tvrage.
-	public function processAnime($threads=1)
-	{
-		if ($this->site->lookupanidb == 1)
-		{
-			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate($threads);
-			$anidb->processAnimeReleases($threads);
-		}
+        // Lookup anidb if enabled - always run before tvrage.
+        public function processAnime($threads=1, $hours=0)
+        {
+                if ($this->site->lookupanidb == 1)
+                {
+                        $anidb = new AniDB($this->echooutput);
+                        $anidb->animetitlesUpdate($threads);
+                        $anidb->processAnimeReleases($threads, $hours);
+                }
 	}
+ 
+        // Lookup anidb lookup of a single Release
+        public function processSingleAnime($releaseToWork='')
+        {
+                if ($this->site->lookupanidb == 1)
+                {
+                        $anidb = new AniDB($this->echooutput);
+                        $anidb->processSingleAnime($releaseToWork);
+                }
+	}
+ 
+        // Lookup anidb check if a release is anime
+        public function checkIfAnime($releaseToWork='')
+        {
+                $anidb = new AniDB($this->echooutput);
+                return $anidb->checkIfAnime($releaseToWork);
+ 	}
+ 
+	// Process XXX group
+	public function processXXX($threads=1, $hours=0)
+	{
+		$xxx = new XXX($this->echooutput);
+		$xxx->processXXXReleases($threads, 0);
+	}
+
+	// Process PC
+	public function processPC($threads=1, $hours=0)
+	{
+		$pc = new PC($this->echooutput);
+		$pc->processPCReleases($threads, 0);
+	}
+
 
 	// Process books using amazon.com.
 	public function processBooks($threads=1)
@@ -309,7 +345,7 @@ class PostProcess
 	}
 
 	// Check for passworded releases, RAR contents and Sample/Media info.
-	public function processAdditional($releaseToWork='', $id='', $gui=false, $groupID='')
+	public function processAdditional($releaseToWork='', $id='', $gui=false)
 	{
 		$like = 'ILIKE';
 		if ($this->db->dbSystem() == 'mysql')
@@ -347,7 +383,6 @@ class PostProcess
 			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
 		}
 
-		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
 			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
@@ -360,7 +395,7 @@ class PostProcess
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
 					$i--;

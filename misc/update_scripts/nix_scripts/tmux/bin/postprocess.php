@@ -8,8 +8,8 @@ $site = new Sites();
 $tmpunrar = $site->get()->tmpunrarpath;
 if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 {
-	echo "Removing dead folders from ".$tmpunrar."\n";
-	exec("rm -r ".$tmpunrar."/*");
+    echo "Removing dead folders from ".$tmpunrar."\n";
+    exec("rm -r ".$tmpunrar."/*");
 }
 
 if (isset($argv[1]) && is_numeric($argv[1]))
@@ -24,4 +24,6 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	$postprocess->processGames($argv[1]);
 	$postprocess->processAnime($argv[1]);
 	$postprocess->processTV($argv[1]);
+	$postprocess->processXXX($argv[1]);
+	$postprocess->processPC($argv[1]);
 }
