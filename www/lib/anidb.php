@@ -7,8 +7,8 @@ require_once(WWW_DIR.'lib/site.php');
 
 class AniDB
 {
-	
-	function AniDB($echooutput=false)
+
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$site = $s->get();
@@ -22,8 +22,8 @@ class AniDB
 		// this should not be run as it should be handled by populate_anidb
 		if ($this->echooutput)
 			echo "Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB_scripts\n";
-		return; 
-		
+		return;
+
 	}
 
 	public function addTitle($AniDBAPIArray)
@@ -146,7 +146,7 @@ class AniDB
 		$searchname = preg_replace('/( S\d+ ?E\d+|Movie ?(\d+|[ivx]+))(.*$)/i', '${1}', $searchname);
 		$searchname = preg_replace('/ ([12][890]\d{2})\b/i', ' (${1})', $searchname);
 		$searchname = str_ireplace('\'', '`', $searchname);
-		
+
 		$cleanFilename = preg_replace('/ (NC)?Opening ?/i', ' OP', $searchname);
 		$cleanFilename = preg_replace('/ (NC)?(Ending|Credits|Closing) ?/i', ' ED', $cleanFilename);
 		$cleanFilename = preg_replace('/ (Trailer|TR(?= ?\d)) ?/i', ' T', $cleanFilename);
@@ -160,7 +160,7 @@ class AniDB
 		preg_match('/^(?P<title>.+) (?P<epno>(?:NC)?(?:[A-Z](?=\d)|[A-Z]{2,3})?(?![A-Z]| [A-Z]|$) ?(?:(?<![&+] | and | v| ver|\w Movie )\d{1,3}(?!\d)(?:-\d{1,3}(?!\d))?)(?:[a-z])?)/i', $cleanFilename, $cleanFilename);
 
 		// if this did not return anything use the previous string as found as the title
-		if(!isset($cleanFilename['title'])) 
+		if(!isset($cleanFilename['title']))
 			$cleanFilename['title'] = $cleanFilename_org;
 
 		// extra cleanup to get a valid title
@@ -186,11 +186,11 @@ class AniDB
 			preg_match('/([^\d]+)(\d+)/i', $cleanFilename['epno'], $epno);
 			$cleanFilename['epno'] = $epno[1].(int) $epno[2];
 		}
-		
+
 		return $cleanFilename;
 	}
 
-	
+
 	// the release name is dieefrent from teh title, but it is what we want to store as the searchname
 	public function getReleaseName($searchname)
 	{
@@ -201,7 +201,7 @@ class AniDB
 
 		// if "'s are  present process
 		// in a quick check of 2000 anime entires this works 98.5% of the time without falling back
-		if(isset($namematch[0])) 
+		if(isset($namematch[0]))
 		{
 			// start by getting rid of the exterior "'s
 			$searchname= $namematch[0];
@@ -213,25 +213,25 @@ class AniDB
 			$searchname = preg_replace('/\s+/i', ' ', $searchname);
 			// remove extentions such as .001 or .010
 			$searchname = preg_replace('/\.\d+$/i', '', $searchname);
-			
+
 			// to make this compatable with cleanFilename return an array
 			$cleanFilename['title'] = $searchname;
-			
+
 			// The episode number is normally a set of numbers surrounded by . or spaces
 			preg_match('/(\.d+\.| \d+ )/', $searchname, $episodematch);
-			// if numbers are  present 
-			if(isset($episodematch[0])) 
+			// if numbers are  present
+			if(isset($episodematch[0]))
 			{
 				  // remove any spaces or .'s surrounding it
 				  $episodematch[0] = trim($episodematch[0], "\. ");
 				  $episodematch[0] = (int)$episodematch[0];
-				  
+
 				  $cleanFilename['epno'] = $episodematch[0];
 			}
-			
+
 			return $cleanFilename;
 		}
-		else 
+		else
 		{
 			if ($this->echooutput)
 				echo "\tFalling back to Pure REGEX methodto determine name\n";
@@ -242,19 +242,19 @@ class AniDB
 
 	}
 
-	
+
 	// determine if given an ID it is ANIME or not, this should be moved to postprocess to be cleaner but for now as to not touch another file leave it here
-	public function checkIfAnime($releaseid) 
+	public function checkIfAnime($releaseid)
 	{
 		$db = new DB();
 		$result = $db->query(sprintf('SELECT categoryid FROM releases WHERE id = %d', $releaseid));
 
-		if(isset($result[0]['categoryid']) && $result[0]['categoryid'] == "5070") 
+		if(isset($result[0]['categoryid']) && $result[0]['categoryid'] == "5070")
 			return True;
 		else
 			return False;
 	}
-	
+
 
 	function processAnAnimeRelease($results)
 	{
@@ -275,9 +275,9 @@ class AniDB
 
 				// Get a release name to update the DB with, this is more than the title as it includes group size ... or worst case the same as the title
 				$getReleaseName = $this->getReleaseName($arr['searchname']);
-				
+
 				echo "\tProcessing Anime entitled: " . $getReleaseName['title'] . "\n";
-				
+
 				// get anidb number for the title of the naime
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if(!$anidbID)
@@ -292,7 +292,7 @@ class AniDB
 
 				// get the data on this anime from the Databse, if not present then this is False
 				$AniDBAPIArray = $this->getAnimeInfo($anidbID);
-				
+
 				if ($AniDBAPIArray['anidbid'])
 				{
 					// if this anime is found postprocess it
@@ -342,7 +342,7 @@ class AniDB
 	{
 		$db = new DB();
 		$threads--;
-		if($hours == 0) 		  
+		if($hours == 0)
 		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
 		else
 		  // only select items within 6 hours
@@ -354,12 +354,12 @@ class AniDB
 	}
 
 	// process a single Anime Release based on teh release ID, such a realtime
-	public function processSingleAnime($releaseid) 
+	public function processSingleAnime($releaseid)
 	{
 		$db = new DB();
 		// get full information on a single release
 		$results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE id = %d', $releaseid));
-		
+
 		// process the resulting set in this case 1
 		$this->processAnAnimeRelease($results);
 	}
