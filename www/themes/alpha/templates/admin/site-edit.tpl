@@ -723,10 +723,10 @@
 </tr>
 
 <tr>
-    <td><label for="safepartrepair">Part Repair for Backfill Safe Threaded:</label></td>
+    <td><label for="safepartrepair">Part Repair for Safe Threaded Scripts:</label></td>
     <td>
         {html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$fsite->safepartrepair separator='<br />'}
-        <div class="hint">Whether to put unreceived parts into partrepair table when running backfill safe threaded script.</div>
+        <div class="hint">Whether to put unreceived parts into partrepair table when running binaries or backfill safe threaded scripts.</div>
     </td>
 </tr>
 
