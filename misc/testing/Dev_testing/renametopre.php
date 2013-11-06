@@ -679,7 +679,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 		if (!empty($cleanerName))
 			return $cleanerName;
 	}
-	//Für brothers-of-usenet.net - [01/10] - "Costume.Quest.Language.Changer.DOX-RAiN.par2" yEnc
+	//FÃ¼r brothers-of-usenet.net - [01/10] - "Costume.Quest.Language.Changer.DOX-RAiN.par2" yEnc
 	elseif (preg_match('/^.+?brothers-of-usenet\.net[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;)(?P<title>.+)\.(par|vol|rar|nfo).*?("|#34;) yEnc$/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
