@@ -11,7 +11,7 @@ $AniDB = new AniDB;
 if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 {
 
-	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", $catarray, -1);
+	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", "5070", -1);
 	$AniDBAPIArray = $AniDB->getAnimeInfo($_GET['id']);
 
 	if (!$release || !$AniDBAPIArray)
@@ -29,7 +29,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 		$animeEpisodeTitles[$r['tvtitle']][] = $r;
 
 	$page->smarty->assign('animeEpisodeTitles', $animeEpisodeTitles);
-	$page->smarty->assign('animeAnidbID', $AniDBAPIArray['anidbid']);
+	$page->smarty->assign('animeAnidbid', $AniDBAPIArray['anidbid']);
 	$page->smarty->assign('animeTitle', $AniDBAPIArray['title']);
 	$page->smarty->assign('animeType', $AniDBAPIArray['type']);
 	$page->smarty->assign('animePicture', $AniDBAPIArray['picture']);
