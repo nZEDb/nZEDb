@@ -1,5 +1,5 @@
 <?php
-/* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */ 
+/* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */
 /*
 require_once("/var/www/nZEDb/www/config.php");
 require_once("/var/www/nZEDb/www/lib/framework/db.php");
@@ -12,7 +12,7 @@ $lppo = "143";
 // Wanted patch: round(( select count(*) from predb where adddate > lpdpo )/10000).
 $wp = "144";
 if (!file_exists(WWW_DIR."/a"))
-    mkdir(WWW_DIR."/a", 0755, true);
+	mkdir(WWW_DIR."/a", 0755, true);
 
 if ($db->dbSystem() == "mysql")
 	$uta = "UNIX_TIMESTAMP(adddate)";

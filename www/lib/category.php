@@ -73,7 +73,7 @@ class Category
 
 	private $tmpCat = 0;
 
-	public function category()
+	public function __construct()
 	{
 		$s = new Sites();
 		$site = $s->get();

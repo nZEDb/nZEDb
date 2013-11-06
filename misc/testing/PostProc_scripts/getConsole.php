@@ -13,7 +13,7 @@ $db = new Db();
 $res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = %d ) ORDER BY id DESC", Category::CAT_PARENT_GAME));
 if (count($res) > 0)
 {
-	foreach ($res as $arr) 
+	foreach ($res as $arr)
 	{
 		$gameInfo = $console->parseTitle($arr['searchname']);
 		if ($gameInfo !== false)

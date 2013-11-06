@@ -4,8 +4,6 @@ require_once(WWW_DIR."lib/backfill.php");
 require_once(WWW_DIR."lib/binaries.php");
 require_once(WWW_DIR."lib/groups.php");
 
-
-
 if (isset($argv[1]))
 {
 	$pieces = explode(" ", $argv[1]);

@@ -25,7 +25,7 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 
 
 	$s = new Sites();
-    $site = $s->get();
+	$site = $s->get();
 	$tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 
 	if ($tablepergroup == 1)

@@ -14,7 +14,7 @@ class Binaries
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
-	public function Binaries()
+	public function __construct()
 	{
 		$this->db = new DB();
 		$s = new Sites();
@@ -35,9 +35,9 @@ class Binaries
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
-		$this->primary = 'green';
-		$this->warning = 'red';
-		$this->header = 'yellow';
+		$this->primary = 'Green';
+		$this->warning = 'Red';
+		$this->header = 'Yellow';
 
 		// Cache of our black/white list.
 		$this->blackList = $this->message = array();
@@ -48,9 +48,9 @@ class Binaries
 	{
 		if ($this->hashcheck == 0)
 		{
-			echo $this->c->setcolor('bold', $this->warning)."We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n".$this->c->rsetcolor();
+			echo $this->c->setColor($this->warning)."We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n".$this->c->rsetcolor();
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes')
-				exit($this->c->setcolor('bold', $this->primary)."If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n".$this->c->rsetcolor());
+				exit($this->c->set256($this->primary)."If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n".$this->c->rsetcolor());
 			$relss = new Releases(true);
 			$relss->resetCollections();
 		}
@@ -60,7 +60,7 @@ class Binaries
 		if ($res)
 		{
 			$alltime = microtime(true);
-			echo $this->c->setcolor('bold', $this->header)."\nUpdating: ".sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No')."\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->header)."\nUpdating: ".sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No')."\n".$this->c->rsetcolor();
 
 			// Connect to usenet.
 			$nntp = new Nntp();
@@ -73,23 +73,23 @@ class Binaries
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
-				echo $this->c->setcolor('bold', $this->header)."\nStarting group ".$counter.' of '.sizeof($res)."\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res)."\n".$this->c->rsetcolor();
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
 			// Quit usenet.
 			$nntp->doQuit();
 
-			echo $this->c->setcolor('bold', $this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
 		}
 		else
-			echo $this->c->setcolor('bold', $this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
+			echo $this->c->setColor($this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
 	public function updateGroup($groupArr, $nntp=null)
 	{
 		$this->startGroup = microtime(true);
-		echo $this->c->setcolor('bold', $this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
+		echo $this->c->set256($this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
 
 		$st = false;
 		if (!isset($nntp))
@@ -114,11 +114,11 @@ class Binaries
 		// Attempt to repair any missing parts before grabbing new ones.
 		if ($this->DoPartRepair)
 		{
-			echo $this->c->setcolor('bold', $this->primary)."Part repair enabled. Checking for missing parts.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary)."Part repair enabled. Checking for missing parts.\n".$this->c->rsetcolor();
 			$this->partRepair($nntp, $groupArr);
 		}
 		else
-			echo $this->c->setcolor('bold', $this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
 
 		// Get first and last part numbers from newsgroup.
 		$db = $this->db;
@@ -130,7 +130,7 @@ class Binaries
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
 				if ($first == '')
 				{
-					echo $this->c->setcolor('bold', $this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
+					echo $this->c->setColor($this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
 					if ($st === true)
 						$nntp->doQuit();
 					return;
@@ -144,16 +144,16 @@ class Binaries
 					$first = $data['last'] - $this->NewGroupMsgsToScan;
 			}
 
-			// In case postdate doesn't get a date.
-			if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL')
+			// In case postdate doesn't get a date. If theis is a new groupt, set oldest post to now()
+			if (is_null($groupArr['first_record_postdate']))
 				$first_record_postdate = time();
 			else
 				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 
-			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true);
+			// get postdate for oldest post recorded
+			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$first_record_postdate = $newdate;
-
 			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 		}
 		else
@@ -183,26 +183,29 @@ class Binaries
 			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
 		}
 
+		// For new groups, we updated the group, so we need to get an updated group array
+		$tempArr = $groupArr;
+		$groupArr = $db->queryOneRow("SELECT * FROM groups WHERE name = '".$tempArr['name']."'");
+
 		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
 		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == 'NULL' || $groupArr['last_record'] == '0')
 			$lastr_postdate = time();
 		else
 		{
 			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
-			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true);
-			if ($groupArr['last_record'] != 0 && $newdatel !== false)
+			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true, 'newest');
+			if ($groupArr['last_record'] != 0 && $newdatel !== false && strtotime($newdatel))
 				$lastr_postdate = $newdatel;
 			else
 				$lastr_postdate = time();
 		}
-
 		// Generate postdates for first records, for those that upgraded.
-		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL' || $groupArr['first_record'] == '0')
+		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
 			$first_record_postdate = time();
 		else
 		{
 			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true);
+			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
 			if ($groupArr['first_record'] != 0 && $newdate !== false)
 				$first_record_postdate = $newdate;
 			else
@@ -216,10 +219,10 @@ class Binaries
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
 		{
-			echo $this->c->setcolor('bold', $this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
 
 			if ($groupArr['last_record'] == 0)
-				echo $this->c->setcolor('bold', $this->primary).'New group starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).'New group starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\n".$this->c->rsetcolor();
 
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
@@ -235,7 +238,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				$first++;
-				echo $this->c->setcolor('bold', $this->primary)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.$data['group']." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->header)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.str_replace('alt.binaries', 'a.b', $data['group'])." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
@@ -249,7 +252,7 @@ class Binaries
 					return;
 				}
 
-				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true);
+				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true, 'newest');
 				if ($newdatek !== false)
 					$lastr_postdate = $newdatek;
 
@@ -265,10 +268,10 @@ class Binaries
 				}
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo $this->c->setcolor('bold', $this->primary).$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
 		}
 		else
-			echo $this->c->setcolor('bold', $this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
 
 		if ($st === true)
 			$nntp->doQuit();
@@ -293,7 +296,6 @@ class Binaries
 			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
 			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
 			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
-
 		}
 		else
 		{
@@ -333,7 +335,7 @@ class Binaries
 			$msgs = $nntp->getOverview($first.'-'.$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				echo $this->c->setcolor('bold', $this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
+				echo $this->c->setColor($this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
 				return;
 			}
 		}
@@ -341,7 +343,7 @@ class Binaries
 
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = array();
+		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs))
 		{
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
@@ -361,8 +363,7 @@ class Binaries
 						continue;
 					else // We got the part this time. Remove article from partrepair.
 					{
-						$sql = sprintf('DELETE FROM partrepair WHERE numberid = %d AND groupid = %d', $msg['Number'], $groupArr['id']);
-						$db->queryExec($sql);
+						$msgrepaired[] = $msg['Number'];
 					}
 				}
 
@@ -448,8 +449,7 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					//Not needed if using table per group
-					if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -458,7 +458,6 @@ class Binaries
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
-
 					if((int)$matches[2] > 0)
 						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
 				}
@@ -481,7 +480,12 @@ class Binaries
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
 			if ($type != 'partrepair')
-				echo $this->c->setcolor('bold', $this->primary).'Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).'Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.\n".$this->c->rsetcolor();
+
+			if (sizeof($msgrepaired) > 0)
+			{
+				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
+			}
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -500,7 +504,7 @@ class Binaries
 					break;
 				}
 				if ($type != 'partrepair')
-					echo $this->c->setcolor('bold', $this->primary).'Server did not return '.sizeof($rangenotreceived)." articles.\n".$this->c->rsetcolor();
+					echo $this->c->set256($this->primary).'Server did not return '.sizeof($rangenotreceived)." articles.\n".$this->c->rsetcolor();
 			}
 
 			$this->startUpdate = microtime(true);
@@ -520,6 +524,7 @@ class Binaries
 				else
 					exit("Couldn't prepare parts insert statement!\n");
 
+				$collectionHashes = $binaryHashes = array();
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
@@ -537,18 +542,27 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
-							if(!$cres)
+							if (array_key_exists($collectionHash, $collectionHashes))
 							{
-								// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-								$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
-								$collectionID = $db->queryInsert($csql);
+								$collectionID = $collectionHashes[$collectionHash];
 							}
 							else
 							{
-								$collectionID = $cres['id'];
-								//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-								$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+								if(!$cres)
+								{
+									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
+									$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$collectionID = $db->queryInsert($csql);
+								}
+								else
+								{
+									$collectionID = $cres['id'];
+									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
+									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+								}
+
+								$collectionHashes[$collectionHash] = $collectionID;
 							}
 
 							$lastCollectionID = $collectionID;
@@ -559,17 +573,25 @@ class Binaries
 							$binaryID = $lastBinaryID;
 						else
 						{
-							$lastBinaryHash = $binaryHash;
-
-							$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
-							if(!$bres)
+							if (array_key_exists($binaryHash, $binaryHashes))
 							{
-								$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
-								$binaryID = $db->queryInsert($bsql);
+								$binaryID = $binaryHashes[$binaryHash];
 							}
 							else
-								$binaryID = $bres['id'];
+							{
+								$lastBinaryHash = $binaryHash;
 
+								$bres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['bname'].' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+								if(!$bres)
+								{
+									$bsql = sprintf('INSERT INTO '.$group['bname'].' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+									$binaryID = $db->queryInsert($bsql);
+								}
+								else
+									$binaryID = $bres['id'];
+
+								$binaryHashes[$binaryHash] = $binaryID;
+							}
 							$lastBinaryID = $binaryID;
 						}
 
@@ -595,7 +617,7 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0)
 				{
-					echo $this->c->setcolor('bold', $this->warning)."WARNING: ".sizeof($msgsnotinserted)." parts failed to insert.".$this->c->rsetcolor();
+					echo $this->c->setColor($this->warning)."WARNING: ".sizeof($msgsnotinserted)." parts failed to insert.".$this->c->rsetcolor();
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 				}
@@ -604,7 +626,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
 
 			if ($type != 'partrepair')
-				echo $this->c->setcolor('bold', $this->primary).$timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop."s total.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).$timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop."s total.\n".$this->c->rsetcolor();
 
 			unset($this->message, $data);
 			return $maxnum;
@@ -613,7 +635,7 @@ class Binaries
 		{
 			if ($type != 'partrepair')
 			{
-				echo $this->c->setcolor('bold', $this->warning)."Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n".$this->c->rsetcolor();
+				echo $this->c->setColor($this->warning)."Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n".$this->c->rsetcolor();
 				return false;
 			}
 		}
@@ -635,7 +657,7 @@ class Binaries
 		if (sizeof($missingParts) > 0)
 		{
 			if ($partID == '')
-				echo $this->c->setcolor('bold', $this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -671,10 +693,10 @@ class Binaries
 				if ($partID == '')
 				{
 					echo "\n";
-					$this->consoleTools->overWrite('Attempting repair: '.$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+					$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 				}
 				else
-					echo $this->c->setcolor('bold', $this->primary).'Attempting repair: '.$partfrom."\n".$this->c->rsetcolor();
+					echo $this->c->set256($this->primary)."\nAttempting repair: ".$partfrom."\n".$this->c->rsetcolor();
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
@@ -701,7 +723,7 @@ class Binaries
 
 			if ($partID == '')
 				echo "\n";
-			echo $this->c->setcolor('bold', $this->primary).$partsRepaired." parts repaired.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).$partsRepaired." parts repaired.\n".$this->c->rsetcolor();
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
@@ -728,6 +750,17 @@ class Binaries
 			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = '.$id);
 			return $id;
 		}
+	}
+
+	private function removeRepairedParts($numbers, $groupID)
+	{
+		$db = $this->db;
+		$sql = 'DELETE FROM partrepair WHERE numberid in (';
+		foreach($numbers as $number)
+			$sql .= sprintf('%d, ', $number);
+		$sql = substr($sql, 0, -2);
+		$sql .= sprintf(') AND groupid = %d', $groupID);
+		$db->queryExec($sql);
 	}
 
 	public function retrieveBlackList()

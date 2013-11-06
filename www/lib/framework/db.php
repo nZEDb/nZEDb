@@ -11,7 +11,7 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	public function DB()
+	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
@@ -36,7 +36,7 @@ class DB
 
 			try {
 				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
 				else
 					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 
@@ -292,8 +292,16 @@ class DB
 			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
 			$collections = true;
 		} catch (PDOException $e) {
-			if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
-				$collections = true;
+			try {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+				{
+					$collections = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
+			} catch (PDOException $e) {
+				return false;
+			}
 		}
 
 		if ($collections === true)
@@ -303,7 +311,11 @@ class DB
 				$binaries = true;
 			} catch (PDOException $e) {
 				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+				{
 					$binaries = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
 			}
 		}
 
@@ -314,7 +326,11 @@ class DB
 				$parts = true;
 			} catch (PDOException $e) {
 				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+				{
 					$parts = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
 			}
 		}
 		if ($parts === true && $binaries = true && $collections = true)

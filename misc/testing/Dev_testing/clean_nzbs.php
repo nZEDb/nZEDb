@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "";
-	echo "Getting List of nzbs to check against db.\n";
+/*	echo "Getting List of nzbs to check against db.\n";
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath)
@@ -43,7 +43,7 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 		}
 	}
 	echo "\n".number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs ".$couldbe."deleted.\n";
-
+*/
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	echo "\nGetting List of releases to check against nzbs.\n";
@@ -59,7 +59,10 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 			if (!file_exists($nzbpath))
 			{
 				if ($argv[1] === "delete")
+				{
 					$releases->fastDelete($row['id'], $row['guid'], $site);
+					usleep(10000);
+				}
 				$deleted++;
 			}
 			elseif (file_exists($nzbpath) && isset($row) && $row['nzbstatus'] != 1)

@@ -25,13 +25,14 @@ $time = TIME();
 
 foreach($objects as $filestoprocess => $nzbFile)
 {
-    if($nzbFile->getExtension() != "gz")
-        continue;
+	if($nzbFile->getExtension() != "gz")
+		continue;
 	$consoleTools->overWrite("Getting filecount: ".$iFilesCounted++." nzbs  ");
 }
 $time1 = TIME();
 
 echo "\nReorganizing files to Level ".$newLevel." from: ".$sourcePath." This could take a while...\n";
+$consoleTools = new ConsoleTools();
 foreach($objects as $filestoprocess => $nzbFile)
 {
 	if($nzbFile->getExtension() != "gz")

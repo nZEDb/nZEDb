@@ -36,7 +36,7 @@ function preName($argv)
 	$n = "\n";
 	$what = $argv[1]=='full' ? '' : ' AND adddate > NOW() - INTERVAL '.$argv[1].' HOUR';
 	$where = isset($argv[3]) ? ' AND groupid = '.$argv[3] : '';
-	$where = (isset($argv[2]) && !isset($argv[3])) ? ' AND groupid = '.$argv[2] : '';
+	$where = (isset($argv[2]) && is_numeric($argv[2]) && !isset($argv[3])) ? ' AND groupid = '.$argv[2] : '';
 	resetSearchnames();
 	echo "Getting work\n";
 	if (!isset($argv[2]))
@@ -45,7 +45,7 @@ function preName($argv)
 		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1".$what.$where);
 	elseif (isset($argv[1]) && $argv[1]=="full" && isset($argv[2]) && $argv[2] == "all")
 		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1".$where);
-	
+
 	$res->execute();
 	$total = $res->rowCount();
 	if ($total > 0)

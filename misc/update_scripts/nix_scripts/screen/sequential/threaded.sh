@@ -20,7 +20,7 @@ date1=`date +%s`
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-    rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
 if [[ $1 != "true" ]]
 then

@@ -30,26 +30,32 @@ function SplitSQL($file, $delimiter = ';')
 			while (feof($file) === false)
 			{
 				$query[] = fgets($file);
-
 				if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1)
 				{
 					$query = trim(implode('', $query));
 
 					if ($dbsys == "pgsql")
 						$query = str_replace(array("`", chr(96)), '', $query);
-					if (preg_match('/ALTER|UPDATE|INSERT|DELETE|DROP|CREATE/i', $query))
-					{
-						if ($db->queryExec($query) === false)
-							exit("Error: ".$query." Failed\n");
+					try {
+						$qry = $db->prepare($query);
+						$qry->execute();
+						echo 'SUCCESS: '.$query."\n";
+					} catch (PDOException $e) {
+						if ($e->errorInfo[1] == 1091)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1060)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1061)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1062)
+							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+						else if ($e->errorInfo[1] == 1071)
+							echo "Error: ".$e->errorInfo[2]." - Assuming MyIsam, Not Fatal.\n";
 						else
-							echo 'SUCCESS: '.$query."\n";
-					}
-					else
-					{
-						if ($db->query($query) === false)
+						{
+							echo $e;
 							exit("Error: ".$query." Failed\n");
-						else
-							echo 'SUCCESS: '.$query."\n";
+						}
 					}
 
 					while (ob_get_level() > 0)
@@ -77,12 +83,12 @@ function BackupDatabase()
 	$returnvar = NULL;
 	$output = NULL;
 	$DIR = MISC_DIR;
-	
+
 	if (command_exist("php5"))
 		$PHP = "php5";
 	else
 		$PHP = "php";
-	
+
 	//Backup based on database system
 	if($db->dbSystem() == "mysql")
 	{
@@ -98,7 +104,7 @@ $os = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? "windows" : "unix";
 
 if(isset($argv[1]) && $argv[1] == "safe")
 	$safeupgrade = true;
-else 
+else
 	$safeupgrade = false;
 
 if (isset($os) && $os == "unix")

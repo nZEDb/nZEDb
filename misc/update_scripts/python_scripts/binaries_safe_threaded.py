@@ -51,7 +51,7 @@ cur = connect()
 cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b, (SELECT value FROM site WHERE setting = 'hashcheck') AS c")
 dbgrab = cur[0].fetchall()
 disconnect(cur[0], cur[1])
-run_threads = int(dbgrab[0][0])-1
+run_threads = int(dbgrab[0][0])
 maxmssgs = int(dbgrab[0][1])
 hashcheck = int(dbgrab[0][2])
 
@@ -59,18 +59,17 @@ if hashcheck == 0:
 	sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
 
 #before we get the groups, lets update shortgroups
-subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+#subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
 cur = connect()
-cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS thier_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name GROUP BY g.name ORDER BY a.last_record DESC")
+cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS thier_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
 datas = cur[0].fetchall()
 disconnect(cur[0], cur[1])
 
 if not datas:
 	print("No Groups activated")
 	sys.exit()
-
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -147,7 +146,7 @@ def main():
 		final = ("{} {} Binary".format(group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
-	print("\nBinaries Threaded Safe Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print("\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
 
 if __name__ == '__main__':

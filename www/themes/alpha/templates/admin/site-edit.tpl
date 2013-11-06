@@ -739,6 +739,14 @@
 </tr>
 
 <tr>
+	<td><label for="tablepergroup">Table Per Group:</label></td>
+	<td>
+		{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}
+		<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run reset_truncate.php.<br />You may need to increase 'open_files_limit' in my.cnf</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="nntpproxy">Use NNTP Proxy:</label></td>
 	<td>
 		{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$fsite->nntpproxy separator='<br />'}
@@ -855,6 +863,46 @@
 <legend>Advanced - Threaded Settings</legend>
 <table class="input">
 <tr>
+	<td><label for="binarythreads">Update Binaries Threads:</label></td>
+	<td>
+		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<div class="hint">The number of threads for update_binaries.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="backfillthreads">Backfill Threads:</label></td>
+	<td>
+		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<div class="hint">The number of threads for backfill.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nzbthreads">Grab NZB Threads:</label></td>
+	<td>
+		<input class="tiny" id="grabnzbthreads" name="grabnzbthreads" type="text" value="{$fsite->grabnzbthreads}" />
+		<div class="hint">The number of threads for Grab NZBs.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="releasesthreads">Update Releases Threads:</label></td>
+	<td>
+		<input class="tiny" id="releasesthreads" name="releasesthreads" type="text" value="{$fsite->releasesthreads}" />
+		<div class="hint">The number of threads for update_releases. This is only for tablepergroup.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nzbthreads">Import-nzb Threads:</label></td>
+	<td>
+		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<div class="hint">The number of threads for import-nzb(bulk). This will thread each subfolder.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="postthreads">Postprocessing Additional Threads:</label></td>
 	<td>
 		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
@@ -863,10 +911,10 @@
 </tr>
 
 <tr>
-	<td><label for="alternate_nntp">Alternate NNTP Ptovider:</label></td>
+	<td><label for="alternate_nntp">Alternate NNTP Provider:</label></td>
 	<td>
 		{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$fsite->alternate_nntp separator='<br />'}
-		<div class="hint">Use an alternate NNTP provider for additional postprocessing only.</div>
+		<div class="hint">This set Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.</div>
 	</td>
 </tr>
 
@@ -892,38 +940,6 @@
         <input class="tiny" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
         <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
     </td>
-</tr>
-
-<tr>
-	<td><label for="binarythreads">Update Binaries Threads:</label></td>
-	<td>
-		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-		<div class="hint">The number of threads for update_binaries.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="backfillthreads">Backfill Threads:</label></td>
-	<td>
-		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
-		<div class="hint">The number of threads for backfill.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="nzbthreads">Import-nzb Threads:</label></td>
-	<td>
-		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
-		<div class="hint">The number of threads for import-nzb(bulk). This will thread each subfolder.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="nzbthreads">Grab NZB Threads:</label></td>
-	<td>
-		<input class="tiny" id="grabnzbthreads" name="grabnzbthreads" type="text" value="{$fsite->grabnzbthreads}" />
-		<div class="hint">The number of threads for Grab NZBs.</div>
-	</td>
 </tr>
 
 </table>

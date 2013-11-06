@@ -216,7 +216,6 @@ if (!empty($argc) || $page->isPostBack() )
 					echo "Failed copying NZB, deleting release from DB.\n";
 					$importfailed = true;
 				}
-			}
 				$nzbCount++;
 				@unlink($nzbFile);
 			}

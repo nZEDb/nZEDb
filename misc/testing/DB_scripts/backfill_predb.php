@@ -21,7 +21,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 		$filenums = 142-$predbv["v"];
 	else if ($argv[1] >= $predbv["v"])
 		$filenums = $argv[1];
-	
+
 	echo "Going to download and insert preDB backfills, you are currently at backfill # ".$predbv["v"].".\n";
 
 	$done = $total = 0;
@@ -39,7 +39,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 				{
 					fwrite($zipfile, fread($gitfile, 1024*8), 1024*8);
 				}
-				
+
 				if ($gitfile)
 					fclose($gitfile);
 				if ($zipfile);
@@ -51,7 +51,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 					{
 						$file = WWW_DIR."data".$filenump.".txt";
 						$txthandle = fopen($file, "w");
-				
+
 						while($string = gzread($handle, 4096))
 						{
 							fwrite($txthandle, $string, strlen($string));

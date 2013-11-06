@@ -47,9 +47,7 @@ if( isset($argv[1]) )
 			exec("rm -rf ".$smarty."*");
 		}
 		else
-		{
 			echo "Nothing to remove from ".$smarty."\n";
-		}
 
 		echo "Patching database - $dbname\n";
 		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
@@ -89,6 +87,4 @@ if( isset($argv[1]) )
 	}
 }
 else
-{
 	exit("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n\n");
-}
