@@ -739,6 +739,14 @@
 </tr>
 
 <tr>
+	<td><label for="replacenzbs">Replace Duplicate NZBs:</label></td>
+	<td>
+		{html_radios id="replacenzbs" name='replacenzbs' values=$yesno_ids output=$yesno_names selected=$fsite->replacenzbs separator='<br />'}
+		<div class="hint">NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="tablepergroup">Table Per Group:</label></td>
 	<td>
 		{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}

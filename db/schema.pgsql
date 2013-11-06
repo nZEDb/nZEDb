@@ -1435,7 +1435,8 @@ INSERT INTO site
 	('tablepergroup', '0'),	
 	('nntpproxy', 0),
 	('releasesthreads', '1'),
-	('sqlpatch','136');
+	('replacenzbs', '0'),
+	('sqlpatch','137');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

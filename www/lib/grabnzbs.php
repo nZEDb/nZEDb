@@ -5,6 +5,7 @@ require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/site.php");
 require_once(WWW_DIR."lib/groups.php");
+require_once(WWW_DIR."lib/releases.php");
 
 class Import
 {
@@ -14,6 +15,7 @@ class Import
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
 	}
 
 	function categorize()
@@ -113,7 +115,6 @@ class Import
 		$nzbsplitlevel = $this->site->nzbsplitlevel;
 		$nzbpath = $this->site->nzbpath;
 		$version = $this->site->version;
-		$crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$namecleaning = new nameCleaning();
 
 		$groups = $this->db->query('SELECT id, name FROM groups');
@@ -190,19 +191,25 @@ class Import
 				if ($skipCheck !== true)
 				{
 					$usename = $this->db->escapeString($name);
-					$dupeCheckSql = sprintf('SELECT name FROM releases WHERE name = %s AND fromname = %s AND groupid = %d AND size = %d', $this->db->escapeString($firstname['0']),$this->db->escapeString($fromname), $realgroupid, $size);
-					$res = $this->db->queryOneRow($dupeCheckSql);
-
-					// Only check one binary per nzb, they should all be in the same release anyway.
-					$skipCheck = true;
-
-					// If the release is in the DB already then just skip this whole procedure.
-					if ($res !== false)
+					$dupeCheckSql = sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %d AND size = %d', $this->db->escapeString($firstname['0']),$this->db->escapeString($fromname), $realgroupid, $size);
+					$res = $this->db->prepare($dupeCheckSql);
+					$res->execute();
+					if ($this->replacenzbs == 1)
+					{
+						$releases = new Releases();
+						foreach ($res as $rel)
+						{
+							$releasess->fastDelete($rel['id'], $rel['guid'], $this->site);
+						}
+					}
+					else if ($res->rowCount() > 0 && $this->replacenzbs == 0)
 					{
 						flush();
 						$importfailed = true;
 						break;
 					}
+					// Only check one binary per nzb, they should all be in the same release anyway.
+					$skipCheck = true;
 				}
 			}
 
