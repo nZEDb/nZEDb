@@ -288,6 +288,14 @@
 	</td>
 </tr>
 
+<tr>
+    <td><label for="anidbkey">Anidb API key:</label></td>
+    <td>
+        <input id="anidbkey" class="long" name="anidbkey" type="text" value="{$fsite->anidbkey}" />
+        <div class="hint">The Anidb api key. Used for Anime lookups.</div>
+    </td>
+</tr>
+
 </table>
 </fieldset>
 

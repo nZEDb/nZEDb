@@ -7,14 +7,14 @@ require_once(WWW_DIR.'lib/site.php');
 
 class AniDB
 {
-	
-	function AniDB($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$site = $s->get();
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = WWW_DIR.'covers/anime/';
+		$this->db = new DB();
 	}
 
 	public function animetitlesUpdate()
@@ -22,43 +22,41 @@ class AniDB
 		// this should not be run as it should be handled by populate_anidb
 		if ($this->echooutput)
 			echo "Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB_scripts\n";
-		return; 
-		
+		return;
 	}
 
 	public function addTitle($AniDBAPIArray)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryInsert(sprintf("INSERT INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']), $db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
 	}
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
 	}
 
 	public function deleteTitle($anidbID)
 	{
-		$db = new DB();
-
+		$db = $this->db;
 		$db->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
 	}
 
 	public function getanidbID($title)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$anidbID = "";
-		if ($db->dbSystem() == 'mysql')  
+		if ($db->dbSystem() == 'mysql')
 		{
 			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $db->escapeString('^'.$title.'$'));
 			$anidbID = $db->queryOneRow($query);
-			
+
 			// if the first query failed try it again using like as we have a change for a match
-			if($anidbID == False)	
+			if($anidbID == False)
 			{
-			    $query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $db->escapeString('%'.$title.'%'));
-			    $anidbID = $db->queryOneRow($query);
+				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $db->escapeString('%'.$title.'%'));
+				$anidbID = $db->queryOneRow($query);
 			}
 		}
 		else
@@ -72,7 +70,7 @@ class AniDB
 
 	public function getAnimeList($letter='', $animetitle='')
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($db->dbSystem() == 'mysql')
 		{
@@ -103,7 +101,7 @@ class AniDB
 
 	public function getAnimeRange($start, $num, $animetitle='')
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = '';
@@ -124,7 +122,7 @@ class AniDB
 
 	public function getAnimeCount($animetitle='')
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$rsql = '';
 		if ($animetitle != '')
@@ -142,7 +140,7 @@ class AniDB
 
 	public function getAnimeInfo($anidbID)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
 
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
@@ -160,7 +158,7 @@ class AniDB
 		$searchname = preg_replace('/( S\d+ ?E\d+|Movie ?(\d+|[ivx]+))(.*$)/i', '${1}', $searchname);
 		$searchname = preg_replace('/ ([12][890]\d{2})\b/i', ' (${1})', $searchname);
 		$searchname = str_ireplace('\'', '`', $searchname);
-		
+
 		$cleanFilename = preg_replace('/ (NC)?Opening ?/i', ' OP', $searchname);
 		$cleanFilename = preg_replace('/ (NC)?(Ending|Credits|Closing) ?/i', ' ED', $cleanFilename);
 		$cleanFilename = preg_replace('/ (Trailer|TR(?= ?\d)) ?/i', ' T', $cleanFilename);
@@ -174,7 +172,7 @@ class AniDB
 		preg_match('/^(?P<title>.+) (?P<epno>(?:NC)?(?:[A-Z](?=\d)|[A-Z]{2,3})?(?![A-Z]| [A-Z]|$) ?(?:(?<![&+] | and | v| ver|\w Movie )\d{1,3}(?!\d)(?:-\d{1,3}(?!\d))?)(?:[a-z])?)/i', $cleanFilename, $cleanFilename);
 
 		// if this did not return anything use the previous string as found as the title
-		if(!isset($cleanFilename['title'])) 
+		if(!isset($cleanFilename['title']))
 			$cleanFilename['title'] = $cleanFilename_org;
 
 		// extra cleanup to get a valid title
@@ -185,28 +183,28 @@ class AniDB
 		// replace multiple spaces with a single one
 		$cleanFilename['title'] = preg_replace('/\s+/i', ' ', $cleanFilename['title']);
 		// remove any remaining "'s
-		$cleanFilename['title'] = preg_replace('/"/i', ' ', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/"/i', ' ', $cleanFilename['title']);
 		// remove remaing numbers since they are suppose to be part of the epno
-		$cleanFilename['title'] = preg_replace('/\d\d+/i', '', $cleanFilename['title']);				
+		$cleanFilename['title'] = preg_replace('/\d\d+/i', '', $cleanFilename['title']);
 		// remove video extentions
 		$cleanFilename['title'] = preg_replace('/(avi|mp4|mkv|ogv|wmv)/i', '', $cleanFilename['title']);
 		// language as that is never part of an anime title
 		$cleanFilename['title'] = preg_replace('/( |\()(english|eng|french|fre|italian|ita|japanese|jap|chinese|ch)(\)| )/i', '', $cleanFilename['title']);
-		
+
 		// there is a case were we have title  tile in this case we want only the first instance, normally these are seperated by mutiple spaces
 		$mypieces = explode("   ", $cleanFilename['title']);
-		if(isset($mypieces[0])) 
-		{		    
-		    trim($mypieces[0]);
-		    $cleanFilename['title'] = $mypieces[0];
+		if(isset($mypieces[0]))
+		{
+			trim($mypieces[0]);
+			$cleanFilename['title'] = $mypieces[0];
 		}
 		// if we end up with something like S2 as in Season 2, try removing the S as anidb want it to read 'title 2'
-		$cleanFilename['title'] = preg_replace('/S(\d+)/i', '$1', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/S(\d+)/i', '$1', $cleanFilename['title']);
 		// extra cleanup to get a valid title
 
 		$cleanFilename['title'] = (isset($cleanFilename['title'])) ? trim($cleanFilename['title']) : trim($searchname);
 		$cleanFilename['title'] = preg_replace('/([^a-z0-9\s])/i', '[${1}]?', $cleanFilename['title']);
-		$cleanFilename['title'] = preg_replace('/( (The |Movie|O[AV][AV]|TV|\[\(\]\d{4}\[\)\]|Ep(isode)?|Vol(ume)?|Part|Phase|Chapter|Mission|(Director[`\']?s )?(Un)?C(ut|hoice)|Rem(aster|[iu]xx?)(ed)?|'.$noforeign.'))/i', '(${1})?', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/( (The |Movie|O[AV][AV]|TV|\[\(\]\d{4}\[\)\]|Ep(isode)?|Vol(ume)?|Part|Phase|Chapter|Mission|(Director[`\']?s )?(Un)?C(ut|hoice)|Rem(aster|[iu]xx?)(ed)?|'.$noforeign.'))/i', '(${1})?', $cleanFilename['title']);
 
 		$cleanFilename['epno'] = (isset($cleanFilename['epno'])) ? preg_replace('/^(NC|E(?!D)p?0*)|(?=^|-)0+|v(er)?(\d+)?$/i', '', $cleanFilename['epno']) : 1;
 		if(preg_match('/S\d+ ?[ED]\d+/i', $searchname)) {
@@ -218,11 +216,11 @@ class AniDB
 			preg_match('/([^\d]+)(\d+)/i', $cleanFilename['epno'], $epno);
 			$cleanFilename['epno'] = $epno[1].(int) $epno[2];
 		}
-		
+
 		return $cleanFilename;
 	}
 
-	
+
 	// the release name is dieefrent from teh title, but it is what we want to store as the searchname
 	public function getReleaseName($searchname)
 	{
@@ -233,7 +231,7 @@ class AniDB
 
 		// if "'s are  present process
 		// in a quick check of 2000 anime entires this works 98.5% of the time without falling back
-		if(isset($namematch[0])) 
+		if(isset($namematch[0]))
 		{
 			// start by getting rid of the exterior "'s
 			$searchname= $namematch[0];
@@ -245,25 +243,25 @@ class AniDB
 			$searchname = preg_replace('/\s+/i', ' ', $searchname);
 			// remove extentions such as .001 or .010
 			$searchname = preg_replace('/\.\d+$/i', '', $searchname);
-			
+
 			// to make this compatable with cleanFilename return an array
 			$cleanFilename['title'] = $searchname;
-			
+
 			// The episode number is normally a set of numbers surrounded by . or spaces
 			preg_match('/(\.d+\.| \d+ )/', $searchname, $episodematch);
-			// if numbers are  present 
-			if(isset($episodematch[0])) 
+			// if numbers are  present
+			if(isset($episodematch[0]))
 			{
 				  // remove any spaces or .'s surrounding it
 				  $episodematch[0] = trim($episodematch[0], "\. ");
 				  $episodematch[0] = (int)$episodematch[0];
-				  
+
 				  $cleanFilename['epno'] = $episodematch[0];
 			}
-			
+
 			return $cleanFilename;
 		}
-		else 
+		else
 		{
 			if ($this->echooutput)
 				echo "\tFalling back to Pure REGEX methodto determine name\n";
@@ -274,23 +272,23 @@ class AniDB
 
 	}
 
-	
+
 	// determine if given an ID it is ANIME or not, this should be moved to postprocess to be cleaner but for now as to not touch another file leave it here
-	public function checkIfAnime($releaseid) 
+	public function checkIfAnime($releaseid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$result = $db->query(sprintf('SELECT categoryid FROM releases WHERE id = %d', $releaseid));
 
-		if(isset($result[0]['categoryid']) && $result[0]['categoryid'] == "5070") 
+		if(isset($result[0]['categoryid']) && $result[0]['categoryid'] == "5070")
 			return True;
 		else
 			return False;
 	}
-	
+
 
 	function processAnAnimeRelease($results)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ri = new ReleaseImage();
 		$site = new Sites();
 
@@ -307,9 +305,9 @@ class AniDB
 
 				// Get a release name to update the DB with, this is more than the title as it includes group size ... or worst case the same as the title
 				$getReleaseName = $this->getReleaseName($arr['searchname']);
-				
+
 				echo "\tProcessing Anime entitled: " . $getReleaseName['title'] . "\n";
-				
+
 				// get anidb number for the title of the naime
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if(!$anidbID)
@@ -323,7 +321,7 @@ class AniDB
 					echo 'Looking up: '.$arr['searchname']."\n";
 
 				$AniDBAPIArray = $this->getAnimeInfo($anidbID);
-				
+
 				if ($AniDBAPIArray['anidbid'])
 				{
 					// if this anime is found postprocess it
@@ -371,9 +369,9 @@ class AniDB
 	// process a group of previously unprcoessed Anime Releases, as in postprocess
 	public function processAnimeReleases($threads=1, $hours=0)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$threads--;
-		if($hours == 0) 		  
+		if($hours == 0)
 		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
 		else
 		  // only select items within 6 hours
@@ -385,12 +383,12 @@ class AniDB
 	}
 
 	// process a single Anime Release based on teh release ID, such a realtime
-	public function processSingleAnime($releaseid) 
+	public function processSingleAnime($releaseid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		// get full information on a single release
 		$results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE id = %d', $releaseid));
-		
+
 		// process the resulting set in this case 1
 		$this->processAnAnimeRelease($results);
 	}
