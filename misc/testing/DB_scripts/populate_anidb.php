@@ -8,158 +8,166 @@ require_once(WWW_DIR.'lib/site.php');
 
 class AniDBstandAlone
 {
-	const CLIENT	= '<ANIDBAPI KEY HERE>';
 	const CLIENTVER = 1;
 
-	function __construct($echooutput)
+	function __construct($debug=false, $echooutput=true)
 	{
 		$s = new Sites();
-		$site = $s->get();
-		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
+		$this->site = $s->get();
+		$this->aniqty = (!empty($this->site->maxanidbprocessed)) ? $this->site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = WWW_DIR.'covers/anime/';
-		$this->APIKEY = $site->anidbkey;
+		$this->debug = ($this->site->debuginfo == '0') ? false : true;
+		$this->APIKEY = $this->site->anidbkey;
+		$this->db = new DB;
 	}
 
 	// get the titles list this is done only once a week
 	public function animetitlesUpdate()
 	{
-		$db = new DB();
+		$db = $this->db;
+		if ($this->APIKEY == '')
+		{
+			echo "You need an API key from anidb.net to use this\n";
+			return;
+		}
 
-
-				$lastUpdate = $db->queryOneRow('SELECT unixtime as utime FROM animetitles LIMIT 1');
-				if(isset($lastUpdate['utime']) && (time() - $lastUpdate['utime']) < 604800) {
-			echo "Last update occured less that 7 days ago, skiping update\n";
+		$lastUpdate = $db->queryOneRow('SELECT unixtime as utime FROM animetitles LIMIT 1');
+		if (isset($lastUpdate['utime']) && (time() - $lastUpdate['utime']) < 604800)
+		{
+			if ($this->echooutput)
+				echo "Last update occured less that 7 days ago, skiping update\n";
 			return;
 		}
 
 		if ($this->echooutput)
-			echo 'Updating animetitles.', "\n";
+			echo "Updating animetitles.\n";
 
 		$zh = gzopen('http://anidb.net/api/anime-titles.dat.gz', 'r');
 
 		preg_match_all('/(\d+)\|\d\|.+\|(.+)/', gzread($zh, '10000000'), $animetitles);
-		if(!$animetitles)
+		if (!$animetitles)
 			return false;
 
 		$db->queryExec('DELETE FROM animetitles WHERE anidbid IS NOT NULL');
 
-
 		if ($this->echooutput)
-			echo '\tTotal of ', count($animetitles[1]), " titles to add\n";
+			echo "Total of ".count($animetitles[1])." titles to add\n";
 
-		for($i = 0; $i < count($animetitles[1]); $i++) {
-			$db->queryInsert(sprintf('INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
-				$animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i], ENT_QUOTES, 'UTF-8')), time()));
-
-			if($i % 2500 == 0)
-				echo "\t\tCompleted Processing ", $i, " titles\n";
+		for ($i = 0; $i < count($animetitles[1]); $i++)
+		{
+			$db->queryInsert(sprintf('INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)', $animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i], ENT_QUOTES, 'UTF-8')), time()));
+			if ($i % 2500 == 0 && $this->echooutput)
+				echo "Completed Processing ", $i, " titles\n";
 		}
 
 		gzclose($zh);
 
-		$db = NULL;
-
 		if ($this->echooutput)
-			echo " done with animetitles update.\n\n";
+			echo "Completed animetitles update.\n\n";
 	}
-
 
 	// update the actual anidb info list as needed
 	public function getAniDBInfo($exitcount)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ri = new ReleaseImage();
 
 		// get an unordered list as anidb dislikes order sets
-		$animetitles = $db->query('SELECT DISTINCT `anidbid` FROM `animetitles`');
+		$animetitles = $db->query('SELECT DISTINCT anidbid FROM animetitles');
 
-		if($exitcount ==0)
+		if ($exitcount == 0)
 			$exitcount = 120;
 
-		echo "\nProcessing $exitcount anidb entries for this session\n";
+		if ($this->echooutput)
+			echo 'Processing '.$exitcount." anidb entries for this session\n";
 
 		if ($this->echooutput)
-			echo 'Total of ', count($animetitles), " titles present\n";
+			echo 'Total of '.count($animetitles)." titles present\n";
 
 		// loop counter
 		$i = 0;
 
 		// remove anything that has not been updated in 60 days as we can assume this are too old to be valid or in progress after 7
-		foreach($animetitles as $value) {
-
+		foreach ($animetitles as $value)
+		{
 			$anidbid = (int)$value['anidbid'];
 
 			// get the information on the anime title as stored in the DB
 			$AniDBAPIArrayOld = $this->getAnimeInfo($anidbid);
-			if($AniDBAPIArrayOld == False) {
+			if ($AniDBAPIArrayOld == false)
+			{
 				// entry is not present, report it in debug, but do nothing else with it
 				if ($this->echooutput)
-					echo "AnimeTitle Record ", $anidbid, " is not present in anidb table yet, skipping\n";
-
+					echo 'AnimeTitle Record '.$anidbid." is not present in anidb table yet, skipping\n";
 			}
-			else {
+			else
+			{
 				if ($this->echooutput)
-					echo "AnimeTitle Record ", $anidbid, " is present in anidb table yet, processing for possible removal\n";
+					echo 'AnimeTitle Record '.$anidbid." is not present in anidb table yet, processing for possible removal.\n";
 
-					$AniDBAPIArrayOld['AnimeInProgress'] = False;
+				$AniDBAPIArrayOld['AnimeInProgress'] = false;
 
 				// get start and end dates in unix time
 				$anidbstartdate = strtotime($AniDBAPIArrayOld['startdate']);
 				$anidbenddate = strtotime($AniDBAPIArrayOld['enddate']);
 
 				// if the current time is less than the endtime or the endtime is 0 then the show likely has not finsihed.
-				if($anidbstartdate == 0 && $anidbenddate == 0) {
+				if ($anidbstartdate == 0 && $anidbenddate == 0)
+				{
 					// ignore as there is no start date or end date listed, assume not in progress
-					$AniDBAPIArrayOld['AnimeInProgress'] = False;
+					$AniDBAPIArrayOld['AnimeInProgress'] = false;
 				}
-				else if($anidbstartdate > time()) {
+				else if ($anidbstartdate > time())
+				{
 					// start date in the future thus it is not in progress as it has not started yet
-					$AniDBAPIArrayOld['AnimeInProgress'] = False;
+					$AniDBAPIArrayOld['AnimeInProgress'] = false;
 				}
-				else if($anidbstartdate != 0 && $anidbenddate == 0) {
+				else if ($anidbstartdate != 0 && $anidbenddate == 0)
+				{
 					// in this case anime may not have a end date and should be considered in progress as teh end date is just unknown
-					$AniDBAPIArrayOld['AnimeInProgress'] = True;
+					$AniDBAPIArrayOld['AnimeInProgress'] = true;
 				}
-				else if($anidbenddate > time()) {
+				else if ($anidbenddate > time())
+				{
 					// anime has end date in the future, is considered in progress
-					$AniDBAPIArrayOld['AnimeInProgress'] = True;
+					$AniDBAPIArrayOld['AnimeInProgress'] = true;
 				}
 
 				// determine if we need to remove the record from the list
-				  // first if the record is over 60 days old replace it no matter what
-				  // second if in progress and the record is over 7 days old then replace it,since new information is likely availiable
-				if( ($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) ||
-					($AniDBAPIArrayOld['AnimeInProgress'] == True && (time() - $AniDBAPIArrayOld['unixtime']) > 604800) )
+				// first if the record is over 60 days old replace it no matter what
+				// second if in progress and the record is over 7 days old then replace it,since new information is likely availiable
+				if (($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) || ($AniDBAPIArrayOld['AnimeInProgress'] == true && (time() - $AniDBAPIArrayOld['unixtime']) > 604800))
 				{
 					if ($this->echooutput)
-						echo "Removing OLD DB record ", $anidbid, "\n";
+						echo 'Removing OLD DB record '.$anidbid."\n";
 
-						// this means in teh next section we only need to deal with new entries
-						$this->deleteTitle($anidbid);
+					// this means in teh next section we only need to deal with new entries
+					$this->deleteTitle($anidbid);
 				}
 			} 	// else defined
 		}
 
 		// now add and update shoows as needed
-		foreach($animetitles as $value) {
-
+		foreach($animetitles as $value)
+		{
 			$anidbid = (int)$value['anidbid'];
 
 			$exists = $db->query(sprintf('SELECT COUNT(*) FROM `anidb` WHERE `anidbid` = %d', $anidbid));
 
-			if( (int)$exists['0'][0] == 0 )
+			if ( (int)$exists['0'][0] == 0 )
 			{
 				if ($this->echooutput)
-					echo "\tAdding AniDB ID ", $anidbid, "\n";
+					echo 'Adding AniDB ID '.$anidbid."\n";
 
 				// actually get the information on this anime from anidb
 				$AniDBAPIArray = $this->AniDBAPI($anidbid);
 
 				// if it is false we can simply exit
-				if($AniDBAPIArray['banned'])
+				if ($AniDBAPIArray['banned'])
 				{
-					echo "\tAniDB Banned, import will fail, please wait 24 hours before retrying\n";
+					if ($this->echooutput)
+						echo "AniDB Banned, import will fail, please wait 24 hours before retrying\n";
 					return;
 				}
 
@@ -168,13 +176,13 @@ class AniDBstandAlone
 
 				$this->addTitle($AniDBAPIArray);
 
-				if($AniDBAPIArray['picture'])
+				if ($AniDBAPIArray['picture'])
 				{
 					// save the image to the covers page
-					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'],
-						$this->imgSavePath);
+					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
 				}
 			}	// if new (AKA not present)
+
 /* Holding on to this in case we want it again as it has some uses, but currently we mange this in the first foreach statement, so there is no need for it any longer
 			else
 			{
@@ -197,7 +205,7 @@ class AniDBstandAlone
 					$AniDBAPIArrayNew = $this->AniDBAPI($anidbid);
 
 					// if it is false we can simply exit
-					if($AniDBAPIArrayNew['banned'])
+					if ($AniDBAPIArrayNew['banned'])
 					{
 						echo "\tAniDB Banned, import will fail, please wait 24 hours before retrying\n";
 						return;
@@ -214,9 +222,9 @@ class AniDBstandAlone
 					$image_file = $this->imgSavePath . $anidbid;
 
 					// if the image is present we do not need to replace it
-					if(!file_exists($image_file) )
+					if (!file_exists($image_file) )
 					{
-						if($AniDBAPIArrayNew['picture'])
+						if ($AniDBAPIArrayNew['picture'])
 						{
 							// save the image to the covers page
 							$ri->saveImage($AniDBAPIArrayNew['anidbid'],
@@ -233,16 +241,16 @@ class AniDBstandAlone
 Holding on to this in case we want it again as it has some uses, but currently we mange this in the first foreach statement, so there is no need for it any longer */
 
 			// every 10 records sleep for 4 minutes before continuing
-			if($i % 10 == 0 && $i != 0)
+			if ($i % 10 == 0 && $i != 0)
 				  sleep(180 + rand(30, 90));
 
 			// using exitcount if this number of API calls is reached exit
-			if($i >= $exitcount)
+			if ($i >= $exitcount)
 				  return;
 
-			// update how many we have done of teh total to do in this session
-			if($i != 0)
-				echo "Processed $i anidb entries of a total possible of $exitcount for this session\n";
+			// update how many we have done of the total to do in this session
+			if ($i != 0 && $this->echooutput)
+				echo 'Processed '.$i." anidb entries of a total possible of $exitcount for this session\n";
 		}	// foreach
 
 	}
@@ -250,7 +258,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 	public function addTitle($AniDBAPIArray)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 /*
 		if ($this->echooutput)
@@ -263,7 +271,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 /*
 		if ($this->echooutput)
@@ -276,7 +284,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 	public function deleteTitle($anidbID)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 /*
 		 	 if ($this->echooutput)
@@ -290,7 +298,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 	public function getAnimeInfo($anidbID)
 	{
 
-		$db = new DB();
+		$db = $this->db;
 		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
 
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
@@ -312,9 +320,9 @@ Holding on to this in case we want it again as it has some uses, but currently w
 		$apiresponse = curl_exec($ch);
 
 		if ($this->echooutput)
-			echo "Response: '" . $apiresponse . "'\n";
+			echo "Response: '".$apiresponse."'\n";
 
-		if(!$apiresponse)
+		if (!$apiresponse)
 			return false;
 		curl_close($ch);
 
@@ -323,15 +331,13 @@ Holding on to this in case we want it again as it has some uses, but currently w
 		$AniDBAPIArray['anidbid'] = $anidbID;
 
 		// if we are banned simply return false
-		if(preg_match("/\<error\>Banned\<\/error\>/",$apiresponse))
+		if (preg_match("/\<error\>Banned\<\/error\>/",$apiresponse))
 		{
-			$AniDBAPIArray['banned'] = True;
+			$AniDBAPIArray['banned'] = true;
 			return $AniDBAPIArray;
 		}
 		else
-		{
-			$AniDBAPIArray['banned'] = False;
-		}
+			$AniDBAPIArray['banned'] = false;
 
 		preg_match_all('/<title xml:lang="x-jat" type="(?:official|main)">(.+)<\/title>/i', $apiresponse, $title);
 		$AniDBAPIArray['title'] = isset($title[1][0]) ? $title[1][0] : '';
@@ -377,38 +383,24 @@ Holding on to this in case we want it again as it has some uses, but currently w
 	}
 }
 
-
-$debug = False;
-if(isset($argv[2]))
+if (isset($argv[1]) && is_numeric($argv[1]))
 {
-	if($argv[2] == 'true')
-		$debug = True;
-}
+	// create a new AniDB object
+	$anidb = new AniDBstandAlone($echooutput=true);
 
-// create a new AniDB object
-if($debug) {
-	$anidb = new AniDBstandAlone(True);
+	// next get the title list and populate the DB
+	$anidb->animetitlesUpdate();
+
+	// sleep between 1 and 3 minutes before it starts this way if from a cron process the start times are random
+	if (isset($argv[2]) && $argv[2] == 'cron')
+		sleep(rand(60, 180));
+
+	// then get the titles, this is where we will make the real changes
+	if (isset($argv[1]))
+	{
+		// we do not always want the same number so add between 1 and 12 to it
+		$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
+	}
 }
 else
-{
-	$anidb = new AniDBstandAlone(False);
-}
-
-// next get the title list and populate the DB
-$anidb->animetitlesUpdate();
-
-// sleep between 1 and 3 minutes before it starts this way if from a cron process the start times are random
-sleep(rand(60, 180));
-
-// then get the titles this is were we will make the real changes
-if(isset($argv[1]))
-{
-	// we do not always want the same number fo add between 1 and 12 to it
-	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
-}
-else
-{
-	$anidb->getAniDBInfo(0);
-}
-// this script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of PI queries that can be executed max and whether or not we want debuging teh first argument if unset will try to do the entire list (a good way to get banded), the second option can be blank or true for debugging.
-// IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connent to anidb as this will fail
+	echo "This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of PI queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n";
