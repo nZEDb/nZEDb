@@ -23,6 +23,7 @@ class Backfill
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
+		$this->safepartrepair = (!empty($site->safepartrepair)) ? $site->safepartrepair : 0;
 	}
 
 	// Backfill groups using user specified time/date.
@@ -606,6 +607,7 @@ class Backfill
 		$backthread = $site->get()->backfillthreads;
 		$binaries = new Binaries();
 		$groupArr = $groups->getByName($group);
+		$type = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->nntpproxy == 0)
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).(($this->compressedHeaders)?' Using Compression':' Not Using Compression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
@@ -613,10 +615,10 @@ class Backfill
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
 		// Let scan handle the connection.
-		$lastId = $binaries->scan(null, $groupArr, $last, $first, 'backfill');
+		$lastId = $binaries->scan(null, $groupArr, $last, $first, $type);
 		// Scan failed - retry once
 		if ($lastId === false)
-			$binaries->scan(null, $groupArr, $last, $first, 'backfill');
+			$binaries->scan(null, $groupArr, $last, $first, $type);
 	}
 
 	function getFinal($group, $first, $type)

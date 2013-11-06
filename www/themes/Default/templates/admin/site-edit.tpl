@@ -413,7 +413,7 @@
 <tr>
 	<td><label for="minfilestoformrelease">Minimum Files to Make a Release:</label></td>
 	<td>
-		<input class="tiny" id="minfilestoformrelease" name="minfilestoformrelease" type="text" value="{$fsite->minfilestoformrelease}" />
+		<input class="short" id="minfilestoformrelease" name="minfilestoformrelease" type="text" value="{$fsite->minfilestoformrelease}" />
 		<div class="hint">The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.</div>
 	</td>
 </tr>
@@ -436,7 +436,7 @@
 <tr>
 	<td><label for="maxsizetopostprocess">Maximum File Size to Postprocess:</label></td>
 	<td>
-		<input class="tiny" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
+		<input class="short" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}" />
 		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
@@ -492,7 +492,7 @@
 <tr>
 	<td><label for="segmentstodownload">Number of Segments to download for video samples:</label></td>
 	<td>
-		<input class="tiny" id="segmentstodownload" name="segmentstodownload" type="text" value="{$fsite->segmentstodownload}" />
+		<input class="short" id="segmentstodownload" name="segmentstodownload" type="text" value="{$fsite->segmentstodownload}" />
 		<div class="hint">The maximum number of segments to download to generate the sample video file. (Default 2)</div>
 	</td>
 </tr>
@@ -500,7 +500,7 @@
 <tr>
 	<td><label for="ffmpeg_duration">Video sample file duration for ffmpeg:</label></td>
 	<td>
-		<input class="tiny" id="ffmpeg_duration" name="ffmpeg_duration" type="text" value="{$fsite->ffmpeg_duration}" />
+		<input class="short" id="ffmpeg_duration" name="ffmpeg_duration" type="text" value="{$fsite->ffmpeg_duration}" />
 		<div class="hint">The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)</div>
 	</td>
 </tr>
@@ -614,7 +614,7 @@
 	<td><label for="newgroupscanmethod">Where to start new groups:</label></td>
 	<td>
 		{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$fsite->newgroupscanmethod separator='<br />'}
-		<input class="tiny" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or
+		<input class="short" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$fsite->newgroupdaystoscan}" /> Days  or
 		<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$fsite->newgroupmsgstoscan}" /> Posts<br />
 		<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
 	</td>
@@ -637,7 +637,7 @@
 <tr>
 	<td><label for="nzbsplitlevel">Nzb File Path Level Deep:</label></td>
 	<td>
-		<input id="nzbsplitlevel" class="tiny" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
+		<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$fsite->nzbsplitlevel}" />
 		<div class="hint">Levels deep to store the nzb Files.</div>
 	</td>
 </tr>
@@ -645,7 +645,7 @@
 <tr>
 	<td><label for="releaseretentiondays">Release Retention:</label></td>
 	<td>
-		<input class="tiny" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
+		<input class="short" id="releasedays" name="releaseretentiondays" type="text" value="{$fsite->releaseretentiondays}" />
 		<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
 	</td>
 </tr>
@@ -653,7 +653,7 @@
 <tr>
 	<td><label for="partretentionhours">Part Retention Hours:</label></td>
 	<td>
-		<input class="tiny" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
+		<input class="short" id="parthours" name="partretentionhours" type="text" value="{$fsite->partretentionhours}" />
 		<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
 	</td>
 </tr>
@@ -661,7 +661,7 @@
 <tr>
 	<td><label for="miscotherretentionhours">Misc->Other Retention Hours:</label></td>
 	<td>
-		<input class="tiny" id="miscotherhours" name="miscotherretentionhours" type="text" value="{$fsite->miscotherretentionhours}" />
+		<input class="short" id="miscotherhours" name="miscotherretentionhours" type="text" value="{$fsite->miscotherretentionhours}" />
 		<div class="hint">The number of hours releases categorized as Misc->Other will be retained.  Set to 0 to disable.</div>
 	</td>
 </tr>
@@ -669,7 +669,7 @@
 <tr>
 	<td><label for="releasecompletion">Release Completion:</label></td>
 	<td>
-		<input class="tiny" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
+		<input class="short" id="releasecompletion" name="releasecompletion" type="text" value="{$fsite->releasecompletion}" />
 		<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
 	</td>
 </tr>
@@ -677,7 +677,7 @@
 <tr>
 	<td><label for="delaytime">Delay Time Check:</label></td>
 	<td>
-		<input class="tiny" id="delaytime" name="delaytime" type="text" value="{$fsite->delaytime}" />
+		<input class="short" id="delaytime" name="delaytime" type="text" value="{$fsite->delaytime}" />
 		<div class="hint">The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..</div>
 	</td>
 </tr>
@@ -685,7 +685,7 @@
 <tr>
 	<td><label for="crossposttime">Crossposted Time Check:</label></td>
 	<td>
-		<input class="tiny" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
+		<input class="short" id="crossposttime" name="crossposttime" type="text" value="{$fsite->crossposttime}" />
 		<div class="hint">The time in hours to check for crossposted releases.</div>
 	</td>
 </tr>
@@ -693,7 +693,7 @@
 <tr>
 	<td><label for="maxmssgs">Max Messages:</label></td>
 	<td>
-		<input class="tiny" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
+		<input class="short" id="maxmssgs" name="maxmssgs" type="text" value="{$fsite->maxmssgs}" />
 		<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
 	</td>
 </tr>
@@ -701,7 +701,7 @@
 <tr>
 	<td><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
 	<td>
-		<input class="tiny" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
+		<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$fsite->maxnzbsprocessed}" />
 		<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
 	</td>
 </tr>
@@ -709,7 +709,7 @@
 <tr>
 	<td><label for="maxpartrepair">Maximum repair per run:</label></td>
 	<td>
-		<input class="tiny" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
+		<input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
 		<div class="hint">The maximum amount of articles to attempt to repair at a time.</div>
 	</td>
 </tr>
@@ -720,6 +720,14 @@
 		{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$fsite->partrepair separator='<br />'}
 		<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 	</td>
+</tr>
+
+<tr>
+    <td><label for="safepartrepair">Part Repair for Safe Threaded Scripts:</label></td>
+    <td>
+        {html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$fsite->safepartrepair separator='<br />'}
+        <div class="hint">Whether to put unreceived parts into partrepair table when running binaries or backfill safe threaded scripts.</div>
+    </td>
 </tr>
 
 <tr>
@@ -779,7 +787,7 @@
 <tr>
 	<td><label for="maxaddprocessed">Maximum add PP per run:</label></td>
 	<td>
-		<input class="tiny" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
+		<input class="short" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$fsite->maxaddprocessed}" />
 		<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run. Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 	</td>
 </tr>
@@ -787,7 +795,7 @@
 <tr>
 	<td><label for="maxpartsprocessed">Maximum add PP parts downloaded:</label></td>
 	<td>
-		<input class="tiny" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
+		<input class="short" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$fsite->maxpartsprocessed}" />
 		<div class="hint">If a part fails to download while post processing, this will retry up to the amount you set, then give up.</div>
 	</td>
 </tr>
@@ -795,7 +803,7 @@
 <tr>
 	<td><label for="passchkattempts">Maximum add PP parts checked:</label></td>
 	<td>
-		<input class="tiny" id="passchkattempts" name="passchkattempts" type="text" value="{$fsite->passchkattempts}" />
+		<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$fsite->passchkattempts}" />
 		<div class="hint">This overrides the above setting if set above 1. How many parts to check for a password before giving up. This slows down post processing massively, better to leave it 1.</div>
 	</td>
 </tr>
@@ -803,7 +811,7 @@
 <tr>
 	<td><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
 	<td>
-		<input class="tiny" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
+		<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$fsite->maxnfoprocessed}" />
 		<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 	</td>
 </tr>
@@ -811,7 +819,7 @@
 <tr>
 	<td><label for="maxrageprocessed">Maximum TVRage per run:</label></td>
 	<td>
-		<input class="tiny" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
+		<input class="short" id="maxrageprocessed" name="maxrageprocessed" type="text" value="{$fsite->maxrageprocessed}" />
 		<div class="hint">The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
@@ -819,7 +827,7 @@
 <tr>
 	<td><label for="maximdbprocessed">Maximum movies per run:</label></td>
 	<td>
-		<input class="tiny" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
+		<input class="short" id="maximdbprocessed" name="maximdbprocessed" type="text" value="{$fsite->maximdbprocessed}" />
 		<div class="hint">The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
@@ -827,7 +835,7 @@
 <tr>
 	<td><label for="maxanidbprocessed">Maximum anidb per run:</label></td>
 	<td>
-		<input class="tiny" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
+		<input class="short" id="maxanidbprocessed" name="maxanidbprocessed" type="text" value="{$fsite->maxanidbprocessed}" />
 		<div class="hint">The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.</div>
 	</td>
 </tr>
@@ -835,7 +843,7 @@
 <tr>
 	<td><label for="maxmusicprocessed">Maximum music per run:</label></td>
 	<td>
-		<input class="tiny" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
+		<input class="short" id="maxmusicprocessed" name="maxmusicprocessed" type="text" value="{$fsite->maxmusicprocessed}" />
 		<div class="hint">The maximum amount of music to process with amazon per run. This does not use an NNTP connection.</div>
 	</td>
 </tr>
@@ -843,7 +851,7 @@
 <tr>
 	<td><label for="maxgamesprocessed">Maximum games per run:</label></td>
 	<td>
-		<input class="tiny" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
+		<input class="short" id="maxgamesprocessed" name="maxgamesprocessed" type="text" value="{$fsite->maxgamesprocessed}" />
 		<div class="hint">The maximum amount of games to process with amazon per run. This does not use an NNTP connection.</div>
 	</td>
 </tr>
@@ -851,7 +859,7 @@
 <tr>
 	<td><label for="maxbooksprocessed">Maximum books per run:</label></td>
 	<td>
-		<input class="tiny" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
+		<input class="short" id="maxbooksprocessed" name="maxbooksprocessed" type="text" value="{$fsite->maxbooksprocessed}" />
 		<div class="hint">The maximum amount of books to process with amazon per run. This does not use an NNTP connection</div>
 	</td>
 </tr>
@@ -859,7 +867,7 @@
 <tr>
     <td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
     <td>
-        <input class="tiny" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
+        <input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
         <div class="hint">The maximum number of releases to check per run(threaded script only).</div>
     </td>
 </tr>
@@ -867,7 +875,7 @@
 <tr>
 	<td><label for="amazonsleep">Amazon sleep time:</label></td>
 	<td>
-		<input class="tiny" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
+		<input class="short" id="amazonsleep" name="amazonsleep" type="text" value="{$fsite->amazonsleep}" />
 		<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
 	</td>
 </tr>
@@ -881,7 +889,7 @@
 <tr>
 	<td><label for="binarythreads">Update Binaries Threads:</label></td>
 	<td>
-		<input class="tiny" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
+		<input class="short" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
 		<div class="hint">The number of threads for update_binaries.</div>
 	</td>
 </tr>
@@ -889,7 +897,7 @@
 <tr>
 	<td><label for="backfillthreads">Backfill Threads:</label></td>
 	<td>
-		<input class="tiny" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
+		<input class="short" id="backfillthreads" name="backfillthreads" type="text" value="{$fsite->backfillthreads}" />
 		<div class="hint">The number of threads for backfill.</div>
 	</td>
 </tr>
@@ -897,7 +905,7 @@
 <tr>
 	<td><label for="nzbthreads">Grab NZB Threads:</label></td>
 	<td>
-		<input class="tiny" id="grabnzbthreads" name="grabnzbthreads" type="text" value="{$fsite->grabnzbthreads}" />
+		<input class="short" id="grabnzbthreads" name="grabnzbthreads" type="text" value="{$fsite->grabnzbthreads}" />
 		<div class="hint">The number of threads for Grab NZBs.</div>
 	</td>
 </tr>
@@ -905,7 +913,7 @@
 <tr>
 	<td><label for="releasesthreads">Update Releases Threads:</label></td>
 	<td>
-		<input class="tiny" id="releasesthreads" name="releasesthreads" type="text" value="{$fsite->releasesthreads}" />
+		<input class="short" id="releasesthreads" name="releasesthreads" type="text" value="{$fsite->releasesthreads}" />
 		<div class="hint">The number of threads for update_releases. This is only for tablepergroup.</div>
 	</td>
 </tr>
@@ -913,7 +921,7 @@
 <tr>
 	<td><label for="nzbthreads">Import-nzb Threads:</label></td>
 	<td>
-		<input class="tiny" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
+		<input class="short" id="nzbthreads" name="nzbthreads" type="text" value="{$fsite->nzbthreads}" />
 		<div class="hint">The number of threads for import-nzb(bulk). This will thread each subfolder.</div>
 	</td>
 </tr>
@@ -921,7 +929,7 @@
 <tr>
 	<td><label for="postthreads">Postprocessing Additional Threads:</label></td>
 	<td>
-		<input class="tiny" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
+		<input class="short" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
 		<div class="hint">The number of threads for additional postprocessing. This includes deep rar inspection, preview and sample creation and nfo processing.</div>
 	</td>
 </tr>
@@ -937,7 +945,7 @@
 <tr>
 	<td><label for="postthreadsamazon">Postprocessing Amazon Threads:</label></td>
 	<td>
-		<input class="tiny" id="postthreadsamazon" name="postthreadsamazon" type="text" value="{$fsite->postthreadsamazon}" />
+		<input class="short" id="postthreadsamazon" name="postthreadsamazon" type="text" value="{$fsite->postthreadsamazon}" />
 		<div class="hint">The number of threads for amazon postprocessing. This includes books, music and games lookups.</div>
 	</td>
 </tr>
@@ -945,7 +953,7 @@
 <tr>
 	<td><label for="postthreadsnon">Postprocessing Non-Amazon Threads:</label></td>
 	<td>
-		<input class="tiny" id="postthreadsnon" name="postthreadsnon" type="text" value="{$fsite->postthreadsnon}" />
+		<input class="short" id="postthreadsnon" name="postthreadsnon" type="text" value="{$fsite->postthreadsnon}" />
 		<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and tv lookups.</div>
 	</td>
 </tr>
@@ -953,7 +961,7 @@
 <tr>
     <td><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
     <td>
-        <input class="tiny" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
+        <input class="short" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
         <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
     </td>
 </tr>
