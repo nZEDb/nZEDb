@@ -29,13 +29,19 @@ function create_guids($live, $delete = false)
 	$relcount = 0;
 
 	if ($live == "true")
-		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
-	elseif ($live == "limited")
-		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
-
-	if ($relrecs > 0)
 	{
-		echo "\nUpdating ".sizeof($relrecs)." release guids\n";
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
+		$relrecs->execute();
+	}
+	elseif ($live == "limited")
+	{
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
+		$relrecs->execute();
+	}
+	$total = $relrecs->rowCount();
+	if ($total > 0)
+	{
+		echo "\nUpdating ".$total." release guids\n";
 		$releases = new Releases();
 		$nzb = new NZB();
 		$reccnt = 0;
@@ -81,7 +87,7 @@ function create_guids($live, $delete = false)
 
 						$db->queryExec("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
 						$relcount++;
-						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,$total)." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
 				}
@@ -103,5 +109,8 @@ function create_guids($live, $delete = false)
 		exit(".\n");
 	}
 	else
-		exit("No releases are missing the guid.\n");
+	{
+		echo 'Query time: '.$consoletools->convertTime(TIME() - $timestart);
+		exit("\nNo releases are missing the guid.\n");
+	}
 }

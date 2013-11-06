@@ -449,9 +449,7 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					//Not needed if using table per group
-					//if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
-					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/("|#34;).+\.nzb("|#34;).+?yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -643,23 +641,16 @@ class Binaries
 		}
 	}
 
-	public function partRepair($nntp, $groupArr, $groupID='', $partID='')
+	public function partRepair($nntp, $groupArr)
 	{
 		// Get all parts in partrepair table.
 		$db = $this->db;
-		if ($partID == '')
-			$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d", $groupArr['id'], $this->partrepairlimit));
-		else
-		{
-			$groupArr = $this->groups->getByID($groupID);
-			$missingParts = array(array('numberid' => $partID, 'groupid' => $groupArr['id']));
-		}
+		$missingParts = $db->query(sprintf('SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0)
 		{
-			if ($partID == '')
-				echo $this->c->set256($this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -691,14 +682,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-
-				if ($partID == '')
-				{
-					echo "\n";
-					$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
-				}
-				else
-					echo $this->c->set256($this->primary)."\nAttempting repair: ".$partfrom."\n".$this->c->rsetcolor();
+				$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
@@ -722,9 +706,6 @@ class Binaries
 					$partsFailed = $result->rowCount();
 				}
 			}
-
-			if ($partID == '')
-				echo "\n";
 			echo $this->c->set256($this->primary).$partsRepaired." parts repaired.\n".$this->c->rsetcolor();
 		}
 
