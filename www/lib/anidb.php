@@ -49,16 +49,16 @@ class AniDB
 	{
 		$db = new DB();
 		$anidbID = "";
-		if ($db->dbSystem() == 'mysql')  
+		if ($db->dbSystem() == 'mysql')
 		{
 			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $db->escapeString('^'.$title.'$'));
 			$anidbID = $db->queryOneRow($query);
-			
+
 			// if the first query failed try it again using like as we have a change for a match
-			if($anidbID == False)	
+			if($anidbID == False)
 			{
-			    $query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $db->escapeString('%'.$title.'%'));
-			    $anidbID = $db->queryOneRow($query);
+				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $db->escapeString('%'.$title.'%'));
+				$anidbID = $db->queryOneRow($query);
 			}
 		}
 		else
@@ -178,35 +178,35 @@ class AniDB
 			$cleanFilename['title'] = $cleanFilename_org;
 
 		// extra cleanup to get a valid title
-		// remove trailing and leading spaces from teh title
+		// remove trailing and leading spaces from the title
 		$cleanFilename['title'] = trim($cleanFilename['title']);
 		// remove trailing -
 		$cleanFilename['title'] = preg_replace('/-$/i', '', $cleanFilename['title']);
 		// replace multiple spaces with a single one
 		$cleanFilename['title'] = preg_replace('/\s+/i', ' ', $cleanFilename['title']);
 		// remove any remaining "'s
-		$cleanFilename['title'] = preg_replace('/"/i', ' ', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/"/i', ' ', $cleanFilename['title']);
 		// remove remaing numbers since they are suppose to be part of the epno
-		$cleanFilename['title'] = preg_replace('/\d\d+/i', '', $cleanFilename['title']);				
+		$cleanFilename['title'] = preg_replace('/\d\d+/i', '', $cleanFilename['title']);
 		// remove video extentions
 		$cleanFilename['title'] = preg_replace('/(avi|mp4|mkv|ogv|wmv)/i', '', $cleanFilename['title']);
 		// language as that is never part of an anime title
 		$cleanFilename['title'] = preg_replace('/( |\()(english|eng|french|fre|italian|ita|japanese|jap|chinese|ch)(\)| )/i', '', $cleanFilename['title']);
-		
-		// there is a case were we have title  tile in this case we want only the first instance, normally these are seperated by mutiple spaces
+
+		// there is a case were we have title  title, in this case we want only the first instance, normally these are seperated by mutiple spaces
 		$mypieces = explode("   ", $cleanFilename['title']);
-		if(isset($mypieces[0])) 
-		{		    
-		    trim($mypieces[0]);
-		    $cleanFilename['title'] = $mypieces[0];
+		if(isset($mypieces[0]))
+		{
+			trim($mypieces[0]);
+			$cleanFilename['title'] = $mypieces[0];
 		}
 		// if we end up with something like S2 as in Season 2, try removing the S as anidb want it to read 'title 2'
-		$cleanFilename['title'] = preg_replace('/S(\d+)/i', '$1', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/S(\d+)/i', '$1', $cleanFilename['title']);
 		// extra cleanup to get a valid title
 
 		$cleanFilename['title'] = (isset($cleanFilename['title'])) ? trim($cleanFilename['title']) : trim($searchname);
 		$cleanFilename['title'] = preg_replace('/([^a-z0-9\s])/i', '[${1}]?', $cleanFilename['title']);
-		$cleanFilename['title'] = preg_replace('/( (The |Movie|O[AV][AV]|TV|\[\(\]\d{4}\[\)\]|Ep(isode)?|Vol(ume)?|Part|Phase|Chapter|Mission|(Director[`\']?s )?(Un)?C(ut|hoice)|Rem(aster|[iu]xx?)(ed)?|'.$noforeign.'))/i', '(${1})?', $cleanFilename['title']);		
+		$cleanFilename['title'] = preg_replace('/( (The |Movie|O[AV][AV]|TV|\[\(\]\d{4}\[\)\]|Ep(isode)?|Vol(ume)?|Part|Phase|Chapter|Mission|(Director[`\']?s )?(Un)?C(ut|hoice)|Rem(aster|[iu]xx?)(ed)?|'.$noforeign.'))/i', '(${1})?', $cleanFilename['title']);
 
 		$cleanFilename['epno'] = (isset($cleanFilename['epno'])) ? preg_replace('/^(NC|E(?!D)p?0*)|(?=^|-)0+|v(er)?(\d+)?$/i', '', $cleanFilename['epno']) : 1;
 		if(preg_match('/S\d+ ?[ED]\d+/i', $searchname)) {
@@ -223,7 +223,7 @@ class AniDB
 	}
 
 
-	// the release name is dieefrent from teh title, but it is what we want to store as the searchname
+	// the release name is different from the title, but it is what we want to store as the searchname
 	public function getReleaseName($searchname)
 	{
 		// extra cleanup to get a more valid title
@@ -343,9 +343,9 @@ class AniDB
 							$offset = -1;
 					}
 
-					// update the airdate if teh episode is found
+					// update the airdate if the episode is found
 					$airdate = isset($airdate[$offset]) ? $airdate[$offset] : $AniDBAPIArray['startdate'];
-					// update the episode title if teh episdoe is found
+					// update the episode title if the episdoe is found
 					$episodetitle = isset($episodetitle[$offset]) ? $episodetitle[$offset] : $cleanFilename['epno'];
 					//set the TV title to that of the episode
 					$tvtitle = ($episodetitle !== 'Complete Movie' && $episodetitle !== $cleanFilename['epno']) ? $cleanFilename['epno'].' - '.$episodetitle : $episodetitle;
@@ -368,7 +368,7 @@ class AniDB
 		}	// if
 	}
 
-	// process a group of previously unprcoessed Anime Releases, as in postprocess
+	// process a group of previously unprocessed Anime Releases, as in postprocess
 	public function processAnimeReleases($threads=1, $hours=0)
 	{
 		$db = new DB();
@@ -379,12 +379,11 @@ class AniDB
 		  // only select items within 6 hours
 		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid is NULL and nzbstatus = 1 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
 
-
 		// process the resulting set
 		$this->processAnAnimeRelease($results);
 	}
 
-	// process a single Anime Release based on teh release ID, such a realtime
+	// process a single Anime Release based on the release ID, such a realtime
 	public function processSingleAnime($releaseid)
 	{
 		$db = new DB();
