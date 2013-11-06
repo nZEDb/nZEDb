@@ -54,19 +54,20 @@ else
 		}
 	}
 
-	$filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
-	$fp = fopen( $filename, "r" ) or die("Couldn't open $filename");
-	while ( ! feof( $fp ) )
-	{
-		$line = fgets( $fp );
-		if (preg_match('/"host": "(.+)",$/', $line, $match))
-			$host_a = $match[1];
-		if (preg_match('/"port": (.+),$/', $line, $match))
-		{
-			$port_a = $match[1];
-			break;
-		}
-	}
+    if ($alternate_nntp == 1)
+    {
+        $filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
+        $fp = fopen($filename, "r") or die("Couldn't open $filename");
+        while (!feof($fp)) {
+            $line = fgets($fp);
+            if (preg_match('/"host": "(.+)",$/', $line, $match))
+                $host_a = $match[1];
+            if (preg_match('/"port": (.+),$/', $line, $match)) {
+                $port_a = $match[1];
+                break;
+            }
+        }
+    }
 	$ip = gethostbyname($host);
 	$ip_a = gethostbyname($host_a);
 }
