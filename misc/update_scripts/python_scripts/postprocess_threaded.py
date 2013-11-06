@@ -92,19 +92,19 @@ elif sys.argv[1] == "nfo":
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "movie":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE searchname IS NOT NULL AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname, id FROM releases WHERE relnamestatus NOT IN (0, 1) AND rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE rsearchname IS NOT NULL AND elnamestatus NOT IN (0, 1) AND rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		run = "SELECT searchname, id FROM releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM searchname IS NOT NULL AND releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 
