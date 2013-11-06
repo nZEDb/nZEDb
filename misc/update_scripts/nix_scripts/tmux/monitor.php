@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4023";
+$version="0.1r4024";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -425,10 +425,10 @@ while( $i > 0 )
 				$tbl = $row['tables_in_'.DB_NAME];
 				if (preg_match('/\d+_collections/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
-					$collections_table += $run[0];
-					$thisage = $db->queryOneRow('SELECT UNIX_TIMESTAMP(dateadded) FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1');
-					$age = ( $thisage < $age ) ? $age = $thisage : $age = $age;
+					$run = $db->queryOneRow('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1');
+					$collections_table += $run['count'];
+					if ( $run['dateadded'] < $age )
+						$age = $run['dateadded'];
 				}
 				else if (preg_match('/\d+_binaries/',$tbl))
 				{
@@ -437,7 +437,7 @@ while( $i > 0 )
 				}
 				else if (preg_match('/\d+_parts/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
+					$run = $db->query('SELECT COUNT(*) FROM '.$tbl);
 					$parts_table += $run[0];
 				}
 			}
@@ -454,10 +454,10 @@ while( $i > 0 )
 				$tbl = $row['tables_in_'.DB_NAME];
 				if (preg_match('/\d+_collections/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) FROM '.$tbl);
-					$collections_table += $run[0];
-					$thisage = $db->queryOneRow('SELECT UNIX_TIMESTAMP(dateadded) FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1');
-					$age = ( $thisage < $age ) ? $age = $thisage : $age = $age;
+					$run = $db->queryOneRow('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1');
+					$collections_table += $run['count'];
+					if ( $run['dateadded'] < $age )
+						$age = $run['dateadded'];
 				}
 				else if (preg_match('/\d+_binaries/',$tbl))
 				{
