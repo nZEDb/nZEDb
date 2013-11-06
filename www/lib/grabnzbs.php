@@ -4,7 +4,7 @@ require_once(WWW_DIR."lib/page.php");
 require_once(WWW_DIR."lib/category.php");
 require_once(WWW_DIR."lib/namecleaning.php");
 require_once(WWW_DIR."lib/site.php");
-
+require_once(WWW_DIR."lib/groups.php");
 
 class Import
 {
@@ -86,7 +86,11 @@ class Import
 			$nntp->doQuit();
 			// If article downloaded, to to import, else delete from nzbs
 			if($article !== false)
-				$this->processGrabNZBs($article, $hash);
+			{
+				$groups = new Groups();
+				$realgroupid = $groups->getIDByName($nzb['groupname']);
+				$this->processGrabNZBs($article, $hash, $realgroupid);
+			}
 			else
 			{
 				$this->db->queryExec(sprintf("DELETE FROM nzbs WHERE collectionhash = %s", $this->db->escapeString($hash)));
@@ -99,7 +103,7 @@ class Import
 	}
 
 
-	function processGrabNZBs($article, $hash)
+	function processGrabNZBs($article, $hash, $realgroupid)
 	{
 		if(!$article)
 			return;
@@ -112,9 +116,9 @@ class Import
 		$crosspostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$namecleaning = new nameCleaning();
 
-		$groups = $this->db->query("SELECT id, name FROM groups");
+		$groups = $this->db->query('SELECT id, name FROM groups');
 		foreach ($groups as $group)
-			$siteGroups[$group["name"]] = $group["id"];
+			$siteGroups[$group['name']] = $group['id'];
 
 		$importfailed = $isBlackListed = false;
 		$xml = @simplexml_load_string($article);
@@ -232,11 +236,9 @@ class Import
 				if ($this->tablepergroup == 1)
 				{
 					$group = array();
-					if ($groupID == '')
-						exit("You must use releases_threaded.py\n");
-					$group['cname'] = $groupID.'_collections';
-					$group['bname'] = $groupID.'_binaries';
-					$group['pname'] = $groupID.'_parts';
+					$group['cname'] = $realgroupid.'_collections';
+					$group['bname'] = $realgroupid.'_binaries';
+					$group['pname'] = $realgroupid.'_parts';
 				}
 				else
 				{
