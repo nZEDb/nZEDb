@@ -86,7 +86,8 @@ class Import
 				}
 			}
 			$nntp->doQuit();
-			// If article downloaded, to to import, else delete from nzbs
+
+			// If article downloaded, import it, else delete from nzbs table
 			if($article !== false)
 			{
 				$groups = new Groups();
@@ -132,7 +133,6 @@ class Import
 		}
 		else
 		{
-			$skipCheck = false;
 			$i = $totalFiles = $totalsize = 0;
 			$firstname = $postername = $postdate = array();
 
@@ -153,7 +153,7 @@ class Import
 				$subject = utf8_encode(trim($partless));
 
 				// Make a fake message object to use to check the blacklist.
-				$msg = array('Subject' => $firstname['0'], 'From' => $fromname, 'Message-ID' => '');
+				$msg = array('Subject' => $subject, 'From' => $fromname, 'Message-ID' => '');
 
                 // Groups.
                 $groupArr = array();
@@ -168,7 +168,7 @@ class Import
                     $groupArr[] = $group;
 
                     if ($binaries->isBlacklisted($msg, $group))
-                        $isBlackListed = TRUE;
+                        $isBlackListed = true;
                 }
                 if ($groupID != -1 && !$isBlackListed)
                 {
@@ -176,8 +176,7 @@ class Import
                     {
                         foreach($file->segments->segment as $segment)
                         {
-                            $size = $segment->attributes()->bytes;
-                            $totalsize = $totalsize+$size;
+                            $totalsize += $segment->attributes()->bytes;
                         }
                     }
                 }
@@ -186,30 +185,28 @@ class Import
                     $importfailed = true;
                     break;
                 }
+			}
 
-				// If the release is in our DB already then don't bother importing it.
-				if ($skipCheck !== true)
+			// To get accurate size to check for true duplicates, we need to process the entire nzb first
+			if (!$importfailed)
+			{
+				$usename = $this->db->escapeString($name);
+				$res = $this->db->prepare(sprintf("SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %s AND size = %s", $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($realgroupid), $this->db->escapeString($totalsize)));
+				$res->execute();
+				if ($this->replacenzbs == 1)
 				{
-					$usename = $this->db->escapeString($name);
-					$dupeCheckSql = sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %d AND size = %d', $this->db->escapeString($firstname['0']),$this->db->escapeString($fromname), $realgroupid, $size);
-					$res = $this->db->prepare($dupeCheckSql);
-					$res->execute();
-					if ($this->replacenzbs == 1)
+					$releases = new Releases();
+					foreach ($res as $rel)
 					{
-						$releases = new Releases();
-						foreach ($res as $rel)
-						{
-							$releasess->fastDelete($rel['id'], $rel['guid'], $this->site);
-						}
+						if (isset($rel['id']) && isset($rel['guid']))
+							$releases->fastDelete($rel['id'], $rel['guid'], $this->site);
 					}
-					else if ($res->rowCount() > 0 && $this->replacenzbs == 0)
-					{
-						flush();
-						$importfailed = true;
-						break;
-					}
-					// Only check one binary per nzb, they should all be in the same release anyway.
-					$skipCheck = true;
+				}
+				else if ($res->rowCount() > 0 && $this->replacenzbs == 0)
+				{
+					flush();
+					$importfailed = true;
+					break;
 				}
 			}
 
