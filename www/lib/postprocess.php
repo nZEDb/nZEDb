@@ -169,7 +169,7 @@ class PostProcess
 	{
 		if ($messageID == '')
 			return false;
-		$db = new DB();
+		$db = $this->db;
 		$category = new Category();
 		if ($db->dbSystem() == 'mysql')
 			$t = 'UNIX_TIMESTAMP(postdate)';

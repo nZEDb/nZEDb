@@ -5,6 +5,8 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
+passthru("clear");
+
 $db = new DB();
 $DIR = MISC_DIR;
 
@@ -53,7 +55,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '135' )
+if ( $patch < '140' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";

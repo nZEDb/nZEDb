@@ -18,13 +18,14 @@ Class Predb
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
+        $this->db = new DB();
 	}
 
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
 		if (strtotime($newestrel['adddate']) < time()-600 || is_null($newestrel['adddate']))
@@ -388,7 +389,7 @@ Class Predb
 		if($this->echooutput)
 			echo 'Querying DB for matches in preDB titles with release searchnames.';
 
-		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.id IN (SELECT id FROM releases WHERE preid IS NULL)');
+		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
 		$res->execute();
 		$total = $res->rowCount();
 		if($total > 0)

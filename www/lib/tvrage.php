@@ -19,7 +19,7 @@ class TvRage
 		$this-> rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
 		$this->echooutput = $echooutput;
 		$this->c = new ColorCLI;
-		$this->primary = 'purple';
+		$this->primary = 'Purple';
 
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
 		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid=";
@@ -424,7 +424,7 @@ class TvRage
 	public function updateEpInfo($show, $relid)
 	{
 		if ($this->echooutput)
-			echo $this->c->setcolor('bold', $this->primary)."TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n".$this->c->rsetcolor();
+			echo $this->c->setcolor($this->primary, 'Bold')."TV series: ".$show['name']." ".$show['seriesfull'].(($show['year']!='')?' '.$show['year']:'').(($show['country']!='')?' ['.$show['country'].']':'')."\n".$this->c->rsetcolor();
 
 		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
 		$this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
@@ -526,7 +526,7 @@ class TvRage
 		// Get all releases without a rageid which are in a tv category.
 		if ($releaseToWork == '')
 		{
-			$res = $this->db->query(sprintf("SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = %d) ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
+			$res = $this->db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.rageid = -1 AND c.parentid = %d ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
 			$tvcount = count($res);
 		}
 		else
@@ -537,7 +537,7 @@ class TvRage
 		}
 
 		if ($this->echooutput && $tvcount > 1)
-			echo $this->c->setcolor('bold', $this->primary)."Processing TV for ".$tvcount." release(s).\n".$this->c->rsetcolor();
+			echo $this->c->setcolor($this->primary, 'Bold')."Processing TV for ".$tvcount." release(s).\n".$this->c->rsetcolor();
 
 		foreach ($res as $arr)
 		{
@@ -554,7 +554,7 @@ class TvRage
 				{
 					// If it doesnt exist locally and lookups are allowed lets try to get it.
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary)."TVRage ID for ".$show['cleanname']." not found in local db, checking web.\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold')."TVRage ID for ".$show['cleanname']." not found in local db, checking web.\n".$this->c->rsetcolor();
 
 					$tvrShow = $this->getRageMatch($show);
 					if ($tvrShow !== false && is_array($tvrShow))
@@ -571,7 +571,7 @@ class TvRage
 							if(isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0)
 							{
 								if ($this->echooutput)
-									echo $this->c->setcolor('bold', $this->primary).'Found TVRage ID on trakt:'.$traktArray['show']['tvrage_id']."\n".$this->c->rsetcolor();
+									echo $this->c->setcolor($this->primary, 'Bold').'Found TVRage ID on trakt:'.$traktArray['show']['tvrage_id']."\n".$this->c->rsetcolor();
 								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['id']);
 							}
 							// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
@@ -695,7 +695,7 @@ class TvRage
 				if (isset($titleMatches[100]))
 				{
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary).'Found 100% match: "'.$titleMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold').'Found 100% match: "'.$titleMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $titleMatches[100][0];
 				}
 
@@ -703,7 +703,7 @@ class TvRage
 				if (isset($urlMatches[100]))
 				{
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary).'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold').'Found 100% url match: "'.$urlMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $urlMatches[100][0];
 				}
 
@@ -711,7 +711,7 @@ class TvRage
 				if (isset($akaMatches[100]))
 				{
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary).'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold').'Found 100% aka match: "'.$akaMatches[100][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $akaMatches[100][0];
 				}
 
@@ -724,7 +724,7 @@ class TvRage
 							continue;
 
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary).'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'.".\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold').'Found '.$mk.'% match: "'.$titleMatches[$mk][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $titleMatches[$mk][0];
 				}
 
@@ -736,18 +736,18 @@ class TvRage
 							continue;
 
 					if ($this->echooutput)
-						echo $this->c->setcolor('bold', $this->primary).'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'.".\n".$this->c->rsetcolor();
+						echo $this->c->setcolor($this->primary, 'Bold').'Found '.$ak.'% aka match: "'.$akaMatches[$ak][0]['title'].'"'.".\n".$this->c->rsetcolor();
 					return $akaMatches[$ak][0];
 				}
 
 				if ($this->echooutput)
-					echo $this->c->setcolor('bold', $this->primary).'No match found on TVRage trying Trakt.'."\n".$this->c->rsetcolor();
+					echo $this->c->setcolor($this->primary, 'Bold').'No match found on TVRage trying Trakt.'."\n".$this->c->rsetcolor();
 				return false;
 			}
 			else
 			{
 				if ($this->echooutput)
-					echo $this->c->setcolor('bold', $this->primary).'Nothing returned from tvrage.'.".\n".$this->c->rsetcolor();
+					echo $this->c->setcolor($this->primary, 'Bold').'Nothing returned from tvrage.'.".\n".$this->c->rsetcolor();
 				return false;
 			}
 		}
@@ -755,7 +755,7 @@ class TvRage
 			return -1;
 
 		if ($this->echooutput)
-			echo $this->c->setcolor('bold', $this->primary).'No match found online.'.".\n".$this->c->rsetcolor();
+			echo $this->c->setcolor($this->primary, 'Bold').'No match found online.'.".\n".$this->c->rsetcolor();
 		return false;
 	}
 

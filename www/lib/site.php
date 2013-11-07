@@ -15,6 +15,11 @@ class Sites
 	const ERR_DEEPNOUNRAR = -5;
 	const ERR_BADTMPUNRARPATH = -6;
 
+    function __construct()
+    {
+        $this->db = new DB();
+    }
+
 	public function version()
 	{
 		return "0.0.3";
@@ -22,7 +27,7 @@ class Sites
 
 	public function update($form)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$site = $this->row2Object($form);
 
 		if (substr($site->nzbpath, strlen($site->nzbpath) - 1) != '/')
@@ -63,7 +68,7 @@ class Sites
 
 	public function get()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$rows = $db->query("SELECT * FROM site");
 
 		if ($rows === false)

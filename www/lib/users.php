@@ -30,15 +30,20 @@ class Users
 	const SALTLEN = 4;
 	const SHA1LEN = 40;
 
+    function __construct()
+    {
+        $this->db = new DB();
+    }
+
 	public function get()
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query("SELECT * FROM users");
 	}
 
 	public function delete($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$this->delCartForUser($id);
 		$this->delUserCategoryExclusions($id);
 
@@ -59,7 +64,7 @@ class Users
 
 	public function getRange($start, $num, $orderby, $username='', $email='', $host='', $role='')
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = "";
@@ -126,14 +131,14 @@ class Users
 
 	public function getCount()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM users");
 		return $res["num"];
 	}
 
 	public function add($uname, $pass, $email, $role, $host, $invites=Users::DEFAULT_INVITES, $invitedby=0)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$site = new Sites();
 		$s = $site->get();
@@ -148,7 +153,7 @@ class Users
 
 	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$uname = trim($uname);
 		$email = trim($email);
@@ -197,65 +202,65 @@ class Users
 
 	public function updateRssKey($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryExec(sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d",
 			$db->escapeString(uniqid()), $uid));
 	}
 
 	public function updatePassResetGuid($id, $guid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $db->escapeString($guid), $id));
 		return Users::SUCCESS;
 	}
 
 	public function updatePassword($id, $password)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d", $db->escapeString($this->hashPassword($password)), $db->escapeString($db->uuid()), $id));
 		return Users::SUCCESS;
 	}
 
 	public function getByEmail($email)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(email) = LOWER(%s) ", $db->escapeString($email)));
 	}
 
 	public function getByPassResetGuid($guid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(resetguid) = LOWER(%s) ", $db->escapeString($guid)));
 	}
 
 	public function getByUsername($uname)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("select * FROM users WHERE LOWER(username) = LOWER(%s) ", $db->escapeString($uname)));
 	}
 
 	public function incrementGrabs($id, $num=1)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE users SET grabs = grabs + %d WHERE id = %d ", $num, $id));
 	}
 
 	public function getById($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
 	}
 
 	public function getByIdAndRssToken($id, $rsstoken)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $this->getById($id);
 		return ($res && $res["rsstoken"] == $rsstoken ? $res : null);
 	}
 
 	public function getByRssToken($rsstoken)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT users.*, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE LOWER(users.rsstoken) = LOWER(%s) ", $db->escapeString($rsstoken)));
 	}
 
@@ -276,7 +281,7 @@ class Users
 
 	public function isDisabled($username)
 	{
-	  $db = new DB();
+	  $db = $this->db;
  		$role = $db->queryOneRow(sprintf("SELECT role AS role FROM users WHERE username = %s", $db->escapeString($username)));
  		return ($role["role"] == Users::ROLE_DISABLED);
 	}
@@ -418,7 +423,7 @@ class Users
 
 	public function updateSiteAccessed($uid, $host="")
 	{
-		$db = new DB();
+		$db = $this->db;
 		$hostSql = '';
 		if ($host != '')
 			$hostSql = sprintf(', host = %s', $db->escapeString($host));
@@ -428,7 +433,7 @@ class Users
 
 	public function updateApiAccessed($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d ", $uid));
 	}
 
@@ -446,13 +451,13 @@ class Users
 
 	public function addCart($uid, $releaseid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryInsert(sprintf("INSERT INTO usercart (userid, releaseid, createddate) VALUES (%d, %d, NOW())", $uid, $releaseid));
 	}
 
 	public function getCart($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query(sprintf("SELECT usercart.*, releases.searchname, releases.guid FROM usercart INNER JOIN releases ON releases.id = usercart.releaseid WHERE userid = %d", $uid));
 	}
 
@@ -468,14 +473,14 @@ class Users
 			if (!empty($id))
 				$del[] = $id;
 		}
-		$db = new DB();
+		$db = $this->db;
 		$sql = sprintf("DELETE FROM usercart WHERE id IN (%s) AND userid = %d", implode(',',$del), $uid);
 		$db->queryExec($sql);
 	}
 
 	public function delCartByUserAndRelease($guid, $uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$rel = $db->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $db->escapeString($guid)));
 		if ($rel)
 			$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d AND releaseid = %d", $uid, $rel["id"]));
@@ -483,19 +488,19 @@ class Users
 
 	public function delCartForUser($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d", $uid));
 	}
 
 	public function delCartForRelease($rid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("DELETE FROM usercart WHERE releaseid = %d", $rid));
 	}
 
 	public function addCategoryExclusions($uid, $catids)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$this->delUserCategoryExclusions($uid);
 		if (count($catids) > 0)
 		{
@@ -508,7 +513,7 @@ class Users
 
 	public function getCategoryExclusion($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ret = array();
 		$data = $db->query(sprintf("SELECT categoryid FROM userexcat WHERE userid = %d", $uid));
 		foreach ($data as $d)
@@ -520,7 +525,7 @@ class Users
 	public function getCategoryExclusionNames($uid)
 	{
 		$data = $this->getCategoryExclusion($uid);
-		$db = new DB();
+		$db = $this->db;
 		$category = new Category();
 		$data = $category->getByIds($data);
 		$ret = array();
@@ -534,13 +539,13 @@ class Users
 
 	public function delCategoryExclusion($uid, $catid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("DELETE userexcat WHERE userid = %d AND categoryid = %d", $uid, $catid));
 	}
 
 	public function delUserCategoryExclusions($uid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("DELETE FROM userexcat WHERE userid = %d", $uid));
 	}
 
@@ -560,7 +565,7 @@ class Users
 
 	public function getInvite($inviteToken)
 	{
-		$db = new DB();
+		$db = $this->db;
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
 		if ($db->dbSystem() == 'mysql')
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
@@ -572,13 +577,13 @@ class Users
 
 	public function addInvite($uid, $inviteToken)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryInsert(sprintf("INSERT INTO userinvite (guid, userid, createddate) VALUES (%s, %d, NOW())", $db->escapeString($inviteToken), $uid));
 	}
 
 	public function deleteInvite($inviteToken)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("DELETE FROM userinvite WHERE guid = %s ", $db->escapeString($inviteToken)));
 	}
 
@@ -588,7 +593,7 @@ class Users
 		if (!$invite)
 			return -1;
 
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["userid"]));
 		$this->deleteInvite($invitecode);
 		return $invite["userid"];
@@ -596,37 +601,37 @@ class Users
 
 	public function getTopGrabbers()
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query("SELECT id, username, SUM(grabs) AS grabs FROM users GROUP BY id, username HAVING SUM(grabs) > 0 ORDER BY grabs DESC LIMIT 10");
 	}
 
 	public function getRoles()
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query("SELECT * FROM userroles");
 	}
 
 	public function getRoleById($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT * FROM userroles WHERE id = %d", $id));
 	}
 
 	public function getDefaultRole()
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow("SELECT * FROM userroles WHERE isdefault = 1");
 	}
 
 	public function addRole($name, $apirequests, $downloadrequests, $defaultinvites, $canpreview)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryInsert(sprintf("INSERT INTO userroles (name, apirequests, downloadrequests, defaultinvites, canpreview) values (%s, %d, %d, %d, %d)", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $canpreview));
 	}
 
 	public function updateRole($id, $name, $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview)
 	{
-		$db = new DB();
+		$db = $this->db;
 		if ($isdefault == 1)
 			$db->queryExec("UPDATE userroles SET isdefault = 0");
 
@@ -635,7 +640,7 @@ class Users
 
 	public function deleteRole($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->query(sprintf("SELECT id FROM users WHERE role = %d", $id));
 		if (sizeof($res) > 0)
 		{
@@ -651,7 +656,7 @@ class Users
 
 	public function getApiRequests($userid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		// Clear old requests.
 		if ($db->dbSystem() == 'mysql')
 		{
@@ -667,13 +672,13 @@ class Users
 
 	public function addApiRequest($userid, $request)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryInsert(sprintf("INSERT INTO userrequests (userid, request, timestamp) VALUES (%d, %s, NOW())", $userid, $db->escapeString($request)));
 	}
 
 	public function getDownloadRequests($userid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		// Clear old requests.
 		if ($db->dbSystem() == 'mysql')
 		{
@@ -689,7 +694,7 @@ class Users
 
 	public function addDownloadRequest($userid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryInsert(sprintf("INSERT INTO userdownloads (userid, timestamp) VALUES (%d, NOW())", $userid));
 	}
 }

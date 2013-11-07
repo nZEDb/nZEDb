@@ -1,4 +1,4 @@
-UPDATE `tmux` SET `DEHASH` = 0 WHERE `DEHASH` = "FALSE";
-UPDATE `tmux` SET `DEHASH` = 3 WHERE `DEHASH` = "TRUE";
+UPDATE `tmux` SET value = 0 WHERE setting = 'DEHASH' AND value = "FALSE";
+UPDATE `tmux` SET value = 3 WHERE setting = 'DEHASH' AND value = "TRUE";
 
 UPDATE `site` set `value` = '85' where `setting` = 'sqlpatch';
