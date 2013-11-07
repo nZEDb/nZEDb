@@ -106,7 +106,7 @@ if ($nntpproxy == '1')
 }
 
 //reset collections dateadded to now
-/*print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
+print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
 if ($tablepergroup == 1)
 {
 	$sql = "SHOW tables";
@@ -135,7 +135,7 @@ $run = $db->prepare("update nzbs set dateadded = now()");
 $run->execute();
 echo $run->rowCount()." nzbs reset\n";
 sleep(2);
-*/
+
 function start_apps($tmux_session)
 {
 	$tmux = new tmux();
