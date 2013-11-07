@@ -2,8 +2,8 @@
 require_once(WWW_DIR."/lib/releases.php");
 require_once(WWW_DIR."/lib/category.php");
 
-$category = new Category;
-$releases = new Releases;
+$category = new Category();
+$releases = new Releases();
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"]))
