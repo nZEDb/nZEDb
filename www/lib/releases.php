@@ -289,7 +289,6 @@ class Releases
 						LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
 						LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
 						WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s", $cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit);
-
 		return $db->query($sql);
 	}
 

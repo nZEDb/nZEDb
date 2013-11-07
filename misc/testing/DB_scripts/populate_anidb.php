@@ -1,4 +1,8 @@
 <?php
+/* This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of PI queries that can be executed max and whether or not we want debuging the first argument if unset will try to do the entire list (a good way to get banned), the second option can be blank or true for debugging.
+ * IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connect to anidb as this will fail
+ */
+
 require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR.'lib/util.php');
 require_once(WWW_DIR.'lib/framework/db.php');
@@ -195,7 +199,7 @@ class AniDBstandAlone
 				// check the last update time is more than a 21 days old
 				$lastUpdate = ((isset($AniDBAPIArrayOld['unixtime']) && (time() - $AniDBAPIArrayOld['unixtime']) > 1814400));
 
-				// if its been long enough do another update
+				// if it's been long enough do another update
 				if ($lastUpdate)
 				{
 					if ($this->echooutput)
@@ -216,8 +220,14 @@ class AniDBstandAlone
 
 
 					// update the stored information with updated data
-					$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
-						$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'], $AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'], $AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+					$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'],
+						$AniDBAPIArrayNew['type'],
+						$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'],
+						$AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'],
+						$AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+						$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'],
+						$AniDBAPIArrayNew['epnos'], $AniDBAPIArrayNew['airdates'],
+						$AniDBAPIArrayNew['episodetitles']);
 
 					$image_file = $this->imgSavePath . $anidbid;
 
@@ -242,17 +252,16 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 			// every 10 records sleep for 4 minutes before continuing
 			if ($i % 10 == 0 && $i != 0)
-				  sleep(180 + rand(30, 90));
+				sleep(180 + rand(30, 90));
 
 			// using exitcount if this number of API calls is reached exit
 			if ($i >= $exitcount)
-				  return;
+				return;
 
 			// update how many we have done of the total to do in this session
 			if ($i != 0 && $this->echooutput)
 				echo 'Processed '.$i." anidb entries of a total possible of $exitcount for this session\n";
 		}	// foreach
-
 	}
 
 
@@ -287,8 +296,8 @@ Holding on to this in case we want it again as it has some uses, but currently w
 		$db = $this->db;
 
 /*
-		 	 if ($this->echooutput)
-			echo sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID), "\n";
+			if ($this->echooutput)
+				echo sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID), "\n";
 */
 
 		$db->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
@@ -391,7 +400,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	// next get the title list and populate the DB
 	$anidb->animetitlesUpdate();
 
-	// sleep between 1 and 3 minutes before it starts this way if from a cron process the start times are random
+	// sleep between 1 and 3 minutes before it starts, this way if from a cron process the start times are random
 	if (isset($argv[2]) && $argv[2] == 'cron')
 		sleep(rand(60, 180));
 
