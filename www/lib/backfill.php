@@ -425,7 +425,8 @@ class Backfill
 						$post = ($post - MT_RAND(100,500));
 					else
 						$post = ($post + MT_RAND(100,500));
-					//echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with article '.$post.".\n".$this->c->rsetColor();
+					if ($debug)
+						echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with article '.$post.".\n".$this->c->rsetColor();
 					$success = false;
 					$record = false;
 				}
@@ -476,7 +477,7 @@ class Backfill
 		/*if ($record === true)
 		{
 			$db = $this->db;
-			if ($type = 'newest')
+			if ($type = 'oldest')
 				$db->queryExec('UPDATE groups set first_record = '.$post);
 			else
 				$db->queryExec('UPDATE groups set last_record = '.$post);
