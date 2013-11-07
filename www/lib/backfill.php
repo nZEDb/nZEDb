@@ -401,11 +401,7 @@ class Backfill
 						if (isset($res['number']))
 						{
 							$post = $res['number'];
-<<<<<<< HEAD
 							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n\n\n".$this->c->rsetColor();
-=======
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
->>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 							$record = true;
 						}
 					}
@@ -415,11 +411,7 @@ class Backfill
 						if (isset($res['number']))
 						{
 							$post = $res['number'];
-<<<<<<< HEAD
 							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n\n\n".$this->c->rsetColor();
-=======
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n".$this->c->rsetColor();
->>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 							$record = true;
 						}
 					}
