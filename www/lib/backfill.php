@@ -425,7 +425,7 @@ class Backfill
 						$post = ($post - MT_RAND(100,500));
 					else
 						$post = ($post + MT_RAND(100,500));
-					echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with article '.$post.".\n".$this->c->rsetColor();
+					//echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with article '.$post.".\n".$this->c->rsetColor();
 					$success = false;
 					$record = false;
 				}
