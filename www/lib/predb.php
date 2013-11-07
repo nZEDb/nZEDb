@@ -18,13 +18,14 @@ Class Predb
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
+        $this->db = new DB();
 	}
 
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
 		if (strtotime($newestrel['adddate']) < time()-600 || is_null($newestrel['adddate']))

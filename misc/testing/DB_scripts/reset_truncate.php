@@ -35,7 +35,7 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 				if ($argv[1] == "drop")
 				{
 					$db->queryDirect(sprintf('DROP TABLE %s', $tbl));
-					printf("Dopping %s completed.\n", $tbl);
+					printf("Dropping %s completed.\n", $tbl);
 				}
 				else
 				{

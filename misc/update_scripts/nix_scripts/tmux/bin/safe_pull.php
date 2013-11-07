@@ -9,8 +9,6 @@ if (isset($argv[1]))
 	$pieces = explode(" ", $argv[1]);
 	if (isset($pieces[1]) && $pieces[1] == "partrepair")
 	{
-		echo "here\n";
-
 		$binaries = new Binaries();
 		$groupName = $pieces[0];
 		$grp = new Groups();

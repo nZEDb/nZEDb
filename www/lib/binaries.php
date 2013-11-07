@@ -650,7 +650,7 @@ class Binaries
 
 		if (sizeof($missingParts) > 0)
 		{
-			echo $this->c->set256($this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'Attempting to repair '.number_format(sizeof($missingParts))." parts.\n".$this->c->rsetcolor();
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -682,7 +682,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-				$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+				$this->consoleTools->overWrite("Attempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
