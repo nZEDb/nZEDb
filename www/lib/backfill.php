@@ -24,6 +24,7 @@ class Backfill
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
 		$this->safepartrepair = (!empty($site->safepartrepair)) ? $site->safepartrepair : 0;
+        $this->db = new DB();
 	}
 
 	// Backfill groups using user specified time/date.
@@ -54,7 +55,7 @@ class Backfill
 			}
 
 			$counter = 1;
-			$db = new DB();
+			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
@@ -176,7 +177,7 @@ class Backfill
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 
-		$db = new DB();
+		$db = $this->db;
 		$groupname = $db->queryOneRow(sprintf('SELECT name FROM groups WHERE first_record_postdate BETWEEN %s AND NOW() AND backfill = 1 ORDER BY name ASC', $db->escapeString($this->safebdate)));
 
 		if (!$groupname)
@@ -217,7 +218,7 @@ class Backfill
 			}
 
 			$counter = 1;
-			$db = new DB();
+			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
@@ -330,7 +331,7 @@ class Backfill
 	// Returns a single timestamp from a local article number. If the article is missing, you can pass $old as true to return false (then use the last known date).
 	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type='newest')
 	{
-		$db = new DB();
+		$db = $this->db;
 		$st = false;
 		$keeppost = $post;
 		if (!isset($nntp) || $nntp->doConnect() === false)
@@ -474,7 +475,7 @@ class Backfill
 
 		if ($record === true)
 		{
-			$db = new DB();
+			$db = $this->db;
 			if ($type = 'newest')
 				$db->queryExec('UPDATE groups set first_record = '.$post);
 			else
@@ -623,7 +624,7 @@ class Backfill
 
 	function getFinal($group, $first, $type)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		if ($type == 'Backfill')

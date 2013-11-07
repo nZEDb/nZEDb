@@ -19,19 +19,19 @@ class Music
 		$this->asstag = $site->amazonassociatetag;
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-
+        $this->db = new DB();
 		$this->imgSavePath = WWW_DIR.'covers/music/';
 	}
 
 	public function getMusicInfo($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genreid WHERE musicinfo.id = %d ", $id));
 	}
 
 	public function getMusicInfoByName($artist, $album)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
@@ -40,7 +40,7 @@ class Music
 
 	public function getRange($start, $num)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = "";
@@ -52,14 +52,14 @@ class Music
 
 	public function getCount()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM musicinfo");
 		return $res["num"];
 	}
 
 	public function getMusicCount($cat, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -112,7 +112,7 @@ class Music
 
 	public function getMusicRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -248,14 +248,14 @@ class Music
 
 	public function update($id, $title, $asin, $url, $salesrank, $artist, $publisher, $releasedate, $year, $tracks, $cover, $genreID)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, year = %s, tracks = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d",
 		$db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));
 	}
 
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$gen = new Genres();
 		$ri = new ReleaseImage();
 
@@ -427,7 +427,7 @@ class Music
 	{
 		$threads--;
 		$ret = 0;
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->musicqty, floor(max(0, $this->musicqty * $threads * 1.5))));
 		if (count($res) > 0)
 		{
@@ -489,7 +489,7 @@ class Music
 
 	public function getGenres($activeOnly=false)
 	{
-		$db = new DB();
+		$db = $this->db;
 		if ($activeOnly)
 			return $db->query("SELECT musicgenre.* FROM musicgenre INNER JOIN (SELECT DISTINCT musicgenreid FROM musicinfo) x ON x.musicgenreid = musicgenre.id ORDER BY title");
 		else
