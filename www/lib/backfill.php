@@ -103,7 +103,7 @@ class Backfill
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= ($data['first'] + 50000))
 		{
-			echo $this->c->setColor($this->warning).'We have hit the maximum we can backfill for this '.$groupArr['name'].", disabling it.\n\n".$this->c->rsetColor();
+			echo $this->c->setColor($this->warning).'We have hit the maximum we can backfill for '.preg_replace('/alt.binaries/', 'a.b', $groupArr['name']).", disabling it.\n\n".$this->c->rsetColor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
@@ -253,14 +253,14 @@ class Backfill
 
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
-			echo $this->c->setColor($this->warning).'You need to run update_binaries on the '.$data['group'].". Otherwise the group is dead, you must disable it.\n".$this->c->rsetColor();
+			echo $this->c->setColor($this->warning).'You need to run update_binaries on the '.preg_replace('/alt.binaries/', 'a.b', $data['group']).". Otherwise the group is dead, you must disable it.\n".$this->c->rsetColor();
 			return '';
 		}
 
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
-			echo $this->c->setColor($this->warning).'We have hit the maximum we can backfill for '.$data['group'].", disabling it.\n\n".$this->c->rsetColor();
+			echo $this->c->setColor($this->warning).'We have hit the maximum we can backfill for '.preg_replace('/alt.binaries/', 'a.b', $groupArr['name']).", disabling it.\n\n".$this->c->rsetColor();
 			$groups = new Groups();
 			$groups->disableForPost($groupArr['name']);
 			return '';
@@ -398,20 +398,20 @@ class Backfill
 					if ($type == 'newest')
 					{
 						$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
-						if (isset($res['namber']))
+						if (isset($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
+							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
 							$record = true;
 						}
 					}
 					else
 					{
 						$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
-						if (isset($res['namber']))
+						if (isset($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n".$this->c->rsetColor();
+							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n".$this->c->rsetColor();
 							$record = true;
 						}
 					}
@@ -425,7 +425,7 @@ class Backfill
 						$post = ($post - MT_RAND(100,500));
 					else
 						$post = ($post + MT_RAND(100,500));
-					//echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.$group.'. Retrying with article '.$post.".\n".$this->c->rsetColor();
+					//echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with article '.$post.".\n".$this->c->rsetColor();
 					$success = false;
 					$record = false;
 				}
@@ -452,7 +452,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('first_record_postdate', $res))
 				{
-					echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.$group.'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n".$this->c->rsetColor();
+					echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n".$this->c->rsetColor();
 					return strtotime($res['first_record_postdate']);
 				}
 				else
@@ -463,7 +463,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('last_record_postdate', $res))
 				{
-					echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.$group.'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n".$this->c->rsetColor();
+					echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n".$this->c->rsetColor();
 					return strtotime($res['last_record_postdate']);
 				}
 				else
@@ -473,14 +473,14 @@ class Backfill
 		else if($success === false)
 			return false;
 
-		if ($record === true)
+		/*if ($record === true)
 		{
 			$db = $this->db;
 			if ($type = 'newest')
 				$db->queryExec('UPDATE groups set first_record = '.$post);
 			else
 				$db->queryExec('UPDATE groups set last_record = '.$post);
-		}
+		}*/
 
 		if ($debug)
 			echo $this->c->set256($this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetColor();

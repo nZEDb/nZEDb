@@ -104,7 +104,7 @@ elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		run = "SELECT searchname, id FROM searchname IS NOT NULL AND releases WHERE rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE searchname IS NOT NULL AND rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 

@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4030";
+$version="0.1r4032";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -87,7 +87,7 @@ $proc_work2 = "SELECT
 	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus IN (-6, -5, -4, -3, -2, -1) AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
 	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus IN (-6, -5, -4, -3, -2, -1) AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
 	(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
-	(SELECT COUNT(*) FROM partrepair) AS partrepair_table";
+	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND relnamestatus IN (0, 1, 20, 21, 22) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,

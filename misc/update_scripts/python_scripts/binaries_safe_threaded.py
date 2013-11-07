@@ -130,7 +130,7 @@ def main():
 				my_queue.put("binupdate %s" % (group[0]))
 			#thread large groups using backfill.php
 			else:
-				my_queue.put("%s %s" % (group[0], 'partrepair'))
+				#my_queue.put("%s %s" % (group[0], 'partrepair'))
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
