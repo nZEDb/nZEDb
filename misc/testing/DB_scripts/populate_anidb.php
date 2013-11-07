@@ -1,4 +1,11 @@
 <?php
+<<<<<<< HEAD
+=======
+/* This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of PI queries that can be executed max and whether or not we want debuging the first argument if unset will try to do the entire list (a good way to get banned), the second option can be blank or true for debugging.
+ * IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connect to anidb as this will fail
+ */
+
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 require(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR.'lib/util.php');
 require_once(WWW_DIR.'lib/framework/db.php');
@@ -47,7 +54,11 @@ class AniDBstandAlone
 
 		preg_match_all('/(\d+)\|\d\|.+\|(.+)/', gzread($zh, '10000000'), $animetitles);
 		if (!$animetitles)
+<<<<<<< HEAD
 			return false;
+=======
+>			return false;
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 		$db->queryExec('DELETE FROM animetitles WHERE anidbid IS NOT NULL');
 
@@ -56,7 +67,14 @@ class AniDBstandAlone
 
 		for ($i = 0; $i < count($animetitles[1]); $i++)
 		{
+<<<<<<< HEAD
 			$db->queryInsert(sprintf('INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)', $animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i], ENT_QUOTES, 'UTF-8')), time()));
+=======
+			$db->queryInsert(sprintf('INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
+				$animetitles[1][$i], $db->escapeString(html_entity_decode($animetitles[2][$i],
+				ENT_QUOTES, 'UTF-8')), time()));
+
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 			if ($i % 2500 == 0 && $this->echooutput)
 				echo "Completed Processing ", $i, " titles\n";
 		}
@@ -80,7 +98,11 @@ class AniDBstandAlone
 			$exitcount = 120;
 
 		if ($this->echooutput)
+<<<<<<< HEAD
 			echo 'Processing '.$exitcount." anidb entries for this session\n";
+=======
+			echo "Processing $exitcount anidb entries for this session\n";
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 		if ($this->echooutput)
 			echo 'Total of '.count($animetitles)." titles present\n";
@@ -99,7 +121,11 @@ class AniDBstandAlone
 			{
 				// entry is not present, report it in debug, but do nothing else with it
 				if ($this->echooutput)
+<<<<<<< HEAD
 					echo 'AnimeTitle Record '.$anidbid." is not present in anidb table yet, skipping\n";
+=======
+					echo "AnimeTitle Record $anidbid is not present in anidb table yet, skipping\n";
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 			}
 			else
 			{
@@ -137,7 +163,12 @@ class AniDBstandAlone
 				// determine if we need to remove the record from the list
 				// first if the record is over 60 days old replace it no matter what
 				// second if in progress and the record is over 7 days old then replace it,since new information is likely availiable
+<<<<<<< HEAD
 				if (($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) || ($AniDBAPIArrayOld['AnimeInProgress'] == true && (time() - $AniDBAPIArrayOld['unixtime']) > 604800))
+=======
+				if (($AniDBAPIArrayOld && (time() - $AniDBAPIArrayOld['unixtime']) > 5184000) ||
+					($AniDBAPIArrayOld['AnimeInProgress'] == true && (time() - $AniDBAPIArrayOld['unixtime']) > 604800))
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 				{
 					if ($this->echooutput)
 						echo 'Removing OLD DB record '.$anidbid."\n";
@@ -179,7 +210,12 @@ class AniDBstandAlone
 				if ($AniDBAPIArray['picture'])
 				{
 					// save the image to the covers page
+<<<<<<< HEAD
 					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
+=======
+					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'],
+						$this->imgSavePath);
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 				}
 			}	// if new (AKA not present)
 
@@ -195,7 +231,11 @@ class AniDBstandAlone
 				// check the last update time is more than a 21 days old
 				$lastUpdate = ((isset($AniDBAPIArrayOld['unixtime']) && (time() - $AniDBAPIArrayOld['unixtime']) > 1814400));
 
+<<<<<<< HEAD
 				// if its been long enough do another update
+=======
+				// if it's been long enough do another update
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 				if ($lastUpdate)
 				{
 					if ($this->echooutput)
@@ -216,8 +256,19 @@ class AniDBstandAlone
 
 
 					// update the stored information with updated data
+<<<<<<< HEAD
 					$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
 						$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'], $AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'], $AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+=======
+					$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'],
+						$AniDBAPIArrayNew['type'],
+						$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'],
+						$AniDBAPIArrayNew['related'], $AniDBAPIArrayNew['creators'],
+						$AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+						$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'],
+						$AniDBAPIArrayNew['epnos'], $AniDBAPIArrayNew['airdates'],
+						$AniDBAPIArrayNew['episodetitles']);
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 					$image_file = $this->imgSavePath . $anidbid;
 
@@ -242,17 +293,28 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 			// every 10 records sleep for 4 minutes before continuing
 			if ($i % 10 == 0 && $i != 0)
+<<<<<<< HEAD
 				  sleep(180 + rand(30, 90));
 
 			// using exitcount if this number of API calls is reached exit
 			if ($i >= $exitcount)
 				  return;
+=======
+				sleep(180 + rand(30, 90));
+
+			// using exitcount if this number of API calls is reached exit
+			if ($i >= $exitcount)
+				return;
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 			// update how many we have done of the total to do in this session
 			if ($i != 0 && $this->echooutput)
 				echo 'Processed '.$i." anidb entries of a total possible of $exitcount for this session\n";
 		}	// foreach
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 	}
 
 
@@ -287,7 +349,11 @@ Holding on to this in case we want it again as it has some uses, but currently w
 		$db = $this->db;
 
 /*
+<<<<<<< HEAD
 		 	 if ($this->echooutput)
+=======
+			if ($this->echooutput)
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 			echo sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID), "\n";
 */
 
@@ -320,7 +386,11 @@ Holding on to this in case we want it again as it has some uses, but currently w
 		$apiresponse = curl_exec($ch);
 
 		if ($this->echooutput)
+<<<<<<< HEAD
 			echo "Response: '".$apiresponse."'\n";
+=======
+			echo "Response: $apiresponse\n";
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 		if (!$apiresponse)
 			return false;
@@ -391,7 +461,11 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	// next get the title list and populate the DB
 	$anidb->animetitlesUpdate();
 
+<<<<<<< HEAD
 	// sleep between 1 and 3 minutes before it starts this way if from a cron process the start times are random
+=======
+	// sleep between 1 and 3 minutes before it starts, this way if from a cron process the start times are random
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 	if (isset($argv[2]) && $argv[2] == 'cron')
 		sleep(rand(60, 180));
 
@@ -404,3 +478,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 }
 else
 	echo "This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of PI queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n";
+<<<<<<< HEAD
+=======
+?>
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1

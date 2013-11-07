@@ -5,7 +5,11 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4033";
+<<<<<<< HEAD
+$version="0.1r4034";
+=======
+$version="0.1r4034";
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -774,7 +778,11 @@ while($i > 0)
 		printf($mask, "Query Block", "Time", "Cumulative");
 		printf($mask, "==============================", "=========================", "==============================");
 		printf("\033[38;5;214m");
+<<<<<<< HEAD
 		printf($mask, "Combined", $tmux_time." ".$split_time." ".$init_time." ".$proc1_time." ".$proc2_time." ".$proc3_time." ".$tpg_count_time, $tmux_time." ".$split1_time." ".$init1_time." ".$proc11_time." ".$proc21_time." ".$proc31_time." ".$tpg_count_1_time);
+=======
+		printf($mask, "Combined", $tmux_time.", ".$split_time.", ".$init_time.", ".$proc1_time.", ".$proc2_time.", ".$proc3_time.", ".$tpg_count_time, $tmux_time.", ".$split1_time.", ".$init1_time.", ".$proc11_time.", ".$proc21_time.", ".$proc31_time.", ".$tpg_count_1_time);
+>>>>>>> 0b18e9ff4ba2c6c7f87caa792dfc5375e30b29a1
 	}
 
 	//get list of panes by name
