@@ -35,9 +35,9 @@ class Binaries
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI;
-		$this->primary = 'green';
-		$this->warning = 'red';
-		$this->header = 'yellow';
+		$this->primary = 'Green';
+		$this->warning = 'Red';
+		$this->header = 'Yellow';
 
 		// Cache of our black/white list.
 		$this->blackList = $this->message = array();
@@ -48,7 +48,7 @@ class Binaries
 	{
 		if ($this->hashcheck == 0)
 		{
-			echo $this->c->set256($this->warning)."We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n".$this->c->rsetcolor();
+			echo $this->c->setColor($this->warning)."We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n".$this->c->rsetcolor();
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes')
 				exit($this->c->set256($this->primary)."If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n".$this->c->rsetcolor());
 			$relss = new Releases(true);
@@ -83,7 +83,7 @@ class Binaries
 			echo $this->c->set256($this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
 		}
 		else
-			echo $this->c->set256($this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
+			echo $this->c->setColor($this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
 	}
 
 	public function updateGroup($groupArr, $nntp=null)
@@ -130,7 +130,7 @@ class Binaries
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
 				if ($first == '')
 				{
-					echo $this->c->set256($this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
+					echo $this->c->setColor($this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
 					if ($st === true)
 						$nntp->doQuit();
 					return;
@@ -335,7 +335,7 @@ class Binaries
 			$msgs = $nntp->getOverview($first.'-'.$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				echo $this->c->set256($this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
+				echo $this->c->setColor($this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
 				return;
 			}
 		}
@@ -449,9 +449,7 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					//Not needed if using table per group
-					//if($this->tablepergroup == 0 && $this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
-					if($this->grabnzbs && preg_match('/".+?\.nzb" yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/("|#34;).+\.nzb("|#34;).+?yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -619,7 +617,7 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0)
 				{
-					echo $this->c->set256($this->warning)."WARNING: ".sizeof($msgsnotinserted)." parts failed to insert.".$this->c->rsetcolor();
+					echo $this->c->setColor($this->warning)."WARNING: ".sizeof($msgsnotinserted)." parts failed to insert.".$this->c->rsetcolor();
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 				}
@@ -637,29 +635,22 @@ class Binaries
 		{
 			if ($type != 'partrepair')
 			{
-				echo $this->c->set256($this->warning)."Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n".$this->c->rsetcolor();
+				echo $this->c->setColor($this->warning)."Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n".$this->c->rsetcolor();
 				return false;
 			}
 		}
 	}
 
-	public function partRepair($nntp, $groupArr, $groupID='', $partID='')
+	public function partRepair($nntp, $groupArr)
 	{
 		// Get all parts in partrepair table.
 		$db = $this->db;
-		if ($partID == '')
-			$missingParts = $db->query(sprintf("SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d", $groupArr['id'], $this->partrepairlimit));
-		else
-		{
-			$groupArr = $this->groups->getByID($groupID);
-			$missingParts = array(array('numberid' => $partID, 'groupid' => $groupArr['id']));
-		}
+		$missingParts = $db->query(sprintf('SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0)
 		{
-			if ($partID == '')
-				echo $this->c->set256($this->primary).'Attempting to repair '.sizeof($missingParts)." parts.\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary).'Attempting to repair '.number_format(sizeof($missingParts))." parts.\n".$this->c->rsetcolor();
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -691,14 +682,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-
-				if ($partID == '')
-				{
-					echo "\n";
-					$this->consoleTools->overWrite("\nAttempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
-				}
-				else
-					echo $this->c->set256($this->primary)."\nAttempting repair: ".$partfrom."\n".$this->c->rsetcolor();
+				$this->consoleTools->overWrite("Attempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
@@ -722,9 +706,6 @@ class Binaries
 					$partsFailed = $result->rowCount();
 				}
 			}
-
-			if ($partID == '')
-				echo "\n";
 			echo $this->c->set256($this->primary).$partsRepaired." parts repaired.\n".$this->c->rsetcolor();
 		}
 

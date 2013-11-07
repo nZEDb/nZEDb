@@ -190,8 +190,8 @@ def main(args):
 	final = ("{} {} Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
-	#group = ("{} {}".format(datas[0], 1000))
-	#subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
+	group = ("{} {}".format(datas[0], 1000))
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
 		print("\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)))
 	else:

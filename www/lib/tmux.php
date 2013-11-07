@@ -3,7 +3,11 @@ require_once(WWW_DIR."/lib/framework/db.php");
 
 class Tmux
 {
-
+    function __construct()
+    {
+        $this->db = new DB();
+    }
+    
 	public function version()
 	{
 		return "0.0.2";
@@ -11,7 +15,7 @@ class Tmux
 
 	public function update($form)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$tmux = $this->row2Object($form);
 
 		$sql = $sqlKeys = array();
@@ -28,7 +32,7 @@ class Tmux
 
 	public function get()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$rows = $db->query("SELECT * FROM tmux");
 
 		if ($rows === false)
@@ -59,7 +63,7 @@ class Tmux
 
 	public function updateItem($setting, $value)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $db->escapeString($value), $db->escapeString($setting));
 		return $db->queryExec($sql);
 	}

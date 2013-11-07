@@ -24,14 +24,15 @@ class Nfo
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
 		$this->c = new ColorCLI;
-		$this->primary = 'green';
-		$this->warning = 'red';
-		$this->header = 'yellow';
+		$this->primary = 'Green';
+		$this->warning = 'Red';
+		$this->header = 'Yellow';
+        $this->db = new DB();
 	}
 
 	public function addReleaseNfo($relid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $relid));
 		if ($res == false)
 			return $db->queryInsert(sprintf('INSERT INTO releasenfo (releaseid) VALUES (%d)', $relid));
@@ -41,7 +42,7 @@ class Nfo
 
 	public function deleteReleaseNfo($relid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryExec(sprintf('DELETE FROM releasenfo WHERE releaseid = %d', $relid));
 	}
 
@@ -145,7 +146,7 @@ class Nfo
 	// Loop through releases, look for NFO's in the NZB file.
 	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='')
 	{
-		$db = new DB();
+		$db = $this->db;
 		$nfocount = $ret = 0;
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
 
@@ -154,7 +155,7 @@ class Nfo
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nfostatus between %d AND -1 AND nzbstatus = 1 AND size < %s '.$groupid.' AND id IN ( SELECT id FROM releases ORDER BY postdate DESC ) LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus between %d AND -1 AND size < %s '.$groupid.' LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
@@ -230,7 +231,7 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->query('SELECT id FROM releases WHERE nfostatus < -6');
+			$relres = $db->query('SELECT id FROM releases WHERE nzbstatus = 1 AND nfostatus < -6');
 			foreach ($relres as $relrow)
 				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
 

@@ -39,6 +39,7 @@ class Sharing
 		$this->site = $s->get();
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 		$this->echooutput = $echooutput;
+        $this->db = new DB();
 
 		// Will be a site setting.. hides username when posting
 		$this->hideuser = false;
@@ -71,7 +72,7 @@ class Sharing
 		 * firstdate	= the unixtime of the first article
 		 */
 
-		$db = new DB;
+		$db = $this->db;
 		$t = $db->queryExec(sprintf("INSERT INTO sharing (updatetime, backfill, name, local, status, lasteen, comments, firstseen, f_comments, p_comments, lastpushtime, lasthash, lastarticle, lastdate, firsthash, firstarticle, firstdate) VALUES (NOW(), 0, %s, 1, 0, 0, NULL, NULL, NULL, NULL, NULL))", $db->escapeString(uniqid("nZEDb.", true))));
 		if ($t !== false)
 			return true;
@@ -82,7 +83,7 @@ class Sharing
 	// Match comments to releases.
 	function matchComments()
 	{
-		$db = new DB;
+		$db = $this->db;
 		$ret = 0;
 
 		$res = $db->query("SELECT id FROM releases r INNER JOIN releasecomment rc ON rc.nzb_guid = r.nzb_guid WHERE rc.releaseid = NULL");
@@ -103,7 +104,7 @@ class Sharing
 	// Retrieve new content.
 	public function retrieveAll()
 	{
-		$db = new DB;
+		$db = $this->db;
 
 		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
 		if($settings === false)
@@ -128,7 +129,7 @@ class Sharing
 	// Upload new content.
 	public function shareAll()
 	{
-		$db = new DB;
+		$db = $this->db;
 
 		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
 		if ($settings === false)

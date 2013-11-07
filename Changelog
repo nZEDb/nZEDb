@@ -2,6 +2,16 @@ NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 NOTE: If you submit a pull request, please update this file with what you changed
 
 
+11062013 -> jonnyboy -> added script to grab all shows from tvrage at 1 time
+                        added option to add unreceived parts to partrepair when running safe threaded scripts, added partrepair run when running binary safe thread script
+                        updated populate_anidb.php, but since i can not open anidb.net, I can not test the script, I assume I am permabanned
+                        merged egant's pull request, it is untested, I spent an hour changing and fixing the pull request before I could merge it
+                        merged Bart39's push
+                        added option to allow grabnzbs to replace releases currently in the db
+11052013 -> jonnyboy -> added script to test a release name against all regexes, show regex and match
+                        added more groups and regexes
+11042013 -> jonnyboy -> updated patchDB to handle errors and ignore certain errors
+                        fixed schema.mysql and bad patches
 11032013 -> jonnyboy -> added some of the changes presented by niel
                         added option to set update releases threads when using tablepergroup
                         hopefully a fix for postdate, error found by tuxeh
