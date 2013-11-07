@@ -473,14 +473,14 @@ class Backfill
 		else if($success === false)
 			return false;
 
-		if ($record === true)
+		/*if ($record === true)
 		{
 			$db = $this->db;
 			if ($type = 'newest')
 				$db->queryExec('UPDATE groups set first_record = '.$post);
 			else
 				$db->queryExec('UPDATE groups set last_record = '.$post);
-		}
+		}*/
 
 		if ($debug)
 			echo $this->c->set256($this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetColor();
