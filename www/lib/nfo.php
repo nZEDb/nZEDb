@@ -27,11 +27,12 @@ class Nfo
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
+        $this->db = new DB();
 	}
 
 	public function addReleaseNfo($relid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $relid));
 		if ($res == false)
 			return $db->queryInsert(sprintf('INSERT INTO releasenfo (releaseid) VALUES (%d)', $relid));
@@ -41,7 +42,7 @@ class Nfo
 
 	public function deleteReleaseNfo($relid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryExec(sprintf('DELETE FROM releasenfo WHERE releaseid = %d', $relid));
 	}
 
@@ -145,7 +146,7 @@ class Nfo
 	// Loop through releases, look for NFO's in the NZB file.
 	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='')
 	{
-		$db = new DB();
+		$db = $this->db;
 		$nfocount = $ret = 0;
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
 
