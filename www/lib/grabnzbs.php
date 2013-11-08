@@ -183,7 +183,7 @@ class Import
                 else
                 {
                     $importfailed = true;
-                    break;
+                    return;
                 }
 			}
 
@@ -206,7 +206,7 @@ class Import
 				{
 					flush();
 					$importfailed = true;
-					break;
+					return;
 				}
 			}
 
