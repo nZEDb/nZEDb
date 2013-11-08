@@ -1,6 +1,6 @@
 <?php
 if (!isset($argv[1]))
-	exit("This script will test a string(release name), single quoted, against all regexes in lib/namecleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'");
+	exit("This script will test a string(release name), single quoted, against all regexes in lib/namecleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
 require_once(dirname(__FILE__)."/../../../www/config.php");
 
 $file = WWW_DIR.'lib/namecleaning.php';

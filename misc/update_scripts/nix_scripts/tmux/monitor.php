@@ -5,24 +5,35 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4056";
+$version="0.1r4057";
 
 $db = new DB();
 $DIR = MISC_DIR;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 
-$tmux = new Tmux();
-$seq = $tmux->get()->sequential;
-$powerline = $tmux->get()->powerline;
-$colors = $tmux->get()->colors;
+$t = new Tmux();
+$tmux = $t->get();
+$seq = (!empty($tmux->sequential)) ? $tmux->sequential : 0;
+$powerline = (!empty($tmux->powerline)) ? $tmux->powerline : FALSE;
+$colors = (!empty($tmux->colors)) ? $tmux->colors : FALSE;
 
 $s = new Sites();
 $site = $s->get();
-$alternate_nntp = $site->alternate_nntp;
 $patch = $site->sqlpatch;
+$alternate_nntp = (!empty($site->alternate_nntp)) ? $site->alternate_nntp : 0;
 $tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
+
+if (command_exist("python3"))
+	$PYTHON = "python3 -OOu";
+else
+	$PYTHON = "python -OOu";
+
+if (command_exist("php5"))
+	$PHP = "php5";
+else
+	$PHP = "php";
 
 if ($nntpproxy == 0)
 {
@@ -630,7 +641,9 @@ while($i > 0)
 		$tvrage_percent = sprintf("%02s", floor(($tvrage_releases_now / $releases_now) * 100));
 		$book_percent = sprintf("%02s", floor(($book_releases_now / $releases_now) * 100));
 		$misc_percent = sprintf("%02s", floor(($misc_releases_now / $releases_now) * 100));
-	} else {
+	}
+	else
+	{
 		$nfo_percent = 0;
 		$pre_percent = 0;
 		$request_percent = 0;
@@ -798,10 +811,6 @@ while($i > 0)
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	}
 
-	if (command_exist("php5"))
-		$PHP = "php5";
-	else
-		$PHP = "php";
 	if ($debug == "1")
 		$show_time = "/usr/bin/time";
 	else
@@ -809,14 +818,9 @@ while($i > 0)
 
 	$_php = $show_time." nice -n$niceness $PHP";
 	$_phpn = "nice -n$niceness $PHP";
-	if (command_exist("python3"))
-		$PYTHON = "python3 -OOu";
-	else
-		$PYTHON = "python -OOu";
 
 	$_python = $show_time." nice -n$niceness $PYTHON";
 	$_pythonn = "nice -n$niceness $PYTHON";
-	$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
 
 	if (($postprocess_kill < $total_work_now) && ($postprocess_kill != 0))
 		$kill_pp = "TRUE";
@@ -833,6 +837,11 @@ while($i > 0)
 		$which_bins = "$_python ${DIR}update_scripts/python_scripts/binaries_safe_threaded.py";
 
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
+
+	if ($releases_run == 1)
+		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
+	else if ($releases_run == 2 && $tablepergroup == 1)
+		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
 
 	if ($running == "TRUE")
 	{

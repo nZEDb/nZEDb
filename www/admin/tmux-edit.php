@@ -42,6 +42,8 @@ $page->smarty->assign('dehash_ids', array(0,1,2,3));
 $page->smarty->assign('dehash_names', array('Disabled', 'Decrypt Hashes', 'Predb', 'All'));
 $page->smarty->assign('import_ids', array(0,1,2));
 $page->smarty->assign('import_names', array('Disabled', 'Import - Do Not Use Filenames', 'Import - Use Filenames'));
+$page->smarty->assign('releases_ids', array(0,1,2));
+$page->smarty->assign('releases_names', array('Disabled', 'Update Releases', 'Update Releases Threaded'));
 $page->smarty->assign('post_ids', array(0,1,2,3));
 $page->smarty->assign('post_names', array('Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All'));
 $page->smarty->assign('fix_crap_ids', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
