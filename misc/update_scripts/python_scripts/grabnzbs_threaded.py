@@ -98,7 +98,7 @@ def main():
 	time_of_last_run = time.time()
 
 	print("We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))))
-	print("+ = nzb imported, - = probably not nzb, ! = duplicate")
+	print("+ = nzb imported, - = probably not nzb, ! = duplicate, f = download failed")
 	time.sleep(2)
 
 	def signal_handler(signal, frame):

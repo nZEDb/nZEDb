@@ -2,6 +2,8 @@
 config.php
 error_log
 failed-login.log
+php_errors.log
+php-errors.log
 
 # Editor temp files
 *#

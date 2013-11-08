@@ -393,44 +393,53 @@ class Backfill
 			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
 			{
 				$old_post = $post;
-				if ($attempts == 0)
+				if ($type == 'newest')
 				{
-					if ($type == 'newest')
+					$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
+					if (isset($res['number']) && is_numeric($res['number']))
 					{
-						$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
-						if (isset($res['number']))
-						{
-							$post = $res['number'];
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
-							$record = true;
-						}
+						$post = $res['number'];
+						echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with newest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
 					}
-					else
-					{
-						$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
-						if (isset($res['number']))
-						{
-							$post = $res['number'];
-							echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n\n\n".$this->c->rsetColor();
-							$record = true;
-						}
-					}
-					$success = false;
 				}
-				if ($record === false)
+				else
 				{
-					$old_post = $post;
-					// for random, backfill will increase into range that we have and binary will decrease into the range that we have
-					if ($type == 'newest')
-						$post = ($post - MT_RAND(100,500));
-					else
-						$post = ($post + MT_RAND(100,500));
-					//echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with article '.$post.".\n".$this->c->rsetColor();
-					$success = false;
-					$record = false;
+					$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
+					if (isset($res['number']) && is_numeric($res['number']))
+					{
+						$post = $res['number'];
+						echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$old_post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Retrying with oldest article, from parts table, ['.$post.'] from '.$groupa['pname'].".\n".$this->c->rsetColor();
+					}
+				}
+				$success = false;
+			}
+			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
+			{
+				if ($type == 'newest')
+				{
+					$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date DESC LIMIT 1');
+					if (isset($res['date']))
+					{
+						$date = strtotime($res['date']);
+						echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using newest date from '.$groupa['cname'].".\n".$this->c->rsetColor();
+						if (strlen($date) > 0)
+							$success = true;
+					}
+				}
+				else
+				{
+					$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date ASC LIMIT 1');
+					if (isset($res['date']))
+					{
+						$date = strtotime($res['date']);
+						echo $this->c->setColor($this->warning).'Error: Unable to fetch article '.$post.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using oldest date from '.$groupa['cname'].".\n".$this->c->rsetColor();
+						if (strlen($date) > 0)
+							$success = true;
+					}
 				}
 			}
-			else if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '')
+
+			if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '' && $success === false)
 			{
 				$date = $msgs[0]['Date'];
 				if (strlen($date) > 0)
@@ -472,15 +481,6 @@ class Backfill
 		}
 		else if($success === false)
 			return false;
-
-		/*if ($record === true)
-		{
-			$db = $this->db;
-			if ($type = 'newest')
-				$db->queryExec('UPDATE groups set first_record = '.$post);
-			else
-				$db->queryExec('UPDATE groups set last_record = '.$post);
-		}*/
 
 		if ($debug)
 			echo $this->c->set256($this->primary).'DEBUG: postdate for post: '.$post.' came back '.$date.' ('.$this->c->rsetColor();

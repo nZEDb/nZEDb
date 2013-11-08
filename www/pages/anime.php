@@ -11,6 +11,7 @@ $AniDB = new AniDB;
 if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 {
 
+	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
 	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", "5070", -1);
 	$AniDBAPIArray = $AniDB->getAnimeInfo($_GET['id']);
 
@@ -29,6 +30,8 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 		$animeEpisodeTitles[$r['tvtitle']][] = $r;
 
 	$page->smarty->assign('animeEpisodeTitles', $animeEpisodeTitles);
+	$page->smarty->assign('animeAnidbID', $AniDBAPIArray['anidbid']);
+	# case is off on old variable this resolves that, I do not think the other is ever used, but left if anyways
 	$page->smarty->assign('animeAnidbid', $AniDBAPIArray['anidbid']);
 	$page->smarty->assign('animeTitle', $AniDBAPIArray['title']);
 	$page->smarty->assign('animeType', $AniDBAPIArray['type']);
