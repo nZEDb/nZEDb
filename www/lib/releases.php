@@ -989,7 +989,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1059,7 +1059,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1093,7 +1093,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1250,7 +1250,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1474,7 +1474,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1656,7 +1656,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You must use releases_threaded.py\n");
+				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
