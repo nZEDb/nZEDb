@@ -8,7 +8,7 @@ export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
 export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
 export DEV_PATH="/var/www/nZEDb/misc/testing/Dev_testing"
 export DB_PATH="/var/www/nZEDb/misc/testing/DB_scripts"
-export THREADED_PATH="/var/www/nZEDb/misc/update_scripts/threaded_scripts"
+export THREADED_PATH="/var/www/nZEDb/misc/update_scripts/python_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
@@ -20,7 +20,7 @@ date1=`date +%s`
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-    rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
 fi
 if [[ $1 != "true" ]]
 then
@@ -30,14 +30,19 @@ fi
 loop=1
 while [ $loop -ge 1 ]
 do
-echo
-echo
-#The process that I use is get binaries, create releases, rename, post process
-#I only use the threaded scripts with the exception of decrypt_hashes.php and I do not use removeCrapReleases.php
-#decrypt hashes and fixReleasenames md5 are very similar, decrypt hashes should be run first, because it is faster
-#but fixReleasenames also looks at release files for a match, which is a plus, so both should be run
-#jonnyboy
+	#The process that I use is get binaries, create releases, rename, post process
+	#I only use the threaded scripts with the exception of decrypt_hashes.php and I do not use removeCrapReleases.php
+	#decrypt hashes and fixReleasenames md5 are very similar, decrypt hashes should be run first, because it is faster
+	#but fixReleasenames also looks at release files for a match, which is a plus, so both should be run, after
+	#jonnyboy
 
+	date1=`date +%s`
+	clear
+	echo
+	echo
+#	tmux respawnp -k -t $tmux_session:2.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
+#	tmux respawnp -k -t$tmux_session:2.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
+#	sleep 5
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full passwordurl

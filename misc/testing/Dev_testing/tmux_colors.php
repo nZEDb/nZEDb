@@ -3,9 +3,9 @@ require_once(dirname(__FILE__)."/../../../www/config.php");
 require_once(WWW_DIR."lib/tmux.php");
 
 $tmux = new Tmux();
-$colors_start = $tmux->get()->COLORS_START;
-$colors_end = $tmux->get()->COLORS_END;
-$colors_exc = $tmux->get()->COLORS_EXC;
+$colors_start = $tmux->get()->colors_start;
+$colors_end = $tmux->get()->colors_end;
+$colors_exc = $tmux->get()->colors_exc;
 
 function get_color($colors_start, $colors_end, $colors_exc)
 {

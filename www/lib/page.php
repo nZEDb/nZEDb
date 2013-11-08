@@ -8,7 +8,7 @@ require_once(WWW_DIR."/lib/logging.php");
 
 class Page extends BasePage
 {
-	function Page()
+	function __construct()
 	{
 		parent::BasePage();
 

@@ -16,7 +16,7 @@
  * @param string
  * @return string
  */
- 
+
 function smarty_modifier_magicurl($str, $dereferrer="") {
 	return preg_replace('/(https?):\/\/([A-Za-z0-9\._\-\/\?=&;%]+)/is', '<a href="'.$dereferrer.'$1://$2" target="_blank">$1://$2</a>', $str);
 }

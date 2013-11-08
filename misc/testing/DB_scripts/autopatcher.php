@@ -18,8 +18,8 @@ function command_exist($cmd)
 if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
 {
 	$tmux = new Tmux();
-	$running = $tmux->get()->RUNNING;
-	$delay = $tmux->get()->MONITOR_DELAY;
+	$running = $tmux->get()->running;
+	$delay = $tmux->get()->monitor_delay;
 
 	if ( $running == "TRUE" )
 	{
@@ -47,13 +47,13 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
 		$PHP = "php";
 
 	echo "Patching database - $dbname\n";
-	
+
 	if($argv[1] == "safe")
 		system("$PHP ${DIR}testing/DB_scripts/patchDB.php safe");
-	else 
+	else
 		system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
-	
-	
+
+
 	if ($restart == "true")
 	{
 		echo "Starting tmux scripts\n";

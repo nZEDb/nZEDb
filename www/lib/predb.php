@@ -13,18 +13,19 @@ require_once(WWW_DIR.'lib/consoletools.php');
 
 Class Predb
 {
-	function Predb($echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
+        $this->db = new DB();
 	}
 
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
 	public function combinePre()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
 		if (strtotime($newestrel['adddate']) < time()-600 || is_null($newestrel['adddate']))
@@ -473,8 +474,9 @@ Class Predb
 		else if ($db->dbSystem() == 'pgsql')
 			$regex = "AND (r.hashed = true OR rf.name ~ '[a-fA-F0-9]{32}')";
 
-		$res = $db->query(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
-		if (count($res) > 0)
+		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
+		$res->execute();
+		if ($res->rowCount() > 0)
 		{
 			foreach ($res as $row)
 			{

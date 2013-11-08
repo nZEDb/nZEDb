@@ -11,7 +11,7 @@ class DB
 	private static $pdo = null;
 
 	// Start a connection to the DB.
-	public function DB()
+	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
@@ -36,7 +36,7 @@ class DB
 
 			try {
 				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
+					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
 				else
 					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 
@@ -284,13 +284,68 @@ class DB
 		return $tablecnt;
 	}
 
+	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	public function newtables($grpid)
+	{
+		$binaries = $parts = $collections = false;
+		try {
+			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+			$collections = true;
+		} catch (PDOException $e) {
+			try {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+				{
+					$collections = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
+			} catch (PDOException $e) {
+				return false;
+			}
+		}
+
+		if ($collections === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+				$binaries = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+				{
+					$binaries = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
+			}
+		}
+
+		if ($binaries === true)
+		{
+			try {
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+				$parts = true;
+			} catch (PDOException $e) {
+				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+				{
+					$parts = true;
+					usleep(100000);
+					$this->newtables($grpid);
+				}
+			}
+		}
+		if ($parts === true && $binaries = true && $collections = true)
+			return true;
+		else
+			return false;
+	}
+
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
 	{
 		try {
 			$stat = DB::$pdo->prepare($query);
 		} catch (PDOException $e) {
-			printf($e);
+			//printf($e);
 			$stat = false;
 		}
 		return $stat;

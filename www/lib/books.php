@@ -11,7 +11,7 @@ require_once(WWW_DIR.'lib/site.php');
 
  class Books
  {
-	 function Books($echooutput=false)
+	 function __construct($echooutput=false)
 	 {
 		$this->echooutput = $echooutput;
 		$s = new Sites();
@@ -22,17 +22,18 @@ require_once(WWW_DIR.'lib/site.php');
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->imgSavePath = WWW_DIR.'covers/book/';
+        $this->db = new DB();
 	}
 
 	public function getBookInfo($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
 	}
 
 	public function getBookInfoByName($author, $title)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
@@ -41,7 +42,7 @@ require_once(WWW_DIR.'lib/site.php');
 
 	public function getRange($start, $num)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = '';
@@ -53,14 +54,14 @@ require_once(WWW_DIR.'lib/site.php');
 
 	public function getCount()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
 		return $res['num'];
 	}
 
 	public function getBookCount($cat, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -104,13 +105,13 @@ require_once(WWW_DIR.'lib/site.php');
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res['num'];
 	}
 
 	public function getBookRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -159,7 +160,7 @@ require_once(WWW_DIR.'lib/site.php');
 			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$order = $this->getBookOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
@@ -206,7 +207,7 @@ require_once(WWW_DIR.'lib/site.php');
 
 	public function getBrowseBy()
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
@@ -243,9 +244,9 @@ require_once(WWW_DIR.'lib/site.php');
 	{
 		$threads--;
 		$ret = 0;
-		$db = new DB();
+		$db = $this->db;
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE bookinfoid IS NULL AND nzbstatus = 1 AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
@@ -284,14 +285,14 @@ require_once(WWW_DIR.'lib/site.php');
 		if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
 		{
 			echo "Changing category to misc books: ".$releasename."\n";
-			$db = new DB();
+			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
 			return false;
 		}
 		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 		{
 			echo "Changing category to magazines: ".$releasename."\n";
-			$db = new DB();
+			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
 			return false;
 		}
@@ -303,7 +304,7 @@ require_once(WWW_DIR.'lib/site.php');
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ri = new ReleaseImage();
 
 		$book = array();

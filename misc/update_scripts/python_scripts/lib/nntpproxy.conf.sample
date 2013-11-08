@@ -1,0 +1,16 @@
+{
+	"usenet": {
+		"host": "your.usenet.host.com",
+		"port": 443,
+		"username": "your_username",
+		"password": "your_password",
+		"use_ssl": true
+	},
+	"proxy": {
+		"host": "localhost",
+		"port": 9991
+	},
+	"pool": {
+		"size": 5
+	}
+}

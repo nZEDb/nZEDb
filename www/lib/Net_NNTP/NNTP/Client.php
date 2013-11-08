@@ -993,9 +993,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	    case !is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && ctype_digit(func_get_arg(1))):
 	    case !is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && ctype_digit(func_get_arg(0))):
 		break;
-
 	    default:
-    	    	// 
+    	    	//
     	        trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getOverview() !', E_USER_NOTICE);
 
     	        // Fetch overview via API v1.3
@@ -1010,7 +1009,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	    	    // Rename 'Number' field into 'number'
     	    	    $article = array_merge(array('number' => array_shift($article)), $article);
-		
+
     	    	    // Use 'Message-ID' field as key
     	            $articles[$article['Message-ID']] = $article;
     	        }

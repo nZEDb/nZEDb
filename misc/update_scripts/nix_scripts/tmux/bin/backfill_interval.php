@@ -15,7 +15,7 @@ if (isset($argv[1]))
 	elseif (isset($pieces[1]) && $pieces[1] == 2)
 	{
 		$tmux = new Tmux();
-		$count = $tmux->get()->BACKFILL_QTY;
+		$count = $tmux->get()->backfill_qty;
 		$backfill = new Backfill();
 		$backfill->backfillPostAllGroups($pieces[0], $count);
 	}

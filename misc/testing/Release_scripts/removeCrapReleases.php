@@ -214,9 +214,9 @@ if (isset($argv[1]) && $argv[1] == 'true')
 			foreach ($regexes as $regex)
 			{
 				if ($db->dbSystem() == 'mysql')
-					$regexsql = '(rf.name REGEXP '.$db->escapeString($regex['regex']).' OR r.name REGEXP '.$db->escapeString($regex['regex']).')';
+					$regexsql = "(rf.name REGEXP ".$db->escapeString($regex['regex'])." OR r.name REGEXP ".$db->escapeString($regex['regex']).")";
 				else
-					$regexsql = '(rf.name ~ '.$db->escapeString($regex['regex']).' OR r.name ~ '.$db->escapeString($regex['regex']).')';
+					$regexsql = "(rf.name ~ ".$db->escapeString($regex['regex'])." OR r.name ~ ".$db->escapeString($regex['regex']).")";
 				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} ".$and);
 				$delcount += deleteReleases($sql, 'Blacklist');
 			}

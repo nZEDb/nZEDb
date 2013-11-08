@@ -25,11 +25,12 @@ class Namefixer
 	const NF_NFO_FILES_F = 21;		// Checked by namefixer filename but no name was found.
 	const NF_NF_PAR2_F = 22;		// Checked by namefixer par2 but no name was found.
 
-	function Namefixer($echooutput=true)
+	function __construct($echooutput=true)
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;
-		$db = new DB;
+        $this->db = new DB();
+		$db = $this->db;
 		if ($db->dbSystem() == 'mysql')
 		{
 			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
@@ -54,7 +55,7 @@ class Namefixer
 		else
 			echo "Fixing search names since the beginning using .nfo files.\n";
 
-		$db = new DB();
+		$db = $this->db;
 		$type = "NFO, ";
 		// Only select releases we haven't checked here before
 		if ($db->dbSystem() == "mysql")
@@ -122,7 +123,7 @@ class Namefixer
 		else
 			echo "Fixing search names since the beginning using the filename.\n";
 
-		$db = new DB();
+		$db = $this->db;
 		$type = "Filenames, ";
 		$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND relnamestatus = 1";
 
@@ -166,7 +167,7 @@ class Namefixer
 		else
 			echo "Fixing search names since the beginning using the par2 files.\n";
 
-		$db = new DB();
+		$db = $this->db;
 		$type = "Filenames, ";
 		$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE rel.categoryid = 7010 AND rel.relnamestatus IN (0, 1, 20, 21)";
 
@@ -185,7 +186,7 @@ class Namefixer
 
 		if (count($relres) > 0)
 		{
-			$db = new DB();
+			$db = $this->db;
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
@@ -253,7 +254,7 @@ class Namefixer
 
 				if ($echo == 1)
 				{
-					$db = new DB();
+					$db = $this->db;
 					if ($namestatus == 1)
 					{
 						if ($type == "NFO, ")
@@ -279,7 +280,7 @@ class Namefixer
 	// Match a MD5 from the predb to a release.
 	public function matchPredbMD5($md5, $release, $echo, $namestatus, $echooutput)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$matching = 0;
 		$category = new Category();
 		$this->matched = false;
@@ -352,18 +353,18 @@ class Namefixer
 		// The release didn't match so set relnamestatus to 20 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false && $type == "NFO, ")
 		{
-			$db = new DB();
+			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 20 WHERE id = %d", $release["releaseid"]));
 		}
 		// The release didn't match so set relnamestatus to 21 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		elseif ($namestatus == 1 && $this->matched === false && $type == "Filenames, ")
 		{
-			$db = new DB();
+			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 21 WHERE id = %d", $release["releaseid"]));
 		}
 		elseif ($namestatus == 1 && $this->matched === false && $type == "PAR2, ")
 		{
-			$db = new DB();
+			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 22 WHERE id = %d", $release["releaseid"]));
 		}
 	}

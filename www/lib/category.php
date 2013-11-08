@@ -73,18 +73,19 @@ class Category
 
 	private $tmpCat = 0;
 
-	public function category()
+	public function __construct()
 	{
 		$s = new Sites();
 		$site = $s->get();
 		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
 		$this->catlanguage = (!empty($site->catlanguage)) ? $site->catlanguage : "0";
 		$this->catwebdl = ($site->catwebdl == "0") ? false : true;
+        $this->db = new DB();
 	}
 
 	public function get($activeonly=false, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0)
@@ -99,7 +100,7 @@ class Category
 
 	public function isParent($cid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ret = $db->queryOneRow(sprintf("SELECT * FROM category WHERE id = %d AND parentid IS NULL", $cid));
 		if ($ret)
 			return true;
@@ -109,7 +110,7 @@ class Category
 
 	public function getFlat($activeonly=false)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$act = "";
 		if ($activeonly)
 			$act = sprintf(" WHERE c.status = %d ", Category::STATUS_ACTIVE ) ;
@@ -118,26 +119,26 @@ class Category
 
 	public function getChildren($cid)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
 	}
 
 	// Returns ID's for site disabled categories.
 	public function getDisabledIDs()
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->query("SELECT id FROM category WHERE status = 2");
 	}
 
 	public function getById($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT c.disablepreview, c.id, CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) as title, c.status, c.parentID, c.minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.id = %d", $id));
 	}
 
 	public function getByIds($ids)
 	{
-		$db = new DB();
+		$db = $this->db;
 		if (count($ids) > 0)
 			return $db->query(sprintf("SELECT CONCAT(cp.title, ' > ',c.title) AS title FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.id IN (%s)", implode(',', $ids)));
 		else
@@ -146,13 +147,13 @@ class Category
 
 	public function update($id, $status, $desc, $disablepreview, $minsize)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryExec(sprintf("UPDATE category SET disablepreview = %d, status = %d, description = %s, minsize = %d  WHERE id = %d", $disablepreview, $status, $db->escapeString($desc), $minsize, $id));
 	}
 
 	public function getForMenu($excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 		$ret = array();
 
 		$exccatlist = '';
@@ -209,7 +210,7 @@ class Category
 	// Return the category name from the supplied categoryID.
 	public function getNameByID($ID)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$parent = $db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", substr($ID, 0, 1)."000"));
 		$cat = $db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", $ID));
 		return $parent["title"]." ".$cat["title"];

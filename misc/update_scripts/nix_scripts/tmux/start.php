@@ -5,6 +5,8 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
+passthru("clear");
+
 $db = new DB();
 $DIR = MISC_DIR;
 
@@ -13,14 +15,15 @@ if ( isset($argv['1']) && $argv['1'] == "limited" )
 	$limited = true;
 
 $tmux = new Tmux();
-$tmux_session = $tmux->get()->TMUX_SESSION;
-$seq = $tmux->get()->SEQUENTIAL;
-$powerline = $tmux->get()->POWERLINE;
-$colors = $tmux->get()->COLORS;
-
+$tmux_session = $tmux->get()->tmux_session;
+$seq = $tmux->get()->sequential;
+$powerline = $tmux->get()->powerline;
+$colors = $tmux->get()->colors;
+$import = $tmux->get()->import;
 $site = new Sites();
 $patch = $site->get()->sqlpatch;
 $hashcheck = $site->get()->hashcheck;
+$tablepergroup = (!empty($site->get()->tablepergroup)) ? $site->get()->tablepergroup : 0;
 
 //check if session exists
 $session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
@@ -34,7 +37,7 @@ function writelog( $pane )
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
 	$tmux = new Tmux();
-	$logs = $tmux->get()->WRITE_LOGS;
+	$logs = $tmux->get()->write_logs;
 	if ( $logs == "TRUE" )
 	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
@@ -52,7 +55,7 @@ if ( $hashcheck != '1' )
 	exit(1);
 }
 
-if ( $patch < '130' )
+if ( $patch < '140' )
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -84,28 +87,67 @@ foreach ($apps as &$value)
 	}
 }
 
+function python_module_exist($module) {
+	exec("python -c \"import $module\"", $output, $returnCode);
+	return ($returnCode == 0 ? true : false);
+}
+
+$nntpproxy = $site->get()->nntpproxy;
+if ($nntpproxy == '1')
+{
+	$modules = array("nntp", "socketpool");
+	foreach ($modules as &$value)
+	{
+		if (!python_module_exist($value)) {
+			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
+			exit(1);
+		}
+	}
+}
+
 //reset collections dateadded to now
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
-$run = $db->queryExec("update collections set dateadded = now()");
-if ($run)
+if ($tablepergroup == 1)
+{
+	$sql = "SHOW tables";
+	$tables = $db->query($sql);
+	$ran = 0;
+	foreach($tables as $row)
+	{
+		$tbl = $row['tables_in_'.DB_NAME];
+		if (preg_match('/\d+_collections/',$tbl))
+		{
+			$run = $db->prepare('UPDATE '.$tbl.' SET dateadded = now()');
+			$run->execute();
+			$ran += $run->rowCount();
+		}
+	}
+	echo $ran." collections reset\n";
+}
+else
+{
+	$run = $db->prepare("update collections set dateadded = now()");
+	$run->execute();
 	echo $run->rowCount()." collections reset\n";
-$run = $db->queryExec("update nzbs set dateadded = now()");
-if ($run)
-	echo $run->rowCount()." nzbs reset\n";
+}
+
+$run = $db->prepare("update nzbs set dateadded = now()");
+$run->execute();
+echo $run->rowCount()." nzbs reset\n";
 sleep(2);
 
 function start_apps($tmux_session)
 {
-	$tmux = new Tmux();
-	$htop = $tmux->get()->HTOP;
-	$vnstat = $tmux->get()->VNSTAT;
-	$vnstat_args = $tmux->get()->VNSTAT_ARGS;
-	$tcptrack = $tmux->get()->TCPTRACK;
-	$tcptrack_args = $tmux->get()->TCPTRACK_ARGS;
-	$nmon = $tmux->get()->NMON;
-	$bwmng = $tmux->get()->BWMNG;
-	$mytop = $tmux->get()->MYTOP;
-	$console_bash = $tmux->get()->CONSOLE;
+	$tmux = new tmux();
+	$htop = $tmux->get()->htop;
+	$vnstat = $tmux->get()->vnstat;
+	$vnstat_args = $tmux->get()->vnstat_args;
+	$tcptrack = $tmux->get()->tcptrack;
+	$tcptrack_args = $tmux->get()->tcptrack_args;
+	$nmon = $tmux->get()->nmon;
+	$bwmng = $tmux->get()->bwmng;
+	$mytop = $tmux->get()->mytop;
+	$console_bash = $tmux->get()->console;
 
 	if (( $htop == "TRUE" ) && (command_exist("htop")))
 	{
@@ -143,6 +185,35 @@ function start_apps($tmux_session)
 	}
 }
 
+function window_proxy($tmux_session, $window)
+{
+	$site = new Sites();
+	$nntpproxy = $site->get()->nntpproxy;
+	if ( $nntpproxy == '1' )
+	{
+		$DIR = MISC_DIR;
+		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
+		if(file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy.conf"))
+		{
+			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy.conf";
+			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+		}
+	}
+	$alternate_nntp = $site->get()->alternate_nntp;
+	$grabnzbs = $site->get()->grabnzbs;
+	if ( $nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
+	{
+		$DIR = MISC_DIR;
+		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
+		if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
+		{
+			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf";
+			exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+		}
+	}
+
+}
+
 function window_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
@@ -160,7 +231,7 @@ function window_colors($tmux_session)
 
 function window_stripped_utilities($tmux_session)
 {
-    exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
+	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
 }
 
 function window_post($tmux_session)
@@ -204,10 +275,14 @@ if ( $seq == 1 )
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_proxy($tmux_session, 3);
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);
@@ -217,9 +292,13 @@ elseif ( $seq == 2 )
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import-bulk\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 
 	window_stripped_utilities($tmux_session);
+	window_proxy($tmux_session, 2);
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);
@@ -229,12 +308,17 @@ else
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	if ($import != 0)
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
+	else
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 5 'printf \"\033]2;nzb-import\033\"'");
 	exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
 	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+	window_proxy($tmux_session, 3);
+
 	if ($colors == "TRUE")
 		window_colors($tmux_session);
 	start_apps($tmux_session);

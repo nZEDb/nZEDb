@@ -15,8 +15,8 @@ $iFilesCounted = $notexist = 0;
 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($site->get()->nzbpath));
 foreach($objects as $nzbFile)
 {
-    if($nzbFile->getExtension() != "gz")
-        continue;
+	if($nzbFile->getExtension() != "gz")
+		continue;
 	$releaseGUID = str_replace(".nzb.gz", "", $nzbFile->getFilename());
 	$consoleTools->overWrite("Checked: ".$iFilesCounted++." ok, ".$notexist." nzbs not in db.");
 	$rel = $db->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $db->escapeString($releaseGUID)));

@@ -1,13 +1,18 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/binaries.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/category.php');
+require_once(WWW_DIR.'lib/nntp.php');
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/releases.php');
+require_once(WWW_DIR.'lib/binaries.php');
 
 class Groups
 {
+	public function __construct($db=null)
+	{
+		$this->db = $db;
+	}
+
 	public function getAll()
 	{
 		$db = new DB();
@@ -30,13 +35,19 @@ class Groups
 
 	public function getByID($id)
 	{
-		$db = new DB();
+		if (isset($this->db))
+			$db = $this->db;
+		else
+			$db = new DB();
 		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE id = %d ", $id));
 	}
 
 	public function getActive()
 	{
-		$db = new DB();
+		if (isset($db))
+			$db = $this->db;
+		else
+			$db = new DB();
 		return $db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
 	}
 
@@ -232,6 +243,7 @@ class Groups
 	public function reset($id)
 	{
 		$db = new DB();
+		$db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
 		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
 	}
 

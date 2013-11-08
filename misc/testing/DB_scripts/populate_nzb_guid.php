@@ -10,11 +10,16 @@ require_once(FS_ROOT."/../../../www/lib/site.php");
 require_once(FS_ROOT."/../../../www/lib/consoletools.php");
 
 if (isset($argv[1]))
-	create_guids($argv[1]);
+{
+	$del = false;
+	if (isset($argv[2]))
+		$del = $argv[2];
+	create_guids($argv[1], $del);
+}
 else
-	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\n");
+	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\nTo delete invalid nzbs and releases, run php populate_nzb_guid.php true delete\n");
 
-function create_guids($live)
+function create_guids($live, $delete = false)
 {
 	$db = new Db;
 	$s = new Sites();
@@ -24,13 +29,19 @@ function create_guids($live)
 	$relcount = 0;
 
 	if ($live == "true")
-		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
-	elseif ($live == "limited")
-		$relrecs = $db->query(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
-
-	if ($relrecs > 0)
 	{
-		echo "\nUpdating ".sizeof($relrecs)." release guids\n";
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
+		$relrecs->execute();
+	}
+	elseif ($live == "limited")
+	{
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
+		$relrecs->execute();
+	}
+	$total = $relrecs->rowCount();
+	if ($total > 0)
+	{
+		echo "\nUpdating ".$total." release guids\n";
 		$releases = new Releases();
 		$nzb = new NZB();
 		$reccnt = 0;
@@ -40,15 +51,30 @@ function create_guids($live)
 			if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid'])))
 			{
 				$nzbpath = 'compress.zlib://'.$nzbpath;
-				$nzbfile = simplexml_load_file($nzbpath);
-
+				$nzbfile = @simplexml_load_file($nzbpath);
+				if (!$nzbfile)
+				{
+					if (isset($delete) && $delete == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
+					continue;
+				}
 				$binary_names = array();
 				foreach($nzbfile->file as $file)
 				{
 					$binary_names[] = $file["subject"];
 				}
 				if (count($binary_names) == 0)
+				{
+					if (isset($delete) && $delete == 'delete')
+					{
+						echo $nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
+						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					}
 					continue;
+				}
 
 				asort($binary_names);
 				$segment = "";
@@ -61,9 +87,17 @@ function create_guids($live)
 
 						$db->queryExec("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
 						$relcount++;
-						$consoletools->overWrite("Updating:".$consoletools->percentString($reccnt,sizeof($relrecs))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,$total)." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
+				}
+			}
+			else
+			{
+				if (isset($delete) && $delete == 'delete')
+				{
+					echo $nzb->$relrec['guid']." does not have an nzb, deleting.\n";
+					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
 				}
 			}
 		}
@@ -75,5 +109,8 @@ function create_guids($live)
 		exit(".\n");
 	}
 	else
-		exit("No releases are missing the guid.\n");
+	{
+		echo 'Query time: '.$consoletools->convertTime(TIME() - $timestart);
+		exit("\nNo releases are missing the guid.\n");
+	}
 }

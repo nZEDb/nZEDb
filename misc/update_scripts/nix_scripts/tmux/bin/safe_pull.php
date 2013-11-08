@@ -4,12 +4,18 @@ require_once(WWW_DIR."lib/backfill.php");
 require_once(WWW_DIR."lib/binaries.php");
 require_once(WWW_DIR."lib/groups.php");
 
-
-
 if (isset($argv[1]))
 {
 	$pieces = explode(" ", $argv[1]);
-	if (isset($pieces[1]) && $pieces[0] == "binupdate")
+	if (isset($pieces[1]) && $pieces[1] == "partrepair")
+	{
+		$binaries = new Binaries();
+		$groupName = $pieces[0];
+		$grp = new Groups();
+		$group = $grp->getByName($groupName);
+		$binaries->partRepair(null, $group);
+	}
+	elseif (isset($pieces[1]) && $pieces[0] == "binupdate")
 	{
 		$binaries = new Binaries();
 		$groupName = $pieces[1];

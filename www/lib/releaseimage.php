@@ -4,7 +4,7 @@ require_once(WWW_DIR."/lib/util.php");
 
 class ReleaseImage
 {
-	function ReleaseImage()
+	function __construct()
 	{
 		$this->imgSavePath = WWW_DIR.'covers/preview/';
 		$this->vidSavePath = WWW_DIR.'covers/video/';

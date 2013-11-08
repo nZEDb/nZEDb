@@ -20,7 +20,7 @@ if($db->dbSystem() == "mysql")
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
 	}
-	else 
+	else
 	{
 		//generic (or unknown) instance of MySQL
 		$exportopts = "--opt --complete-insert --skip-quick";
@@ -36,17 +36,20 @@ function builddefaultsfile()
 {
 	//generate file contents
 	$filetext = "[mysqldump]"
-				."\r\n\r\n"
+				."\n"
 				."user = " . DB_USER
-				."\r\n\r\n"
+				."\n"
+				."password = " . DB_PASSWORD
+				."\n[mysql]"
+				."\n"
+				."user = " . DB_USER
+				."\n"
 				."password = " . DB_PASSWORD;
-	
+
 	$filehandle = fopen("mysql-defaults.txt", "w+");
 	if(!$filehandle)
-	{
 		exit("Unable to write mysql defaults file! Exiting");
-	}
-	else 
+	else
 	{
 		fwrite($filehandle, $filetext);
 		fclose($filehandle);
@@ -81,7 +84,7 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 		printf("Restoring $dbname\n");
 		$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 		system($command);
-    }
+	}
 }
 elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
@@ -181,7 +184,7 @@ elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] 
 		if (file_exists($filename))
 			newname($filename);
 		$db->query(sprintf("SELECT title, nfo, size, category, predate, adddate, source, md5 INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
-    }
+	}
 }
 else
 {
@@ -203,6 +206,6 @@ else
 }
 
 if(file_exists("mysql-defaults.txt"))
-	unlink("mysql-defaults.txt");
+	@unlink("mysql-defaults.txt");
 
 ?>
