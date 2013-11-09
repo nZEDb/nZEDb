@@ -191,6 +191,18 @@ class ColorCLI {
         return $debugstring;
     }
 
+    public static function info ($str)
+    {
+        $infostring = "\033[".self::$foreground_colors['Purple']."Info: $str\033[0m\n";
+        return $infostring;
+    }
+
+    public static function notice ($str)
+    {
+        $noticstring = "\033[".self::$colors256['Blue']."Notice: $str\033[0m\n";
+        return $noticstring;
+    }
+
     public static function warning ($str)
     {
         $warnstring = "\033[".self::$foreground_colors['Yellow']."Warning: $str\033[0m\n";

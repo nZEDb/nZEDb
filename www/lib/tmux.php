@@ -21,11 +21,16 @@ class Tmux
 		$sql = $sqlKeys = array();
 		foreach($form as $settingK=>$settingV)
 		{
-			$sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
+			if (is_array($settingV))
+                $settingV = implode(', ',$settingV);
+            system("echo \"Key: $settingK Value $settingV\" >> /tmp/postdata-db.txt");
+            $sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
 		$db->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+        $dbquery = sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys));
+
 
 		return $tmux;
 	}

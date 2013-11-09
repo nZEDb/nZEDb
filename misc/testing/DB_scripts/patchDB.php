@@ -5,6 +5,7 @@ define('FS_ROOT', realpath(dirname(__FILE__)));
 require_once(FS_ROOT."/../../../www/config.php");
 require_once(FS_ROOT."/../../../www/lib/framework/db.php");
 require_once(FS_ROOT."/../../../www/lib/site.php");
+require_once(FS_ROOT."/../../../www/lib/ColorCLI.php");
 
 function command_exist($cmd)
 {
@@ -26,6 +27,7 @@ function SplitSQL($file, $delimiter = ';')
 			$query = array();
 			$db = new DB();
 			$dbsys = $db->dbSystem();
+            $c = new ColorCLI();
 
 			while (feof($file) === false)
 			{
@@ -42,19 +44,19 @@ function SplitSQL($file, $delimiter = ';')
 						echo 'SUCCESS: '.$query."\n";
 					} catch (PDOException $e) {
 						if ($e->errorInfo[1] == 1091)
-							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else if ($e->errorInfo[1] == 1060)
-							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else if ($e->errorInfo[1] == 1061)
-							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else if ($e->errorInfo[1] == 1062)
-							echo "Error: ".$e->errorInfo[2]." - Not Fatal.\n";
+							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else if ($e->errorInfo[1] == 1071)
-							echo "Error: ".$e->errorInfo[2]." - Assuming MyIsam, Not Fatal.\n";
+							echo $c->error($e->errorInfo[2]." - Assuming MyIsam, Not Fatal.\n");
 						else
 						{
 							echo $e;
-							exit("Error: ".$query." Failed\n");
+							exit($c->error($query." Failed\n"));
 						}
 					}
 
@@ -80,6 +82,7 @@ function SplitSQL($file, $delimiter = ';')
 function BackupDatabase()
 {
 	$db = new DB();
+    $c = new ColorCLI();
 	$returnvar = NULL;
 	$output = NULL;
 	$DIR = MISC_DIR;
@@ -96,7 +99,7 @@ function BackupDatabase()
 	}
 	else if($db->dbSystem() == "pgsql")
 	{
-		exit("Currently not supported on this platform.");
+		exit($c->error("Currently not supported on this platform."));
 	}
 }
 
@@ -132,7 +135,7 @@ if (isset($os) && $os == "unix")
 		closedir($handle);
 	}
 	else
-		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
+		exit($c->error("Have you changed the path to the patches folder, or do you have the right permissions?\n"));
 
 	if ($db->dbSystem() == "mysql")
 		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', FS_ROOT);
@@ -172,7 +175,7 @@ else if (isset($os) && $os == "windows")
 
 	// Open the patch folder.
 	if (!isset($argv[1]))
-		exit("You must supply the directory to the patches.\n");
+		exit($c->error("You must supply the directory to the patches.\n"));
 	if ($handle = @opendir($argv[1]))
 	{
 		while (false !== ($patch = readdir($handle)))
@@ -182,7 +185,7 @@ else if (isset($os) && $os == "windows")
 		closedir($handle);
 	}
 	else
-		exit("ERROR: Have you changed the path to the patches folder, or do you have the right permissions?\n");
+		exit($c->error("Have you changed the path to the patches folder, or do you have the right permissions?\n"));
 
 	sort($patches);
 	foreach($patches as $patch)
@@ -209,7 +212,7 @@ else if (isset($os) && $os == "windows")
 	}
 }
 else
-	exit("ERROR: Unable to determine OS\n");
+	exit($c->error("Unable to determine OS\n"));
 
 if ($patched > 0)
 	exit($patched." patch(es) applied. Now you need to delete the files inside of the www/lib/smarty/templates_c folder.\n");
