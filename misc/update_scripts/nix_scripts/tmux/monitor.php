@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4060";
+$version="0.1r4065";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -562,7 +562,6 @@ while($i > 0)
 	if ($split_result[0]['backfill_groups_date'] != NULL) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
 	if ($split_result[0]['newestadd']) { $newestadd = $split_result[0]['newestadd']; }
 
-
 	//reset monitor paths before query
 	$monitor_path = "";
 	$monitor_path_a = "";
@@ -685,7 +684,6 @@ while($i > 0)
 	}
 	else
 	{
-
 		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
 		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
 		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0)
@@ -1132,7 +1130,7 @@ while($i > 0)
 			if (($kill_coll == "FALSE") && ($kill_pp == "FALSE") && (TIME() - $time6 <= 4800))
 			{
 				//runs all/safe less than 4800
-				if (($binaries != 0) && ($backfill == "4") && ($releases_run == "TRUE"))
+				if (($binaries != 0) && ($backfill == "4") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
@@ -1142,7 +1140,7 @@ while($i > 0)
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs all less than 4800
-				else if (($binaries != 0) && ($backfill != "0") && ($releases_run == "TRUE"))
+				else if (($binaries != 0) && ($backfill != "0") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
@@ -1152,7 +1150,7 @@ while($i > 0)
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back/safe less than 4800
-				else if (($binaries != 0) && ($backfill == "4") && ($releases_run != "TRUE"))
+				else if (($binaries != 0) && ($backfill == "4") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
@@ -1162,7 +1160,7 @@ while($i > 0)
 							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back less than 4800
-				else if (($binaries != 0) && ($backfill != "0") && ($releases_run != "TRUE"))
+				else if (($binaries != 0) && ($backfill != "0") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
@@ -1171,7 +1169,7 @@ while($i > 0)
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe/rel less than 4800
-				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run == "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
@@ -1179,7 +1177,7 @@ while($i > 0)
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/rel less than 4800
-				else if (($binaries != "TRUE") && ($backfill != "0") && ($releases_run == "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill != "0") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
@@ -1187,7 +1185,7 @@ while($i > 0)
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/rel less than 4800
-				else if (($binaries != 0) && ($backfill == "0") && ($releases_run == "TRUE"))
+				else if (($binaries != 0) && ($backfill == "0") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
@@ -1195,33 +1193,33 @@ while($i > 0)
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin less than 4800
-				else if (($binaries != 0) && ($backfill == "0") && ($releases_run != "TRUE"))
+				else if (($binaries != 0) && ($backfill == "0") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe less than 4800
-				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run != "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back less than 4800
-				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run != "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill == "4") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs rel less than 4800
-				else if (($binaries != "TRUE") && ($backfill == "0") && ($releases_run == "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill == "0") && ($releases_run != 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
-				else if (($binaries != "TRUE") && ($backfill == "0") && ($releases_run != "TRUE"))
+				else if (($binaries != "TRUE") && ($backfill == "0") && ($releases_run == 0))
 				{
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
@@ -1240,7 +1238,7 @@ while($i > 0)
 				}
 				$time6 = TIME();
 			}
-			else if ((($kill_coll == "TRUE") || ($kill_pp == "TRUE")) && ($releases_run == "TRUE"))
+			else if ((($kill_coll == "TRUE") || ($kill_pp == "TRUE")) && ($releases_run != 0))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
@@ -1375,7 +1373,7 @@ while($i > 0)
 			}
 
 			//run update_releases
-			if ($releases_run == "TRUE")
+			if ($releases_run != 0)
 			{
 				$log = writelog($panes0[4]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.4 ' \
