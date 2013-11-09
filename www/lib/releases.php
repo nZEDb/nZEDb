@@ -990,6 +990,8 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+			if ($db->newtables($groupID) === false)
+				exit ("There is a problem creating new parts/files tables for this group.\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
