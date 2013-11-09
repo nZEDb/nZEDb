@@ -44,3 +44,14 @@ a.backfill_deactive:visited,
 a.backfill_deactive:active {
     color: #008C00;
 }
+
+.checkbox-grid label {
+    display: table-cell;
+    float: left;
+    width: 50%;
+}
+.hint {
+    display: block;
+    float: left;
+    width: 100%;
+}

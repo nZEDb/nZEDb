@@ -16,7 +16,7 @@ switch($action)
 	case 'submit':
 		$error = "";
 		$ret = $tmux->update($_POST);
-		$page->title = "Tmux Settings Edit";
+        $page->title = "Tmux Settings Edit";
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
 		break;
@@ -46,8 +46,10 @@ $page->smarty->assign('releases_ids', array(0,1,2));
 $page->smarty->assign('releases_names', array('Disabled', 'Update Releases', 'Update Releases Threaded'));
 $page->smarty->assign('post_ids', array(0,1,2,3));
 $page->smarty->assign('post_names', array('Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All'));
-$page->smarty->assign('fix_crap_ids', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
-$page->smarty->assign('fix_crap_names', array('Disabled', 'All', 'blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
+$page->smarty->assign('fix_crap_radio_ids', array('Disabled', 'All', 'Custom'));
+$page->smarty->assign('fix_crap_radio_names', array('Disabled', 'All', 'Custom'));
+$page->smarty->assign('fix_crap_check_ids', array('blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
+$page->smarty->assign('fix_crap_check_names', array('blacklist', 'executable', 'gibberish', 'hashed', 'installbin', 'passworded', 'passwordurl', 'sample', 'scr', 'short', 'size'));
 $page->smarty->assign('sequential_ids', array(0,1,2));
 $page->smarty->assign('sequential_names', array('Disabled', 'Basic Sequential', 'Complete Sequential'));
 $page->smarty->assign('binaries_ids', array(0,1,2));

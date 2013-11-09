@@ -156,6 +156,7 @@ $proc_tmux = "SELECT
 	(SELECT VALUE FROM tmux WHERE SETTING = 'postprocess_kill') as postprocess_kill,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'crap_timer') as crap_timer,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap') as fix_crap,
+	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap_opt') as fix_crap_opt,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'tv_timer') as tv_timer,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'update_tv') as update_tv,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'post_kill_timer') as post_kill_timer,
@@ -371,6 +372,7 @@ if ($show_query == "TRUE")
 
 $monitor = 30;
 $i = 1;
+$fcfirstrun = true;
 while($i > 0)
 {
 	//check the db connection
@@ -541,7 +543,8 @@ while($i > 0)
 	if ($proc_tmux_result[0]['import'] != NULL) { $import = $proc_tmux_result[0]['import']; }
 	if ($proc_tmux_result[0]['nzbs'] != NULL) { $nzbs = $proc_tmux_result[0]['nzbs']; }
 	if ($proc_tmux_result[0]['fix_names'] != NULL) { $fix_names = $proc_tmux_result[0]['fix_names']; }
-	if ($proc_tmux_result[0]['fix_crap'] != NULL) { $fix_crap = $proc_tmux_result[0]['fix_crap']; }
+	if ($proc_tmux_result[0]['fix_crap'] != NULL) { $fix_crap = explode(', ', ($proc_tmux_result[0]['fix_crap'])); }
+    if ($proc_tmux_result[0]['fix_crap_opt'] != NULL) { $fix_crap_opt = $proc_tmux_result[0]['fix_crap_opt']; }
 	if ($proc_tmux_result[0]['sorter'] != NULL) { $sorter = $proc_tmux_result[0]['sorter']; }
 	if ($proc_tmux_result[0]['update_tv'] != NULL) { $update_tv = $proc_tmux_result[0]['update_tv']; }
 	if ($proc_tmux_result[0]['post'] != NULL) { $post = $proc_tmux_result[0]['post']; }
@@ -908,34 +911,72 @@ while($i > 0)
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Decrypt Hashes\"'");
 			}
 
-			//remove crap releases
-			if (($fix_crap != "Disabled") && ($i == 1))
-			{
-				if ($fix_crap == "All")
-					$remove = '';
-				else
-					$remove = $fix_crap;
-				$log = writelog($panes1[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $remove $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-			}
-			else if ($fix_crap != "Disabled")
-			{
-				if ($fix_crap == "All")
-					$remove = '';
-				else
-					$remove = $fix_crap;
-				$log = writelog($panes1[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $remove $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
-			}
+            //remove crap releases
+            if (($fix_crap_opt != "Disabled") && (($i == 1) || $fcfirstrun))
+            {
+                $log = writelog($panes1[1]);
+                if ( $fix_crap_opt == "All" )
+                {
+                    shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                    $fcmax = count($fix_crap);
+                    if (is_null($fcnum))
+                    {
+                        $fcnum = -1;
+                    }
+                    if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
+                    {
+                        $fcnum++;
+                    }
+                    shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+                        echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
+                        php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                    if ($fcnum == $fcmax)
+                    {
+                        $fcnum = -1;
+                        $fcfirstrun = false;
+                    }
+                }
+            }
+            else if ($fix_crap_opt != "Disabled")
+            {
+                $log = writelog($panes1[1]);
+                if ( $fix_crap_opt == "All" )
+                {
+                    shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                }
+                else
+                {
+                    $fcmax = count($fix_crap);
+                    if (is_null($fcnum))
+                    {
+                        $fcnum = -1;
+                    }
+                    if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
+                    {
+                        $fcnum++;
+                    }
+                    shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+                        echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
+                        $_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                    if ($fcnum == $fcmax)
+                    {
+                        $fcnum = -1;
+                    }
 
-			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now) > 0)
+                }
+            }
+            else
+            {
+                $color = get_color($colors_start, $colors_end, $colors_exc);
+                shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
+            }
+
+            if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now) > 0)
 			{
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
