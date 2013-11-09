@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4066";
+$version="0.1r4067";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -846,6 +846,16 @@ while($i > 0)
 		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
 	else if ($releases_run == 2 && $tablepergroup == 1)
 		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
+	else if ($releases_run == 2 && $tablepergroup == 0)
+	{
+		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
+		echo "Not using releases_threaded.py, Table Per Group is not activated in site-edit\nThreaded releases is only available for Table Per Group.\n";
+	}
+	else if ($releases_run == 1 && $tablepergroup == 1)
+	{
+		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
+		echo "Using releases_threaded.py, Table Per Group is activated in site-edit\nNon-Threaded releases is only available when not using Table Per Group.\n";
+	}
 
 	if ($running == "TRUE")
 	{
