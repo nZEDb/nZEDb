@@ -218,6 +218,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 	{
 		$db = new DB();
 		$regexes = $db->prepare('SELECT regex FROM binaryblacklist WHERE status = 1');
+		$regexes->execute();
 		$delcount = 0;
 		if(sizeof($regexes > 0))
 		{
