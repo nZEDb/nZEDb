@@ -187,31 +187,31 @@ class ColorCLI {
 	}
     public static function debug ($str)
     {
-        $debugstring = "\033[".self::$foreground_colors['Purple']."Debug: $str\033[0m\n";
+        $debugstring = "\033[".self::$foreground_colors['Purple']."mDebug: $str\033[0m\n";
         return $debugstring;
     }
 
     public static function info ($str)
     {
-        $infostring = "\033[".self::$foreground_colors['Purple']."Info: $str\033[0m\n";
+        $infostring = "\033[".self::$foreground_colors['Purple']."mInfo: $str\033[0m\n";
         return $infostring;
     }
 
     public static function notice ($str)
     {
-        $noticstring = "\033[".self::$colors256['Blue']."Notice: $str\033[0m\n";
+        $noticstring = "\033[".self::$colors256['Blue']."mNotice: $str\033[0m\n";
         return $noticstring;
     }
 
     public static function warning ($str)
     {
-        $warnstring = "\033[".self::$foreground_colors['Yellow']."Warning: $str\033[0m\n";
+        $warnstring = "\033[".self::$foreground_colors['Yellow']."mWarning: $str\033[0m\n";
         return $warnstring;
     }
 
     public static function error ($str)
     {
-        $errorstring = "\033[".self::$foreground_colors['Red']."Error: $str\033[0m\n";
+        $errorstring = "\033[".self::$foreground_colors['Red']."mError: $str\033[0m\n";
         return $errorstring;
     }
 
