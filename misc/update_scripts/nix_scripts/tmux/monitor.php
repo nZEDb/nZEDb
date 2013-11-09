@@ -934,7 +934,7 @@ while($i > 0)
                     $fcmax = count($fix_crap);
                     if (is_null($fcnum))
                     {
-                        $fcnum = -1;
+                        $fcnum = 0;
                     }
                     if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
                     {
