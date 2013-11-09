@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4059";
+$version="0.1r4060";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -207,8 +207,9 @@ function writelog($pane)
 {
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
-	$tmux = new Tmux();
-	$logs = $tmux->write_logs;
+	$t = new Tmux();
+	$tmux = $t->get();
+	$logs = (!empty($tmux->write_logs)) ? $tmux->write_logs : FALSE;
 	if ($logs == "TRUE")
 	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
@@ -387,6 +388,7 @@ while($i > 0)
 
 	//run queries only after time exceeded, these queries can take awhile
 	$running = $tmux->running;
+	$running = (!empty($tmux->running)) ? $tmux->running : FALSE;
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == "TRUE"))
 	{
 		$time02 = TIME();
