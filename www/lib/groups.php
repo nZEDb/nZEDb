@@ -237,6 +237,7 @@ class Groups
 	public function delete($id)
 	{
 		$db = new DB();
+		$this->purge($id);
 		return $db->queryExec(sprintf("DELETE FROM groups WHERE id = %d", $id));
 	}
 
