@@ -19,5 +19,5 @@ define('SMARTY_DIR', WWW_DIR.'lib/smarty/');
 define('THEMES_DIR', WWW_TOP.'themes');
 
 // Number of results per page.
-define("ITEMS_PER_PAGE", "50");
-define("ITEMS_PER_COVER_PAGE", "20");
+define("ITEMS_PER_PAGE", "100");
+define("ITEMS_PER_COVER_PAGE", "50");

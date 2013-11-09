@@ -5,7 +5,7 @@ require_once(WWW_DIR."lib/framework/db.php");
 require_once(WWW_DIR."lib/tmux.php");
 require_once(WWW_DIR."lib/site.php");
 
-$version="0.1r4065";
+$version="0.1r4066";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -393,6 +393,7 @@ while($i > 0)
 	$running = (!empty($tmux->running)) ? $tmux->running : FALSE;
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == "TRUE"))
 	{
+		echo "\nNote:\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n";
 		$time02 = TIME();
 		$split_result = $db->query($split_query, false);
 		$split_time = (TIME() - $time02);
