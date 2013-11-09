@@ -48,7 +48,7 @@ class Binaries
 	{
 		if ($this->hashcheck == 0)
 		{
-			echo $this->c->setColor($this->warning)."We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n".$this->c->rsetcolor();
+			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n");
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes')
 				exit($this->c->set256($this->primary)."If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php\n".$this->c->rsetcolor());
 			$relss = new Releases(true);
@@ -83,7 +83,7 @@ class Binaries
 			echo $this->c->set256($this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
 		}
 		else
-			echo $this->c->setColor($this->warning)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetcolor();
+			echo $this->c->warning("No groups specified. Ensure groups are added to nZEDb's database for updating.\n");
 	}
 
 	public function updateGroup($groupArr, $nntp=null)
@@ -130,7 +130,7 @@ class Binaries
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
 				if ($first == '')
 				{
-					echo $this->c->setColor($this->warning)."Skipping group: {$groupArr['name']}\n".$this->c->rsetcolor();
+					echo $this->c->warning("Skipping group: {$groupArr['name']}\n");
 					if ($st === true)
 						$nntp->doQuit();
 					return;
@@ -335,7 +335,7 @@ class Binaries
 			$msgs = $nntp->getOverview($first.'-'.$last, true, false);
 			if(PEAR::isError($msgs))
 			{
-				echo $this->c->setColor($this->warning)."Error {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n".$this->c->rsetcolor();
+				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n");
 				return;
 			}
 		}
@@ -617,7 +617,7 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0)
 				{
-					echo $this->c->setColor($this->warning)."WARNING: ".sizeof($msgsnotinserted)." parts failed to insert.".$this->c->rsetcolor();
+					echo $this->c->warning("".sizeof($msgsnotinserted)." parts failed to insert.");
 					if ($this->DoPartRepair)
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 				}
@@ -635,7 +635,7 @@ class Binaries
 		{
 			if ($type != 'partrepair')
 			{
-				echo $this->c->setColor($this->warning)."Error: Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n".$this->c->rsetcolor();
+				echo $this->c->error("Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}\n");
 				return false;
 			}
 		}
@@ -682,7 +682,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-				$this->consoleTools->overWrite("Attempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto);
+				$this->consoleTools->overWrite($this->c->set256($this->primary)."Attempting repair: ".$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted,sizeof($missingParts)).': '.$partfrom.' to '.$partto).$this->c->rsetcolor();
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);

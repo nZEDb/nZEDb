@@ -230,8 +230,8 @@
 			<tr>
 				<td><label for="releases">Update Releases:</label></td>
 				<td>
-					{html_radios id="releases" name='releases' values=$truefalse_names output=$truefalse_names selected=$ftmux->releases separator='<br />'}
-					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process. This runs "Categorizes releases in misc sections using the search name" on first loop and has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new releases.</div>
+					{html_options class="siteeditstyle" id="releases" name='releases' values=$releases_ids output=$releases_names selected=$ftmux->releases}
+					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process. This runs "Categorizes releases in misc sections using the search name" on first loop and has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new releases.<br />Threaded is only used with tablepergroup and is required if using tpg.</div>
 				</td>
 			</tr>
 
@@ -333,8 +333,16 @@
 			<tr>
 				<td><label for="fix_crap">Remove Crap Releases:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="fix_crap" name='fix_crap' values=$fix_crap_ids output=$fix_crap_names selected=$ftmux->fix_crap}
-					<div class="hint">Choose to run Remove Crap Releases. You can all or one.</div>
+                    {html_radios id="fix_crap_opt" name='fix_crap_opt' onchange="enableFixCrapCustom()" values=$fix_crap_radio_ids output=$fix_crap_radio_names selected=$ftmux->fix_crap_opt separator='<br />'}
+                    <br>
+                    <div class="checkbox-grid">
+                        {if $ftmux->fix_crap_opt == "Custom"}
+                            {html_checkboxes id="fix_crap" name='fix_crap' values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+                        {else}
+                            {html_checkboxes id="fix_crap" name='fix_crap' disabled="true" readonly="true" values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+                        {/if}
+                    </div>
+					<div class="hint">Choose to run Remove Crap Releases. You can all or some.</div>
 				</td>
 			</tr>
 

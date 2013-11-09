@@ -145,7 +145,7 @@ class ColorCLI {
 
 	static $background_colors = array(
 		'Black'        => '40',   'Red'          => '41',
-		'Green'        => '42',   'Tellow'       => '43',
+		'Green'        => '42',   'Yellow'       => '43',
 		'Blue'         => '44',   'Purple'       => '45',
 		'Cyan'         => '46',   'White'        => '47',
 	);
@@ -174,32 +174,43 @@ class ColorCLI {
 		return $colored_string;
 	}
 
-	// If you would like to use one of the 256 colors as the bg, choose opt 7 (reverse)
 	public static function set256 ($fg, $opt = "None", $bg = "None")
 	{
 		$colored_string = "\033[38;5;".self::$colors256[$fg];
 		if (isset(self::$options[$opt]) && $opt != 'Norm')
 			$colored_string .= ";".self::$options[$opt];
 		if (isset(self::$background_colors[$bg]))
-			$colored_string .= ";".self::$background_colors[$bg];
+			$colored_string .= ";48;5;".self::$colors256[$bg];
 		$colored_string .= "m";
 		return $colored_string;
 	}
     public static function debug ($str)
     {
-        $debugstring = "\033[".self::$foreground_colors['Purple']."Debug: $str\033[0m\n";
+        $debugstring = "\033[".self::$foreground_colors['Purple']."mDebug: $str\033[0m\n";
         return $debugstring;
+    }
+
+    public static function info ($str)
+    {
+        $infostring = "\033[".self::$foreground_colors['Purple']."mInfo: $str\033[0m\n";
+        return $infostring;
+    }
+
+    public static function notice ($str)
+    {
+        $noticstring = "\033[38;5;".self::$colors256['Blue']."mNotice: $str\033[0m\n";
+        return $noticstring;
     }
 
     public static function warning ($str)
     {
-        $warnstring = "\033[".self::$foreground_colors['Yellow']."Warning: $str\033[0m\n";
+        $warnstring = "\033[".self::$foreground_colors['Yellow']."mWarning: $str\033[0m\n";
         return $warnstring;
     }
 
     public static function error ($str)
     {
-        $errorstring = "\033[".self::$foreground_colors['Red']."Error: $str\033[0m\n";
+        $errorstring = "\033[".self::$foreground_colors['Red']."mError: $str\033[0m\n";
         return $errorstring;
     }
 

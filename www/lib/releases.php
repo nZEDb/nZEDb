@@ -990,6 +990,8 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+			if ($db->newtables($groupID) === false)
+				exit ("There is a problem creating new parts/files tables for this group.\n");
 			$group['cname'] = $groupID.'_collections';
 			$group['bname'] = $groupID.'_binaries';
 			$group['pname'] = $groupID.'_parts';
@@ -1974,7 +1976,7 @@ class Releases
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0)
-			exit($this->c->setColor($this->warning)."You must run update_binaries.php to update your collectionhash.\n".$this->c->rsetColor());
+			exit($this->c->error("You must run update_binaries.php to update your collectionhash.\n"));
 		$db = $this->db;
 		$page = new Page();
 		$groupID = '';
@@ -1992,7 +1994,7 @@ class Releases
 		if (!file_exists($page->site->nzbpath))
 		{
 			if ($this->echooutput)
-				echo $this->c->setColor($this->warning).'Bad or missing nzb directory - '.$page->site->nzbpath;
+				echo $this->c->error('Bad or missing nzb directory - '.$page->site->nzbpath);
 			return;
 		}
 

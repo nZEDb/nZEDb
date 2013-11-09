@@ -51,7 +51,7 @@ class Nntp extends Net_NNTP_Client
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
-					echo $this->c->setcolor($this->warning, 'Bold').'Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().$this->c->rsetcolor();
+					echo $this->c->warning('Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			}
 			else
 				$connected = true;
@@ -66,7 +66,7 @@ class Nntp extends Net_NNTP_Client
 					if(PEAR::isError($ret2))
 					{
 						if ($retries < 1)
-							echo $this->c->setcolor($this->warning, 'Bold').'Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')'.$this->c->rsetcolor();
+							echo $this->c->warning('Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')');
 					}
 					else
 						$authent = true;
@@ -112,7 +112,7 @@ class Nntp extends Net_NNTP_Client
 			if(PEAR::isError($ret))
 			{
 				if ($retries < 1)
-					echo $this->c->setcolor($this->warning, 'Bold').'Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage().$this->c->rsetcolor();
+					echo $this->c->warning('Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			}
 			else
 				$connected = true;
@@ -127,7 +127,7 @@ class Nntp extends Net_NNTP_Client
 					if(PEAR::isError($ret2))
 					{
 						if ($retries < 1)
-							echo $this->c->setcolor($this->warning, 'Bold').'Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')'.$this->c->setcolor();
+							echo $this->c->warning('Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')');
 					}
 					else
 						$authent = true;
@@ -288,7 +288,7 @@ class Nntp extends Net_NNTP_Client
 
 			// If the buffer is zero it's zero, return error.
 			if ($bytesreceived === 0)
-				return $this->throwError($this->c->setcolor($this->warning, 'Bold').'The NNTP server has returned no data.'.$this->c->rsetcolor(), 1000);
+				return $this->throwError($this->c->error('The NNTP server has returned no data.'), 1000);
 
 			// Keep going if no errors.
 			if ($errorcode === 0)
@@ -329,7 +329,7 @@ class Nntp extends Net_NNTP_Client
 				{
 					// Try 5 times to decompress.
 					if ($tries++ > 5)
-						return $this->throwError($this->c->setcolor($this->warning, 'Bold').'Decompression Failed after 5 tries, connection closed.'.$this->c->rsetcolor(), 1000);
+						return $this->throwError($this->c->error('Decompression Failed after 5 tries, connection closed.'), 1000);
 				}
 			}
 		}
@@ -337,7 +337,7 @@ class Nntp extends Net_NNTP_Client
 		if (!feof($this->_socket))
 			return "Error: Could not find the end-of-file pointer on the gzip stream.\n";
 
-		return $this->throwError($this->c->setcolor($this->warning, 'Bold').'Decompression Failed, connection closed.'.$this->c->rsetcolor(), 1000);
+		return $this->throwError($this->c->error('Decompression Failed, connection closed.'), 1000);
 	}
 
 	// If there is an error with selectGroup(), try to restart the connection, else show the error. Send a 3rd argument, false, for a connection with no compression.
@@ -350,7 +350,7 @@ class Nntp extends Net_NNTP_Client
 		$data = $nntp->selectGroup($group);
 		if (PEAR::isError($data))
 		{
-			echo $this->c->setcolor($this->warning, 'Bold')."Error {$data->code}: {$data->message}\nSkipping group: {$group}\n".$this->c->rsetcolor();
+			echo $this->c->error("Code {$data->code}: {$data->message}\nSkipping group: {$group}\n");
 			$nntp->doQuit();
 			return false;
 		}

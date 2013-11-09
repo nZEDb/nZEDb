@@ -1,5 +1,5 @@
 <?php
-
+require_once WWW_DIR.'lib/ColorCLI.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -13,10 +13,11 @@ class DB
 	// Start a connection to the DB.
 	public function __construct()
 	{
-		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+		$this->c = new ColorCLI();
+        if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
-			exit("ERROR: config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');\n");
+			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
 		if (DB::$initialized === false)
 		{
 			if ($this->dbsystem == 'mysql')
@@ -44,7 +45,7 @@ class DB
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			} catch (PDOException $e) {
-				exit("Connection to the SQL server failed, error follows: (".$e->getMessage().")");
+				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 			}
 
 			DB::$initialized = true;
@@ -415,6 +416,11 @@ class DB
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
+	public function __construct()
+    {
+        $this->c = new ColorCLI();
+    }
+
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
@@ -422,10 +428,10 @@ class Mcached
 		{
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false)
-				throw new Exception('Unable to connect to the memcached server.');
+				throw new Exception($this->c->error('Unable to connect to the memcached server.'));
 		}
 		else
-			throw new Exception('Extension "memcache" not loaded.');
+			throw new Exception($this->c->error('Extension "memcache" not loaded.'));
 
 		$this->expiry = MEMCACHE_EXPIRY;
 
