@@ -936,8 +936,10 @@ class PostProcess
 	function debug($str)
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
-            $c = new ColorCLI();
-		   echo $c->debug($str);
+		{
+			$c = new ColorCLI();
+			echo $c->debug($str);
+		}
 	}
 
 	function addmediafile ($file, $data)
