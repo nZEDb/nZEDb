@@ -70,6 +70,7 @@ class PostProcess
 		}
 		$sigstr = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr;
+		$this->c = new ColorCLI;
 	}
 
 	public function processAll($releaseToWork='', $threads=1)
@@ -937,8 +938,7 @@ class PostProcess
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
 		{
-			$c = new ColorCLI();
-			echo $c->debug($str);
+			echo $this->c->debug($str);
 		}
 	}
 
