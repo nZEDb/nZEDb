@@ -333,8 +333,16 @@
 			<tr>
 				<td><label for="fix_crap">Remove Crap Releases:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="fix_crap" name='fix_crap' values=$fix_crap_ids output=$fix_crap_names selected=$ftmux->fix_crap}
-					<div class="hint">Choose to run Remove Crap Releases. You can all or one.</div>
+                    {html_radios id="fix_crap_opt" name='fix_crap_opt' onchange="enableFixCrapCustom()" values=$fix_crap_radio_ids output=$fix_crap_radio_names selected=$ftmux->fix_crap_opt separator='<br />'}
+                    <br>
+                    <div class="checkbox-grid">
+                        {if $ftmux->fix_crap_opt == "Custom"}
+                            {html_checkboxes id="fix_crap" name='fix_crap' values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+                        {else}
+                            {html_checkboxes id="fix_crap" name='fix_crap' disabled="true" readonly="true" values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+                        {/if}
+                    </div>
+					<div class="hint">Choose to run Remove Crap Releases. You can all or some.</div>
 				</td>
 			</tr>
 

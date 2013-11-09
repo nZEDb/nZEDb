@@ -228,6 +228,7 @@ jQuery(function($){
 
 $('#regexGroupSelect').change(function() {
   document.location="?group=" + $("#regexGroupSelect option:selected").attr('value');
+    document.getby
 });
 
 // misc
@@ -236,3 +237,22 @@ $('.confirm_action').click(function(){ return confirm('Are you sure?'); });
 });
 
 
+
+//enable Custom checkboxes for fix crap releases
+function enableFixCrapCustom(){
+    var inputs = document.getElementsByName('fix_crap_opt');
+    if (inputs[2].checked == true) {
+        var checks = document.getElementsByName('fix_crap[]')
+        for (var t = 0; t < checks.length; t ++) {
+            checks[t].disabled = false;
+            checks[t].readonly = false;
+        }
+    }
+    else {
+        var checks = document.getElementsByName('fix_crap[]')
+        for (var t = 0; t < checks.length; t ++) {
+            checks[t].disabled = true;
+            checks[t].readonly = true;
+        }
+    }
+}
