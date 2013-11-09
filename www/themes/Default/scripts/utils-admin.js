@@ -228,7 +228,6 @@ jQuery(function($){
 
 $('#regexGroupSelect').change(function() {
   document.location="?group=" + $("#regexGroupSelect option:selected").attr('value');
-    document.getby
 });
 
 // misc
