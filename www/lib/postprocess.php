@@ -22,7 +22,7 @@ require_once(WWW_DIR.'lib/util.php');
 require_once(WWW_DIR.'lib/rarinfo/archiveinfo.php');
 require_once(WWW_DIR.'lib/rarinfo/par2info.php');
 require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
-require_once(WWW_DIR.'/lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class PostProcess
 {
