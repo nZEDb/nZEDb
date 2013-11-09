@@ -22,6 +22,7 @@ require_once(WWW_DIR.'lib/util.php');
 require_once(WWW_DIR.'lib/rarinfo/archiveinfo.php');
 require_once(WWW_DIR.'lib/rarinfo/par2info.php');
 require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
+require_once(WWW_DIR.'/lib/ColorCLI.php');
 
 class PostProcess
 {
@@ -935,7 +936,8 @@ class PostProcess
 	function debug($str)
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
-		   echo $str."\n";
+            $c = new ColorCLI();
+		   echo $c->debug($str);
 	}
 
 	function addmediafile ($file, $data)
