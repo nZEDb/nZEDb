@@ -413,7 +413,7 @@ class Backfill
 				}
 				$success = false;
 			}
-			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && attempts != 0)
+			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts != 0)
 			{
 				if ($type == 'newest')
 				{
