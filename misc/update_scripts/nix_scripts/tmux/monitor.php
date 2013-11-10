@@ -79,6 +79,11 @@ else
 		$ip_a = gethostbyname($host_a);
 }
 
+function rand_bool($chance = 50)
+{
+	return (mt_rand(1,100) <= $chance);
+}
+
 //totals per category in db, results by parentID
 $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
 
@@ -401,17 +406,17 @@ while($i > 0)
 		$init1_time = (TIME() - $time01);
 
 		$time04 = TIME();
-		$proc_work_result = $db->query($proc_work, true);
+		$proc_work_result = $db->query($proc_work, rand_bool());
 		$proc1_time = (TIME() - $time04);
 		$proc11_time = (TIME() - $time01);
 
 		$time05 = TIME();
-		$proc_work_result2 = $db->query($proc_work2, true);
+		$proc_work_result2 = $db->query($proc_work2, rand_bool());
 		$proc2_time = (TIME() - $time05);
 		$proc21_time = (TIME() - $time01);
 
 		$time06 = TIME();
-		$proc_work_result3 = $db->query($proc_work3, true);
+		$proc_work_result3 = $db->query($proc_work3, rand_bool());
 		$proc3_time = (TIME() - $time06);
 		$proc31_time = (TIME() - $time01);
 
@@ -427,22 +432,22 @@ while($i > 0)
 				$tbl = $row['tables_in_'.DB_NAME];
 				if (preg_match('/\d+_collections/',$tbl))
 				{
-					$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', true);
-					$collections_table += $run['count'];
-					if (isset($run['dateadded']) && is_numeric($run['dateadded']) && $run['dateadded'] < $age)
-						$age = $run['dateadded'];
+					$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool());
+					$collections_table += $run[0]['count'];
+					if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
+						$age = $run[0]['dateadded'];
 				}
 				else if (preg_match('/\d+_binaries/',$tbl))
 				{
-					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, true);
-					if (isset($run['count']) && is_numeric($run['count']))
-						$binaries_table += $run['count'];
+					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
+					if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+						$binaries_table += $run[0]['count'];
 				}
 				else if (preg_match('/\d+_parts/',$tbl))
 				{
-					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, true);
-					if (isset($run['count']) && is_numeric($run['count']))
-						$parts_table += $run['count'];
+					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
+					if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+						$parts_table += $run[0]['count'];
 				}
 			}
 			$oldestcollection = $age;
