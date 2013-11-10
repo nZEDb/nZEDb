@@ -14,7 +14,7 @@ class DB
 	public function __construct()
 	{
 		$this->c = new ColorCLI();
-        if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
@@ -417,14 +417,10 @@ class DB
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
-	public function __construct()
-    {
-        $this->c = new ColorCLI();
-    }
-
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
+		$this->c = new ColorCLI();
 		if (extension_loaded('memcache'))
 		{
 			$this->m = new Memcache();
