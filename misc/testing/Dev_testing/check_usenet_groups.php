@@ -37,7 +37,7 @@ foreach ($grps as $grp)
 {
 	if (!myInArray($res, $grp, "name"))
 	{
-		$data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(MAX(updated)-MIN(updated)) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
+		$data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(UNIX_TIMESTAMP(MAX(updated))-UNIX_TIMESTAMP(MIN(updated))) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
 		if (floor($data["per_second"]*3600) >= $minvalue)
 		{
 			echo "\n".$grp["name"]."\n"
