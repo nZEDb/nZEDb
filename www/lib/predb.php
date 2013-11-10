@@ -28,7 +28,7 @@ Class Predb
 		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
-		if (strtotime($newestrel['adddate']) < time()-600 || is_null($newestrel['adddate']))
+		if (strtotime($newestrel['adddate']) < time()-60 || is_null($newestrel['adddate']))
 		{
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
@@ -57,13 +57,13 @@ Class Predb
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 		}
-		$matched = $this->matchPredb();
+/*		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
 			echo 'Matched '.$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo();
 		if ($nfos > 0 && $this->echooutput)
 			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
-		return $newnames;
+		return $newnames;*/
 	}
 
 	public function retrieveWomble()
@@ -474,7 +474,7 @@ Class Predb
 		else if ($db->dbSystem() == 'pgsql')
 			$regex = "AND (r.hashed = true OR rf.name ~ '[a-fA-F0-9]{32}')";
 
-		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus IN (-5, -4, -3, -2, -1, 0) AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
+		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus BETWEEN -5 AND 0 AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
 		$res->execute();
 		if ($res->rowCount() > 0)
 		{

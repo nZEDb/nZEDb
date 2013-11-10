@@ -14,16 +14,18 @@ $limited = false;
 if (isset($argv['1']) && $argv['1'] == "limited")
 	$limited = true;
 
-$tmux = new Tmux();
-$tmux_session = $tmux->get()->tmux_session;
-$seq = $tmux->get()->sequential;
-$powerline = $tmux->get()->powerline;
-$colors = $tmux->get()->colors;
-$import = $tmux->get()->import;
-$site = new Sites();
-$patch = $site->get()->sqlpatch;
-$hashcheck = $site->get()->hashcheck;
-$tablepergroup = (!empty($site->get()->tablepergroup)) ? $site->get()->tablepergroup : 0;
+$t = new Tmux();
+$tmux = $t->get();
+$tmux_session = $tmux->tmux_session;
+$seq = $tmux->sequential;
+$powerline = $tmux->powerline;
+$colors = $tmux->colors;
+$import = $tmux->import;
+$s = new Sites();
+$site = $s->get();
+$patch = $site->sqlpatch;
+$hashcheck = $site->hashcheck;
+$tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 
 //check if session exists
 $session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
@@ -55,7 +57,7 @@ if ($hashcheck != '1')
 	exit(1);
 }
 
-if ($patch < '141')
+if ($patch < '143')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -65,7 +67,7 @@ if ($patch < '141')
 passthru("clear");
 
 //remove folders from tmpunrar
-$tmpunrar = $site->get()->tmpunrarpath;
+$tmpunrar = $site->tmpunrarpath;
 if ((count(glob("$tmpunrar/*",GLOB_ONLYDIR))) > 0)
 {
 	echo "Removing dead folders from ".$tmpunrar."\n";
@@ -92,7 +94,7 @@ function python_module_exist($module) {
 	return ($returnCode == 0 ? true : false);
 }
 
-$nntpproxy = $site->get()->nntpproxy;
+$nntpproxy = $site->nntpproxy;
 if ($nntpproxy == '1')
 {
 	$modules = array("nntp", "socketpool");
@@ -138,57 +140,50 @@ sleep(2);
 
 function start_apps($tmux_session)
 {
-	$tmux = new tmux();
-	$htop = $tmux->get()->htop;
-	$vnstat = $tmux->get()->vnstat;
-	$vnstat_args = $tmux->get()->vnstat_args;
-	$tcptrack = $tmux->get()->tcptrack;
-	$tcptrack_args = $tmux->get()->tcptrack_args;
-	$nmon = $tmux->get()->nmon;
-	$bwmng = $tmux->get()->bwmng;
-	$mytop = $tmux->get()->mytop;
-	$console_bash = $tmux->get()->console;
+	$t = new tmux();
+	$tmux = $t->get();
+	$htop = $tmux->htop;
+	$vnstat = $tmux->vnstat;
+	$vnstat_args = $tmux->vnstat_args;
+	$tcptrack = $tmux->tcptrack;
+	$tcptrack_args = $tmux->tcptrack_args;
+	$nmon = $tmux->nmon;
+	$bwmng = $tmux->bwmng;
+	$mytop = $tmux->mytop;
+	$showprocesslist = $tmux->showprocesslist;
+	$processupdate = $tmux->processupdate;
+	$console_bash = $tmux->console;
 
-	if (($htop == "TRUE") && (command_exist("htop")))
-	{
+	if ($htop == "TRUE" && command_exist("htop"))
 		exec("tmux new-window -t $tmux_session -n htop 'printf \"\033]2;htop\033\" && htop'");
-	}
 
-	if (($nmon == "TRUE") && (command_exist("nmon")))
-	{
+	if ($nmon == "TRUE" && command_exist("nmon"))
 		exec("tmux new-window -t $tmux_session -n nmon 'printf \"\033]2;nmon\033\" && nmon -t'");
-	}
 
-	if (($vnstat == "TRUE") && (command_exist("vnstat")))
-	{
+	if ($vnstat == "TRUE" && command_exist("vnstat"))
 		exec("tmux new-window -t $tmux_session -n vnstat 'printf \"\033]2;vnstat\033\" && watch -n10 \"vnstat ${vnstat_args}\"'");
-	}
 
-	if (($tcptrack == "TRUE") && (command_exist("tcptrack")))
-	{
+	if ($tcptrack == "TRUE" && command_exist("tcptrack"))
 		exec("tmux new-window -t $tmux_session -n tcptrack 'printf \"\033]2;tcptrack\033\" && tcptrack ${tcptrack_args}'");
-	}
 
-	if (($bwmng == "TRUE") && (command_exist("bwm-ng")))
-	{
+	if ($bwmng == "TRUE" && command_exist("bwm-ng"))
 		exec("tmux new-window -t $tmux_session -n bwm-ng 'printf \"\033]2;bwm-ng\033\" && bwm-ng'");
-	}
 
-	if (($mytop == "TRUE") && (command_exist("mytop")))
-	{
+	if ($mytop == "TRUE" && command_exist("mytop"))
 		exec("tmux new-window -t $tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
-	}
+
+	if ($showprocesslist == "TRUE")
+		exec("tmux new-window -t $tmux_session -n showprocesslist 'printf \"\033]2;showprocesslist\033\" && watch -n .2 \"mysql -e \\\"SELECT time, state, rows_examined, info FROM information_schema.processlist WHERE command != \\\\\\\"Sleep\\\\\\\" AND time >= $processupdate ORDER BY time DESC \\\G\\\"\"'");
 
 	if ($console_bash == "TRUE")
-	{
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
-	}
 }
 
 function window_proxy($tmux_session, $window)
 {
-	$site = new Sites();
-	$nntpproxy = $site->get()->nntpproxy;
+	$s = new Sites();
+	$site = $s->get();
+	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == '1')
 	{
 		$DIR = MISC_DIR;
@@ -199,8 +194,8 @@ function window_proxy($tmux_session, $window)
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
-	$alternate_nntp = $site->get()->alternate_nntp;
-	$grabnzbs = $site->get()->grabnzbs;
+	$alternate_nntp = $site->alternate_nntp;
+	$grabnzbs = $site->grabnzbs;
 	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
 	{
 		$DIR = MISC_DIR;

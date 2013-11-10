@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4083";
+$version="0.3r4088";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -79,7 +79,8 @@ else
 		$ip_a = gethostbyname($host_a);
 }
 
-function rand_bool($chance = 50)
+// Returns random bool, weighted by $chance
+function rand_bool($chance = 60)
 {
 	return (mt_rand(1,100) <= $chance);
 }

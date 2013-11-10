@@ -58,7 +58,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus <= 0 AND rel.dehashstatus >= %s AND rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.relnamestatus in (0, 1, 20, 21, 22) AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
@@ -104,7 +104,10 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
+	if sys.argv[1] == 'md5' or sys.argv[1] == 'par2':
+		print("We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries))
+	else:
+		print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
