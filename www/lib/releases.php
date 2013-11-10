@@ -1009,25 +1009,25 @@ class Releases
 		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID.' ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE b.collectionid = c.id'.$where.'GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) AND c.totalfiles > 0 AND c.filecheck = 0');
+		$db->queryExec('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0'.$where.'GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1');
 
 		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 16 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE b.collectionid = c.id AND b.filenumber = 0'.$where.'GROUP BY b.collectionid) AND c.totalfiles > 0 AND c.filecheck = 1');
+		$db->queryExec('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1'.$where.'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16');
 
 		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
 		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 15 WHERE filecheck = 1'.$where);
 
 		// If we have all the parts set partcheck to 1.
 		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE p.binaryid = b.id AND c.filecheck = 15 AND c.id = b.collectionid'.$where.'GROUP BY p.binaryid HAVING COUNT(p.id) = b.totalparts ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0'.$where.'GROUP BY b.id,b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1');
 
 		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b SET partcheck = 1 WHERE b.id IN (SELECT p.binaryid FROM '.$group['pname'].' p, '.$group['cname'].' c WHERE p.binaryid = b.id AND c.filecheck = 16 AND c.id = b.collectionid'.$where.'GROUP BY p.binaryid HAVING COUNT(p.id) >= b.totalparts+1 ) AND b.partcheck = 0');
+		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0'.$where.'GROUP BY b.id,b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1');
 
 		// Set filecheck to 2 if partcheck = 1.
-		$query = $db->prepare('UPDATE '.$group['cname'].' c SET filecheck = 2 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b WHERE c.id = b.collectionid AND b.partcheck = 1'.$where.'GROUP BY b.collectionid HAVING COUNT(b.id) >= c.totalfiles) AND c.filecheck IN (15, 16)');
+		$query = $db->prepare('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)'.$where.'GROUP BY b.collectionid,c.totalfiles HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2');
 		$query->execute();
 
 		// Set filecheck to 1 if we don't have all the parts.

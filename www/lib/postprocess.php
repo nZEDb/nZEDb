@@ -22,6 +22,7 @@ require_once(WWW_DIR.'lib/util.php');
 require_once(WWW_DIR.'lib/rarinfo/archiveinfo.php');
 require_once(WWW_DIR.'lib/rarinfo/par2info.php');
 require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 class PostProcess
 {
@@ -69,6 +70,7 @@ class PostProcess
 		}
 		$sigstr = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr;
+		$this->c = new ColorCLI;
 	}
 
 	public function processAll($releaseToWork='', $threads=1)
@@ -935,7 +937,9 @@ class PostProcess
 	function debug($str)
 	{
 		if ($this->echooutput && $this->DEBUG_ECHO)
-		   echo $str."\n";
+		{
+			echo $this->c->debug($str);
+		}
 	}
 
 	function addmediafile ($file, $data)

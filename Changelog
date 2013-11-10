@@ -2,7 +2,9 @@ NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 NOTE: If you submit a pull request, please update this file with what you changed
 
 
-11082013 -> ThePeePs -> added option to choise more then one type of Crap Release rather then None/All/One (see tmux-edit page)
+11102013 -> jonnyboy -> added pane that could be used as a live 'slow query monitor' to tmux
+11102913 -> nuthead  -> rewritten sql in file releases.php to give speed boost
+11082013 -> ThePeePs -> added option to choose more then one type of Crap Release rather then None/All/One (see tmux-edit page)
 11062013 -> jonnyboy -> added script to grab all shows from tvrage at 1 time
                         added option to add unreceived parts to partrepair when running safe threaded scripts, added partrepair run when running binary safe thread script
                         updated populate_anidb.php, but since i can not open anidb.net, I can not test the script, I assume I am permabanned

@@ -199,7 +199,10 @@ class Import
 					foreach ($res as $rel)
 					{
 						if (isset($rel['id']) && isset($rel['guid']))
+						{
 							$releases->fastDelete($rel['id'], $rel['guid'], $this->site);
+							echo '!';
+						}
 					}
 				}
 				else if ($res->rowCount() > 0 && $this->replacenzbs == 0)

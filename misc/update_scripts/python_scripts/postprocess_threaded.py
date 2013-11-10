@@ -143,7 +143,7 @@ def main(args):
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
-		print("We will be using a max of {} threads, a queue of {} {} releases. Query range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries+1))
+		print("We will be using a max of {} threads, a queue of {} {} releases. passwordstatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries+1))
 	else:
 		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
 	time.sleep(2)

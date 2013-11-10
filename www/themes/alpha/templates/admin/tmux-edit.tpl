@@ -540,6 +540,15 @@
 			</tr>
 
 			<tr>
+				<td style="width:160px;"><label for="showprocesslist">Show Process List:</label></td>
+				<td>
+					{html_radios id="showprocesslist" name='showprocesslist' values=$truefalse_names output=$truefalse_names selected=$ftmux->showprocesslist separator='<br />'}
+					<input id="processupdate" name="processupdate" class="short" type="text" value="{$ftmux->processupdate}" />
+					<div class="hint">This runs the watch command in its own pane. This could be used for a live 'slow query monitor'. Just set the time above and only the queries that exceed it will be displayed.<br />mysql -e "SELECT time, state, rows_examined, info FROM information_schema.processlist WHERE command != \"Sleep\" AND time >= .5 ORDER BY time DESC \G"<br />This shows a grid like layout with the full test of the running queries.<br />You will need to create a ~/.my.cnf for this to work properlly. The pane for this can not be created after tmux starts and modifying the time above will have no effect until a restart occurs.</div>
+				</td>
+			</tr>
+
+			<tr>
 				<td style="width:160px;"><label for="console">Console:</label></td>
 				<td>
 					{html_radios id="console" name='console' values=$truefalse_names output=$truefalse_names selected=$ftmux->console separator='<br />'}
