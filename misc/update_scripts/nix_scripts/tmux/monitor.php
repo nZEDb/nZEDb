@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4080";
+$version="0.3r4081";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -932,9 +932,9 @@ while($i > 0)
                 }
                 else
                 {
-                    $fcmax = count($fix_crap);
+                    $fcmax = count($fix_crap) - 1;
                     if (is_null($fcnum))
-                        $fcnum = 0;
+                        $fcnum = -1;
                     if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
                         $fcnum++;
                     shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
@@ -957,7 +957,7 @@ while($i > 0)
                 }
                 else
                 {
-                    $fcmax = count($fix_crap);
+                    $fcmax = count($fix_crap) - 1;
                     if (is_null($fcnum))
                         $fcnum = -1;
                     if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
