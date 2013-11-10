@@ -1,5 +1,5 @@
 <?php
-require_once WWW_DIR.'lib/ColorCLI.php';
+require_once(WWW_DIR.'lib/ColorCLI.php');
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -14,7 +14,7 @@ class DB
 	public function __construct()
 	{
 		$this->c = new ColorCLI();
-        if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
@@ -288,56 +288,57 @@ class DB
 	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
 	public function newtables($grpid)
 	{
-		$binaries = $parts = $collections = false;
-		try {
-			DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
-			$collections = true;
-		} catch (PDOException $e) {
-			try {
-				if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
-				{
-					$collections = true;
-					usleep(100000);
-					$this->newtables($grpid);
-				}
-			} catch (PDOException $e) {
-				return false;
-			}
-		}
-
-		if ($collections === true)
+		if (!is_null($grpid) && is_numeric($grpid))
 		{
+			$binaries = $parts = $collections = false;
 			try {
-				DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
-				$binaries = true;
+				DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+				$collections = true;
 			} catch (PDOException $e) {
-				if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
-				{
+				try {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+					{
+						$collections = true;
+						$this->newtables($grpid);
+					}
+				} catch (PDOException $e) {
+					return false;
+				}
+			}
+
+			if ($collections === true)
+			{
+				try {
+					DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
 					$binaries = true;
-					usleep(100000);
-					$this->newtables($grpid);
+				} catch (PDOException $e) {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+					{
+						$binaries = true;
+						$this->newtables($grpid);
+					}
 				}
 			}
-		}
 
-		if ($binaries === true)
-		{
-			try {
-				DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
-				$parts = true;
-			} catch (PDOException $e) {
-				if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
-				{
+			if ($binaries === true)
+			{
+				try {
+					DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
 					$parts = true;
-					usleep(100000);
-					$this->newtables($grpid);
+				} catch (PDOException $e) {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+					{
+						$parts = true;
+						$this->newtables($grpid);
+					}
 				}
 			}
+
+			if ($parts === true && $binaries = true && $collections = true)
+				return true;
+			else
+				return false;
 		}
-		if ($parts === true && $binaries = true && $collections = true)
-			return true;
-		else
-			return false;
 	}
 
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
@@ -416,14 +417,10 @@ class DB
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
-	public function __construct()
-    {
-        $this->c = new ColorCLI();
-    }
-
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
+		$this->c = new ColorCLI();
 		if (extension_loaded('memcache'))
 		{
 			$this->m = new Memcache();

@@ -86,7 +86,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '^[a-zA-Z0-9]{15,}$'";
 
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Gibberish');
 		return $delcount;
 	}
@@ -100,7 +101,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '[a-zA-Z0-9]{25,}'";
 
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Hashed');
 		return $delcount;
 	}
@@ -114,7 +116,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '^[a-zA-Z0-9]{0,5}$'";
 
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Short');
 		return $delcount;
 	}
@@ -126,7 +129,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%.exe%' AND r.categoryid NOT IN (4000, 4010, 4020, 4050, 7010)".$and);
+		$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%.exe%' AND r.categoryid NOT IN (4000, 4010, 4020, 4050, 7010)".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Executable');
 		return $delcount;
 	}
@@ -138,7 +142,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%install.bin%'".$and);
+		$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%install.bin%'".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'install.bin');
 		return $delcount;
 	}
@@ -150,7 +155,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%password.url%'".$and);
+		$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name ".$like." '%password.url%'".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'PasswordURL');
 		return $delcount;
 	}
@@ -162,7 +168,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE ( searchname ".$like." '%passworded%' OR searchname ".$like." '%password protect%' OR searchname ".$like." '%password%' OR searchname ".$like." '%passwort%' ) AND searchname NOT ".$like." '%no password%' AND searchname NOT ".$like." '%not passworded%' AND searchname NOT ".$like." '%unlocker%' AND searchname NOT ".$like." '%reset%' AND searchname NOT ".$like." '%recovery%' AND searchname NOT ".$like." '%keygen%' and searchname NOT ".$like." '%advanced%' AND nzbstatus IN (1, 2) AND categoryid NOT IN (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE ( searchname ".$like." '%passworded%' OR searchname ".$like." '%password protect%' OR searchname ".$like." '%password%' OR searchname ".$like." '%passwort%' ) AND searchname NOT ".$like." '%no password%' AND searchname NOT ".$like." '%not passworded%' AND searchname NOT ".$like." '%unlocker%' AND searchname NOT ".$like." '%reset%' AND searchname NOT ".$like." '%recovery%' AND searchname NOT ".$like." '%keygen%' and searchname NOT ".$like." '%advanced%' AND nzbstatus IN (1, 2) AND categoryid NOT IN (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Passworded');
 		return $delcount;
 	}
@@ -171,7 +178,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 	function deleteSize($and)
 	{
 		$db = new DB();
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE totalpart = 1 AND size < 1000000 AND categoryid NOT IN (8000, 8010, 8020, 8030, 8040, 8050, 8060, 3010)".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE totalpart = 1 AND size < 1000000 AND categoryid NOT IN (8000, 8010, 8020, 8030, 8040, 8050, 8060, 3010)".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Size');
 		return $delcount;
 	}
@@ -184,7 +192,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
-		$sql = $db->query("SELECT id, guid, searchname FROM releases WHERE totalpart > 1 AND name ".$like." '%sample%' AND size < 40000000 AND categoryid IN (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE totalpart > 1 AND name ".$like." '%sample%' AND size < 40000000 AND categoryid IN (5010, 5020, 5030, 5040, 5050, 5060, 5070, 5080, 2010, 2020, 2030, 2040, 2050, 2060)".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, 'Sample');
 		return $delcount;
 	}
@@ -198,7 +207,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "(rf.name ~ '[.]scr$' OR r.name ~ '[.]scr[$ \"]')";
 
-		$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regex}".$and);
+		$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regex}".$and);
+		$sql->execute();
 		$delcount = deleteReleases($sql, '.scr');
 		return $delcount;
 	}
@@ -207,7 +217,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 	function deleteBlacklist($and)
 	{
 		$db = new DB();
-		$regexes = $db->query('SELECT regex FROM binaryblacklist WHERE status = 1');
+		$regexes = $db->prepare('SELECT regex FROM binaryblacklist WHERE status = 1');
+		$regexes->execute();
 		$delcount = 0;
 		if(sizeof($regexes > 0))
 		{
@@ -217,7 +228,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 					$regexsql = "(rf.name REGEXP ".$db->escapeString($regex['regex'])." OR r.name REGEXP ".$db->escapeString($regex['regex']).")";
 				else
 					$regexsql = "(rf.name ~ ".$db->escapeString($regex['regex'])." OR r.name ~ ".$db->escapeString($regex['regex']).")";
-				$sql = $db->query("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} ".$and);
+				$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} ".$and);
+				$sql->execute();
 				$delcount += deleteReleases($sql, 'Blacklist');
 			}
 		}

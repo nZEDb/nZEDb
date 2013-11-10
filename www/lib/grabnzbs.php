@@ -96,6 +96,7 @@ class Import
 			}
 			else
 			{
+				var_dump($article);
 				$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
 				echo 'f';
 				return;
