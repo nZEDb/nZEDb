@@ -11,7 +11,7 @@ $db = new DB();
 $DIR = MISC_DIR;
 
 $limited = false;
-if ( isset($argv['1']) && $argv['1'] == "limited" )
+if (isset($argv['1']) && $argv['1'] == "limited")
 	$limited = true;
 
 $tmux = new Tmux();
@@ -27,18 +27,18 @@ $tablepergroup = (!empty($site->get()->tablepergroup)) ? $site->get()->tableperg
 
 //check if session exists
 $session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
-if ( $session != 0 )
+if ($session != 0)
 	exit("\033[1;33mtmux session:".$tmux_session." is already running, aborting.\033[0m\n\n");
 else
 	echo "The above is just a TMUX notice, it is saying TMUX, that you do not have a TMUX session currently running. It is not an error. It is TMUX\n";
 
-function writelog( $pane )
+function writelog($pane)
 {
 	$path = dirname(__FILE__)."/logs";
 	$getdate = gmDate("Ymd");
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
-	if ( $logs == "TRUE" )
+	if ($logs == "TRUE")
 	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
 	}
@@ -48,14 +48,14 @@ function writelog( $pane )
 	}
 }
 
-if ( $hashcheck != '1' )
+if ($hashcheck != '1')
 {
 	echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
 	echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
 	exit(1);
 }
 
-if ( $patch < '140' )
+if ($patch < '141')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -149,37 +149,37 @@ function start_apps($tmux_session)
 	$mytop = $tmux->get()->mytop;
 	$console_bash = $tmux->get()->console;
 
-	if (( $htop == "TRUE" ) && (command_exist("htop")))
+	if (($htop == "TRUE") && (command_exist("htop")))
 	{
 		exec("tmux new-window -t $tmux_session -n htop 'printf \"\033]2;htop\033\" && htop'");
 	}
 
-	if (( $nmon == "TRUE" ) && (command_exist("nmon")))
+	if (($nmon == "TRUE") && (command_exist("nmon")))
 	{
 		exec("tmux new-window -t $tmux_session -n nmon 'printf \"\033]2;nmon\033\" && nmon -t'");
 	}
 
-	if (( $vnstat == "TRUE" ) && (command_exist("vnstat")))
+	if (($vnstat == "TRUE") && (command_exist("vnstat")))
 	{
 		exec("tmux new-window -t $tmux_session -n vnstat 'printf \"\033]2;vnstat\033\" && watch -n10 \"vnstat ${vnstat_args}\"'");
 	}
 
-	if (( $tcptrack == "TRUE" ) && (command_exist("tcptrack")))
+	if (($tcptrack == "TRUE") && (command_exist("tcptrack")))
 	{
 		exec("tmux new-window -t $tmux_session -n tcptrack 'printf \"\033]2;tcptrack\033\" && tcptrack ${tcptrack_args}'");
 	}
 
-	if (( $bwmng == "TRUE" ) && (command_exist("bwm-ng")))
+	if (($bwmng == "TRUE") && (command_exist("bwm-ng")))
 	{
 		exec("tmux new-window -t $tmux_session -n bwm-ng 'printf \"\033]2;bwm-ng\033\" && bwm-ng'");
 	}
 
-	if (( $mytop == "TRUE" ) && (command_exist("mytop")))
+	if (($mytop == "TRUE") && (command_exist("mytop")))
 	{
 		exec("tmux new-window -t $tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
 	}
 
-	if ( $console_bash == "TRUE" )
+	if ($console_bash == "TRUE")
 	{
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
 	}
@@ -189,7 +189,7 @@ function window_proxy($tmux_session, $window)
 {
 	$site = new Sites();
 	$nntpproxy = $site->get()->nntpproxy;
-	if ( $nntpproxy == '1' )
+	if ($nntpproxy == '1')
 	{
 		$DIR = MISC_DIR;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
@@ -201,7 +201,7 @@ function window_proxy($tmux_session, $window)
 	}
 	$alternate_nntp = $site->get()->alternate_nntp;
 	$grabnzbs = $site->get()->grabnzbs;
-	if ( $nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
+	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
 	{
 		$DIR = MISC_DIR;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
@@ -258,7 +258,7 @@ function attach($DIR, $tmux_session, $limited=false)
 	$panes_win_1 = exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
-	if ( !$limited )
+	if (!$limited)
 		exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php $log'");
 	else
 		exec("tmux respawnp -t $tmux_session:0.0 '$PHP ".$DIR."update_scripts/nix_scripts/tmux/monitor.php limited $log'");
@@ -266,12 +266,12 @@ function attach($DIR, $tmux_session, $limited=false)
 }
 
 //create tmux session
-if ( $powerline == "TRUE" )
+if ($powerline == "TRUE")
 	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/powerline/tmux.conf";
 else
 	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
 
-if ( $seq == 1 )
+if ($seq == 1)
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
@@ -288,7 +288,7 @@ if ( $seq == 1 )
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session, $limited);
 }
-elseif ( $seq == 2 )
+elseif ($seq == 2)
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");

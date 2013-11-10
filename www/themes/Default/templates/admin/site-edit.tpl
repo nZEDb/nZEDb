@@ -766,7 +766,7 @@
 	<td><label for="tablepergroup">Table Per Group:</label></td>
 	<td>
 		{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}
-		<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run reset_truncate.php.<br />You may need to increase 'open_files_limit' in my.cnf</div>
+		<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run reset_truncate.php.<br />You may need to increase 'open_files_limit' in my.cnf<br />This requires that you also run releases_threaded.py.</div>
 	</td>
 </tr>
 

@@ -96,8 +96,9 @@ class Import
 			}
 			else
 			{
+				var_dump($article);
 				$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-				echo "-";
+				echo 'f';
 				return;
 			}
 		}
@@ -128,7 +129,7 @@ class Import
 		if (!$xml)
 		{
 			$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-			echo "-";
+			echo '-';
 			return;
 		}
 		else
@@ -153,7 +154,7 @@ class Import
 				$subject = utf8_encode(trim($partless));
 
 				// Make a fake message object to use to check the blacklist.
-				$msg = array('Subject' => $subject, 'From' => $fromname, 'Message-ID' => '');
+				$msg = array('Subject' => $subject, 'From' => $postername[0], 'Message-ID' => '');
 
                 // Groups.
                 $groupArr = array();
@@ -183,7 +184,7 @@ class Import
                 else
                 {
                     $importfailed = true;
-                    break;
+                    return;
                 }
 			}
 
@@ -206,7 +207,7 @@ class Import
 				{
 					flush();
 					$importfailed = true;
-					break;
+					return;
 				}
 			}
 
@@ -229,9 +230,9 @@ class Import
 				}
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true)
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
 				else
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $groupID, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($postername['0']), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
 
 				// Set table names
 				if ($this->tablepergroup == 1)

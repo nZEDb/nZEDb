@@ -19,19 +19,20 @@ class Console
 		$this->asstag = $site->amazonassociatetag;
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
+        $this->db = new DB();
 
 		$this->imgSavePath = WWW_DIR.'covers/console/';
 	}
 
 	public function getConsoleInfo($id)
 	{
-		$db = new DB();
+		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genreid WHERE consoleinfo.id = %d ", $id));
 	}
 
 	public function getConsoleInfoByName($title, $platform)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$like = 'ILIKE';
 		if ($db->dbSystem() == 'mysql')
 			$like = 'LIKE';
@@ -40,7 +41,7 @@ class Console
 
 	public function getRange($start, $num)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = "";
@@ -52,14 +53,14 @@ class Console
 
 	public function getCount()
 	{
-		$db = new DB();
+		$db = $this->db;
 		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM consoleinfo");
 		return $res["num"];
 	}
 
 	public function getConsoleCount($cat, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -109,7 +110,7 @@ class Console
 
 	public function getConsoleRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
@@ -208,7 +209,7 @@ class Console
 
 	public function getBrowseBy()
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
@@ -244,14 +245,14 @@ class Console
 
 	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID)
 	{
-		$db = new DB();
+		$db = $this->db;
 
 		$db->queryExec(sprintf("UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, releasedate= %s, esrb = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d", $db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($platform), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($esrb), $cover, $genreID, $id));
 	}
 
 	public function updateConsoleInfo($gameInfo)
 	{
-		$db = new DB();
+		$db = $this->db;
 		$gen = new Genres();
 		$ri = new ReleaseImage();
 
@@ -477,7 +478,7 @@ class Console
 	public function processConsoleReleases($threads=1)
 	{
 		$threads--;
-		$db = new DB();
+		$db = $this->db;
 		// Non-fixed release names.
 		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
@@ -487,7 +488,7 @@ class Console
 	public function processConsoleReleaseTypes($res, $type)
 	{
 		$ret = 0;
-		$db = new DB();
+		$db = $this->db;
 
 		if (count($res) > 0)
 		{
