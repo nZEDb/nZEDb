@@ -84,19 +84,19 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 5000 AND rageid = -1) AS tv,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 2000 AND r.imdbid IS NULL) AS movies,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND relnamestatus != 0) AS audio,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 1000 AND consoleinfoid IS NULL) AS console,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
-	(SELECT COUNT(*) FROM releases WHERE NZBSTATUS = 1) AS releases,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus IN (-6, -5, -4, -3, -2, -1)) AS nforemains";
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus IN (-6, -5, -4, -3, -2, -1) AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus IN (-6, -5, -4, -3, -2, -1) AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus IN (-6, -5, -4, -3, -2, -1) AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
+	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
+	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
+	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
 	(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
 	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
@@ -212,13 +212,9 @@ function writelog($pane)
 	$tmux = $t->get();
 	$logs = (!empty($tmux->write_logs)) ? $tmux->write_logs : FALSE;
 	if ($logs == "TRUE")
-	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
-	}
 	else
-	{
 		return "";
-	}
 }
 
 function get_color($colors_start, $colors_end, $colors_exc)
@@ -405,24 +401,24 @@ while($i > 0)
 		$init1_time = (TIME() - $time01);
 
 		$time04 = TIME();
-		$proc_work_result = $db->query($proc_work, false);
+		$proc_work_result = $db->query($proc_work, true);
 		$proc1_time = (TIME() - $time04);
 		$proc11_time = (TIME() - $time01);
 
 		$time05 = TIME();
-		$proc_work_result2 = $db->query($proc_work2, false);
+		$proc_work_result2 = $db->query($proc_work2, true);
 		$proc2_time = (TIME() - $time05);
 		$proc21_time = (TIME() - $time01);
 
 		$time06 = TIME();
-		$proc_work_result3 = $db->query($proc_work3, false);
+		$proc_work_result3 = $db->query($proc_work3, true);
 		$proc3_time = (TIME() - $time06);
 		$proc31_time = (TIME() - $time01);
 
 		$time07 = TIME();
 		if ($tablepergroup == 1)
 		{
-			$sql = "SHOW tables";
+			$sql = 'SHOW tables';
 			$tables = $db->query($sql);
 			$collections_table = $binaries_table = $parts_table = 0;
 			$age = TIME();
@@ -431,20 +427,20 @@ while($i > 0)
 				$tbl = $row['tables_in_'.DB_NAME];
 				if (preg_match('/\d+_collections/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1');
+					$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', true);
 					$collections_table += $run['count'];
 					if (isset($run['dateadded']) && is_numeric($run['dateadded']) && $run['dateadded'] < $age)
 						$age = $run['dateadded'];
 				}
 				else if (preg_match('/\d+_binaries/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) AS count FROM '.$tbl);
+					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, true);
 					if (isset($run['count']) && is_numeric($run['count']))
 						$binaries_table += $run['count'];
 				}
 				else if (preg_match('/\d+_parts/',$tbl))
 				{
-					$run = $db->queryOneRow('SELECT COUNT(*) AS count FROM '.$tbl);
+					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, true);
 					if (isset($run['count']) && is_numeric($run['count']))
 						$parts_table += $run['count'];
 				}
@@ -933,13 +929,9 @@ while($i > 0)
                 {
                     $fcmax = count($fix_crap);
                     if (is_null($fcnum))
-                    {
                         $fcnum = 0;
-                    }
                     if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
-                    {
                         $fcnum++;
-                    }
                     shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
                         echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
                         php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
@@ -962,20 +954,14 @@ while($i > 0)
                 {
                     $fcmax = count($fix_crap);
                     if (is_null($fcnum))
-                    {
                         $fcnum = -1;
-                    }
                     if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
-                    {
                         $fcnum++;
-                    }
                     shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
                         echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
                         $_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
                     if ($fcnum == $fcmax)
-                    {
                         $fcnum = -1;
-                    }
 
                 }
             }
