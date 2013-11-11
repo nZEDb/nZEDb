@@ -53,7 +53,7 @@ else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv
 	else if ($argv[2] == 'false')
 		$postprocess = new PostProcess();
 
-	$postprocess->processPredb();
+	$postprocess->processPredb($nntp);
 }
 else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] == 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false'))
 {

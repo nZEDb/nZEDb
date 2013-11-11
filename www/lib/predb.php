@@ -6,6 +6,7 @@ require_once(WWW_DIR.'lib/nfo.php');
 require_once(WWW_DIR.'lib/namefixer.php');
 require_once(WWW_DIR.'lib/site.php');
 require_once(WWW_DIR.'lib/consoletools.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
@@ -18,12 +19,13 @@ Class Predb
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->echooutput = $echooutput;
-        $this->db = new DB();
+		$this->db = new DB();
+		$this->c = new ColorCLI;
 	}
 
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
-	public function combinePre()
+	public function combinePre($nntp)
 	{
 		$db = $this->db;
 		$newnames = 0;
@@ -60,7 +62,7 @@ Class Predb
 		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
 			echo 'Matched '.$matched." predDB titles to release search names.\n";
-		$nfos = $this->matchNfo();
+		$nfos = $this->matchNfo($nntp);
 		if ($nfos > 0 && $this->echooutput)
 			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
 		return $newnames;
@@ -407,8 +409,11 @@ Class Predb
 	}
 
 	// Look if the release is missing an nfo.
-	public function matchNfo()
+	public function matchNfo($nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->updateAllGroups).\n"));
+
 		$db = new DB();
 		$nfos = 0;
 		if($this->echooutput)
@@ -426,7 +431,7 @@ Class Predb
 				$buffer = getUrl($row['nfo']);
 				if ($buffer !== false)
 				{
-					if($nfo->addAlternateNfo($db, $buffer, $row))
+					if($nfo->addAlternateNfo($db, $buffer, $row, $nntp))
 					{
 						if($this->echooutput)
 							echo '+';

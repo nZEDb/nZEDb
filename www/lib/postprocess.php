@@ -75,7 +75,7 @@ class PostProcess
 
 	public function processAll($nntp)
 	{
-		//$this->processPredb();
+		$this->processPredb($nntp);
 		$this->processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp);
 		$this->processNfos($releaseToWork='', $nntp);
 		$this->processMovies($releaseToWork='');
@@ -160,10 +160,10 @@ class PostProcess
 	}
 
 	// Fetch titles from predb sites.
-	public function processPredb()
+	public function processPredb($nntp)
 	{
 		$predb = new Predb($this->echooutput);
-		$titles = $predb->combinePre();
+		$titles = $predb->combinePre($nntp);
 		if ($titles > 0)
 			$this->doecho('Fetched '.$titles.' new title(s) from predb sources.');
 	}
@@ -1058,7 +1058,7 @@ class PostProcess
 				{
 					if ($file['compressed'] !== 1)
 					{
-						if($nfo->addAlternateNfo($this->db, $thisdata, $release))
+						if($nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp))
 						{
 							$this->debug('Added zip NFO.');
 							if ($this->echooutput)
@@ -1072,7 +1072,7 @@ class PostProcess
 						$zipdata = $zip->extractFile($file['name']);
 						if ($zipdata !== false && strlen($zipdata) > 5);
 						{
-							if($nfo->addAlternateNfo($this->db, $zipdata, $release))
+							if($nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp))
 							{
 								$this->debug('Added compressed zip NFO.');
 								if ($this->echooutput)
