@@ -31,7 +31,7 @@ class Backfill
 	public function backfillAllGroups($groupName='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->backfillAllGroups).\n"));
 
 		if ($this->hashcheck == 0)
 			exit($this->c->error("You must run update_binaries.php to update your collectionhash."));
@@ -67,7 +67,7 @@ class Backfill
 	public function backfillGroup($nntp, $db, $binaries, $groupArr, $left)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->backfillGroup).\n"));
 
 		$this->startGroup = microtime(true);
 
@@ -166,7 +166,7 @@ class Backfill
 	public function safeBackfill($articles='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->safeBackfill).\n"));
 
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
@@ -184,7 +184,7 @@ class Backfill
 	public function backfillPostAllGroups($groupName='', $articles='', $type='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->backfillPostAllGroups).\n"));
 
 		if ($this->hashcheck == 0)
 			exit($this->c->error("You must run update_binaries.php to update your collectionhash."));
@@ -223,7 +223,7 @@ class Backfill
 	public function backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles='', $left)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->backfillPostGroup).\n"));
 
 		$this->startGroup = microtime(true);
 
@@ -324,7 +324,7 @@ class Backfill
 	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type='newest')
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->postdate).\n"));
 
 		$db = $this->db;
 		$keeppost = $post;
@@ -460,7 +460,7 @@ class Backfill
 	public function daytopost($nntp, $group, $days, $debug=true, $data)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->daytopost).\n"));
 
 		// DEBUG every postdate call?!?!
 		$pddebug = false;
@@ -548,7 +548,7 @@ class Backfill
 	public function getRange($group, $first, $last, $threads, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->getRange).\n"));
 
 		$groups = new Groups();
 		$this->startGroup = microtime(true);
@@ -563,14 +563,14 @@ class Backfill
 		else
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
-		
+
 		$binaries->scan($nntp, $groupArr, $last, $first, $type);
 	}
 
 	function getFinal($group, $first, $type, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(backfill->getFinal).\n"));
 
 		$db = $this->db;
 		$groups = new Groups();

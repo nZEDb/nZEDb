@@ -47,7 +47,7 @@ class Binaries
 	public function updateAllGroups($nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(binaries->updateAllGroups).\n"));
 
 		if ($this->hashcheck == 0)
 		{
@@ -90,11 +90,11 @@ class Binaries
 
 	public function updateGroup($groupArr, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->updateGroup).\n"));
+
 		$this->startGroup = microtime(true);
 		echo $this->c->set256($this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
-
-		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
 
 		// Select the group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -263,7 +263,7 @@ class Binaries
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(binaries->scan).\n"));
 
 		$db = $this->db;
 		$this->startHeaders = microtime(true);
@@ -613,7 +613,7 @@ class Binaries
 	public function partRepair($nntp, $groupArr)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(binaries->partRepair).\n"));
 
 		// Get all parts in partrepair table.
 		$db = $this->db;

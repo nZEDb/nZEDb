@@ -80,6 +80,7 @@ if (version_compare(PHP_VERSION, '5.2.11') === 0) {
 require_once 'PEAR.php';
 //require_once 'Net/NNTP/Error.php';
 require_once 'Responsecode.php';
+require_once('Socket.php');
 
 
 // {{{ constants
