@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4090";
+$version="0.3r4091";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -795,6 +795,7 @@ while($i > 0)
 		printf("\033[38;5;214m");
 		printf($mask, "Combined", $tmux_time." ".$split_time." ".$init_time." ".$proc1_time." ".$proc2_time." ".$proc3_time." ".$tpg_count_time, $tmux_time." ".$split1_time." ".$init1_time." ".$proc11_time." ".$proc21_time." ".$proc31_time." ".$tpg_count_1_time);
 	}
+	echo $db->getAttribute(PDO::ATTR_SERVER_INFO)."\n";
 
 	//get list of panes by name
 	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
