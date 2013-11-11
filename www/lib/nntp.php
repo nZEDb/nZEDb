@@ -21,6 +21,7 @@ class Nntp extends Net_NNTP_Client
 		$this->articlegroup = '';
 		$this->s = new Sites();
 		$this->site = $this->s->get();
+		$this->nntpretries = (!empty($this->site->nntpretries)) ? $this->site->nntpretries : 0;
 	}
 
 
@@ -40,7 +41,7 @@ class Nntp extends Net_NNTP_Client
 		if (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
 
-		$retries = 10;
+		$retries = $this->nntpretries;
 		while($retries >= 1)
 		{
 			$authent = false;
@@ -92,7 +93,7 @@ class Nntp extends Net_NNTP_Client
 		if (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A == true)
 			$enc = 'ssl';
 
-		$retries = 10;
+		$retries = $this->nntpretries;
 		while($retries >= 1)
 		{
 			$authent = false;
