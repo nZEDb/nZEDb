@@ -1,25 +1,49 @@
 <?php
-require_once(dirname(__FILE__)."/../../../config.php");
-require_once(WWW_DIR."lib/postprocess.php");
-require_once(WWW_DIR."lib/tmux.php");
+require_once(dirname(__FILE__).'/../../../config.php');
+require_once(WWW_DIR.'lib/postprocess.php');
+require_once(WWW_DIR.'lib/tmux.php');
+require_once(WWW_DIR.'lib/nntp.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
+
+$c = new ColorCLI;
+if (!isset($argv[1]))
+	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+
+$s = new Sites();
+$site = $s->get();
 
 $tmux = new Tmux;
 $torun = $tmux->get()->post;
 
-$pieces = explode("           =+=            ", $argv[1]);
+$pieces = explode('           =+=            ', $argv[1]);
 $postprocess = new PostProcess(true);
 if (isset($pieces[6]))
 {
-	$postprocess->processAdditional($argv[1]);
+	$nntp = new Nntp();
+	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	{
+		echo $c->error("Unable to connect to usenet.\n");
+		return;
+	}
+	$postprocess->processAdditionalThreaded($argv[1], $nntp);
+	$nntp->doQuit();
 }
 elseif (isset($pieces[3]))
 {
-	$postprocess->processNfos($argv[1]);
+	$nntp = new Nntp();
+	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	{
+		echo $c->error("Unable to connect to usenet.\n");
+		return;
+	}
+	$postprocess->processNfos($argv[1], $nntp);
+	$nntp->doQuit();
 }
 elseif (isset($pieces[2]))
 {
 	$postprocess->processMovies($argv[1]);
-	echo ".";
+	echo '.';
 }
 elseif (isset($pieces[1]))
 {

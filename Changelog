@@ -2,7 +2,9 @@ NOTE: Add this to config.php   define('DB_SYSTEM', 'mysql');
 NOTE: If you submit a pull request, please update this file with what you changed
 
 
-11102013 -> jonnyboy -> added getAttribute function to db, removed rows_examined until I can determine db brand
+11112013 -> jonnyboy -> moved all nntp connection responsiblity to the calling script, this allows for the same connection to be used throughout the process, it is closed only on error or process ends
+11102013 -> jonnyboy -> added clean option to movies/tv pp in tmux
+                        added getAttribute function to db, removed rows_examined until I can determine db brand
                         added pane that could be used as a live 'slow query monitor' to tmux
 11102913 -> nuthead  -> rewritten sql in file releases.php to give speed boost
 11082013 -> ThePeePs -> added option to choose more then one type of Crap Release rather then None/All/One (see tmux-edit page)

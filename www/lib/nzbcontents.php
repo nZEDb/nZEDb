@@ -18,6 +18,9 @@ Class NZBcontents
 
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
 			return $fetchedBinary;
 		else if ($fetchedBinary = $this->hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
@@ -81,6 +84,9 @@ Class NZBcontents
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
 	public function NZBcompletion($guid, $relID, $groupID, $nntp, $db, $nfocheck=false)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
@@ -142,6 +148,9 @@ Class NZBcontents
 	// Look for an .nfo file in the NZB, return the NFO. Also gets the NZB completion.
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
 		if ($messageid !== false)
 		{
@@ -167,6 +176,9 @@ Class NZBcontents
 	// Look for an NFO in the nzb which does not end in .nfo, return the nfo.
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{

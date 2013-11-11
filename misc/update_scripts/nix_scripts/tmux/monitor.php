@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4092";
+$version="0.3r4093";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -39,10 +39,13 @@ if ($nntpproxy == 0)
 {
 	$port = NNTP_PORT;
 	$host = NNTP_SERVER;
-	$port_a = NNTP_PORT_A;
-	$host_a = NNTP_SERVER_A;
 	$ip = gethostbyname($host);
-	$ip_a = gethostbyname($host_a);
+	if ($alternate_nntp == "1")
+	{
+		$port_a = NNTP_PORT_A;
+		$host_a = NNTP_SERVER_A;
+		$ip_a = gethostbyname($host_a);
+	}
 }
 else
 {
@@ -289,7 +292,7 @@ $newestpre = TIME();
 $oldestcollection = TIME();
 $oldestnzb = TIME();
 
-$active_groups = $all_groups = $show_query = 0;
+$active_groups = $all_groups = 0;
 $backfilldays = $backfill_groups_date = 0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
@@ -308,6 +311,7 @@ $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2t
 $collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
 $grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = 0;
+$show_query = "FALSE";
 
 $last_history = "";
 
@@ -861,6 +865,11 @@ while($i > 0)
 		echo "Using releases_threaded.py, Table Per Group is activated in site-edit\nNon-Threaded releases is only available when not using Table Per Group.\n";
 	}
 
+	if ($post_non == 2)
+		$clean = ' clean ';
+	else
+		$clean = ' ';
+
 	if ($running == "TRUE")
 	{
 		//run these if complete sequential not set
@@ -1052,15 +1061,15 @@ while($i > 0)
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess Additional\"'");
 			}
 
-			if (($post_non == "TRUE") && (($movie_releases_proc > 0) || ($tvrage_releases_proc > 0)))
+			if (($post_non != 0) && (($movie_releases_proc > 0) || ($tvrage_releases_proc > 0)))
 			{
 				//run postprocess_releases non amazon
 				$log = writelog($panes2[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py tv $log; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py movie $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py tv $clean $log; \
+						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py movie $clean $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
 			}
-			else if (($post_non == "TRUE") && ($movie_releases_proc == 0) && ($tvrage_releases_proc == 0))
+			else if (($post_non != 0) && ($movie_releases_proc == 0) && ($tvrage_releases_proc == 0))
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by No Movies/TV to process\"'");

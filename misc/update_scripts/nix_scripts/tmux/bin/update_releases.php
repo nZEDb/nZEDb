@@ -1,14 +1,18 @@
 <?php
-require_once(dirname(__FILE__)."/../../../config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/consoletools.php");
-require_once(WWW_DIR."lib/binaries.php");
+require_once(dirname(__FILE__).'/../../../config.php');
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/releases.php');
+require_once(WWW_DIR.'lib/groups.php');
+require_once(WWW_DIR.'lib/consoletools.php');
+require_once(WWW_DIR.'lib/binaries.php');
+require_once(WWW_DIR.'lib/ColorCLI.php');
 
-$pieces = explode("  ", $argv[1]);
+$c = new ColorCLI;
+if (!isset($argv[1]))
+	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+
+$pieces = explode('  ', $argv[1]);
 $groupid = $pieces[0];
-//sleep($pieces[1]*2);
 
 $releases = new Releases(true);
 $groups = new Groups();
@@ -21,7 +25,7 @@ $db = new DB();
 if ($releases->hashcheck == 0)
 	exit("You must run update_binaries.php to update your collectionhash.\n");
 
-if ($pieces[0] != "Stage7b")
+if ($pieces[0] != 'Stage7b')
 {
 	try {
 		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
@@ -51,11 +55,11 @@ if ($pieces[0] != "Stage7b")
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 }
-elseif ($pieces[0] == "Stage7b")
+elseif ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);
 	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true);
 	$releases->processReleasesStage7b($groupid='', true);
-	//echo "Deleted ".number_format($deleted)." collections/binaries/parts.\n";
+	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

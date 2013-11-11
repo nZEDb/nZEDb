@@ -19,6 +19,8 @@ class Nntp extends Net_NNTP_Client
 		$this->header = 'Yellow';
 		// Cache the group name for article/body.
 		$this->articlegroup = '';
+		$this->s = new Sites();
+		$this->site = $this->s->get();
 	}
 
 
@@ -30,9 +32,7 @@ class Nntp extends Net_NNTP_Client
 		else
 			$this->doQuit();
 
-		$s = new Sites();
-		$site = $s->get();
-		$compressionstatus = $site->compressedheaders;
+		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
 		$enc = $ret = $ret2 = $connected = false;
 
@@ -92,7 +92,7 @@ class Nntp extends Net_NNTP_Client
 
 		$s = new Sites();
 		$site = $s->get();
-		$compressionstatus = $site->compressedheaders;
+		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
 
 		$enc = $ret = $ret2 = $connected = false;
@@ -193,14 +193,6 @@ class Nntp extends Net_NNTP_Client
 	// Get a full article (body + header).
 	public function get_Article($groupname, $partMsgId)
 	{
-		if ($this->articlegroup != $groupname)
-		{
-			$this->articlegroup = $groupname;
-			$summary = $this->selectGroup($groupname);
-			if (PEAR::isError($summary))
-				return false;
-		}
-
 		$body = $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 			return false;
@@ -212,6 +204,14 @@ class Nntp extends Net_NNTP_Client
 	public function getArticles($groupname, $msgIds)
 	{
 		$body = '';
+		if ($this->articlegroup != $groupname)
+		{
+			$this->articlegroup = $groupname;
+			$summary = $this->selectGroup($groupname);
+			if (PEAR::isError($summary))
+				return false;
+		}
+
 		foreach ($msgIds as $m)
 		{
 			$message = $this->get_Article($groupname, $m);

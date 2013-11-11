@@ -72,12 +72,12 @@ if len(sys.argv) == 1 and type == 4:
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	# Using string formatting is not the correct way to do this, but using +group is even worse
 	# removing the % before the variables at the end of the query adds quotes/escapes strings
-	cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND backfill = 1 %s" % (group))
+	cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND backfill = 1 %s" % (group))
 else:
 	if conf['DB_SYSTEM'] == "mysql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 	elif conf['DB_SYSTEM'] == "pgsql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record IS NOT NULL AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 
 datas = cur.fetchall()
 if not datas:

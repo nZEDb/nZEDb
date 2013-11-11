@@ -54,13 +54,13 @@ class Groups
 	public function getActiveBackfill()
 	{
 		$db = new DB();
-		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY name");
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name");
 	}
 
 	public function getActiveByDateBackfill()
 	{
 		$db = new DB();
-		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY first_record_postdate DESC");
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC");
 	}
 
 	public function getActiveIDs()

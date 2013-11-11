@@ -565,7 +565,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	 * @access protected
 	 */
 	function connect($host = null, $encryption = null,
-					$port = null, $timeout = null) {
+					$port = null, $timeout = 15) {
 		//
 		if ($this->_isConnected() ) {
 			return $this->throwError('Already connected, disconnect first!', null);
@@ -605,11 +605,6 @@ class Net_NNTP_Protocol_Client extends PEAR
 			default:
 				trigger_error('$encryption parameter must be either '
 				.'tcp, tls or ssl.', E_USER_ERROR);
-		}
-
-		//
-		if (is_null($timeout)) {
-			$timeout = 15;
 		}
 
 		// Open Connection
