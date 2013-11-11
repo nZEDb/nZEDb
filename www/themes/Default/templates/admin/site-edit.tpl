@@ -614,7 +614,7 @@
 	<td><label for="nntpretries">NNTP Retry Attempts:</label></td>
 	<td>
 		<input class="short" id="nntpretries" name="nntpretries" type="text" value="{$fsite->nntpretries}" />
-		<div class="hint">The maximum number of retry attmpts to connect to nntp provider. (Default 10)</div>
+		<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10)</div>
 	</td>
 </tr>
 
