@@ -213,7 +213,7 @@ class Backfill
 			// Connect to usenet.
 			if ($nntp->doConnect() === false)
 			{
-				echo "Error connecting to usenet.\n";
+				echo $this->c->error("Unable to connect to usenet.\n");
 				return;
 			}
 
@@ -390,7 +390,7 @@ class Backfill
 				$groupa['pname'] = 'parts';
 			}
 
-			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
+			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts == 0)
 			{
 				$old_post = $post;
 				if ($type == 'newest')
@@ -413,7 +413,7 @@ class Backfill
 				}
 				$success = false;
 			}
-			if (!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date']))
+			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts != 0)
 			{
 				if ($type == 'newest')
 				{
@@ -461,7 +461,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('first_record_postdate', $res))
 				{
-					echo $this->c->error('Error: Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
+					echo $this->c->error('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
 					return strtotime($res['first_record_postdate']);
 				}
 				else
@@ -472,7 +472,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('last_record_postdate', $res))
 				{
-					echo $this->c->error('Error: Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
+					echo $this->c->error('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
 					return strtotime($res['last_record_postdate']);
 				}
 				else
@@ -542,7 +542,7 @@ class Backfill
 		{
 			if ($st === true)
 				$nntp->doQuit();
-			echo $this->c->error('ERROR: Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n");
+			echo $this->c->error('Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n");
 			return '';
 		}
 

@@ -24,6 +24,8 @@ function preName($argv)
 	$show = '';
 	if($total > 0)
 	{
+		$precount = $db->queryOneRow('SELECT COUNT(*) AS count FROM predb');
+		echo 'Comparing '.number_format($total).' releases against '.number_format($precount['count'])." preDB's\n";
 		$consoletools = new ConsoleTools();
 		$category = new Category();
 		$reset = 0;

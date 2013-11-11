@@ -412,6 +412,21 @@ class DB
 			return false;
 		}
 	}
+	
+	// Retrieve attributes
+	public function getAttribute($attribute)
+	{
+		if ($attribute != '')
+		{
+			try {
+				$result = DB::$pdo->getAttribute($attribute);
+			} catch (PDOException $e) {
+				printf($e);
+				$result = false;
+			}
+			return $result;
+		}
+	}
 }
 
 // Class for caching queries into RAM using memcache.
