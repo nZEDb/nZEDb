@@ -480,9 +480,9 @@ class Console
 		$threads--;
 		$db = $this->db;
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r USE INDEX(ix_releases_categoryID, ix_releases_consoleinfoID) INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid = -2 AND r.relnamestatus NOT IN (0, 1, 20) AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r USE INDEX(ix_releases_categoryID, ix_releases_consoleinfoID) INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid = -2 AND r.relnamestatus NOT IN (0, 1, 20) AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)
