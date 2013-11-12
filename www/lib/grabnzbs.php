@@ -1,11 +1,12 @@
 <?php
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/page.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/namecleaning.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/releases.php");
+require_once(WWW_DIR.'lib/framework/db.php');
+require_once(WWW_DIR.'lib/page.php');
+require_once(WWW_DIR.'lib/category.php');
+require_once(WWW_DIR.'lib/namecleaning.php');
+require_once(WWW_DIR.'lib/site.php');
+require_once(WWW_DIR.'lib/groups.php');
+require_once(WWW_DIR.'lib/releases.php');
+require_once(WWW_DIR.'lib/nntp.php');
 
 class Import
 {
@@ -35,12 +36,12 @@ class Import
 		}
 	}
 
-	public function GrabNZBs($hash='')
+	public function GrabNZBs($hash='', $nntp)
 	{
-		$nntp = new Nntp();
-		$nzb = array();
-		$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
 
+		$nzb = array();
 		if ($hash == '')
 		{
 			$hashes = $this->db->query('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
@@ -70,9 +71,9 @@ class Import
 		}
 		if($nzb && array_key_exists('groupname', $nzb))
 		{
-			$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
 			if (sizeof($arr) > 10)
 				echo "\nGetting ".sizeof($arr).' articles for '.$hash."\n";
+
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
 			if ($article === false || PEAR::isError($article))
 			{
@@ -85,7 +86,6 @@ class Import
 					$article = false;
 				}
 			}
-			$nntp->doQuit();
 
 			// If article downloaded, import it, else delete from nzbs table
 			if($article !== false)
@@ -191,7 +191,7 @@ class Import
 			if (!$importfailed)
 			{
 				$usename = $this->db->escapeString($name);
-				$res = $this->db->prepare(sprintf("SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %s AND size = %s", $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($realgroupid), $this->db->escapeString($totalsize)));
+				$res = $this->db->prepare(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($realgroupid), $this->db->escapeString($totalsize)));
 				$res->execute();
 				if ($this->replacenzbs == 1)
 				{
@@ -263,7 +263,7 @@ class Import
 						{
 							foreach ($idr as $id)
 							{
-								$reccount = $this->db->queryExec(sprintf('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id["id"]));
+								$reccount = $this->db->queryExec(sprintf('DELETE FROM '.$group['pname'].' WHERE EXISTS (SELECT id FROM '.$group['bname'].' WHERE '.$group['bname'].'.id = '.$group['pname'].'.binaryid AND '.$group['bname'].'.collectionid = %d)', $id['id']));
 								$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['bname'].' WHERE collectionid = %d', $id['id']));
 							}
 							$reccount += $this->db->queryExec(sprintf('DELETE FROM '.$group['cname'].' WHERE collectionshash = %s', $this->db->escapeString($hash)));

@@ -28,8 +28,11 @@ class Backfill
 	}
 
 	// Backfill groups using user specified time/date.
-	public function backfillAllGroups($groupName='')
+	public function backfillAllGroups($groupName='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->backfillAllGroups).\n"));
+
 		if ($this->hashcheck == 0)
 			exit($this->c->error("You must run update_binaries.php to update your collectionhash."));
 		$groups = new Groups();
@@ -46,14 +49,6 @@ class Backfill
 
 		if (@$res)
 		{
-			$nntp = new Nntp();
-			// Connect to usenet.
-			if ($nntp->doConnect() === false)
-			{
-				echo "Error connecting to usenet.\n";
-				return;
-			}
-
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
@@ -63,7 +58,6 @@ class Backfill
 				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
-			$nntp->doQuit();
 		}
 		else
 			echo $this->c->set256($this->primary)."No groups specified. Ensure groups are added to nZEDb's database for updating.\n".$this->c->rsetColor();
@@ -72,15 +66,12 @@ class Backfill
 	// Backfill 1 group using time.
 	public function backfillGroup($nntp, $db, $binaries, $groupArr, $left)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->backfillGroup).\n"));
+
 		$this->startGroup = microtime(true);
 
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			if ($nntp->doConnect() === false)
-				return;
-		}
-
+		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
@@ -90,7 +81,7 @@ class Backfill
 		}
 
 		// Get targetpost based on days target.
-		$targetpost = $this->daytopost($nntp, $groupArr['name'], $groupArr['backfill_target'], true);
+		$targetpost = $this->daytopost($nntp, $groupArr['name'], $groupArr['backfill_target'], true, $data);
 		if ($targetpost < 0)
 			$targetpost = round($data['first']);
 
@@ -172,8 +163,11 @@ class Backfill
 
 	// Safe backfill using posts. Going back to a date specified by the user on the site settings.
 	// This does 1 group for x amount of parts until it reaches the date.
-	public function safeBackfill($articles='')
+	public function safeBackfill($articles='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->safeBackfill).\n"));
+
 		if ($this->hashcheck == 0)
 			exit("You must run update_binaries.php to update your collectionhash.\n");
 
@@ -183,12 +177,15 @@ class Backfill
 		if (!$groupname)
 			exit('No groups to backfill, they are all at the target date '.$this->safebdate.", or you have not enabled them to be backfilled in the groups page.\n");
 		else
-			$this->backfillPostAllGroups($groupname['name'], $articles);
+			$this->backfillPostAllGroups($groupname['name'], $articles, $type='', $nntp);
 	}
 
 	// Backfill groups using user specified article count.
-	public function backfillPostAllGroups($groupName='', $articles='', $type='')
+	public function backfillPostAllGroups($groupName='', $articles='', $type='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->backfillPostAllGroups).\n"));
+
 		if ($this->hashcheck == 0)
 			exit($this->c->error("You must run update_binaries.php to update your collectionhash."));
 
@@ -209,14 +206,6 @@ class Backfill
 
 		if (@$res)
 		{
-			$nntp = new Nntp();
-			// Connect to usenet.
-			if ($nntp->doConnect() === false)
-			{
-				echo $this->c->error("Unable to connect to usenet.\n");
-				return;
-			}
-
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
@@ -226,7 +215,6 @@ class Backfill
 				$this->backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}
-			$nntp->doQuit();
 		}
 		else
 			echo $this->c->warning("No groups specified. Ensure groups are added to nZEDb's database for updating.\n");
@@ -234,10 +222,14 @@ class Backfill
 
 	public function backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles='', $left)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->backfillPostGroup).\n"));
+
 		$this->startGroup = microtime(true);
 
 		echo $this->c->set256($this->header).'Processing '.$groupArr['name']."\n".$this->c->rsetColor();
 
+		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
 		if(PEAR::isError($data))
 		{
@@ -331,45 +323,20 @@ class Backfill
 	// Returns a single timestamp from a local article number. If the article is missing, you can pass $old as true to return false (then use the last known date).
 	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type='newest')
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->postdate).\n"));
+
 		$db = $this->db;
-		$st = false;
 		$keeppost = $post;
-		if (!isset($nntp) || $nntp->doConnect() === false)
-		{
-			$nntp = new Nntp();
-			if ($nntp->doConnect() === false)
-				return;
-			$st = true;
-		}
+
 		$attempts=0;
 		$success = $record = false;
 		do
 		{
-			$data = $nntp->selectGroup($group);
-			if (PEAR::isError($data))
-			{
-				$data = $nntp->dataError($nntp, $group);
-				if ($data === false)
-					return;
-			}
 			$msgs = $nntp->getOverview($post."-".$post, true, false);
 			if (PEAR::isError($msgs))
-			{
-				$nntp->doQuit();
-				if ($nntp->doConnect() === false)
-					return;
+				return false;
 
-				$nntp->selectGroup($group);
-				$msgs = $nntp->getOverview($post."-".$post, true, false);
-				if (PEAR::isError($msgs))
-				{
-					echo $this->c->error("Code {$msgs->code}: {$msgs->message}.\nUnable to fetch the article.");
-					if ($old === true)
-						return false;
-					else
-						return;
-				}
-			}
 			// Set table names
 			$groups = new Groups();
 			$groupID = $groups->getIDByName($group);
@@ -452,8 +419,6 @@ class Backfill
 			$attempts++;
 		} while ($attempts <= 20 && $success === false);
 
-		if ($st === true)
-			$nntp->doQuit();
 		if ($success === false && $old === true)
 		{
 			if ($type == 'oldest')
@@ -492,29 +457,15 @@ class Backfill
 	}
 
 	// Returns article number based on # of days.
-	public function daytopost($nntp, $group, $days, $debug=true)
+	public function daytopost($nntp, $group, $days, $debug=true, $data)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->daytopost).\n"));
+
 		// DEBUG every postdate call?!?!
-		$pddebug = $st = false;
+		$pddebug = false;
 		if ($debug)
 			echo $this->c->info('Finding article for '.$group.' '.$days." days back.\n");
-
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			if ($nntp->doConnectNC() === false)
-				return;
-
-			$st = true;
-		}
-
-		$data = $nntp->selectGroup($group);
-		if (PEAR::isError($data))
-		{
-			$data = $nntp->dataError($nntp, $group);
-			if ($data === false)
-				return;
-		}
 
 		// Goal timestamp.
 		$goaldate = date('U')-(86400*$days);
@@ -533,15 +484,11 @@ class Backfill
 
 		if ($goaldate < $firstDate)
 		{
-			if ($st === true)
-				$nntp->doQuit();
 			echo $this->c->warning("Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n");
 			return $data['first'];
 		}
 		elseif ($goaldate > $lastDate)
 		{
-			if ($st === true)
-				$nntp->doQuit();
 			echo $this->c->error('Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n");
 			return '';
 		}
@@ -588,8 +535,6 @@ class Backfill
 			while(!$dateofnextone)
 			{  $dateofnextone = $this->postdate($nntp,($upperbound-1),$pddebug,$group,false,'oldest'); }
 	 	}
-	 	if ($st === true)
-			$nntp->doQuit();
 
 		printf($mask1, 'Determined to be article:', number_format($upperbound), 'which is '.$this->daysOld($dateofnextone).' days old ('.date('r', $dateofnextone).')');
 		return $upperbound;
@@ -600,8 +545,11 @@ class Backfill
 		return round((time()-$timestamp)/86400, 1);
 	}
 
-	public function getRange($group, $first, $last, $threads)
+	public function getRange($group, $first, $last, $threads, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->getRange).\n"));
+
 		$groups = new Groups();
 		$this->startGroup = microtime(true);
 		$site = new Sites();
@@ -615,22 +563,22 @@ class Backfill
 		else
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
-		// Let scan handle the connection.
-		$lastId = $binaries->scan(null, $groupArr, $last, $first, $type);
-		// Scan failed - retry once
-		if ($lastId === false)
-			$binaries->scan(null, $groupArr, $last, $first, $type);
+
+		$binaries->scan($nntp, $groupArr, $last, $first, $type);
 	}
 
-	function getFinal($group, $first, $type)
+	function getFinal($group, $first, $type, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(backfill->getFinal).\n"));
+
 		$db = $this->db;
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
 		if ($type == 'Backfill')
-			$postsdate = $this->postdate(null,$first,false,$group,true,'oldest');
+			$postsdate = $this->postdate($nntp,$first,false,$group,true,'oldest');
 		else
-			$postsdate = $this->postdate(null,$first,false,$group,true,'newest');
+			$postsdate = $this->postdate($nntp,$first,false,$group,true,'newest');
 
 		$postsdate = $db->from_unixtime($postsdate);
 		if ($type == 'Backfill')

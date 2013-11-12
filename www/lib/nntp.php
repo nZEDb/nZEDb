@@ -19,6 +19,9 @@ class Nntp extends Net_NNTP_Client
 		$this->header = 'Yellow';
 		// Cache the group name for article/body.
 		$this->articlegroup = '';
+		$this->s = new Sites();
+		$this->site = $this->s->get();
+		$this->nntpretries = (!empty($this->site->nntpretries)) ? $this->site->nntpretries : 0;
 	}
 
 
@@ -30,29 +33,24 @@ class Nntp extends Net_NNTP_Client
 		else
 			$this->doQuit();
 
-		$s = new Sites();
-		$site = $s->get();
-		$compressionstatus = $site->compressedheaders;
+
+		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
 		$enc = $ret = $ret2 = $connected = false;
 
 		if (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED == true)
 			$enc = 'ssl';
 
-		$retries = 10;
+		$retries = $this->nntpretries;
 		while($retries >= 1)
 		{
-			usleep(10000);
 			$authent = false;
 			$retries--;
 			if ($connected === false)
 				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 15);
 
 			if(PEAR::isError($ret))
-			{
-				if ($retries < 1)
-					echo $this->c->warning('Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
-			}
+					echo $this->c->error('Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			else
 				$connected = true;
 
@@ -64,10 +62,7 @@ class Nntp extends Net_NNTP_Client
 				{
 					$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
 					if(PEAR::isError($ret2))
-					{
-						if ($retries < 1)
-							echo $this->c->warning('Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')');
-					}
+						echo $this->c->error('Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')');
 					else
 						$authent = true;
 				}
@@ -79,41 +74,35 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			else
-				return false;
 		}
+		return false;
 	}
 
-	// Make an nntp connection (alternate server).
-	public function doConnect_A()
+	public function doConnect_A($compression=true)
 	{
-		if ($this->_isConnected())
+		if ($compression === true && $this->_isConnected())
 			return true;
+		else
+			$this->doQuit();
 
-		$s = new Sites();
-		$site = $s->get();
-		$compressionstatus = $site->compressedheaders;
+
+		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
-
 		$enc = $ret = $ret2 = $connected = false;
 
 		if (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A == true)
 			$enc = 'ssl';
 
-		$retries = 10;
+		$retries = $this->nntpretries;
 		while($retries >= 1)
 		{
-			usleep(10000);
 			$authent = false;
 			$retries--;
 			if ($connected === false)
 				$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 15);
 
 			if(PEAR::isError($ret))
-			{
-				if ($retries < 1)
-					echo $this->c->warning('Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
-			}
+				echo $this->c->error('Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			else
 				$connected = true;
 
@@ -125,10 +114,7 @@ class Nntp extends Net_NNTP_Client
 				{
 					$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
 					if(PEAR::isError($ret2))
-					{
-						if ($retries < 1)
-							echo $this->c->warning('Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')');
-					}
+							echo $this->c->error('Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')');
 					else
 						$authent = true;
 				}
@@ -136,13 +122,12 @@ class Nntp extends Net_NNTP_Client
 
 			if ($connected && $authent === true)
 			{
-				if($compressionstatus == '1')
+				if($compression === true && $compressionstatus == '1')
 					$this->enableCompression();
 				return true;
 			}
-			else
-				return false;
 		}
+		return false;
 	}
 
 	// Make a nntp connection (no XFeature GZip compression).
@@ -193,14 +178,6 @@ class Nntp extends Net_NNTP_Client
 	// Get a full article (body + header).
 	public function get_Article($groupname, $partMsgId)
 	{
-		if ($this->articlegroup != $groupname)
-		{
-			$this->articlegroup = $groupname;
-			$summary = $this->selectGroup($groupname);
-			if (PEAR::isError($summary))
-				return false;
-		}
-
 		$body = $this->getArticle('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body))
 			return false;
@@ -212,6 +189,14 @@ class Nntp extends Net_NNTP_Client
 	public function getArticles($groupname, $msgIds)
 	{
 		$body = '';
+		if ($this->articlegroup != $groupname)
+		{
+			$this->articlegroup = $groupname;
+			$summary = $this->selectGroup($groupname);
+			if (PEAR::isError($summary))
+				return false;
+		}
+
 		foreach ($msgIds as $m)
 		{
 			$message = $this->get_Article($groupname, $m);

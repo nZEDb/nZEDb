@@ -289,11 +289,11 @@
 </tr>
 
 <tr>
-    <td><label for="anidbkey">Anidb API key:</label></td>
-    <td>
-        <input id="anidbkey" class="long" name="anidbkey" type="text" value="{$fsite->anidbkey}" />
-        <div class="hint">The Anidb api key. Used for Anime lookups.</div>
-    </td>
+	<td><label for="anidbkey">Anidb API key:</label></td>
+	<td>
+		<input id="anidbkey" class="long" name="anidbkey" type="text" value="{$fsite->anidbkey}" />
+		<div class="hint">The Anidb api key. Used for Anime lookups.</div>
+	</td>
 </tr>
 
 </table>
@@ -611,6 +611,14 @@
 </tr>
 
 <tr>
+	<td><label for="nntpretries">NNTP Retry Attempts:</label></td>
+	<td>
+		<input class="short" id="nntpretries" name="nntpretries" type="text" value="{$fsite->nntpretries}" />
+		<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10)</div>
+	</td>
+</tr>
+
+<tr>
 	<td><label for="newgroupscanmethod">Where to start new groups:</label></td>
 	<td>
 		{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$fsite->newgroupscanmethod separator='<br />'}
@@ -723,11 +731,11 @@
 </tr>
 
 <tr>
-    <td><label for="safepartrepair">Part Repair for Safe Threaded Scripts:</label></td>
-    <td>
-        {html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$fsite->safepartrepair separator='<br />'}
-        <div class="hint">Whether to put unreceived parts into partrepair table when running binaries or backfill safe threaded scripts.</div>
-    </td>
+	<td><label for="safepartrepair">Part Repair for Safe Threaded Scripts:</label></td>
+	<td>
+		{html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$fsite->safepartrepair separator='<br />'}
+		<div class="hint">Whether to put unreceived parts into partrepair table when running binaries or backfill safe threaded scripts.</div>
+	</td>
 </tr>
 
 <tr>
@@ -865,11 +873,11 @@
 </tr>
 
 <tr>
-    <td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
-    <td>
-        <input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
-        <div class="hint">The maximum number of releases to check per run(threaded script only).</div>
-    </td>
+	<td><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
+	<td>
+		<input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$fsite->fixnamesperrun}" />
+		<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
+	</td>
 </tr>
 
 <tr>
@@ -959,11 +967,11 @@
 </tr>
 
 <tr>
-    <td><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
-    <td>
-        <input class="short" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
-        <div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
-    </td>
+	<td><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
+	<td>
+		<input class="short" id="fixnamethreads"  name="fixnamethreads" type="text" value="{$fsite->fixnamethreads}" />
+		<div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
+	</td>
 </tr>
 
 </table>

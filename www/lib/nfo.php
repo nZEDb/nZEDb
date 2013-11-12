@@ -112,8 +112,11 @@ class Nfo
 	}
 
 	// Adds an NFO found from predb, rar, zip etc...
-	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
+	public function addAlternateNfo($db, $nfo, $release, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		if ($release['id'] > 0)
 		{
 			if ($db->dbSystem() == 'mysql')
@@ -144,8 +147,11 @@ class Nfo
 	}
 
 	// Loop through releases, look for NFO's in the NZB file.
-	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='')
+	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$db = $this->db;
 		$nfocount = $ret = 0;
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
@@ -172,7 +178,6 @@ class Nfo
 		{
 			if ($this->echooutput && $releaseToWork == '')
 				echo $this->c->set256($this->primary).'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n".$this->c->rsetcolor();
-			$nntp = new Nntp();
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$movie = new Movie($this->echooutput);
@@ -180,7 +185,6 @@ class Nfo
 
 			foreach ($res as $arr)
 			{
-				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $db, $this);
 				if ($fetchedBinary !== false)
 				{
@@ -225,7 +229,6 @@ class Nfo
 					}
 				}
 			}
-			$nntp->doQuit();
 		}
 
 		// Remove nfo that we cant fetch after 5 attempts.
