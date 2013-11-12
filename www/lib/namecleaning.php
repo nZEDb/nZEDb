@@ -2512,6 +2512,21 @@ class nameCleaning
 			//<<<Thor>>><<<Chuck S04E20 Chuck gegen die Familie Volkoff German Dubbed DL 720p BluRay x264-idTV>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "idtv-chuck_s04e20_720p-sample.mkv" >< 03/61 (2,39 GB) >< 21,89 MB > yEnc
 			else if (preg_match('/^<<<(Thor(\d+)?)>>><<<(.+)>>>usenet-space-cowboys.+<<<Powered.+>< ("|#34;).+("|#34;).+> yEnc$/i', $subject, $match))
 				return $match[3];
+			//[47404]-[#a.b.teevee@EFNet]-[Futurama.5x01.Crimes_Of_The_Hot.DVDRip_XviD-FoV]-[01/36] - "futurama.5x01.crimes_of_the_hot.dvdrip_xvid-fov.nfo" yEnc
+			else if (preg_match('/^\[\d+\][ -]\[#.+\][ -]\[(.+)\][ -]\[\d+\/\d+\][ -]{0,3}("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//(Public) (FULL) (a.b.teevee@EFNet) [04/13] (????) [00/27] - "DC.Guy.in.a.Ceelo.Green.Hood..S01E07.720p.HDTV.X264-DIMENSION.nzb" yEnc
+			else if (preg_match('/\(Public\).*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//>ghost-of-usenet.org<< Suburgatory.S01E13.Sex.und.die.Vorstadt.GERMAN.DUBBED.DL.720p.WebHD.x264-TVP >>www.SSL-News.info> -  "tvp-suburgatory-s01e13-720p.nfo" yEnc
+			else if (preg_match('/^>ghost-of-usenet\.org<< ?(.+) ?>>www.+>[ _-]{0,3}("|#34;)?.+("|#34;)? ?yEnc$/i', $subject, $match))
+				return $match[1];
+			//Touch.S02E09.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF NoAds [01/30] - "Touch.S02E09.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF.nfo" yEnc
+			else if (preg_match('/^(.+?) NoAds \[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			//<<<Thor1602>>><<<NCIS.Los.Angeles.S03E02.Die.Cyberattacke.GERMAN.DUBBED.HDTVRiP.XviD-SOF>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "sof-ncis.los.angeles.s03e02.die.cyberattacke.(2010).hdtvdubbed.nfo" >< 02/28 (419,00 MB) >< 4,18
+			else if (preg_match('/^<<<(Thor(\d+)?)>>><<<(.+)>>>.+<<<.+>< ("|#34;).+("|#34;).+/', $subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
