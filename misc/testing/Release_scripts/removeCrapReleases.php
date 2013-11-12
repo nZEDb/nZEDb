@@ -220,7 +220,8 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$regexes = $db->prepare('SELECT regex FROM binaryblacklist WHERE status = 1');
 		$regexes->execute();
 		$delcount = 0;
-		if(sizeof($regexes > 0))
+        $count = sizeof($regexes);
+		if ($count > 0)
 		{
 			foreach ($regexes as $regex)
 			{
