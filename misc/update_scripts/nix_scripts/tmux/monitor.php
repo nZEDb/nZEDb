@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4235";
+$version="0.3r4236";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -437,7 +437,7 @@ while($i > 0)
 			{
 				foreach($tables as $row)
 				{
-					$tbl = $row['tables_in_'.DB_NAME];
+					$tbl = $row[0];
 					if (preg_match('/\d+_collections/',$tbl))
 					{
 						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool());
