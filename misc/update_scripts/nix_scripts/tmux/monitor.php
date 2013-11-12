@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4232";
+$version="0.3r4235";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -433,32 +433,35 @@ while($i > 0)
 			$tables = $db->query($sql);
 			$collections_table = $binaries_table = $parts_table = 0;
 			$age = TIME();
-			foreach($tables as $row)
+			if (count($tables) > 0)
 			{
-				$tbl = $row['tables_in_'.DB_NAME];
-				if (preg_match('/\d+_collections/',$tbl))
+				foreach($tables as $row)
 				{
-					$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool());
-					$collections_table += $run[0]['count'];
-					if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
-						$age = $run[0]['dateadded'];
+					$tbl = $row['tables_in_'.DB_NAME];
+					if (preg_match('/\d+_collections/',$tbl))
+					{
+						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool());
+						$collections_table += $run[0]['count'];
+						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
+							$age = $run[0]['dateadded'];
+					}
+					else if (preg_match('/\d+_binaries/',$tbl))
+					{
+						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
+						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+							$binaries_table += $run[0]['count'];
+					}
+					else if (preg_match('/\d+_parts/',$tbl))
+					{
+						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
+						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+							$parts_table += $run[0]['count'];
+					}
 				}
-				else if (preg_match('/\d+_binaries/',$tbl))
-				{
-					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
-					if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-						$binaries_table += $run[0]['count'];
-				}
-				else if (preg_match('/\d+_parts/',$tbl))
-				{
-					$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool());
-					if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-						$parts_table += $run[0]['count'];
-				}
+				$oldestcollection = $age;
+				$tpg_count_time = (TIME() - $time07);
+				$tpg_count_1_time = (TIME() - $time01);
 			}
-			$oldestcollection = $age;
-			$tpg_count_time = (TIME() - $time07);
-			$tpg_count_1_time = (TIME() - $time01);
 		}
 		$time1 = TIME();
 	}
