@@ -9,10 +9,10 @@ LASTOPTIMIZE1=`date +%s`
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 
 #delete stale tmpunrar folders
-export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
+export count=`find $NZEDB_ROOT/nzbfiles/tmpunrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_ROOT/nzbfiles/tmpunrar/*
 fi
 
 while :
@@ -21,6 +21,7 @@ while :
 CURRTIME=`date +%s`
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
+exit
 $PHP ${NZEDB_PATH}/update_releases.php 1 true
 
 cd ${TEST_PATH}
