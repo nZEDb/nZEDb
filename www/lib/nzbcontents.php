@@ -61,8 +61,11 @@ Class NZBcontents
 	}
 
 	// Attempts to get the releasename from a par2 file
-	public function checkPAR2($guid, $relID, $groupID, $db, $pp)
+	public function checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
@@ -70,7 +73,7 @@ Class NZBcontents
 			{
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject))
 				{
-					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, null) === true)
+					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 					{
 						$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
 						return true;

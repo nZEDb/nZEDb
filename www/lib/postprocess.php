@@ -75,6 +75,9 @@ class PostProcess
 
 	public function processAll($nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAll).\n"));
+
 		$this->processPredb($nntp);
 		$this->processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp);
 		$this->processNfos($releaseToWork='', $nntp);
@@ -141,7 +144,7 @@ class PostProcess
 	public function processNfos($releaseToWork='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(postprocess->processNfos).\n"));
 
 		if ($this->site->lookupnfo == 1)
 		{
@@ -154,7 +157,7 @@ class PostProcess
 	public function processAdditionalThreaded($releaseToWork='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditionalThreaded).\n"));
 
 		$this->processAdditional($releaseToWork, $id='', $gui=false, $groupID='', $nntp);
 	}
@@ -162,6 +165,9 @@ class PostProcess
 	// Fetch titles from predb sites.
 	public function processPredb($nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
+
 		$predb = new Predb($this->echooutput);
 		$titles = $predb->combinePre($nntp);
 		if ($titles > 0)
@@ -182,7 +188,7 @@ class PostProcess
 	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
 
 		if ($messageID == '')
 			return false;
@@ -318,7 +324,7 @@ class PostProcess
 	public function processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditional).\n"));
 
 		$like = 'ILIKE';
 		if ($this->db->dbSystem() == 'mysql')
@@ -964,6 +970,9 @@ class PostProcess
 
 	function addfile($v, $release, $rar=false, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->addfile).\n"));
+
 		if (!isset($v['error']) && isset($v['source']))
 		{
 			if ($rar !== false && preg_match('/\.zip$/', $v['source']))
@@ -1018,8 +1027,11 @@ class PostProcess
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release)
+	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseZips).\n"));
+
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
 		if ($open)
@@ -1177,6 +1189,9 @@ class PostProcess
 	// Open the rar, see if it has a password, attempt to get a file.
 	function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
+
 		$retval = array();
 		$rar = new ArchiveInfo();
 		$rf = new ReleaseFiles();
@@ -1243,7 +1258,7 @@ class PostProcess
 						if (preg_match('/\.zip$/i', $file['name']))
 						{
 							$zipdata = $rar->getFileData($file['name'], $file['source']);
-							$data = $this->processReleaseZips($zipdata, false, true , $release);
+							$data = $this->processReleaseZips($zipdata, false, true , $release, $nntp);
 
 							if ($data != false)
 							{
@@ -1314,7 +1329,7 @@ class PostProcess
 		else
 		{
 			// Not a rar file, try it as a ZIP file.
-			$files = $this->processReleaseZips($fetchedBinary, false, false , $release);
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $release, $nntp);
 			if ($files !== false)
 			{
 				$this->name = $files[0]['name'];

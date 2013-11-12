@@ -65,16 +65,6 @@ class Binaries
 			$alltime = microtime(true);
 			echo $this->c->set256($this->header)."\nUpdating: ".sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No')."\n".$this->c->rsetcolor();
 
-			if (!isset($nntp))
-			{
-				$nntp = new Nntp();
-				if ($nntp->doConnect() === false)
-				{
-					echo $this->c->error("Unable to connect to usenet.\n");
-					return;
-				}
-			}
-
 			foreach($res as $groupArr)
 			{
 				$this->message = array();

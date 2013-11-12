@@ -22,6 +22,20 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 	$other = ($argv[3] == "other") ? 1 : 2;
 	$setStatus = ($argv[4] == "yes") ? 1 : 2;
 
+	if ($argv[1] == 7 || $argv[1] == 8)
+	{
+		require_once(FS_ROOT.'/../../../www/lib/site.php');
+		require_once(FS_ROOT.'/../../../www/lib/nntp.php');
+		$s = new Sites();
+		$site = $s->get();
+		$nntp = new Nntp();
+		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+		{
+			echo $c->error("Unable to connect to usenet.\n");
+			return;
+		}
+	}
+
 	switch ($argv[1])
 	{
 		case 1:
@@ -43,10 +57,10 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 			$namefixer->fixNamesWithFiles(2,$update,$other,$setStatus);
 			break;
 		case 7:
-			$namefixer->fixNamesWithPar2(1,$update,$other,$setStatus);
+			$namefixer->fixNamesWithPar2(1,$update,$other,$setStatus, $nntp);
 			break;
 		case 8:
-			$namefixer->fixNamesWithPar2(2,$update,$other,$setStatus);
+			$namefixer->fixNamesWithPar2(2,$update,$other,$setStatus, $nntp);
 			break;
 		default :
 			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
