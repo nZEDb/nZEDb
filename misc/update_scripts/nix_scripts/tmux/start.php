@@ -116,7 +116,7 @@ if ($tablepergroup == 1)
 	$ran = 0;
 	foreach($tables as $row)
 	{
-		$tbl = $row['tables_in_'.DB_NAME];
+		$tbl = $row[0];
 		if (preg_match('/\d+_collections/',$tbl))
 		{
 			$run = $db->prepare('UPDATE '.$tbl.' SET dateadded = now()');
