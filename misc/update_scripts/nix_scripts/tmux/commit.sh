@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 nano Changelog
 cd ${NZEDB_ROOT}
 commit=`git log | grep "^commit" | wc -l`

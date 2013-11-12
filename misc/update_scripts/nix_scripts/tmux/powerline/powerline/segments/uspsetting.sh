@@ -1,6 +1,6 @@
 # This script will check the number of connections to your USP, and display it on the powerline bar in tmux.
 
-export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+export NZEDB_ROOT="$(php ../../../../../../../nZEDbBase.php)"
 
 
 run_segment() {
