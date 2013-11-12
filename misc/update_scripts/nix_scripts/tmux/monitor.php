@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4102";
+$version="0.3r4232";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -310,8 +310,8 @@ $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
 $collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
 $grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
-$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = 0;
-$tpg_count_1_time = 0;
+$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
+$init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
 $show_query = "FALSE";
 
 $last_history = "";
@@ -716,10 +716,8 @@ while($i > 0)
 	if ($grabnzbs != 0)
 		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 	printf($mask1, "Parts in Repair:", number_format($partrepair_table));
-	if ($post == "1" || $post == "3")
-	{
+	if (($post == "1" || $post == "3") && $seq != 2)
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
-	}
 
 	printf("\033[1;33m\n");
 	printf($mask, "Collections", "Binaries", "Parts");
