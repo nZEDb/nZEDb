@@ -1,7 +1,8 @@
 #!/bin/sh
 
-export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
-export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
+export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
