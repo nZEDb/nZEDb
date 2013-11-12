@@ -6,8 +6,7 @@ then
 else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
-#echo $NZEDB_ROOT
-#exit
+
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds

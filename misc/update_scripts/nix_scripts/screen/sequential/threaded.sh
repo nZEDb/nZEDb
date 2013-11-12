@@ -3,7 +3,13 @@
 #	This is a simple sequential script the uses many of the threaded scripts
 #	Just set the variables and uncomment what you would like to run.
 
-export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+if [ -e "nZEDbBase.php" ]
+then
+	export NZEDB_ROOT="$(pwd)"
+else
+	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+fi
+
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
