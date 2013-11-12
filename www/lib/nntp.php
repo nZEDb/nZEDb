@@ -47,7 +47,7 @@ class Nntp extends Net_NNTP_Client
 			$authent = false;
 			$retries--;
 			if ($connected === false)
-				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 15);
+				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
 
 			if(PEAR::isError($ret))
 					echo $this->c->error('Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
@@ -74,6 +74,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
+			usleep(10000);
 		}
 		return false;
 	}
@@ -99,7 +100,7 @@ class Nntp extends Net_NNTP_Client
 			$authent = false;
 			$retries--;
 			if ($connected === false)
-				$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 15);
+				$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 5);
 
 			if(PEAR::isError($ret))
 				echo $this->c->error('Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
@@ -126,6 +127,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
+			usleep(10000);
 		}
 		return false;
 	}
@@ -258,6 +260,7 @@ class Nntp extends Net_NNTP_Client
 			$completed = false;
 			// Get data from the stream.
 			$buffer = fgets($this->_socket);
+			
 			// Get byte count.
 			$bytesreceived = strlen($buffer);
 

@@ -11,6 +11,7 @@ $site = $s->get();
 $nntp = new Nntp();
 if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 {
+	$c = new ColorCLI;
 	echo $c->error("Unable to connect to usenet.\n");
 	return;
 }

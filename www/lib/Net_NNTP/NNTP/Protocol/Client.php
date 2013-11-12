@@ -81,7 +81,6 @@ require_once 'PEAR.php';
 //require_once 'Net/NNTP/Error.php';
 require_once 'Responsecode.php';
 
-
 // {{{ constants
 
 /**
@@ -310,6 +309,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 		// Retrieve a line (terminated by "\r\n") from the server.
 		// RFC says max is 510, but IETF says "be liberal in what you accept"...
 		$response = @fgets($this->_socket, 4096);
+		
 		if ($response === false) {
 			return $this->throwError('Failed to read from socket...!');
 		}
@@ -564,8 +564,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	 *               otherwise false) or (object) pear_error on failure
 	 * @access protected
 	 */
-	function connect($host = null, $encryption = null,
-					$port = null, $timeout = 15) {
+	function connect($host = null, $encryption = null, $port = null, $timeout = 15) {
 		//
 		if ($this->_isConnected() ) {
 			return $this->throwError('Already connected, disconnect first!', null);
@@ -608,8 +607,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 		}
 
 		// Open Connection
-		$R = @stream_socket_client($transport . '://' . $host . ':' .
-									$port, $errno, $errstr, $timeout);
+		$R = @stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
 		if ($R === false) {
 			if ($this->_logger) {
 				$this->_logger->notice
@@ -619,6 +617,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 		}
 
 		$this->_socket = $R;
+		stream_set_timeout($this->_socket, 120);
 
 		//
 		if ($this->_logger) {

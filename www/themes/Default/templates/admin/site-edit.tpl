@@ -602,23 +602,6 @@
 </tr>
 
 <tr>
-	<td><label for="compressedheaders">Use Compressed Headers:</label></td>
-	<td>
-		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
-		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.<br />
-		If you notice that update binaries or backfill seems to hang, look in htop and see if a group is being processed. If so, first try disabling compressed headers and let run until it processes the group at least once, then you can re-enable compressed headers.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="nntpretries">NNTP Retry Attempts:</label></td>
-	<td>
-		<input class="short" id="nntpretries" name="nntpretries" type="text" value="{$fsite->nntpretries}" />
-		<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10)</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="newgroupscanmethod">Where to start new groups:</label></td>
 	<td>
 		{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$fsite->newgroupscanmethod separator='<br />'}
@@ -755,14 +738,6 @@
 </tr>
 
 <tr>
-	<td><label for="grabnzbs">Grab NZBs:</label></td>
-	<td>
-		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
-	</td>
-</tr>
-
-<tr>
 	<td><label for="replacenzbs">Replace Duplicate NZBs:</label></td>
 	<td>
 		{html_radios id="replacenzbs" name='replacenzbs' values=$yesno_ids output=$yesno_names selected=$fsite->replacenzbs separator='<br />'}
@@ -775,14 +750,6 @@
 	<td>
 		{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}
 		<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run reset_truncate.php.<br />You may need to increase 'open_files_limit' in my.cnf<br />This requires that you also run releases_threaded.py.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="nntpproxy">Use NNTP Proxy:</label></td>
-	<td>
-		{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$fsite->nntpproxy separator='<br />'}
-		<div class="hint">Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site preferences (the proxy uses compressed headers by default and passes on decompressed data).</div>
 	</td>
 </tr>
 
@@ -892,6 +859,55 @@
 </fieldset>
 
 <fieldset>
+<legend>Connection Settings</legend>
+<table class="input">
+
+<tr>
+	<td><label for="compressedheaders">Use Compressed Headers:</label></td>
+	<td>
+		{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$fsite->compressedheaders separator='<br />'}
+		<div class="hint">Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.<br />
+		If you notice that update binaries or backfill seems to hang, look in htop and see if a group is being processed. If so, first try disabling compressed headers and let run until it processes the group at least once, then you can re-enable compressed headers.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nntpretries">NNTP Retry Attempts:</label></td>
+	<td>
+		<input class="short" id="nntpretries" name="nntpretries" type="text" value="{$fsite->nntpretries}" />
+		<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10)</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="nntpproxy">Use NNTP Proxy:</label></td>
+	<td>
+		{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$fsite->nntpproxy separator='<br />'}
+		<div class="hint">Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site preferences (the proxy uses compressed headers by default and passes on decompressed data).</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="alternate_nntp">Alternate NNTP Provider:</label></td>
+	<td>
+		{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$fsite->alternate_nntp separator='<br />'}
+		<div class="hint">This sets Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="grabnzbs">Grab NZBs:</label></td>
+	<td>
+		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
+	</td>
+</tr>
+
+</table>
+</fieldset>
+
+
+<fieldset>
 <legend>Advanced - Threaded Settings</legend>
 <table class="input">
 <tr>
@@ -939,14 +955,6 @@
 	<td>
 		<input class="short" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
 		<div class="hint">The number of threads for additional postprocessing. This includes deep rar inspection, preview and sample creation and nfo processing.</div>
-	</td>
-</tr>
-
-<tr>
-	<td><label for="alternate_nntp">Alternate NNTP Provider:</label></td>
-	<td>
-		{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$fsite->alternate_nntp separator='<br />'}
-		<div class="hint">This set Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.</div>
 	</td>
 </tr>
 

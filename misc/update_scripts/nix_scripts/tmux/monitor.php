@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4101";
+$version="0.3r4231";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -716,10 +716,8 @@ while($i > 0)
 	if ($grabnzbs != 0)
 		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
 	printf($mask1, "Parts in Repair:", number_format($partrepair_table));
-	if ($post == "1" || $post == "3")
-	{
+	if (($post == "1" || $post == "3") && $seq != 2)
 		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
-	}
 
 	printf("\033[1;33m\n");
 	printf($mask, "Collections", "Binaries", "Parts");
