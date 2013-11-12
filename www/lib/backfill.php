@@ -321,10 +321,13 @@ class Backfill
 	}
 
 	// Returns a single timestamp from a local article number. If the article is missing, you can pass $old as true to return false (then use the last known date).
-	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type='newest')
+	public function postdate($nntp, $post, $debug=true, $group, $old=false, $type)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Not connected to usenet(backfill->postdate).\n"));
+		{
+			echo $this->c->error("Not connected to usenet(backfill->postdate).\n");
+			return false;
+		}
 
 		$db = $this->db;
 		$keeppost = $post;
@@ -334,89 +337,87 @@ class Backfill
 		do
 		{
 			$msgs = $nntp->getOverview($post."-".$post, true, false);
-			if (PEAR::isError($msgs))
-				return false;
-
-			// Set table names
-			$groups = new Groups();
-			$groupID = $groups->getIDByName($group);
-			if ($this->tablepergroup == 1)
-			{
-				if ($db->newtables($groupID) === false)
-					exit ("There is a problem creating new parts/files tables for this group.\n");
-				$groupa = array();
-				$groupa['cname'] = $groupID.'_collections';
-				$groupa['bname'] = $groupID.'_binaries';
-				$groupa['pname'] = $groupID.'_parts';
-			}
-			else
-			{
-				$groupa = array();
-				$groupa['cname'] = 'collections';
-				$groupa['bname'] = 'binaries';
-				$groupa['pname'] = 'parts';
-			}
-
-			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts == 0)
-			{
-				$old_post = $post;
-				if ($type == 'newest')
-				{
-					$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
-					if (isset($res['number']) && is_numeric($res['number']))
-					{
-						$post = $res['number'];
-						echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
-					}
-				}
-				else
-				{
-					$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
-					if (isset($res['number']) && is_numeric($res['number']))
-					{
-						$post = $res['number'];
-						echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
-					}
-				}
-				$success = false;
-			}
-			if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts != 0)
-			{
-				if ($type == 'newest')
-				{
-					$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date DESC LIMIT 1');
-					if (isset($res['date']))
-					{
-						$date = strtotime($res['date']);
-						echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
-						if (strlen($date) > 0)
-							$success = true;
-					}
-				}
-				else
-				{
-					$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date ASC LIMIT 1');
-					if (isset($res['date']))
-					{
-						$date = strtotime($res['date']);
-						echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
-						if (strlen($date) > 0)
-							$success = true;
-					}
-				}
-			}
-
-			if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '' && $success === false)
-			{
-				$date = $msgs[0]['Date'];
-				if (strlen($date) > 0)
-					$success = true;
-			}
-
-			if ($debug && $attempts > 0)
-				echo $this->c->debug('Retried '.$attempts." time(s).\n");
-
 			$attempts++;
+			if (!PEAR::isError($msgs))
+			{
+				// Set table names
+				$groups = new Groups();
+				$groupID = $groups->getIDByName($group);
+				if ($this->tablepergroup == 1)
+				{
+					if ($db->newtables($groupID) === false)
+						echo $this->c->error("There is a problem creating new parts/files tables for this group.\n");
+					$groupa = array();
+					$groupa['cname'] = $groupID.'_collections';
+					$groupa['bname'] = $groupID.'_binaries';
+					$groupa['pname'] = $groupID.'_parts';
+				}
+				else
+				{
+					$groupa = array();
+					$groupa['cname'] = 'collections';
+					$groupa['bname'] = 'binaries';
+					$groupa['pname'] = 'parts';
+				}
+				if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts == 0)
+				{
+					$old_post = $post;
+					if ($type == 'newest')
+					{
+						$res = $db->queryOneRow('SELECT p.number AS number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number DESC LIMIT 1');
+						if (isset($res['number']) && is_numeric($res['number']))
+						{
+							$post = $res['number'];
+							echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
+						}
+					}
+					else
+					{
+						$res = $db->queryOneRow('SELECT p.number FROM '.$groupa['cname'].' c, '.$groupa['bname'].' b, '.$groupa['pname'].' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = '.$groupID.' ORDER BY p.number ASC LIMIT 1');
+						if (isset($res['number']) && is_numeric($res['number']))
+						{
+							$post = $res['number'];
+							echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
+						}
+					}
+					$success = false;
+				}
+				if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts != 0)
+				{
+					if ($type == 'newest')
+					{
+						$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date DESC LIMIT 1');
+						if (isset($res['date']))
+						{
+							$date = strtotime($res['date']);
+							echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
+							if (strlen($date) > 0)
+								$success = true;
+						}
+					}
+					else
+					{
+						$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date ASC LIMIT 1');
+						if (isset($res['date']))
+						{
+							$date = strtotime($res['date']);
+							echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
+							if (strlen($date) > 0)
+								$success = true;
+						}
+					}
+				}
+
+				if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '' && $success === false)
+				{
+					$date = $msgs[0]['Date'];
+					if (strlen($date) > 0)
+						$success = true;
+				}
+
+				if ($debug && $attempts > 0)
+					echo $this->c->debug('Retried '.$attempts." time(s).\n");
+			}
 		} while ($attempts <= 20 && $success === false);
 
 		if ($success === false && $old === true)
@@ -575,12 +576,22 @@ class Backfill
 		$db = $this->db;
 		$groups = new Groups();
 		$groupArr = $groups->getByName($group);
-		if ($type == 'Backfill')
-			$postsdate = $this->postdate($nntp,$first,false,$group,true,'oldest');
-		else
-			$postsdate = $this->postdate($nntp,$first,false,$group,true,'newest');
 
+		// Select group, here, only once
+		$data = $nntp->selectGroup($groupArr['name']);
+		if(PEAR::isError($data))
+		{
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false)
+				return;
+		}
+
+		if ($type == 'Backfill')
+			$postsdate = $this->postdate($nntp, $first, false, $group, true, 'oldest');
+		else
+			$postsdate = $this->postdate($nntp, $first, false, $group, true, 'newest');
 		$postsdate = $db->from_unixtime($postsdate);
+		
 		if ($type == 'Backfill')
 			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 		else
