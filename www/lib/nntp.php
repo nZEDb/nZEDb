@@ -74,7 +74,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(10000);
+			usleep(100000);
 		}
 		return false;
 	}
@@ -127,7 +127,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(10000);
+			usleep(100000);
 		}
 		return false;
 	}
