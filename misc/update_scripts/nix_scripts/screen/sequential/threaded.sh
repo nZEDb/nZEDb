@@ -3,12 +3,19 @@
 #	This is a simple sequential script the uses many of the threaded scripts
 #	Just set the variables and uncomment what you would like to run.
 
-export START_PATH="/var/www/nZEDb"
-export NZEDB_PATH="/var/www/nZEDb/misc/update_scripts"
-export TEST_PATH="/var/www/nZEDb/misc/testing/Release_scripts"
-export DEV_PATH="/var/www/nZEDb/misc/testing/Dev_testing"
-export DB_PATH="/var/www/nZEDb/misc/testing/DB_scripts"
-export THREADED_PATH="/var/www/nZEDb/misc/update_scripts/python_scripts"
+if [ -e "nZEDbBase.php" ]
+then
+	export NZEDB_ROOT="$(pwd)"
+else
+	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+fi
+
+export START_PATH="${NZEDB_ROOT}"
+export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
+export DEV_PATH="${NZEDB_ROOT}/misc/testing/Dev_testing"
+export DB_PATH="${NZEDB_ROOT}/misc/testing/DB_scripts"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update_scripts/python_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
