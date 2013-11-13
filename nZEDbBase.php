@@ -1,1 +1,1 @@
-<?php exit(dirname(__FILE__) . DIRECTORY_SEPARATOR); ?>
+<?php exit(dirname(__FILE__)); ?>

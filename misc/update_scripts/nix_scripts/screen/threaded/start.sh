@@ -1,6 +1,12 @@
 #!/bin/sh
 
-export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+if [ -e "nZEDbBase.php" ]
+then
+	export NZEDB_ROOT="$(pwd)"
+else
+	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+fi
+
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
 export HELP_PATH="${NZEDB_ROOT}/misc/update_scripts/nix_scripts/screen/threaded"
 export THREAD_PATH="${NZEDB_ROOT}/misc/update_scripts/python_scripts"
