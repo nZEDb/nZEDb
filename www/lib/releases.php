@@ -963,8 +963,8 @@ class Releases
 		$db = $this->db;
 		$cat = new Category();
 		$relcount = 0;
-		$resrel = $db->query('SELECT id, '.$type.', groupid FROM releases '.$where);
-		$total = count($resrel);
+		$resrel = $db->queryDirect('SELECT id, '.$type.', groupid FROM releases '.$where);
+		$total = $resrel->rowCount();
 		if (count($resrel) > 0)
 		{
 			foreach ($resrel as $rowrel)
