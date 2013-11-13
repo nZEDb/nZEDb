@@ -949,15 +949,18 @@ while($i > 0)
 				{
 					$fcmax = count($fix_crap) - 1;
 					if (is_null($fcnum))
-						$fcnum = -1;
+						$fcnum = 0;
+                    //Check to see if the pane is dead, if so resawn it.
 					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
-						$fcnum++;
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-						php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                    {
+					    shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+						    echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
+						    php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                        $fcnum++;
+                    }
 					if ($fcnum == $fcmax)
 					{
-						$fcnum = -1;
+						$fcnum = 0;
 						$fcfirstrun = false;
 					}
 				}
@@ -974,14 +977,17 @@ while($i > 0)
 				{
 					$fcmax = count($fix_crap) - 1;
 					if (is_null($fcnum))
-						$fcnum = -1;
+						$fcnum = 0;
+                    //Check to see if the pane is dead, if so respawn it.
 					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
-						$fcnum++;
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                    {
+    					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+	    					echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
+		    				$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+                        $fcnum++;
+                    }
 					if ($fcnum == $fcmax)
-						$fcnum = -1;
+						$fcnum = 0;
 
 				}
 			}
