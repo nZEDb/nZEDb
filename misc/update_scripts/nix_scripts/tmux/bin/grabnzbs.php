@@ -27,5 +27,5 @@ if (isset($argv[1]))
 	$import->GrabNZBs($argv[1], $nntp);
 else
 	$import->GrabNZBs($hash='', $nntp);
-if ($site->get()->nntpproxy === false)
+if ($site->nntpproxy === false)
 	$nntp->doQuit();
