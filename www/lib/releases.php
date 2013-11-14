@@ -1516,9 +1516,9 @@ class Releases
 
 		$timing = $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage5);
 		if ($this->echooutput && $nzbcount > 0)
-			echo $this->c->set256($this->primary)."\n".number_format($nzbcount).' NZBs created in '. $timing.'.';
+			echo $this->c->set256($this->primary)."\n".number_format($nzbcount).' NZBs created in '. $timing.".\n";
 		elseif ($this->echooutput)
-			echo $this->c->set256($this->primary).number_format($nzbcount).' NZBs created in '. $timing.'.';
+			echo $this->c->set256($this->primary).number_format($nzbcount).' NZBs created in '. $timing.".\n";
 		return $nzbcount;
 	}
 
@@ -1535,7 +1535,7 @@ class Releases
 			$n = "\n";
 
 			if ($this->echooutput)
-				echo $this->c->set256($this->header)."\nStage 5b -> Request ID lookup.";
+				echo $this->c->set256($this->header)."\n\nStage 5b -> Request ID lookup.";
 
 			// Look for records that potentially have requestID titles.
 			if ($db->dbSystem() == 'mysql')
