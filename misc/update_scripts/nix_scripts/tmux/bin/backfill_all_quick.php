@@ -3,8 +3,10 @@ require_once(dirname(__FILE__).'/../../../config.php');
 require_once(WWW_DIR.'lib/backfill.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $c = new ColorCLI;
+$site = new Sites();
 if (!isset($argv[1]))
 	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
 $nntp = new Nntp();
@@ -17,4 +19,5 @@ if ($nntp->doConnect() === false)
 $pieces = explode(' ', $argv[1]);
 $backfill = new Backfill();
 $backfill->backfillPostAllGroups($pieces[0], 10000, 'normal', $nntp);
-$nntp->doQuit();
+if ($site->get()->nntpproxy === false)
+	$nntp->doQuit();

@@ -4,9 +4,11 @@ require_once(WWW_DIR.'lib/binaries.php');
 require_once(WWW_DIR.'lib/groups.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $binaries = new Binaries();
 $c = new ColorCLI;
+$site = new Sites();
 
 // Create the connection here and pass
 $nntp = new Nntp();
@@ -28,4 +30,5 @@ if (isset($argv[1]))
 }
 else
 	$binaries->updateAllGroups($nntp);
-$nntp->doQuit();
+if ($site->get()->nntpproxy === false)
+	$nntp->doQuit();

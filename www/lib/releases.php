@@ -1676,7 +1676,7 @@ class Releases
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header).$n."Stage 7a -> Delete finished collections.".$n;
-		$stage7 = TIME();;
+		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql')

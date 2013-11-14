@@ -27,7 +27,8 @@ if (isset($pieces[6]))
 		return;
 	}
 	$postprocess->processAdditionalThreaded($argv[1], $nntp);
-	$nntp->doQuit();
+	if ($site->nntpproxy === false)
+		$nntp->doQuit();
 }
 elseif (isset($pieces[3]))
 {
@@ -38,7 +39,8 @@ elseif (isset($pieces[3]))
 		return;
 	}
 	$postprocess->processNfos($argv[1], $nntp);
-	$nntp->doQuit();
+	if ($site->get()->nntpproxy === false)
+		$nntp->doQuit();
 }
 elseif (isset($pieces[2]))
 {

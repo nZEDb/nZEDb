@@ -4,8 +4,10 @@ require_once(WWW_DIR.'lib/backfill.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $c = new ColorCLI;
+$site = new Sites();
 if (!isset($argv[1]))
 	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
 else if (isset($argv[1]))
@@ -30,5 +32,6 @@ else if (isset($argv[1]))
 		$backfill = new Backfill();
 		$backfill->backfillPostAllGroups($pieces[0], $count, $type='', $nntp);
 	}
-	$nntp->doQuit();
+	if ($site->get()->nntpproxy === false)
+		$nntp->doQuit();
 }

@@ -3,8 +3,10 @@ require_once(dirname(__FILE__).'/../../../config.php');
 require_once(WWW_DIR.'lib/grabnzbs.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $c = new ColorCLI;
+$site = new Sites();
 if (!isset($argv[1]))
 	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
 
@@ -25,4 +27,5 @@ if (isset($argv[1]))
 	$import->GrabNZBs($argv[1], $nntp);
 else
 	$import->GrabNZBs($hash='', $nntp);
-$nntp->doQuit();
+if ($site->get()->nntpproxy === false)
+	$nntp->doQuit();
