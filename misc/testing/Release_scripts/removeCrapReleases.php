@@ -313,7 +313,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		if($PURLDeleted > 0)
 			echo "PURL         : ".$PURLDeleted."\n";
 		if($PassDeleted > 0)
-			echo "Passwordeded : ".$PassDeleted."\n";
+			echo "Passworded : ".$PassDeleted."\n";
 		if($sizeDeleted > 0)
 			echo "Size         : ".$sizeDeleted."\n";
 		if($sampleDeleted > 0)
