@@ -1,6 +1,6 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/content.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'content.php';
 
 $contents = new Contents();
 

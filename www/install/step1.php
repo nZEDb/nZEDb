@@ -1,6 +1,6 @@
 <?php
-require_once('../lib/installpage.php');
-require_once('../lib/install.php');
+require_once '../lib/installpage.php';
+require_once '../lib/install.php';
 
 $page = new Installpage();
 $page->title = "Preflight Checklist";
@@ -106,7 +106,7 @@ if ($cfg->lockCheck === false)
 	}
 }
 
-$cfg->pearCheck = @include('System.php');
+$cfg->pearCheck = @include 'System.php';
 $cfg->pearCheck = class_exists('System');
 if (!$cfg->pearCheck)
 	$cfg->error = true;

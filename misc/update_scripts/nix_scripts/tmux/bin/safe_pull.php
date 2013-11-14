@@ -1,11 +1,11 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/backfill.php');
-require_once(WWW_DIR.'lib/binaries.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
-require_once(WWW_DIR.'lib/site.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI;
 $site = new Sites();

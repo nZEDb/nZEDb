@@ -9,11 +9,11 @@ if (!isset($_GET["type"]) || !isset($_GET["id"]) || !ctype_digit($_GET["id"]))
 // User requested a tvrage image.
 if ($_GET["type"] == "tvrage")
 {
-	require_once(WWW_DIR."/lib/framework/db.php");
+	require_once nZEDb_LIB . 'framework/db.php';
 	$db = new DB;
 	if ($db->dbSystem() == 'mysql')
 	{
-		require_once(WWW_DIR."/lib/tvrage.php");
+		require_once nZEDb_LIB . 'tvrage.php';
 		$rage = new TvRage;
 		$r = $rage->getByID($_GET["id"]);
 		if (!$r)

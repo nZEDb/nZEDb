@@ -1,9 +1,9 @@
 <?php
-require_once(SMARTY_DIR.'Smarty.class.php');
-require_once(WWW_DIR.'lib/users.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/sabnzbd.php');
-require_once(WWW_DIR.'lib/framework/db.php');
+require_once SMARTY_DIR . 'Smarty.class.php';
+require_once nZEDb_LIB . 'users.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'sabnzbd.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 class BasePage
 {

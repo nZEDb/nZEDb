@@ -1,11 +1,11 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/binaries.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))

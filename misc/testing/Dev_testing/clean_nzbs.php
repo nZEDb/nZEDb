@@ -3,12 +3,11 @@
 
 if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 {
-	define('FS_ROOT', realpath(dirname(__FILE__)));
-	require_once(FS_ROOT."/../../../www/config.php");
-	require_once(WWW_DIR."lib/site.php");
-	require_once(WWW_DIR."lib/nzb.php");
-	require_once(WWW_DIR."lib/releases.php");
-	require_once(WWW_DIR."lib/consoletools.php");
+	require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+	require_once nZEDb_LIB . 'site.php';
+	require_once nZEDb_LIB . 'nzb.php';
+	require_once nZEDb_LIB . 'releases.php';
+	require_once nZEDb_LIB . 'consoletools.php';
 
 	$s = new Sites();
 	$site = $s->get();

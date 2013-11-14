@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR.'/lib/movie.php');
-require_once(WWW_DIR.'/lib/category.php');
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'category.php';
 
 $movie = new Movie;
 $cat = new Category;

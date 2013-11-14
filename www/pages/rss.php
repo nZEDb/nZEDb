@@ -1,6 +1,6 @@
 <?php
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/category.php");
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'category.php';
 
 $category = new Category();
 $releases = new Releases();

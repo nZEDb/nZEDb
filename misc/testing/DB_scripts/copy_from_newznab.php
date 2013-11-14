@@ -1,8 +1,8 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/util.php");
+require realpath(dirname(__FILE__) . '/../../../www/config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'util.php';
 
 $dir = WWW_DIR;
 $misc = MISC_DIR;

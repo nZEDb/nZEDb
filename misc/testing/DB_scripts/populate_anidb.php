@@ -3,12 +3,12 @@
  * IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connect to anidb as this will fail
  */
 
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/releaseimage.php');
-require_once(WWW_DIR.'lib/site.php');
+require realpath(dirname(__FILE__) . '/../../../www/config.php');
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'site.php';
 
 class AniDBstandAlone
 {

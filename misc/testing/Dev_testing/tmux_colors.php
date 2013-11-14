@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/tmux.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'tmux.php';
 
 $tmux = new Tmux();
 $colors_start = $tmux->get()->colors_start;

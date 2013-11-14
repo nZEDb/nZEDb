@@ -3,10 +3,10 @@
 
 define('CUR_PATH', realpath(dirname(__FILE__)));
 require_once(CUR_PATH."/../config.php");
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/nntp.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/yenc.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'yenc.php';
 
 /* TODO:
  *

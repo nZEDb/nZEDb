@@ -4,7 +4,7 @@ if (!$users->isLoggedIn())
 
 $id = $_GET["id"] + 0;
 
-require_once(WWW_DIR."/lib/forum.php");
+require_once nZEDb_LIB . 'forum.php';
 $forum = new Forum();
 if ($page->isPostBack())
 {

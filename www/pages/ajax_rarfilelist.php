@@ -5,7 +5,7 @@ if (!$users->isLoggedIn())
 if (!isset($_REQUEST["id"]))
 	$page->show404();
 
-require_once(WWW_DIR."/lib/releasefiles.php");
+require_once nZEDb_LIB . 'releasefiles.php';
 $rf = new ReleaseFiles();
 $files = $rf->getByGuid($_REQUEST["id"]);
 

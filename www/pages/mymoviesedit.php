@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/usermovies.php");
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'usermovies.php';
 
 $um = new UserMovies();
 if (isset($_REQUEST["del"]))

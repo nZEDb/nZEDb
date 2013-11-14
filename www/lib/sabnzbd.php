@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."/lib/util.php");
+require_once nZEDb_LIB . 'util.php';
 
 class SABnzbd
 {

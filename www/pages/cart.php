@@ -4,7 +4,7 @@ if (!$users->isLoggedIn())
 
 if (isset($_GET["add"]))
 {
-	require_once(WWW_DIR."/lib/releases.php");
+	require_once nZEDb_LIB . 'releases.php';
 	$releases = new Releases;
 	$guids = explode(',', $_GET['add']);
 	$data = $releases->getByGuid($guids);

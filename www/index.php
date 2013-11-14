@@ -1,6 +1,6 @@
 <?php
 if(is_file("config.php"))
-	require_once("config.php");
+	require_once './config.php';
 else
 {
 	if(is_dir("install"))
@@ -10,9 +10,8 @@ else
 	}
 }
 
-require_once("config.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/users.php");
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'users.php';
 
 $page = new Page;
 $users = new Users;

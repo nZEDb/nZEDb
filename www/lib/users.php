@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/forum.php');
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/releasecomments.php');
-require_once(WWW_DIR.'lib/usermovies.php');
-require_once(WWW_DIR.'lib/userseries.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'forum.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'releasecomments.php';
+require_once nZEDb_LIB . 'usermovies.php';
+require_once nZEDb_LIB . 'userseries.php';
 
 class Users
 {
