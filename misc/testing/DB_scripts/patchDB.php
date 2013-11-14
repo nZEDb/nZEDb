@@ -1,7 +1,7 @@
 <?php
 //This inserts the patches into MySQL and PostgreSQL.
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
@@ -118,6 +118,7 @@ if (isset($os) && $os == "unix")
 	$patches = array();
 	$db = new DB();
 	$backedup = false;
+	$c = new ColorCLI();
 
 	if ($db->dbSystem() == "mysql")
 		$path = '/../../../db/mysql_patches';

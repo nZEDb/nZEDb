@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once dirname(__FILE__) . '/../../../config.php';
 require_once nZEDb_LIB . 'grabnzbs.php';
 require_once nZEDb_LIB . 'nntp.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
