@@ -39,7 +39,7 @@ elseif (isset($pieces[3]))
 		return;
 	}
 	$postprocess->processNfos($argv[1], $nntp);
-	if ($site->get()->nntpproxy === false)
+	if ($site->nntpproxy === false)
 		$nntp->doQuit();
 }
 elseif (isset($pieces[2]))
