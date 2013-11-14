@@ -25,11 +25,11 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 
 	if ($tablepergroup == 1)
 	{
-		$sql = "SHOW tables";
+		$sql = "SHOW table status";
 		$tables = $db->query($sql);
 		foreach($tables as $row)
 		{
-			$tbl = $row['tables_in_'.DB_NAME];
+			$tbl = $row['name'];
 			if (preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl))
 			{
 				if ($argv[1] == "drop")

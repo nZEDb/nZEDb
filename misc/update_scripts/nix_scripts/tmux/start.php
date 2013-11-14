@@ -111,12 +111,12 @@ if ($nntpproxy == '1')
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
 if ($tablepergroup == 1)
 {
-	$sql = "SHOW tables";
-	$tables = $db->query($sql);
+	$sql = "SHOW table status";
+	$tables = $db->queryDirect($sql);
 	$ran = 0;
 	foreach($tables as $row)
 	{
-		$tbl = $row[0];
+		$tbl = $row['name'];
 		if (preg_match('/\d+_collections/',$tbl))
 		{
 			$run = $db->prepare('UPDATE '.$tbl.' SET dateadded = now()');

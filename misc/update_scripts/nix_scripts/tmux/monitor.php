@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4261";
+$version="0.3r4265";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -428,7 +428,7 @@ while($i > 0)
 		$time07 = TIME();
 		if ($tablepergroup == 1)
 		{
-			$sql = 'SHOW tables';
+			$sql = 'SHOW TABLE STATUS';
 			$tables = $db->query($sql);
 			$collections_table = $binaries_table = $parts_table = 0;
 			$age = TIME();
@@ -436,7 +436,7 @@ while($i > 0)
 			{
 				foreach($tables as $row)
 				{
-					$tbl = $row[0];
+					$tbl = $row['name'];
 					if (preg_match('/\d+_collections/',$tbl))
 					{
 						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool());
