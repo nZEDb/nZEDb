@@ -963,8 +963,8 @@ class Releases
 		$db = $this->db;
 		$cat = new Category();
 		$relcount = 0;
-		$resrel = $db->query('SELECT id, '.$type.', groupid FROM releases '.$where);
-		$total = count($resrel);
+		$resrel = $db->queryDirect('SELECT id, '.$type.', groupid FROM releases '.$where);
+		$total = $resrel->rowCount();
 		if (count($resrel) > 0)
 		{
 			foreach ($resrel as $rowrel)
@@ -1676,7 +1676,7 @@ class Releases
 		// Delete old releases and finished collections.
 		if ($this->echooutput)
 			echo $this->c->set256($this->header).$n."Stage 7a -> Delete finished collections.".$n;
-		$stage7 = TIME();;
+		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql')

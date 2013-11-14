@@ -4,10 +4,12 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
 require_once(WWW_DIR.'lib/consoletools.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $start = TIME();
 $c = new ColorCLI;
 $consoleTools = new Consoletools();
+$site = new Sites();
 
 $nntp = new Nntp();
 if ($nntp->doConnect() === false)
@@ -17,7 +19,8 @@ if ($nntp->doConnect() === false)
 }
 echo "Getting first/last for all your active groups\n";
 $data = $nntp->getGroups();
-$nntp->doQuit();
+if ($site->get()->nntpproxy === false)
+	$nntp->doQuit();
 
 if (PEAR::isError($data))
 	exit($c->error("Failed to getGroups() from nntp server.\n"));

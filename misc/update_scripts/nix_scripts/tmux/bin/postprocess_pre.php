@@ -18,3 +18,5 @@ if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) ===
 
 $postprocess = new PostProcess(true);
 $postprocess->processPredb($nntp);
+if ($site->nntpproxy === false)
+	$nntp->doQuit();

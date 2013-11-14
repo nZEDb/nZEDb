@@ -1,10 +1,10 @@
 <?php
 define('DS', DIRECTORY_SEPARATOR);
 
-define('nZEDb_ROOT',	realpath(dirname(dirname(__FILE__))) . DS);
-define('nZEDb_WWW',		nZEDb_ROOT	. 'www' . DS);
-define('nZEDb_LIB',		nZEDb_WWW	. 'lib' . DS);
-define('nZEDb_MISC',	nZEDb_ROOT	. 'misc' . DS);
+define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
+define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
+define('nZEDb_LIB', nZEDb_WWW . 'lib' . DS);
+define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
 define('nZEDb_DEBUG', false);
 
