@@ -253,6 +253,22 @@ class DB
 		return $result;
 	}
 
+    //Query that will return an associative array
+    public function queryAssoc($query)
+    {
+        DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        if ($query == '')
+            return false;
+
+        try {
+            $result = DB::$pdo->query($query);
+        } catch (PDOException $e) {
+            printf($e->getMessage());
+            $result = false;
+        }
+        return $result;
+    }
+
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	public function optimise($admin=false)
 	{
