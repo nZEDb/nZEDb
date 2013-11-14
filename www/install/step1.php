@@ -32,50 +32,50 @@ $cfg->cacheCheck = is_writable($cfg->SMARTY_DIR.'/templates_c');
 if ($cfg->cacheCheck === false)
 	$cfg->error = true;
 
-$cfg->animeCoversCheck = is_writable($cfg->WWW_DIR.'/covers/anime');
+$cfg->animeCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/anime');
 if ($cfg->animeCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->audioCoversCheck = is_writable($cfg->WWW_DIR.'/covers/audio');
+$cfg->audioCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/audio');
 if ($cfg->audioCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->audiosampleCoversCheck = is_writable($cfg->WWW_DIR.'/covers/audiosample');
+$cfg->audiosampleCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/audiosample');
 if ($cfg->audiosampleCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->bookCoversCheck = is_writable($cfg->WWW_DIR.'/covers/book');
+$cfg->bookCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/book');
 if ($cfg->bookCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->consoleCoversCheck = is_writable($cfg->WWW_DIR.'/covers/console');
+$cfg->consoleCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/console');
 if ($cfg->consoleCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->movieCoversCheck = is_writable($cfg->WWW_DIR.'/covers/movies');
+$cfg->movieCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/movies');
 if ($cfg->movieCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->musicCoversCheck = is_writable($cfg->WWW_DIR.'/covers/music');
+$cfg->musicCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/music');
 if ($cfg->musicCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->previewCoversCheck = is_writable($cfg->WWW_DIR.'/covers/preview');
+$cfg->previewCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/preview');
 if ($cfg->previewCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->sampleCoversCheck = is_writable($cfg->WWW_DIR.'/covers/sample');
+$cfg->sampleCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/sample');
 if ($cfg->sampleCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->videoCoversCheck = is_writable($cfg->WWW_DIR.'/covers/video');
+$cfg->videoCoversCheck = is_writable($cfg->nZEDb_WWW.'/covers/video');
 if ($cfg->videoCoversCheck === false)
 	$cfg->error = true;
 
-$cfg->configCheck = is_writable($cfg->WWW_DIR.'/config.php');
+$cfg->configCheck = is_writable($cfg->nZEDb_WWW.'/config.php');
 if($cfg->configCheck === false)
 {
-	$cfg->configCheck = is_file($cfg->WWW_DIR.'/config.php');
+	$cfg->configCheck = is_file($cfg->nZEDb_WWW.'/config.php');
 	if($cfg->configCheck === true)
 	{
 		$cfg->configCheck = false;
@@ -83,7 +83,7 @@ if($cfg->configCheck === false)
 	}
 	else
 	{
-		$cfg->configCheck = is_writable($cfg->WWW_DIR);
+		$cfg->configCheck = is_writable($cfg->nZEDb_WWW);
 		if($cfg->configCheck === false)
 			$cfg->error = true;
 	}
@@ -127,9 +127,9 @@ $cfg->timezoneCheck = (ini_get('date.timezone') != "");
 $cfg->rewriteCheck = (function_exists("apache_get_modules") && in_array("mod_rewrite", apache_get_modules())) ? true : false;
 
 // Load previous config.php.
-if (file_exists($cfg->WWW_DIR.'/config.php') && is_readable($cfg->WWW_DIR.'/config.php'))
+if (file_exists($cfg->nZEDb_WWW.'/config.php') && is_readable($cfg->nZEDb_WWW.'/config.php'))
 {
-	$tmpCfg = file_get_contents($cfg->WWW_DIR.'/config.php');
+	$tmpCfg = file_get_contents($cfg->nZEDb_WWW.'/config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

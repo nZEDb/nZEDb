@@ -101,10 +101,10 @@ $page->smarty->assign('loggingopt_ids', array(0,1,2,3));
 $page->smarty->assign('loggingopt_names', array ('Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file'));
 
 $themelist = array();
-$themes = scandir(WWW_DIR."/themes");
+$themes = scandir(nZEDb_WWW."/themes");
 foreach ($themes as $theme)
 {
-	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/themes/".$theme))
+	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW."/themes/".$theme))
 		$themelist[] = $theme;
 }
 

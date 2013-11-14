@@ -76,7 +76,7 @@ switch($page->page)
 	case 'api':
 	case 'getnzb':
 	case 'login':
-		include(WWW_DIR.'pages/'.$page->page.'.php');
+		include(nZEDb_WWW.'pages/'.$page->page.'.php');
 	break;
 	default:
 		$page->show404();

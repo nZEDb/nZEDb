@@ -21,8 +21,8 @@ if (isset($_REQUEST["id"]))
 	switch($action)
 	{
 		case 'submit':
-			$coverLoc = WWW_DIR."covers/movies/".$id.'-cover.jpg';
-			$backdropLoc = WWW_DIR."covers/movies/".$id.'-backdrop.jpg';
+			$coverLoc = nZEDb_WWW."covers/movies/".$id.'-cover.jpg';
+			$backdropLoc = nZEDb_WWW."covers/movies/".$id.'-backdrop.jpg';
 
 			if($_FILES['cover']['size'] > 0)
 			{

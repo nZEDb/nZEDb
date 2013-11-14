@@ -28,7 +28,7 @@ if  ($page->isPostBack())
 		$cfg->error = true;
 	else
 	{
-		require_once $cfg->WWW_DIR.'/lib/users.php';
+		require_once $cfg->nZEDb_WWW.'/lib/users.php';
 
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER))
