@@ -10,11 +10,14 @@ require_once(WWW_DIR.'lib/postprocess.php');
 require_once(WWW_DIR.'lib/nfo.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
 	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
 
+$s = new Sites();
+$site = $s->get();
 $pieces = explode('  ', $argv[1]);
 $groupid = $pieces[0];
 $releases = new Releases(true);
@@ -78,16 +81,17 @@ if ($pieces[0] != 'Stage7b')
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 
-	if ($this->site->alternate_nntp == 1)
+	if ($site->alternate_nntp == 1)
 	{
 		$nntp->doQuit();
-		$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+		$site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 	}
 	$postprocess = new PostProcess(true);
 	$postprocess->processAdditional(null, null, null, $groupid, $nntp);
 	$nfopostprocess = new Nfo(true);
 	$nfopostprocess->processNfoFiles(null, null, null, $groupid, $nntp);
-	$nntp->doQuit();
+	if ($site->nntpproxy === false)
+		$nntp->doQuit();
 }
 elseif ($pieces[0] == 'Stage7b')
 {

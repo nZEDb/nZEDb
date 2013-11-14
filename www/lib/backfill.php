@@ -368,7 +368,7 @@ class Backfill
 						if (isset($res['number']) && is_numeric($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
+							echo $this->c->info("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
 						}
 					}
 					else
@@ -377,7 +377,7 @@ class Backfill
 						if (isset($res['number']) && is_numeric($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->error("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
+							echo $this->c->info("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
 						}
 					}
 					$success = false;
@@ -390,7 +390,7 @@ class Backfill
 						if (isset($res['date']))
 						{
 							$date = strtotime($res['date']);
-							echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
+							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
 						}
@@ -401,7 +401,7 @@ class Backfill
 						if (isset($res['date']))
 						{
 							$date = strtotime($res['date']);
-							echo $this->c->error("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
+							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
 						}
@@ -427,7 +427,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('first_record_postdate', $res))
 				{
-					echo $this->c->error('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
+					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
 					return strtotime($res['first_record_postdate']);
 				}
 				else
@@ -438,7 +438,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('last_record_postdate', $res))
 				{
-					echo $this->c->error('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
+					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
 					return strtotime($res['last_record_postdate']);
 				}
 				else
@@ -478,7 +478,7 @@ class Backfill
 			echo $this->c->debug('Total Articles: '.number_format($totalnumberofarticles).' Newest: '.number_format($upperbound).' Oldest: '.number_format($lowerbound)."\nGoal: ".date('r', $goaldate)." ({$goaldate}).\n");
 
 		if ($data['last'] == PHP_INT_MAX)
-			exit($this->c->error("Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n"));
+			exit($this->c->info("Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n"));
 
 		$firstDate = $this->postdate($nntp, $data['first'], $pddebug, $group, false, 'oldest');
 		$lastDate = $this->postdate($nntp, $data['last'], $pddebug, $group, false, 'oldest');
@@ -591,7 +591,7 @@ class Backfill
 		else
 			$postsdate = $this->postdate($nntp, $first, false, $group, true, 'newest');
 		$postsdate = $db->from_unixtime($postsdate);
-		
+
 		if ($type == 'Backfill')
 			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $db->escapeString($first), $groupArr['id']));
 		else

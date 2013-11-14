@@ -5,7 +5,7 @@ require_once(WWW_DIR.'lib/framework/db.php');
 require_once(WWW_DIR.'lib/tmux.php');
 require_once(WWW_DIR.'lib/site.php');
 
-$version="0.3r4253";
+$version="0.3r4261";
 
 $db = new DB();
 $DIR = MISC_DIR;
@@ -396,8 +396,7 @@ while($i > 0)
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
-	$running = $tmux->running;
-	$running = (!empty($tmux->running)) ? $tmux->running : FALSE;
+	$running = (!empty($tmux->running)) ? $tmux->running : "FALSE";
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == "TRUE"))
 	{
 		echo "\nNote:\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n";

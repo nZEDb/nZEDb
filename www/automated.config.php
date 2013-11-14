@@ -1,4 +1,13 @@
 <?php
+define('DS', DIRECTORY_SEPARATOR);
+
+define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
+define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
+define('nZEDb_LIB', nZEDb_WWW . 'lib' . DS);
+define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
+
+define('nZEDb_DEBUG', false);
+
 $www_top = str_replace("\\","/",dirname($_SERVER['PHP_SELF']));
 if(strlen($www_top) == 1)
 	$www_top = "";
@@ -7,13 +16,13 @@ if(strlen($www_top) == 1)
 define('WWW_TOP', $www_top);
 
 // Used to refer to the /www/lib class files.
-define('WWW_DIR', realpath(dirname(__FILE__)).'/');
+define('WWW_DIR', nZEDb_WWW);
 
 // Used to refer to the /misc class files.
-define('MISC_DIR', realpath(dirname(__FILE__)).'/../misc/');
+define('MISC_DIR', nZEDb_MISC);
 
 // Path to smarty files.
-define('SMARTY_DIR', WWW_DIR.'lib/smarty/');
+define('SMARTY_DIR', nZEDb_LIB . 'smarty' . DS);
 
 // Path to themes directory.
 define('THEMES_DIR', WWW_TOP.'themes');

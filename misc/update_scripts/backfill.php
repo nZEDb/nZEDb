@@ -3,9 +3,11 @@ require(dirname(__FILE__).'/config.php');
 require_once(WWW_DIR.'/lib/backfill.php');
 require_once(WWW_DIR.'lib/nntp.php');
 require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once(WWW_DIR.'lib/site.php');
 
 $binaries = new Binaries();
 $c = new ColorCLI;
+$site = new Sites();
 
 // Create the connection here and pass
 $nntp = new Nntp();
@@ -59,4 +61,5 @@ else
 		.'php backfill.php all			 ...: Backfills all groups 1 at a time, by date (set in admin-view groups)'."\n"
 		.'php backfill.php alt.binaries.ath	 ...: Backfills a group by name, by date (set in admin-view groups)'."\n");
 }
-$nntp->doQuit();
+if ($site->get()->nntpproxy === false)
+	$nntp->doQuit();

@@ -267,11 +267,6 @@ class Binaries
 			$group['cname'] = $groupArr['id'].'_collections';
 			$group['bname'] = $groupArr['id'].'_binaries';
 			$group['pname'] = $groupArr['id'].'_parts';
-
-			// Check tables for content
-			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
-			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
-			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
 		}
 		else
 		{
@@ -408,7 +403,7 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					if($this->grabnzbs && preg_match('/".+\.nzb".+yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/.+\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
