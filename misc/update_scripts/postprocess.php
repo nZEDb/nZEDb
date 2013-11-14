@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require './config.php';
 require_once(WWW_DIR.'lib/postprocess.php');
 require_once(WWW_DIR.'lib/site.php');
 require_once(WWW_DIR.'lib/nntp.php');

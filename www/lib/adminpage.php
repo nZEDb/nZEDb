@@ -1,5 +1,5 @@
 <?php
-require_once('config.php');
+require_once './config.php';
 require_once(WWW_DIR.'lib/framework/basepage.php');
 require_once(WWW_DIR.'lib/users.php');
 

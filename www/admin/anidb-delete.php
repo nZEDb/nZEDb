@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once './config.php';
 require_once(WWW_DIR."/lib/anidb.php");
 require_once(WWW_DIR."/lib/adminpage.php");
 
