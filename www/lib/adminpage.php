@@ -10,9 +10,9 @@ class AdminPage extends BasePage
 		parent::BasePage();
 
 		$this->smarty->setTemplateDir(array(
-			'user_admin' => WWW_DIR.'themes/'.$this->site->style.'/templates/admin',
-			'admin' => WWW_DIR.'themes/Default/templates/admin',
-			'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+			'user_admin' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/admin',
+			'admin' => nZEDb_WWW.'themes/Default/templates/admin',
+			'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
 		));
 
 		$users = new Users();

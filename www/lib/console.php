@@ -21,7 +21,7 @@ class Console
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
         $this->db = new DB();
 
-		$this->imgSavePath = WWW_DIR.'covers/console/';
+		$this->imgSavePath = nZEDb_WWW.'covers/console/';
 	}
 
 	public function getConsoleInfo($id)

@@ -21,7 +21,7 @@ require_once nZEDb_LIB . 'site.php';
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->imgSavePath = WWW_DIR.'covers/book/';
+		$this->imgSavePath = nZEDb_WWW.'covers/book/';
         $this->db = new DB();
 	}
 

@@ -13,7 +13,7 @@ class AniDB
 		$site = $s->get();
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
-		$this->imgSavePath = WWW_DIR.'covers/anime/';
+		$this->imgSavePath = nZEDb_WWW.'covers/anime/';
 		$this->db = new DB();
 	}
 

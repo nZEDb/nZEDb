@@ -20,7 +20,7 @@ class Music
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
         $this->db = new DB();
-		$this->imgSavePath = WWW_DIR.'covers/music/';
+		$this->imgSavePath = nZEDb_WWW.'covers/music/';
 	}
 
 	public function getMusicInfo($id)
