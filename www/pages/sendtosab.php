@@ -5,7 +5,7 @@ if (!$users->isLoggedIn())
 if (empty($_GET["id"]))
 	$page->show404();
 
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once nZEDb_LIB . 'sabnzbd.php';
 $sab = new SABnzbd($page);
 
 if (empty($sab->url))

@@ -1,24 +1,24 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/page.php');
-require_once(WWW_DIR.'lib/binaries.php');
-require_once(WWW_DIR.'lib/users.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/nzb.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/zipfile.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/releasefiles.php');
-require_once(WWW_DIR.'lib/releaseextra.php');
-require_once(WWW_DIR.'lib/releaseimage.php');
-require_once(WWW_DIR.'lib/releasecomments.php');
-require_once(WWW_DIR.'lib/postprocess.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/namecleaning.php');
-require_once(WWW_DIR.'lib/predb.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'users.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'zipfile.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'releasefiles.php';
+require_once nZEDb_LIB . 'releaseextra.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'releasecomments.php';
+require_once nZEDb_LIB . 'postprocess.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Releases
 {

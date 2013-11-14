@@ -1,6 +1,6 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/users.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'users.php';
 
 class Menu
 {

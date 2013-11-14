@@ -1,9 +1,9 @@
 <?php
 require(dirname(__FILE__).'/../../../www/config.php');
-require_once(WWW_DIR.'lib/miscsorter.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
-require_once(WWW_DIR.'lib/site.php');
+require_once nZEDb_LIB . 'miscsorter.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+require_once nZEDb_LIB . 'site.php';
 
 $sorter = new MiscSorter(true);
 

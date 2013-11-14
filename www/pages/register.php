@@ -2,7 +2,7 @@
 if ($users->isLoggedIn())
 	$page->show404();
 
-require_once(WWW_DIR."/lib/site.php");
+require_once nZEDb_LIB . 'site.php';
 
 $showregister = 1;
 

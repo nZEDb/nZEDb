@@ -1,7 +1,7 @@
 <?php
 require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/postprocess.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'postprocess.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))

@@ -1,11 +1,11 @@
 <?php
 require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/backfill.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/page.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))

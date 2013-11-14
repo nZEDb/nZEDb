@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/forum.php");
+require_once nZEDb_LIB . 'forum.php';
 $forum = new Forum;
 
 if ($page->isPostBack())

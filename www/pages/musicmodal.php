@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/music.php");
+require_once nZEDb_LIB . 'music.php';
 $music = new Music;
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"]))

@@ -1,9 +1,9 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/binaries.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Backfill
 {

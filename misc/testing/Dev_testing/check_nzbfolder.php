@@ -2,10 +2,10 @@
 // Check how many nzbs are not tied to a NZB.
 if (!isset($argv[1]))
 	exit("This script checks how many NZB's have no releases.\nTo run, pass true as an argument.\n");
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/consoletools.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'consoletools.php';
 
 $site = new Sites();
 $db = new DB();

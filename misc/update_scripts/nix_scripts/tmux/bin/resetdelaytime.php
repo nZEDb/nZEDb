@@ -1,8 +1,8 @@
 <?php
 
 require_once(dirname(__FILE__).'/../../../../../www/config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/site.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
 
 $db = new DB();
 $s = new Sites();

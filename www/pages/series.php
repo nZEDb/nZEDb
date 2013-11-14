@@ -2,10 +2,10 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/tvrage.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/userseries.php");
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'tvrage.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'userseries.php';
 
 $releases = new Releases;
 $tvrage = new TvRage;
