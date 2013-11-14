@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
 require_once nZEDb_LIB . 'consoletools.php';
 
 $consoletools = new consoleTools();

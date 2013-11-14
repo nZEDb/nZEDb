@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__).'/config.php');
+require_once dirname(__FILE__) . '/config.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'nfo.php';

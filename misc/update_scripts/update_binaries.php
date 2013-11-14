@@ -1,5 +1,5 @@
 <?php
-require(dirname(__FILE__).'/config.php');
+require_once realpath(dirname(__FILE__) . '/config.php');
 require_once nZEDb_LIB . 'binaries.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'nntp.php';

@@ -1,5 +1,5 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
+require realpath(dirname(__FILE__) . '/../../../www/config.php');
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'category.php';
 
