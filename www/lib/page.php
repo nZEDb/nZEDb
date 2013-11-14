@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR."/lib/framework/basepage.php");
-require_once(WWW_DIR."/lib/content.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/users.php");
-require_once(WWW_DIR."/lib/menu.php");
-require_once(WWW_DIR."/lib/logging.php");
+require_once nZEDb_LIB . 'framework/basepage.php';
+require_once nZEDb_LIB . 'content.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'users.php';
+require_once nZEDb_LIB . 'menu.php';
+require_once nZEDb_LIB . 'logging.php';
 
 class Page extends BasePage
 {

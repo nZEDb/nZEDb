@@ -2,11 +2,11 @@
 if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to and the source directory  (You would use: 3 /var/www/nZEDb/nzbfiles/ to move it to 3 levels deep)\n");
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/nzb.php");
-require_once(WWW_DIR."lib/consoletools.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'consoletools.php';
 
 $db = new DB();
 $s = new Sites();

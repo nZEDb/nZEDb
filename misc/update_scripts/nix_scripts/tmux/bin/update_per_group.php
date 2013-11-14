@@ -1,16 +1,16 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/binaries.php');
-require_once(WWW_DIR.'lib/backfill.php');
-require_once(WWW_DIR.'lib/postprocess.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
-require_once(WWW_DIR.'lib/site.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'postprocess.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))

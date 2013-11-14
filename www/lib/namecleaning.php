@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR.'/lib/category.php');
-require_once(WWW_DIR.'/lib/groups.php');
-require_once(WWW_DIR.'/lib/namefixer.php');
-require_once(WWW_DIR.'/lib/predb.php');
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'namefixer.php';
+require_once nZEDb_LIB . 'predb.php';
 
 /*
  * Cleans names for collections/releases/imports/namefixer.

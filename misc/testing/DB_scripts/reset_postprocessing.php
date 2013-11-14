@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 $db = new DB();
 
 if (isset($argv[1]) && $argv[1] === "all")

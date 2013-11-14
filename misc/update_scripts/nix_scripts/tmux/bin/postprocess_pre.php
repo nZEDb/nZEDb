@@ -1,9 +1,9 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/predb.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 $s = new Sites();
 $site = $s->get();

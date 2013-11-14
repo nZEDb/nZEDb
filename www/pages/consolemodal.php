@@ -4,7 +4,7 @@ if (!$users->isLoggedIn())
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"]))
 {
-	require_once(WWW_DIR."/lib/console.php");
+	require_once nZEDb_LIB . 'console.php';
 	$console = new Console;
 	$con = $console->getConsoleInfo($_GET['id']);
 	if (!$con)

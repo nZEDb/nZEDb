@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR."/lib/sitemaps.php");
+require_once nZEDb_LIB . 'sitemaps.php';
 
 $te = $page->smarty;
 $arPages = array();

@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/category.php");
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'category.php';
 
 $book = new Books;
 $cat = new Category;

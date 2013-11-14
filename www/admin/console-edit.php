@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/console.php");
-require_once(WWW_DIR."/lib/genres.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'genres.php';
 
 $page = new AdminPage();
 $console = new Console();

@@ -5,7 +5,7 @@ if (!$users->isLoggedIn())
 if (!isset($_REQUEST['id']))
 	$page->show404();
 
-require_once(WWW_DIR.'/lib/releaseextra.php');
+require_once nZEDb_LIB . 'releaseextra.php';
 $re = new ReleaseExtra();
 $redata = $re->getBriefByGuid($_REQUEST['id']);
 

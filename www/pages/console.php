@@ -2,9 +2,9 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/console.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/genres.php");
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'genres.php';
 
 $console = new Console;
 $cat = new Category;

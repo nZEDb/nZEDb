@@ -2,10 +2,10 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/TMDb.php');
-require_once(WWW_DIR.'lib/movie.php');
-require_once(WWW_DIR.'lib/usermovies.php');
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'TMDb.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'usermovies.php';
 $um = new UserMovies();
 
 if (isset($_REQUEST['del']))

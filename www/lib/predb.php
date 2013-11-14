@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/namefixer.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'namefixer.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.

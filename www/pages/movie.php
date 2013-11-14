@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/movie.php");
+require_once nZEDb_LIB . 'movie.php';
 $movie = new Movie;
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"]))

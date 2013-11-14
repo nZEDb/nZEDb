@@ -11,11 +11,11 @@ if(trim($line) != 'DESTROY')
 echo "\n";
 echo "Thank you, continuing...\n";
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/consoletools.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'consoletools.php';
 
 $db = new Db();
 $s = new Sites();

@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'ColorCLI.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.

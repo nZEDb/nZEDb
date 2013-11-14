@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."lib/sabnzbd.php");
+require_once nZEDb_LIB . 'sabnzbd.php';
 $sab = new SABnzbd($page);
 
 if (empty($sab->url))
