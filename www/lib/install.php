@@ -24,7 +24,7 @@ class Install {
 	public $WWW_DIR;
 	public $SMARTY_DIR;
 	public $DB_DIR;
-	public $MISC_DIR;
+	public $nZEDb_MISC;
 	public $INSTALL_DIR;
 
 	public $ADMIN_USER;
@@ -82,7 +82,7 @@ class Install {
 		$this->WWW_DIR = dirname(realpath('.'));
 		$this->SMARTY_DIR = $this->WWW_DIR.'/lib/smarty';
 		$this->DB_DIR = dirname(realpath('..')).'/db';
-		$this->MISC_DIR = dirname(realpath('..')).'/misc';
+		$this->nZEDb_MISC = dirname(realpath('..')).'/misc';
 		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))).'/nzbfiles/';
 		$this->INSTALL_DIR = $this->WWW_DIR.'/install';
 	}

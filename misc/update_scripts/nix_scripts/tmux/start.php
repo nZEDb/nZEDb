@@ -8,7 +8,7 @@ require_once nZEDb_LIB . 'site.php';
 passthru("clear");
 
 $db = new DB();
-$DIR = MISC_DIR;
+$DIR = nZEDb_MISC;
 
 $limited = false;
 if (isset($argv['1']) && $argv['1'] == "limited")
@@ -187,7 +187,7 @@ function window_proxy($tmux_session, $window)
 	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == '1')
 	{
-		$DIR = MISC_DIR;
+		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
 		if(file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy.conf"))
 		{
@@ -199,7 +199,7 @@ function window_proxy($tmux_session, $window)
 	$grabnzbs = $site->grabnzbs;
 	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
 	{
-		$DIR = MISC_DIR;
+		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
 		if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
 		{

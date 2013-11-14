@@ -5,10 +5,10 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4268";
+$version="0.3r4277";
 
 $db = new DB();
-$DIR = MISC_DIR;
+$DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 

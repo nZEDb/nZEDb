@@ -5,7 +5,7 @@ require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'util.php';
 
 $dir = WWW_DIR;
-$misc = MISC_DIR;
+$misc = nZEDb_MISC;
 $site = new Sites();
 $db = new DB();
 $level = $site->get()->nzbsplitlevel;

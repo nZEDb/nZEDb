@@ -1938,7 +1938,7 @@ class Releases
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
 	{
-		$DIR = MISC_DIR;
+		$DIR = nZEDb_MISC;
 		if ($this->command_exist('python3'))
 			$PYTHON = 'python3 -OOu';
 		else

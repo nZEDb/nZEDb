@@ -84,7 +84,7 @@ function BackupDatabase()
     $c = new ColorCLI();
 	$returnvar = NULL;
 	$output = NULL;
-	$DIR = MISC_DIR;
+	$DIR = nZEDb_MISC;
 
 	if (command_exist("php5"))
 		$PHP = "php5";

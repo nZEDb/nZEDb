@@ -4,7 +4,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 
 $db = new DB();
-$DIR = MISC_DIR;
+$DIR = nZEDb_MISC;
 $smarty = SMARTY_DIR . 'templates_c/';
 $dbname = DB_NAME;
 $restart = "false";
