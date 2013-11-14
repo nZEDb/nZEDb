@@ -1,4 +1,3 @@
-
 REQUIREMENTS
 	PHP
 		php version 5.4 or higher
@@ -24,7 +23,7 @@ REQUIREMENTS
 			To determine the IP / port ; on linux as root, run:
 				netstat -plunt |grep postgres
 			To set it up ; on linux as root, run:
-				sudo apt-get install php5-pgsql postgresql
+				sudo apt-get install php5-pgsql postgresql php5-json
 				sudo -i -u postgres
 				psql
 				CREATE USER EnterYourUserNameHere;
@@ -71,7 +70,7 @@ REQUIREMENTS
 		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
 	# Or the Python psycopg module for PostgreSQL
-		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
+		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql php5-json python-dev python3-dev make
 		# Python 2.*
 			sudo apt-get install python-setuptools python-pip
 			sudo easy_install psycopg2
