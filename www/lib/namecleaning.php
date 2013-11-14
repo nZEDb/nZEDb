@@ -1,8 +1,8 @@
 <?php
-require_once(WWW_DIR.'/lib/category.php');
-require_once(WWW_DIR.'/lib/groups.php');
-require_once(WWW_DIR.'/lib/namefixer.php');
-require_once(WWW_DIR.'/lib/predb.php');
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'namefixer.php';
+require_once nZEDb_LIB . 'predb.php';
 
 /*
  * Cleans names for collections/releases/imports/namefixer.
@@ -93,6 +93,8 @@ class nameCleaning
 				return $this->boneless();
 			case 'alt.binaries.british.drama':
 				return $this->british_drama();
+			case 'alt.binaries.bungabunga':
+				return $this->bungabunga();
 			case 'alt.binaries.cats':
 				return $this->cats();
 			case 'alt.binaries.cd.image':
@@ -549,6 +551,19 @@ class nameCleaning
 		//Danger Man S2E05-08 [075/149] - "7.The colonel's daughter.avi.001" yEnc
 		else if (preg_match('/^([a-zA-Z0-9]+ .+? (S\d+)?E\d+-\d\d \[)\d+\/\d+\] - "\d(\d |\.).+?" yEnc$/', $this->subject, $match))
 			return $match[1];
+		else
+			return $this->generic();
+	}
+
+	// a.b.bungabunga
+	public function bungabunga()
+	{
+		//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [05/87] - "Deep.Black.Ass.5.XXX.1080p.WEBRip.x264-TBP.part03.rar" - 7,87 GB yEnc
+		if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+			return $match[1];
+		//<TOWN><www.town.ag > <partner of www.ssl-news.info > [01/18] - "2012-11.-.Supurbia.-.Volume.Tw o.Digital-1920.K6-Empire.par2" - 421,98 MB yEnc
+		if (preg_match('/^[ <\[]{0,2}TOWN[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}www\.town\.ag[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}partner of www.ssl-news\.info[ >\]]{0,2}[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)\.(par|vol|rar|nfo).*?("|#34;).+?yEnc$/i', $this->subject, $match))
+			return $match[2];
 		else
 			return $this->generic();
 	}
@@ -1719,6 +1734,29 @@ class nameCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
+		else if ($groupName === "alt.binaries.bungabunga")
+		{
+			//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [05/87] - "Deep.Black.Ass.5.XXX.1080p.WEBRip.x264-TBP.part03.rar" - 7,87 GB yEnc
+			//<TOWN><www.town.ag > <partner of www.ssl-news.info > [02/24] - "Dragons.Den.UK.S11E02.HDTV.x264-ANGELiC.nfo" - 288,96 MB yEnc
+			//<TOWN><www.town.ag > <SSL - News.Info> [6/6] - "TTT.Magazine.2013.08.vol0+1.par2" - 33,47 MB yEnc
+			if (preg_match('/^<TOWN>.+?town\.ag.+?(www\..+?|News)\.[iI]nfo.+? \[\d+\/\d+\]( -)? "(.+?)(-sample)?'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB]M? yEnc$/', $subject, $match))
+				return $match[3];
+			//<TOWN><www.town.ag > <partner of www.ssl-news.info > [01/18] - "2012-11.-.Supurbia.-.Volume.Tw o.Digital-1920.K6-Empire.par2" - 421,98 MB yEnc
+			if (preg_match('/^[ <\[]{0,2}TOWN[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}www\.town\.ag[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}partner of www.ssl-news\.info[ >\]]{0,2}[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)\.(par|vol|rar|nfo).*?("|#34;).+?yEnc$/i', $subject, $match))
+				return $match[2];
+			//[01/29] - "Bellflower.2011.German.AC3.BDRip.XviD-EPHEMERiD.par2" - 1,01 GB yEnc
+			//(3/9) - "Microsoft Frontpage 2003 - 4 Town-Up from Kraenk.rar.par2" - 181,98 MB - yEnc
+			else if (preg_match('/^[\[(]\d+\/\d+[\])] - "([A-Z0-9].{2,}?)'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB]( -)? yEnc$/', $subject, $match))
+				return $match[1];
+			//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ MOVIE ] [14/19] - "Night.Vision.2011.DVDRip.x264-IGUANA.part12.rar" - 660,80 MB yEnc
+			else if (preg_match('/^\[ TOWN \][ _-]{0,3}\[ www\.town\.ag \][ _-]{0,3}\[ partner of www\.ssl-news\.info \][ _-]{0,3}\[ .* \] \[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)((\.part\d+\.rar)|(\.vol\d+\+\d+\.par2))("|#34;)[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i', $subject, $match))
+				return $match[2];
+			//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ MOVIE ] [01/84] - "The.Butterfly.Effect.2.2006.1080p.BluRay.x264-LCHD.par2" - 7,49 GB yEnc
+			else if (preg_match('/^\[ TOWN \][ _-]{0,3}\[ www\.town\.ag \][ _-]{0,3}\[ partner of www\.ssl-news\.info \][ _-]{0,3}\[ .* \] \[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)\.(par2|rar|nfo|nzb)("|#34;)[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i', $subject, $match))
+				return $match[2];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
 		else if ($groupName === "alt.binaries.cats")
 		{
 			//Pb7cvL3YiiOu06dsYPzEfpSvvTul[02/37] - "Fkq33mlTVyHHJLm0gJNU.par2" yEnc
@@ -2537,6 +2575,9 @@ class nameCleaning
 			//<TOWN><www.town.ag > <SSL - News.Info> [6/6] - "TTT.Magazine.2013.08.vol0+1.par2" - 33,47 MB yEnc
 			if (preg_match('/^<TOWN>.+?town\.ag.+?(www\..+?|News)\.[iI]nfo.+? \[\d+\/\d+\]( -)? "(.+?)(-sample)?'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB]M? yEnc$/', $subject, $match))
 				return $match[3];
+			//<TOWN><www.town.ag > <partner of www.ssl-news.info > [01/18] - "2012-11.-.Supurbia.-.Volume.Tw o.Digital-1920.K6-Empire.par2" - 421,98 MB yEnc
+			if (preg_match('/^[ <\[]{0,2}TOWN[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}www\.town\.ag[ >\]]{0,2}[ _-]{0,3}[ <\[]{0,2}partner of www.ssl-news\.info[ >\]]{0,2}[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)\.(par|vol|rar|nfo).*?("|#34;).+?yEnc$/i', $subject, $match))
+				return $match[2];
 			//[01/29] - "Bellflower.2011.German.AC3.BDRip.XviD-EPHEMERiD.par2" - 1,01 GB yEnc
 			//(3/9) - "Microsoft Frontpage 2003 - 4 Town-Up from Kraenk.rar.par2" - 181,98 MB - yEnc
 			else if (preg_match('/^[\[(]\d+\/\d+[\])] - "([A-Z0-9].{2,}?)'.$this->e0.' - \d+[.,]\d+ [kKmMgG][bB]( -)? yEnc$/', $subject, $match))

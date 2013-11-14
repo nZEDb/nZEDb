@@ -1,6 +1,6 @@
 <?php
 if(is_file("config.php"))
-	require_once("config.php");
+	require_once './config.php';
 else
 {
 	if(is_dir("install"))
@@ -10,9 +10,8 @@ else
 	}
 }
 
-require_once("config.php");
-require_once(WWW_DIR."/lib/page.php");
-require_once(WWW_DIR."/lib/users.php");
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'users.php';
 
 $page = new Page;
 $users = new Users;
@@ -77,7 +76,7 @@ switch($page->page)
 	case 'api':
 	case 'getnzb':
 	case 'login':
-		include(WWW_DIR.'pages/'.$page->page.'.php');
+		include(nZEDb_WWW.'pages/'.$page->page.'.php');
 	break;
 	default:
 		$page->show404();

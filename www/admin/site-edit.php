@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'sabnzbd.php';
 
 $page = new AdminPage();
 $sites = new Sites();
@@ -101,10 +101,10 @@ $page->smarty->assign('loggingopt_ids', array(0,1,2,3));
 $page->smarty->assign('loggingopt_names', array ('Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file'));
 
 $themelist = array();
-$themes = scandir(WWW_DIR."/themes");
+$themes = scandir(nZEDb_WWW."/themes");
 foreach ($themes as $theme)
 {
-	if (strpos($theme, ".") === false && is_dir(WWW_DIR."/themes/".$theme))
+	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW."/themes/".$theme))
 		$themelist[] = $theme;
 }
 

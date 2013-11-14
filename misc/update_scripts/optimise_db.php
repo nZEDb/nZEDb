@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(__FILE__).'/config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
+require_once realpath(dirname(__FILE__) . '/config.php');
+require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new DB();
 $type = $db->dbSystem();

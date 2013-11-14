@@ -1,11 +1,11 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."lib/adminpage.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/binaries.php");
-require_once(WWW_DIR."lib/page.php");
-require_once(WWW_DIR."lib/namecleaning.php");
-require_once(WWW_DIR."lib/site.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'binaries.php';
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'site.php';
 
 $db = new DB();
 $binaries = new Binaries();

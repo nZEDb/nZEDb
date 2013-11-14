@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'ColorCLI.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -44,6 +44,7 @@ class DB
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+				DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			} catch (PDOException $e) {
 				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 			}
@@ -88,7 +89,6 @@ class DB
 			{
 				$p = DB::$pdo->prepare($query.' RETURNING id');
 				$p->execute();
-				$r = $p->fetch(PDO::FETCH_ASSOC);
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
@@ -252,6 +252,22 @@ class DB
 		}
 		return $result;
 	}
+
+    //Query that will return an associative array
+    public function queryAssoc($query)
+    {
+        DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        if ($query == '')
+            return false;
+
+        try {
+            $result = DB::$pdo->query($query);
+        } catch (PDOException $e) {
+            printf($e->getMessage());
+            $result = false;
+        }
+        return $result;
+    }
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	public function optimise($admin=false)

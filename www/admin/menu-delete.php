@@ -1,7 +1,7 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/menu.php");
-require_once(WWW_DIR."/lib/adminpage.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'menu.php';
+require_once nZEDb_LIB . 'adminpage.php';
 
 $page = new AdminPage();
 

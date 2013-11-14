@@ -1,11 +1,10 @@
 <?php
 //This inserts the patches into MySQL and PostgreSQL.
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/site.php");
-require_once(FS_ROOT."/../../../www/lib/ColorCLI.php");
+require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 function command_exist($cmd)
 {
@@ -85,7 +84,7 @@ function BackupDatabase()
     $c = new ColorCLI();
 	$returnvar = NULL;
 	$output = NULL;
-	$DIR = MISC_DIR;
+	$DIR = nZEDb_MISC;
 
 	if (command_exist("php5"))
 		$PHP = "php5";

@@ -1,8 +1,8 @@
 <?php
 /* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */
 /*
-require_once("/var/www/nZEDb/www/config.php");
-require_once("/var/www/nZEDb/www/lib/framework/db.php");
+require_once '../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 $db = new DB;
 
 // Last patch date +1 day.
@@ -11,8 +11,8 @@ $lpdpo = "2013-05-30";
 $lppo = "143";
 // Wanted patch: round(( select count(*) from predb where adddate > lpdpo )/10000).
 $wp = "144";
-if (!file_exists(WWW_DIR."/a"))
-	mkdir(WWW_DIR."/a", 0755, true);
+if (!file_exists(nZEDb_WWW."/a"))
+	mkdir(nZEDb_WWW."/a", 0755, true);
 
 if ($db->dbSystem() == "mysql")
 	$uta = "UNIX_TIMESTAMP(adddate)";
@@ -28,10 +28,10 @@ foreach (range($lppo, $wp) as $number)
 	else
 		$db->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit ${loop}, 10000 INTO OUTFILE 'data${number2}.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
 
-	$fp = gzopen (WWW_DIR."/a/data".$number2.".gz", 'w9');
+	$fp = gzopen (nZEDb_WWW."/a/data".$number2.".gz", 'w9');
 	gzwrite ($fp, file_get_contents("/var/lib/mysql/nzedb/data".$number2.".txt"));
 	gzclose($fp);
-	chmod(WWW_DIR."/a/data".$number2.".gz", 0777);
+	chmod(nZEDb_WWW."/a/data".$number2.".gz", 0777);
 	unlink("/var/lib/mysql/nzedb/data".$number2.".txt");
 }
 */

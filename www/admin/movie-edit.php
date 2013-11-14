@@ -1,7 +1,7 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/movie.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'movie.php';
 
 $page = new AdminPage();
 $movie = new Movie();
@@ -21,8 +21,8 @@ if (isset($_REQUEST["id"]))
 	switch($action)
 	{
 		case 'submit':
-			$coverLoc = WWW_DIR."covers/movies/".$id.'-cover.jpg';
-			$backdropLoc = WWW_DIR."covers/movies/".$id.'-backdrop.jpg';
+			$coverLoc = nZEDb_WWW."covers/movies/".$id.'-cover.jpg';
+			$backdropLoc = nZEDb_WWW."covers/movies/".$id.'-backdrop.jpg';
 
 			if($_FILES['cover']['size'] > 0)
 			{

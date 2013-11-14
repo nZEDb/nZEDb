@@ -112,6 +112,7 @@ Admin: <input type="button" class="btn btn-warning nzb_multi_operations_edit" va
 {else}
 <div class="alert">
 <button type="button" class="close" data-dismiss="alert">&times;</button>
-<strong>Sorry!</strong> Either some amazon key is wrong, or there is nothing in this section.
+<h4>There doesn't seem to be any releases here. Please try the <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">list</a> view.</h4>
+<strong>Sorry!</strong> There is nothing in this section.
 </div>
 {/if}

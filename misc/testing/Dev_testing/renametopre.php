@@ -1,11 +1,11 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/consoletools.php");
-require_once(WWW_DIR."lib/namecleaning.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/releases.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'releases.php';
 
 
 /*

@@ -1,10 +1,9 @@
 <?php
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/releases.php");
-require_once(FS_ROOT."/../../../www/lib/site.php");
-require_once(FS_ROOT."/../../../www/lib/consoletools.php");
+require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'consoletools.php';
 
 $db = new Db;
 $s = new Sites();

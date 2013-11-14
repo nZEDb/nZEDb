@@ -1,11 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
-require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/predb.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'predb.php';
 
 class MiscSorter
 {

@@ -27,11 +27,10 @@ else if (isset($argv[1]) && $argv[1] == 'false' && !isset($argv[2]))
 		."php removeCrapReleases.php true full gibberish runs only this type\n");
 }
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT.'/../../../www/config.php');
-require_once(FS_ROOT.'/../../../www/lib/framework/db.php');
-require_once(FS_ROOT.'/../../../www/lib/releases.php');
-require_once(FS_ROOT.'/../../../www/lib/site.php');
+require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'site.php';
 
 if (isset($argv[1]) && !is_numeric($argv[1]) && isset($argv[2]) && $argv[2] == 'full')
 {

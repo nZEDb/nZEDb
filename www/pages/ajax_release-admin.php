@@ -1,7 +1,7 @@
 <?php
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/category.php");
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'category.php';
 
 $page = new AdminPage(true);
 $releases = new Releases();

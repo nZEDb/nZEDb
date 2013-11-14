@@ -7,10 +7,9 @@
  * there is another script called resetRelnameStatus.php
  */
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/namefixer.php");
-require_once(FS_ROOT."/../../../www/lib/predb.php");
+require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once nZEDb_LIB . 'namefixer.php';
+require_once nZEDb_LIB . 'predb.php';
 
 $n = "\n";
 $namefixer = new Namefixer();
@@ -24,8 +23,8 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 
 	if ($argv[1] == 7 || $argv[1] == 8)
 	{
-		require_once(FS_ROOT.'/../../../www/lib/site.php');
-		require_once(FS_ROOT.'/../../../www/lib/nntp.php');
+		require_once nZEDb_LIB . 'site.php';
+		require_once nZEDb_LIB . 'nntp.php';
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new Nntp();

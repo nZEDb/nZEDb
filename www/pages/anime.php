@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/releases.php");
-require_once(WWW_DIR."/lib/anidb.php");
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'anidb.php';
 
 $Releases = new Releases;
 $AniDB = new AniDB;

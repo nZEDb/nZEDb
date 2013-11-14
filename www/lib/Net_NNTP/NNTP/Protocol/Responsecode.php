@@ -2,14 +2,14 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * 
- * 
+ *
+ *
  * PHP versions 4 and 5
  *
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3CÂ® SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,10 +61,10 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2011 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3CÂ® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id: Responsecode.php 306619 2010-12-24 12:16:07Z heino $
  * @link       http://pear.php.net/package/Net_NNTP
- * @see        
+ * @see
  * @since      File available since release 1.3.0
  */
 
@@ -401,7 +401,7 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_ACCEPTED', 281);
  * @access     public
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
-    
+
 
 // }}}
 // {{{ Constants: Misc

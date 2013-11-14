@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/page.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/namecleaning.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/nntp.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'page.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'nntp.php';
 
 class Import
 {

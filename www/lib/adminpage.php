@@ -1,7 +1,7 @@
 <?php
-require_once('config.php');
-require_once(WWW_DIR.'lib/framework/basepage.php');
-require_once(WWW_DIR.'lib/users.php');
+require_once './config.php';
+require_once nZEDb_LIB . 'framework/basepage.php';
+require_once nZEDb_LIB . 'users.php';
 
 class AdminPage extends BasePage
 {
@@ -10,9 +10,9 @@ class AdminPage extends BasePage
 		parent::BasePage();
 
 		$this->smarty->setTemplateDir(array(
-			'user_admin' => WWW_DIR.'themes/'.$this->site->style.'/templates/admin',
-			'admin' => WWW_DIR.'themes/Default/templates/admin',
-			'frontend' => WWW_DIR.'themes/Default/templates/frontend',
+			'user_admin' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/admin',
+			'admin' => nZEDb_WWW.'themes/Default/templates/admin',
+			'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
 		));
 
 		$users = new Users();

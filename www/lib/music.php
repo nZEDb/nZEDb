@@ -1,11 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/amazon.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/genres.php");
-require_once(WWW_DIR."/lib/site.php");
-require_once(WWW_DIR."/lib/util.php");
-require_once(WWW_DIR."/lib/releaseimage.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'amazon.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'genres.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'releaseimage.php';
 
 class Music
 {
@@ -20,7 +20,7 @@ class Music
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
         $this->db = new DB();
-		$this->imgSavePath = WWW_DIR.'covers/music/';
+		$this->imgSavePath = nZEDb_WWW.'covers/music/';
 	}
 
 	public function getMusicInfo($id)

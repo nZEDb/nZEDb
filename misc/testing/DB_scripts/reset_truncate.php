@@ -1,8 +1,8 @@
 <?php
 // This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/site.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
 
 if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 {
@@ -25,11 +25,11 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))
 
 	if ($tablepergroup == 1)
 	{
-		$sql = "SHOW tables";
+		$sql = "SHOW table status";
 		$tables = $db->query($sql);
 		foreach($tables as $row)
 		{
-			$tbl = $row['tables_in_'.DB_NAME];
+			$tbl = $row['name'];
 			if (preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl))
 			{
 				if ($argv[1] == "drop")

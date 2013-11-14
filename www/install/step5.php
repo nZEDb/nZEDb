@@ -1,7 +1,7 @@
 <?php
-require_once('../config.php');
-require_once('../lib/installpage.php');
-require_once('../lib/install.php');
+require_once realpath(dirname(__FILE__) . '/../config.php');
+require_once '../lib/installpage.php';
+require_once '../lib/install.php';
 
 $page = new Installpage();
 $page->title = "Setup Admin User";
@@ -28,7 +28,7 @@ if  ($page->isPostBack())
 		$cfg->error = true;
 	else
 	{
-		require_once($cfg->WWW_DIR.'/lib/users.php');
+		require_once $cfg->nZEDb_WWW.'/lib/users.php';
 
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER))

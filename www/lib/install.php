@@ -21,10 +21,10 @@ class Install {
 	public $NNTP_PORT_A = 119;
 	public $NNTP_SSLENABLED_A = false;
 
-	public $WWW_DIR;
+	public $nZEDb_WWW;
 	public $SMARTY_DIR;
 	public $DB_DIR;
-	public $MISC_DIR;
+	public $nZEDb_MISC;
 	public $INSTALL_DIR;
 
 	public $ADMIN_USER;
@@ -79,12 +79,12 @@ class Install {
 	public $error = false;
 
 	function Install() {
-		$this->WWW_DIR = dirname(realpath('.'));
-		$this->SMARTY_DIR = $this->WWW_DIR.'/lib/smarty';
+		$this->nZEDb_WWW = dirname(realpath('.'));
+		$this->SMARTY_DIR = $this->nZEDb_WWW.'/lib/smarty';
 		$this->DB_DIR = dirname(realpath('..')).'/db';
-		$this->MISC_DIR = dirname(realpath('..')).'/misc';
+		$this->nZEDb_MISC = dirname(realpath('..')).'/misc';
 		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))).'/nzbfiles/';
-		$this->INSTALL_DIR = $this->WWW_DIR.'/install';
+		$this->INSTALL_DIR = $this->nZEDb_WWW.'/install';
 	}
 
 	public function setSession() {
@@ -142,7 +142,7 @@ class Install {
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A?"true":"false"), $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
-		return @file_put_contents($this->WWW_DIR.'/config.php', $tmpCfg);
+		return @file_put_contents($this->nZEDb_WWW.'/config.php', $tmpCfg);
 	}
 
 	public function saveInstallLock() {

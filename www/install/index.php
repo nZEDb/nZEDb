@@ -1,6 +1,6 @@
 <?php
 @session_start();
-require_once('../lib/install.php');
+require_once '../lib/install.php';
 $page_title = "Welcome";
 
 $cfg = new Install();

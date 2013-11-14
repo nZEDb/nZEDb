@@ -1,10 +1,10 @@
 <?php
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/tmux.php');
+require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'tmux.php';
 
 $db = new DB();
-$DIR = MISC_DIR;
+$DIR = nZEDb_MISC;
 $smarty = SMARTY_DIR.'templates_c/';
 $dbname = DB_NAME;
 

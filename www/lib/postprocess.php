@@ -1,28 +1,28 @@
 <?php
-require_once(WWW_DIR.'lib/anidb.php');
-require_once(WWW_DIR.'lib/books.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/console.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/movie.php');
-require_once(WWW_DIR.'lib/music.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/nzb.php');
-require_once(WWW_DIR.'lib/nzbcontents.php');
-require_once(WWW_DIR.'lib/predb.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/releaseextra.php');
-require_once(WWW_DIR.'lib/releasefiles.php');
-require_once(WWW_DIR.'lib/releaseimage.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/tvrage.php');
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/rarinfo/archiveinfo.php');
-require_once(WWW_DIR.'lib/rarinfo/par2info.php');
-require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'anidb.php';
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'music.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'nzbcontents.php';
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'releaseextra.php';
+require_once nZEDb_LIB . 'releasefiles.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'tvrage.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIB . 'rarinfo/par2info.php';
+require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class PostProcess
 {
@@ -32,7 +32,7 @@ class PostProcess
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->addpar2 = ($this->site->addpar2 == '0') ? false : true;
-		$this->audSavePath = WWW_DIR.'covers/audiosample/';
+		$this->audSavePath = nZEDb_WWW.'covers/audiosample/';
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
 		$this->DEBUG_ECHO = ($this->site->debuginfo == '0') ? false : true;
