@@ -1936,7 +1936,7 @@ class Releases
 			echo $this->c->set256($this->primary).$this->consoleTools->convertTime(TIME() - $stage7).".\n".$this->c->rsetColor();
 	}
 
-	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false)
+	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false, $nntp)
 	{
 		$DIR = nZEDb_MISC;
 		if ($this->command_exist('python3'))
@@ -2001,7 +2001,7 @@ class Releases
 		$this->processReleasesStage1($groupID, $echooutput=false);
 		$this->processReleasesStage2($groupID, $echooutput=false);
 		$this->processReleasesStage3($groupID, $echooutput=false);
-		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false);
+		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false, $nntp);
 		$this->processReleasesStage4dot5($groupID, $echooutput=false);
 		$deletedCount = $this->processReleasesStage7b($groupID, $echooutput=false);
 
