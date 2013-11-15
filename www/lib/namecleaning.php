@@ -121,8 +121,8 @@ class nameCleaning
 				return $this->downunder();
 			case 'alt.binaries.dvd':
 				return $this->dvd();
-            case 'alt.binaries.dvdr':
-                return $this->dvdr();
+			case 'alt.binaries.dvdr':
+				return $this->dvdr();
 			case 'alt.binaries.dvd-r':
 				return $this->dvd_r();
 			case 'alt.binaries.erotica':
@@ -846,15 +846,15 @@ class nameCleaning
 			return $this->generic();
 	}
 
-    // alt.binaries.dvdr
-    public function dvdr()
-    {
-        //Golem.The.Petrified.Garden.1993.NTSC.DVDR-FiCODVDR [001/111] - #34;ficodvdr-golempet.nfo#34; yEnc
-        if (preg_match('/^([a-zA-Z].+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
-            return $match[1];
-        else
-            return $this->generic();
-    }
+	// alt.binaries.dvdr
+	public function dvdr()
+	{
+		//Golem.The.Petrified.Garden.1993.NTSC.DVDR-FiCODVDR [001/111] - #34;ficodvdr-golempet.nfo#34; yEnc
+		if (preg_match('/^([a-zA-Z].+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
 
 	// alt.binaries.dvd-r
 	public function dvd_r()
@@ -2139,14 +2139,14 @@ class nameCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
-        else if ($groupName === "alt.binaries.dvdr")
-        {
+		else if ($groupName === "alt.binaries.dvdr")
+		{
 			//Golem.The.Petrified.Garden.1993.NTSC.DVDR-FiCODVDR [001/111] - #34;ficodvdr-golempet.nfo#34; yEnc
-            if (preg_match('/^([a-zA-Z].+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
-                return $match[1];
-            else
-                return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
-        }
+			if (preg_match('/^([a-zA-Z].+) \[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
 
 		else if ($groupName === "alt.binaries.dvd-german")
 		{
@@ -2471,9 +2471,9 @@ class nameCleaning
 			//Disney short films collection by mayhem masta"1923 - Alice's Wonderland.vol15+7.par2" yEnc
 			else if (preg_match('/.+?by mayhem masta"(.+?)'.$this->e1, $subject, $match))
 				return $match[1];
- 	       //(http://dream-of-usenet.info) - [01/43] - "Nicht.auflegen.2002.German.DL.AC3.BDRip.XviD-iNCEPTiON.nfo" yEnc
-    	    else if (preg_match('/^\(.+usenet\.info\)[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
-        	    return $match[1];
+ 		   //(http://dream-of-usenet.info) - [01/43] - "Nicht.auflegen.2002.German.DL.AC3.BDRip.XviD-iNCEPTiON.nfo" yEnc
+			else if (preg_match('/^\(.+usenet\.info\)[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -2730,11 +2730,11 @@ class nameCleaning
 			//[27267]-[FULL]-[#a.b.teevee@EFNet]-[Only.Fools.And.Horses.S04E07.iNTERNAL.DVDRip.XviD-aAF]- [00/27] - "aaf-ofah.s04e07.nzb" (1/1) yEnc
 			else if (preg_match('/^\[\d+\][ -]\[FULL\][ -]\[.+\][ -]\[(.+)\][ -]{0,3}\[\d+\/\d+\][ -]{0,3}".+" \(\d+\/\d+\) yEnc$/', $subject, $match))
 				return $match[1];
-	        //<<<Nimue>>><<<Die.Geschichte.der.Fliegerei.E05.Von.der.Luffahrt.zur.Raumfahrt.GERMAN.DOKU.FS.DVDRip.XviD-NGE>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "nge-dgdf-e05-xvid.r04" >< 07/39 (1,51 GB) >< 47,68 MB > yEnc
+			//<<<Nimue>>><<<Die.Geschichte.der.Fliegerei.E05.Von.der.Luffahrt.zur.Raumfahrt.GERMAN.DOKU.FS.DVDRip.XviD-NGE>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "nge-dgdf-e05-xvid.r04" >< 07/39 (1,51 GB) >< 47,68 MB > yEnc
 			//<<<CowboyUp26-0706>>><<<Spartacus.S02E09.Monster.GERMAN.DUBBED.720p.HDTV.x264-ZZGtv>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "zzgtv-spartacus-s02e09.r00" >< 04/43 (1,72 GB) >< 47,68 MB > yEnc
 			//<<<Nimue>>><<<Die.Geschichte.der.Fliegerei.E05.Von.der.Luffahrt.zur.Raumfahrt.GERMAN.DOKU.FS.DVDRip.XviD-NGE>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "nge-dgdf-e05-xvid.r04" >< 07/39 (1,51 GB) >< 47,68 MB > yEnc
-    	    else if (preg_match('/^<<<(Nimue|CowboyUp\d+(-\d+)?)>>><<<(.+)>>>.+<<<Powered by.+yEnc$/i', $subject, $match))
-        	    return $match[2];
+			else if (preg_match('/^<<<(Nimue|CowboyUp\d+(-\d+)?)>>><<<(.+)>>>.+<<<Powered by.+yEnc$/i', $subject, $match))
+				return $match[2];
 			//[ Ugly.Betty.S02E13.DVDRip.XviD-SAiNTS ] - [01/39] - "Ugly.Betty.S02E13.DVDRip.XviD-SAiNTS.par2" yEnc
 			else if (preg_match('/^\[ ([a-zA-Z].+) \] - \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
 				return $match[1];

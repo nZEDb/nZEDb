@@ -5,7 +5,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4291";
+$version="0.3r4292";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
