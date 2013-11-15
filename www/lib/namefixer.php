@@ -165,7 +165,7 @@ class Namefixer
 	public function fixNamesWithPar2($time, $echo, $cats, $namestatus, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(namefixer->fixNamesWithPar2).\n"));
 
 		if ($time == 1)
 			echo "Fixing search names in the past 6 hours using the par2 files.\n";

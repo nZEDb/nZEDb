@@ -5,7 +5,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4288";
+$version="0.3r4290";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -24,6 +24,7 @@ $patch = $site->sqlpatch;
 $alternate_nntp = (!empty($site->alternate_nntp)) ? $site->alternate_nntp : 0;
 $tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
+$running = (!empty($tmux->running)) ? $tmux->running : "FALSE";
 
 if (command_exist("python3"))
 	$PYTHON = "python3 -OOu";
@@ -193,6 +194,7 @@ $proc_tmux = "SELECT
 	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_end') AS colors_end,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query,
+	(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS running,
 	(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs,
 	(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs,
 	(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs,
@@ -396,7 +398,6 @@ while($i > 0)
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
-	$running = (!empty($tmux->running)) ? $tmux->running : "FALSE";
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == "TRUE"))
 	{
 		echo "\nNote:\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n";
@@ -563,6 +564,7 @@ while($i > 0)
 	if ($proc_tmux_result[0]['dehash'] != NULL) { $dehash = $proc_tmux_result[0]['dehash']; }
 	if ($proc_tmux_result[0]['newestname']) { $newestname = $proc_tmux_result[0]['newestname']; }
 	if ($proc_tmux_result[0]['show_query']) { $show_query = $proc_tmux_result[0]['show_query']; }
+	if ($proc_tmux_result[0]['running']) { $running = $proc_tmux_result[0]['running']; }
 
 	if ($split_result[0]['oldestnzb'] != NULL) { $oldestnzb = $split_result[0]['oldestnzb']; }
 	if ($split_result[0]['newestpre']) { $newestpre = $split_result[0]['newestpre']; }
