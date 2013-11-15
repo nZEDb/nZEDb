@@ -5,6 +5,7 @@ require_once nZEDb_LIB . 'tmux.php';
 
 $db = new DB();
 $DIR = nZEDb_MISC;
+$ROOTDIR = nZEDb_ROOT;
 $smarty = SMARTY_DIR.'templates_c/';
 $dbname = DB_NAME;
 
@@ -28,7 +29,7 @@ if( isset($argv[1]) )
 
 	if ( $running == 'TRUE' && $argv[1] == 'true' )
 	{
-		$db->queryExec("update tmux set value = 'FALSE' where setting = 'RUNNING'");
+		$db->queryExec('update tmux set value = \'FALSE\' where setting = \'RUNNING\'');
 		$sleep = $delay;
 		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
 		$restart = 'true';
@@ -37,7 +38,7 @@ if( isset($argv[1]) )
 
 	if ( $patch == 'TRUE' )
 	{
-		exec('cd $DIR && git pull');
+		exec('cd $ROOTDIR && git pull');
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0)
@@ -48,7 +49,7 @@ if( isset($argv[1]) )
 		else
 			echo 'Nothing to remove from '.$smarty."\n";
 
-		echo 'Patching database - $dbname\n';
+		echo 'Patching database - '.$dbname."\n";
 		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
 	}
 
@@ -71,7 +72,7 @@ if( isset($argv[1]) )
 	}
 	else if ($db->dbSystem() == 'pgsql')
 	{
-		$alltables = $db->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
+		$alltables = $db->query('SELECT table_name as name FROM information_schema.tables WHERE table_schema = \'public\'');
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table)
 		{
@@ -82,7 +83,7 @@ if( isset($argv[1]) )
 	if ( $restart == 'true'  && $argv[1] == 'true' )
 	{
 		echo "Starting tmux scripts\n";
-		$db->queryExec("update tmux set value = 'TRUE' where setting = 'RUNNING'");
+		$db->queryExec('update tmux set value = \'TRUE\' where setting = \'RUNNING\'');
 	}
 }
 else

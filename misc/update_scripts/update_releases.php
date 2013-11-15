@@ -8,12 +8,13 @@ require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'nntp.php';
 require_once nZEDb_LIB . 'site.php';
 
+$s = new Sites();
+$site = $s->get();
 
 if (isset($argv[2]) && $argv[2] === 'true')
 {
-	$site = new Sites();
 	$nntp = new Nntp();
-	if (($site->get()->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 	{
 		echo $c->error("Unable to connect to usenet.\n");
 		return;
