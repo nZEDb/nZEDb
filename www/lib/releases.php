@@ -1619,7 +1619,7 @@ class Releases
 		}
 	}
 
-	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false)
+	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false, $nntp)
 	{
 		$db = $this->db;
 		$where = (!empty($groupID)) ? 'WHERE relnamestatus = 0 AND groupid = '.$groupID : 'WHERE relnamestatus = 0';
@@ -1634,7 +1634,7 @@ class Releases
 		if ($postproc == 1)
 		{
 			$postprocess = new PostProcess(true);
-			$postprocess->processAll();
+			$postprocess->processAll($nntp);
 		}
 		else
 		{
@@ -1964,7 +1964,7 @@ class Releases
 			}
 
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
-			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false);
+			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false, $nntp);
 			$this->processReleasesStage7a($groupID, $this->echooutput);
 			$loops++;
 		// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
@@ -1972,7 +1972,7 @@ class Releases
 		return $tot_retcount;
 	}
 
-	public function processReleases($categorize, $postproc, $groupName, $echooutput=false)
+	public function processReleases($categorize, $postproc, $groupName, $echooutput=false, $nntp)
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0)
