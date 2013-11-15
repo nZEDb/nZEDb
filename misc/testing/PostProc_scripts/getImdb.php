@@ -1,7 +1,7 @@
 <?php
 //This script will update all records in the movieinfo table
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_WWW . 'config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'movie.php';

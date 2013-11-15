@@ -2,7 +2,7 @@
 /* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
  * Type php resetSearchname.php to see detailed info. */
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'namefixer.php';

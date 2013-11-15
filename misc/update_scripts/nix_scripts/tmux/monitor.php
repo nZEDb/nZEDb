@@ -1,11 +1,11 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../../www/config.php';
 require_once nZEDb_LIB . 'postprocess.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4279";
+$version="0.3r4288";
 
 $db = new DB();
 $DIR = nZEDb_MISC;

@@ -1,23 +1,37 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/config.php');
+require_once dirname(__FILE__) . '/config.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'site.php';
+
+
+if (isset($argv[2]) && $argv[2] === 'true')
+{
+	$site = new Sites();
+	$nntp = new Nntp();
+	if (($site->get()->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	{
+		echo $c->error("Unable to connect to usenet.\n");
+		return;
+	}
+}
 
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2]))
 {
 	$releases = new Releases();
 	if ($argv[1] == 1 && $argv[2] == 'true')
-		$releases->processReleases(1, 1, $groupName, true);
+		$releases->processReleases(1, 1, $groupName, true, $nntp);
 	else if ($argv[1] == 1 && $argv[2] == 'false')
-		$releases->processReleases(1, 2, $groupName, true);
+		$releases->processReleases(1, 2, $groupName, true, null);
 	else if ($argv[1] == 2 && $argv[2] == 'true')
-		$releases->processReleases(2, 1, $groupName, true);
+		$releases->processReleases(2, 1, $groupName, true, $nntp);
 	else if ($argv[1] == 2 && $argv[2] == 'false')
-		$releases->processReleases(2, 2, $groupName, true);
+		$releases->processReleases(2, 2, $groupName, true, null);
 	else if ($argv[1] == 4 && ($argv[2] == 'true' || $argv[2] == 'false'))
 	{
 		echo "Moving all releases to other -> misc, this can take a while, be patient.\n";
@@ -66,5 +80,6 @@ else
 			."php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n"
 			."php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n");
 }
-
+if ($site->get()->nntpproxy === false)
+    $nntp->doQuit();
 ?>

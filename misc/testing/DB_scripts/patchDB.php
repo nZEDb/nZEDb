@@ -1,7 +1,7 @@
 <?php
 //This inserts the patches into MySQL and PostgreSQL.
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
@@ -118,14 +118,15 @@ if (isset($os) && $os == "unix")
 	$patches = array();
 	$db = new DB();
 	$backedup = false;
+	$c = new ColorCLI();
 
 	if ($db->dbSystem() == "mysql")
-		$path = '/../../../db/mysql_patches';
+		$path = nZEDb_ROOT . 'db/mysql_patches/';
 	else if ($db->dbSystem() == "pgsql")
-		$path = '/../../../db/pgsql_patches';
+		$path = nZEDb_ROOT . 'db/pgsql_patches/';
 
 	// Open the patch folder.
-	if ($handle = @opendir(FS_ROOT.$path))
+	if ($handle = @opendir($path))
 	{
 		while (false !== ($patch = readdir($handle)))
 		{
@@ -136,16 +137,17 @@ if (isset($os) && $os == "unix")
 	else
 		exit($c->error("Have you changed the path to the patches folder, or do you have the right permissions?\n"));
 
-	if ($db->dbSystem() == "mysql")
-		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', FS_ROOT);
+/*	if ($db->dbSystem() == "mysql")
+		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', nZEDb_ROOT);
 	else if ($db->dbSystem() == "pgsql")
-		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', FS_ROOT);
-	sort($patches);
+		$patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', nZEDb_ROOT);
+*/	sort($patches);
+
 	foreach($patches as $patch)
 	{
 		if (preg_match('/\.sql$/i', $patch))
 		{
-			$filepath = $patchpath.$patch;
+			$filepath = $path.$patch;
 			$file = fopen($filepath, "r");
 			$patch = fread($file, filesize($filepath));
 			if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(\d{1,})\'? WHERE `?setting`? = \'sqlpatch\'/i', $patch, $patchnumber))

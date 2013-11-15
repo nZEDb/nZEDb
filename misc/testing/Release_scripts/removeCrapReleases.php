@@ -27,7 +27,7 @@ else if (isset($argv[1]) && $argv[1] == 'false' && !isset($argv[2]))
 		."php removeCrapReleases.php true full gibberish runs only this type\n");
 }
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'site.php';

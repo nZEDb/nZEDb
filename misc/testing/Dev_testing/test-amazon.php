@@ -1,6 +1,6 @@
 <?php
 // Test if your amazon keys are working.
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'amazon.php';
 require_once nZEDb_LIB . 'site.php';
 

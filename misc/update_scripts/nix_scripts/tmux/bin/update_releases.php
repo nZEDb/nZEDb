@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../../config.php');
+require_once dirname(__FILE__) . '/../../../config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'groups.php';
@@ -59,7 +59,7 @@ elseif ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);
-	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true);
+	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true, null);
 	$releases->processReleasesStage7b($groupid='', true);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

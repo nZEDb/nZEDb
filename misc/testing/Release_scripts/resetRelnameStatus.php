@@ -1,7 +1,7 @@
 <?php
 /* This script resets the relnamestatus to 1 on every release that doesn't have relnamestatus 3 or 7, so you can rerun fixReleaseNames.php miscsorter etc*/
 
-require_once realpath(dirname(__FILE__) . '../../../www/config.php');
+require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 
 if (!isset($argv[1]))
