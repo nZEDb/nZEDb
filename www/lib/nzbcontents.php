@@ -19,7 +19,7 @@ Class NZBcontents
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(nzbcontents->getNfoFromNZB).\n"));
 
 		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
 			return $fetchedBinary;
@@ -64,7 +64,7 @@ Class NZBcontents
 	public function checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(nzbcontents->checkPAR2).\n"));
 
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
@@ -88,7 +88,7 @@ Class NZBcontents
 	public function NZBcompletion($guid, $relID, $groupID, $nntp, $db, $nfocheck=false)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(nzbcontents->NZBcompletion).\n"));
 
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
@@ -152,7 +152,7 @@ Class NZBcontents
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(nzbcontents->NFOfromNZB).\n"));
 
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
 		if ($messageid !== false)
@@ -180,7 +180,7 @@ Class NZBcontents
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("Not connected to usenet(nzbcontents->hiddenNFOfromNZB).\n"));
 
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
