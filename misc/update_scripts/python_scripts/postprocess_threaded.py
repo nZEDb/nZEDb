@@ -92,7 +92,7 @@ elif sys.argv[1] == "nfo":
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "movie":
