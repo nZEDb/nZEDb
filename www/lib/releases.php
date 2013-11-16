@@ -1318,7 +1318,7 @@ class Releases
 		}
 
 		if ($this->echooutput)
-			echo $this->c->primary(number_format($retcount).' Releases added and '.number_format($duplicate).' marked for deletion in '.$this->consoleTools->convertTime(TIME() - $stage4).'.');
+			echo $this->c->primary(number_format($retcount).' Releases added and '.number_format($duplicate).' marked for deletion in '.$this->consoleTools->convertTime(TIME() - $stage4));
 		return $retcount;
 	}
 
@@ -1516,9 +1516,9 @@ class Releases
 
 		$timing = $this->c->primary($this->consoleTools->convertTime(TIME() - $stage5));
 		if ($this->echooutput && $nzbcount > 0)
-			echo $this->c->primary("\n".number_format($nzbcount).' NZBs created in '. $timing.'.');
+			echo $this->c->primary("\n".number_format($nzbcount).' NZBs created in '. $timing);
 		elseif ($this->echooutput)
-			echo $this->c->primary(number_format($nzbcount).' NZBs created in '. $timing.'.');
+			echo $this->c->primary(number_format($nzbcount).' NZBs created in '. $timing);
 		return $nzbcount;
 	}
 
@@ -1568,11 +1568,7 @@ class Releases
 							}
 						}
 						else
-						{
 							$db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
-							if ($this->echooutput)
-								echo $this->c->primary('.');
-						}
 					}
 					if ($bFound)
 					{
@@ -1593,18 +1589,14 @@ class Releases
 						$updated++;
 					}
 					else
-					{
 						$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = '.$rowrel['id']);
-						if ($this->echooutput)
-							echo $this->c->primary('.');
-					}
 				}
 				if ($this->echooutput && $bFound)
 					echo "\n";
 			}
 
 			if ($this->echooutput)
-				echo $this->c->primary("\n".number_format($iFoundcnt).' Releases updated in '.$this->consoleTools->convertTime(TIME() - $stage8).'.');
+				echo $this->c->primary("\n".number_format($iFoundcnt).' Releases updated in '.$this->consoleTools->convertTime(TIME() - $stage8));
 		}
 	}
 
@@ -1631,7 +1623,7 @@ class Releases
 				echo $this->c->primary("Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
 		}
 		if ($this->echooutput)
-			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage6).'.');
+			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage6));
 	}
 
 	public function processReleasesStage7a($groupID, $echooutput=false)
@@ -1911,18 +1903,18 @@ class Releases
 		else
 			$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $page->site->partretentionhours));
 
-		if ($this->echooutput)
-			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other');
 		if ($this->echooutput && $this->completion > 0)
-			echo $this->c->primary(', '.number_format($completioncount).' under '.$this->completion.'% completion. Removed '.number_format($reccount).' parts/binaries/collection rows.');
+			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other, '.number_format($completioncount).' under '.$this->completion.'% completion. Removed '.number_format($reccount).' parts/binaries/collection rows.');
+		if ($this->echooutput && $this->completion == 0)
+			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other');
 		else
 		{
 			if ($this->echooutput)
-				echo $this->c->primary(". \nRemoved ".number_format($reccount).' parts/binaries/collection rows.');
+				echo $this->c->primary("Removed ".number_format($reccount).' parts/binaries/collection rows.');
 		}
 
 		if ($this->echooutput)
-			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage7).'.');
+			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage7));
 	}
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput=false, $nntp)
@@ -1949,7 +1941,7 @@ class Releases
 					echo $this->c->set256($this->header)."Stage 5b -> Request ID Threaded lookup.\n".$this->c->rsetColor();
 				passthru("$PYTHON ${DIR}update_scripts/python_scripts/requestid_threaded.py");
 				if ($this->echooutput)
-					echo $this->c->primary("\nReleases updated in ".$this->consoleTools->convertTime(TIME() - $stage8).'.');
+					echo $this->c->primary("\nReleases updated in ".$this->consoleTools->convertTime(TIME() - $stage8));
 			}
 
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;

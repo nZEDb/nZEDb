@@ -46,21 +46,21 @@ if (isset($argv[3]))
 	{
 		if ($db->dbSystem() == 'mysql')
 		{
-			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
-			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." DAY");
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." HOUR");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL ".$argv[3]." HOUR");
 		}
 		else
 		{
-			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
-			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." DAYS'");
+			$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." HOURS'");
+			printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND r.".$argv[1]." > NOW() - INTERVAL '".$argv[3]." HOURS'");
 		}
 	}
 }
 else
-	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid or newer than x adddate/postdate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, adddate/postdate ] equals [ name, guid, days(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid or newer than x hours adddate/postdate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, adddate/postdate ] equals [ name, guid, hours(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n\n");
 
 if ($argv[1] == "adddate")
-	echo "\nDeleting ".sizeof($relids)." releases and NZB's for past ".$argv[3]." days\n";
+	echo "\nDeleting ".sizeof($relids)." releases and NZB's for past ".$argv[3]." hours\n";
 else
 	echo "\nDeleting ".sizeof($relids)." releases and NZB's for ".$argv[3]."\n";
 

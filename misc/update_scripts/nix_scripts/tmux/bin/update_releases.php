@@ -31,15 +31,15 @@ if ($pieces[0] != 'Stage7b')
 		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
 		$test->execute();
 		// Don't even process the group if no collections
-		//if ($test->rowCount() == 0)
-		//{
+		if ($test->rowCount() == 0)
+		{
 			//$mask = "%-30.30s has %s collections, skipping.\n";
 			//printf($mask, str_replace('alt.binaries', 'a.b', $groupname), number_format($test->rowCount()));
 			//exit();
-		//}
+		}
 	} catch (PDOException $e) {
 		//No collections available
-		//exit($groupname." has no collections to process\n");
+		//exit($groupname." has no collections table to process.\n");
 		exit();
 	}
 
