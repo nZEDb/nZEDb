@@ -413,8 +413,11 @@ class PostProcess
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
-				if ($this->echooutput)
+				if ($this->echooutput && $releaseToWork == '')
 					echo '['.$startCount--.']';
+				else if ($this->echooutput)
+					echo '['.$rel['id']--.']';
+
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
 				if (!is_dir($this->tmpPath))
