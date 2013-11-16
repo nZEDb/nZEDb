@@ -1,7 +1,8 @@
 <?php
 // This script removes all NZB's not found in the DB and all releases with no NZB.
 
-if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
+passthru('clear');
+if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 {
 	require_once dirname(__FILE__) . '/../../../www/config.php';
 	require_once nZEDb_LIB . 'site.php';
@@ -13,19 +14,22 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 	$site = $s->get();
 	$db = new DB();
 	$releases = new Releases();
+	$nzb = new NZB();
 	$consoletools = new ConsoleTools();
 	$nzb = new NZB(true);
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "";
-/*	echo "Getting List of nzbs to check against db.\n";
+	echo "Getting List of nzbs to check against db.\n";
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath)
 	{
 		if (is_file($filePath))
 		{
-			if (preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid))
+			$nzbpath = 'compress.zlib://'.$filePath;
+			$nzbfile = @simplexml_load_file($nzbpath);
+			if ($nzbfile && preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid))
 			{
 				$res = $db->queryOneRow(sprintf("SELECT id, guid, nzbstatus FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false)
@@ -40,9 +44,16 @@ if (isset($argv[1]) && $argv[1] === "true" || $argv[1] === "delete")
 				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." ".$couldbe."deleted from disk,  Running time: ".$time);
 			}
 		}
+		else
+		{
+			if ($argv[1] === "delete")
+				$releases->fastDelete("NULL", $guid[1], $site);
+			$deleted++;
+		}
+		
 	}
 	echo "\n".number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs ".$couldbe."deleted.\n";
-*/
+
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	echo "\nGetting List of releases to check against nzbs.\n";
