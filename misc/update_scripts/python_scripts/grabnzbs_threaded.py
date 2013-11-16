@@ -30,6 +30,7 @@ def connect():
 			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 		except ImportError:
 			sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+	con.autocommit(True)
 	cur = con.cursor()
 	return cur, con
 
@@ -46,18 +47,27 @@ print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strft
 
 #get array of collectionhash
 cur = connect()
-cur[0].execute("SELECT value FROM site WHERE setting = 'grabnzbs'")
-grab = cur[0].fetchone()
-if int(grab[0]) == 0:
-	sys.exit("GrabNZBs is disabled")
-cur[0].execute("SELECT value FROM site WHERE setting = 'delaytime'")
-delay = cur[0].fetchone()
+cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'grabnzbs') AS a, (SELECT value FROM site WHERE setting = 'delaytime') AS b, (SELECT value FROM site WHERE setting = 'maxgrabnzbs') AS c")
+dbgrab = cur[0].fetchall()
+grab = int(dbgrab[0][0])
+delay = int(dbgrab[0][1])
+maxnzb = dbgrab[0][2]
 
+if grab == 0:
+	sys.exit("GrabNZBs is disabled")
+
+#delete from nzbs where size greater than x
+cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) > "+maxnzb)
+delnzbs = cur[0].fetchall()
+for delnzb in delnzbs:
+	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
+print("Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
+	
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
 elif conf['DB_SYSTEM'] == "pgsql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL '%s HOURS'"
-cur[0].execute(run, (int(delay[0])))
+cur[0].execute(run, (delay))
 datas = cur[0].fetchall()
 if len(datas) == 0:
 	sys.exit("No NZBs to Grab")

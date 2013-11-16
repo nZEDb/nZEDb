@@ -903,6 +903,14 @@
 	</td>
 </tr>
 
+<tr>
+	<td><label for="maxgrabnzbs">Maximum Parts to Grab NZBs:</label></td>
+	<td>
+		<input class="short" id="maxgrabnzbs" name="maxgrabnzbs" type="text" value="{$fsite->maxgrabnzbs}" />
+		<div class="hint">The maximum number of parts to download when running GrabNZBS, all potential nzbs exceeding this number will be deleted from the nzbs table.</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 

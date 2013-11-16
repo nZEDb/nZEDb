@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-11-16 -> jonnyboy -> added check for valid xml in check_nzbs.php
+2013-11-16 -> jonnyboy -> added maximum parts to download when usign GrabNZBs
+                          added check for valid xml in check_nzbs.php
                           added unique index on predb md5
                           possible fix for utf-8 encode errors in py postprocess, added half second sleep after making an nntp connection, to allow nntpproxy time to wake up
 2013-11-15 -> jonnyboy -> Added more regexes to namecleaning, added 2 functions to colorcli, fixed bugs

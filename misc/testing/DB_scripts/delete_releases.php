@@ -32,7 +32,7 @@ if (isset($argv[3]))
 		if ($db->dbSystem() == 'mysql')
 			$like = ' LIKE';
 		$relids = $db->query("SELECT id, guid, fromname FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
-		printf("SELECT id, guid, fromanme FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
+		echo "SELECT id, guid, fromanme FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'";
 	}
 	elseif ($argv[2] == "like" && $argv[1] == "groupname")
 	{
