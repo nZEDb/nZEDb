@@ -5,9 +5,15 @@
 
 if [ -e "nZEDbBase.php" ]
 then
-	export NZEDB_ROOT="$(pwd)"
+    export NZEDB_ROOT="$(pwd)"
+elif [ -e "../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
+elif [ -e "../../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 else
-	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+    export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
 export START_PATH="${NZEDB_ROOT}"
@@ -20,8 +26,6 @@ export NZEDB_SLEEP_TIME="60" # in seconds
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }
-
-date1=`date +%s`
 
 #delete stale tmpunrar folders
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
@@ -86,6 +90,7 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
+#	sleep $NZEDB_SLEEP_TIME
 	if [[ $# -eq 1 && $1 == "true" ]]
 	then
 		loop=0
@@ -94,5 +99,4 @@ do
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."
 	sleep 2
-#	sleep $NZEDB_SLEEP_TIME
 done

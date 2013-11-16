@@ -1508,7 +1508,7 @@ class Releases
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						echo $this->c->primary($this->consoleTools->overWrite('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
+						echo $this->c->primaryOver($this->consoleTools->overWrite('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
 				}
 			}
 		}
@@ -1638,7 +1638,7 @@ class Releases
 		else
 		{
 			if ($this->echooutput)
-				echo $this->c->primary('Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.');
+				echo $this->c->primary("Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
 		}
 		if ($this->echooutput)
 			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage6).'.');
