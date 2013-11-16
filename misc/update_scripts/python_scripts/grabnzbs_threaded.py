@@ -52,8 +52,6 @@ if int(grab[0]) == 0:
 	sys.exit("GrabNZBs is disabled")
 cur[0].execute("SELECT value FROM site WHERE setting = 'delaytime'")
 delay = cur[0].fetchone()
-cur[0].execute("SELECT COUNT(*) FROM collections")
-collstart = cur[0].fetchone()
 
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
@@ -126,11 +124,6 @@ def main():
 	print("\n\nPopulate nzb_guids Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
 	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
-	cur = connect()
-	cur[0].execute("SELECT COUNT(*) FROM collections")
-	collend = cur[0].fetchone()
-	print("{} duplicate Collections were deleted during this process.\n\n".format("{:,}".format(collstart[0]-collend[0])))
-	disconnect(cur[0], cur[1])
 
 if __name__ == '__main__':
 	main()
