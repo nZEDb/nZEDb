@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-3013-11-15 -> jonnyboy -> Added more regexes to namecleaning, added 2 functions to colorcli, fixed bugs
+2013-11-16 -> jonnyboy -> possible fix for utf-8 encode errors in py postprocess
+2013-11-15 -> jonnyboy -> Added more regexes to namecleaning, added 2 functions to colorcli, fixed bugs
 2013-11-14 -> niel     -> Changed dates to use international format
 2013-11-14 -> ThePeePs -> Added Script in testing/DB_scripts to convert to TPG.
 2013-11-14 -> niel     -> Conversion of require(_once) constructs to use path constants.
