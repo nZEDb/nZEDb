@@ -7,7 +7,8 @@ require_once nZEDb_LIB . 'site.php';
 
 $binaries = new Binaries();
 $c = new ColorCLI;
-$site = new Sites();
+$s = new Sites();
+$site = $s->get();
 
 // Create the connection here and pass
 $nntp = new Nntp();
@@ -16,6 +17,8 @@ if ($nntp->doConnect() === false)
 	echo $this->c->error('Unable to connect to usenet.'."\n");
 	return;
 }
+if ($site->nntpproxy === true)
+	usleep(500000);
 
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2]))
 {
@@ -61,5 +64,5 @@ else
 		.'php backfill.php all			 ...: Backfills all groups 1 at a time, by date (set in admin-view groups)'."\n"
 		.'php backfill.php alt.binaries.ath	 ...: Backfills a group by name, by date (set in admin-view groups)'."\n");
 }
-if ($site->get()->nntpproxy === false)
+if ($site->nntpproxy === false)
 	$nntp->doQuit();

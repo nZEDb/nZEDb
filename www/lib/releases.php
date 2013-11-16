@@ -1537,18 +1537,7 @@ class Releases
 				echo $this->c->set256($this->header)."\n\nStage 5b -> Request ID lookup.";
 
 			// Look for records that potentially have requestID titles.
-			if ($db->dbSystem() == 'mysql')
-			{
-				// Mark records that don't have requestID titles.
-				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name REGEXP '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
-			}
-			else
-			{
-				// Mark records that don't have requestID titles.
-				//$db->queryExec("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus = 1 AND name ~ '^\\[[0-9]+\\]' = 0 ".$where);
-				$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.requst = true LIMIT 100");
-			}
+			$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
 
 			if (count($resrel) > 0)
 			{

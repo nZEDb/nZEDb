@@ -2,11 +2,16 @@
 
 if [ -e "nZEDbBase.php" ]
 then
-	export NZEDB_ROOT="$(pwd)"
+    export NZEDB_ROOT="$(pwd)"
+elif [ -e "../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
+elif [ -e "../../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 else
-	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+    export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
-
 
 run_segment() {
     # get USP settings from config.php
