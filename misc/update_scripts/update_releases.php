@@ -19,6 +19,8 @@ if (isset($argv[2]) && $argv[2] === 'true')
 		echo $c->error("Unable to connect to usenet.\n");
 		return;
 	}
+	if ($site->nntpproxy === true)
+		usleep(500000);
 }
 
 $groupName = isset($argv[3]) ? $argv[3] : '';

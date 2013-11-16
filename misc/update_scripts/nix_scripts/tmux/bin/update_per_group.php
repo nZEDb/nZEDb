@@ -36,6 +36,8 @@ if ($nntp->doConnect() === false)
 	echo $c->error("Unable to connect to usenet.\n");
 	return;
 }
+if ($site->nntpproxy === true)
+	usleep(500000);
 
 if ($releases->hashcheck == 0)
 	exit("You must run update_binaries.php to update your collectionhash.\n");

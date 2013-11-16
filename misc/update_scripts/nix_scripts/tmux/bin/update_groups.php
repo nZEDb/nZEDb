@@ -9,7 +9,8 @@ require_once nZEDb_LIB . 'site.php';
 $start = TIME();
 $c = new ColorCLI;
 $consoleTools = new Consoletools();
-$site = new Sites();
+$s = new Sites();
+$site = $s->get();
 
 $nntp = new Nntp();
 if ($nntp->doConnect() === false)
@@ -17,9 +18,12 @@ if ($nntp->doConnect() === false)
 	echo $c->error("Unable to connect to usenet.\n");
 	return;
 }
+if ($site->nntpproxy === true)
+	usleep(500000);
+
 echo "Getting first/last for all your active groups\n";
 $data = $nntp->getGroups();
-if ($site->get()->nntpproxy === false)
+if ($site->nntpproxy === false)
 	$nntp->doQuit();
 
 if (PEAR::isError($data))

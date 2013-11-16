@@ -8,7 +8,8 @@ require_once nZEDb_LIB . 'site.php';
 
 $binaries = new Binaries();
 $c = new ColorCLI;
-$site = new Sites();
+$s = new Sites();
+$site = $s->get();
 
 // Create the connection here and pass
 $nntp = new Nntp();
@@ -17,6 +18,8 @@ if ($nntp->doConnect() === false)
 	echo $c->error("Unable to connect to usenet.\n");
 	return;
 }
+if ($site->nntpproxy === true)
+	usleep(500000);
 
 if (isset($argv[1]))
 {
@@ -30,5 +33,5 @@ if (isset($argv[1]))
 }
 else
 	$binaries->updateAllGroups($nntp);
-if ($site->get()->nntpproxy === false)
+if ($site->nntpproxy === false)
 	$nntp->doQuit();

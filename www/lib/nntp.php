@@ -33,7 +33,6 @@ class Nntp extends Net_NNTP_Client
 		else
 			$this->doQuit();
 
-
 		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
 		$enc = $ret = $ret2 = $connected = false;
@@ -74,7 +73,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(1000000);
+			usleep(100000);
 		}
 		return false;
 	}
@@ -85,7 +84,6 @@ class Nntp extends Net_NNTP_Client
 			return true;
 		else
 			$this->doQuit();
-
 
 		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
@@ -127,7 +125,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(1000000);
+			usleep(100000);
 		}
 		return false;
 	}

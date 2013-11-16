@@ -26,6 +26,8 @@ if (isset($pieces[6]))
 		echo $c->error("Unable to connect to usenet.\n");
 		return;
 	}
+	if ($site->nntpproxy === true)
+		usleep(500000);
 	$postprocess->processAdditionalThreaded($argv[1], $nntp);
 	if ($site->nntpproxy === false)
 		$nntp->doQuit();
@@ -38,6 +40,8 @@ elseif (isset($pieces[3]))
 		echo $c->error("Unable to connect to usenet.\n");
 		return;
 	}
+	if ($site->nntpproxy === true)
+		usleep(500000);
 	$postprocess->processNfos($argv[1], $nntp);
 	if ($site->nntpproxy === false)
 		$nntp->doQuit();

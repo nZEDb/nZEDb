@@ -16,6 +16,8 @@ if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) ===
 	echo $c->error("Unable to connect to usenet.\n");
 	return;
 }
+if ($site->nntpproxy === true)
+	usleep(500000);
 
 // Remove folders from tmpunrar.
 $tmpunrar = $site->tmpunrarpath;
