@@ -96,19 +96,23 @@ class Binaries
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
-		if ($this->DoPartRepair)
+		if ($groupArr['last_record'] != 0)
 		{
-			echo $this->c->set256($this->primary)."Part repair enabled. Checking for missing parts.\n".$this->c->rsetcolor();
-			$this->partRepair($nntp, $groupArr);
+			if ($this->DoPartRepair)
+			{
+				echo $this->c->set256($this->primary)."Part repair enabled. Checking for missing parts.\n".$this->c->rsetcolor();
+				$this->partRepair($nntp, $groupArr);
+			}
+			else
+				echo $this->c->set256($this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
 		}
-		else
-			echo $this->c->set256($this->primary)."Part repair disabled by user.\n".$this->c->rsetcolor();
-
+		
 		// Get first and last part numbers from newsgroup.
 		$db = $this->db;
-		// For new newsgroups - determine here how far you want to go back.
+		
 		if ($groupArr['last_record'] == 0)
 		{
+			// For new newsgroups - determine here how far you want to go back.
 			if ($this->NewGroupScanByDays)
 			{
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
@@ -120,92 +124,82 @@ class Binaries
 			}
 			else
 			{
-				if ($data['first'] > ($data['last'] - $this->NewGroupMsgsToScan))
+				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer)))
 					$first = $data['first'];
 				else
-					$first = $data['last'] - $this->NewGroupMsgsToScan;
+					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
 			}
-
-			// In case postdate doesn't get a date. If theis is a new groupt, set oldest post to now()
-			if (is_null($groupArr['first_record_postdate']))
-				$first_record_postdate = time();
-			else
-				$first_record_postdate = strtotime($groupArr['first_record_postdate']);
-
-			// get postdate for oldest post recorded
-			$newdate = $this->backfill->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
-			if ($newdate !== false)
-				$first_record_postdate = $newdate;
-			$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $first, $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
+			
+			$left = $this->messagebuffer;
+			$last = $grouplast = $data['last'] - $left;
 		}
 		else
-			$first = $groupArr['last_record'];
-
-		// Leave upto 50% of the new articles on the server for next run (allow server enough time to actually make parts available).
-		$newcount = $data['last'] - $first;
-		$left = 0;
-		if ($newcount > $this->messagebuffer)
 		{
-			// Drop the remaining plus $this->messagebuffer, pick them up on next run
-			$remainingcount = $newcount % $this->messagebuffer;
-			if ($newcount < (2 * $this->messagebuffer))
+			$first = $groupArr['last_record'];
+			
+			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
+			$newcount = $data['last'] - $first;
+			$left = 0;
+			if ($newcount > $this->messagebuffer)
 			{
-				$left = $newcount - ((int)($newcount/2));
-				$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
+				// Drop the remaining plus $this->messagebuffer, pick them up on next run
+				if ($newcount < (2 * $this->messagebuffer))
+				{
+					$left = ((int)($newcount/2));
+					$last = $grouplast = ($data['last'] - $left);
+				}
+				else
+				{
+					$remainingcount = $newcount % $this->messagebuffer;
+					$left = $remainingcount + $this->messagebuffer;
+					$last = $grouplast = ($data['last'] - $left);
+				}
 			}
 			else
 			{
-				$left = $remainingcount + $this->messagebuffer;
+				$left = ((int)($newcount/2));
 				$last = $grouplast = ($data['last'] - $left);
 			}
 		}
-		else
+		
+		// Generate postdate for first record, for those that upgraded.
+		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0')
 		{
-			$left = $newcount - ((int)($newcount/2));
-			$last = $grouplast = ($data['last'] - ((int)($newcount/2)));
-		}
-
-		// For new groups, we updated the group, so we need to get an updated group array
-		$tempArr = $groupArr;
-		$groupArr = $db->queryOneRow("SELECT * FROM groups WHERE name = '".$tempArr['name']."'");
-
-		// Generate last record postdate. In case there are missing articles in the loop it can use this (the loop will update this if it doesnt fail).
-		if (is_null($groupArr['last_record_postdate']) || $groupArr['last_record_postdate'] == 'NULL' || $groupArr['last_record'] == '0')
-			$lastr_postdate = time();
-		else
-		{
-			$lastr_postdate = strtotime($groupArr['last_record_postdate']);
-			$newdatel = $this->backfill->postdate($nntp, $groupArr['last_record'], false, $groupArr['name'], true, 'newest');
-			if ($groupArr['last_record'] != 0 && $newdatel !== false && strtotime($newdatel))
-				$lastr_postdate = $newdatel;
-			else
-				$lastr_postdate = time();
-		}
-		// Generate postdates for first records, for those that upgraded.
-		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
-			$first_record_postdate = time();
-		else
-		{
-			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
 			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
-			if ($groupArr['first_record'] != 0 && $newdate !== false)
+			if ($newdate !== false)
 				$first_record_postdate = $newdate;
 			else
 				$first_record_postdate = time();
+			
+			$groupArr['first_record_postdate'] = $first_record_postdate;
+
+			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
-		$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $db->from_unixtime($lastr_postdate), $groupArr['id']));
+		
+		// Defaults for post record first/last postdate
+		if (is_null($groupArr['first_record_postdate']))
+			$first_record_postdate = time();
+		else
+			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
+
+		if (is_null($groupArr['last_record_postdate']))
+			$last_record_postdate = time();
+		else
+			$last_record_postdate = strtotime($groupArr['last_record_postdate']);
+		
+		
 		// Calculate total number of parts.
 		$total = $grouplast - $first;
 		$realtotal = $data['last'] - $first;
-
+		
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
 		{
-			echo $this->c->set256($this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
-
 			if ($groupArr['last_record'] == 0)
-				echo $this->c->set256($this->primary).'New group starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\n".$this->c->rsetcolor();
-
+				echo $this->c->set256($this->primary).'New group '.$data['group'].' starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+			else
+				echo $this->c->set256($this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+				
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
 			while ($done === false)
@@ -224,19 +218,29 @@ class Binaries
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
-				$lastId = $this->scan($nntp, $groupArr, $first, $last);
+				$scanSummary = $this->scan($nntp, $groupArr, $first, $last);
 
 				// Scan failed - skip group.
-				if ($lastId == false)
+				if ($scanSummary == false)
 					return;
 
-				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true, 'newest');
-				if ($newdatek !== false)
-					$lastr_postdate = $newdatek;
+				// If new group, update first record & postdate
+				if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
+				{
+					$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
+					
+					if (isset($scanSummary['firstArticleDate']))
+						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
+					
+					$groupArr['first_record_postdate'] = $first_record_postdate;
+					
+					$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
+				}
+				
+				if (isset($scanSummary['lastArticleDate']))
+					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
 
-				$db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($lastId), $db->from_unixtime($lastr_postdate), $groupArr['id']));
-				if ($this->debug)
-					printf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d'."\n\n\n", $db->escapeString($lastId), $db->from_unixtime($lastr_postdate), $groupArr['id']);
+				$db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($scanSummary['lastArticleNumber']), $db->from_unixtime($last_record_postdate), $groupArr['id']));
 
 				if ($last == $grouplast)
 					$done = true;
@@ -244,14 +248,19 @@ class Binaries
 					$first = $last;
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo $this->c->set256($this->primary).$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary)."\n".$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
 		}
 		else
-			echo $this->c->set256($this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+		{
+			echo $this->c->set256($this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' grouplast '.number_format($groupArr['last_record']).' total '.number_format($total).")\n".$this->c->rsetcolor();
+			echo $this->c->set256($this->primary)."Server oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n\n".$this->c->rsetcolor();
+		}
 	}
 
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
+		$returnArray = array();
+		
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(binaries->scan).\n"));
 
@@ -283,14 +292,14 @@ class Binaries
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
 			if ($nntp->doConnectNC() === false)
-				return;
+				return false;
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first.'-'.$last, true, false);
 			if(PEAR::isError($msgs))
 			{
 				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}\033[0m\n");
-				return;
+				return false;
 			}
 		}
 		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
@@ -310,6 +319,35 @@ class Binaries
 				if (!isset($msg['Number']))
 					continue;
 
+
+				if (isset($returnArray['firstArticleNumber']))
+				{
+					if ($msg['Number'] < $returnArray['firstArticleNumber'])
+						$returnArray['firstArticleNumber'] = $msg['Number'];
+						if (isset($msg['Date']))
+							$returnArray['firstArticleDate'] = $msg['Date'];
+				}
+				else
+				{
+					$returnArray['firstArticleNumber'] = $msg['Number'];
+					if (isset($msg['Date']))
+						$returnArray['firstArticleDate'] = $msg['Date'];
+				}
+				
+				if (isset($returnArray['lastArticleNumber']))
+				{
+					if ($msg['Number'] > $returnArray['lastArticleNumber'])
+						$returnArray['lastArticleNumber'] = $msg['Number'];
+						if (isset($msg['Date']))
+							$returnArray['lastArticleDate'] = $msg['Date'];
+				}
+				else
+				{
+					$returnArray['lastArticleNumber'] = $msg['Number'];
+					if (isset($msg['Date']))
+						$returnArray['lastArticleDate'] = $msg['Date'];
+				}
+				
 				// If set we are running in partRepair mode
 				if (isset($missingParts))
 				{
@@ -583,7 +621,7 @@ class Binaries
 				echo $this->c->set256($this->primary).$timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop."s total.\n".$this->c->rsetcolor();
 
 			unset($this->message, $data);
-			return $maxnum;
+			return $returnArray;
 		}
 		else
 		{
