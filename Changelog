@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-11-17 -> jonnyoby -> updated active_groups.php to include renamed and predme matched counts, more regexes add
 2013-11-16 -> jonnyboy -> disabled misc/testing/DB_scripts/backfill_predb.php
                           added requestid lookup to releases_threaded.py, both per group and without
                           changed output for threaded postprocess additional [release.id] instead of [1], removed extra '!' echo in grabnzbs for replaced dupe
