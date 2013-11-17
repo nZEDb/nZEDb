@@ -17,6 +17,7 @@ $tmux = new Tmux;
 $torun = $tmux->get()->post;
 
 $pieces = explode('           =+=            ', $argv[1]);
+
 $postprocess = new PostProcess(true);
 if (isset($pieces[6]))
 {

@@ -16,6 +16,7 @@ else
     export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
+export niceness=10
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
@@ -24,8 +25,10 @@ export DB_PATH="${NZEDB_ROOT}/misc/testing/DB_scripts"
 export THREADED_PATH="${NZEDB_ROOT}/misc/update_scripts/python_scripts"
 export NZEDB_SLEEP_TIME="60" # in seconds
 
-command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
-command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }
+command -v php5 >/dev/null 2>&1 && export PHPv=`command -v php5` || { export PHP=`command -v php`; }
+command -v python3 >/dev/null 2>&1 && export PYTHONv=`command -v python3` || { export PYTHON=`command -v python`; }
+export PHP="nice -n$niceness $PHPv"
+export PYTHON="nice -n$niceness $PYTHONv"
 
 #delete stale tmpunrar folders
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
@@ -51,8 +54,8 @@ do
 	clear
 	echo
 	echo
-#	tmux respawnp -k -t $tmux_session:2.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
-#	tmux respawnp -k -t$tmux_session:2.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
+#	tmux kill-session -t NNTPProxy
+#	$PHP ${NZEDB_PATH}/nntpproxy.php
 #	sleep 5
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr

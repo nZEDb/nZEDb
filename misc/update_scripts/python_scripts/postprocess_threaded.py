@@ -20,7 +20,7 @@ con = None
 if conf['DB_SYSTEM'] == "mysql":
 	try:
 		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'])
+		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
 		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
 elif conf['DB_SYSTEM'] == "pgsql":
@@ -137,6 +137,13 @@ class queue_runner(threading.Thread):
 					time.sleep(.05)
 					self.my_queue.task_done()
 
+def u(x):
+	if sys.version_info[0] < 3:
+		import codecs
+		return codecs.unicode_escape_decode(x)[0]
+	else:
+		return x
+		
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
@@ -163,19 +170,19 @@ def main(args):
 	if sys.argv[1] == "additional":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
+			my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], release[3]))
+			my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s" % (release[0], release[1], release[2]))
+			my_queue.put(u("%s           =+=            %s           =+=            %s") % (release[0], release[1], release[2]))
 	elif sys.argv[1] == "tv":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s" % (release[0], release[1]))
+			my_queue.put(u("%s           =+=            %s") % (release[0], release[1]))
 
 	my_queue.join()
 

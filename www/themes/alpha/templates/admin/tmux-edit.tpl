@@ -29,7 +29,7 @@
 				<td style="width:180px;"><label for="running">Tmux Scripts Running:</label></td>
 				<td>
 					{html_radios id="running" name='running' values=$truefalse_names output=$truefalse_names selected=$ftmux->running separator='<br />'}
-					<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This will start/stop all panes without terminating the monitor pane.</div>
+					<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This will start/stop all panes without terminating the monitor pane. This is not instant, it does not kill any panes, it simply does not aloow any pane to restart if set to false.</div>
 				</td>
 			</tr>
 

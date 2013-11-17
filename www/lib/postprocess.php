@@ -432,7 +432,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
 						// Increment.
-						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
 					}
 				}
@@ -441,7 +441,7 @@ class PostProcess
 				if (!file_exists($nzbpath))
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
@@ -454,7 +454,7 @@ class PostProcess
 				if (count($nzbfiles) == 0)
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
