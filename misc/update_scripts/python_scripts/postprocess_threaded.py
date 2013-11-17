@@ -170,19 +170,19 @@ def main(args):
 	if sys.argv[1] == "additional":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], u(release[2]), release[3], release[4], release[5], release[6], release[7]))
+			my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
 	elif sys.argv[1] == "nfo":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s           =+=            %s" % (release[0], release[1], release[2], u(release[3])))
+			my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3]))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s           =+=            %s" % (u(release[0]), release[1], release[2]))
+			my_queue.put(u("%s           =+=            %s           =+=            %s") % (release[0], release[1], release[2]))
 	elif sys.argv[1] == "tv":
 		for release in datas:
 			time.sleep(.1)
-			my_queue.put("%s           =+=            %s" % (u(release[0]), release[1]))
+			my_queue.put(u("%s           =+=            %s") % (release[0], release[1]))
 
 	my_queue.join()
 
