@@ -31,15 +31,15 @@ if ($pieces[0] != 'Stage7b')
 		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
 		$test->execute();
 		// Don't even process the group if no collections
-		//if ($test->rowCount() == 0)
-		//{
+		if ($test->rowCount() == 0)
+		{
 			//$mask = "%-30.30s has %s collections, skipping.\n";
 			//printf($mask, str_replace('alt.binaries', 'a.b', $groupname), number_format($test->rowCount()));
 			//exit();
-		//}
+		}
 	} catch (PDOException $e) {
 		//No collections available
-		//exit($groupname." has no collections to process\n");
+		//exit($groupname." has no collections table to process.\n");
 		exit();
 	}
 
@@ -49,6 +49,7 @@ if ($pieces[0] != 'Stage7b')
 	$releases->processReleasesStage3($groupid, true);
 	$retcount = $releases->processReleasesStage4($groupid, true);
 	$releases->processReleasesStage5($groupid, true);
+	$releases->processReleasesStage5b($groupid, true);
 	$releases->processReleasesStage7a($groupid, true);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);
@@ -59,6 +60,7 @@ elseif ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);
+	$releases->processReleasesStage5b($groupid='', true);
 	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true, null);
 	$releases->processReleasesStage7b($groupid='', true);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";

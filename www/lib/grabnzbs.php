@@ -75,12 +75,12 @@ class Import
 				echo "\nGetting ".sizeof($arr).' articles for '.$hash."\n";
 
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
-			if ($article === false || PEAR::isError($article))
+			if (PEAR::isError($article))
 			{
 				$nntp->doQuit();
 				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
 				$article = $nntp->getArticles($nzb['groupname'], $arr);
-				if ($article === false || PEAR::isError($article))
+				if (PEAR::isError($article))
 				{
 					$nntp->doQuit();
 					$article = false;
@@ -199,10 +199,7 @@ class Import
 					foreach ($res as $rel)
 					{
 						if (isset($rel['id']) && isset($rel['guid']))
-						{
 							$releases->fastDelete($rel['id'], $rel['guid'], $this->site);
-							echo '!';
-						}
 					}
 				}
 				else if ($res->rowCount() > 0 && $this->replacenzbs == 0)

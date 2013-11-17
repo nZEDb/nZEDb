@@ -46,7 +46,7 @@
 
 <tr>
 	<td><label for="metakeywords">Meta Keywords:</label></td>
-	<td>
+	<td>r
 		<textarea id="metakeywords" name="metakeywords">{$fsite->metakeywords}</textarea>
 		<div class="hint">Stem meta-keywords appended to all page meta keyword tags.</div>
 	</td>
@@ -900,6 +900,14 @@
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
 		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
+	</td>
+</tr>
+
+<tr>
+	<td><label for="maxgrabnzbs">Maximum Parts to Grab NZBs:</label></td>
+	<td>
+		<input class="short" id="maxgrabnzbs" name="maxgrabnzbs" type="text" value="{$fsite->maxgrabnzbs}" />
+		<div class="hint">The maximum number of parts to download when running GrabNZBS, all potential nzbs exceeding this number will be deleted from the nzbs table.</div>
 	</td>
 </tr>
 
