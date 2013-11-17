@@ -375,7 +375,7 @@ class PostProcess
 				$tries = (5 * -1) -1;
 				while ((count($result) != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.pa3sswordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					if (count($result) > 0)
 						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
 					$i--;
@@ -432,7 +432,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
 						// Increment.
-						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
 					}
 				}
@@ -441,7 +441,7 @@ class PostProcess
 				if (!file_exists($nzbpath))
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
@@ -454,7 +454,7 @@ class PostProcess
 				if (count($nzbfiles) == 0)
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
