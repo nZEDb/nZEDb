@@ -1,28 +1,28 @@
 <?php
-require_once(WWW_DIR.'lib/anidb.php');
-require_once(WWW_DIR.'lib/books.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/console.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/movie.php');
-require_once(WWW_DIR.'lib/music.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/nzb.php');
-require_once(WWW_DIR.'lib/nzbcontents.php');
-require_once(WWW_DIR.'lib/predb.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/releaseextra.php');
-require_once(WWW_DIR.'lib/releasefiles.php');
-require_once(WWW_DIR.'lib/releaseimage.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/tvrage.php');
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/rarinfo/archiveinfo.php');
-require_once(WWW_DIR.'lib/rarinfo/par2info.php');
-require_once(WWW_DIR.'lib/rarinfo/zipinfo.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'anidb.php';
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'music.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'nzbcontents.php';
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'releaseextra.php';
+require_once nZEDb_LIB . 'releasefiles.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'tvrage.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIB . 'rarinfo/par2info.php';
+require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class PostProcess
 {
@@ -32,7 +32,7 @@ class PostProcess
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->addpar2 = ($this->site->addpar2 == '0') ? false : true;
-		$this->audSavePath = WWW_DIR.'covers/audiosample/';
+		$this->audSavePath = nZEDb_WWW.'covers/audiosample/';
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
 		$this->DEBUG_ECHO = ($this->site->debuginfo == '0') ? false : true;
@@ -73,17 +73,20 @@ class PostProcess
 		$this->c = new ColorCLI;
 	}
 
-	public function processAll($releaseToWork='', $threads=1)
+	public function processAll($nntp)
 	{
-		$this->processPredb();
-		$this->processAdditional($releaseToWork);
-		$this->processNfos($releaseToWork);
-		$this->processMovies($releaseToWork);
-		$this->processMusic($threads);
-		$this->processGames($threads);
-		$this->processAnime($threads);
-		$this->processTv($releaseToWork);
-		$this->processBooks($threads);
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAll).\n"));
+
+		$this->processPredb($nntp);
+		$this->processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp);
+		$this->processNfos($releaseToWork='', $nntp);
+		$this->processMovies($releaseToWork='');
+		$this->processMusic($threads=1);
+		$this->processGames($threads=1);
+		$this->processAnime($threads=1);
+		$this->processTv($releaseToWork='');
+		$this->processBooks($threads=1);
 	}
 
 	// Lookup anidb if enabled - always run before tvrage.
@@ -138,20 +141,35 @@ class PostProcess
 	}
 
 	// Process nfo files.
-	public function processNfos($releaseToWork='')
+	public function processNfos($releaseToWork='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processNfos).\n"));
+
 		if ($this->site->lookupnfo == 1)
 		{
 			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage);
+			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID='',$nntp);
 		}
 	}
 
-	// Fetch titles from predb sites.
-	public function processPredb()
+	// Process nfo files.
+	public function processAdditionalThreaded($releaseToWork='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditionalThreaded).\n"));
+
+		$this->processAdditional($releaseToWork, $id='', $gui=false, $groupID='', $nntp);
+	}
+
+	// Fetch titles from predb sites.
+	public function processPredb($nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
+
 		$predb = new Predb($this->echooutput);
-		$titles = $predb->combinePre();
+		$titles = $predb->combinePre($nntp);
 		if ($titles > 0)
 			$this->doecho('Fetched '.$titles.' new title(s) from predb sources.');
 	}
@@ -169,6 +187,9 @@ class PostProcess
 	// Attempt to get a better name from a par2 file and categorize the release.
 	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
+
 		if ($messageID == '')
 			return false;
 		$db = $this->db;
@@ -181,30 +202,19 @@ class PostProcess
 		if (!in_array($quer['relnamestatus'], array(0, 1, 6, 20, 21)) || $quer['relnamestatus'] === 7 || $quer['categoryid'] != Category::CAT_MISC)
 			return false;
 
-		$st = false;
-		if (!isset($nntp))
-		{
-			$st = true;
-			$nntp = new Nntp();
-			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
-		}
-
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-		if ($par2 === false || PEAR::isError($par2))
+		if (PEAR::isError($par2))
 		{
 			$nntp->doQuit();
 			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-			if ($par2 === false || PEAR::isError($par2))
+			if (PEAR::isError($par2))
 			{
-				if ($st)
-					$nntp->doQuit();
+				$nntp->doQuit();
 				return false;
 			}
 		}
-		if ($st)
-			$nntp->doQuit();
 
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
@@ -311,8 +321,11 @@ class PostProcess
 	}
 
 	// Check for passworded releases, RAR contents and Sample/Media info.
-	public function processAdditional($releaseToWork='', $id='', $gui=false, $groupID='')
+	public function processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditional).\n"));
+
 		$like = 'ILIKE';
 		if ($this->db->dbSystem() == 'mysql')
 			$like = 'LIKE';
@@ -386,7 +399,6 @@ class PostProcess
 				$this->doecho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
 			}
 			$ri = new ReleaseImage();
-			$nntp = new Nntp();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
 			$groups = new Groups();
@@ -397,13 +409,15 @@ class PostProcess
 			$processJPGSample = ($this->site->processjpg == '0') ? false : true;
 			$processPasswords = ($this->site->unrarpath != '') ? true : false;
 			$tmpPath = $this->tmpPath;
-			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
-				if ($this->echooutput)
+				if ($this->echooutput && $releaseToWork == '')
 					echo '['.$startCount--.']';
+				else if ($this->echooutput)
+					echo '['.$rel['id']--.']';
+
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
 				if (!is_dir($this->tmpPath))
@@ -584,12 +598,12 @@ class PostProcess
 								$mid = array_slice((array)$rarFile['segments'], 0, $this->segmentstodownload);
 								$bingroup = $groupName;
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-								if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
+								if (PEAR::isError($fetchedBinary))
 								{
 									$nntp->doQuit();
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-									if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
+									if (PEAR::isError($fetchedBinary))
 										$fetchedBinary = false;
 								}
 
@@ -599,7 +613,7 @@ class PostProcess
 									if ($this->echooutput)
 										echo 'b';
 									$notinfinite++;
-									$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile['title']);
+									$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile['title'], $nntp);
 									if ($this->password === true)
 										$passStatus[] = Releases::PASSWD_RAR;
 
@@ -652,7 +666,7 @@ class PostProcess
 
 												$r['range'] = $range;
 												if (!isset($r['error']) && !preg_match($this->supportfiles.'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $r['name']))
-													$this->addfile($r, $rel, $rar);
+													$this->addfile($r, $rel, $rar, $nntp);
 											}
 										}
 									}
@@ -729,12 +743,12 @@ class PostProcess
 						if (!empty($samplemsgid))
 						{
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-							if ($sampleBinary === false || PEAR::isError($sampleBinary))
+							if (PEAR::isError($sampleBinary))
 							{
 								$nntp->doQuit();
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-								if ($sampleBinary === false || PEAR::isError($sampleBinary))
+								if (PEAR::isError($sampleBinary))
 									$sampleBinary = false;
 							}
 
@@ -769,12 +783,12 @@ class PostProcess
 						if (!empty($mediamsgid))
 						{
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-							if ($mediaBinary === false || PEAR::isError($mediaBinary))
+							if (PEAR::isError($mediaBinary))
 							{
 								$nntp->doQuit();
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-								if ($mediaBinary === false || PEAR::isError($mediaBinary))
+								if (PEAR::isError($mediaBinary))
 									$mediaBinary = false;
 							}
 							if ($mediaBinary !== false)
@@ -806,12 +820,12 @@ class PostProcess
 				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
 				{
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					if ($audioBinary === false || PEAR::isError($audioBinary))
+					if (PEAR::isError($audioBinary))
 					{
 						$nntp->doQuit();
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-						if ($audioBinary === false || PEAR::isError($audioBinary))
+						if (PEAR::isError($audioBinary))
 							$audioBinary = false;
 					}
 					if ($audioBinary !== false)
@@ -836,12 +850,12 @@ class PostProcess
 				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
 				{
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					if ($jpgBinary === false || PEAR::isError($jpgBinary))
+					if (PEAR::isError($jpgBinary))
 					{
 						$nntp->doQuit();
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-						if ($jpgBinary === false || PEAR::isError($jpgBinary))
+						if (PEAR::isError($jpgBinary))
 							$jpgBinary = false;
 					}
 					if ($jpgBinary !== false)
@@ -918,14 +932,13 @@ class PostProcess
 				}
 				@rmdir($this->tmpPath);
 			}
-			$nntp->doQuit();
 			if ($this->echooutput)
 				echo "\n";
 		}
 		if ($gui)
 			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
 
-		unset($nntp, $this->consoleTools, $rar, $nzbcontents, $groups, $ri);
+		unset($this->consoleTools, $rar, $nzbcontents, $groups, $ri);
 	}
 
 	function doecho($str)
@@ -958,8 +971,11 @@ class PostProcess
 		}
 	}
 
-	function addfile($v, $release, $rar=false)
+	function addfile($v, $release, $rar=false, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->addfile).\n"));
+
 		if (!isset($v['error']) && isset($v['source']))
 		{
 			if ($rar !== false && preg_match('/\.zip$/', $v['source']))
@@ -992,7 +1008,7 @@ class PostProcess
 				if ($this->nonfo === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name']))
 				{
 					$nfo = new Nfo($this->echooutput);
-					if($nfo->addAlternateNfo($this->db, $tmpdata, $release))
+					if($nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp))
 					{
 						$this->debug('added rar nfo');
 						if ($this->echooutput)
@@ -1014,8 +1030,11 @@ class PostProcess
 	}
 
 	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release)
+	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseZips).\n"));
+
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
 		if ($open)
@@ -1054,7 +1073,7 @@ class PostProcess
 				{
 					if ($file['compressed'] !== 1)
 					{
-						if($nfo->addAlternateNfo($this->db, $thisdata, $release))
+						if($nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp))
 						{
 							$this->debug('Added zip NFO.');
 							if ($this->echooutput)
@@ -1068,7 +1087,7 @@ class PostProcess
 						$zipdata = $zip->extractFile($file['name']);
 						if ($zipdata !== false && strlen($zipdata) > 5);
 						{
-							if($nfo->addAlternateNfo($this->db, $zipdata, $release))
+							if($nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp))
 							{
 								$this->debug('Added compressed zip NFO.');
 								if ($this->echooutput)
@@ -1089,7 +1108,7 @@ class PostProcess
 						{
 							if ($limit++ > 11)
 								break;
-							$ret = $this->addfile($f, $release);
+							$ret = $this->addfile($f, $release, $rar=false, $nntp);
 							$files[] = $f;
 						}
 					}
@@ -1171,8 +1190,11 @@ class PostProcess
 	}
 
 	// Open the rar, see if it has a password, attempt to get a file.
-	function processReleaseFiles($fetchedBinary, $release, $name)
+	function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
+
 		$retval = array();
 		$rar = new ArchiveInfo();
 		$rf = new ReleaseFiles();
@@ -1239,7 +1261,7 @@ class PostProcess
 						if (preg_match('/\.zip$/i', $file['name']))
 						{
 							$zipdata = $rar->getFileData($file['name'], $file['source']);
-							$data = $this->processReleaseZips($zipdata, false, true , $release);
+							$data = $this->processReleaseZips($zipdata, false, true , $release, $nntp);
 
 							if ($data != false)
 							{
@@ -1310,7 +1332,7 @@ class PostProcess
 		else
 		{
 			// Not a rar file, try it as a ZIP file.
-			$files = $this->processReleaseZips($fetchedBinary, false, false , $release);
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $release, $nntp);
 			if ($files !== false)
 			{
 				$this->name = $files[0]['name'];
@@ -1354,7 +1376,7 @@ class PostProcess
 		foreach ($retval as $k => $v)
 		{
 			if (!preg_match($this->supportfiles.'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $v['name']) && count($retval) > 0)
-				$this->addfile($v, $release, $rar);
+				$this->addfile($v, $release, $rar, $nntp);
 			else
 				unset($retval[$k]);
 		}

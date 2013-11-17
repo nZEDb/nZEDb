@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/movie.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/nzbcontents.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/tvrage.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'nzbcontents.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'tvrage.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 /*
  * Class for handling fetching/storing of NFO files.
@@ -82,7 +82,7 @@ class Nfo
 				return $r;
 
 			// Use getid3 to check if it's an image/video/rar/zip etc..
-			require_once(WWW_DIR.'lib/getid3/getid3/getid3.php');
+			require_once nZEDb_LIB . 'getid3/getid3/getid3.php';
 			$getid3 = new getid3;
 			// getid3 works with files, so save to disk
 			$tmpPath = $this->tmpPath.$guid.'.nfo';
@@ -94,13 +94,13 @@ class Nfo
 			if (isset($check['error']))
 			{
 				// Check if it's a par2.
-				require_once(WWW_DIR.'lib/rarinfo/par2info.php');
+				require_once nZEDb_LIB . 'rarinfo/par2info.php';
 				$par2info = new Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error)
 				{
 					// Check if it's an SFV.
-					require_once(WWW_DIR.'lib/rarinfo/sfvinfo.php');
+					require_once nZEDb_LIB . 'rarinfo/sfvinfo.php';
 					$sfv = new SfvInfo;
 					$sfv->setData($possibleNFO);
 					if ($sfv->error)
@@ -112,8 +112,11 @@ class Nfo
 	}
 
 	// Adds an NFO found from predb, rar, zip etc...
-	public function addAlternateNfo($db, $nfo, $release, $nntp=NULL)
+	public function addAlternateNfo($db, $nfo, $release, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		if ($release['id'] > 0)
 		{
 			if ($db->dbSystem() == 'mysql')
@@ -144,8 +147,11 @@ class Nfo
 	}
 
 	// Loop through releases, look for NFO's in the NZB file.
-	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='')
+	public function processNfoFiles($releaseToWork = '', $processImdb=1, $processTvrage=1, $groupID='', $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Unable to connect to usenet.\n"));
+
 		$db = $this->db;
 		$nfocount = $ret = 0;
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
@@ -172,7 +178,6 @@ class Nfo
 		{
 			if ($this->echooutput && $releaseToWork == '')
 				echo $this->c->set256($this->primary).'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n".$this->c->rsetcolor();
-			$nntp = new Nntp();
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$movie = new Movie($this->echooutput);
@@ -180,7 +185,6 @@ class Nfo
 
 			foreach ($res as $arr)
 			{
-				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nzbcontents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $db, $this);
 				if ($fetchedBinary !== false)
 				{
@@ -225,7 +229,6 @@ class Nfo
 					}
 				}
 			}
-			$nntp->doQuit();
 		}
 
 		// Remove nfo that we cant fetch after 5 attempts.

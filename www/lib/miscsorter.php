@@ -1,11 +1,11 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/movie.php");
-require_once(WWW_DIR."/lib/nfo.php");
-require_once(WWW_DIR."/lib/namecleaning.php");
-require_once(WWW_DIR."/lib/books.php");
-require_once(WWW_DIR."/lib/predb.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'predb.php';
 
 class MiscSorter
 {
@@ -770,17 +770,15 @@ echo "asin ".$set[1]."\n";
  					$ok = $this->doAmazon ($row['name'], $row['id'], $nfo, $set[2], $set[1], $case, $nfo, $row);
 				}
 				break;
-
-
-
-
 		}
 		return $ok;
 	}
 
-
-	function nfosorter ($category = Category::CAT_PARENT_MISC, $id = 0)
+	function nfosorter ($category = Category::CAT_PARENT_MISC, $id = 0, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(miscsorter->nfosorter).\n"));
+
 		$this->idarr = $this->getIDs($category);
 		if ($id != 0)
 			$this->idarr = $id;
@@ -788,7 +786,7 @@ echo "asin ".$set[1]."\n";
 		{
 			$pb = new Predb(true);
 			$pb->parseTitles(0, 1, 0, 1, '');
-			$pb->matchNfo();
+			$pb->matchNfo($nntp);
 			$pb->matchPredb();
 			unset($pb);
 			if ($this-> echooutput)

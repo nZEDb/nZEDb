@@ -1,8 +1,8 @@
 <?php
 
-require_once(dirname(__FILE__).'/../../../../../www/config.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/site.php');
+require_once dirname(__FILE__) . '/../../../config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
 
 $db = new DB();
 $s = new Sites();
@@ -13,7 +13,7 @@ $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
 if ($tablepergroup == 1)
 {
-	$sql = "SHOW tables";
+	$sql = 'SHOW tables';
 	$tables = $db->query($sql);
 	$ran = 0;
 	foreach($tables as $row)
@@ -29,10 +29,10 @@ if ($tablepergroup == 1)
 }
 else
 {
-	$run = $db->queryExec("update collections set dateadded = now()");
+	$run = $db->queryExec('update collections set dateadded = now()');
 	echo $run->rowCount()." collections reset\n";
 }
 
-$run = $db->queryExec("update nzbs set dateadded = now()");
+$run = $db->queryExec('update nzbs set dateadded = now()');
 echo $run->rowCount()." nzbs reset\n";
 sleep(2);

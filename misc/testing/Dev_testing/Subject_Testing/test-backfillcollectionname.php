@@ -1,7 +1,7 @@
 <?php
-require("../../../../www/config.php");
-require_once(WWW_DIR."lib/backfill.php");
-require_once(WWW_DIR."lib/groups.php");
+require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'groups.php';
 
 if(!isset($argv[1]))
 	exit('You must start the script like this (# of articles) : php test-backfillcleansubject.php 20000'."\n");

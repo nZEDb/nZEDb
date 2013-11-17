@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -30,15 +30,15 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
 cur = con.cursor()
 
+start_time = time.time()
+pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+if len(sys.argv) == 1:
+	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
+
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2":
 	sys.exit("\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
 
 print("\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
-if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2]\n")
-
-start_time = time.time()
-pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
 run_threads = cur.fetchone()

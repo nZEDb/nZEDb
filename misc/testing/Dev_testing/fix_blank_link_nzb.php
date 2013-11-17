@@ -3,9 +3,9 @@
 
 if (isset($argv[1]) && $argv[1] == "true")
 {
-	require(dirname(__FILE__)."/../../../www/config.php");
-	require_once(WWW_DIR."/lib/nzb.php");
-	require_once(WWW_DIR."/lib/framework/db.php");
+	require dirname(__FILE__) . '/../../../www/config.php';
+	require_once nZEDb_LIB . 'nzb.php';
+	require_once nZEDb_LIB . 'framework/db.php';
 	$timestart = TIME();
 	$nzbcount = $brokencount = 0;
 	$db = new DB();

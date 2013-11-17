@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/trakttv.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'trakttv.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class TvRage
 {
@@ -93,7 +93,7 @@ class TvRage
 			}
 			if ($imgbytes != '')
 			{
-				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
+				$path = nZEDb_WWW.'covers/tvrage/'.$id.'.jpg';
 				if (file_exists($path))
 					unlink($path);
 				$check = file_put_contents($path, $imgbytes);
@@ -121,7 +121,7 @@ class TvRage
 			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString($genre), $this->db->escapeString($country), $id ));
 			if ($imgbytes != '')
 			{
-				$path = WWW_DIR.'covers/tvrage/'.$id.'.jpg';
+				$path = nZEDb_WWW.'covers/tvrage/'.$id.'.jpg';
 				if (file_exists($path))
 					unlink($path);
 				$check = file_put_contents($path, $imgbytes);

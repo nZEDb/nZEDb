@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/console.php");
-require_once(WWW_DIR."/lib/genres.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'genres.php';
 
 $page = new AdminPage();
 $console = new Console();
@@ -24,7 +24,7 @@ if (isset($_REQUEST["id"]))
 	switch($action)
 	{
 		case 'submit':
-			$coverLoc = WWW_DIR."covers/console/".$id.'.jpg';
+			$coverLoc = nZEDb_WWW."covers/console/".$id.'.jpg';
 
 			if($_FILES['cover']['size'] > 0)
 			{

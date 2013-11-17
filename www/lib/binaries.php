@@ -1,12 +1,12 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/backfill.php');
-require_once(WWW_DIR.'lib/consoletools.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/namecleaning.php');
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Binaries
 {
@@ -44,8 +44,11 @@ class Binaries
 		$this->blackListLoaded = false;
 	}
 
-	public function updateAllGroups()
+	public function updateAllGroups($nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->updateAllGroups).\n"));
+
 		if ($this->hashcheck == 0)
 		{
 			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.\n");
@@ -62,14 +65,6 @@ class Binaries
 			$alltime = microtime(true);
 			echo $this->c->set256($this->header)."\nUpdating: ".sizeof($res).' group(s) - Using compression? '.(($this->compressedHeaders)?'Yes':'No')."\n".$this->c->rsetcolor();
 
-			// Connect to usenet.
-			$nntp = new Nntp();
-			if ($nntp->doConnect() === false)
-			{
-				echo "Error connecting to usenet.\n";
-				return;
-			}
-
 			foreach($res as $groupArr)
 			{
 				$this->message = array();
@@ -77,34 +72,23 @@ class Binaries
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
-			// Quit usenet.
-			$nntp->doQuit();
-
 			echo $this->c->set256($this->primary).'Updating completed in '.number_format(microtime(true) - $alltime, 2)." seconds\n".$this->c->rsetcolor();
 		}
 		else
 			echo $this->c->warning("No groups specified. Ensure groups are added to nZEDb's database for updating.\n");
 	}
 
-	public function updateGroup($groupArr, $nntp=null)
+	public function updateGroup($groupArr, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->updateGroup).\n"));
+
 		$this->startGroup = microtime(true);
 		echo $this->c->set256($this->primary).'Processing '.$groupArr['name']."\n".$this->c->rsetcolor();
 
-		$st = false;
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			if ($nntp->doConnect() === false)
-				return;
-			$st = true;
-		}
-
-		// Select the group.
+		// Select the group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-
-		// Attempt to reconnect if there is an error.
-		if(PEAR::isError($data))
+		if (PEAR::isError($data))
 		{
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false)
@@ -131,8 +115,6 @@ class Binaries
 				if ($first == '')
 				{
 					echo $this->c->warning("Skipping group: {$groupArr['name']}\n");
-					if ($st === true)
-						$nntp->doQuit();
 					return;
 				}
 			}
@@ -246,11 +228,7 @@ class Binaries
 
 				// Scan failed - skip group.
 				if ($lastId == false)
-				{
-					if ($st === true)
-						$nntp->doQuit();
 					return;
-				}
 
 				$newdatek = $this->backfill->postdate($nntp, $lastId, false, $groupArr['name'], true, 'newest');
 				if ($newdatek !== false)
@@ -263,22 +241,20 @@ class Binaries
 				if ($last == $grouplast)
 					$done = true;
 				else
-				{
 					$first = $last;
-				}
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $this->c->set256($this->primary).$data['group'].' processed in '.$timeGroup." seconds.\n\n".$this->c->rsetcolor();
 		}
 		else
 			echo $this->c->set256($this->primary).'No new articles for '.$data['group'].' (first '.number_format($first).' last '.number_format($last).' total '.number_format($total).') grouplast '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
-
-		if ($st === true)
-			$nntp->doQuit();
 	}
 
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->scan).\n"));
+
 		$db = $this->db;
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
@@ -291,11 +267,6 @@ class Binaries
 			$group['cname'] = $groupArr['id'].'_collections';
 			$group['bname'] = $groupArr['id'].'_binaries';
 			$group['pname'] = $groupArr['id'].'_parts';
-
-			// Check tables for content
-			//if ($db->queryInsert('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) SELECT c.subject, c.fromname, c.date, c.xref, c.totalfiles, c.groupid, c.collectionhash, c.dateadded, c.filecheck, c.filesize, c.releaseid FROM collections c WHERE c.groupid = '.$groupArr['id']))
-			//	$db->queryExec('DELETE from collections WHERE groupid = '.$groupArr['id']);
-			//if ($db->queryInsert('INSERT INTO '.$group['bname'].'(name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize)
 		}
 		else
 		{
@@ -303,24 +274,7 @@ class Binaries
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
 		}
-		// If NNTP is null, connect.
-		if (!isset($nntp))
-		{
-			$nntp = new Nntp();
-			if ($nntp->doConnect() === false)
-				return;
 
-			// Select the group.
-			$data = $nntp->selectGroup($groupArr['name']);
-
-			// Attempt to reconnect if there is an error.
-			if(PEAR::isError($data))
-			{
-				$data = $nntp->dataError($nntp, $groupArr['name']);
-				if ($data === false)
-					return;
-			}
-		}
 		// Download the headers.
 		$msgs = $nntp->getOverview($first."-".$last, true, false);
 		// If there ware an error, try to reconnect.
@@ -449,7 +403,7 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					if($this->grabnzbs && preg_match('/("|#34;).+\.nzb("|#34;).+?yEnc$/', $subject))
+					if($this->grabnzbs && preg_match('/.+\.nzb" yEnc$/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -552,7 +506,7 @@ class Binaries
 								if(!$cres)
 								{
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString($db->escapeString(utf8_encode($data['From']))), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$csql = sprintf('INSERT INTO '.$group['cname'].' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject,0,255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'],0,255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 									$collectionID = $db->queryInsert($csql);
 								}
 								else
@@ -643,6 +597,9 @@ class Binaries
 
 	public function partRepair($nntp, $groupArr)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(binaries->partRepair).\n"));
+
 		// Get all parts in partrepair table.
 		$db = $this->db;
 		$missingParts = $db->query(sprintf('SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));

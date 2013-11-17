@@ -1,8 +1,8 @@
 <?php
 //This script converts tables to myisam , innodb dynamic or innodb compressed, or tokudb. Run like this : php convert_mysql_tables.php dinnodb
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new DB();
 if($db->dbSystem() == "pgsql")
@@ -69,40 +69,38 @@ else if (isset($argv[1]) && $argv[1] == "collections")
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 }
+else if (isset($argv[1]) && $argv[1] == "mariadb-tokudb")
+{
+	$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
+	foreach($tables as $row)
+	{
+		$tbl = $row['name'];
+		printf("Converting $tbl\n");
+		$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
+		$db->queryExec($sql);
+		$db->queryExec("OPTIMIZE TABLE $tbl");
+	}
+}
 else if (isset($argv[1]) && $argv[1] == "tokudb")
 {
-/*	try {
-		$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR ROW_FORMAT=tokudb_quicklz');
-		foreach($tables as $row)
-		{
-			$tbl = $row['name'];
-			printf("Converting $tbl\n");
-			if ($tbl != "parts" && $tbl != "binaries" && $tbl != "collections")
-				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_quicklz";
-			else
-				$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_uncompressed";
-			$db->queryExec($sql);
-			$db->queryExec("OPTIMIZE TABLE $tbl");
-		}
-	} catch (PDOException $e) {*/
-		$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
-		foreach($tables as $row)
-		{
-			$tbl = $row['name'];
-			printf("Converting $tbl\n");
-			$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
-			$db->queryExec($sql);
-			$db->queryExec("OPTIMIZE TABLE $tbl");
-		}
-	//}
+	$tables = $db->query('SHOW table status WHERE Engine != "TokuDB" OR ROW_FORMAT="tokudb_lzma" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
+	foreach($tables as $row)
+	{
+		$tbl = $row['name'];
+		printf("Converting $tbl\n");
+		$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_lzma";
+		$db->queryExec($sql);
+		$db->queryExec("OPTIMIZE TABLE $tbl");
+	}
 }
 else
 {
 	exit("\nERROR: Wrong argument.\n\n"
-		."php convert_mysql_tables.php myisam		...: Converts all the tables to Myisam Dynamic.\n"
-		."php convert_mysql_tables.php dinnodb		...: Converts all the tables to InnoDB Dynamic.\n"
-		."php convert_mysql_tables.php cinnodb		...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php collections	...: Converts collections, binaries, parts to MyIsam.\n"
-		."php convert_mysql_tables.php tokudb		...: Converts all the tables to Tokutek DB.\n"
+		."php convert_mysql_tables.php myisam			...: Converts all the tables to Myisam Dynamic.\n"
+		."php convert_mysql_tables.php dinnodb			...: Converts all the tables to InnoDB Dynamic.\n"
+		."php convert_mysql_tables.php cinnodb			...: Converts all the tables to InnoDB Compressed.\n"
+		."php convert_mysql_tables.php collections		...: Converts collections, binaries, parts to MyIsam.\n"
+		."php convert_mysql_tables.php mariadb-tokudb		...: Converts all the tables to MariaDB Tokutek DB.\n"
+		."php convert_mysql_tables.php tokudb			...: Converts all the tables to Tokutek DB.\n"
 		."php convert_mysql_tables.php table [ myisam, dinnodb, cinnodb ]	...: Converts 1 table to Engine, row_format specified.\n\n");
 }

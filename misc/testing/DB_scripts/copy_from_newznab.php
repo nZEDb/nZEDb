@@ -1,11 +1,11 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/site.php");
-require_once(WWW_DIR."lib/util.php");
+require dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'util.php';
 
-$dir = WWW_DIR;
-$misc = MISC_DIR;
+$dir = nZEDb_WWW;
+$misc = nZEDb_MISC;
 $site = new Sites();
 $db = new DB();
 $level = $site->get()->nzbsplitlevel;

@@ -3,8 +3,8 @@
 //                  Manage sabnzbd via API
 // --------------------------------------------------------------
 
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 if (!isset($argv[1]))
 	exit("Use this script to manage sabnzbd.\nUseful when bandwidth and/or connections are limited.\nA full API Key is required. To run: \nphp sabnzbd_control.php nZEDb-username sabnzbd-command\nsabnzbd-command = pause, resume or speedlimit 1234 (where 1234 = KB/s)\n");

@@ -1,11 +1,10 @@
 <?php
 //This script will update all records in the consoleinfo table
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/console.php");
-require_once(FS_ROOT."/../../../www/lib/category.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'category.php';
 
 $console = new Console(true);
 $db = new Db();

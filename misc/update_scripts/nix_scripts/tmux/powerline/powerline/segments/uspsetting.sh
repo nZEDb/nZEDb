@@ -1,16 +1,23 @@
 # This script will check the number of connections to your USP, and display it on the powerline bar in tmux.
 
-
-##############
-# FIXME Make sure you edit the path to the config.php file to reflect your install!!
-##############
-
+if [ -e "nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(pwd)"
+elif [ -e "../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
+elif [ -e "../../../../nZEDbBase.php" ]
+then
+    export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
+else
+    export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+fi
 
 run_segment() {
     # get USP settings from config.php
-    uspsetting=( $(cat /var/www/nZEDb/www/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
+    uspsetting=( $(cat ${NZEDB_ROOT}/www/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
 
-    # Get info about primary NNTP connections. 
+    # Get info about primary NNTP connections.
     mainusp=( $(dig ${uspsetting[0]} | awk '/   A   / {print $5}') )
     grepusp=$(echo "${mainusp[@]}" | sed 's/ /|/g')
     maincount=$(ss -n | awk '/ESTAB/ {printf"%s %s\n",$1,$5}' | egrep "$grepusp" | grep -c ${uspsetting[1]})
@@ -28,5 +35,5 @@ run_segment() {
     else
         echo "MainUSP: A${maincount} T${tmaincount}"
     fi
-    
+
 }

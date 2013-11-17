@@ -1,9 +1,8 @@
 <?php
 // Test if your amazon keys are working.
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/amazon.php");
-require_once(FS_ROOT."/../../../www/lib/site.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'amazon.php';
+require_once nZEDb_LIB . 'site.php';
 
 $s = new Sites();
 $site = $s->get();

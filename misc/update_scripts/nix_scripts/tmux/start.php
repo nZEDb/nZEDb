@@ -1,14 +1,14 @@
 <?php
 
-require_once(dirname(__FILE__)."/../../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/tmux.php");
-require_once(WWW_DIR."lib/site.php");
+require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'tmux.php';
+require_once nZEDb_LIB . 'site.php';
 
 passthru("clear");
 
 $db = new DB();
-$DIR = MISC_DIR;
+$DIR = nZEDb_MISC;
 
 $limited = false;
 if (isset($argv['1']) && $argv['1'] == "limited")
@@ -57,7 +57,7 @@ if ($hashcheck != '1')
 	exit(1);
 }
 
-if ($patch < '143')
+if ($patch < '147')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
@@ -111,12 +111,12 @@ if ($nntpproxy == '1')
 print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
 if ($tablepergroup == 1)
 {
-	$sql = "SHOW tables";
-	$tables = $db->query($sql);
+	$sql = "SHOW table status";
+	$tables = $db->queryDirect($sql);
 	$ran = 0;
 	foreach($tables as $row)
 	{
-		$tbl = $row['tables_in_'.DB_NAME];
+		$tbl = $row['name'];
 		if (preg_match('/\d+_collections/',$tbl))
 		{
 			$run = $db->prepare('UPDATE '.$tbl.' SET dateadded = now()');
@@ -173,7 +173,7 @@ function start_apps($tmux_session)
 		exec("tmux new-window -t $tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
 
 	if ($showprocesslist == "TRUE")
-		exec("tmux new-window -t $tmux_session -n showprocesslist 'printf \"\033]2;showprocesslist\033\" && watch -n .2 \"mysql -e \\\"SELECT time, state, info FROM information_schema.processlist WHERE command != \\\\\\\"Sleep\\\\\\\" AND time >= $processupdate ORDER BY time DESC \\\G\\\"\"'");
+		exec("tmux new-window -t $tmux_session -n showprocesslist 'printf \"\033]2;showprocesslist\033\" && watch -n .5 \"mysql -e \\\"SELECT time, state, info FROM information_schema.processlist WHERE command != \\\\\\\"Sleep\\\\\\\" AND time >= $processupdate ORDER BY time DESC \\\G\\\"\"'");
 		//exec("tmux new-window -t $tmux_session -n showprocesslist 'printf \"\033]2;showprocesslist\033\" && watch -n .2 \"mysql -e \\\"SELECT time, state, rows_examined, info FROM information_schema.processlist WHERE command != \\\\\\\"Sleep\\\\\\\" AND time >= $processupdate ORDER BY time DESC \\\G\\\"\"'");
 
 	if ($console_bash == "TRUE")
@@ -187,7 +187,7 @@ function window_proxy($tmux_session, $window)
 	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == '1')
 	{
-		$DIR = MISC_DIR;
+		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
 		if(file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy.conf"))
 		{
@@ -199,7 +199,7 @@ function window_proxy($tmux_session, $window)
 	$grabnzbs = $site->grabnzbs;
 	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
 	{
-		$DIR = MISC_DIR;
+		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
 		if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
 		{

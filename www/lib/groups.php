@@ -1,10 +1,10 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/nntp.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/binaries.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'binaries.php';
 
 class Groups
 {
@@ -54,13 +54,13 @@ class Groups
 	public function getActiveBackfill()
 	{
 		$db = new DB();
-		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY name");
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name");
 	}
 
 	public function getActiveByDateBackfill()
 	{
 		$db = new DB();
-		return $db->query("SELECT * FROM groups WHERE backfill = 1 ORDER BY first_record_postdate DESC");
+		return $db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC");
 	}
 
 	public function getActiveIDs()

@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/groups.php");
+require_once nZEDb_LIB . 'groups.php';
 $groups = new Groups;
 
 $grouplist = $groups->getAll();

@@ -1,7 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import unicode_literals
 import sys, os, time
 import threading
 try:
@@ -78,33 +79,33 @@ else:
 if sys.argv[1] == "additional":
 	while len(datas) == 0 and maxtries >= -6:
 		if maxsizeck == 0:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 			cur.execute(run, (maxtries, run_threads * ppperrun))
 		else:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 AND r.size < %s AND r.passwordstatus BETWEEN %s AND -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 			cur.execute(run, (maxsize, maxtries, run_threads * ppperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "nfo":
 	while len(datas) == 0 and maxtries >= -6:
-		run = "SELECT id, guid, groupid, name FROM releases WHERE nfostatus BETWEEN %s AND -1 AND nzbstatus = 1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN %s AND -1 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, run_threads * nfoperrun))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "movie":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE searchname IS NOT NULL AND imdbid IS NULL AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname, id FROM releases WHERE searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		run = "SELECT searchname, id FROM releases WHERE searchname IS NOT NULL AND rageid = -1 AND nzbstatus = 1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 
@@ -131,10 +132,8 @@ class queue_runner(threading.Thread):
 					return
 			else:
 				if my_id:
-					#print(os.getloadavg())
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_new.php", ""+my_id])
-					#subprocess.call(['timeout', '300', 'php', pathname+'/../nix_scripts/tmux/bin/postprocess_new.php', my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 

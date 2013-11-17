@@ -1,14 +1,14 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/TMDb.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/nfo.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/util.php');
-require_once(WWW_DIR.'lib/releaseimage.php');
-require_once(WWW_DIR.'lib/releases.php');
-require_once(WWW_DIR.'lib/rottentomato.php');
-require_once(WWW_DIR.'lib/trakttv.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'TMDb.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'rottentomato.php';
+require_once nZEDb_LIB . 'trakttv.php';
 
 class Movie
 {
@@ -29,7 +29,7 @@ class Movie
 		$this->debug = ($site->debuginfo == "0") ? false : true;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		$this->imgSavePath = WWW_DIR.'covers/movies/';
+		$this->imgSavePath = nZEDb_WWW.'covers/movies/';
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
 	}

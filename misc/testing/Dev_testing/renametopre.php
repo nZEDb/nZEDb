@@ -1,11 +1,11 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/consoletools.php");
-require_once(WWW_DIR."lib/namecleaning.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/releases.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'releases.php';
 
 
 /*
@@ -284,7 +284,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 			return $cleanerName;
 	}
 	// <kere.ws> - MViD - 1341305405 - Metallica.Orion.Music.Festival.2012.AC3.HDTV.720p.x264-TSCC - [01/89] - "Metallica.Orion.Music.Festival.2012.AC3.HDTV.720p.x264-TSCC-thumb.jpg" yEnc
-	elseif (preg_match('/^<kere\.ws>[ _-]{0,3}\w+(-\w+)?[ _-]{0,3}\d+[ _-]{0,3}(?P<title>.+)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
+	elseif (preg_match('/^<kere\.ws>[ _-]{0,3}\w+(-\w+)?[ _-]{0,3}\d+[ _-]{0,3}(?P<title>.+) - \[\d+\/\d+\][ _-]{0,3}("|#34;).+?("|#34;) yEnc$/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName))

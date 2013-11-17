@@ -1,8 +1,8 @@
 <?php
-require_once("config.php");
-require_once(WWW_DIR."/lib/adminpage.php");
-require_once(WWW_DIR."/lib/tmux.php");
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once './config.php';
+require_once nZEDb_LIB . 'adminpage.php';
+require_once nZEDb_LIB . 'tmux.php';
+require_once nZEDb_LIB . 'sabnzbd.php';
 
 $page = new AdminPage();
 $tmux = new Tmux();
@@ -54,6 +54,8 @@ $page->smarty->assign('sequential_ids', array(0,1,2));
 $page->smarty->assign('sequential_names', array('Disabled', 'Basic Sequential', 'Complete Sequential'));
 $page->smarty->assign('binaries_ids', array(0,1,2));
 $page->smarty->assign('binaries_names', array('Disabled', 'Simple Threaded Update', 'Complete Threaded Update'));
+$page->smarty->assign('post_non_ids', array(0,1,2));
+$page->smarty->assign('post_non_names', array('Disabled', 'All Available Releases', 'Properly Renamed Releases'));
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once(WWW_DIR."/lib/category.php");
-require_once(WWW_DIR."/lib/sabnzbd.php");
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'sabnzbd.php';
 
 $category = new Category;
 $sab = new SABnzbd($page);

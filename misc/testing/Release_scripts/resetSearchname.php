@@ -2,12 +2,11 @@
 /* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
  * Type php resetSearchname.php to see detailed info. */
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/namecleaning.php");
-require_once(FS_ROOT."/../../../www/lib/namefixer.php");
-require_once(FS_ROOT."/../../../www/lib/consoletools.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'namefixer.php';
+require_once nZEDb_LIB . 'consoletools.php';
 
 if (isset($argv[1]) && $argv[1] == "full")
 {

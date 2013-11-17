@@ -1,5 +1,5 @@
 <?php
-require_once(WWW_DIR.'lib/ColorCLI.php');
+require_once nZEDb_LIB . 'ColorCLI.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -44,6 +44,7 @@ class DB
 				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+				DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			} catch (PDOException $e) {
 				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 			}
@@ -88,38 +89,37 @@ class DB
 			{
 				$p = DB::$pdo->prepare($query.' RETURNING id');
 				$p->execute();
-				$r = $p->fetch(PDO::FETCH_ASSOC);
 				return $r['id'];
 			}
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
-				echo "Sleeping\n";
+				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping\n");
 				sleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
 				$ins->execute();
 				return DB::$pdo->lastInsertId();
 				$i++;
 			}
-			if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205)
+			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205)
 			{
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
+			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[0]==1406 || $e->errorInfo[0]==22001)
+			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;
 			}
 			else
-				printf($e);
+				printf($e->getMessage());
 			return false;
 
 		}
@@ -138,7 +138,7 @@ class DB
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			$i = 1;
-			while (($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
+			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
 				echo "Sleeping\n";
 				sleep($i * $i);
@@ -147,23 +147,23 @@ class DB
 				return $run;
 				$i++;
 			}
-			if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205)
+			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205)
 			{
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[0]==1062 || $e->errorInfo[0]==23000)
+			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[0]==1406 || $e->errorInfo[0]==22001)
+			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;
 			}
 			else
-				printf($e);
+				printf($e->getMessage());
 			return false;
 		}
 	}
@@ -177,7 +177,7 @@ class DB
 		try {
 			return DB::$pdo->exec($query);
 		} catch (PDOException $e) {
-			printf($e);
+			printf($e->getMessage());
 			return false;
 		}
 	}
@@ -208,7 +208,7 @@ class DB
 		try {
 			$result = DB::$pdo->query($query);
 		} catch (PDOException $e) {
-			printf($e);
+			printf($e->getMessage());
 			$result = false;
 		}
 
@@ -247,11 +247,27 @@ class DB
 		try {
 			$result = DB::$pdo->query($query);
 		} catch (PDOException $e) {
-			printf($e);
+			printf($e->getMessage());
 			$result = false;
 		}
 		return $result;
 	}
+
+    //Query that will return an associative array
+    public function queryAssoc($query)
+    {
+        DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        if ($query == '')
+            return false;
+
+        try {
+            $result = DB::$pdo->query($query);
+        } catch (PDOException $e) {
+            printf($e->getMessage());
+            $result = false;
+        }
+        return $result;
+    }
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	public function optimise($admin=false)
@@ -347,7 +363,7 @@ class DB
 		try {
 			$stat = DB::$pdo->prepare($query);
 		} catch (PDOException $e) {
-			//printf($e);
+			//printf($e->getMessage());
 			$stat = false;
 		}
 		return $stat;
@@ -413,7 +429,7 @@ class DB
 		}
 	}
 	
-	// Retrieve attributes
+	// Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php
 	public function getAttribute($attribute)
 	{
 		if ($attribute != '')
@@ -421,7 +437,7 @@ class DB
 			try {
 				$result = DB::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				printf($e);
+				printf($e->getMessage());
 				$result = false;
 			}
 			return $result;

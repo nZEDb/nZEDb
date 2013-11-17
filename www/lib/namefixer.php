@@ -1,9 +1,10 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/category.php');
-require_once(WWW_DIR.'lib/groups.php');
-require_once(WWW_DIR.'lib/namecleaning.php');
-require_once(WWW_DIR.'lib/nzbcontents.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'nzbcontents.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Namefixer
 {
@@ -44,6 +45,7 @@ class Namefixer
 		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 		$this->fullall = " ORDER BY postdate DESC";
 		$this->done = $this->matched = false;
+		$this->c = new ColorCLI;
 	}
 
 	//  Attempts to fix release names using the NFO.
@@ -160,8 +162,11 @@ class Namefixer
 	}
 
 	//  Attempts to fix release names using the Par2 File.
-	public function fixNamesWithPar2($time, $echo, $cats, $namestatus)
+	public function fixNamesWithPar2($time, $echo, $cats, $namestatus, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(namefixer->fixNamesWithPar2).\n"));
+
 		if ($time == 1)
 			echo "Fixing search names in the past 6 hours using the par2 files.\n";
 		else
@@ -191,7 +196,7 @@ class Namefixer
 			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
 			{
-				if ($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp) === true)
+				if ($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $nntp) === true)
 				{
 					echo ".";
 					$this->fixed++;

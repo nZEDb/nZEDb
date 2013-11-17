@@ -1,9 +1,8 @@
 <?php
 /* This script resets the relnamestatus to 1 on every release that doesn't have relnamestatus 3 or 7, so you can rerun fixReleaseNames.php miscsorter etc*/
 
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 if (!isset($argv[1]))
 	exit("This script resets the relnamestatus to 1 on every release that doesn't have relnamestatus 3 or 7, so you can rerun fixReleaseNames.php miscsorter etc\nRun this with true to run it.\n");

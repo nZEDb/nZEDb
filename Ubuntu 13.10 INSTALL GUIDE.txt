@@ -27,7 +27,7 @@ Most of this guide is done from the command line (terminal).
 			pip-3.3 list
 		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
-	# Or the Python psycopg module for PostgreSQL
+	# Or the Python psycopg module for PostgreSQL(this is not currently supported)
 		sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
 		# Python 2.*
 			sudo apt-get install python-setuptools python-pip
@@ -71,7 +71,7 @@ Most of this guide is done from the command line (terminal).
 		sudo apt-get update
 
 	# Install PHP and the required extensions:
-		sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl
+		sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl
 3. Install MySQL OR PostgreSQL.
 
 	# MySQL:

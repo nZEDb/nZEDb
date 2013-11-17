@@ -3,11 +3,11 @@
 
 if(isset($argv[1]) && $argv[1] == "true")
 {
-	require(dirname(__FILE__)."/../../../www/config.php");
-	require_once(WWW_DIR."/lib/framework/db.php");
-	require_once(WWW_DIR."/lib/category.php");
-	require_once(WWW_DIR."/lib/releases.php");
-	require_once(WWW_DIR."/lib/site.php");
+	require dirname(__FILE__) . '/../../../www/config.php';
+	require_once nZEDb_LIB . 'framework/db.php';
+	require_once nZEDb_LIB . 'category.php';
+	require_once nZEDb_LIB . 'releases.php';
+	require_once nZEDb_LIB . 'site.php';
 
 	$timestart = TIME();
 	$s = new Sites();

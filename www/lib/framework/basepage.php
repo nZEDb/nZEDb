@@ -1,9 +1,9 @@
 <?php
-require_once(SMARTY_DIR.'Smarty.class.php');
-require_once(WWW_DIR.'lib/users.php');
-require_once(WWW_DIR.'lib/site.php');
-require_once(WWW_DIR.'lib/sabnzbd.php');
-require_once(WWW_DIR.'lib/framework/db.php');
+require_once SMARTY_DIR . 'Smarty.class.php';
+require_once nZEDb_LIB . 'users.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'sabnzbd.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 class BasePage
 {
@@ -47,7 +47,7 @@ class BasePage
 		$this->site = $s->get();
 
 		$this->smarty = new Smarty();
-		$this->smarty->setTemplateDir(array('user_frontend' => WWW_DIR.'themes/'.$this->site->style.'/templates/frontend', 'frontend' => WWW_DIR.'themes/Default/templates/frontend'));
+		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/frontend', 'frontend' => nZEDb_WWW.'themes/Default/templates/frontend'));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');

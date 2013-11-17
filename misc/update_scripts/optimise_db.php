@@ -1,20 +1,20 @@
 <?php
-require_once(dirname(__FILE__)."/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require_once dirname(__FILE__) . '/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new DB();
 $type = $db->dbSystem();
-if ($type == "mysql")
+if ($type == 'mysql')
 {
-	$a = "MySQL";
-	$b = "Optimizing";
-	$c = "Optimized";
+	$a = 'MySQL';
+	$b = 'Optimizing';
+	$c = 'Optimized';
 }
-if ($type == "pgsql")
+if ($type == 'pgsql')
 {
-	$a = "PostgreSQL";
-	$b = "Vacuuming";
-	$c = "Vacuumed";
+	$a = 'PostgreSQL';
+	$b = 'Vacuuming';
+	$c = 'Vacuumed';
 }
 echo "{$b} {$a} tables, this can take a while...\n";
 $tablecnt = $db->optimise();

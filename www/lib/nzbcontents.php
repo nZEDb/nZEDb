@@ -1,7 +1,7 @@
 <?php
-require_once(WWW_DIR.'lib/framework/db.php');
-require_once(WWW_DIR.'lib/nzb.php');
-require_once(WWW_DIR.'lib/nfo.php');
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'nfo.php';
 
 /*
  * Gets information contained within the NZB.
@@ -18,6 +18,9 @@ Class NZBcontents
 
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(nzbcontents->getNfoFromNZB).\n"));
+
 		if($fetchedBinary = $this->NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
 			return $fetchedBinary;
 		else if ($fetchedBinary = $this->hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo))
@@ -58,8 +61,11 @@ Class NZBcontents
 	}
 
 	// Attempts to get the releasename from a par2 file
-	public function checkPAR2($guid, $relID, $groupID, $db, $pp)
+	public function checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(nzbcontents->checkPAR2).\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
@@ -67,7 +73,7 @@ Class NZBcontents
 			{
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject))
 				{
-					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, null) === true)
+					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 					{
 						$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
 						return true;
@@ -81,6 +87,9 @@ Class NZBcontents
 	// Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
 	public function NZBcompletion($guid, $relID, $groupID, $nntp, $db, $nfocheck=false)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(nzbcontents->NZBcompletion).\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
@@ -142,16 +151,19 @@ Class NZBcontents
 	// Look for an .nfo file in the NZB, return the NFO. Also gets the NZB completion.
 	public function NFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(nzbcontents->NFOfromNZB).\n"));
+
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
 		if ($messageid !== false)
 		{
 			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-			if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
+			if (PEAR::isError($fetchedBinary))
 			{
 				$nntp->doQuit();
 				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				if ($fetchedBinary === false || PEAR::isError($fetchedBinary))
+				if (PEAR::isError($fetchedBinary))
 					$fetchedBinary = false;
 			}
 			if ($nfo->isNFO($fetchedBinary, $guid) === true)
@@ -167,6 +179,9 @@ Class NZBcontents
 	// Look for an NFO in the nzb which does not end in .nfo, return the nfo.
 	public function hiddenNFOfromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
 	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(nzbcontents->hiddenNFOfromNZB).\n"));
+
 		$nzbfile = $this->LoadNZB($guid);
 		if ($nzbfile !== false)
 		{
@@ -181,12 +196,12 @@ Class NZBcontents
 					if ($messageid !== false)
 					{
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if ($possibleNFO === false || PEAR::isError($possibleNFO))
+						if (PEAR::isError($possibleNFO))
 						{
 							$nntp->doQuit();
 							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if ($possibleNFO === false || PEAR::isError($possibleNFO))
+							if (PEAR::isError($possibleNFO))
 							{
 								$nntp->doQuit();
 								$possibleNFO = false;

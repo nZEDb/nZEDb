@@ -1,6 +1,6 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
+require dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new DB();
 $count = $groups = 0;

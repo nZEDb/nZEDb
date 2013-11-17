@@ -1,8 +1,8 @@
 <?php
-require(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."/lib/consoletools.php");
-require_once(WWW_DIR."/lib/predb.php");
-require_once(WWW_DIR."/lib/framework/db.php");
+require dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'framework/db.php';
 
 // Downloads predb titles from github and stores them in the predb table.
 if (isset($argv[1]) && is_numeric($argv[1]))
@@ -31,7 +31,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 		$gitfile = fopen("https://github.com/nZEDb/pre-info/raw/master/datafiles/data".$filenump.".gz", "rb");
 		if($gitfile)
 		{
-			$zippath = WWW_DIR."data".$filenump.".gz";
+			$zippath = nZEDb_WWW."data".$filenump.".gz";
 			$zipfile = fopen($zippath, "wb");
 			if($zipfile)
 			{
@@ -49,7 +49,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 				{
 					if($handle = gzopen($zippath, "rb"))
 					{
-						$file = WWW_DIR."data".$filenump.".txt";
+						$file = nZEDb_WWW."data".$filenump.".txt";
 						$txthandle = fopen($file, "w");
 
 						while($string = gzread($handle, 4096))

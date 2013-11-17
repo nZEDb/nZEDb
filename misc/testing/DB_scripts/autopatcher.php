@@ -1,11 +1,11 @@
 <?php
-require_once(dirname(__FILE__)."/../../../www/config.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/tmux.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'tmux.php';
 
 $db = new DB();
-$DIR = MISC_DIR;
-$smarty = SMARTY_DIR."templates_c/";
+$DIR = nZEDb_MISC;
+$smarty = SMARTY_DIR . 'templates_c/';
 $dbname = DB_NAME;
 $restart = "false";
 

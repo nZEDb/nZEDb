@@ -1,10 +1,9 @@
 <?php
-define('FS_ROOT', realpath(dirname(__FILE__)));
-require_once(FS_ROOT."/../../../www/config.php");
-require_once(FS_ROOT."/../../../www/lib/framework/db.php");
-require_once(FS_ROOT."/../../../www/lib/backfill.php");
-require_once(FS_ROOT."/../../../www/lib/nntp.php");
-require_once(FS_ROOT."/../../../www/lib/ColorCLI.php");
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'backfill.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
 It will also truncate the parts, binaries, collections, and partsrepair tables.

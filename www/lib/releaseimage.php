@@ -1,15 +1,15 @@
 <?php
-require_once(WWW_DIR."/lib/framework/db.php");
-require_once(WWW_DIR."/lib/util.php");
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'util.php';
 
 class ReleaseImage
 {
 	function __construct()
 	{
-		$this->imgSavePath = WWW_DIR.'covers/preview/';
-		$this->vidSavePath = WWW_DIR.'covers/video/';
-		$this->jpgSavePath = WWW_DIR.'covers/sample/';
-		$this->audSavePath = WWW_DIR.'covers/audiosample/';
+		$this->imgSavePath = nZEDb_WWW.'covers/preview/';
+		$this->vidSavePath = nZEDb_WWW.'covers/video/';
+		$this->jpgSavePath = nZEDb_WWW.'covers/sample/';
+		$this->audSavePath = nZEDb_WWW.'covers/audiosample/';
 	}
 
 	public function fetchImage($imgLoc)

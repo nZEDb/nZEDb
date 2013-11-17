@@ -1,54 +1,71 @@
 <?php
-require(dirname(__FILE__)."/config.php");
-require_once(WWW_DIR."lib/releases.php");
-require_once(WWW_DIR."lib/category.php");
-require_once(WWW_DIR."lib/groups.php");
-require_once(WWW_DIR."lib/framework/db.php");
-require_once(WWW_DIR."lib/consoletools.php");
+require_once dirname(__FILE__) . '/config.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'site.php';
 
-$groupName = isset($argv[3]) ? $argv[3] : "";
+$s = new Sites();
+$site = $s->get();
+
+if (isset($argv[2]) && $argv[2] === 'true')
+{
+	$nntp = new Nntp();
+	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	{
+		echo $c->error("Unable to connect to usenet.\n");
+		return;
+	}
+	if ($site->nntpproxy === true)
+		usleep(500000);
+}
+
+$groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2]))
 {
 	$releases = new Releases();
-	if ($argv[1] == 1 && $argv[2] == "true")
-		$releases->processReleases(1, 1, $groupName, true);
-	else if ($argv[1] == 1 && $argv[2] == "false")
-		$releases->processReleases(1, 2, $groupName, true);
-	else if ($argv[1] == 2 && $argv[2] == "true")
-		$releases->processReleases(2, 1, $groupName, true);
-	else if ($argv[1] == 2 && $argv[2] == "false")
-		$releases->processReleases(2, 2, $groupName, true);
-	else if ($argv[1] == 4 && ($argv[2] == "true" || $argv[2] == "false"))
+	if ($argv[1] == 1 && $argv[2] == 'true')
+		$releases->processReleases(1, 1, $groupName, true, $nntp);
+	else if ($argv[1] == 1 && $argv[2] == 'false')
+		$releases->processReleases(1, 2, $groupName, true, null);
+	else if ($argv[1] == 2 && $argv[2] == 'true')
+		$releases->processReleases(2, 1, $groupName, true, $nntp);
+	else if ($argv[1] == 2 && $argv[2] == 'false')
+		$releases->processReleases(2, 2, $groupName, true, null);
+	else if ($argv[1] == 4 && ($argv[2] == 'true' || $argv[2] == 'false'))
 	{
 		echo "Moving all releases to other -> misc, this can take a while, be patient.\n";
 		$releases->resetCategorize();
 	}
-	else if ($argv[1] == 5 && ($argv[2] == "true" || $argv[2] == "false"))
+	else if ($argv[1] == 5 && ($argv[2] == 'true' || $argv[2] == 'false'))
 	{
 		echo "Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.\n";
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease("name", "WHERE relnamestatus = 0 AND categoryID = 7010", true);
+		$relcount = $releases->categorizeRelease('name', 'WHERE relnamestatus = 0 AND categoryID = 7010', true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
-		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.\n";
+		echo "\n".'Finished categorizing '.$relcount.' releases in '.$time." seconds, using the usenet subject.\n";
 	}
-	else if ($argv[1] == 6 && $argv[2] == "true")
+	else if ($argv[1] == 6 && $argv[2] == 'true')
 	{
 		echo "Categorizing releases in all sections using the searchname. This can take a while, be patient.\n";
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease("searchname", "", true);
+		$relcount = $releases->categorizeRelease('searchname', '', true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
-		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";
+		echo "\n".'Finished categorizing '.$relcount.' releases in '.$time." seconds, using the search name.\n";
 	}
-	else if ($argv[1] == 6 && $argv[2] == "false")
+	else if ($argv[1] == 6 && $argv[2] == 'false')
 	{
 		echo "Categorizing releases in misc sections using the searchname. This can take a while, be patient.\n";
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease("searchname", "WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)", true);
+		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)', true);
 		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
-		echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the search name.\n";
+		echo "\n".'Finished categorizing '.$relcount.' releases in '.$time." seconds, using the search name.\n";
 	}
 	else
 		exit("Wrong argument, type php update_releases.php to see a list of valid arguments.\n");
@@ -66,5 +83,6 @@ else
 			."php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n"
 			."php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n");
 }
-
+if ($site->nntpproxy === false)
+    $nntp->doQuit();
 ?>

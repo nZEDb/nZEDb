@@ -4,20 +4,20 @@ if (!$users->isLoggedIn())
 
 if (isset($_GET["id"]))
 {
-	require_once(WWW_DIR."/lib/releases.php");
+	require_once nZEDb_LIB . 'releases.php';
 	$releases = new Releases;
 	$data = $releases->getByGuid($_GET["id"]);
 
 	if (!$data)
 		$page->show404();
 
-	require_once(WWW_DIR."/lib/releasecomments.php");
+	require_once nZEDb_LIB . 'releasecomments.php';
 	$rc = new ReleaseComments;
 	if ($page->isPostBack())
 			$rc->addComment($data["id"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 
 	$nfo = $releases->getReleaseNfo($data["id"], false);
-	require_once(WWW_DIR."/lib/releaseextra.php");
+	require_once nZEDb_LIB . 'releaseextra.php';
 	$re = new ReleaseExtra;
 	$reVideo = $re->getVideo($data["id"]);
 	$reAudio = $re->getAudio($data["id"]);
@@ -28,7 +28,7 @@ if (isset($_GET["id"]))
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data["rageid"] != '')
 	{
-		require_once(WWW_DIR."/lib/tvrage.php");
+		require_once nZEDb_LIB . 'tvrage.php';
 		$tvrage = new TvRage;
 		$rageinfo = $tvrage->getByRageID($data["rageid"]);
 		if (count($rageinfo) > 0)
@@ -64,14 +64,14 @@ if (isset($_GET["id"]))
 
 	if ($data["anidbid"] > 0)
 	{
-		require_once(WWW_DIR."/lib/anidb.php");
+		require_once nZEDb_LIB . 'anidb.php';
 		$AniDB = new AniDB;
 		$ani = $AniDB->getAnimeInfo($data["anidbid"]);
 	}
 
 	if ($data['imdbid'] != '')
 	{
-		require_once(WWW_DIR."/lib/movie.php");
+		require_once nZEDb_LIB . 'movie.php';
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
@@ -86,30 +86,30 @@ if (isset($_GET["id"]))
 
 	if ($data['musicinfoid'] != '')
 	{
-		require_once(WWW_DIR."/lib/music.php");
+		require_once nZEDb_LIB . 'music.php';
 		$music = new Music();
 		$mus = $music->getMusicInfo($data['musicinfoid']);
 	}
 
 	if ($data['consoleinfoid'] != '')
 	{
-		require_once(WWW_DIR."/lib/console.php");
+		require_once nZEDb_LIB . 'console.php';
 		$c = new Console();
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
 	if ($data['bookinfoid'] != '')
 	{
-		require_once(WWW_DIR."/lib/books.php");
+		require_once nZEDb_LIB . 'books.php';
 		$b = new Books();
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
-	require_once(WWW_DIR."/lib/releasefiles.php");
+	require_once nZEDb_LIB . 'releasefiles.php';
 	$rf = new ReleaseFiles;
 	$releasefiles = $rf->get($data["id"]);
 
-	require_once(WWW_DIR."/lib/predb.php");
+	require_once nZEDb_LIB . 'predb.php';
 	$predb = new Predb();
 	$pre = $predb->getForRelease($data['preid']);
 
