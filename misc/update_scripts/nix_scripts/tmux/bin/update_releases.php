@@ -49,6 +49,7 @@ if ($pieces[0] != 'Stage7b')
 	$releases->processReleasesStage3($groupid, true);
 	$retcount = $releases->processReleasesStage4($groupid, true);
 	$releases->processReleasesStage5($groupid, true);
+	$releases->processReleasesStage5b($groupid, true);
 	$releases->processReleasesStage7a($groupid, true);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);
@@ -59,6 +60,7 @@ elseif ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);
+	$releases->processReleasesStage5b($groupid='', true);
 	$releases->processReleasesStage6($categorize=1, $postproc=0, $groupid='', true, null);
 	$releases->processReleasesStage7b($groupid='', true);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
