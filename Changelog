@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-11-16 -> jonnyboy -> added requestid lookup to releases_threaded.py, both per group and without
+2013-11-16 -> jonnyboy -> disabled misc/testing/DB_scripts/backfill_predb.php
+                          added requestid lookup to releases_threaded.py, both per group and without
                           changed output for threaded postprocess additional [release.id] instead of [1], removed extra '!' echo in grabnzbs for replaced dupe
                           added maximum parts to download when usign GrabNZBs
                           added check for valid xml in check_nzbs.php
