@@ -3,7 +3,7 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-
+2013-11-17 -> Whitelighter -> improved binaries.php->updateGroup processing. Get article dates from scan function instead of calling postdate. Plus improved output to user and minor bug fixes.
 2013-11-17 -> jonnyoby -> added misc/update_scripts/nntpproxy.php, allows using nntpproxy in scripts other than tmux script, it creates its on session 'NNTPProxy' but does not attach to it. if you run
                           script again, it will attach, not create another session, to attach to session run tmux a -t NNTPProxy
                           updated active_groups.php to include renamed and predme matched counts, more regexes add
