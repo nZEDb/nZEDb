@@ -32,6 +32,9 @@ while :
 do
 	sleep 1
 	CURRTIME=`date +%s`
+	tmux kill-session -t NNTPProxy
+	$PHP ${NZEDB_PATH}/nntpproxy.php
+
 	cd ${NZEDB_PATH}
 	if ! $SCREEN -list | grep -q "POSTP"; then
 		cd $NZEDB_PATH && $SCREEN -dmS POSTP $SCREEN $PHP $NZEDB_PATH/postprocess.php allinf true

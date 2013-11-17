@@ -51,8 +51,8 @@ do
 	clear
 	echo
 	echo
-#	tmux respawnp -k -t $tmux_session:2.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
-#	tmux respawnp -k -t$tmux_session:2.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
+#	tmux kill-session -t NNTPProxy
+#	$PHP ${NZEDB_PATH}/nntpproxy.php
 #	sleep 5
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr

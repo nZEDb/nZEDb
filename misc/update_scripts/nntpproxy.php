@@ -13,15 +13,19 @@ $tmux = $t->get();
 $powerline = $tmux->powerline;
 $s = new Sites();
 $site = $s->get();
+
 $tmux_session = 'NNTPProxy';
 
-function python_module_exist($module) {
+function python_module_exist($module)
+{
 	exec("python -c \"import $module\"", $output, $returnCode);
 	return ($returnCode == 0 ? true : false);
 }
 
 $nntpproxy = $site->nntpproxy;
-if ($nntpproxy == '1')
+if ($nntpproxy == 0)
+	exit();
+else
 {
 	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value)
@@ -41,7 +45,7 @@ function window_proxy($tmux_session, $powerline)
 	if ($powerline == "TRUE")
 		$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/powerline/tmux.conf";
 	else
-	$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
+		$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
 
 	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == '1')
@@ -54,6 +58,7 @@ function window_proxy($tmux_session, $powerline)
 			shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n NNTPProxy 'printf \"\033]2;\"NNTPProxy\"\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
+
 	$alternate_nntp = $site->alternate_nntp;
 	$grabnzbs = $site->grabnzbs;
 	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
