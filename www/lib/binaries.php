@@ -196,9 +196,9 @@ class Binaries
 		if($total > 0)
 		{
 			if ($groupArr['last_record'] == 0)
-				echo $this->c->set256($this->primary).'New group '.$data['group'].' starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).'New group '.$data['group'].' starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth. Leaving ".number_format($left)." for next pass.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
 			else
-				echo $this->c->set256($this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->primary).'Group '.$data['group'].' has '.number_format($realtotal)." new articles. Leaving ".number_format($left)." for next pass.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record'])."\n".$this->c->rsetcolor();
 				
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
@@ -214,7 +214,7 @@ class Binaries
 						$last = $first + $this->messagebuffer;
 				}
 				$first++;
-				echo $this->c->set256($this->header)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.str_replace('alt.binaries', 'a.b', $data['group'])." - (".number_format($grouplast - $last)." articles in queue). Leaving ".number_format($left)." for next pass.\n".$this->c->rsetcolor();
+				echo $this->c->set256($this->header)."\nGetting ".number_format($last-$first+1).' articles ('.number_format($first).' to '.number_format($last).') from '.str_replace('alt.binaries', 'a.b', $data['group'])." - (".number_format($grouplast - $last)." articles in queue).\n".$this->c->rsetcolor();
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
