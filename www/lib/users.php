@@ -269,14 +269,14 @@ class Users
 		return array('username_asc', 'username_desc', 'email_asc', 'email_desc', 'host_asc', 'host_desc', 'createddate_asc', 'createddate_desc', 'lastlogin_asc', 'lastlogin_desc', 'apiaccess_asc', 'apiaccess_desc', 'grabs_asc', 'grabs_desc', 'role_asc', 'role_desc');
 	}
 
-	public function isValidUsername($uname)
+	public function isValidUsername($pame)
 	{
-		return preg_match("/^[a-z][a-z0-9]{2,}$/i", $uname);
+		return preg_match("/^[a-z][a-z0-9]{5,}$/i", $uname);
 	}
 
 	public function isValidPassword($pass)
 	{
-		return (strlen($pass) > 5);
+		return (strlen($pass) > 8);
 	}
 
 	public function isDisabled($username)
@@ -555,7 +555,7 @@ class Users
 		$token = $this->hashSHA1(uniqid());
 		$subject = $sitetitle." Invitation";
 		$url = $serverurl."register?invitecode=".$token;
-		$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address. To accept the invition click the following link.\n\n ".$url;
+		$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address. To accept the invition click the following link.\n\n ".$url."\n\n";
 
 		sendEmail($emailto, $subject, $contents, $siteemail);
 		$this->addInvite($uid, $token);
