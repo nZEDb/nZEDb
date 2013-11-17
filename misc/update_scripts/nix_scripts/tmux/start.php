@@ -27,6 +27,13 @@ $patch = $site->sqlpatch;
 $hashcheck = $site->hashcheck;
 $tablepergroup = (!empty($site->tablepergroup)) ? $site->tablepergroup : 0;
 
+//check if session exists
+$session = exec("echo `tmux list-sessions | grep $tmux_session | wc -l`");
+if ($session != 0)
+	exit("\033[1;33mtmux session:".$tmux_session." is already running, aborting.\033[0m\n\n");
+else
+	echo "The above is just a TMUX notice, it is saying TMUX, that you do not have a TMUX session currently running. It is not an error. It is TMUX\n";
+
 function writelog($pane)
 {
 	$path = dirname(__FILE__)."/logs";
@@ -34,27 +41,21 @@ function writelog($pane)
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
 	if ($logs == "TRUE")
-	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
-	}
 	else
-	{
 		return "";
-	}
 }
 
 if ($hashcheck != '1')
 {
 	echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
-	echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
-	exit(1);
+	exit("php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n");
 }
 
 if ($patch < '147')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
-	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
-	exit(1);
+	exit("php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n");
 }
 
 passthru("clear");
@@ -76,13 +77,12 @@ function command_exist($cmd) {
 $apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
 {
-	if (!command_exist($value)) {
-		echo "I require ".$value." but it's not installed. Aborting.\n";
-		exit(1);
-	}
+	if (!command_exist($value))
+		exit("Tmux scripts require ".$value." but it's not installed. Aborting.\n");
 }
 
-function python_module_exist($module) {
+function python_module_exist($module)
+{
 	exec("python -c \"import $module\"", $output, $returnCode);
 	return ($returnCode == 0 ? true : false);
 }
@@ -93,10 +93,8 @@ if ($nntpproxy == '1')
 	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value)
 	{
-		if (!python_module_exist($value)) {
-			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
-			exit(1);
-		}
+		if (!python_module_exist($value))
+			exit("NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n");
 	}
 }
 
@@ -262,7 +260,7 @@ else
 
 if ($seq == 1)
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	if ($import != 0)
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
@@ -279,7 +277,7 @@ if ($seq == 1)
 }
 elseif ($seq == 2)
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
 	if ($import != 0)
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
@@ -295,7 +293,7 @@ elseif ($seq == 2)
 }
 else
 {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	if ($import != 0)
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
