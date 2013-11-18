@@ -271,12 +271,14 @@ class Users
 
 	public function isValidUsername($uname)
 	{
-		return preg_match("/^[a-z][a-z0-9]{5,}$/i", $uname);
+		// Username must be at least five characters
+		return preg_match("/^[a-z][a-z0-9]{4,}$/i", $uname);
 	}
 
 	public function isValidPassword($pass)
 	{
-		return (strlen($pass) > 8);
+		// Password mut be longer that 8 characters
+		return (strlen($pass) > 7);
 	}
 
 	public function isDisabled($username)
@@ -555,7 +557,7 @@ class Users
 		$token = $this->hashSHA1(uniqid());
 		$subject = $sitetitle." Invitation";
 		$url = $serverurl."register?invitecode=".$token;
-		$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address. To accept the invition click the following link.\n\n ".$url."\n\n";
+		$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address. To accept the invition click the following link.\n\n ".$url;
 
 		sendEmail($emailto, $subject, $contents, $siteemail);
 		$this->addInvite($uid, $token);
