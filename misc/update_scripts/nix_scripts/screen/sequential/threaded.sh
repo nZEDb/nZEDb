@@ -58,9 +58,6 @@ do
 	then
 		loop=0
 	fi
-    then
-        loop=0
-    fi
 	# Uncomment this if statement only if using nntpproxy
 #	if [[ $loop -eq 1 ]]
 #	then
