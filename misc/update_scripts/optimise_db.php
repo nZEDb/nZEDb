@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$c = new ColorCLI;
+$c = new ColorCLI();
 $db = new DB();
 $type = $db->dbSystem();
 if (isset($argv[1]) && $argv[1] === "run")
@@ -12,22 +12,22 @@ if (isset($argv[1]) && $argv[1] === "run")
 	{
 		$a = 'MySQL';
 		$b = 'Optimizing';
-		$c = 'Optimized';
+		$d = 'Optimized';
 	}
-	if ($type == 'pgsql')
+	else if ($type == 'pgsql')
 	{
 		$a = 'PostgreSQL';
 		$b = 'Vacuuming';
-		$c = 'Vacuumed';
+		$d = 'Vacuumed';
 	}
-	echo $c->header("{$b} {$a} tables, this can take a while...");
+	echo $c->header($b." ".$a." tables, this can take a while...");
 	$tablecnt = $db->optimise();
 	if ($tablecnt > 0)
-		exit($c->primary("{$c} {$tablecnt} {$a} tables succesfuly."));
+		exit($c->primary("{$d} {$tablecnt} {$a} tables succesfuly."));
 	else
 		exit($c->notice("No {$a} tables to optimize."));
 }
 else
 	exit($c->error("\nWrong set of arguments.\n"
-		."php optimise_db.php true		...: Optimise the database.\n"));
+		."php optimise_db.php run		...: Optimise the database.\n"));
 ?>
