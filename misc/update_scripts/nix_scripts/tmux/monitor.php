@@ -5,7 +5,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4338";
+$version="0.3r4341";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -916,7 +916,7 @@ while($i > 0)
 			{
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update_scripts/decrypt_hashes.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			else if ($dehash == 2)
 			{
@@ -929,7 +929,7 @@ while($i > 0)
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
 						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php true $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update_scripts/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
