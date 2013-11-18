@@ -52,7 +52,7 @@ if ($hashcheck != '1')
 	exit("php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n");
 }
 
-if ($patch < '147')
+if ($patch < '148')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
 	exit("php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n");
@@ -173,6 +173,7 @@ function start_apps($tmux_session)
 
 function window_proxy($tmux_session, $window)
 {
+	exec("tmux kill-session -t NNTPProxy");
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;

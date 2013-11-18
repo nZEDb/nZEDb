@@ -3,13 +3,12 @@ require_once dirname(__FILE__) . '/../../../config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'binaries.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
-	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+	exit($c->error("This script is not intended to be run manually, it is called from releases_threaded.py."));
 
 $pieces = explode('  ', $argv[1]);
 $groupid = $pieces[0];
@@ -18,12 +17,11 @@ $releases = new Releases(true);
 $groups = new Groups();
 $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
-$consoletools = new ConsoleTools();
 $binaries = new Binaries();
 $db = new DB();
 
 if ($releases->hashcheck == 0)
-	exit("You must run update_binaries.php to update your collectionhash.\n");
+	exit($c->error("You must run update_binaries.php to update your collectionhash."));
 
 if ($pieces[0] != 'Stage7b')
 {
@@ -35,7 +33,7 @@ if ($pieces[0] != 'Stage7b')
 		{
 			//$mask = "%-30.30s has %s collections, skipping.\n";
 			//printf($mask, str_replace('alt.binaries', 'a.b', $groupname), number_format($test->rowCount()));
-			//exit();
+			exit();
 		}
 	} catch (PDOException $e) {
 		//No collections available

@@ -23,7 +23,7 @@ if ($_GET["type"] == "tvrage")
 	}
 	else if ($db->dbSystem() == 'pgsql')
 	{
-		$imgdata = @file_get_contents(WWW_DIR.'covers/tvrage/'.$_GET['id'].'.jpg');
+		$imgdata = @file_get_contents(nZEDb_WWW.'covers/tvrage/'.$_GET['id'].'.jpg');
 		if ($imgdata === false)
 			$page->show404();
 	}

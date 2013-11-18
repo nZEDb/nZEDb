@@ -1506,7 +1506,7 @@ class Releases
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						echo $this->c->primaryOver($this->consoleTools->overWrite('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
+						echo $this->consoleTools->overWrite($this->c->primaryOver('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
 				}
 			}
 		}

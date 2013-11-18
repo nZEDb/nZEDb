@@ -9,7 +9,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
-	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py."));
 
 $pieces = explode('                       ', $argv[1]);
 $db = new DB();
@@ -47,12 +47,12 @@ if ($bFound === true)
 	$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
 	$run->execute();
 	$newcatname = $category->getNameByID($determinedcat);
-	echo	$n.$n.'New name:  '.$newTitle.$n.
+	echo $c->primary($n.$n.'New name:  '.$newTitle.$n.
 		'Old name:  '.$pieces[1].$n.
 		'New cat:   '.$newcatname.$n.
 		'Group:     '.$pieces[2].$n.
 		'Method:    '.'requestID'.$n.
-		'ReleaseID: '. $pieces[0].$n;
+		'ReleaseID: '. $pieces[0]);
 	$updated++;
 }
 else
@@ -79,3 +79,4 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 
 	return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
 }
+?>

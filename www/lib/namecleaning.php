@@ -198,7 +198,7 @@ class nameCleaning
 			case 'alt.binaries.warez';
 				return $this->warez();
 			case 'alt.binaries.wii':
-				return wii();
+				return $this->wii();
 			case 'alt.binaries.xbox360':
 				return $this->xbox360();
 			case 'alt.binaries.x':

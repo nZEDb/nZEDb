@@ -12,7 +12,7 @@ require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
-	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+	exit($c->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
 else if (isset($argv[1]))
 {
 	$db = new DB();
@@ -75,12 +75,10 @@ else if (isset($argv[1]))
 		$site = $s->get();
 		$nntp = new Nntp();
 		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
-		{
-			echo $c->error("Unable to connect to usenet.\n");
-			return;
-		}
-		if ($site->nntpproxy === true)
-			usleep(500000);
+			exit($c->error("Unable to connect to usenet."));
+		if ($site->nntpproxy === "1")
+			usleep(1000000);
+
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
@@ -88,6 +86,8 @@ else if (isset($argv[1]))
 		$pp = new Postprocess($echooutput=true);
 		$nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp);
 		echo '.';
-		$nntp->doQuit();
+		if ($site->nntpproxy != "1")
+			$nntp->doQuit();
 	}
 }
+?>

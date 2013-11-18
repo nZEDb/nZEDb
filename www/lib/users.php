@@ -271,12 +271,14 @@ class Users
 
 	public function isValidUsername($uname)
 	{
-		return preg_match("/^[a-z][a-z0-9]{2,}$/i", $uname);
+		// Username must be at least five characters
+		return preg_match("/^[a-z][a-z0-9]{4,}$/i", $uname);
 	}
 
 	public function isValidPassword($pass)
 	{
-		return (strlen($pass) > 5);
+		// Password mut be longer that 8 characters
+		return (strlen($pass) > 7);
 	}
 
 	public function isDisabled($username)
