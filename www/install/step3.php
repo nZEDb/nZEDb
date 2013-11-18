@@ -32,7 +32,7 @@ if  ($page->isPostBack())
 	if ($cfg->NNTP_SSLENABLED)
 		$enc = "ssl";
 
-	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
+	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT, 15);
 	if(PEAR::isError($cfg->nntpCheck))
 		$cfg->error = true;
 	elseif ($cfg->NNTP_USERNAME != "")
