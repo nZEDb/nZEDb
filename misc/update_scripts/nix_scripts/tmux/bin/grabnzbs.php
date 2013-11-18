@@ -16,7 +16,7 @@ $nntp = new Nntp();
 if (($site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 	exit($c->error("Unable to connect to usenet."));
 if ($site->nntpproxy === "1")
-	usleep(1000000);
+	usleep(500000);
 
 $import = new Import(true);
 

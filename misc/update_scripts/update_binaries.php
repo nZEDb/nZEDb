@@ -16,7 +16,7 @@ $nntp = new Nntp();
 if ($nntp->doConnect() === false)
 	exit($c->error("Unable to connect to usenet."));
 if ($site->nntpproxy === "1")
-	usleep(1000000);
+	usleep(500000);
 
 if (isset($argv[1]))
 {
