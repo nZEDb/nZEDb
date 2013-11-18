@@ -112,7 +112,7 @@ class Binaries
 			// For new newsgroups - determine here how far you want to go back.
 			if ($this->NewGroupScanByDays)
 			{
-				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true);
+				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, true, $data);
 				if ($first == '')
 				{
 					echo $this->c->warning("Skipping group: {$groupArr['name']}");
