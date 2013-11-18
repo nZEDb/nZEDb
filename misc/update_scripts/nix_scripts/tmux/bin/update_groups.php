@@ -17,7 +17,7 @@ $nntp = new Nntp();
 if ($nntp->doConnect() === false)
 	exit($c->error("Unable to connect to usenet."));
 if ($site->nntpproxy === "1")
-	usleep(1000000);
+	usleep(500000);
 
 echo $c->header("Getting first/last for all your active groups.");
 $data = $nntp->getGroups();

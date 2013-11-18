@@ -26,7 +26,7 @@ if (isset($pieces[6]))
 	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 		exit($c->error("Unable to connect to usenet."));
 	if ($site->nntpproxy === "1")
-		usleep(1000000);
+		usleep(500000);
 
 	$postprocess->processAdditionalThreaded($argv[1], $nntp);
 	if ($site->nntpproxy != "1")
@@ -39,7 +39,7 @@ elseif (isset($pieces[3]))
 	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 		exit($c->error("Unable to connect to usenet."));
 	if ($site->nntpproxy === "1")
-		usleep(1000000);
+		usleep(500000);
 
 	$postprocess->processNfos($argv[1], $nntp);
 	if ($site->nntpproxy != "1")

@@ -18,7 +18,7 @@ else if (isset($argv[1]))
 	if ($nntp->doConnect() === false)
 		exit($c->error("Unable to connect to usenet."));
 	if ($site->nntpproxy === "1")
-		usleep(1000000);
+		usleep(500000);
 
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[1] == 1)

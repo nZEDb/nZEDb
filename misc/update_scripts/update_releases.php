@@ -20,7 +20,7 @@ if (isset($argv[2]) && $argv[2] === 'true')
 	if ($nntp->doConnect() === false)
 		exit($c->error("Unable to connect to usenet."));
 	if ($site->nntpproxy === "1")
-		usleep(1000000);
+		usleep(500000);
 }
 if ($site->tablepergroup === 1)
 	exit($c->error("You are using 'tablepergroup', you must use releases_threaded.py"));

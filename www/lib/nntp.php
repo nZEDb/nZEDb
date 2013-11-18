@@ -48,7 +48,7 @@ class Nntp extends Net_NNTP_Client
 			if ($connected === false)
 				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
 
-			if(PEAR::isError($ret))
+			if(PEAR::isError($ret) && $retries === 0)
 				echo $this->c->error('Cannot connect to server '.NNTP_SERVER.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			else
 				$connected = true;
@@ -60,7 +60,7 @@ class Nntp extends Net_NNTP_Client
 				else
 				{
 					$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-					if(PEAR::isError($ret2))
+					if(PEAR::isError($ret2) && $retries === 0)
 						echo $this->c->error('Cannot authenticate to server '.NNTP_SERVER.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME.' ('.$ret2->getMessage().')');
 					else
 						$authent = true;
@@ -73,7 +73,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(100000);
+			usleep(200000);
 		}
 		return false;
 	}
@@ -100,7 +100,7 @@ class Nntp extends Net_NNTP_Client
 			if ($connected === false)
 				$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 5);
 
-			if(PEAR::isError($ret))
+			if(PEAR::isError($ret) && $retries === 0)
 				echo $this->c->error('Cannot connect to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':'(ssl) ').': '.$ret->getMessage());
 			else
 				$connected = true;
@@ -112,7 +112,7 @@ class Nntp extends Net_NNTP_Client
 				else
 				{
 					$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
-					if(PEAR::isError($ret2))
+					if(PEAR::isError($ret2) && $retries === 0)
 						echo $this->c->error('Cannot authenticate to server '.NNTP_SERVER_A.(!$enc?' (nonssl) ':' (ssl) ').' - '.NNTP_USERNAME_A.' ('.$ret2->getMessage().')');
 					else
 						$authent = true;
@@ -125,7 +125,7 @@ class Nntp extends Net_NNTP_Client
 					$this->enableCompression();
 				return true;
 			}
-			usleep(100000);
+			usleep(200000);
 		}
 		return false;
 	}

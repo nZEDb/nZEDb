@@ -9,20 +9,25 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI;
 if (!isset($argv[1]))
 	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\n"
-		."php decrypt_hashes.php true		...: to limit 1000.\n"
-		."php decrypt_hashes.php full 		...: to run on full database.\n"));
+		."php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
+		."php decrypt_hashes.php full 		...: to run on full database.\n"
+		."php decrypt_hashes.php all 		...: to run on all hashed releases(including previously renamed).\n"));
 
-echo $c->header("\nDecrypt Hashes Started at ".date('g:i:s')."\nMatching predb MD5 to md5(releases.name or releases.searchname)");
+echo $c->header("\nDecrypt Hashes (${argv[1]}) Started at ".date('g:i:s')."\nMatching predb MD5 to md5(releases.name or releases.searchname)");
 preName($argv);
 
 function preName($argv)
 {
 	$db = new DB();
 	$timestart = TIME();
-	$limit = ($argv[1] == 'full') ? '' : ' LIMIT 1000';
+	if (isset($argv[1]) && $argv[1] === "all")
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true');
+	else if (isset($argv[1]) && $argv[1] === "full")
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0');
+	else if (isset($argv[1]) && is_numeric($argv[1]))
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
 	$c = new ColorCLI;
 
-	$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0'.$limit);
 	$total = $res->rowCount();
 	$counter = 0;
 	$show = '';
@@ -30,6 +35,7 @@ function preName($argv)
 	{
 		$precount = $db->queryOneRow('SELECT COUNT(*) AS count FROM predb');
 		echo $c->primary('Comparing '.number_format($total).' releases against '.number_format($precount['count'])." preDB's.");
+		sleep(2);
 		$consoletools = new ConsoleTools();
 		$category = new Category();
 		$reset = 0;
