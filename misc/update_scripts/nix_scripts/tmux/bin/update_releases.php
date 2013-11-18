@@ -3,7 +3,6 @@ require_once dirname(__FILE__) . '/../../../config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'binaries.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
@@ -18,7 +17,6 @@ $releases = new Releases(true);
 $groups = new Groups();
 $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
-$consoletools = new ConsoleTools();
 $binaries = new Binaries();
 $db = new DB();
 
