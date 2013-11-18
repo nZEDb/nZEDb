@@ -5,15 +5,15 @@
 
 if [ -e "nZEDbBase.php" ]
 then
-    export NZEDB_ROOT="$(pwd)"
+	export NZEDB_ROOT="$(pwd)"
 elif [ -e "../../../nZEDbBase.php" ]
 then
-    export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
+	export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
 elif [ -e "../../../../nZEDbBase.php" ]
 then
-    export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
+	export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 else
-    export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
 export niceness=10
@@ -54,9 +54,16 @@ do
 	clear
 	echo
 	echo
-#	tmux kill-session -t NNTPProxy
-#	$PHP ${NZEDB_PATH}/nntpproxy.php
-#	sleep 5
+	if [[ $# -eq 1 && $1 == "true" ]]
+	then
+		loop=0
+	fi
+#	if [[ $loop -eq 1 ]]
+#	then
+#		tmux kill-session -t NNTPProxy
+#		$PHP ${NZEDB_PATH}/nntpproxy.php
+#		sleep 1
+#	fi
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full passwordurl
@@ -94,10 +101,6 @@ do
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
 #	sleep $NZEDB_SLEEP_TIME
-	if [[ $# -eq 1 && $1 == "true" ]]
-	then
-		loop=0
-	fi
 	date2=`date +%s`
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."

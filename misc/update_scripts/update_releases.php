@@ -22,7 +22,7 @@ if (isset($argv[2]) && $argv[2] === 'true')
 	if ($site->nntpproxy === "1")
 		usleep(1000000);
 }
-if ($site->tablepergroup === "1")
+if ($site->tablepergroup === 1)
 	exit($c->error("You are using 'tablepergroup', you must use releases_threaded.py"));
 
 $groupName = isset($argv[3]) ? $argv[3] : '';

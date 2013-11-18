@@ -173,6 +173,7 @@ function start_apps($tmux_session)
 
 function window_proxy($tmux_session, $window)
 {
+	exec("tmux kill-session -t NNTPProxy");
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;
