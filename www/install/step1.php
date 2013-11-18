@@ -24,6 +24,10 @@ $cfg->PDOCheck = extension_loaded('PDO');
 if ($cfg->PDOCheck === false)
 	$cfg->error = true;
 
+$cfg->jsonCheck = extension_loaded('json');
+if ($cfg->jsonCheck === false)
+	$cfg->error = true;
+
 $cfg->gdCheck = function_exists('imagecreatetruecolor');
 
 $cfg->curlCheck = function_exists('curl_init');

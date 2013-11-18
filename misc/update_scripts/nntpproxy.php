@@ -30,10 +30,8 @@ else
 	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value)
 	{
-		if (!python_module_exist($value)) {
-			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
-			exit(1);
-		}
+		if (!python_module_exist($value))
+			exit($c->error("NNTP Proxy requires ".$value." python module but it's not installed. Aborting."));
 	}
 }
 

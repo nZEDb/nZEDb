@@ -12,14 +12,14 @@ class Install {
 	public $NNTP_USERNAME;
 	public $NNTP_PASSWORD;
 	public $NNTP_SERVER;
-	public $NNTP_PORT = 119;
-	public $NNTP_SSLENABLED = false;
+	public $NNTP_PORT;
+	public $NNTP_SSLENABLED;
 
 	public $NNTP_USERNAME_A;
 	public $NNTP_PASSWORD_A;
 	public $NNTP_SERVER_A;
-	public $NNTP_PORT_A = 119;
-	public $NNTP_SSLENABLED_A = false;
+	public $NNTP_PORT_A;
+	public $NNTP_SSLENABLED_A;
 
 	public $nZEDb_WWW;
 	public $SMARTY_DIR;

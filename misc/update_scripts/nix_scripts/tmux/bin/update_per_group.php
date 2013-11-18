@@ -14,7 +14,7 @@ require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
-	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py.\n"));
+	exit($c->error("This script is not intended to be run manually, it is called from update_threaded.py."));
 
 $s = new Sites();
 $site = $s->get();
@@ -29,18 +29,15 @@ $binaries = new Binaries();
 $backfill = new Backfill();
 $db = new DB();
 
-// Create the connection here and pass
+// Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new Nntp();
-if ($nntp->doConnect() === false)
-{
-	echo $c->error("Unable to connect to usenet.\n");
-	return;
-}
-if ($site->nntpproxy === true)
-	usleep(500000);
+if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+	exit($c->error("Unable to connect to usenet."));
+if ($site->nntpproxy === "1")
+	usleep(1000000);
 
 if ($releases->hashcheck == 0)
-	exit("You must run update_binaries.php to update your collectionhash.\n");
+	exit($c->error("You must run update_binaries.php to update your collectionhash."));
 
 if ($pieces[0] != 'Stage7b')
 {
@@ -54,10 +51,6 @@ if ($pieces[0] != 'Stage7b')
 	try {
 		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
 		$test->execute();
-		$test1 = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
-		$test1->execute();
-		$test2 = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
-		$test2->execute();
 		// Don't even process the group if no collections
 		if ($test->rowCount() == 0)
 		{
@@ -83,16 +76,11 @@ if ($pieces[0] != 'Stage7b')
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 
-	if ($site->alternate_nntp == 1)
-	{
-		$nntp->doQuit();
-		$site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
-	}
 	$postprocess = new PostProcess(true);
 	$postprocess->processAdditional(null, null, null, $groupid, $nntp);
 	$nfopostprocess = new Nfo(true);
 	$nfopostprocess->processNfoFiles(null, null, null, $groupid, $nntp);
-	if ($site->nntpproxy === false)
+	if ($site->nntpproxy != "1")
 		$nntp->doQuit();
 }
 elseif ($pieces[0] == 'Stage7b')
@@ -103,3 +91,4 @@ elseif ($pieces[0] == 'Stage7b')
 	$releases->processReleasesStage7b($groupid='', true);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }
+?>

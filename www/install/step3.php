@@ -25,7 +25,7 @@ if  ($page->isPostBack())
 	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
 	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl'])?(trim($_POST['ssl']) == '1' ? true : false):false);
 
-	include $cfg->nZEDb_WWW.'/lib/Net_NNTP/NNTP/Client.php';
+	include $cfg->nZEDb_WWW . '/lib/Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();
 
 	$enc = false;
@@ -35,12 +35,13 @@ if  ($page->isPostBack())
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
 	if(PEAR::isError($cfg->nntpCheck))
 		$cfg->error = true;
-	elseif ($cfg->NNTP_USERNAME != "")
+	// Commented out until the issue is resolved
+	/*elseif ($cfg->NNTP_USERNAME != "")
 	{
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
 		if(PEAR::isError($cfg->nntpCheck))
 			$cfg->error = true;
-	}
+	}*/
 
 	if (!$cfg->error)
 	{
