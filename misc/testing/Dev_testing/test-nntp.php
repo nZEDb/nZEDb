@@ -4,21 +4,14 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'nntp.php';
 require_once nZEDb_LIB . 'backfill.php';
 
-if (!isset($argv[1]))
+if (!isset($argv[2]) || !is_numeric($argv[2]))
 	exit("\nTest your nntp connection, get group information and postdate for specific article.\nTo run:\ntest-nntp.php groupname articlenumber.\n");
 
 $nntp = new Nntp();
 $nntp->doConnect();
 
-if (isset($argv[2]) && is_numeric($argv[2]))
-	$first = $argv[2];
-else
-	$first = '555313070';
-
-if (isset($argv[1]))
-	$group = $argv[1];
-else
-	$group = 'alt.binaries.teevee';
+$first = $argv[2];
+$group = $argv[1];
 
 // Select a group.
 $groupArr = $nntp->selectGroup($group);

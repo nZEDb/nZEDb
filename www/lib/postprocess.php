@@ -403,19 +403,19 @@ class PostProcess
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
 			$groups = new Groups();
-			$processSample = ($this->site->ffmpegpath != '') ? true : false;
-			$processVideo = ($this->site->processvideos == '0') ? false : true;
-			$processMediainfo = ($this->site->mediainfopath != '') ? true : false;
-			$processAudioinfo = ($this->site->mediainfopath != '') ? true : false;
-			$processJPGSample = ($this->site->processjpg == '0') ? false : true;
-			$processPasswords = ($this->site->unrarpath != '') ? true : false;
-			$tmpPath = $this->tmpPath;
+			$processSample 		= ($this->site->ffmpegpath != '') ? true : false;
+			$processVideo 		= ($this->site->processvideos == '0') ? false : true;
+			$processMediainfo 	= ($this->site->mediainfopath != '') ? true : false;
+			$processAudioinfo 	= ($this->site->mediainfopath != '') ? true : false;
+			$processJPGSample 	= ($this->site->processjpg == '0') ? false : true;
+			$processPasswords 	= ($this->site->unrarpath != '') ? true : false;
+			$tmpPath 			= $this->tmpPath;
 
 			// Loop through the releases.
 			foreach ($result as $rel)
 			{
 				if ($this->echooutput && $releaseToWork == '')
-					echo $this->c->primary('['.$startCount--.']');
+					echo '['.$this->c->primaryOver($startCount--).']';
 				else if ($this->echooutput)
 					echo '['.$this->c->primaryOver($rel['id']).']';
 
@@ -441,27 +441,36 @@ class PostProcess
 				$nzbpath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 				if (!file_exists($nzbpath))
 				{
-					// Increment.
+					// The nzb was not located. decrement the passwordstatus.
 					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
+				// turn on output buffering
 				ob_start();
+				
+				// uncompress the nzb
 				@readgzfile($nzbpath);
+				
+				// read the nzb into memory
 				$nzbfile = ob_get_contents();
+				
+				// Clean (erase) the output buffer and turn off output buffering
 				ob_end_clean();
 
+				// get a list of files in the nzb
 				$nzbfiles = $nzb->nzbFileList($nzbfile);
 				if (count($nzbfiles) == 0)
 				{
-					// Increment.
+					// There does not appear to be any files in the nzb, decrement passwordstatus
 					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
+				// sort the files
 				usort($nzbfiles, 'PostProcess::sortrar');
 
-				// Only attempt sample if not disabled.
+				// Only process for samples, previews and images if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				if ($processSample === false)		$blnTookSample = true;
@@ -470,7 +479,6 @@ class PostProcess
 				if ($processAudioinfo === false)	$blnTookAudioinfo = true;
 				if ($processJPGSample === false)	$blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
-
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = '';
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
 				$hasrar = $ignoredbooks = $failed = $this->filesadded = 0;
@@ -511,7 +519,7 @@ class PostProcess
 					}
 
 					// Look for a media file.
-					elseif ($processMediainfo === true && !preg_match('/sample/i', $nzbcontents['title']) && preg_match('/'.$this->videofileregex.'[. ")\]]/i', $nzbcontents['title']))
+					if ($processMediainfo === true && !preg_match('/sample/i', $nzbcontents['title']) && preg_match('/'.$this->videofileregex.'[. ")\]]/i', $nzbcontents['title']))
 					{
 						if (isset($nzbcontents['segments']) && empty($mediamsgid))
 						{
@@ -521,7 +529,7 @@ class PostProcess
 					}
 
 					// Look for a audio file.
-					elseif ($processAudioinfo === true && preg_match('/'.$this->audiofileregex.'[. ")\]]/i', $nzbcontents['title'], $type))
+					if ($processAudioinfo === true && preg_match('/'.$this->audiofileregex.'[. ")\]]/i', $nzbcontents['title'], $type))
 					{
 						if (isset($nzbcontents['segments']) && empty($audiomsgid))
 						{
@@ -532,7 +540,7 @@ class PostProcess
 					}
 
 					// Look for a JPG picture.
-					elseif ($processJPGSample === true && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[. ")\]]/i', $nzbcontents['title']))
+					if ($processJPGSample === true && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[. ")\]]/i', $nzbcontents['title']))
 					{
 						if (isset($nzbcontents['segments']) && empty($jpgmsgid))
 						{
@@ -542,7 +550,7 @@ class PostProcess
 								$jpgmsgid[] = $nzbcontents['segments'][1];
 						}
 					}
-					elseif (preg_match($this->ignorebookregex, $nzbcontents['title']))
+					if (preg_match($this->ignorebookregex, $nzbcontents['title']))
 						$ignoredbooks++;
 				}
 

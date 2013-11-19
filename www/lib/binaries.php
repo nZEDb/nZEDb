@@ -364,7 +364,7 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc) \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)\.? \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
 					/*if ($this->debug)
@@ -412,14 +412,13 @@ class Binaries
 					{
 						if (!in_array($cleansubject, $colnames))
 						{
-							/* Uncomment this to only show articles matched by generic function of namecleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							// Uncomment this to only show articles matched by generic function of namecleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
-							if (preg_match('/yEnc$/', $cleansubject))
+							/*if (preg_match('/yEnc$/', $cleansubject))
 							{
 								$colnames[] = $cleansubject;
 								$orignames[] = $msg['Subject'];
-							}
-							*/
+							}*/
 
 							/*If you uncommented the above, comment following 2 lines..*/
 							$colnames[] = $cleansubject;
@@ -453,8 +452,8 @@ class Binaries
 			}
 
 			// Uncomment this to see which articles are not yEnc.
-			/*if ($this->debug && count($notyenc) > 1)
-				print_r($notyenc);*/
+			//if ($this->debug && count($notyenc) > 1)
+			//	print_r($notyenc);
 			// For looking at the difference between $subject and $cleansubject.
 			if ($this->debug && count($colnames) > 1 && count($orignames) > 1)
 			{
