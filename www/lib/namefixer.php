@@ -34,7 +34,7 @@ class Namefixer
 		$db = $this->db;
 		if ($db->dbSystem() == 'mysql')
 		{
-			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
 		}
 		else if ($db->dbSystem() == 'pgsql')
@@ -68,18 +68,18 @@ class Namefixer
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
-			$relres = $db->query($query.$this->timeother);
+			$relres = $db->queryDirect($query.$this->timeother);
 		//24 hours, all cats
 		else if ($time == 1 && $cats == 2)
-			$relres = $db->query($query.$this->timeall);
+			$relres = $db->queryDirect($query.$this->timeall);
 		//other cats
 		else if ($time == 2 && $cats == 1)
-			$relres = $db->query($query.$this->fullother);
+			$relres = $db->queryDirect($query.$this->fullother);
 		//all cats
 		if ($time == 2 && $cats == 2)
-			$relres = $db->query($query.$this->fullall);
+			$relres = $db->queryDirect($query.$this->fullall);
 
-		if (count($relres) > 0)
+		if ($relres->rowCount() > 0)
 		{
 			foreach ($relres as $relrow)
 			{
@@ -178,25 +178,26 @@ class Namefixer
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1)
-			$relres = $db->query($query.$this->timeother);
+			$relres = $db->queryDirect($query.$this->timeother);
 		//24 hours, other cats
 		if ($time == 1 && $cats == 2)
-			$relres = $db->query($query.$this->timeother);
+			$relres = $db->queryDirect($query.$this->timeother);
 		//other cats
 		if ($time == 2 && $cats == 1)
-			$relres = $db->query($query.$this->fullother);
+			$relres = $db->queryDirect($query.$this->fullother);
 		//other cats
 		if ($time == 2 && $cats == 2)
-			$relres = $db->query($query.$this->fullother);
+			$relres = $db->queryDirect($query.$this->fullother);
 
-		if (count($relres) > 0)
+		if ($relres->rowCount() > 0)
 		{
+			echo $relres->rowCount()." releases to process.\n";
 			$db = $this->db;
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
 			{
-				if ($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $nntp) === true)
+				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $nntp)) === true)
 				{
 					echo ".";
 					$this->fixed++;
