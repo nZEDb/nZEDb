@@ -85,6 +85,6 @@ else
 			."php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n"
 			."php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n"));
 }
-if ($site->nntpproxy != "1")
+if ($site->nntpproxy != "1" && $argv[2] === 'true')
 	$nntp->doQuit();
 ?>

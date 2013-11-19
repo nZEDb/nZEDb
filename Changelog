@@ -3,7 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-2013-11-17 -> jonnyboy -> fixed bug in postprocessing, only effected threaded script
+2013-11-17 -> jonnyboy -> fixed bug in update_releases.php, fixed bug in removeCrapReleases.php
+                          fixed bug in postprocessing, only effected threaded script
                           changed postprocess_threaded_py nfo and additional to get all of -1 and add from -2 and so on until limit is reached
                           comment out error in install3.php, converting to new color scheme
 2013-11-17 -> Whitelighter -> added additional indexes to partrepair table.
