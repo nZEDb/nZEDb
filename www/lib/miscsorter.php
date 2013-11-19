@@ -785,7 +785,7 @@ echo "asin ".$set[1]."\n";
 		else
 		{
 			$pb = new Predb(true);
-			$pb->parseTitles(0, 1, 0, 1, '');
+			$pb->parseTitles(1, 1, 1, 1, '');
 			$pb->matchNfo($nntp);
 			$pb->matchPredb();
 			unset($pb);
