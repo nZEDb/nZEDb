@@ -329,6 +329,7 @@ class PostProcess
 		$like = 'ILIKE';
 		if ($this->db->dbSystem() == 'mysql')
 			$like = 'LIKE';
+
 		if ($gui)
 		{
 			$ok = false;
@@ -416,7 +417,7 @@ class PostProcess
 				if ($this->echooutput && $releaseToWork == '')
 					echo '['.$startCount--.']';
 				else if ($this->echooutput)
-					echo '['.$rel['id']--.']';
+					echo '['.$rel['id'].']';
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
