@@ -389,7 +389,7 @@ Class Predb
 		$consoletools = new ConsoleTools();
 		$updated = 0;
 		if($this->echooutput)
-			echo 'Querying DB for matches in preDB titles with release searchnames.';
+			echo $this->c->header('Querying DB for matches in preDB titles with release searchnames.');
 
 		$res = $db->prepare('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
 		$res->execute();

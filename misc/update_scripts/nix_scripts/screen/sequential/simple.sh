@@ -25,9 +25,13 @@ while :
 
  do
 CURRTIME=`date +%s`
+
+tmux kill-session -t NNTPProxy
+$PHP ${NZEDB_PATH}/nntpproxy.php
+
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
-exit
+
 $PHP ${NZEDB_PATH}/update_releases.php 1 true
 
 cd ${TEST_PATH}

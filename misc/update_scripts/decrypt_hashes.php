@@ -4,27 +4,38 @@ require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'nfo.php';
 require_once nZEDb_LIB . 'namecleaning.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
-if (!isset($argv[1]))
-	exit ("This script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\nphp decrypt_hashes.php true to limit 1000.\nphp decrypt_hashes.php full to run on full database.\n");
+$c = new ColorCLI;
+if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1])))
+	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\n"
+		."php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
+		."php decrypt_hashes.php full 		...: to run on full database.\n"
+		."php decrypt_hashes.php all 		...: to run on all hashed releases(including previously renamed).\n"));
 
-echo "\nDecrypt Hashes Started at ".date('g:i:s')."\nMatching predb MD5 to md5(releases.name or releases.searchname)\n";
+echo $c->header("\nDecrypt Hashes (${argv[1]}) Started at ".date('g:i:s')."\nMatching predb MD5 to md5(releases.name or releases.searchname)");
 preName($argv);
 
 function preName($argv)
 {
 	$db = new DB();
 	$timestart = TIME();
-	$limit = ($argv[1] == 'full') ? '' : ' LIMIT 1000';
+	if (isset($argv[1]) && $argv[1] === "all")
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true');
+	else if (isset($argv[1]) && $argv[1] === "full")
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0');
+	else if (isset($argv[1]) && is_numeric($argv[1]))
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
+	$c = new ColorCLI;
 
-	$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0'.$limit);
 	$total = $res->rowCount();
 	$counter = 0;
 	$show = '';
 	if($total > 0)
 	{
 		$precount = $db->queryOneRow('SELECT COUNT(*) AS count FROM predb');
-		echo 'Comparing '.number_format($total).' releases against '.number_format($precount['count'])." preDB's\n";
+		echo $c->primary('Comparing '.number_format($total).' releases against '.number_format($precount['count'])." preDB's.");
+		sleep(2);
 		$consoletools = new ConsoleTools();
 		$category = new Category();
 		$reset = 0;
@@ -48,13 +59,13 @@ function preName($argv)
 						$oldcatname = $category->getNameByID($row['categoryid']);
 						$newcatname = $category->getNameByID($determinedcat);
 
-						echo	$n.'New name:  '.$pre['title'].$n.
+						echo $c->primary($n.'New name:  '.$pre['title'].$n.
 							'Old name:  '.$row['searchname'].$n.
 							'New cat:   '.$newcatname.$n.
 							'Old cat:   '.$oldcatname.$n.
 							'Group:     '.$groupname.$n.
 							'Method:    '.'predb md5 release name: '.$pre['source'].$n.
-							'ReleaseID: '. $row['id'].$n;
+							'ReleaseID: '. $row['id']);
 
 						$success = true;
 						$counter++;
@@ -69,7 +80,8 @@ function preName($argv)
 		}
 	}
 	if ($total > 0)
-		echo "\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart)."\n";
+		echo $c->header("\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart).".");
 	else
-		echo "\nNothing to do.\n";
+		echo $c->info("\nNothing to do.");
 }
+?>

@@ -329,6 +329,7 @@ class PostProcess
 		$like = 'ILIKE';
 		if ($this->db->dbSystem() == 'mysql')
 			$like = 'LIKE';
+
 		if ($gui)
 		{
 			$ok = false;
@@ -416,7 +417,7 @@ class PostProcess
 				if ($this->echooutput && $releaseToWork == '')
 					echo '['.$startCount--.']';
 				else if ($this->echooutput)
-					echo '['.$rel['id']--.']';
+					echo '['.$rel['id'].']';
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
@@ -432,7 +433,7 @@ class PostProcess
 						if ($this->echooutput)
 							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
 						// Increment.
-						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
 					}
 				}
@@ -441,7 +442,7 @@ class PostProcess
 				if (!file_exists($nzbpath))
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 
@@ -454,7 +455,7 @@ class PostProcess
 				if (count($nzbfiles) == 0)
 				{
 					// Increment.
-					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus -1 WHERE id = '.$rel['id']);
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 					continue;
 				}
 

@@ -12,42 +12,38 @@ $consoleTools = new Consoletools();
 $s = new Sites();
 $site = $s->get();
 
+// Create the connection here and pass
 $nntp = new Nntp();
 if ($nntp->doConnect() === false)
-{
-	echo $c->error("Unable to connect to usenet.\n");
-	return;
-}
-if ($site->nntpproxy === true)
+	exit($c->error("Unable to connect to usenet."));
+if ($site->nntpproxy === "1")
 	usleep(500000);
 
-echo "Getting first/last for all your active groups\n";
+echo $c->header("Getting first/last for all your active groups.");
 $data = $nntp->getGroups();
-if ($site->nntpproxy === false)
-	$nntp->doQuit();
-
 if (PEAR::isError($data))
-	exit($c->error("Failed to getGroups() from nntp server.\n"));
+	exit($c->error("Failed to getGroups() from nntp server."));
+
+if ($site->nntpproxy != "1")
+	$nntp->doQuit();
 
 $db = new DB();
 $db->queryExec('TRUNCATE TABLE shortgroups');
 
-
 // Put into an array all active groups
 $res = $db->query('SELECT name FROM groups WHERE active = 1');
 
-
-echo "Inserting new values into shortgroups table\n";
+echo $c->header("Inserting new values into shortgroups table.");
 
 foreach ($data as $newgroup)
 {
 	if (myInArray($res, $newgroup['group'], 'name'))
 	{
 		$db->queryInsert(sprintf('INSERT INTO shortgroups (name, first_record, last_record, updated) VALUES (%s, %s, %s, NOW())', $db->escapeString($newgroup['group']), $db->escapeString($newgroup['first']), $db->escapeString($newgroup['last'])));
-		echo 'Updated '.$newgroup['group']."\n";
+		echo $c->primary('Updated '.$newgroup['group']);
 	}
 }
-echo 'Running time: '.$consoleTools->convertTimer(TIME() - $start)."\n";
+echo $c->header('Running time: '.$consoleTools->convertTimer(TIME() - $start));
 
 function myInArray($array, $value, $key){
 	//loop through the array
@@ -67,3 +63,4 @@ function myInArray($array, $value, $key){
 	}
 	return false;
 }
+?>

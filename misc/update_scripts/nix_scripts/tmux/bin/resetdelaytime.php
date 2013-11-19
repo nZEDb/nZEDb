@@ -1,16 +1,17 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../config.php';
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $s = new Sites();
 $site = $s->get();
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
+$c = new ColorCLI;
 
 //reset collections dateadded to now
-print("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.\n");
+echo $c->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1)
 {
 	$sql = 'SHOW tables';
@@ -25,14 +26,15 @@ if ($tablepergroup == 1)
 			$ran += $run->rowCount();
 		}
 	}
-	echo $ran." collections reset\n";
+	echo $c->primary($ran." collections reset.");
 }
 else
 {
 	$run = $db->queryExec('update collections set dateadded = now()');
-	echo $run->rowCount()." collections reset\n";
+	echo $c->primary($run->rowCount()." collections reset.");
 }
 
 $run = $db->queryExec('update nzbs set dateadded = now()');
-echo $run->rowCount()." nzbs reset\n";
+echo $c->primary($run->rowCount()." nzbs reset.");
 sleep(2);
+?>

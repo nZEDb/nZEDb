@@ -52,10 +52,10 @@ else
 					switch ($ret)
 					{
 						case Users::ERR_SIGNUP_BADUNAME:
-							$page->smarty->assign('error', "Your username must be longer than three characters.");
+							$page->smarty->assign('error', "Your username must be longer than five characters.");
 							break;
 						case Users::ERR_SIGNUP_BADPASS:
-							$page->smarty->assign('error', "Your password must be longer than five characters.");
+							$page->smarty->assign('error', "Your password must be longer than eight characters.");
 							break;
 						case Users::ERR_SIGNUP_BADEMAIL:
 							$page->smarty->assign('error', "Your email is not a valid format.");

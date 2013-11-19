@@ -135,7 +135,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo $this->c->set256($this->primary).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
@@ -293,7 +293,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo $this->c->set256($this->primary)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
 			flush();
 			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');

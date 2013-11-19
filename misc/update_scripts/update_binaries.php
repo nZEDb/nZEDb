@@ -14,24 +14,21 @@ $site = $s->get();
 // Create the connection here and pass
 $nntp = new Nntp();
 if ($nntp->doConnect() === false)
-{
-	echo $c->error("Unable to connect to usenet.\n");
-	return;
-}
-if ($site->nntpproxy === true)
+	exit($c->error("Unable to connect to usenet."));
+if ($site->nntpproxy === "1")
 	usleep(500000);
 
 if (isset($argv[1]))
 {
 	$groupName = $argv[1];
-	echo "Updating group: $groupName\n";
+	echo $c->header("Updating group: $groupName");
 
 	$grp = new Groups();
 	$group = $grp->getByName($groupName);
-
 	$binaries->updateGroup($group, $nntp);
 }
 else
 	$binaries->updateAllGroups($nntp);
-if ($site->nntpproxy === false)
+if ($site->nntpproxy != "1")
 	$nntp->doQuit();
+?>

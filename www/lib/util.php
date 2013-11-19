@@ -7,11 +7,25 @@
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {
-	$ret = @mail($to, $subject, $contents, "From: ".$from);
-	if (!$ret)
-		return false;
+	if (isWindows)
+		$n = "\r\n";
+	else
+		$n = "\n";
+	$body = '<html>'.$n;
+	$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>'.$n;
+	$body = $contents;
+	$body .= '</body>'.$n;
+	$body .= '</html>'.$n;
 
-	return true;
+	$headers  = 'From: $from'.$n;
+	$headers .= 'Reply-To: $from'.$n;
+	$headers .= 'Return-Path: $from'.$n;
+	$headers .= 'X-Mailer: nZEDb'.$n;
+	$headers .= 'MIME-Version: 1.0'.$n;
+	$headers .= 'Content-type: text/html; charset=iso-8859-1'.$n;
+	$headers .= $n;
+
+	return mail($to, $subject, $body, $headers);
 }
 
 // Check if O/S is windows.

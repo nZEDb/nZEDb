@@ -41,27 +41,21 @@ function writelog($pane)
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
 	if ($logs == "TRUE")
-	{
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
-	}
 	else
-	{
 		return "";
-	}
 }
 
 if ($hashcheck != '1')
 {
 	echo "\033[1;33mWe have updated the way collections are created, the collection table has to be updated to use the new changes.\n";
-	echo "php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n";
-	exit(1);
+	exit("php ${DIR}testing/DB_scripts/reset_Collections.php true\033[0m\n");
 }
 
-if ($patch < '147')
+if ($patch < '148')
 {
 	echo "\033[1;33mYour database is not up to date. Please update.\n";
-	echo "php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n";
-	exit(1);
+	exit("php ${DIR}testing/DB_scripts/patchDB.php\033[0m\n");
 }
 
 passthru("clear");
@@ -83,13 +77,12 @@ function command_exist($cmd) {
 $apps = array("time", "tmux", "nice", "python", "tee");
 foreach ($apps as &$value)
 {
-	if (!command_exist($value)) {
-		echo "I require ".$value." but it's not installed. Aborting.\n";
-		exit(1);
-	}
+	if (!command_exist($value))
+		exit("Tmux scripts require ".$value." but it's not installed. Aborting.\n");
 }
 
-function python_module_exist($module) {
+function python_module_exist($module)
+{
 	exec("python -c \"import $module\"", $output, $returnCode);
 	return ($returnCode == 0 ? true : false);
 }
@@ -100,10 +93,8 @@ if ($nntpproxy == '1')
 	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value)
 	{
-		if (!python_module_exist($value)) {
-			echo "NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n";
-			exit(1);
-		}
+		if (!python_module_exist($value))
+			exit("NNTP Proxy requires ".$value." python module but it's not installed. Aborting.\n");
 	}
 }
 
@@ -182,6 +173,7 @@ function start_apps($tmux_session)
 
 function window_proxy($tmux_session, $window)
 {
+	exec("tmux kill-session -t NNTPProxy");
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;

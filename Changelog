@@ -3,7 +3,15 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-
+2013-11-17 -> jonnyboy -> fixed bug in update_releases.php, fixed bug in removeCrapReleases.php
+                          fixed bug in postprocessing, only effected threaded script
+                          changed postprocess_threaded_py nfo and additional to get all of -1 and add from -2 and so on until limit is reached
+                          comment out error in install3.php, converting to new color scheme
+2013-11-17 -> Whitelighter -> added additional indexes to partrepair table.
+2013-11-17 -> Whitelighter -> improved binaries.php->updateGroup processing. Get article dates from scan function instead of calling postdate. Plus improved output to user and minor bug fixes.
+2013-11-17 -> jonnyoby -> added misc/update_scripts/nntpproxy.php, allows using nntpproxy in scripts other than tmux script, it creates its on session 'NNTPProxy' but does not attach to it. if you run
+                          script again, it will attach, not create another session, to attach to session run tmux a -t NNTPProxy
+                          updated active_groups.php to include renamed and predme matched counts, more regexes add
 2013-11-16 -> jonnyboy -> disabled misc/testing/DB_scripts/backfill_predb.php
                           added requestid lookup to releases_threaded.py, both per group and without
                           changed output for threaded postprocess additional [release.id] instead of [1], removed extra '!' echo in grabnzbs for replaced dupe
