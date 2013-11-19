@@ -128,7 +128,10 @@ $cfg->opensslCheck = extension_loaded("openssl");
 $cfg->exifCheck = extension_loaded("exif");
 $cfg->timezoneCheck = (ini_get('date.timezone') != "");
 
-$cfg->rewriteCheck = (function_exists("apache_get_modules") && in_array("mod_rewrite", apache_get_modules())) ? true : false;
+if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE']))
+	$cfg->rewriteCheck = (function_exists("apache_get_modules") && in_array("mod_rewrite", apache_get_modules())) ? true : false;
+else
+	$cfg->rewriteCheck = true;
 
 // Load previous config.php.
 if (file_exists($cfg->nZEDb_WWW.'/config.php') && is_readable($cfg->nZEDb_WWW.'/config.php'))
