@@ -228,7 +228,7 @@ class ColorCLI {
 
 	public static function primaryOver ($str)
 	{
-		$primarystring = "\033[38;5;".self::$colors256['Green']."m$str";
+		$primarystring = "\033[38;5;".self::$colors256['Green']."m$str\033[0m";
 		return $primarystring;
 	}
 

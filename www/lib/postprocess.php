@@ -415,9 +415,9 @@ class PostProcess
 			foreach ($result as $rel)
 			{
 				if ($this->echooutput && $releaseToWork == '')
-					echo '['.$startCount--.']';
+					echo $this->c->primary('['.$startCount--.']');
 				else if ($this->echooutput)
-					echo '['.$rel['id'].']';
+					echo '['.$this->c->primaryOver($rel['id']).']';
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath.$rel['guid'].'/';
@@ -431,7 +431,7 @@ class PostProcess
 					if (!is_dir($this->tmpPath))
 					{
 						if ($this->echooutput)
-							echo "\nERROR: Unable to create directory: {$this->tmpPath}\n";
+							echo $this->c->error("Unable to create directory: {$this->tmpPath}");
 						// Increment.
 						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
@@ -945,7 +945,7 @@ class PostProcess
 	function doecho($str)
 	{
 		if ($this->echooutput)
-			echo $str."\n";
+			echo $this->c->header($str);
 	}
 
 	function debug($str)
