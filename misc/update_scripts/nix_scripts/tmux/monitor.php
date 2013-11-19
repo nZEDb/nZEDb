@@ -5,7 +5,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 
-$version="0.3r4351";
+$version="0.3r4352";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -854,20 +854,10 @@ while($i > 0)
 
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
-	if ($releases_run == 1)
+	if ($releases_run == 1 && $tablepergroup == 0)
 		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
-	else if ($releases_run == 2 && $tablepergroup == 1)
+	else if ($releases_run != 0 && $tablepergroup == 1)
 		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
-	else if ($releases_run == 2 && $tablepergroup == 0)
-	{
-		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
-		echo "Not using releases_threaded.py, Table Per Group is not activated in site-edit\nThreaded releases is only available for Table Per Group.\n";
-	}
-	else if ($releases_run == 1 && $tablepergroup == 1)
-	{
-		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
-		echo "Using releases_threaded.py, Table Per Group is activated in site-edit\nNon-Threaded releases is only available when not using Table Per Group.\n";
-	}
 
 	if ($post_non == 2)
 		$clean = ' clean ';
