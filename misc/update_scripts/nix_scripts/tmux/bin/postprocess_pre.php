@@ -16,8 +16,9 @@ if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) ===
 if ($site->nntpproxy === "1")
 	usleep(500000);
 
-$postprocess = new PostProcess(true);
-$postprocess->processPredb($nntp);
+$predb = new Predb($echooutput=true);
+$predb->updatePre();
+//$predb->updatePre(checkPre);
 if ($site->nntpproxy != "1")
 	$nntp->doQuit();
 ?>

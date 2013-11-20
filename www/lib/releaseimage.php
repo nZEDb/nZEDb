@@ -6,6 +6,7 @@ class ReleaseImage
 {
 	function __construct()
 	{
+		$this->movimgSavePath = nZEDb_WWW.'covers/movies/';
 		$this->imgSavePath = nZEDb_WWW.'covers/preview/';
 		$this->vidSavePath = nZEDb_WWW.'covers/video/';
 		$this->jpgSavePath = nZEDb_WWW.'covers/sample/';
@@ -73,11 +74,12 @@ class ReleaseImage
 		return ($coverSave !== false || ($coverSave === false && file_exists($coverPath))) ? 1 : 0;
 	}
 
-	public function delete($guid)
+	public function delete($guid, $imdbid=null)
 	{
-		@unlink($this->imgSavePath.$guid.'_thumb.jpg');
+		@unlink($this->movimgSavePath.$imdbid.'-cover.jpg');
 		@unlink($this->vidSavePath.$guid.'.ogv');
 		@unlink($this->audSavePath.$guid.'.ogg');
+		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 	}
 

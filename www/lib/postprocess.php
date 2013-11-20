@@ -169,7 +169,8 @@ class PostProcess
 			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
 
 		$predb = new Predb($this->echooutput);
-		$titles = $predb->combinePre($nntp);
+		$titles = $predb->updatePre();
+		$predb->checkPre($nntp);
 		if ($titles > 0)
 			$this->doecho('Fetched '.$titles.' new title(s) from predb sources.');
 	}
