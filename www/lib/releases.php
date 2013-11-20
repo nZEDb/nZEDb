@@ -1282,7 +1282,7 @@ class Releases
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];
 				$relstat = $ncar['rstatus'];*/
-				$fromname = trim("'", $rowcol['fromname']);
+				$fromname = trim($rowcol['fromname'], "'");
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else

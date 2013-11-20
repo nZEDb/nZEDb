@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-11-19 -> Whitelighter -> fixed bug in releases.php where poster was always being set to '
 2013-11-19 -> jonnyboy -> added correct arg to screen scripts for optimise
                           fixed bug in binaries.php where we were dropping all posts like yEnc. (1/1) instead of yEnc (1/1), pointed out by mukler
 2013-11-17 -> jonnyboy -> fixed bug in update_releases.php, fixed bug in removeCrapReleases.php
