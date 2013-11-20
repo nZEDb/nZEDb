@@ -51,6 +51,10 @@ disconnect(cur[0], cur[1])
 if not dorun:
 	#before we get the groups, lets update shortgroups
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+elif len(sys.argv) > 1 and sys.argv[1] not in dorun:
+	#if not dorun:
+	#before we get the groups, lets update shortgroups
+	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
 
 count = 0
 previous = "'alt.binaries.crap'"

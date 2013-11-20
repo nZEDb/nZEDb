@@ -1,5 +1,6 @@
 <?php
 require_once nZEDb_LIB . 'ColorCLI.php';
+require_once nZEDb_LIB . 'consoletools.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -14,6 +15,7 @@ class DB
 	public function __construct()
 	{
 		$this->c = new ColorCLI();
+		$this->consoletools = new ConsoleTools();
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
@@ -96,8 +98,8 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
-				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping\n");
-				sleep($i * $i);
+				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
+				$this->consoletools->showsleep($i * $i);
 				$ins = DB::$pdo->prepare($query);
 				$ins->execute();
 				return DB::$pdo->lastInsertId();
@@ -140,8 +142,8 @@ class DB
 			$i = 1;
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage()=='SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10)
 			{
-				echo "Sleeping\n";
-				sleep($i * $i);
+				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
+				$this->consoletools->showsleep($i * $i);
 				$run = DB::$pdo->prepare($query);
 				$run->execute();
 				return $run;
