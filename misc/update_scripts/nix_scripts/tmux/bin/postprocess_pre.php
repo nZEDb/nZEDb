@@ -18,7 +18,7 @@ if ($site->nntpproxy === "1")
 
 $predb = new Predb($echooutput=true);
 $predb->updatePre();
-//$predb->updatePre(checkPre);
+$predb->checkPre($nntp);
 if ($site->nntpproxy != "1")
 	$nntp->doQuit();
 ?>

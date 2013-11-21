@@ -28,11 +28,12 @@ $timestart = TIME();
 $relcount = 0;
 $ri = new ReleaseImage();
 $nzb = new NZB();
+$consoletools = new ConsoleTools();
 
 $db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $c->primary("Reseting all groups completed.");
 
-$arr = array("tvrage", "releasenfo", "releasecomment", "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "nzbs");
+$arr = array("tvrage", "releasenfo", "releasecomment", "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "nzbs", "releases");
 foreach ($arr as &$value)
 {
 	$rel = $db->queryExec("TRUNCATE TABLE $value");
@@ -54,51 +55,31 @@ foreach($tables as $row)
 	}
 }
 
-echo $c->header("Querying db for releases.");
-$relids = $db->queryDirect("SELECT id, guid, imdbid FROM releases ORDER BY postdate DESC");
-if ($relids->rowCount() > 0)
+echo $c->header("Deleting nzbfiles subfolders.");
+$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($site->nzbpath, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+$deleted = 0;
+foreach ($files as $file)
 {
-	echo $c->primary("Deleting ".number_format($relids->rowCount())." releases, NZB's, covers, previews and samples.");
-	$releases = new Releases();
-	$consoletools = new ConsoleTools();
-	foreach ($relids as $relid)
+	if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar')
 	{
-		@unlink($nzb->getNZBPath($relid['guid'], $site->nzbpath, false, $site->nzbsplitlevel));
-		@unlink($ri->delete($relid['guid'], $relid['imdbid']));
-		$consoletools->overWrite($c->headerOver("Deleting: ".$consoletools->percentString(++$relcount,$relids->rowCount())." Time:".$consoletools->convertTimer(TIME() - $timestart)));
+		$todo = ($file->isDir() ? 'rmdir' : 'unlink');
+		@$todo($file);
 	}
 }
 
-$rel = $db->queryExec("TRUNCATE TABLE releases");
-if($rel !== false)
-	echo $c->primary("\nTruncating releases completed.");
-
-echo $c->header("Getting List of nzbs to check against db.");
-$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
-$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
-$consoletools = new ConsoleTools();
-$deleted = 0;
-foreach ($itr as $filePath)
-{
-	@unlink($filePath);
-	$consoletools->overWrite($c->header("Deleting NZBs: ".++$deleted." deleted from disk,  Running time: ".$consoletools->convertTimer(TIME() - $timestart)));
-}
-
-echo $c->header("\nGetting List of Images, previews and samples that still remain.");
+echo $c->header("Deleting all images, previews and samples that still remain.");
 $dirItr = new RecursiveDirectoryIterator(nZEDb_WWW . 'covers');
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
-$consoletools = new ConsoleTools();
 $deleted = 0;
 foreach ($itr as $filePath)
 {
 	if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg')
 	{
 		@unlink($filePath);
-		$consoletools->overWrite($c->headerOver("Deleting Files: ".++$deleted." deleted from disk,  Running time: ".$consoletools->convertTimer(TIME() - $timestart)));
 	}
 }
 
-echo $c->header("\nGetting Updated List of TV Shows from TVRage.");
+echo $c->header("Getting Updated List of TV Shows from TVRage.");
 $tvshows = @simplexml_load_file('http://services.tvrage.com/feeds/show_list.php');
 if ($tvshows !== false)
 {
@@ -111,8 +92,4 @@ if ($tvshows !== false)
 else
 	echo $c->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying agrain.");
 
-if ($relcount > 0)
-{
-	$consoletools = new ConsoleTools();
-	echo $c->header("\nDeleted ".$relcount." release(s). This script ran for ".$consoletools->convertTime(TIME() - $timestart));
-}
+echo $c->header("Deleted all releases, images, previews and samples. This script ran for ".$consoletools->convertTime(TIME() - $timestart));
