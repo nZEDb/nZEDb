@@ -258,7 +258,7 @@ class Nntp extends Net_NNTP_Client
 			$completed = false;
 			// Get data from the stream.
 			$buffer = fgets($this->_socket);
-			
+
 			// Get byte count.
 			$bytesreceived = strlen($buffer);
 

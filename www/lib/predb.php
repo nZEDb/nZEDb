@@ -25,7 +25,7 @@ Class Predb
 
 	// Retrieve pre info from predb sources and store them in the DB.
 	// Returns the quantity of new titles retrieved.
-	public function combinePre($nntp)
+	public function updatePre()
 	{
 		$db = $this->db;
 		$newnames = 0;
@@ -58,14 +58,19 @@ Class Predb
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
+			return $newnames;
 		}
+	}
+
+	// Attempts to match predb to releases.
+	public function checkPre($nntp)
+	{
 		$matched = $this->matchPredb();
 		if ($matched > 0 && $this->echooutput)
 			echo 'Matched '.$matched." predDB titles to release search names.\n";
 		$nfos = $this->matchNfo($nntp);
 		if ($nfos > 0 && $this->echooutput)
 			echo "\nAdded ".$nfos." missing NFOs from preDB sources.\n";
-		return $newnames;
 	}
 
 	public function retrieveWomble()
