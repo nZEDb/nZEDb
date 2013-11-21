@@ -34,6 +34,7 @@ class Binaries
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? $this->site->showdroppedyencparts : 0;
 		$this->c = new ColorCLI;
 
 		// Cache of our black/white list.
@@ -103,10 +104,10 @@ class Binaries
 			else
 				echo $this->c->primary("Part repair disabled by user.");
 		}
-		
+
 		// Get first and last part numbers from newsgroup.
 		$db = $this->db;
-		
+
 		if ($groupArr['last_record'] == 0)
 		{
 			// For new newsgroups - determine here how far you want to go back.
@@ -126,14 +127,14 @@ class Binaries
 				else
 					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
 			}
-			
+
 			$left = $this->messagebuffer;
 			$last = $grouplast = $data['last'] - $left;
 		}
 		else
 		{
 			$first = $groupArr['last_record'];
-			
+
 			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
 			$newcount = $data['last'] - $first;
 			$left = 0;
@@ -158,7 +159,7 @@ class Binaries
 				$last = $grouplast = ($data['last'] - $left);
 			}
 		}
-		
+
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0')
 		{
@@ -167,12 +168,12 @@ class Binaries
 				$first_record_postdate = $newdate;
 			else
 				$first_record_postdate = time();
-			
+
 			$groupArr['first_record_postdate'] = $first_record_postdate;
 
 			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
-		
+
 		// Defaults for post record first/last postdate
 		if (is_null($groupArr['first_record_postdate']))
 			$first_record_postdate = time();
@@ -183,12 +184,12 @@ class Binaries
 			$last_record_postdate = time();
 		else
 			$last_record_postdate = strtotime($groupArr['last_record_postdate']);
-		
-		
+
+
 		// Calculate total number of parts.
 		$total = $grouplast - $first;
 		$realtotal = $data['last'] - $first;
-		
+
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if($total > 0)
 		{
@@ -196,7 +197,7 @@ class Binaries
 				echo $this->c->primary('New group '.$data['group'].' starting with '.(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan.' days' : number_format($this->NewGroupMsgsToScan).' messages')." worth. Leaving ".number_format($left)." for next pass.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record']));
 			else
 				echo $this->c->primary('Group '.$data['group'].' has '.number_format($realtotal)." new articles. Leaving ".number_format($left)." for next pass.\nServer oldest: ".number_format($data['first']).' Server newest: '.number_format($data['last']).' Local newest: '.number_format($groupArr['last_record']));
-				
+
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
 			while ($done === false)
@@ -225,15 +226,15 @@ class Binaries
 				if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0')
 				{
 					$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
-					
+
 					if (isset($scanSummary['firstArticleDate']))
 						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
-					
+
 					$groupArr['first_record_postdate'] = $first_record_postdate;
-					
+
 					$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 				}
-				
+
 				if (isset($scanSummary['lastArticleDate']))
 					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
 
@@ -257,7 +258,7 @@ class Binaries
 	public function scan($nntp, $groupArr, $first, $last, $type='update', $missingParts=null)
 	{
 		$returnArray = array();
-		
+
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(binaries->scan)."));
 
@@ -330,7 +331,7 @@ class Binaries
 					if (isset($msg['Date']))
 						$returnArray['firstArticleDate'] = $msg['Date'];
 				}
-				
+
 				if (isset($returnArray['lastArticleNumber']))
 				{
 					if ($msg['Number'] > $returnArray['lastArticleNumber'])
@@ -344,7 +345,7 @@ class Binaries
 					if (isset($msg['Date']))
 						$returnArray['lastArticleDate'] = $msg['Date'];
 				}
-				
+
 				// If set we are running in partRepair mode
 				if (isset($missingParts))
 				{
@@ -364,8 +365,11 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)\.? \((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
+				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === "1")
+						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".txt", $msg['Subject']."\n", FILE_APPEND);
+
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
 					/*if ($this->debug)
 					{
@@ -393,7 +397,7 @@ class Binaries
 					$nofiles = true;
 				}
 
-				if(is_numeric($matches[2]) && is_numeric($matches[3]))
+				if(is_numeric($matches[3]) && is_numeric($matches[4]))
 				{
 					array_map('trim', $matches);
 					// Inserted into the collections table as the subject.
@@ -430,7 +434,7 @@ class Binaries
 					if(!isset($this->message[$subject]))
 					{
 						$this->message[$subject] = $msg;
-						$this->message[$subject]['MaxParts'] = (int)$matches[3];
+						$this->message[$subject]['MaxParts'] = (int)$matches[4];
 						$this->message[$subject]['Date'] = strtotime($msg['Date']);
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject.$msg['From'].$groupArr['id'].$filecnt[6]);
@@ -442,12 +446,12 @@ class Binaries
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
 						{
-							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[2], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
+							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'],1,-1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject,0,255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int)$bytes, (int)$matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
-					if((int)$matches[2] > 0)
-						$this->message[$subject]['Parts'][(int)$matches[2]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int)$matches[2], 'size' => $bytes);
+					if((int)$matches[3] > 0)
+						$this->message[$subject]['Parts'][(int)$matches[3]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int)$matches[3], 'size' => $bytes);
 				}
 			}
 

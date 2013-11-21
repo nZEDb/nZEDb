@@ -1378,57 +1378,62 @@ class nameCleaning
 	{
 		//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
 		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		//Re: [147053]-[FULL]-[#a.b.teevee]-[ Top_Gear.20x04.HDTV_x264-FoV ]-[11/59] - "top_gear.20x04.hdtv_x264-fov.r00" yEnc (01/20)
-		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ .+? \][- ]\[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+		//Re: [147053]-[FULL]-[#a.b.teevee]-[ Top_Gear.20x04.HDTV_x264-FoV ]-[11/59] - "top_gear.20x04.hdtv_x264-fov.r00" yEnc
+		if (preg_match('/^(Re: )?\[[\d#]+\]-\[FULL\]-\[#.+\]-\[ (.+) \][ -]\[\d+\/\d+\] - ("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//[163558] - [09/41] - "163558.part07.rar" yEnc
+		elseif (preg_match('/^(Re: )?\[\d+\] - \[\d+\/\d+\] - ("|#34;)(\d+)\.(part(\d+)?\.(nzb|rar|sfv)|srr|nzb|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
 			return $match[1];
 		//[#a.b.teevee] Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD - [01/24] - "Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD.nfo" yEnc
-		else if (preg_match('/^(\[#a\.b\.teevee\] .+? - \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+		else if (preg_match('/^\[#a\.b\.teevee\] (.+) - \[\d+\/\d+\] - ".+" yEnc$/', $this->subject, $match))
 			return $match[1];
 		//ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
-		else if (preg_match('/^([a-z0-9]+ - )\[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $this->subject, $match))
-			return $match[1];
 		//fhdbg34rgjdsfd008c (42/43) "fhdbg34rgjdsfd008c.vol062+64.par2" - 3,68 GB - yEnc
-		else if (preg_match('/^([a-z0-9]+ \()\d+\/\d+\) ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
-			return $match[1];
 		//t2EI3CdWdF0hi5b8L9tkx[08/52] - "t2EI3CdWdF0hi5b8L9tkx.part07.rar" yEnc
-		else if (preg_match('/^([a-zA-Z0-9]+)\[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+		else if (preg_match('/^([a-z0-9]{18,24})[ -]*[\[\(]\d+\/\d+[\]\)][ -]+("|#34;)([a-z0-9]{18,24})\..+("|#34;)( - \d+[.,]\d+ [kmg][b] - | )yEnc$/i', $this->subject, $match))
 			return $match[1];
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
-		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
-		else if (preg_match('/^\(\d+(\/\d+\) ".+?)'.$this->e0.' - \d.+?B - (\d.+?B -)? yEnc$/', $this->subject, $match))
-			return $match[1];
+		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc
+		else if (preg_match('/^\(\d+\/\d+\) ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) - (\d+ B - )?\d+[.,]\d+ MB - yEnc$/', $this->subject, $match))
+			return $match[2];
 		//[01/42] - "King.And.Maxwell.S01E08.1080p.WEB-DL.DD5.1.H264-Abjex.par2" yEnc
-		else if (preg_match('/^\[\d+(\/\d+\] - "[A-Za-z0-9.-]+?)'.$this->e1, $this->subject, $match))
+		else if (preg_match('/^\[\d+\/\d+\] - "([\'A-Za-z0-9\.-]+)\.(part\d+\.rar|nfo|par2)" yEnc$/', $this->subject, $match))
+			return $match[1];
+		//[34/40] - "The.Walking.Dead.S04E06.1080p.WEB-DL.AAC2.0.H.264-Cyphanix.vol032+32.par2" yEnc
+		else if (preg_match('/\[\d+\/\d+\] - ("|#34;)(.+)\.vol\d+(\+\d+.+)?("|#34;) yEnc/', $this->subject, $match))
+			return $match[2];
+		//[03/20] Unsealed.Alien.Files.S01E17.HDTV.x264-N0TSC3N3 - "Unsealed.Alien.Files.S01E17.HDTV.x264-N0TSC3N3.r00" yEnc
+		else if (preg_match('/^\[\d+\/\d+\] (.+S\d+E\d+.+) - ("|#34;).+("|#34;) yEnc/', $this->subject, $match))
 			return $match[1];
 		//Divers (12/42) -"Juste.Pour.Rire.2013.Gala.JF.Mercier.FRENCH.720p.HDTV.x264-QuebecRules.part11.rar" yEnc
 		//Par le chapeau (06/43) - "8C7D59F472E03.part04.rar" yEnc
-		else if (preg_match('/^([a-zA-Z0-9 ]+ \()\d+(\/\d+\) - ?".+?)'.$this->e1, $this->subject, $match))
-			return $match[1].$match[2];
+		else if (preg_match('/^(Divers|Par le chapeau) \(\d+\/\d+\)[ -]+("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[3];
 		//House.Hunters.International.S05E502.720p.hdtv.x264 [01/27] - "House.Hunters.International.S05E502.720p.hdtv.x264.nfo" yEnc
 		//Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS - [01/33] - "Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS.par2" yEnc
-		else if (preg_match('/^(Re: )?([a-zA-Z0-9._-]+([{}A-Z_]+)?( -)? \[)\d+(\/| of )\d+\]( -)? ".+?" yEnc$/', $this->subject, $match))
+		else if (preg_match('/^(Re: )?([a-zA-Z0-9\._-]+)[ -]+\[\d+\/\d+\][ -]+("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
 			return $match[2];
 		//Silent Witness S15E02 Death has no dominion.par2 [01/44] - yEnc
-		else if (preg_match('/^([a-zA-Z0-9 ]+)(\.part\d*|\.rar)?(\.vol.+? |\.[A-Za-z0-9]{2,4} )\[\d+(\/\d+\] - yEnc)$/', $this->subject, $match))
-			return $match[1].$match[4];
-		//(bf1) [03/31] - "The.Block.AU.Sky.High.S07E61.WS.PDTV.XviD.BF1.part01.sfv" yEnc (1/1)
-		else if (preg_match('/^\(bf1\) \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
+		else if (preg_match('/^([a-zA-Z0-9 ]+)\.(part\d+\.rar|nfo|par2) \[\d+\/\d+\] - yEnc$/', $this->subject, $match))
 			return $match[1];
+		//(bf1) [03/31] - "The.Block.AU.Sky.High.S07E61.WS.PDTV.XviD.BF1.part01.sfv" yEnc
+		else if (preg_match('/^\(bf1\) \[\d+\/\d+\] - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[2];
 		//[ TVPower ] - "Dexter.S07E10.720p.HDTV.x264-NLsubs.par2" yEnc
 		//[ TVPower ] - [010/101] - "Desperate.Housewives.S08Disc2.NLsubs.part009.rar" yEnc
-		else if (preg_match('/^(\[ [A-Za-z]+ \] - (\[\d+\/\d+\] - )?".+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\[ TVPower \]( - | - \[\d+\/\d+\] - )("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[3];
 		//[www.allyourbasearebelongtous.pw]-[WWE.Monday.Night.Raw.2013.07.22.HDTV.x264-IWStreams]-[03/69] "WWE.Monday.Night.Raw.2013.07.22.HDTV.x264-IWStreams.r00" - 1.58 GB - yEnc
-		else if (preg_match('/^(\[.+?\]-\[.+?\]-\[)\d+\/\d+\] ".+?" - \d+([.,]\d+ [kKmMgG])?[bB] - yEnc$/', $this->subject, $match))
+		else if (preg_match('/^\[.+allyourbasearebelongtous.+\]-\[(.+)\]-\[\d+\/\d+\] ("|#34;).+("|#34;) - \d+([.,]\d+ [kKmMgG])?[bB] - yEnc$/', $this->subject, $match))
 			return $match[1];
 		//(www.Thunder-News.org) >CD1< <Sponsored by Secretusenet> - "moovee-fastest.cda.par2" yEnc
-		else if (preg_match('/^(\(www\..+?\) .+? <Sponsored.+?> - ".+?)'.$this->e1, $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^\(.+Thunder.+\).+Sponsored.+> - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[2];
 		//<<<Pitbull>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "S05E03 Pack die Badehose ein_usenet-space-cowbys.info.par2" >< 01/10 (411,16 MB) >< 3,48 kB > yEnc
-		else if (preg_match('/(\.info .+?Powered by .+?\.com ".+?)'.$this->e0.' .+? \d+\/\d+ \(\d+[,.]\d+ [mMkKgG][bB]\) .+? yEnc$/', $this->subject, $match))
-			return $match[1];
+		else if (preg_match('/^<<<Pitbull>>>.+<<<Powered by.+>< ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) >< \d+\/\d+ \(\d+[,.]\d+ [mMkKgG][bB]\) >< \d+[,.]\d+ [mMkKgG][bB] > yEnc$/', $this->subject, $match))
+			return $match[2];
 		//Newport Harbor The Real Orange County - S01E01 - A Black & White Affair [01/11] - "Newport Harbor The Real Orange County - S01E01 - A Black & White Affair.mkv" yEnc
-		else if (preg_match('/^([a-zA-Z0-9]+ .+? - S\d+E\d+ - .+? \[)\d+\/\d+\] - ".+?\..+?" yEnc$/', $this->subject, $match))
+		else if (preg_match('/^([a-zA-Z0-9]+ .+ - S\d+E\d+ - .+) \[\d+\/\d+\] - ("|#34;).+\..+("|#34;) yEnc$/', $this->subject, $match))
 			return $match[1];
 		//<<<Nimue>>><<<Die.Geschichte.der.Fliegerei.E05.Von.der.Luffahrt.zur.Raumfahrt.GERMAN.DOKU.FS.DVDRip.XviD-NGE>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "nge-dgdf-e05-xvid.r04" >< 07/39 (1,51 GB) >< 47,68 MB > yEnc
 		//<<<CowboyUp26-0706>>><<<Spartacus.S02E09.Monster.GERMAN.DUBBED.720p.HDTV.x264-ZZGtv>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "zzgtv-spartacus-s02e09.r00" >< 04/43 (1,72 GB) >< 47,68 MB > yEnc
@@ -1437,13 +1442,39 @@ class nameCleaning
 		else if (preg_match('/^<<<(Hustensaft\d+|Nimue|CowboyUp\d+(-\d+)?)>>><<<(.+)>>>.+<<<Powered by.+yEnc$/i', $this->subject, $match))
 			return $match[3];
 		//[ Ugly.Betty.S02E13.DVDRip.XviD-SAiNTS ] - [01/39] - "Ugly.Betty.S02E13.DVDRip.XviD-SAiNTS.par2" yEnc
-		else if (preg_match('/^\[ ([a-zA-Z].+) \] - \[\d+\/\d+\] - ".+" yEnc$/', $this->subject, $match))
-			return $match[1];
 		//(Wainy Days.S02E07.DVDRip.x264-PiNK) [01/10] - "Wainy Days.S02E07.DVDRip.x264-PiNK.par2" yEnc
-		else if (preg_match('/\((.+)\) \[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+		else if (preg_match('/^\[ ([a-zA-Z\.]+S\d+E\d+.+) \] - \[\d+\/\d+\] - ".+" yEnc$/', $this->subject, $match))
 			return $match[1];
 		//[Mercy.S01.720p.WEB-DL.DD5.1.h.264-LP-MMI]-[ Mercy.S01E18.Of Course I'm Not.720p.WEB-DL.DD5.1.H.264-LP ]-[01/24] - "Mercy.S01E18.Of Course I'm Not.720p.WEB-DL.DD5.1.H.264-LP.par2" yEnc
-		else if (preg_match('/^\[.+\][ -]{0,3}\[ (.+) \][ -]{0,3}\[\d+\/\d+\][ -]{0,3}("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+		else if (preg_match('/^\[[a-zA-Z0-9\.-]+\][ -]{0,3}\[ (.+) \][ -]+\[\d+\/\d+\][ -]+("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//REPOST: [ B0@5dw@1k.3mpi53.S04E11.720p.HDTV.x264-KILLERS ] - [05/37] - "B0@5dw@1k.3mpi53.S04E11.720p.HDTV.x264-KILLERS.part03.rar" yEnc
+		else if (preg_match('/^REPOST: \[ (.+S\d+E\d+.+) \][ -]+\[\d+\/\d+\][ -]+("|#34;).+("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//(WhoDatNation) [06/72] - "NFL.2013.Week.11.49ers.at.Saints.720p.part05.rar" yEnc
+		else if (preg_match('/^\(WhoDatNation\) \[\d+\/\d+\] - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[2];
+		//[O.I.T.N.B.S01.Disc2] - "O.I.T.N.B.S01.Disc2.part004.rar" yEnc
+		else if (preg_match('/^\[O\.I\..+\] - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[2];
+		//[O.I.T.N.B.S01.Disc2] - "O.I.T.N.B.S01.Disc2.vol003+04.PAR2" yEnc
+		else if (preg_match('/^\[O\.I\..+\] - ("|#34;)(.+)\.vol\d+(\+\d+.+)?("|#34;) yEnc/', $this->subject, $match))
+			return $match[2];
+		//Walking Dead - S03 E06 - Not my cap, found online, credit to whoever capped it [13/20] - "Talking.Dead.S03E06.WEBrip.x264.aac.part12.rar" yEnc
+		else if (preg_match('/^.+\[\d+\/\d+\] - ("|#34;)(.+S\d+E\d+.+)\.(part(\d+)?\.(nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[2];
+		//wYW6T-LPp14hPo-7GFkto[06/50] - "wYW6T-LPp14hPo-7GFkto.part05.rar" yEnc
+		//wYW6T-LPp14hPo-7GFkto[00/50] - "wYW6T-LPp14hPo-7GFkto.nzb" yEnc
+		else if (preg_match('/^(w.+)\[\d+\/\d+\] - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv|nzb)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//FsaF9EFrMb8KzU8VnxJMHJpd2KsyyyFr - File 02 of 53: "9K1FG4HtVgisMsyyA9Y0j3o.part02.rar" yEnc
+		else if (preg_match('/^(.+) - File \d+ of \d+: ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv|\d+)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//[ The.Daily.Show.2013.11.19.Bill.Cosby.720p.WEBRip.AAC2.0.H.264-DCK ]-[02/16] - "The.Daily.Show.2013.11.19.Bill.Cosby.720p.WEBRip.AAC2.0.H.264-DCK.part01.rar" yEnc
+		else if (preg_match('/^\[ (.+) \]-\[\d+\/\d+\] - ("|#34;)(.+)\.(part(\d+)?\.(srr|nzb|rar|sfv)|nfo|par2|mkv)("|#34;) yEnc$/', $this->subject, $match))
+			return $match[1];
+		//The.Simpsons.S25E01.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF NoAds [00/30] - "The.Simpsons.S25E01.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF.nzb" yEnc
+		else if (preg_match('/^(.+S\d+E\d+.+) NoAds \[\d+\/\d+\] - ("|#34;)(.+)("|#34;) yEnc$/', $this->subject, $match))
 			return $match[1];
 		else
 			return $this->generic();

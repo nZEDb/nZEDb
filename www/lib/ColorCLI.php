@@ -216,32 +216,32 @@ class ColorCLI {
 
 	public static function primary ($str)
 	{
-		$primarystring = "\033[38;5;".self::$colors256['Green']."m$str\033[0m\n";
-		return $primarystring;
+		$str = "\033[38;5;".self::$colors256['Green']."m$str\033[0m\n";
+		return $str;
 	}
 
 	public static function header ($str)
 	{
-		$headerstring = "\033[38;5;".self::$colors256['Yellow']."m$str\033[0m\n";
-		return $headerstring;
+		$str = "\033[38;5;".self::$colors256['Yellow']."m$str\033[0m\n";
+		return $str;
 	}
 
 	public static function primaryOver ($str)
 	{
-		$primarystring = "\033[38;5;".self::$colors256['Green']."m$str\033[0m";
-		return $primarystring;
+		$str = "\033[38;5;".self::$colors256['Green']."m$str\033[0m";
+		return $str;
 	}
 
 	public static function headerOver ($str)
 	{
-		$headerstring = "\033[38;5;".self::$colors256['Yellow']."m$str\033[0m";
-		return $headerstring;
+		$str = "\033[38;5;".self::$colors256['Yellow']."m$str\033[0m";
+		return $str;
 	}
 
 	public static function warningOver ($str)
 	{
-		$headerstring = "\033[38;5;".self::$colors256['Red']."m";
-		return $headerstring;
+		$str = "\033[38;5;".self::$colors256['Red']."m";
+		return $str;
 	}
 
 	public static function rsetColor ()
