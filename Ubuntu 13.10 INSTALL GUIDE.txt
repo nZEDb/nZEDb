@@ -148,6 +148,7 @@ Most of this guide is done from the command line (terminal).
     	DocumentRoot "/var/www/nZEDb/www"
     	LogLevel warn
     	ServerSignature Off
+	ErrorLog /var/log/apache2/error.log
 
   <Directory "/var/www/nZEDb/www">
          Options FollowSymLinks
