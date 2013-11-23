@@ -146,9 +146,17 @@ Most of this guide is done from the command line (terminal).
 	ServerName localhost
 
 	# These paths should be fine
-	DocumentRoot /var/www/nZEDb/www
+     	DocumentRoot "/var/www/nZEDb/www"
 	ErrorLog /var/log/apache2/error.log
 	LogLevel warn
+	ServerSignature Off
+
+  <Directory "/var/www/nZEDb/www">
+         Options FollowSymLinks
+         AllowOverride All
+         Order allow,deny
+         allow from all
+  </Directory>
 </VirtualHost>
 
 	# Save and exit nano.
