@@ -1241,6 +1241,7 @@ class Releases
 	public function processReleasesStage4($groupID, $echooutput=false)
 	{
 		$db = $this->db;
+		$categorize = new Category();
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID.' AND ' : ' ';
 
@@ -1291,11 +1292,12 @@ class Releases
 					$propername = $cleanerName['properlynamed'];
 				}
 				$relguid = sha1(uniqid('',true).mt_rand());
-
+				
+				$category = $categorize->determineCategory($cleanName, $rowcol['gname']);
 				if ($propername != false)
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 				else
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 
 				if (isset($relid) && $relid)
 				{

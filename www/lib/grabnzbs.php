@@ -17,23 +17,8 @@ class Import
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
-	}
-
-	function categorize()
-	{
-		$cat = new Category();
-		$relres = $this->db->prepare('SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0');
-		$relres->execute();
-		$tot = $relres->rowCount();
-		if ($tot > 0)
-		{
-			foreach ($relres as $relrow)
-			{
-				$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-				if ($relrow['groupid'] != 7010)
-					$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', $catID, $relrow['id']));
-			}
-		}
+		$this->namecleaner = new nameCleaning();
+		$this->categorize = new Category();
 	}
 
 	public function GrabNZBs($hash='', $nntp)
@@ -44,12 +29,12 @@ class Import
 		$nzb = array();
 		if ($hash == '')
 		{
-			$hashes = $this->db->query('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
-			if (count($hashes) > 0)
+			$hashes = $this->db->queryDirect('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
+			if ($hashes->rowCount > 0)
 			{
 				foreach ($hashes as $hash)
 				{
-					$rel = $this->db->query(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapeString($hash['collectionhash'])));
+					$rel = $this->db->queryDirect(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapeString($hash['collectionhash'])));
 					$arr = '';
 					foreach ($rel as $nzb)
 					{
@@ -62,7 +47,7 @@ class Import
 		}
 		else
 		{
-			$rel = $this->db->query(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapestring($hash)));
+			$rel = $this->db->queryDirect(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapestring($hash)));
 			$arr = '';
 			foreach ($rel as $nzb)
 			{
@@ -116,8 +101,7 @@ class Import
 		$nzbsplitlevel = $this->site->nzbsplitlevel;
 		$nzbpath = $this->site->nzbpath;
 		$version = $this->site->version;
-		$namecleaning = new nameCleaning();
-
+		
 		$groups = $this->db->query('SELECT id, name FROM groups');
 		foreach ($groups as $group)
 			$siteGroups[$group['name']] = $group['id'];
@@ -215,7 +199,7 @@ class Import
 				$relguid = sha1(uniqid('',true).mt_rand());
 				$nzb = new NZB();
 				$propername = false;
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $this->namecleaner->releaseCleaner($subject, $groupName);
 				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];
@@ -227,11 +211,13 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
+				
+				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true)
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 				else
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0)));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 
 				// Set table names
 				if ($this->tablepergroup == 1)
@@ -298,7 +284,6 @@ class Import
 								}
 							}
 							$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-							$this->categorize();
 							echo '+';
 						}
 						else

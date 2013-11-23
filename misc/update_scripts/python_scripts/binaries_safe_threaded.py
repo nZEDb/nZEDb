@@ -14,6 +14,7 @@ import datetime
 import math
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 
 def connect():
@@ -42,7 +43,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print("\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S"))+ bcolors.ENDC)
 
 count = 0
 
@@ -68,7 +69,7 @@ datas = cur[0].fetchall()
 disconnect(cur[0], cur[1])
 
 if not datas:
-	print("No Groups activated")
+	print(bcolors.ERROR + "No Groups activated"+ bcolors.ENDC)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -147,8 +148,8 @@ def main():
 		final = ("{} {} Binary".format(group[0], group[1]))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
 
-	print("\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S"))+ bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time)))+ bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()
