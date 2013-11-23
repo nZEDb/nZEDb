@@ -9,12 +9,14 @@ require_once nZEDb_LIB . 'movie.php';
 $movie = new Movie(true);
 $db = new Db();
 
-$movies = $db->query("SELECT imdbid FROM movieinfo");
-
+$movies = $db->queryDirect("SELECT imdbid FROM movieinfo");
+if ($movies->rowCount() > 0)
+	echo "Updating movie info for ".$movies->rowCount()." movies.\n";
 foreach ($movies as $mov)
 {
 	$mov = $movie->updateMovieInfo($mov['imdbid']);
+	echo ".";
 	sleep(1);
 }
-
+echo "\n";
 ?>

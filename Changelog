@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-11-23 -> jonnyboy -> added option to log 'yEnc' dropped headers, more regexes, added not that using GrabNZBs and replacing nzbs is not necessary, may remove in the future
+2013-11-23 -> jonnyboy -> added file to export user settings using pastebinit
+                          added option to log 'yEnc' dropped headers, more regexes, added not that using GrabNZBs and replacing nzbs is not necessary, may remove in the future
                           moved misc sorter into fixreleasenames_threaded.py, not sure if it works, changed fixreleasenames_threaded.py to only process misc cat(7010) and relnamestatus (0, 1)
                           added all fixreleasenames_threaded.py choices to tmux, removed misc sorter from its own pane
                           reverted all changes to collectionsCleaner, had a serious misunderstanding of that functions purpose, only affected a few groups, look at the diff and see if you index those groups, a reset of those groups affected groups is necessary, sorry
