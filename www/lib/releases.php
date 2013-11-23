@@ -1608,8 +1608,8 @@ class Releases
 		if ($this->echooutput)
 			echo $this->c->header("\nStage 6 -> Categorize and post process releases.");
 		$stage6 = TIME();
-		//if ($categorize == 1)
-			//$this->categorizeRelease('name', $where);
+		if ($categorize == 1)
+			$this->categorizeRelease('name', $where);
 
 		if ($postproc == 1)
 		{

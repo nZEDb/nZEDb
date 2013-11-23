@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4362";
+$version="0.3r4388";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -346,13 +346,13 @@ printf($mask1, "Parts in Repair:", number_format($partrepair_table));
 $mask = "%-16.16s %25.25s %25.25s\n";
 printf("\033[1;33m\n");
 printf($mask, "Collections", "Binaries", "Parts");
-printf($mask, "====================", "=================", "====================");
+printf($mask, "======================================", "=========================", "======================================");
 printf("\033[38;5;214m");
 printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 printf("\033[1;33m\n");
 printf($mask, "Category", "In Process", "In Database");
-printf($mask, "====================", "=================", "====================");
+printf($mask, "======================================", "=========================", "======================================");
 printf("\033[38;5;214m");
 printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
@@ -370,7 +370,7 @@ printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number
 
 printf("\n\033[1;33m\n");
 printf($mask, "Groups", "Active", "Backfill");
-printf($mask, "====================", "=================", "====================");
+printf($mask, "======================================", "=========================", "======================================");
 printf("\033[38;5;214m");
 if ($backfilldays == "1")
 	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
@@ -381,7 +381,7 @@ if ($show_query == 1)
 {
 	printf("\n\033[1;33m\n");
 	printf($mask, "Query Block", "Time", "Cumulative");
-	printf($mask, "====================", "=================", "====================");
+	printf($mask, "======================================", "=========================", "======================================");
 	printf("\033[38;5;214m");
 	printf($mask, "Combined", "0",  "0");
 }
@@ -732,7 +732,7 @@ while($i > 0)
 
 	printf("\033[1;33m\n");
 	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "====================", "=================", "====================");
+	printf($mask, "======================================", "=========================", "======================================");
 	printf("\033[38;5;214m");
 	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
@@ -740,7 +740,7 @@ while($i > 0)
 	{
 		printf("\033[1;33m\n");
 		printf($mask, "Ramdisk", "Used", "Free");
-		printf($mask, "====================", "=================", "====================");
+		printf($mask, "======================================", "=========================", "======================================");
 		printf("\033[38;5;214m");
 		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path))
 		{
@@ -776,7 +776,7 @@ while($i > 0)
 
 	printf("\033[1;33m\n");
 	printf($mask, "Category", "In Process", "In Database");
-	printf($mask, "====================", "=================", "====================");
+	printf($mask, "======================================", "=========================", "======================================");
 	printf("\033[38;5;214m");
 	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
 	printf($mask, "predb", number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
@@ -794,7 +794,7 @@ while($i > 0)
 
 	printf("\n\033[1;33m\n");
 	printf($mask, "Groups", "Active", "Backfill");
-	printf($mask, "====================", "=================", "====================");
+	printf($mask, "======================================", "=========================", "======================================");
 	printf("\033[38;5;214m");
 	if ($backfilldays == "1")
 		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
@@ -805,7 +805,7 @@ while($i > 0)
 	{
 		printf("\n\033[1;33m\n");
 		printf($mask, "Query Block", "Time", "Cumulative");
-		printf($mask, "====================", "=================", "====================");
+		printf($mask, "======================================", "=========================", "======================================");
 		printf("\033[38;5;214m");
 		printf($mask, "Combined", $tmux_time." ".$split_time." ".$init_time." ".$proc1_time." ".$proc2_time." ".$proc3_time." ".$tpg_count_time, $tmux_time." ".$split1_time." ".$init1_time." ".$proc11_time." ".$proc21_time." ".$proc31_time." ".$tpg_count_1_time);
 
