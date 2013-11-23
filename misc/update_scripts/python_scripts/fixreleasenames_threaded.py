@@ -48,23 +48,27 @@ perrun = cur.fetchone()
 datas = []
 maxtries = 0
 
-if len(sys.argv) > 1 and (sys.argv[1] == "nfo" or sys.argv[1] == "miscsorter"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND categoryid = 7010 LIMIT %s"
+if len(sys.argv) > 1 and sys.argv[1] == "nfo":
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur.fetchall()
+elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
+	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND categoryid = 7010 LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1)) ORDER BY postdate DESC  LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND categoryid = 7010 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND categoryid = 7010 AND relnamestatus IN (0, 1, 20, 21) LIMIT %s"
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus IN (0, 1)) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
