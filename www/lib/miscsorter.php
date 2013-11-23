@@ -782,16 +782,17 @@ echo "asin ".$set[1]."\n";
 		$this->idarr = $this->getIDs($category);
 		if ($id != 0)
 			$this->idarr = $id;
-		else
+//This is already being done in postprocessing
+/*		else
 		{
-			$pb = new Predb(true);
-			$pb->parseTitles(0, 1, 0, 1, '');
-			$pb->matchNfo($nntp);
-			$pb->matchPredb();
-			unset($pb);
-			if ($this-> echooutput)
-				exit("Misc sorter: No ID supplied so exiting.\n");
-		}
+			//$pb = new Predb(true);
+			//$pb->parseTitles(0, 1, 0, 1, '');
+			//$pb->matchNfo($nntp);
+			//$pb->matchPredb();
+			//unset($pb);
+			//if ($this-> echooutput)
+			//	exit("Misc sorter: No ID supplied so exiting.\n");
+		}*/
 
 		if ($this->db->dbSystem() == "mysql")
 			$uc = "UNCOMPRESS(releasenfo.nfo)";

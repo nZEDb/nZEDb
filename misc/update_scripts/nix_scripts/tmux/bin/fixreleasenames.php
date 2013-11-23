@@ -9,6 +9,7 @@ require_once nZEDb_LIB . 'nzbcontents.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'nntp.php';
 require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'miscsorter.php';
 
 $c = new ColorCLI;
 if (!isset($argv[1]))
@@ -43,7 +44,7 @@ else if (isset($argv[1]))
 		}
 	}
 
-	if (isset($pieces[1]) && $pieces[0] == 'filename')
+	else if (isset($pieces[1]) && $pieces[0] == 'filename')
 	{
 		$release = $pieces[1];
 		if ($res = $db->queryOneRow(sprintf('SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release)))
@@ -56,7 +57,7 @@ else if (isset($argv[1]))
 		}
 	}
 
-	if (isset($pieces[1]) && $pieces[0] == 'md5')
+	else if (isset($pieces[1]) && $pieces[0] == 'md5')
 	{
 		$release = $pieces[1];
 		if ($res = $db->queryOneRow(sprintf('SELECT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d', $release)))
@@ -69,7 +70,7 @@ else if (isset($argv[1]))
 		}
 	}
 
-	if (isset($pieces[1]) && $pieces[0] == 'par2')
+	else if (isset($pieces[1]) && $pieces[0] == 'par2')
 	{
 		$s = new Sites();
 		$site = $s->get();
@@ -85,6 +86,24 @@ else if (isset($argv[1]))
 		$nzbcontents = new NZBcontents(true);
 		$pp = new Postprocess($echooutput=true);
 		$nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp);
+		echo '.';
+		if ($site->nntpproxy != "1")
+			$nntp->doQuit();
+	}
+
+	else if (isset($pieces[1]) && $pieces[0] == 'miscsorter')
+	{
+		$s = new Sites();
+		$site = $s->get();
+		$nntp = new Nntp();
+		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+			exit($c->error("Unable to connect to usenet."));
+		if ($site->nntpproxy === "1")
+			usleep(500000);
+
+		$sorter = new MiscSorter(true);
+		$relID = $pieces[1];
+		$sorter->nfosorter(7010, $relID, $nntp);
 		echo '.';
 		if ($site->nntpproxy != "1")
 			$nntp->doQuit();
