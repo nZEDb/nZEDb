@@ -368,7 +368,7 @@ class Binaries
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
 					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === "1")
-						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".txt", $msg['Subject']."\n", FILE_APPEND);
+						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".dropped.txt", $msg['Subject']."\n", FILE_APPEND);
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
 					/*if ($this->debug)

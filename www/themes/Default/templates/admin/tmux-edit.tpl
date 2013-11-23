@@ -28,7 +28,7 @@
 			<tr>
 				<td style="width:180px;"><label for="running">Tmux Scripts Running:</label></td>
 				<td>
-					{html_radios id="running" name='running' values=$truefalse_ids output=$truefalse_names selected=$ftmux->running separator='<br />'}
+					{html_radios id="running" name='running' values=$yesno_ids output=$yesno_names selected=$ftmux->running separator='<br />'}
 					<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This will start/stop all panes without terminating the monitor pane. This is not instant, it does not kill any panes, it simply does not aloow any pane to restart if set to false.</div>
 				</td>
 			</tr>
@@ -182,7 +182,7 @@
 			<tr>
 				<td style="width:180px;"><label for="progressive">Variable Sleep Timer:</label></td>
 				<td>
-					{html_radios id="progressive" name='progressive' values=$truefalse_ids output=$truefalse_names selected=$ftmux->progressive separator='<br />'}
+					{html_radios id="progressive" name='progressive' values=$yesno_ids output=$yesno_names selected=$ftmux->progressive separator='<br />'}
 					<div class="hint">This will vary the backfill sleep depending on how many collections you have.<br />ie 50k collections would make sleep timer 100 seconds and 20k releases would make sleep timer 40 seconds.</div>
 				</td>
 			</tr>
@@ -275,7 +275,7 @@
 			<tr>
 				<td style="width:180px;"><label for="post_amazon">Postprocess Amazon:</label></td>
 				<td>
-					{html_radios id="post_amazon" name='post_amazon' values=$truefalse_ids output=$truefalse_names selected=$ftmux->post_amazon separator='<br />'}
+					{html_radios id="post_amazon" name='post_amazon' values=$yesno_ids output=$yesno_names selected=$ftmux->post_amazon separator='<br />'}
 					<div class="hint">Choose to do books, music and games lookups true/false</div>
 				</td>
 			</tr>
@@ -312,7 +312,7 @@
 			<tr>
 				<td style="width:180px;"><label for="fix_names">Fix Release Names:</label></td>
 				<td>
-					{html_radios id="fix_names" name='fix_names' values=$truefalse_ids output=$truefalse_names selected=$ftmux->fix_names separator='<br />'}
+					{html_radios id="fix_names" name='fix_names' values=$yesno_ids output=$yesno_names selected=$ftmux->fix_names separator='<br />'}
 					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false<br /> I have changed the query so that only category 7010 will be processed.</div>
 				</td>
 			</tr>
@@ -391,7 +391,7 @@
 			<tr>
 				<td style="width:180px;"><label for="update_tv">Update TV and Theater Schedules:</label></td>
 				<td>
-					{html_radios id="update_tv" name='update_tv' values=$truefalse_ids output=$truefalse_names selected=$ftmux->update_tv separator='<br />'}
+					{html_radios id="update_tv" name='update_tv' values=$yesno_ids output=$yesno_names selected=$ftmux->update_tv separator='<br />'}
 					<div class="hint">Choose to run Update TV and Theater Schedules true/false</div>
 				</td>
 			</tr>
@@ -436,7 +436,7 @@
 			<tr>
 				<td style="width:180px;"><label for="write_logs">Logging:</label></td>
 				<td>
-					{html_radios id="write_logs" name='write_logs' values=$truefalse_ids output=$truefalse_names selected=$ftmux->write_logs separator='<br />'}
+					{html_radios id="write_logs" name='write_logs' values=$yesno_ids output=$yesno_names selected=$ftmux->write_logs separator='<br />'}
 					<div class="hint">Set this to write each panes output to a per pane per day log file. This adds GMT date to the filename.</div>
 				</td>
 			</tr>
@@ -444,7 +444,7 @@
 			<tr>
 				<td style="width:180px;"><label for="powerline">Powerline Status Bar:</label></td>
 				<td>
-					{html_radios id="powerline" name='powerline' values=$truefalse_ids output=$truefalse_names selected=$ftmux->powerline separator='<br />'}
+					{html_radios id="powerline" name='powerline' values=$yesno_ids output=$yesno_names selected=$ftmux->powerline separator='<br />'}
 					<div class="hint">Choose to use the Powerline tmux status bar. To make this pretty, you need to install a patched font. This can be found on <a href="https://github.com/jonnyboy/powerline-fonts">my fork</a> or <a href="https://github.com/Lokaltog/powerline-fonts">the original git</a><br \>You will need to copy the default theme located at powerline/powerline/themes/default.sh to powerline/powerline/themes/tmux.sh and edit that file for what is displayed, colors, etc.</div>
 				</td>
 			</tr>
@@ -457,7 +457,7 @@
 			<tr>
 				<td style="width:180px;"><label for="showquery">Display Query Times:</label></td>
 				<td>
-					{html_radios id="showquery" name='showquery' values=$truefalse_ids output=$truefalse_names selected=$ftmux->showquery separator='<br />'}
+					{html_radios id="showquery" name='showquery' values=$yesno_ids output=$yesno_names selected=$ftmux->showquery separator='<br />'}
 					<div class="hint">Choose to display the query times for each set of queries. true/false.</div>
 				</td>
 			</tr>
@@ -465,7 +465,7 @@
 			<tr>
 				<td style="width:180px;"><label for="htop">htop:</label></td>
 				<td>
-					{html_radios id="htop" name='htop' values=$truefalse_ids output=$truefalse_names selected=$ftmux->htop separator='<br />'}
+					{html_radios id="htop" name='htop' values=$yesno_ids output=$yesno_names selected=$ftmux->htop separator='<br />'}
 					<div class="hint">htop - an interactive process viewer for Linux. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -473,7 +473,7 @@
 			<tr>
 				<td style="width:180px;"><label for="nmon">nmon:</label></td>
 				<td>
-					{html_radios id="nmon" name='nmon' values=$truefalse_ids output=$truefalse_names selected=$ftmux->nmon separator='<br />'}
+					{html_radios id="nmon" name='nmon' values=$yesno_ids output=$yesno_names selected=$ftmux->nmon separator='<br />'}
 					<div class="hint">nmon is short for Nigel's performance Monitor for Linux. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -481,7 +481,7 @@
 			<tr>
 				<td style="width:180px;"><label for="vnstat">vnstat:</label></td>
 				<td>
-					{html_radios id="vnstat" name='vnstat' values=$truefalse_ids output=$truefalse_names selected=$ftmux->vnstat separator='<br />'}
+					{html_radios id="vnstat" name='vnstat' values=$yesno_ids output=$yesno_names selected=$ftmux->vnstat separator='<br />'}
 					<input id="vnstat_ARGS" name="vnstat_ARGS" class="text" type="text" value="{$ftmux->vnstat_ARGS}" />
 					<div class="hint">vnStat is a console-based network traffic monitor for Linux and BSD that keeps a log of network traffic for the selected interface(s). Any additional arguments should be placed in the text box. The pane for this can not be created after tmux starts.</div>
 				</td>
@@ -490,7 +490,7 @@
 			<tr>
 				<td style="width:180px;"><label for="tcptrack">tcptrack:</label></td>
 				<td>
-					{html_radios id="tcptrack" name='tcptrack' values=$truefalse_ids output=$truefalse_names selected=$ftmux->tcptrack separator='<br />'}
+					{html_radios id="tcptrack" name='tcptrack' values=$yesno_ids output=$yesno_names selected=$ftmux->tcptrack separator='<br />'}
 					<input id="tcptrack_args" name="tcptrack_args" class="text" type="text" value="{$ftmux->tcptrack_args}" />
 					<div class="hint">tcptrack displays the status of TCP connections that it sees on a given network interface. tcptrack monitors their state and displays information such as state, source/destination addresses and bandwidth usage in a sorted, updated list very much like the top(1) command. <br />Any additional arguments should be placed in the text box. <br />You may need to run "sudo setcap cap_net_raw+ep /usr/bin/tcptrack", to be able to run as user. The pane for this can not be created after tmux starts.</div>
 				</td>
@@ -499,7 +499,7 @@
 			<tr>
 				<td style="width:180px;"><label for="bwmng">bwm-ng:</label></td>
 				<td>
-					{html_radios id="bwmng" name='bwmng' values=$truefalse_ids output=$truefalse_names selected=$ftmux->bwmng separator='<br />'}
+					{html_radios id="bwmng" name='bwmng' values=$yesno_ids output=$yesno_names selected=$ftmux->bwmng separator='<br />'}
 					<div class="hint">bwm-ng can be used to monitor the current bandwidth of all or some specific network interfaces or disks (or partitions). The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -507,7 +507,7 @@
 			<tr>
 				<td style="width:180px;"><label for="mytop">mytop:</label></td>
 				<td>
-					{html_radios id="mytop" name='mytop' values=$truefalse_ids output=$truefalse_names selected=$ftmux->mytop separator='<br />'}
+					{html_radios id="mytop" name='mytop' values=$yesno_ids output=$yesno_names selected=$ftmux->mytop separator='<br />'}
 					<div class="hint">mytop - display MySQL server performance info like `top'. <br />You will need to create ~/.mytop, an example can be found in 'perldoc mytop'. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -515,7 +515,7 @@
 			<tr>
 				<td style="width:180px;"><label for="showprocesslist">Show Process List:</label></td>
 				<td>
-					{html_radios id="showprocesslist" name='showprocesslist' values=$truefalse_ids output=$truefalse_names selected=$ftmux->showprocesslist separator='<br />'}
+					{html_radios id="showprocesslist" name='showprocesslist' values=$yesno_ids output=$yesno_names selected=$ftmux->showprocesslist separator='<br />'}
 					<input id="processupdate" name="processupdate" class="short" type="text" value="{$ftmux->processupdate}" />
 					<div class="hint">This runs the watch command in its own pane. This could be used for a live 'slow query monitor'. Just set the time above and only the queries that exceed it will be displayed.<br />mysql -e "SELECT time, state, rows_examined, info FROM information_schema.processlist WHERE command != \"Sleep\" AND time >= .5 ORDER BY time DESC \G"<br />This shows a grid like layout with the full test of the running queries.<br />You will need to create a ~/.my.cnf for this to work properlly. The pane for this can not be created after tmux starts and modifying the time above will have no effect until a restart occurs.</div>
 				</td>
@@ -524,7 +524,7 @@
 			<tr>
 				<td style="width:180px;"><label for="console">Console:</label></td>
 				<td>
-					{html_radios id="console" name='console' values=$truefalse_ids output=$truefalse_names selected=$ftmux->console separator='<br />'}
+					{html_radios id="console" name='console' values=$yesno_ids output=$yesno_names selected=$ftmux->console separator='<br />'}
 					<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.</div>
 				</td>
 			</tr>
@@ -537,7 +537,7 @@
 			<tr>
 				<td style="width:180px;"><label for="colors">256 Colors:</label></td>
 				<td>
-					{html_radios id="colors" name='colors' values=$truefalse_ids output=$truefalse_names selected=$ftmux->colors separator='<br />'}
+					{html_radios id="colors" name='colors' values=$yesno_ids output=$yesno_names selected=$ftmux->colors separator='<br />'}
 					<div class="hint">Show a color display of all available colors based on the settings below. true/fasle</div>
 					<input id="colors_start" name="colors_start" class="short" type="text" value="{$ftmux->colors_start}" />
 					<input id="colors_end" name="colors_end" class="short" type="text" value="{$ftmux->colors_end}" /><br />
