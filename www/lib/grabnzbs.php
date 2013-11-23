@@ -7,7 +7,6 @@ require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'category.php';
 
 class Import
 {
@@ -19,6 +18,7 @@ class Import
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
 		$this->namecleaner = new nameCleaning();
+		$this->categorize = new Category();
 	}
 
 	public function GrabNZBs($hash='', $nntp)
@@ -30,7 +30,7 @@ class Import
 		if ($hash == '')
 		{
 			$hashes = $this->db->queryDirect('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
-			if ($hashes->rowCount) > 0)
+			if ($hashes->rowCount > 0)
 			{
 				foreach ($hashes as $hash)
 				{
@@ -199,7 +199,7 @@ class Import
 				$relguid = sha1(uniqid('',true).mt_rand());
 				$nzb = new NZB();
 				$propername = false;
-				$cleanerName = $this->namecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $this->namecleaner->releaseCleaner($subject, $groupName);
 				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];
@@ -211,7 +211,8 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				$category = $cat->determineCategory($cleanName, $groupName);
+				
+				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true)
 					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
