@@ -94,13 +94,13 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
-#	$PHP ${DEV_PATH}/test_misc_sorter.php
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py filename
 #   $PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py par2
+#   $PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py miscsorter  ##I do not know if misc sorter works or ever worked with nZEDb, ugo has not been around in many months
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie clean
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes

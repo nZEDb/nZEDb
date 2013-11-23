@@ -28,4 +28,3 @@ if (isset($argv[2]))
 $sorter->nfosorter($cat, $id, $nntp);
 
 $sorter->musicnzb( $cat, $id);
-

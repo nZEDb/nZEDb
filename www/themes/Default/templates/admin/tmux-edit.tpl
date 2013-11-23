@@ -313,7 +313,7 @@
 				<td style="width:180px;"><label for="fix_names">Fix Release Names:</label></td>
 				<td>
 					{html_radios id="fix_names" name='fix_names' values=$truefalse_ids output=$truefalse_names selected=$ftmux->fix_names separator='<br />'}
-					<div class="hint">Choose to try to fix Releases Names using NFOs true/false</div>
+					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false<br /> I have changed the query so that only category 7010 will be processed.</div>
 				</td>
 			</tr>
 
@@ -351,33 +351,6 @@
 				<td>
 					<input id="crap_timer" name="crap_timer" class="short" type="text" value="{$ftmux->crap_timer}" />
 					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
-				</td>
-			</tr>
-		</table>
-</fieldset>
-
-<fieldset>
-	<legend>Misc Sorter</legend>
-		<table class="input">
-			<tr>
-				<td style="width:180px;"><label for="sorter">Misc Sorter:</label></td>
-				<td>
-					{html_radios id="sorter" name='sorter' values=$truefalse_ids output=$truefalse_names selected=$ftmux->sorter separator='<br />'}
-					<div class="hint">Choose to run Misc Sorter true/false</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="width:180px;"><label for="sorter_timer">Misc Sorter Sleep Timer:</label></td>
-				<td>
-					<input id="sorter_timer" name="sorter_timer" class="short" type="text" value="{$ftmux->sorter_timer}" />
-					<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="explain">Information:</label></td>
-				<td>
-					<div class="explanation">Misc Sorter only works on the misc category(7000). It will throw an error if you have no releases in 7000 that need to be postprocessed. This works by collecting keywords from the nfo, if enough keywords are present, then an assumption is made as to which category it belongs.</div>
 				</td>
 			</tr>
 		</table>

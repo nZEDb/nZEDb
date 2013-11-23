@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4390";
+$version="0.3r4392";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -180,8 +180,6 @@ $proc_tmux = "SELECT
 	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path') as monitor_path,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_a') as monitor_path_a,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_b') as monitor_path_b,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'sorter') as sorter,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'sorter_timer') as sorter_timer,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'progressive') as progressive,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer,
@@ -563,7 +561,6 @@ while($i > 0)
 	if ($proc_tmux_result[0]['fix_names'] != NULL) { $fix_names = $proc_tmux_result[0]['fix_names']; }
 	if ($proc_tmux_result[0]['fix_crap'] != NULL) { $fix_crap = explode(', ', ($proc_tmux_result[0]['fix_crap'])); }
 	if ($proc_tmux_result[0]['fix_crap_opt'] != NULL) { $fix_crap_opt = $proc_tmux_result[0]['fix_crap_opt']; }
-	if ($proc_tmux_result[0]['sorter'] != NULL) { $sorter = $proc_tmux_result[0]['sorter']; }
 	if ($proc_tmux_result[0]['update_tv'] != NULL) { $update_tv = $proc_tmux_result[0]['update_tv']; }
 	if ($proc_tmux_result[0]['post'] != NULL) { $post = $proc_tmux_result[0]['post']; }
 	if ($proc_tmux_result[0]['releases_run'] != NULL) { $releases_run = $proc_tmux_result[0]['releases_run']; }
@@ -603,7 +600,6 @@ while($i > 0)
 	if ($proc_tmux_result[0]['rel_timer'] != NULL) { $rel_timer = $proc_tmux_result[0]['rel_timer']; }
 	if ($proc_tmux_result[0]['fix_timer'] != NULL) { $fix_timer = $proc_tmux_result[0]['fix_timer']; }
 	if ($proc_tmux_result[0]['crap_timer'] != NULL) { $crap_timer = $proc_tmux_result[0]['crap_timer']; }
-	if ($proc_tmux_result[0]['sorter_timer'] != NULL) { $sorter_timer = $proc_tmux_result[0]['sorter_timer']; }
 	if ($proc_tmux_result[0]['post_timer'] != NULL) { $post_timer = $proc_tmux_result[0]['post_timer']; }
 	if ($proc_tmux_result[0]['post_kill_timer'] != NULL) { $post_kill_timer = $proc_tmux_result[0]['post_kill_timer']; }
 	if ($proc_tmux_result[0]['tv_timer'] != NULL) { $tv_timer = $proc_tmux_result[0]['tv_timer']; }
@@ -885,27 +881,16 @@ while($i > 0)
 			{
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_php ${DIR}testing/Dev_testing/renametopre.php 24 $log; \
 						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py filename $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
 			else
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Fix Release Names\"'");
-			}
-
-			//misc sorter
-			if ($sorter == 1)
-			{
-				$log = writelog($panes1[2]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
-						$_php ${DIR}testing/Dev_testing/test_misc_sorter.php $log; date +\"%D %T\"; $_sleep $sorter_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Misc Sorter\"'");
 			}
 
 			//dehash releases
@@ -1114,7 +1099,7 @@ while($i > 0)
 			if (($update_tv == 0) && ((TIME() - $time3 >= $tv_timer) || ($i == 1)))
 			{
 				$log = writelog($panes1[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.4 ' \
+				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
 						$_phpn ${DIR}update_scripts/update_theaters.php $log; $_phpn ${DIR}update_scripts/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 				$time3 = TIME();
 			}
@@ -1122,12 +1107,12 @@ while($i > 0)
 			{
 				$run_time = relativeTime($tv_timer + $time3);
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -t${tmux_session}:1.4 'echo \"\033[38;5;${color}m\n${panes1[4]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
+				shell_exec("tmux respawnp -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
 			}
 			else
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.4 'echo \"\033[38;5;${color}m\n${panes1[4]} has been disabled/terminated by Update TV/Theater\"'");
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 		}
 
