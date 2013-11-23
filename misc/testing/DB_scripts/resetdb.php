@@ -1,55 +1,95 @@
 <?php
 passthru('clear');
-echo "This script removes all releases, nzb files, samples, previews , nfos, truncates all article tables and resets all groups.\n";
-echo "Are you sure you want reset the DB?  Type 'DESTROY' to continue: \n";
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+$c = new ColorCLI;
+
+echo $c->warning("This script removes all releases, nzb files, samples, previews , nfos, truncates all article tables and resets all groups.");
+echo $c->header("Are you sure you want reset the DB?  Type 'DESTROY' to continue:  \n");
+echo $c->warningOver("\n");
 $line = fgets(STDIN);
 if(trim($line) != 'DESTROY')
-{
-	echo "This script is dangerous you must type DESTROY for it function\n";
-	exit();
-}
-echo "\n";
-echo "Thank you, continuing...\n";
+	exit($c->error("This script is dangerous you must type DESTROY for it function."));
 
-require_once dirname(__FILE__) . '/../../../www/config.php';
+echo "\n";
+echo $c->header("Thank you, continuing...\n\n");
+
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'nzb.php';
 
 $db = new Db();
 $s = new Sites();
-$consoletools = new ConsoleTools();
 $site = $s->get();
 $timestart = TIME();
 $relcount = 0;
+$ri = new ReleaseImage();
+$nzb = new NZB();
+$consoletools = new ConsoleTools();
 
-echo "Truncating tables.\n";
-$db->queryExec("TRUNCATE TABLE collections");
-$db->queryExec("TRUNCATE TABLE binaries");
-$db->queryExec("TRUNCATE TABLE parts");
-$db->queryExec("TRUNCATE TABLE partrepair");
-$db->queryExec("TRUNCATE TABLE releasenfo");
-$db->queryExec("TRUNCATE TABLE nzbs");
+$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
+echo $c->primary("Reseting all groups completed.");
 
-echo "Resetting groups.\n";
-$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL");
-
-echo "Querying db for releases.\n";
-$relids = $db->query(sprintf("SELECT id, guid FROM releases"));
-if (count($relids) > 0)
+$arr = array("tvrage", "releasenfo", "releasecomment", "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "nzbs", "releases");
+foreach ($arr as &$value)
 {
-	echo "Deleting ".number_format(count($relids))." releases, NZB's, previews and samples.\n";
-	$releases = new Releases();
+	$rel = $db->queryExec("TRUNCATE TABLE $value");
+	if($rel !== false)
+		echo $c->primary("Truncating ${value} completed.");
+}
+unset($value);
 
-	foreach ($relids as $relid)
+$sql = "SHOW table status";
+$tables = $db->query($sql);
+foreach($tables as $row)
+{
+	$tbl = $row['name'];
+	if (preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl))
 	{
-		$releases->fastDelete($relid['id'], $relid['guid'], $site);
-		$consoletools->overWrite("Deleting:".$consoletools->percentString(++$relcount,sizeof($relids))." Time:".$consoletools->convertTimer(TIME() - $timestart));
+		$rel = $db->queryDirect(sprintf('DROP TABLE %s', $tbl));
+		if($rel !== false)
+			echo $c->primary("Dropping ${tbl} completed.");
 	}
 }
-if ($relcount > 0)
+
+echo $c->header("Deleting nzbfiles subfolders.");
+$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($site->nzbpath, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+$deleted = 0;
+foreach ($files as $file)
 {
-	$consoletools = new ConsoleTools();
-	echo "\nDeleted ".$relcount." release(s). This script ran for ".$consoletools->convertTime(TIME() - $timestart);
+	if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar')
+	{
+		$todo = ($file->isDir() ? 'rmdir' : 'unlink');
+		@$todo($file);
+	}
 }
+
+echo $c->header("Deleting all images, previews and samples that still remain.");
+$dirItr = new RecursiveDirectoryIterator(nZEDb_WWW . 'covers');
+$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+$deleted = 0;
+foreach ($itr as $filePath)
+{
+	if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg')
+	{
+		@unlink($filePath);
+	}
+}
+
+echo $c->header("Getting Updated List of TV Shows from TVRage.");
+$tvshows = @simplexml_load_file('http://services.tvrage.com/feeds/show_list.php');
+if ($tvshows !== false)
+{
+	foreach ($tvshows->show as $rage)
+	{
+		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name))
+			$db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $db->escapeString($rage->id), $db->escapeString($rage->name), $db->escapeString($rage->country)));
+	}
+}
+else
+	echo $c->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying agrain.");
+
+echo $c->header("Deleted all releases, images, previews and samples. This script ran for ".$consoletools->convertTime(TIME() - $timestart));

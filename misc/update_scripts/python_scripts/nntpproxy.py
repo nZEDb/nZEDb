@@ -8,6 +8,7 @@ import socket
 import SocketServer
 import socketpool
 import nntp
+from lib.info import bcolors
 
 class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 
@@ -22,7 +23,7 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 			raise ValueError("Bad backend")
 		nntp.NNTPClient.__init__(self, self.host, self.port, username, password, timeout=timeout, use_ssl=use_ssl)
 		self.id = self.socket.getsockname()[1]
-		print("%5d NEW CONNECTION" % self.id)
+		print(bcolors.HEADER + "%5d NEW CONNECTION" % self.id)
 		self._connected = True
 		self.xfeature_compress_gzip()
 

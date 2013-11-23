@@ -12,7 +12,7 @@ $smarty = SMARTY_DIR.'templates_c/';
 $dbname = DB_NAME;
 
 function command_exist($cmd) {
-	$returnVal = shell_exec('which $cmd');
+	$returnVal = shell_exec("which $cmd");
 	return (empty($returnVal) ? false : true);
 }
 
@@ -40,7 +40,7 @@ if( isset($argv[1]) )
 
 	if ( $patch == 'TRUE' )
 	{
-		exec('cd $ROOTDIR && git pull');
+        exec("cd $ROOTDIR && git pull");
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0)

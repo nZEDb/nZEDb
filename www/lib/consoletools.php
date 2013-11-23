@@ -1,10 +1,12 @@
 <?php
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class ConsoleTools
 {
 
 	function __construct(){
 		$this->lastMessageLength = 0;
+		$this->c = new ColorCLI;
 	}
 
 	function overWrite($message, $reset=False)
@@ -71,7 +73,7 @@ class ConsoleTools
 	{
 		for ( $i = $seconds; $i >= 0; $i-- )
 		{
-			$this->overWrite("Sleeping for ".$i." seconds");
+			$this->overWrite($this->c->headerOver("Sleeping for ".$i." seconds."));
 			usleep(1000000);
 		}
 		echo "\n";

@@ -105,7 +105,7 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
-#	sleep $NZEDB_SLEEP_TIME
+#	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/showsleep.php $NZEDB_SLEEP_TIME
 	date2=`date +%s`
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."
