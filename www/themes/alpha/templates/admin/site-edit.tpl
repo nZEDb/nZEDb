@@ -732,14 +732,6 @@
 </tr>
 
 <tr>
-	<td style="width:180px;"><label for="replacenzbs">Replace Duplicate NZBs:</label></td>
-	<td>
-		{html_radios id="replacenzbs" name='replacenzbs' values=$yesno_ids output=$yesno_names selected=$fsite->replacenzbs separator='<br />'}
-		<div class="hint">NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.</div>
-	</td>
-</tr>
-
-<tr>
 	<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
 	<td>
 		{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}
@@ -894,6 +886,14 @@
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
 		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
+	</td>
+</tr>
+
+<tr>
+	<td style="width:180px;"><label for="replacenzbs">Replace Duplicate NZBs:</label></td>
+	<td>
+		{html_radios id="replacenzbs" name='replacenzbs' values=$yesno_ids output=$yesno_names selected=$fsite->replacenzbs separator='<br />'}
+		<div class="hint">NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work)</div>
 	</td>
 </tr>
 

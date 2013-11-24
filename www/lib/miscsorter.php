@@ -28,8 +28,8 @@ class MiscSorter
 		$this->nc = new nameCleaning();
 
 
-		//$res = $this->db->query("SET NAMES 'utf8'");
-		//$res = $this->db->query("SET CHARACTER SET 'utf8'");
+		//$res = $this->db->queryExec("SET NAMES 'utf8'");
+		//$res = $this->db->queryExec("SET CHARACTER SET 'utf8'");
 
 		mb_internal_encoding("UTF-8");
 		mb_regex_encoding("UTF-8");
@@ -227,7 +227,7 @@ class MiscSorter
 		$this->doecho($query);
 		if (!$debug)
 		{
-			if ($this->db->query($query) !== false)
+			if ($this->db->queryExec($query) !== false)
 				return true;
 		}
 		else
@@ -310,7 +310,7 @@ class MiscSorter
 		$name = $this->nc->fixerCleaner($name);
 		foreach ($qual as $key=>$quality)
 		{
-			if (preg_match("/$quality/i", $name))
+			if (@preg_match("/$quality/i", $name))
 			{
 				unset($qual[$key]);
 			}

@@ -54,6 +54,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
 	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
+	#run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):

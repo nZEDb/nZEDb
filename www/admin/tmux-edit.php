@@ -29,9 +29,8 @@ switch($action)
 		break;
 }
 
+$page->smarty->assign('yesno_ids', array(1, 0));
 $page->smarty->assign('yesno_names', array('yes', 'no'));
-$page->smarty->assign('truefalse_ids', array(1, 0));
-$page->smarty->assign('truefalse_names', array('TRUE', 'FALSE'));
 
 $page->smarty->assign('backfill_ids', array(0,4,2,1));
 $page->smarty->assign('backfill_names', array('Disabled', 'Safe', 'All', 'Interval'));
