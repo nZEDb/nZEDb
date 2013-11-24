@@ -11,9 +11,7 @@ if (!isset($argv[1]) || ($argv[1] != "site" && $argv[1] != "tmux")) {
 }
 
 if (!command_exist('pastebinit')) {
-	if (!nZEDb_DEBUG) {
-		exit($c->error("This script requires pastebinit, but it's not installed. Aborting.\n"));
-	}
+	exit($c->error("This script requires pastebinit, but it's not installed. Aborting.\n"));
 }
 
 switch (strtolower($argv[1]))
@@ -28,17 +26,27 @@ switch (strtolower($argv[1]))
 		$sql = '';
 }
 
-if ($sql != '')
-{
+if ($sql != '') {
+	$output = '';
+	$style = isset($argv[2]) ? strtolower($argv[2]) : '';
+	switch ($style)
+	{
+		case 'html':
+			$mask = "\t\t<tr><td>%s</td><td>%s</td></tr>\n";
+			$output = "<table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Setting</th>\n\t\t\t<th>Value</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n";
+			break;
+		case 'csv':
+			$mask = "'%s','%s'\n";
+			break;
+		default:
+		case 'tabbed':
+		case 'tabulated':
+			$mask = "%-30s... %-125s\n";
+	}
+
 	$db = new DB();
-	$mask = "\t\t<td>%s</td>\n\t\t<td>%s</td>\n";
 	$res = $db->queryDirect($sql);
 	@unlink("xdfrexgvtedvgb.uhdntef");
-
-	$html = "<table>\n\t<thead>\n\t<tr>\n\t\t\t<th>Setting</th>\n\t\t\t<th>Value</th>\n\t\t</tr>\n	</thead>\n\t<tbody>\n";
-	if (nZEDb_DEBUG) {
-		echo $html;
-	}
 
 	foreach ($res as $setting)
 	{
@@ -46,19 +54,17 @@ if ($sql != '')
 		if (nZEDb_DEBUG) {
 			echo $line;
 		}
-		$html .= $line;
-	}
-	$line .= "\t</tbody>\n</table>\n";
-	if (nZEDb_DEBUG) {
-		echo $line;
-	}
-	$html .= $line;
-
-	if (!nZEDb_DEBUG) {
-		file_put_contents("xdfrexgvtedvgb.uhdntef", $html, FILE_APPEND);
+		$output .= $line;
 	}
 
-	if (file_exists("xdfrexgvtedvgb.uhdntef") && !nZEDb_DEBUG) {
+	if ($style == 'html') {
+		$line .= "\t</tbody>\n</table>\n";
+		$output .= $line;
+	}
+
+	file_put_contents("xdfrexgvtedvgb.uhdntef", $output, FILE_APPEND);
+
+	if (file_exists("xdfrexgvtedvgb.uhdntef")) {
 		passthru("pastebinit xdfrexgvtedvgb.uhdntef");
 	}
 	@unlink("xdfrexgvtedvgb.uhdntef");
