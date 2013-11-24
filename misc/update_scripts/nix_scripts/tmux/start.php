@@ -209,6 +209,8 @@ function window_colors($tmux_session)
 function window_stripped_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
+	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;fixReleaseNames\033\"'");
+	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
 function window_post($tmux_session)
