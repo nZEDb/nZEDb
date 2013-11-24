@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4399";
+$version="0.3r4406";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -1296,6 +1296,46 @@ while($i > 0)
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 
+			//fix names
+			if ($fix_names == 1)
+			{
+				$log = writelog($panes1[2]);
+				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py filename $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+			}
+			else
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Fix Release Names\"'");
+			}
+
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)))
+			{
+				//run postprocess_releases amazon
+				$log = writelog($panes1[1]);
+				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
+			}
+			else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0))
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
+			}
+			else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0))
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console to process\"'");
+			}
+			else
+			{
+				$color = get_color($colors_start, $colors_end, $colors_exc);
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Postprocess Amazon\"'");
+			}
+
 			//run user_threaded.sh
 			$log = writelog($panes0[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
@@ -1434,6 +1474,11 @@ while($i > 0)
 		{
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
+		}
+		for ($g=0; $g<=1; $g++)
+		{
+			$color = get_color($colors_start, $colors_end, $colors_exc);
+			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
 		}
 	}
 

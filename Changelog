@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-11-24 -> jonnyboy -> added 2 pp panes to complete seq, amazon so can run 24/7 and fixreleasenames.py (all options) so this does not slow down the loop, at least until bitwise is done
 2013-11-23 -> jonnyboy -> added file to export user settings using pastebinit
                           added option to log 'yEnc' dropped headers, more regexes, added not that using GrabNZBs and replacing nzbs is not necessary, may remove in the future
                           moved misc sorter into fixreleasenames_threaded.py, not sure if it works, changed fixreleasenames_threaded.py to only process misc cat(7010) and relnamestatus (0, 1)
