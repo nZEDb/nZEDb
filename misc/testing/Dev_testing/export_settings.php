@@ -42,7 +42,7 @@ if ($sql != '')
 
 	foreach ($res as $setting)
 	{
-		$line .= sprintf($mask, $setting['setting'], $setting['value']);
+		$line = sprintf($mask, $setting['setting'], $setting['value']);
 		if (nZEDb_DEBUG) {
 			echo $line;
 		}
