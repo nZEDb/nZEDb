@@ -70,7 +70,12 @@ if ($sql != '') {
 	@unlink("xdfrexgvtedvgb.uhdntef");
 }
 
-function command_exist($cmd) {
+function command_exist($cmd)
+{
+	if (strtolower(PHP_OS) == 'windows') {
+		echo "This script currently does not work on Windows ;-(";
+		return false;
+	}
 	$returnVal = exec("which $cmd 2>/dev/null");
 	return (empty($returnVal) ? false : true);
 }
