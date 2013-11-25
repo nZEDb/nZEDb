@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4406";
+$version="0.3r4407";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -103,7 +103,7 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 $proc_work = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND relnamestatus != 0) AS audio,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND (bitwise & 1) = 1) AS audio,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
@@ -118,7 +118,7 @@ $proc_work2 = "SELECT
 	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND relnamestatus IN (0, 1, 20, 21, 22) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,
+	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND ((bitwise & 4) = 0 AND (bitwise & 128) = 0) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1) AS requestid_matched,
 	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid IS NOT NULL) AS predb_matched,
 	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
@@ -319,7 +319,7 @@ $collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
 $grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
 $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
-$show_query = 0;
+$show_query = $run_releases = 0;
 
 $last_history = "";
 
@@ -857,10 +857,13 @@ while($i > 0)
 
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
-	if ($releases_run == 1 && $tablepergroup == 0)
-		$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
-	else if ($releases_run != 0 && $tablepergroup == 1)
-		$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
+	if ($releases_run == 1)
+	{
+		if ($tablepergroup == 0)
+			$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
+		else
+			$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
+	}
 
 	if ($post_non == 2)
 		$clean = ' clean ';
@@ -1294,23 +1297,6 @@ while($i > 0)
 			{
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
-			}
-
-			//fix names
-			if ($fix_names == 1)
-			{
-				$log = writelog($panes1[2]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py filename $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Fix Release Names\"'");
 			}
 
 			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)))

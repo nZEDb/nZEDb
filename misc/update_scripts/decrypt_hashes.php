@@ -50,7 +50,7 @@ function preName($argv)
 				if ($pre !== false)
 				{
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
-					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
+					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, bitwise = ((bitwise & ~36)|36), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
 					$result->execute();
 					if (count($result) > 0)
 					{

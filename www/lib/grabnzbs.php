@@ -102,7 +102,7 @@ class Import
 		$nzbpath = $this->site->nzbpath;
 		$version = $this->site->version;
 		
-		$groups = $this->db->query('SELECT id, name FROM groups');
+		$groups = $this->db->queryDirect('SELECT id, name FROM groups');
 		foreach ($groups as $group)
 			$siteGroups[$group['name']] = $group['id'];
 
@@ -174,9 +174,7 @@ class Import
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
 			if (!$importfailed)
 			{
-				$usename = $this->db->escapeString($name);
-				$res = $this->db->prepare(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($realgroupid), $this->db->escapeString($totalsize)));
-				$res->execute();
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND groupid = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($realgroupid), $this->db->escapeString($totalsize)));
 				if ($this->replacenzbs == 1)
 				{
 					$releases = new Releases();
@@ -211,13 +209,13 @@ class Import
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				
+
 				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true)
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 1, (bitwise & ~5)|5)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 				else
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, 7010, -1, 1, 6)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 1, (bitwise & ~1)|1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $totalsize, ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 
 				// Set table names
 				if ($this->tablepergroup == 1)
@@ -241,8 +239,8 @@ class Import
 						$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
 					elseif ($this->db->dbSystem() == 'pgsql')
 					{
-						$idr = $this->db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
-						if (count($idr) > 0)
+						$idr = $this->db->queryDirect(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
+						if ($idr->rowCount() > 0)
 						{
 							foreach ($idr as $id)
 							{
@@ -272,8 +270,8 @@ class Import
 								$this->db->queryExec(sprintf('DELETE '.$group['cname'].', '.$group['bname'].', '.$group['pname'].' FROM '.$group['cname'].' LEFT JOIN '.$group['bname'].' ON '.$group['cname'].'.id = '.$group['bname'].'.collectionid LEFT JOIN '.$group['pname'].' ON '.$group['bname'].'.id = '.$group['pname'].'.binaryid WHERE '.$group['cname'].'.collectionhash = %s', $this->db->escapeString($hash)));
 							elseif ($this->db->dbSystem() == 'pgsql')
 							{
-								$idr = $this->db->query(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
-								if (count($idr) > 0)
+								$idr = $this->db->queryDirect(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $this->db->escapeString($hash)));
+								if ($idr->rowCount() > 0)
 								{
 									foreach ($idr as $id)
 									{

@@ -428,7 +428,7 @@ class Music
 		$threads--;
 		$ret = 0;
 		$db = $this->db;
-		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND relnamestatus != 0 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->musicqty, floor(max(0, $this->musicqty * $threads * 1.5))));
+		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND nzbstatus = 1 AND (bitwise & 1) = 1 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->musicqty, floor(max(0, $this->musicqty * $threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
