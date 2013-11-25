@@ -6,6 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
+exec("tmux kill-session -t NNTPProxy");
 passthru("clear");
 
 $db = new DB();
@@ -164,7 +165,6 @@ function start_apps($tmux_session)
 
 function window_proxy($tmux_session, $window)
 {
-	exec("tmux kill-session -t NNTPProxy");
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;
