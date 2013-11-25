@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4407";
+$version="0.3r4412";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -857,7 +857,7 @@ while($i > 0)
 
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
-	if ($releases_run == 1)
+	if ($releases_run != 0)
 	{
 		if ($tablepergroup == 0)
 			$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";

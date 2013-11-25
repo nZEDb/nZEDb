@@ -231,13 +231,14 @@ class Namefixer
 
 				$this->fixed ++;
 
+				$checkedname = explode("\\", $newname);
+				$newname = $checkedname[0];
 				if ($this->echooutput === true)
 				{
 					$groups = new Groups();
 					$groupname = $groups->getByNameByID($release["groupid"]);
 					$oldcatname = $category->getNameByID($release["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
-
 
 					if ($type === "PAR2, ")
 						echo $n;
@@ -258,16 +259,16 @@ class Namefixer
 					if ($namestatus == 1)
 					{
 						if ($type == "NFO, ")
-							$status = 64;
+							$status = 69;
 						else if ($type == "PAR2, ")
-							$status = 32;
+							$status = 37;
 						else if ($type == "Filenames, ")
-							$status = 128;
+							$status = 133;
 						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~4)|4), bitwise = ((bitwise & ~%d)|%d), categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $status, $determinedcat, $release["releaseid"]));
 					}
 					else
 					{
-						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
