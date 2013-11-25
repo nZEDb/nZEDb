@@ -54,8 +54,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
 	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND ((bitwise & 4) = 0 OR categoryid = 7010) AND (bitwise & 16) = 0 ORDER BY postdate DESC LIMIT %s"
-	#cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	cur.execute(run, 50)
+	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	run = "SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 128) = 0) ORDER BY postdate DESC  LIMIT %s"
