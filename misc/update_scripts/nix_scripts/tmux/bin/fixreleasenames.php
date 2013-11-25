@@ -105,9 +105,8 @@ else if (isset($argv[1]))
 		$sorter = new MiscSorter(true);
 		$relID = $pieces[1];
 		$res = $sorter->nfosorter(null, $relID, $nntp);
-		// no return is given on failure, so set all to have checked
-		$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~16)|16) WHERE id = %d', $relID));
-		echo '.';
+		if ($res === false)
+			echo '.';
 		if ($site->nntpproxy != "1")
 			$nntp->doQuit();
 	}
