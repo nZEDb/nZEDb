@@ -824,6 +824,7 @@ class MiscSorter
 						if ($ret = $this->matchnfo($case, $nfo, $row))
 							return $ret;
 						$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~16)|16) WHERE id = %d', $res[0]['id']));
+						return false;
 					}
 				}
 			}
