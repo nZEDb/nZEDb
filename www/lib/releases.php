@@ -951,7 +951,7 @@ class Releases
 	public function resetCategorize($where='')
 	{
 		$db = $this->db;
-		$db->queryExec('UPDATE releases SET categoryid = 7010, relnamestatus = 0 '.$where);
+		$db->queryExec('UPDATE releases SET categoryid = 7010, bitwise = ((bitwise & ~1)|0) '.$where);
 	}
 
 	// Categorizes releases.
@@ -969,7 +969,7 @@ class Releases
 			foreach ($resrel as $rowrel)
 			{
 				$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
-				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d', $catId, $rowrel['id']));
+				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d, bitwise = ((bitwise & ~1)|1) WHERE id = %d', $catId, $rowrel['id']));
 				$relcount ++;
 				if ($this->echooutput)
 					$this->consoleTools->overWrite('Categorizing:'.$this->consoleTools->percentString($relcount,$total));
@@ -1295,12 +1295,12 @@ class Releases
 					$propername = $cleanerName['properlynamed'];
 				}
 				$relguid = sha1(uniqid('',true).mt_rand());
-				
+
 				$category = $categorize->determineCategory($cleanName, $rowcol['gname']);
 				if ($propername != false)
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, 6)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, (bitwise & ~5)|5)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 				else
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, (bitwise & ~1)|1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 
 				if (isset($relid) && $relid)
 				{
@@ -1540,9 +1540,9 @@ class Releases
 				echo $this->c->header("\nStage 5b -> Request ID lookup.");
 
 			// Look for records that potentially have requestID titles.
-			$resrel = $db->query("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(bitwise & 4) = 0 AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
 
-			if (count($resrel) > 0)
+			if ($resrel->rowCount() > 0)
 			{
 				echo $n;
 				$bFound = false;
@@ -1576,7 +1576,7 @@ class Releases
 					{
 						$groupname = $this->groups->getByNameByID($rowrel['groupname']);
 						$determinedcat = $category->determineCategory($newTitle, $groupname);
-						$run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
+						$run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, bitwise = ((bitwise & ~132)|132), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
 						$run->execute();
 						$newcatname = $category->getNameByID($determinedcat);
 						if ($this->echooutput)
@@ -1605,7 +1605,7 @@ class Releases
 	public function processReleasesStage6($categorize, $postproc, $groupID, $echooutput=false, $nntp)
 	{
 		$db = $this->db;
-		$where = (!empty($groupID)) ? 'WHERE relnamestatus = 0 AND groupid = '.$groupID : 'WHERE relnamestatus = 0';
+		$where = (!empty($groupID)) ? 'WHERE (bitwise & 1) = 0 AND groupid = '.$groupID : 'WHERE (bitwise & 1) = 0';
 
 		// Categorize releases.
 		if ($this->echooutput)

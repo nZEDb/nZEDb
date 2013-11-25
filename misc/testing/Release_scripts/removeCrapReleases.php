@@ -85,7 +85,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '^[a-zA-Z0-9]{15,}$'";
 
-		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND (bitwise & 1) = 1 AND rarinnerfilecount = 0".$and);
 		$sql->execute();
 		$delcount = deleteReleases($sql, 'Gibberish');
 		return $delcount;
@@ -100,7 +100,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '[a-zA-Z0-9]{25,}'";
 
-		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND (bitwise & 1) = 1  AND rarinnerfilecount = 0".$and);
 		$sql->execute();
 		$delcount = deleteReleases($sql, 'Hashed');
 		return $delcount;
@@ -115,7 +115,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		else
 			$regex = "searchname ~ '^[a-zA-Z0-9]{0,5}$'";
 
-		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND relnamestatus > 1 AND rarinnerfilecount = 0".$and);
+		$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE {$regex} AND nfostatus = 0 AND (bitwise & 1) = 1 AND rarinnerfilecount = 0".$and);
 		$sql->execute();
 		$delcount = deleteReleases($sql, 'Short');
 		return $delcount;

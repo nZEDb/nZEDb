@@ -56,7 +56,7 @@ class nameCleaning
 	*	@return
 	*	- (array)	'hash'		string	Unique parts of the $subject string.
 	*				'subject'	string	Nice looking part of the $subject string.
-	*				'rstatus'	int		relnamestatus
+	*				'rstatus'	int		bitwise
 	*				'cat'		int		category ID
 	*/
 

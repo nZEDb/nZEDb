@@ -49,7 +49,7 @@ function writelog($pane)
 if ($hashcheck != 1)
 	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
 
-if ($patch < 149)
+if ($patch < 150)
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
 
 passthru("clear");
@@ -209,8 +209,7 @@ function window_colors($tmux_session)
 function window_stripped_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
-	exec("tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;fixReleaseNames\033\"'");
-	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
+	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
 function window_post($tmux_session)

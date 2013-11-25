@@ -40,9 +40,9 @@ function preName($argv)
 	resetSearchnames();
 	echo "Getting work\n";
 	if (!isset($argv[2]))
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1".$what);
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ((bitwise & 4) = 0 or categoryid between 7000 and 7999) and nzbstatus = 1".$what);
 	elseif (isset($argv[2]) && is_numeric($argv[2]))
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ( relnamestatus in (0, 1, 20, 21, 22) or categoryid between 7000 and 7999) and nzbstatus = 1".$what.$where);
+		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ((bitwise & 4) = 0 or categoryid between 7000 and 7999) and nzbstatus = 1".$what.$where);
 	elseif (isset($argv[1]) && $argv[1]=="full" && isset($argv[2]) && $argv[2] == "all")
 		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1".$where);
 
@@ -59,8 +59,7 @@ function preName($argv)
 				if ( $cleanerName != $row['name'] && $cleanerName != '' )
 				{
 					$determinedcat = $category->determineCategory($cleanerName, $row["groupid"]);
-					$run = $db->prepare(sprintf("UPDATE releases set relnamestatus = 16, searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
-					$run->execute();
+					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
 					$groupname = $groups->getByNameByID($row["groupid"]);
 					$oldcatname = $category->getNameByID($row["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
@@ -78,7 +77,7 @@ function preName($argv)
 				//echo $row['name']."\n";
 
 			if ( $cleanerName == $row['name'])
-				$db->queryExec(sprintf("UPDATE releases set relnamestatus = 16 where id = %d", $db->escapeString($row['id'])));
+				$db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5) where id = %d", $db->escapeString($row['id'])));
 			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
 		}
 	}
@@ -134,10 +133,10 @@ function categorizeRelease($type, $where="", $echooutput=false)
 		foreach ($resrel as $rowrel)
 		{
 			$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
-			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
+			$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount ++;
 			if ($echooutput)
-				$consoletools->overWrite("Categorizing:".$consoletools->percentString($relcount,$total));
+				$consoletools->overWrite("Categorizing: ".$consoletools->percentString($relcount,$total));
 		}
 	}
 	if ($echooutput !== false && $relcount > 0)
@@ -168,7 +167,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 			$determinedcat = $category->determineCategory($cleanName, $groupid);
 			if (!empty($cleanName) && $cleanName != $subject && $propername != false)
 			{
-				$db->queryExec(sprintf("UPDATE releases SET relnamestatus = 6, searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
+				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
 				return;
 			}
 		}

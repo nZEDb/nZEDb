@@ -49,27 +49,27 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 64) = 0) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
-	#run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
+	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND ((bitwise & 4) = 0 OR categoryid = 7010) AND (bitwise & 16) = 0 ORDER BY postdate DESC LIMIT %s"
+	#cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
+	cur.execute(run, 50)
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1)) ORDER BY postdate DESC  LIMIT %s"
+	run = "SELECT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 128) = 0) ORDER BY postdate DESC  LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') AND (bitwise & 4) = 0 ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus IN (0, 1)) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 32) = 0) ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
@@ -109,7 +109,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	if sys.argv[1] == 'md5' or sys.argv[1] == 'par2':
+	if sys.argv[1] == 'md5':
 		print("We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1))
 	else:
 		print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
@@ -130,23 +130,18 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 	elif sys.argv[1] == "miscsorter":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("miscsorter", release[0]))
 
 	my_queue.join()

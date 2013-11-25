@@ -199,8 +199,9 @@ class PostProcess
 			$t = 'UNIX_TIMESTAMP(postdate)';
 		else
 			$t = 'extract(epoch FROM postdate)';
-		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, relnamestatus, searchname, '.$t.' as postdate, id as releaseid  FROM releases WHERE id = '.$relID);
-		if (!in_array($quer['relnamestatus'], array(0, 1, 6, 20, 21)) || $quer['relnamestatus'] === 7 || $quer['categoryid'] != Category::CAT_MISC)
+
+		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, '.$t.' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = '.$relID);
+		if ($quer['categoryid'] != Category::CAT_MISC)
 			return false;
 
 		$groups = new Groups();
@@ -241,8 +242,8 @@ class PostProcess
 				}
 				$quer['textstring'] = $file['name'];
 				$namefixer->checkName($quer, 1, 'PAR2, ', 1);
-				$stat = $db->queryOneRow('SELECT relnamestatus AS a FROM releases WHERE id = '.$relID);
-				if ($stat['a'] === 7)
+				$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
+				if ($stat['id'] === $relID)
 				{
 					$foundname = true;
 					break;
@@ -449,13 +450,13 @@ class PostProcess
 
 				// turn on output buffering
 				ob_start();
-				
+
 				// uncompress the nzb
 				@readgzfile($nzbpath);
-				
+
 				// read the nzb into memory
 				$nzbfile = ob_get_contents();
-				
+
 				// Clean (erase) the output buffer and turn off output buffering
 				ob_end_clean();
 
@@ -1437,7 +1438,7 @@ class PostProcess
 			return $retval;
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, relnamestatus, groupid FROM releases WHERE id = %d', $releaseID));
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 AND id = %d', $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $rquer['id']))
 			return $retval;
 
@@ -1466,17 +1467,15 @@ class PostProcess
 											$newname = $track['Performer'].' - '.$track['Album'].' ('.$Year[0].') '.$ext;
 										else
 											$newname = $track['Performer'].' - '.$track['Album'].' '.$ext;
-										if ($rquer['relnamestatus'] != '3')
-										{
-											$category = new Category();
-											if ($ext == 'MP3')
-												$newcat = Category::CAT_MUSIC_MP3;
-											else if ($ext == 'FLAC')
-												$newcat = Category::CAT_MUSIC_LOSSLESS;
-											else
-												$newcat = $category->determineCategory($newname, $rquer['groupid']);
-											$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
-										}
+										$category = new Category();
+										if ($ext == 'MP3')
+											$newcat = Category::CAT_MUSIC_MP3;
+										else if ($ext == 'FLAC')
+											$newcat = Category::CAT_MUSIC_LOSSLESS;
+										else
+											$newcat = $category->determineCategory($newname, $rquer['groupid']);
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID,$xmlarray);
 										$retval = true;

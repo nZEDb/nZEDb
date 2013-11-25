@@ -75,12 +75,13 @@ Class NZBcontents
 				{
 					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
 					{
-						$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
+						$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
+		$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
 		return false;
 	}
 

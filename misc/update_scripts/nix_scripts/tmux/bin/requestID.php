@@ -44,7 +44,7 @@ if ($bFound === true)
 {
 	$groupname = $groups->getByNameByID($pieces[2]);
 	$determinedcat = $category->determineCategory($newTitle, $groupname);
-	$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, relnamestatus = 12, searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
+	$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
 	$run->execute();
 	$newcatname = $category->getNameByID($determinedcat);
 	echo $c->primary($n.$n.'New name:  '.$newTitle.$n.
