@@ -56,6 +56,26 @@ function preName($argv)
 			$groupname = $groups->getByNameByID($row["groupid"]);
 			if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname)))
 			{
+                if ($groupname === 'alt.binaries.e-book' || $groupname === 'alt.binaries.e-book.flood')
+                {
+                    if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanerName, $match))
+                    {
+                        $rf = new ReleaseFiles();
+                        $files = $rf->get($row['id']);
+                        if (count($files) == 1)
+                        {
+                            foreach ($files as $f)
+                            {
+                                if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi)/', $f["name"], $match))
+                                {
+                                    $oldName = $cleanerName;
+                                    $cleanerName = $match['title'];
+                                    echo "renamed book from ".$oldName." to ".$cleanerName."\n";
+                                }
+                            }
+                        }
+                    }
+                }
 				if ( $cleanerName != $row['name'] && $cleanerName != '' )
 				{
 					$determinedcat = $category->determineCategory($cleanerName, $row["groupid"]);
