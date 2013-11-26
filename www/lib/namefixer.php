@@ -188,11 +188,6 @@ class Namefixer
 			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
 			{
-<<<<<<< HEAD
-				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $nntp)) !== false)
-				{
-					echo ".";
-=======
 				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $nntp)) === true)
 >>>>>>> 06d26d3c21da1bfca5f791703cd07640009f1cd3
 					$this->fixed++;
