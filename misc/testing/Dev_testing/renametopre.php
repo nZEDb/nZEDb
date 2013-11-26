@@ -6,6 +6,7 @@ require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'releasefiles.php';
 
 
 /*
