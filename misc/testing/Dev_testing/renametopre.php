@@ -6,6 +6,7 @@ require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'releasefiles.php';
 
 
 /*
@@ -56,10 +57,37 @@ function preName($argv)
 			$groupname = $groups->getByNameByID($row["groupid"]);
 			if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname)))
 			{
+                $cleanedBook = false;
+                if ($groupname === 'alt.binaries.e-book' || $groupname === 'alt.binaries.e-book.flood')
+                {
+                    if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanerName, $match))
+                    {
+                        $rf = new ReleaseFiles();
+                        $files = $rf->get($row['id']);
+                        if (count($files) == 1)
+                        {
+                            foreach ($files as $f)
+                            {
+                                if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi)/', $f["name"], $match))
+                                {
+                                    $cleanedBook = true;
+                                    $cleanerName = $match['title'];
+                                }
+                            }
+                        }
+                    }
+                }
 				if ( $cleanerName != $row['name'] && $cleanerName != '' )
 				{
 					$determinedcat = $category->determineCategory($cleanerName, $row["groupid"]);
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
+                    if ($cleanedBook) // reset bookinfoid so it gets re-processed
+                    {
+                        $run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s, bookinfoid = NULL where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
+                    }
+                    else
+                    {
+                        $run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
+                    }
 					$groupname = $groups->getByNameByID($row["groupid"]);
 					$oldcatname = $category->getNameByID($row["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
