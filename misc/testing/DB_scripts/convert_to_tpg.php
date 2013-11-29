@@ -4,6 +4,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'site.php';
 
 
 /*This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
@@ -18,6 +19,9 @@ $db = new DB();
 $c = new ColorCLI();
 $groups = new Groups();
 $consoletools = new ConsoleTools();
+$s = new Sites();
+$site = $s->get();
+$DoPartRepair = ($site->partrepair == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true')
     exit($c->error("Mandatory argument missing\n\nThis script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\nPlease STOP all update scripts before running this script.\n\nUse the following options to run:\nphp convert_to_tpg.php true               Convert c/b/p to tpg leaving current collections/binaries/parts tables in-tact.\nphp convert_to_tgp.php true delete        Convert c/b/p to tpg and TRUNCATE current collections/binaries/parts tables."));
@@ -43,7 +47,7 @@ foreach ($actgroups as $group)
 $endtime = time();
 echo "\nTable creation took ".$consoletools->convertTime($endtime - $starttime).".\n";
 $starttime = time();
-echo "\nNew tables created, moving data from old tables to new tables.\nThis will take awhile....\n";
+echo "\nNew tables created, moving data from old tables to new tables.\nThis will take awhile....\n\n";
 while ($cdone < $clen['total'])
 {
     // Only load 1000 collections per loop to not overload memory.
@@ -116,6 +120,38 @@ while ($cdone < $clen['total'])
     $cdone = $cdone + 1000;
 }
 
+if ($DoPartRepair === true)
+{
+    foreach ($actgroups as $group)
+    {
+        $pcount = 1;
+        $pdone = 0;
+        $sql = sprintf('SELECT COUNT(*) AS total FROM partrepair where groupid = %d;', $group['id']);
+        $plen = $db->queryOneRow($sql);
+        while ($pdone < $plen['total'])
+        {
+            // Only load 10000 partrepair records per loop to not overload memory.
+            $partrepairs = $db->queryAssoc(sprintf('select * from partrepair where groupid = %d limit %d, 10000;', $group['id'], $pdone));
+            foreach ($partrepairs as $partrepair)
+            {
+                $partrepair['numberid'] = $db->escapeString($partrepair['numberid']);
+                $partrepair['groupid'] = $db->escapeString($partrepair['groupid']);
+                $partrepair['attempts'] = $db->escapeString($partrepair['attempts']);
+                if($debug)
+                {
+                    echo "\n\nPart Repair insert:\n";
+                    print_r($partrepair);
+                    echo sprintf("\nINSERT INTO %d_partrepair (numberid, groupid, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts'] );
+                }
+                $db->queryExec(sprintf('INSERT INTO %d_partrepair (numberid, groupid, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts']));
+                $consoletools->overWrite('Part Repairs Completed for '.$group['name'].':'.$consoletools->percentString($pcount, $plen['total']));
+                $pcount++;
+            }
+            $pdone = $pdone + 10000;
+        }
+    }
+}
+
 $endtime =  time();
 echo "\nTable population took ".$consoletools->convertTimer($endtime - $starttime).".\n";
 
@@ -126,6 +162,7 @@ if (isset($argv[2]) &&  $argv[2] == 'delete')
     $db->queryDirect('TRUNCATE TABLE collections;');
     $db->queryDirect('TRUNCATE TABLE binaries;');
     $db->queryDirect('TRUNCATE TABLE parts');
+    $db->queryDirect('TRUNCATE TABLE partrepair');
     echo "Complete.\n";
 }
 // Update TPG setting in site-edit.

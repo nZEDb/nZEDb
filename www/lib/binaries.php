@@ -640,7 +640,17 @@ class Binaries
 
 		// Get all parts in partrepair table.
 		$db = $this->db;
-		$missingParts = $db->query(sprintf('SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
+
+        if ($this->tablepergroup == 1)
+        {
+            $group['prname'] = $groupArr['id'].'_partrepair';
+        }
+        else
+        {
+            $group['prname'] = 'partrepair';
+        }
+
+		$missingParts = $db->query(sprintf('SELECT * FROM '.$group['prname'].' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0)
@@ -684,7 +694,7 @@ class Binaries
 			}
 
 			// Calculate parts repaired
-			$sql = sprintf('SELECT COUNT(id) AS num FROM partrepair WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+			$sql = sprintf('SELECT COUNT(id) AS num FROM '.$group['prname'].' WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
 			$result = $db->queryOneRow($sql);
 			if (isset($result['num']))
 				$partsRepaired = (sizeof($missingParts)) - $result['num'];
@@ -692,7 +702,7 @@ class Binaries
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[sizeof($missingParts)-1]['id']))
 			{
-				$sql = sprintf('UPDATE partrepair SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+				$sql = sprintf('UPDATE '.$group['prname'].' SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
 				$result = $db->queryExec($sql);
 				if ($result)
 					$partsFailed = $result->rowCount();
@@ -701,13 +711,26 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$db->queryExec(sprintf('DELETE FROM partrepair WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
+		$db->queryExec(sprintf('DELETE FROM '.$group['prname'].' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
 	}
 
 	private function addMissingParts($numbers, $groupID)
 	{
 		$db = $this->db;
-		$insertStr = 'INSERT INTO partrepair (numberid, groupid) VALUES ';
+
+        // Check that tables exist, create if they do not
+        if ($this->tablepergroup == 1)
+        {
+            if ($db->newtables($groupID) === false)
+                exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+            $group['prname'] = $groupID.'_partrepair';
+        }
+        else
+        {
+            $group['prname'] = 'partrepair';
+        }
+
+		$insertStr = 'INSERT INTO '.$group['prname'].' (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 
@@ -728,7 +751,15 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		$db = $this->db;
-		$sql = 'DELETE FROM partrepair WHERE numberid in (';
+        if ($this->tablepergroup == 1)
+        {
+            $group['prname'] = $groupID.'_partrepair';
+        }
+        else
+        {
+            $group['prname'] = 'partrepair';
+        }
+		$sql = 'DELETE FROM '.$group['prname'].' WHERE numberid in (';
 		foreach($numbers as $number)
 			$sql .= sprintf('%d, ', $number);
 		$sql = substr($sql, 0, -2);

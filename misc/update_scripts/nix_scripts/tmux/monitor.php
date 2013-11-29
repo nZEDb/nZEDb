@@ -436,7 +436,7 @@ while($i > 0)
 		{
 			$sql = 'SHOW TABLE STATUS';
 			$tables = $db->query($sql);
-			$collections_table = $binaries_table = $parts_table = 0;
+			$collections_table = $binaries_table = $parts_table = $partrepair_table = 0;
 			$age = TIME();
 			if (count($tables) > 0)
 			{
@@ -462,6 +462,12 @@ while($i > 0)
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
+                    else if (preg_match('/\d+_partrepair/',$tbl))
+                    {
+                        $run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
+                        if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+                            $partrepair_table += $run[0]['count'];
+                    }
 				}
 				$oldestcollection = $age;
 				$tpg_count_time = (TIME() - $time07);
@@ -521,9 +527,9 @@ while($i > 0)
 		if ($proc_work_result3[0]['binaries_table'] != NULL) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
 		if ($split_result[0]['parts_table'] != NULL) { $parts_table = $split_result[0]['parts_table']; }
 		if ($proc_work_result2[0]['collections_table'] != NULL) { $collections_table = $proc_work_result2[0]['collections_table']; }
+        if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	}
 
-	if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	if ($split_result[0]['predb'] != NULL) { $predb = $split_result[0]['predb']; }
 
 	if ($proc_work_result3[0]['predb_matched'] != NULL) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
