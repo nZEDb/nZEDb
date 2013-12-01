@@ -175,7 +175,7 @@ class nameCleaning
 			case 'alt.binaries.sounds.audiobooks.repost':
 				return $this->sounds_audiobooks();
 			case 'alt.binaries.sounds.mp3.audiobooks':
-				return $this->sounds_audiobooks();			
+				return $this->sounds_audiobooks();
 			case 'alt.binaries.teevee':
 				return $this->teevee();
 			case 'alt.binaries.town':
@@ -1183,7 +1183,7 @@ class nameCleaning
 	public function sounds_audiobooks()
 	{
 		// currently these are teh same as mp3, but in the future these should be modified to be unique to audiobooks
-		
+
 		//(dream-of-usenet.info) - [04/15] - "Enya-And_Winter_Came...-2008.part2.rar" yEnc
 		if (preg_match('/^\(dream-of-usenet\.info\) - \[\d+(\/\d+\] - ".+?)'.$this->e1, $this->subject, $match))
 			return $match[1];
@@ -1199,7 +1199,7 @@ class nameCleaning
 		else
 		  return $this->generic();
 	}
-	
+
 	// a.b.sounds.mp3
 	public function sounds_mp3()
 	{

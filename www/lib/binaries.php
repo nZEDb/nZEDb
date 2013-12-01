@@ -645,14 +645,14 @@ class Binaries
 		// Get all parts in partrepair table.
 		$db = $this->db;
 
-        if ($this->tablepergroup == 1)
-        {
-            $group['prname'] = $groupArr['id'].'_partrepair';
-        }
-        else
-        {
-            $group['prname'] = 'partrepair';
-        }
+		if ($this->tablepergroup == 1)
+		{
+			$group['prname'] = $groupArr['id'].'_partrepair';
+		}
+		else
+		{
+			$group['prname'] = 'partrepair';
+		}
 
 		$missingParts = $db->query(sprintf('SELECT * FROM '.$group['prname'].' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
@@ -722,17 +722,17 @@ class Binaries
 	{
 		$db = $this->db;
 
-        // Check that tables exist, create if they do not
-        if ($this->tablepergroup == 1)
-        {
-            if ($db->newtables($groupID) === false)
-                exit($this->c->error("There is a problem creating new parts/files tables for this group."));
-            $group['prname'] = $groupID.'_partrepair';
-        }
-        else
-        {
-            $group['prname'] = 'partrepair';
-        }
+		// Check that tables exist, create if they do not
+		if ($this->tablepergroup == 1)
+		{
+			if ($db->newtables($groupID) === false)
+				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			$group['prname'] = $groupID.'_partrepair';
+		}
+		else
+		{
+			$group['prname'] = 'partrepair';
+		}
 
 		$insertStr = 'INSERT INTO '.$group['prname'].' (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
@@ -755,14 +755,14 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		$db = $this->db;
-        if ($this->tablepergroup == 1)
-        {
-            $group['prname'] = $groupID.'_partrepair';
-        }
-        else
-        {
-            $group['prname'] = 'partrepair';
-        }
+		if ($this->tablepergroup == 1)
+		{
+			$group['prname'] = $groupID.'_partrepair';
+		}
+		else
+		{
+			$group['prname'] = 'partrepair';
+		}
 		$sql = 'DELETE FROM '.$group['prname'].' WHERE numberid in (';
 		foreach($numbers as $number)
 			$sql .= sprintf('%d, ', $number);

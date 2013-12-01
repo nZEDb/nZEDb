@@ -86,7 +86,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 	else
 		exit("You have no releases in the DB.\n");
 }
-elseif (isset($argv[1]) && $argv[1] == "reset")
+else if (isset($argv[1]) && $argv[1] == "reset")
 {
 	$db = new DB();
 	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");

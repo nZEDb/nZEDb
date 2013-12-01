@@ -1314,7 +1314,7 @@ class Releases
 					else
 						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
 				}
-				
+
 				if (isset($relid) && $relid)
 				{
 					$predb->matchPre($cleanRelName, $relid);

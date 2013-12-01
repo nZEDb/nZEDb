@@ -83,7 +83,7 @@ if ($pieces[0] != 'Stage7b')
 	if ($site->nntpproxy != "1")
 		$nntp->doQuit();
 }
-elseif ($pieces[0] == 'Stage7b')
+else if ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);

@@ -21,17 +21,17 @@ if (isset($argv[3]))
 		$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3])));
 		printf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
-    elseif ($argv[2] == "equals" && ($argv[1] == "categoryid") && is_numeric($argv[3]))
-    {
-        $relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $argv[3]));
-        printf("SELECT id, guid FROM releases WHERE categoryid = %s", $db->escapeString($argv[3]));
-    }
-	elseif ($argv[2] == "equals" && ($argv[1] == "groupname"))
+	else if ($argv[2] == "equals" && ($argv[1] == "categoryid") && is_numeric($argv[3]))
+	{
+		$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $argv[3]));
+		printf("SELECT id, guid FROM releases WHERE categoryid = %s", $db->escapeString($argv[3]));
+	}
+	else if ($argv[2] == "equals" && ($argv[1] == "groupname"))
 	{
 		$relids = $db->query(sprintf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3])));
 		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3]));
 	}
-	elseif ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
+	else if ($argv[2] == "like" && ($argv[1] == "searchname" || $argv[1] == "name" || $argv[1] == "guid" || $argv[1] == "fromname"))
 	{
 		$like = ' ILIKE';
 		if ($db->dbSystem() == 'mysql')
@@ -39,7 +39,7 @@ if (isset($argv[3]))
 		$relids = $db->query("SELECT id, guid, fromname FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'");
 		echo "SELECT id, guid, fromanme FROM releases WHERE ".$argv[1].$like." '%".$argv[3]."%'";
 	}
-	elseif ($argv[2] == "like" && $argv[1] == "groupname")
+	else if ($argv[2] == "like" && $argv[1] == "groupname")
 	{
 		$like = ' ILIKE';
 		if ($db->dbSystem() == 'mysql')
@@ -47,7 +47,7 @@ if (isset($argv[3]))
 		$relids = $db->query("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
 		printf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID AND g.name ".$like." '%".$argv[3]."%'");
 	}
-	elseif ($argv[2] == "equals" && ($argv[1] == "adddate" || $argv[1] == "postdate") && isset($argv[3]) && is_numeric($argv[3]))
+	else if ($argv[2] == "equals" && ($argv[1] == "adddate" || $argv[1] == "postdate") && isset($argv[3]) && is_numeric($argv[3]))
 	{
 		if ($db->dbSystem() == 'mysql')
 		{

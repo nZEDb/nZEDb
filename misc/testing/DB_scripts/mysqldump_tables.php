@@ -76,7 +76,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname | gzip -9 > $filename";
 	system($command);
 }
-elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$filename = $argv[3]."/".$dbname.".gz";
 	if (file_exists($filename))
@@ -86,7 +86,7 @@ elseif((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == 
 		system($command);
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
@@ -101,7 +101,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		system($command);
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
@@ -117,7 +117,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		}
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
@@ -130,7 +130,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		system($command);
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl)
@@ -144,7 +144,7 @@ elseif((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] =
 		}
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
@@ -158,7 +158,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		$db->queryDirect(sprintf("SELECT * INTO OUTFILE %s FROM %s", $db->escapeString($filename), $tbl));
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3])))
 {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
@@ -173,7 +173,7 @@ elseif((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] ==
 		}
 	}
 }
-elseif((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
+else if((isset($argv[1]) && $argv[1] == "predb") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3])))
 {
 	$tables = array('predb');
 	foreach($tables as $row)

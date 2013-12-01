@@ -51,7 +51,7 @@ class MiscSorter
 		{
 			if ($this->DEBUGGING && $type == 'debug')
 				echo "$str\n";
-			elseif ($type != 'debug')
+			else if ($type != 'debug')
 				echo "$str\n";
 		}
 	}
@@ -193,11 +193,11 @@ class MiscSorter
 			$debug = $this->DEBUGGING;
 		$n = "\n";
 		$groups = new Groups();
-					
+
 		$release = $this->db->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.groupid = g.id WHERE r.id = {$id}");
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);
 		$newcatname = $this->category->getNameByID($cat);
-		
+
 		$query = "UPDATE releases SET categoryid = {$cat}, bitwise = ((bitwise & ~16)|16)";
 		if ($name != '')
 		{
@@ -652,11 +652,11 @@ class MiscSorter
 					{
 						if (preg_match('/sport/iU', $movie['genre']))
 							$cat = Category::CAT_TV_SPORT;
-						elseif (preg_match('/docu/iU', $movie['genre']))
+						else if (preg_match('/docu/iU', $movie['genre']))
 							$cat = Category::CAT_TV_DOCUMENTARY;
-						elseif (preg_match('/talk\-show/iU', $movie['genre']))
+						else if (preg_match('/talk\-show/iU', $movie['genre']))
 							$cat = Category::CAT_TV_OTHER;
-						elseif (preg_match('/tv/iU', $movie['type']) || preg_match('/episode/iU', $movie['type']) || preg_match('/reality/iU', $movie['type']))
+						else if (preg_match('/tv/iU', $movie['type']) || preg_match('/episode/iU', $movie['type']) || preg_match('/reality/iU', $movie['type']))
 							$cat = Category::CAT_TV_OTHER;
 						else
 						{
@@ -686,7 +686,7 @@ class MiscSorter
 				$title = preg_split('/(?:t\s?i\s?t\s?l\s?e\b|b\s?o\s?o\s?k\b)+? *?(?!(?:[^\s\.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)]((?!\:) ?[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 				if (isset($author[1]) && isset($title[1]))
 					$ok = $this->dodbupdate($row['id'], Category::CAT_MUSIC_AUDIOBOOK, $this->cleanname($author[1]." - ".$title[1]));
-				elseif (preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches))
+				else if (preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches))
 				{
 					$pos = $this->nfopos($nfo, $matches[1]." - ".$matches[2]);
 					if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48)
@@ -884,7 +884,7 @@ class MiscSorter
 					$ok = $this->dodbupdate($row['id'], Category::CAT_MUSIC_MP3, $name);
 					return $ok;
 				}
-				
+
 			}
 		}
 	}

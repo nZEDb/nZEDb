@@ -19,7 +19,7 @@ class Console
 		$this->asstag = $site->amazonassociatetag;
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-        $this->db = new DB();
+		$this->db = new DB();
 
 		$this->imgSavePath = nZEDb_WWW.'covers/console/';
 	}

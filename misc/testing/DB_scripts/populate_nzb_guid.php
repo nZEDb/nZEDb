@@ -32,7 +32,7 @@ function create_guids($live, $delete = false)
 		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
 		$relrecs->execute();
 	}
-	elseif ($live == "limited")
+	else if ($live == "limited")
 	{
 		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC LIMIT 10000"));
 		$relrecs->execute();

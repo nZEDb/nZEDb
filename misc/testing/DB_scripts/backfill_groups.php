@@ -9,7 +9,7 @@ printf("\033[1;33mThis script will show all Backfill Groups.\nAn optional first 
 $limit = "";
 if (isset($argv[2]) && is_numeric($argv[2]))
 	$limit = "limit ".$argv[2];
-elseif(isset($argv[1]) && is_numeric($argv[1]))
+else if(isset($argv[1]) && is_numeric($argv[1]))
 	$limit = "limit ".$argv[1];
 
 $mask = "\033[1;33m%-50.50s %22.22s %22.22s %22.22s %22.22s\n";
@@ -36,7 +36,7 @@ if (isset($argv[1]) && ($argv[1] === "desc" || $argv[1] === "DESC"))
 		}
 	}
 }
-elseif (isset($argv[1]) && ($argv[1] === "asc" || $argv[1] === "ASC"))
+else if (isset($argv[1]) && ($argv[1] === "asc" || $argv[1] === "ASC"))
 {
 	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND last_updated IS NOT NULL ORDER BY first_record_postdate ASC %s", $limit)))
 	{

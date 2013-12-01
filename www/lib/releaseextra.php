@@ -3,12 +3,12 @@ require_once nZEDb_LIB . 'framework/db.php';
 
 class ReleaseExtra
 {
-    function __construct()
-    {
-        $this->db = new DB();
-    }
-    
-    public function makeCodecPretty($codec)
+	function __construct()
+	{
+		$this->db = new DB();
+	}
+
+	public function makeCodecPretty($codec)
 	{
 		if(preg_match('/DX50|DIVX|DIV3/i',$codec))
 			return 'DivX';
@@ -102,7 +102,7 @@ class ReleaseExtra
 							$overallbitrate = $track['Overall_bit_rate'];
 						$gendata = $track;
 					}
-					elseif ($track['@attributes']['type'] == 'Video')
+					else if ($track['@attributes']['type'] == 'Video')
 					{
 						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = $gendata = $viddata = $audiodata = '';
 						if (isset($track['Duration']))
@@ -124,7 +124,7 @@ class ReleaseExtra
 						$viddata = $track;
 						$this->addVideo($releaseID, $containerformat, $overallbitrate, $videoduration, $videoformat, $videocodec, $videowidth, $videoheight, $videoaspect, $videoframerate, $videolibrary);
 					}
-					elseif ($track['@attributes']['type'] == 'Audio')
+					else if ($track['@attributes']['type'] == 'Audio')
 					{
 						$audioID = 1;
 						$audioformat = $audiomode =  $audiobitratemode = $audiobitrate = $audiochannels = $audiosamplerate = $audiolibrary = $audiolanguage = $audiotitle = '';
@@ -151,7 +151,7 @@ class ReleaseExtra
 						$audiodata = $track;
 						$this->addAudio($releaseID, $audioID, $audioformat, $audiomode, $audiobitratemode, $audiobitrate, $audiochannels,$audiosamplerate, $audiolibrary, $audiolanguage,$audiotitle);
 					}
-					elseif ($track['@attributes']['type'] == 'Text')
+					else if ($track['@attributes']['type'] == 'Text')
 					{
 						$subsID = 1;$subslanguage = 'Unknown';
 						if (isset($track['@attributes']['streamid']))

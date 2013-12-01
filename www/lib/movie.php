@@ -281,7 +281,7 @@ class Movie
 		$mov['cover'] = 0;
 		if (isset($tmdb['cover']) && $tmdb['cover'] != '') {
 			$mov['cover'] = $ri->saveImage($imdbId.'-cover', $tmdb['cover'], $this->imgSavePath);
-		} elseif (isset($imdb['cover']) && $imdb['cover'] != '') {
+		} else if (isset($imdb['cover']) && $imdb['cover'] != '') {
 			$mov['cover'] = $ri->saveImage($imdbId.'-cover', $imdb['cover'], $this->imgSavePath);
 		}
 
@@ -293,7 +293,7 @@ class Movie
 		$mov['title'] = '';
 		if (isset($imdb['title']) && $imdb['title'] != '') {
 			$mov['title'] = $imdb['title'];
-		} elseif (isset($tmdb['title']) && $tmdb['title'] != '') {
+		} else if (isset($tmdb['title']) && $tmdb['title'] != '') {
 			$mov['title'] = $tmdb['title'];
 		}
 		$mov['title'] = html_entity_decode($mov['title'], ENT_QUOTES, 'UTF-8');
@@ -301,21 +301,21 @@ class Movie
 		$mov['rating'] = '';
 		if (isset($imdb['rating']) && $imdb['rating'] != '') {
 			$mov['rating'] = $imdb['rating'];
-		} elseif (isset($tmdb['rating']) && $tmdb['rating'] != '') {
+		} else if (isset($tmdb['rating']) && $tmdb['rating'] != '') {
 			$mov['rating'] = $tmdb['rating'];
 		}
 
 		$mov['tagline'] = '';
 		if (isset($imdb['tagline']) && $imdb['tagline'] != '') {
 			$mov['tagline'] = html_entity_decode($imdb['tagline'], ENT_QUOTES, 'UTF-8');
-		} elseif (isset($tmdb['tagline']) && $tmdb['tagline'] != '') {
+		} else if (isset($tmdb['tagline']) && $tmdb['tagline'] != '') {
 			$mov['tagline'] = $tmdb['tagline'];
 		}
 
 		$mov['plot'] = '';
 		if (isset($imdb['plot']) && $imdb['plot'] != '') {
 			$mov['plot'] = $imdb['plot'];
-		} elseif (isset($tmdb['plot']) && $tmdb['plot'] != '') {
+		} else if (isset($tmdb['plot']) && $tmdb['plot'] != '') {
 			$mov['plot'] = $tmdb['plot'];
 		}
 		$mov['plot'] = html_entity_decode($mov['plot'], ENT_QUOTES, 'UTF-8');
@@ -323,14 +323,14 @@ class Movie
 		$mov['year'] = '';
 		if (isset($imdb['year']) && $imdb['year'] != '') {
 			$mov['year'] = $imdb['year'];
-		} elseif (isset($tmdb['year']) && $tmdb['year'] != '') {
+		} else if (isset($tmdb['year']) && $tmdb['year'] != '') {
 			$mov['year'] = $tmdb['year'];
 		}
 
 		$mov['genre'] = '';
 		if (isset($tmdb['genre']) && $tmdb['genre'] != '') {
 			$mov['genre'] = $tmdb['genre'];
-		} elseif (isset($imdb['genre']) && $imdb['genre'] != '') {
+		} else if (isset($imdb['genre']) && $imdb['genre'] != '') {
 			$mov['genre'] = $imdb['genre'];
 		}
 		if (is_array($mov['genre'])) {

@@ -66,7 +66,7 @@ delnzbs = cur[0].fetchall()
 for delnzb in delnzbs:
 	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
 print(bcolors.HEADER + "Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
-	
+
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
 elif conf['DB_SYSTEM'] == "pgsql":

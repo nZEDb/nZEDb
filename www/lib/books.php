@@ -22,7 +22,7 @@ require_once nZEDb_LIB . 'site.php';
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->imgSavePath = nZEDb_WWW.'covers/book/';
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	public function getBookInfo($id)
@@ -246,7 +246,7 @@ require_once nZEDb_LIB . 'site.php';
 		$ret = 0;
 		$db = $this->db;
 
-        // include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
+		// include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
 		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
@@ -317,7 +317,7 @@ require_once nZEDb_LIB . 'site.php';
 				return false;
 		}
 		else if($releasetype == 'audiobook')
-		{			
+		{
 			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
 			{
 				// we can skip category for audiobooks, since we already know it, so as long as the release name is valid return it so that it is postprocessed by amazon.  In the future, determining the type of audiobook could be added (Lecture or book), since we can skip lookups on lectures, but for now handle them all the same way
@@ -325,7 +325,7 @@ require_once nZEDb_LIB . 'site.php';
 			}
 			else
 				return false;
-		}		
+		}
 	}
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
@@ -337,7 +337,7 @@ require_once nZEDb_LIB . 'site.php';
 
 		if ($bookInfo != '')
 			$amaz = $this->fetchAmazonProperties($bookInfo);
-		elseif ($amazdata != null)
+		else if ($amazdata != null)
 			$amaz = $amazdata;
 
 		if (!$amaz)

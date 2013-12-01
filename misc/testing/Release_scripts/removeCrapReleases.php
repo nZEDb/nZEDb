@@ -219,7 +219,7 @@ if (isset($argv[1]) && $argv[1] == 'true')
 		$regexes = $db->prepare('SELECT regex FROM binaryblacklist WHERE status = 1 AND optype = 1');
 		$regexes->execute();
 		$delcount = 0;
-        $count = $regexes->rowCount();
+		$count = $regexes->rowCount();
 		if ($count > 0)
 		{
 			foreach ($regexes as $regex)

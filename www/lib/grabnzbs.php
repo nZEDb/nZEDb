@@ -139,36 +139,36 @@ class Import
 				// Make a fake message object to use to check the blacklist.
 				$msg = array('Subject' => $subject, 'From' => $postername[0], 'Message-ID' => '');
 
-                // Groups.
-                $groupArr = array();
-                foreach($file->groups->group as $group)
-                {
-                    $group = (string)$group;
-                    if (array_key_exists($group, $siteGroups))
-                    {
-                        $groupName = $group;
-                        $groupID = $siteGroups[$group];
-                    }
-                    $groupArr[] = $group;
+				// Groups.
+				$groupArr = array();
+				foreach($file->groups->group as $group)
+				{
+					$group = (string)$group;
+					if (array_key_exists($group, $siteGroups))
+					{
+						$groupName = $group;
+						$groupID = $siteGroups[$group];
+					}
+					$groupArr[] = $group;
 
-                    if ($binaries->isBlacklisted($msg, $group))
-                        $isBlackListed = true;
-                }
-                if ($groupID != -1 && !$isBlackListed)
-                {
-                    if (count($file->segments->segment) > 0)
-                    {
-                        foreach($file->segments->segment as $segment)
-                        {
-                            $totalsize += $segment->attributes()->bytes;
-                        }
-                    }
-                }
-                else
-                {
-                    $importfailed = true;
-                    return;
-                }
+					if ($binaries->isBlacklisted($msg, $group))
+						$isBlackListed = true;
+				}
+				if ($groupID != -1 && !$isBlackListed)
+				{
+					if (count($file->segments->segment) > 0)
+					{
+						foreach($file->segments->segment as $segment)
+						{
+							$totalsize += $segment->attributes()->bytes;
+						}
+					}
+				}
+				else
+				{
+					$importfailed = true;
+					return;
+				}
 			}
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first

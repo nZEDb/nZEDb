@@ -26,7 +26,7 @@ function SplitSQL($file, $delimiter = ';')
 			$query = array();
 			$db = new DB();
 			$dbsys = $db->dbSystem();
-            $c = new ColorCLI();
+			$c = new ColorCLI();
 
 			while (feof($file) === false)
 			{
@@ -81,7 +81,7 @@ function SplitSQL($file, $delimiter = ';')
 function BackupDatabase()
 {
 	$db = new DB();
-    $c = new ColorCLI();
+	$c = new ColorCLI();
 	$returnvar = NULL;
 	$output = NULL;
 	$DIR = nZEDb_MISC;

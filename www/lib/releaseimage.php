@@ -19,7 +19,7 @@ class ReleaseImage
 
 		if (preg_match('/^http:/i', $imgLoc))
 			$img = getUrl($imgLoc);
-		elseif (file_exists($imgLoc))
+		else if (file_exists($imgLoc))
 			$img = @file_get_contents($imgLoc);
 
 		if ($img !== false)

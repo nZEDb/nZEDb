@@ -26,7 +26,7 @@ else if (isset($argv[1]))
 		$backfill = new Backfill();
 		$backfill->backfillAllGroups($pieces[0], $nntp);
 	}
-	elseif (isset($pieces[1]) && $pieces[1] == 2)
+	else if (isset($pieces[1]) && $pieces[1] == 2)
 	{
 		$tmux = new Tmux();
 		$count = $tmux->get()->backfill_qty;

@@ -27,7 +27,7 @@ class Nfo
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	public function addReleaseNfo($relid)

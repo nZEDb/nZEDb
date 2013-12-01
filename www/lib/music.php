@@ -19,7 +19,7 @@ class Music
 		$this->asstag = $site->amazonassociatetag;
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-        $this->db = new DB();
+		$this->db = new DB();
 		$this->imgSavePath = nZEDb_WWW.'covers/music/';
 	}
 
@@ -262,7 +262,7 @@ class Music
 		$mus = array();
 		if ($title != '')
 			$amaz = $this->fetchAmazonProperties($title);
-		elseif ($amazdata != null)
+		else if ($amazdata != null)
 			$amaz = $amazdata;
 		if (!$amaz)
 			return false;

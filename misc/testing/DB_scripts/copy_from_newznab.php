@@ -15,7 +15,9 @@ if (isWindows() === true)
 
 if (!isset($argv[1]))
 	exit("Usage php copy_from_newznab.php path_to_newznab_nzbs\n");
-elseif (isset($argv[1]) && !file_exists($argv[1]))
+else if (isset($argv[1]) && !file_exists($argv[1]))
+else if (isset($argv[1]) && !file_exists($argv[1]))
+else if (isset($argv[1]) && !file_exists($argv[1]))
 	exit("$argv[1]) is an invalid path\n");
 else
 {

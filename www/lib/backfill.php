@@ -24,7 +24,7 @@ class Backfill
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
 		$this->safepartrepair = (!empty($site->safepartrepair)) ? $site->safepartrepair : 0;
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	// Backfill groups using user specified time/date.
@@ -47,14 +47,15 @@ class Backfill
 			$res = $groups->getActiveBackfill();
 
 
-		if (@$res)
+		if ($res)
 		{
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
-				echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
+				if ($groupName === '')
+					echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
 				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
@@ -205,14 +206,15 @@ class Backfill
 				$res = $groups->getActiveByDateBackfill();
 		}
 
-		if (@$res)
+		if ($res)
 		{
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
-				echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
+				if ($groupName === '')
+					echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
 				$this->backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}

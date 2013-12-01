@@ -5,6 +5,7 @@ Each update goes to the top of the file
 
 
 2013-12-01 -> jonnyboy -> please update this file when you post do a pull request
+                          changed 4 spaces to tab, removed excess whitespace on blank lines
                           added notices to start.php to better explain the tmux output(iguyking)
                           moved nzbstatus to bitwise, added color to all python scripts, added color to more php scripts, fixed bug in fixreleasenames par2 not couting total changed
                           fixed bug in monitor.php not get correct newest releases name

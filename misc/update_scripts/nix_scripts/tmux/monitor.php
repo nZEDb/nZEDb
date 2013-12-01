@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4439";
+$version="0.3r4441";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -462,12 +462,12 @@ while($i > 0)
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
-                    else if (strpos($tbl, '_partrepair') !== false)
-                    {
-                        $run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-                        if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-                            $partrepair_table += $run[0]['count'];
-                    }
+					else if (strpos($tbl, '_partrepair') !== false)
+					{
+						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
+						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+							$partrepair_table += $run[0]['count'];
+					}
 				}
 				$oldestcollection = $age;
 				$tpg_count_time = (TIME() - $time07);
@@ -527,7 +527,7 @@ while($i > 0)
 		if ($proc_work_result3[0]['binaries_table'] != NULL) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
 		if ($split_result[0]['parts_table'] != NULL) { $parts_table = $split_result[0]['parts_table']; }
 		if ($proc_work_result2[0]['collections_table'] != NULL) { $collections_table = $proc_work_result2[0]['collections_table']; }
-        if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
+		if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	}
 
 	if ($split_result[0]['predb'] != NULL) { $predb = $split_result[0]['predb']; }

@@ -25,7 +25,7 @@ class Namefixer
 	{
 		$this->echooutput = $echooutput;
 		$this->relid = $this->fixed = $this->checked = 0;
-        $this->db = new DB();
+		$this->db = new DB();
 		$db = $this->db;
 		if ($db->dbSystem() == 'mysql')
 		{
@@ -153,7 +153,7 @@ class Namefixer
 		else
 			echo "Nothing to fix.\n";
 	}
-	
+
 	//  Attempts to fix release names using the Par2 File.
 	public function fixNamesWithAniDB($time, $echo, $cats, $namestatus)
 	{
@@ -250,7 +250,7 @@ class Namefixer
 				$checkedname = explode("\\", $newname);
 				$newname = $checkedname[0];
 				$newname = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $newname);
-				
+
 				if ($this->echooutput === true)
 				{
 					$groups = new Groups();

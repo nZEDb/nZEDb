@@ -120,7 +120,7 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 		echo $c->warning("The oldest post indexed from $days day(s) ago is older than the first article stored on your news server.\nSetting to First available article of (date('r', $firstDate) or daysOld($firstDate) days).");
 		return $data['first'];
 	}
-	elseif ($goaldate > $lastDate && $bfcheck)
+	else if ($goaldate > $lastDate && $bfcheck)
 	{
 		if ($st === true)
 			$nntp->doQuit();

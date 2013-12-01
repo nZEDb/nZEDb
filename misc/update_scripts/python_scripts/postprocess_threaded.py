@@ -197,7 +197,7 @@ def u(x):
 		return codecs.unicode_escape_decode(x)[0]
 	else:
 		return x
-		
+
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
