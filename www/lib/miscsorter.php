@@ -7,6 +7,7 @@ require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'books.php';
 require_once nZEDb_LIB . 'predb.php';
 require_once nZEDb_LIB . 'groups.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class MiscSorter
 {
@@ -28,7 +29,7 @@ class MiscSorter
 		$this->nfolib = new Nfo($this->echooutput);
 		$this->nc = new nameCleaning();
 		$this->groups = new Groups();
-
+		$this->c = new ColorCLI;
 
 		//$res = $this->db->queryExec("SET NAMES 'utf8'");
 		//$res = $this->db->queryExec("SET CHARACTER SET 'utf8'");
@@ -152,16 +153,14 @@ class MiscSorter
 				}
 			}
 
-			if ($x == -1)
+			if ($x != -1)
 			{
-
-			} elseif ($x == 0) {
-				$r[$i++] = $m;
-			} else if (isset($r[$x]))
-			{
-				$r[$x + mt_rand(0,100)/100] = $m;
-			} else {
-				$r[$x] = $m;
+				if ($x == 0)
+					$r[$i++] = $m;
+				else if (isset($r[$x]))
+					$r[$x + mt_rand(0,100)/100] = $m;
+				else
+					$r[$x] = $m;
 			}
 		}
 		ksort($r);
@@ -203,8 +202,9 @@ class MiscSorter
 		if ($name != '')
 		{
 			$query .= ", bitwise = ((bitwise & ~5)|5), searchname = ".$this->db->escapeString($name);
-			echo	$n."New name:  ".$name.$n.
-					"Old name:  ".$release[0]["searchname"];
+			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
+			echo	$n.$this->c->headerOver("New name:  ").$this->c->primary($name).
+					$this->c->headerOver("Old name:  ").$this->c->primaryOver($release[0]["searchname"]);
 		}
 
 		switch ($type) {
@@ -231,11 +231,11 @@ class MiscSorter
 			default:
 				break;
 		}
-		echo	$n.	"New cat:   ".$newcatname.$n.
-					"Old cat:   ".$oldcatname.$n.
-					"Group:     ".$release[0]['name'].$n.
-					"Method:    sorter ".$type.$n.
-					"ReleaseID: ".$id.$n;
+		echo	$n.$this->c->headerOver("New cat:   ").$this->c->primary($newcatname).
+				$this->c->headerOver("Old cat:   ").$this->c->primary($oldcatname).
+				$this->c->headerOver("Group:     ").$this->c->primary($release[0]['name']).
+				$this->c->headerOver("Method:    ").$this->c->primary('sorter '.$type).
+				$this->c->headerOver("ReleaseID: ").$this->c->primary($id);
 
 		$query .= " WHERE id = {$id}";
 		//$this->doecho($query);
