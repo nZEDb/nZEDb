@@ -13,24 +13,24 @@ if (isset($_GET['action']) && $_GET['action'] == "2")
 	$group->delete($id);
 	print "Group $id deleted.";
 }
-eles if (isset($_GET['action']) && $_GET['action'] == "3")
+else if (isset($_GET['action']) && $_GET['action'] == "3")
 {
 	$id = (int)$_GET['group_id'];
 	$group->reset($id);
 	print "Group $id reset.";
 }
-eles if (isset($_GET['action']) && $_GET['action'] == "4")
+else if (isset($_GET['action']) && $_GET['action'] == "4")
 {
 	$id = (int)$_GET['group_id'];
 	$group->purge($id);
 	print "Group $id purged.";
 }
-eles if (isset($_GET['action']) && $_GET['action'] == "5")
+else if (isset($_GET['action']) && $_GET['action'] == "5")
 {
 	$group->resetall();
 	print "All groups reset.";
 }
-eles if (isset($_GET['action']) && $_GET['action'] == "6")
+else if (isset($_GET['action']) && $_GET['action'] == "6")
 {
 	$group->purgeall();
 	print "All groups purged.";

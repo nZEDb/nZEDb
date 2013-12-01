@@ -646,13 +646,9 @@ class Binaries
 		$db = $this->db;
 
 		if ($this->tablepergroup == 1)
-		{
 			$group['prname'] = $groupArr['id'].'_partrepair';
-		}
 		else
-		{
 			$group['prname'] = 'partrepair';
-		}
 
 		$missingParts = $db->query(sprintf('SELECT * FROM '.$group['prname'].' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
@@ -730,9 +726,7 @@ class Binaries
 			$group['prname'] = $groupID.'_partrepair';
 		}
 		else
-		{
 			$group['prname'] = 'partrepair';
-		}
 
 		$insertStr = 'INSERT INTO '.$group['prname'].' (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
@@ -756,13 +750,10 @@ class Binaries
 	{
 		$db = $this->db;
 		if ($this->tablepergroup == 1)
-		{
 			$group['prname'] = $groupID.'_partrepair';
-		}
 		else
-		{
 			$group['prname'] = 'partrepair';
-		}
+
 		$sql = 'DELETE FROM '.$group['prname'].' WHERE numberid in (';
 		foreach($numbers as $number)
 			$sql .= sprintf('%d, ', $number);
