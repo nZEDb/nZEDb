@@ -443,26 +443,26 @@ while($i > 0)
 				foreach($tables as $row)
 				{
 					$tbl = $row['name'];
-					if (preg_match('/\d+_collections/',$tbl))
+					if (strpos($tbl, '_collections') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
 						$collections_table += $run[0]['count'];
 						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
 							$age = $run[0]['dateadded'];
 					}
-					else if (preg_match('/\d+_binaries/',$tbl))
+					else if (strpos($tbl, '_binaries') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$binaries_table += $run[0]['count'];
 					}
-					else if (preg_match('/\d+_parts/',$tbl))
+					else if (strpos($tbl, '_parts') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
-                    else if (preg_match('/\d+_partrepair/',$tbl))
+                    else if (strpos($tbl, '_partrepair') !== false)
                     {
                         $run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
                         if (isset($run[0]['count']) && is_numeric($run[0]['count']))

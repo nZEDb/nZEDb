@@ -117,7 +117,7 @@ while ($cdone < $clen['total'])
         }
         $ccount++;
     }
-    $cdone = $cdone + 1000;
+    $cdone += 1000;
 }
 
 if ($DoPartRepair === true)
@@ -147,7 +147,7 @@ if ($DoPartRepair === true)
                 $consoletools->overWrite('Part Repairs Completed for '.$group['name'].':'.$consoletools->percentString($pcount, $plen['total']));
                 $pcount++;
             }
-            $pdone = $pdone + 10000;
+            $pdone += 10000;
         }
     }
 }
