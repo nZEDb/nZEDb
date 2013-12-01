@@ -246,7 +246,8 @@ require_once nZEDb_LIB . 'site.php';
 		$ret = 0;
 		$db = $this->db;
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+        // include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
+		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE nzbstatus = 1  AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
@@ -254,11 +255,8 @@ require_once nZEDb_LIB . 'site.php';
 
 			foreach ($res as $arr)
 			{
-				// detrime if this is an ebook or an audiobook
-				$category = $db->query(sprintf('SELECT categoryid FROM releases where id = %s', $arr['id']));
-
 				// audiobooks are also books and should be handles in an idetical manor, even though it fails under a music category
-				if($category[0]['categoryid'] == '3030') 
+				if($arr['categoryid'] == '3030')
 				{
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "audiobook");
