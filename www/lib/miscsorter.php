@@ -203,7 +203,7 @@ class MiscSorter
 		{
 			$query .= ", bitwise = ((bitwise & ~5)|5), searchname = ".$this->db->escapeString($name);
 			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
-			echo	$n.$this->c->headerOver("New name:  ").$this->c->primary($name).
+			echo	$n.$n.$this->c->headerOver("New name:  ").$this->c->primary($name).
 					$this->c->headerOver("Old name:  ").$this->c->primaryOver($release[0]["searchname"]);
 		}
 
