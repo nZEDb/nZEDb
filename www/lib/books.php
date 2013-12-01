@@ -105,7 +105,7 @@ require_once nZEDb_LIB . 'site.php';
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE (r.bitwise & 256) = 256 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res['num'];
 	}
 
@@ -160,7 +160,7 @@ require_once nZEDb_LIB . 'site.php';
 			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$order = $this->getBookOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
@@ -246,7 +246,7 @@ require_once nZEDb_LIB . 'site.php';
 		$ret = 0;
 		$db = $this->db;
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)

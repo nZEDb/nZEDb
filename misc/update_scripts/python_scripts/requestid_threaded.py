@@ -37,10 +37,7 @@ print("\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strf
 threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-
-#cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND (bitwise & 4) = 0 AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-#cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 4) = 0 AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 100")
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (bitwise & 4) = 0 AND reqidstatus in (0, -1) AND request = true limit 100")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 256) = 256 AND (bitwise & 4) = 0 AND reqidstatus in (0, -1) AND request = true limit 100")
 datas = cur.fetchall()
 
 if not datas:

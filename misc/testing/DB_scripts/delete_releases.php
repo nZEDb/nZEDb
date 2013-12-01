@@ -21,6 +21,11 @@ if (isset($argv[3]))
 		$relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3])));
 		printf("SELECT id, guid FROM releases WHERE %s = %s", $argv[1], $db->escapeString($argv[3]));
 	}
+    elseif ($argv[2] == "equals" && ($argv[1] == "categoryid") && is_numeric($argv[3]))
+    {
+        $relids = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $argv[3]));
+        printf("SELECT id, guid FROM releases WHERE categoryid = %s", $db->escapeString($argv[3]));
+    }
 	elseif ($argv[2] == "equals" && ($argv[1] == "groupname"))
 	{
 		$relids = $db->query(sprintf("SELECT r.id, r.guid FROM releases r, groups g WHERE r.groupid = g.ID  AND g.name = %s", $db->escapeString($argv[3])));
@@ -57,7 +62,7 @@ if (isset($argv[3]))
 	}
 }
 else
-	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid or newer than x hours adddate/postdate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, adddate/postdate ] equals [ name, guid, hours(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n\n");
+	exit("This script removes all releases and nzb files from a poster or by searchname, name, groupname, guid, categoryid or newer than x hours adddate/postdate.\nIf you are sure you want to run it, type php delete_releases.php [ fromname, searchname, name, groupname, guid, categoryid, adddate/postdate ] equals [ name, guid, 7010, hours(number) ]\nYou can also use like instead of = by doing type php delete_releases.php [ fromname, searchname, name, groupname, guid ] like [ name/guid ]\n\n");
 
 if ($argv[1] == "adddate")
 	echo "\nDeleting ".sizeof($relids)." releases and NZB's for past ".$argv[3]." hours\n";

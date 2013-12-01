@@ -10,7 +10,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	$nzbcount = $brokencount = 0;
 	$db = new DB();
 
-	$guids = $db->query("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
+	$guids = $db->query("SELECT guid FROM releases WHERE (bitwise & 256) = 256 ORDER BY postdate DESC");
 	echo "Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are ".count($guids)." NZB files to scan.\n";
 
 	foreach ($guids as $guid)

@@ -4,6 +4,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI;
 
+if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true'))
+	exit($c->error("\nThis script removes all releases and release related files. To run:\nphp resetdb.php true\n"));
+
 echo $c->warning("This script removes all releases, nzb files, samples, previews , nfos, truncates all article tables and resets all groups.");
 echo $c->header("Are you sure you want reset the DB?  Type 'DESTROY' to continue:  \n");
 echo $c->warningOver("\n");
@@ -90,6 +93,6 @@ if ($tvshows !== false)
 	}
 }
 else
-	echo $c->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying agrain.");
+	echo $c->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying again.");
 
 echo $c->header("Deleted all releases, images, previews and samples. This script ran for ".$consoletools->convertTime(TIME() - $timestart));

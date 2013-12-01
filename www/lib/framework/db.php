@@ -110,12 +110,12 @@ class DB
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
+			else if ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
+			else if ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;
@@ -154,12 +154,12 @@ class DB
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
+			else if ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
+			else if ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;

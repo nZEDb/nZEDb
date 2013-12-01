@@ -311,12 +311,14 @@ class Binaries
 			if ($this->debug)
 				$colnames = $orignames = $notyenc = array();
 
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			usort($msgs, function ($elem1, $elem2) { return strcmp($elem1['Subject'], $elem2['Subject']); });
+
 			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
 					continue;
-
 
 				if (isset($returnArray['firstArticleNumber']))
 				{
@@ -367,7 +369,7 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
-					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === "1")
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1')
 						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".dropped.txt", $msg['Subject']."\n", FILE_APPEND);
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
@@ -395,6 +397,8 @@ class Binaries
 				{
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1')
+						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".no_parts.txt", $msg['Subject']."\n", FILE_APPEND);
 				}
 
 				if(is_numeric($matches[3]) && is_numeric($matches[4]))
@@ -441,7 +445,8 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					if($this->grabnzbs && preg_match('/.+\.nzb" yEnc$/', $subject))
+
+					if($this->grabnzbs && preg_match('/.+\.nzb"/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -475,9 +480,7 @@ class Binaries
 				echo $this->c->primary('Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.");
 
 			if (sizeof($msgrepaired) > 0)
-			{
 				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
-			}
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -534,13 +537,15 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
+							$cres = $db->queryOneRow(sprintf('SELECT id, subject FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if (array_key_exists($collectionHash, $collectionHashes))
 							{
 								$collectionID = $collectionHashes[$collectionHash];
+								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set subject = %s WHERE id = %s', $db->escapeString(substr($subject,0,255)), $collectionID));
 							}
 							else
 							{
-								$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 								if(!$cres)
 								{
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
@@ -551,12 +556,13 @@ class Binaries
 								{
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+										$db->queryExec(sprintf('UPDATE '.$group['cname'].' set subject = %s WHERE id = %s', $db->escapeString(substr($subject,0,255)), $collectionID));
+									else
+										$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
 								}
-
 								$collectionHashes[$collectionHash] = $collectionID;
 							}
-
 							$lastCollectionID = $collectionID;
 						}
 						$binaryHash = md5($subject.$data['From'].$groupArr['id']);
@@ -566,9 +572,7 @@ class Binaries
 						else
 						{
 							if (array_key_exists($binaryHash, $binaryHashes))
-							{
 								$binaryID = $binaryHashes[$binaryHash];
-							}
 							else
 							{
 								$lastBinaryHash = $binaryHash;
@@ -618,7 +622,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
 
 			if ($type != 'partrepair')
-				echo $this->c->primary($timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop."s total.");
+				echo $this->c->primary($timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop.'s total.');
 
 			unset($this->message, $data);
 			return $returnArray;

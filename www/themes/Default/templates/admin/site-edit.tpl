@@ -893,7 +893,7 @@
 	<td style="width:180px;"><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases. I have discovered that the nzbs imported using GrabNZBs does not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db. This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs.</div>
 	</td>
 </tr>
 

@@ -488,7 +488,7 @@ class Backfill
 			echo $this->c->warning("Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n");
 			return $data['first'];
 		}
-		elseif ($goaldate > $lastDate)
+		else if ($goaldate > $lastDate)
 		{
 			echo $this->c->error('Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n");
 			return '';

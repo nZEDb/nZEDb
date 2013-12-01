@@ -263,7 +263,7 @@ if ($seq == 1)
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 }
-elseif ($seq == 2)
+else if ($seq == 2)
 {
 	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");

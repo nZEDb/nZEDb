@@ -50,7 +50,7 @@ class nameCleaning
 	*
 	*	@param string		$subject				The usenet subject, ending with yEnc (part count removed from the end).
 	*	@param string		$groupName				The name of the usenet group for the article.
-	*	@param bool		$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
+	*	@param bool			$nofiles	(optional)	Whether the article has a filecount or not. Defaults to false.
 	*
 	*
 	*	@return
@@ -66,7 +66,6 @@ class nameCleaning
 		$this->nofiles = $nofiles;
 		$this->subject = $subject;
 		$this->groupname = $groupName;
-
 		switch ($groupName)
 		{
 			case 'alt.binaries.0day.stuffz':
@@ -202,7 +201,6 @@ class nameCleaning
 		else
 			return $this->generic();
 	}
-
 	// a.b.anime
 	public function anime()
 	{
@@ -1318,8 +1316,7 @@ class nameCleaning
 			// Random stuff.
 			$cleansubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleansubject);
 			// Multi spaces.
-			return utf8_encode(trim(preg_replace('/\s\s+/i', ' ', $cleansubject)));
-
+			return utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleansubject)));
 		}
 		// Music groups.
 		else
@@ -1471,6 +1468,77 @@ class nameCleaning
 			//Old Dad uppt Taffe Mädels XivD LD HDTV Rip oben Kleine Einblendug German 01/43] - "Taffe Mädels.par2" yEnc
 			else if (preg_match('/^([a-zA-Z0-9].+?\s{2,}|Old Dad uppt\s+)(.+?) \d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[2];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.audiobooks")
+		{
+			//WEB Griffin - [06/26] - "The Outlaws-Part06.mp3" yEnc
+			//Re: WEB Griffin - [18/26] - "The Outlaws.par2" yEnc
+			if (preg_match('/^(Re: )?([\w\s]+) - \[\d+\/\d+\] - "(.+)[\.-]([Pp]art|vol|jpg|sfv|mp3|nzb|nfo|rar).*" yEnc$/', $subject, $match))
+				return $match[2].", ".$match[3];
+			//WEB Griffin - [06/26] - "The Outlaws-Part06.mp3" yEnc
+			//Re: WEB Griffin - [18/26] - "The Outlaws.par2" yEnc
+			else if (preg_match('/^(Re: )?([\w\s]+) - \[\d+\/\d+\] - "(.+)[\.-]([Pp]ar2).*" yEnc$/', $subject, $match))
+				return $match[2].", ".$match[3];
+			//[05/13] - "Into the Fire-Part03.mp3" yEnc
+			else if (preg_match('/^\[\d+\/\d+\] - "(.+)-Part\d+\..+" yEnc$/', $subject, $match))
+				return $match[1];
+			//[Repost - Original Damaged]  [35/86] - "Mark Twain - Personal Recollections of Joan of Arc Vol 1 and Vol 2 - 33 - 32 - Tinsel Trappings of Nobility.mp3" yEnc
+			else if (preg_match('/^\[Repost.+\]\s+\[\d+\/\d+\] - "(.+)\.(part|vol|jpg|sfv|mp3|nzb|nfo|rar).*" yEnc$/', $subject, $match))
+				return $match[1];
+			//[Repost - Original Damaged]  [35/86] - "Mark Twain - Personal Recollections of Joan of Arc Vol 1 and Vol 2 - 33 - 32 - Tinsel Trappings of Nobility.mp3" yEnc
+			else if (preg_match('/^\[Repost.+\]\s+\[\d+\/\d+\] - "(.+)\.(par2).*" yEnc$/', $subject, $match))
+				return $match[1];
+			//(????) [12/19] - "Notorious Nineteen.part10.rar" yEnc
+			else if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "(.+)\.(part|vol|jpg|sfv|mp3|nzb|nfo|rar).*" yEnc$/', $subject, $match))
+				return $match[1];
+			//(????) [12/19] - "Notorious Nineteen.part10.rar" yEnc
+			else if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "(.+)\.(par2).*" yEnc$/', $subject, $match))
+				return $match[1];
+			//(08/10) "The Vampire Diaries - Kampen.vol63+15.par2" - 313,91 MB yEnc
+			else if (preg_match('/^\(\d+\/\d+\) "(.+)[\.-](part|vol|jpg|sfv|mp3|nzb|nfo|rar).*" - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			//(01/10) "The Vampire Diaries - Raseriet.par2" - 296,93 MB yEnc
+			else if (preg_match('/^(Re: )?\(\d+\/\d+\) "(.+)[\.-](par2).*" - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[2];
+			//Margaret Weis - Dragonlance Kr�niker Bind 1-6 [Danish AudioBook] [02/18] - "DL-CRON.r00" yEnc
+			else if (preg_match('/^(.+) \[Danish.+\] \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//David Baldacci - The Forgotten 128 kbps stereo [03/24] - "The Forgotten 01.m4b" yEnc
+			else if (preg_match('/^([\w\s\d-]+) \d+ kbps stereo \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//ASOS0010 [03/40] - "ASOS.r01" yEnc
+			//FFTT0010 (01/22) "FFTT.r10" yEnc
+			else if (preg_match('/(\w{4}\d{4}) [\[\(]\d+\/\d+[\]\)][ -]+"\w{4}\..+" yEnc$/', $subject, $match))
+				return $match[1];
+			//Christopher Moore - Practrcal Demonkeeping (1992) [New Post] [04/15] "Christopher Moore - Practical Demonkeeping 01.mp3" yEnc
+			else if (preg_match('/^(.+) \[New Post\] \[\d+\/\d+\] ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//Christopher Moore - Coyote Blue (1994) NMR [04/17] "Christopher Moore - Coyote Blue  01.mp3" yEnc
+			else if (preg_match('/^(.+) NMR \[\d+\/\d+\] ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//Christopher Moore - Island of the Sequined Love Nun (1997) [09/19] "Christopher Moore - Island of the Sequined Love Nun 06.mp3" yEnc
+			else if (preg_match('/^(.+\(\d{4}\)) \[\d+\/\d+\] ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//NR - Jonathan Maberry - Extinction Machine - [26/98] - "Extinction Machine - 26-89.mp3" yEnc
+			else if (preg_match('/^NR - (.+) - \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//[Seizing the Enigma - David Kahn (Unabridged)(NMR)] - [06/29] - "DKSTE.part03.rar" yEnc
+			else if (preg_match('/^\[(.+)\] - \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//[116/194] - "David Baldacci - SK 03 Simple Genius - 21 - SK 03 Simple Genius - 021.mp3" yEnc
+			else if (preg_match('/\[\d+\/\d+\] - "(.+) - \d+ -.+-.+" yEnc$/', $subject, $match))
+				return $match[1];
+			//Michael Moss - Salt Sugar Fat - How the Food Giants Hooked Us [03/20] "Salt Sugar Fat - How the Food Giants Hooked Us 01.mp3" yEnc
+			else if (preg_match('/^([\s\w\d-]+) \[\d+\/\d+\][ -]+".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//(TTC Audio - Impossible - Physics Beyond the Edge) [01/34] - "TTC Audio - Impossible - Physics Beyond the Edge.sfv" yEnc
+			else if (preg_match('/^\((TTC Audio - .+)\) \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
+			//TTC Audio - Impossible - Physics Beyond the Edge) (proper pars) [0/8] - "(proper par2s) TTC Audio - Impossible - Physics Beyond the Edge.nzb" yEnc
+			else if (preg_match('/^(TTC Audio - .+)\)\s\(.+\[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}

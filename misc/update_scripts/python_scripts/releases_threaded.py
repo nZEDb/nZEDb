@@ -50,7 +50,7 @@ threads = int(dbgrab[0][1])
 if allowed == 0:
 	sys.exit("Table per group not enabled")
 
-cur[0].execute("SELECT id FROM groups")
+cur[0].execute("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+conf['DB_NAME']+"' AND table_rows > 0 AND table_name LIKE '%_collections'")
 datas = cur[0].fetchall()
 disconnect(cur[0], cur[1])
 
@@ -106,7 +106,7 @@ def main():
 		if count >= threads:
 			count = 0
 		count += 1
-		my_queue.put("%s  %s" % (str(release[0]), count))
+		my_queue.put("%s  %s" % (release[0].replace('_collections', ''), count))
 
 	my_queue.join()
 

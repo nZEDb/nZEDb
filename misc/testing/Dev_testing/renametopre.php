@@ -12,8 +12,8 @@ require_once nZEDb_LIB . 'releases.php';
  *
  * This was added because I starting writing this before
  * all of the regexes were converted to by group in namecleaning.php
- * and I do not want to convert these regexes to run per group.
- * namecleaning.php is where the regexes should go
+ * AND I do not want to convert these regexes to run per group.
+ * namecleaning.php is WHERE the regexes should go
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
@@ -40,11 +40,11 @@ function preName($argv)
 	resetSearchnames();
 	echo "Getting work\n";
 	if (!isset($argv[2]))
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ((bitwise & 4) = 0 or categoryid between 7000 and 7999) and nzbstatus = 1".$what);
+		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what);
 	elseif (isset($argv[2]) && is_numeric($argv[2]))
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where reqidstatus != 1 and ((bitwise & 4) = 0 or categoryid between 7000 and 7999) and nzbstatus = 1".$what.$where);
+		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what.$where);
 	elseif (isset($argv[1]) && $argv[1]=="full" && isset($argv[2]) && $argv[2] == "all")
-		$res = $db->prepare("select id, name, searchname, groupid, categoryid from releases where nzbstatus = 1".$where);
+		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256".$where);
 
 	$res->execute();
 	$total = $res->rowCount();
@@ -59,7 +59,7 @@ function preName($argv)
 				if ( $cleanerName != $row['name'] && $cleanerName != '' )
 				{
 					$determinedcat = $category->determineCategory($cleanerName, $row["groupid"]);
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
+					$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s WHERE id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
 					$groupname = $groups->getByNameByID($row["groupid"]);
 					$oldcatname = $category->getNameByID($row["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
@@ -77,7 +77,7 @@ function preName($argv)
 				//echo $row['name']."\n";
 
 			if ( $cleanerName == $row['name'])
-				$db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5) where id = %d", $db->escapeString($row['id'])));
+				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $db->escapeString($row['id'])));
 			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
 		}
 	}
@@ -219,7 +219,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 	// [39975]-[#a.b.foreign@EFNet]-[FULL]-[ The.Cape.S01E10.FiNAL.FRENCH.LD.DVDRiP.XViD-EPZ ]-[REPOST]-[01/34] - #34;epz-the.cape.s01e10-sample.avi#34; yEnc
 	// [37090]-[#a.b.foreign@EFNet]-[ Alarm.fuer.Cobra.11.S30E06.German.SATRip.XviD-ITG ]-[04/33] - "itg-c11-s30e06-sample-sample.vol3+2.par2" yEnc
 	// [270512]-[FULL]-[Koh.Lanta.La.Revanche.Des.Heros.Cambodge.E08.FRENCH.720p.HDTV.x264-TTHD] [01/75] - "kohlanta.cambodge.e08.720p.hdtv.x264-sample.mkv" yEnc
-	// This matches the most and the matches are usually predb matches, run first
+	// This matches the most AND the matches are usually predb matches, run first
 	// 1130678 out of 5751006
 	if (preg_match('/^\[?\d*\][ _-]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[ _-]{0,3}\[[- #@\.\w]+\][ _-]{0,3}|\[[- #@\.\w]+\][ _-]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[ _-]{0,3}|\[.+?efnet\][ _-]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[ _-]{0,3})(\[(FULL|REPOST)\])?[ _-]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,})[ _-]{0,3}(\])?[ _-]{0,3}(\[)?[ _-]{0,3}(REPOST|REPACK|SCENE|EXTRA PARS|REAL)?[ _-]{0,3}(\])?[ _-]{0,3}(\[\d+[-\/~]\d+\])?[ _-]{0,3}("|#34;).+("|#34;)[ _-]{0,3}[yEnc]{0,4}/i', $subject, $match))
 	{
@@ -268,7 +268,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 		if (!empty($cleanerName))
 			return $cleanerName;
 	}
-	// []OOO[]  ASST NEW MTLS 26 MAR -  [138/158] - "Spintronics - Materials, Applications and Devices - G. Lombardi, G. Bianchi (Nova, 2009) WW.pdf" yEnc
+	// []OOO[]  ASST NEW MTLS 26 MAR -  [138/158] - "Spintronics - Materials, Applications AND Devices - G. Lombardi, G. Bianchi (Nova, 2009) WW.pdf" yEnc
 	elseif (preg_match('/\[\]OOO\[\][ _-]{0,3}ASST.+?[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;)(?P<title>.+)\.(pdf|doc|lit|mobi|txt|epub|chm|djvu|rar|zip)("|#34;) yEnc/i', $subject, $match))
 	{
 		$cleanerName = $match['title'];
