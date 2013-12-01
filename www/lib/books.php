@@ -246,7 +246,8 @@ require_once nZEDb_LIB . 'site.php';
 		$ret = 0;
 		$db = $this->db;
 
-		$res = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND bookinfoid IS NULL AND categoryid = 8010 ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+        // include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
+		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE nzbstatus = 1  AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
@@ -254,7 +255,18 @@ require_once nZEDb_LIB . 'site.php';
 
 			foreach ($res as $arr)
 			{
-				$bookInfo = $this->parseTitle($arr['searchname'], $arr['id']);
+				// audiobooks are also books and should be handles in an idetical manor, even though it fails under a music category
+				if($arr['categoryid'] == '3030')
+				{
+					// audiobook
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "audiobook");
+				}
+				else
+				{
+					// ebook
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "ebook");
+				}
+
 				if ($bookInfo !== false)
 				{
 					if ($this->echooutput)
@@ -276,30 +288,44 @@ require_once nZEDb_LIB . 'site.php';
 		}
 	}
 
-	public function parseTitle($releasename, $releaseID)
+	public function parseTitle($releasename, $releaseID, $releasetype)
 	{
 		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
 		$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
 		$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 
-		if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
+		// the default existing type was ebook, this handles that in the same manor as before
+		if($releasetype == 'ebook')
 		{
-			echo "Changing category to misc books: ".$releasename."\n";
-			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
-			return false;
+			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
+			{
+				echo "Changing category to misc books: ".$releasename."\n";
+				$db = $this->db;
+				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
+				return false;
+			}
+			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
+			{
+				echo "Changing category to magazines: ".$releasename."\n";
+				$db = $this->db;
+				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
+				return false;
+			}
+			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+				return $releasename;
+			else
+				return false;
 		}
-		else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
-		{
-			echo "Changing category to magazines: ".$releasename."\n";
-			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
-			return false;
-		}
-		else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
-			return $releasename;
-		else
-			return false;
+		else if($releasetype == 'audiobook')
+		{			
+			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+			{
+				// we can skip category for audiobooks, since we already know it, so as long as the release name is valid return it so that it is postprocessed by amazon.  In the future, determining the type of audiobook could be added (Lecture or book), since we can skip lookups on lectures, but for now handle them all the same way
+				return $releasename;
+			}
+			else
+				return false;
+		}		
 	}
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
@@ -412,3 +438,5 @@ require_once nZEDb_LIB . 'site.php';
 		return $bookId;
 	}
 }
+
+
