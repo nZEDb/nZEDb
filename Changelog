@@ -4,6 +4,18 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-12-01 -> jonnyboy -> please update this file when you post do a pull request
+                          added notices to start.php to better explain the tmux output(iguyking)
+                          moved nzbstatus to bitwise, added color to all python scripts, added color to more php scripts, fixed bug in fixreleasenames par2 not couting total changed
+                          fixed bug in monitor.php not get correct newest releases name
+                          added sort to messages in an attempt to get shortest subject inserted as releases.name
+                          fixed bug in grabnzbs not setting bitwise 4, expanded option to add parts to partrepair for any backfill script
+                          added utf8_encode to insert for name, searchname and fromname, added a.b.audiobooks to releaseCleaner
+                          changed gzip compression level from 6 to 5, since the difference in compression in negligeable but the difference in time is noticeable
+                          ***NOTE***
+                          I have discovered that the nzbs imported using GrabNZBs do not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db.
+                          This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs, but the file size will differ.
+                          The difference appears to be from USP providers, the posted nzb and size is from the originating USP and may vary in size from your USP.
 2013-11-25 -> jonnyboy -> updated miscsorter.php to echo updated changes same as other rename scripts, fixed bug in fixreleasenames filename where renamed to folder\filename
                           changed relnamestatus to bitwise, running this batch will reset relnamestatus to 0, please run 'renametopre.php full all' after running the patch and before anything else
                           you can now run all renaming scripts and only category 7010 will be rechecked(may contain bugs :))

@@ -249,6 +249,8 @@ class Namefixer
 
 				$checkedname = explode("\\", $newname);
 				$newname = $checkedname[0];
+				$newname = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $newname);
+				
 				if ($this->echooutput === true)
 				{
 					$groups = new Groups();
@@ -258,13 +260,13 @@ class Namefixer
 
 					if ($type === "PAR2, ")
 						echo $n;
-					echo	$n."New name:  ".$newname.$n.
-							"Old name:  ".$release["searchname"].$n.
-							"New cat:   ".$newcatname.$n.
-							"Old cat:   ".$oldcatname.$n.
-							"Group:     ".$groupname.$n.
-							"Method:    ".$type.$method.$n.
-							"ReleaseID: ". $release["releaseid"].$n;
+					echo	$n.$this->c->headerOver("New name:  ").$this->c->primary($newname).
+							$this->c->headerOver("Old name:  ").$this->c->primary($release["searchname"]).
+							$this->c->headerOver("New cat:   ").$this->c->primary($newcatname).
+							$this->c->headerOver("Old cat:   ").$this->c->primary($oldcatname).
+							$this->c->headerOver("Group:     ").$this->c->primary($groupname).
+							$this->c->headerOver("Method:    ").$this->c->primary($type.$method).
+							$this->c->headerOver("ReleaseID: "). $this->c->primary($release["releaseid"]);
 					if ($type !== "PAR2, ")
 						echo $n;
 				}

@@ -14,6 +14,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -21,16 +22,16 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 cur = con.cursor()
 
-print("\nBinaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nBinaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -39,14 +40,14 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 cur.execute("SELECT name FROM groups WHERE active = 1")
 datas = cur.fetchall()
 if len(datas) == 0:
-	sys.exit("No Active Groups")
+	print(bcolors.ERROR + "No Active Groups" + bcolors.ENDC)
 
 cur.execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'hashcheck') AS b")
 dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 hashcheck = int(dbgrab[0][1])
 if hashcheck == 0:
-	sys.exit("We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true")
+	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true" + bcolors.ENDC)
 
 #close connection to mysql
 cur.close()
@@ -79,7 +80,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -101,8 +102,8 @@ def main():
 
 	my_queue.join()
 
-	print("\nBinaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nBinaries Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()

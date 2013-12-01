@@ -437,7 +437,7 @@ class PostProcess
 					{
 						if ($this->echooutput)
 							echo $this->c->error("Unable to create directory: {$this->tmpPath}");
-						// Increment.
+						// Decrement passwordstatus.
 						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
 					}
@@ -724,7 +724,6 @@ class PostProcess
 										$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $this->tmpPath.$file, $ri->jpgSavePath, 650, 650);
 										if ($blnTookJPG !== false)
 											$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
-
 									}
 									if ($processSample === true || $processVideo === true || $processMediainfo === true)
 									{

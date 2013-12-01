@@ -137,7 +137,8 @@ class Backfill
 
 			echo $this->c->set256($this->header).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
 			flush();
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$process = $this->safepartrepair ? 'update' : 'backfill';
+			$binaries->scan($nntp, $groupArr, $first, $last, $process);
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
@@ -295,7 +296,8 @@ class Backfill
 
 			echo $this->c->set256($this->header)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
 			flush();
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$process = $this->safepartrepair ? 'update' : 'backfill';
+			$binaries->scan($nntp, $groupArr, $first, $last, $process);
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
@@ -557,7 +559,7 @@ class Backfill
 		$backthread = $site->get()->backfillthreads;
 		$binaries = new Binaries();
 		$groupArr = $groups->getByName($group);
-		$type = $this->safepartrepair ? 'update' : 'backfill';
+		$process = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->nntpproxy == 0)
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).(($this->compressedHeaders)?' Using Compression':' Not Using Compression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
@@ -565,7 +567,7 @@ class Backfill
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
 
-		$binaries->scan($nntp, $groupArr, $last, $first, $type);
+		$binaries->scan($nntp, $groupArr, $last, $first, $process);
 	}
 
 	function getFinal($group, $first, $type, $nntp)

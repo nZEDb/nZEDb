@@ -14,6 +14,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -21,24 +22,28 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	sys.exit()
 
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter":
-	sys.exit("\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	sys.exit()
 
-print("\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
 run_threads = cur.fetchone()
@@ -77,7 +82,7 @@ cur.close()
 con.close()
 
 if not datas:
-	print("No Work to Process")
+	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -109,9 +114,9 @@ def main():
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == 'md5':
-		print("We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1) + bcolors.ENDC)
 	else:
-		print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -145,8 +150,8 @@ def main():
 
 	my_queue.join()
 
-	print("\nfixReleaseNames {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nfixReleaseNames {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()

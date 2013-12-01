@@ -15,6 +15,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -22,28 +23,31 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
-	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 else:
-	print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+	print(bcolors.HEADER + "\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 if sys.argv[1] == "additional":
-	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
-	print("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
-	print("Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip");
+	print(bcolors.HEADER + "Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file" + bcolors.ENDC);
+	print(bcolors.HEADER + "Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample" + bcolors.ENDC);
+	print(bcolors.HEADER + "Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip" + bcolors.ENDC);
 elif sys.argv[1] == "nfo":
-	print("* = hidden NFO, + = NFO, - = no NFO, f = download failed.")
+	print(bcolors.HEADER + "* = hidden NFO, + = NFO, - = no NFO, f = download failed." + bcolors.ENDC)
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -55,7 +59,8 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
 else:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	sys.exit()
 
 run_threads = int(dbgrab[0][0])
 ppperrun = int(dbgrab[0][1])
@@ -159,7 +164,7 @@ elif sys.argv[1] == "tv":
 		datas = cur.fetchall()
 
 if not datas:
-	print("No Work to Process")
+	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -198,11 +203,11 @@ def main(args):
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == "additional":
-		print("We will be using a max of {} threads, a queue of {} {} releases. passwordstatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. passwordstatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries) + bcolors.ENDC)
 	elif sys.argv[1] == "nfo":
-		print("We will be using a max of {} threads, a queue of {} {} releases. nfostatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. nfostatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries) + bcolors.ENDC)
 	else:
-		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -250,8 +255,8 @@ def main(args):
 	cur.close()
 	con.close()
 
-	print("\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

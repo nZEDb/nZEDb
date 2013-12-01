@@ -976,7 +976,7 @@ class Releases
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d, bitwise = ((bitwise & ~1)|1) WHERE id = %d', $catId, $rowrel['id']));
 				$relcount ++;
 				if ($this->echooutput)
-					$this->consoleTools->overWrite('Categorizing:'.$this->consoleTools->percentString($relcount,$total));
+					$this->consoleTools->overWrite($this->primaryOver('Categorizing: '.$this->consoleTools->percentString($relcount,$total)));
 			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)

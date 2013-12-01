@@ -59,13 +59,13 @@ function preName($argv)
 						$oldcatname = $category->getNameByID($row['categoryid']);
 						$newcatname = $category->getNameByID($determinedcat);
 
-						echo $c->primary($n.'New name:  '.$pre['title'].$n.
-							'Old name:  '.$row['searchname'].$n.
-							'New cat:   '.$newcatname.$n.
-							'Old cat:   '.$oldcatname.$n.
-							'Group:     '.$groupname.$n.
-							'Method:    '.'predb md5 release name: '.$pre['source'].$n.
-							'ReleaseID: '. $row['id']);
+						echo	$n.$this->c->headerOver("New name:  ").$this->c->primary($pre['title']).
+							$this->c->headerOver("Old name:  ").$this->c->primary($row['searchname']).
+							$this->c->headerOver("New cat:   ").$this->c->primary($newcatname).
+							$this->c->headerOver("Old cat:   ").$this->c->primary($oldcatname).
+							$this->c->headerOver("Group:     ").$this->c->primary($groupname).
+							$this->c->headerOver("Method:    ").$this->c->primary('predb md5 release name: '.$pre['source']).
+							$this->c->headerOver("ReleaseID: "). $this->c->primary($row['id']);
 
 						$success = true;
 						$counter++;
