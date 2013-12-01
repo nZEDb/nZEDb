@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'site.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -304,60 +305,79 @@ class DB
 	}
 
 	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
-	public function newtables($grpid)
-	{
-		if (!is_null($grpid) && is_numeric($grpid))
-		{
-			$binaries = $parts = $collections = false;
-			try {
-				DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
-				$collections = true;
-			} catch (PDOException $e) {
-				try {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
-					{
-						$collections = true;
-						$this->newtables($grpid);
-					}
-				} catch (PDOException $e) {
-					return false;
-				}
-			}
+    public function newtables($grpid)
+    {
+        $s = new Sites();
+        $site = $s->get();
+        $DoPartRepair = ($site->partrepair == '0') ? false : true;
+        if (!is_null($grpid) && is_numeric($grpid))
+        {
+            $binaries = $parts = $collections = $partrepair = false;
+            try {
+                DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+                $collections = true;
+            } catch (PDOException $e) {
+                try {
+                    if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+                    {
+                        $collections = true;
+                        $this->newtables($grpid);
+                    }
+                } catch (PDOException $e) {
+                    return false;
+                }
+            }
 
-			if ($collections === true)
-			{
-				try {
-					DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
-					$binaries = true;
-				} catch (PDOException $e) {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
-					{
-						$binaries = true;
-						$this->newtables($grpid);
-					}
-				}
-			}
+            if ($collections === true)
+            {
+                try {
+                    DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+                    $binaries = true;
+                } catch (PDOException $e) {
+                    if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+                    {
+                        $binaries = true;
+                        $this->newtables($grpid);
+                    }
+                }
+            }
 
-			if ($binaries === true)
-			{
-				try {
-					DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
-					$parts = true;
-				} catch (PDOException $e) {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
-					{
-						$parts = true;
-						$this->newtables($grpid);
-					}
-				}
-			}
+            if ($binaries === true)
+            {
+                try {
+                    DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+                    $parts = true;
+                } catch (PDOException $e) {
+                    if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+                    {
+                        $parts = true;
+                        $this->newtables($grpid);
+                    }
+                }
+            }
 
-			if ($parts === true && $binaries = true && $collections = true)
-				return true;
-			else
-				return false;
-		}
-	}
+            if ($DoPartRepair === true)
+            {
+                try {
+                    DB::$pdo->query('SELECT * FROM '.$grpid.'_partrepair LIMIT 1');
+                    $partrepair = true;
+                } catch (PDOException $e) {
+                    if ($this->queryExec('CREATE TABLE '.$grpid.'_partrepair LIKE partrepair') !== false)
+                    {
+                        $partrepair = true;
+                        $this->newtables($grpid);
+                    }
+                }
+            }
+            else
+                $partrepair = true;
+
+            if ($parts === true && $binaries = true && $collections = true && $partrepair = true)
+                return true;
+            else
+                return false;
+        }
+    }
 
 	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
 	public function Prepare($query)
