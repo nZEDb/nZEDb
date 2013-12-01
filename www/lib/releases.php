@@ -384,7 +384,7 @@ class Releases
 		return $res['num'];
 	}
 
-	public function delete($id, $isGuid=false)
+	public function delete($id, $isGuid = false)
 	{
 		$db = $this->db;
 		$nzb = new NZB();
@@ -396,7 +396,11 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			$rel = $this->getById($identifier);
+			if ($isGuid) {
+				$rel = $this->getByGuid($identifier);
+			} else {
+				$rel = $this->getById($identifier);
+			}
 			$this->fastDelete($rel['id'], $rel['guid'], $this->site);
 		}
 	}
@@ -457,8 +461,8 @@ class Releases
 	{
 		$db = $this->db;
 		$db->queryExec(sprintf('UPDATE releases SET name = %s, searchname = %s, fromname = %s, categoryid = %d, totalpart = %d, grabs = %d, size = %s,
-							postdate = %s, adddate = %s, rageid = %d, seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d WHERE id = %d', 
-							$db->escapeString($name), $db->escapeString($searchname), $db->escapeString($fromname), $category, $parts, $grabs, $db->escapeString($size), 
+							postdate = %s, adddate = %s, rageid = %d, seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d WHERE id = %d',
+							$db->escapeString($name), $db->escapeString($searchname), $db->escapeString($fromname), $category, $parts, $grabs, $db->escapeString($size),
 							$db->escapeString($posteddate), $db->escapeString($addeddate), $rageid, $db->escapeString($seriesfull), $db->escapeString($season), $db->escapeString($episode), $imdbid, $anidbid, $id));
 	}
 
