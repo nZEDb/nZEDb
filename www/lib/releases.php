@@ -1522,6 +1522,7 @@ class Releases
 				if($nzb_create != false)
 				{
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
+					$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
 						echo $this->consoleTools->overWrite($this->c->primaryOver('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
@@ -1553,7 +1554,7 @@ class Releases
 				echo $this->c->header("\nStage 5b -> Request ID lookup.");
 
 			// Look for records that potentially have requestID titles.
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(bitwise & 4) = 0 AND (bitwise & 256) = 256 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(bitwise & 260) = 256 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
 
 			if ($resrel->rowCount() > 0)
 			{
