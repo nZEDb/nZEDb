@@ -436,32 +436,38 @@ while($i > 0)
 		{
 			$sql = 'SHOW TABLE STATUS';
 			$tables = $db->query($sql);
-			$collections_table = $binaries_table = $parts_table = 0;
+			$collections_table = $binaries_table = $parts_table = $partrepair_table = 0;
 			$age = TIME();
 			if (count($tables) > 0)
 			{
 				foreach($tables as $row)
 				{
 					$tbl = $row['name'];
-					if (preg_match('/\d+_collections/',$tbl))
+					if (strpos($tbl, '_collections') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
 						$collections_table += $run[0]['count'];
 						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
 							$age = $run[0]['dateadded'];
 					}
-					else if (preg_match('/\d+_binaries/',$tbl))
+					else if (strpos($tbl, '_binaries') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$binaries_table += $run[0]['count'];
 					}
-					else if (preg_match('/\d+_parts/',$tbl))
+					else if (strpos($tbl, '_parts') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
+                    else if (strpos($tbl, '_partrepair') !== false)
+                    {
+                        $run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
+                        if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+                            $partrepair_table += $run[0]['count'];
+                    }
 				}
 				$oldestcollection = $age;
 				$tpg_count_time = (TIME() - $time07);
@@ -521,9 +527,9 @@ while($i > 0)
 		if ($proc_work_result3[0]['binaries_table'] != NULL) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
 		if ($split_result[0]['parts_table'] != NULL) { $parts_table = $split_result[0]['parts_table']; }
 		if ($proc_work_result2[0]['collections_table'] != NULL) { $collections_table = $proc_work_result2[0]['collections_table']; }
+        if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	}
 
-	if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	if ($split_result[0]['predb'] != NULL) { $predb = $split_result[0]['predb']; }
 
 	if ($proc_work_result3[0]['predb_matched'] != NULL) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
