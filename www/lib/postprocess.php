@@ -1319,25 +1319,26 @@ class PostProcess
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
-				if(!@file_put_contents($rarfile, $fetchedBinary))
-					continue;
-				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
-				$output = runCmd($execstring, false, true);
-				if (isset($files[0]['name']))
+				if(@file_put_contents($rarfile, $fetchedBinary))
 				{
-					if ($this->echooutput)
-						echo 'r';
-					foreach ($files as $file)
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
+					$output = runCmd($execstring, false, true);
+					if (isset($files[0]['name']))
 					{
-						if (isset($file['name']))
+						if ($this->echooutput)
+							echo 'r';
+						foreach ($files as $file)
 						{
-							if (!isset($file['next_offset']))
-								$file['next_offset'] = 0;
-							$range = mt_rand(0,99999);
-							if (isset($file['range']))
-								$range = $file['range'];
+							if (isset($file['name']))
+							{
+								if (!isset($file['next_offset']))
+									$file['next_offset'] = 0;
+								$range = mt_rand(0,99999);
+								if (isset($file['range']))
+									$range = $file['range'];
 
-							$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+								$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+							}
 						}
 					}
 				}

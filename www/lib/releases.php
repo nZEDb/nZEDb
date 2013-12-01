@@ -384,7 +384,7 @@ class Releases
 		return $res['num'];
 	}
 
-	public function delete($id, $isGuid=false)
+	public function delete($id, $isGuid = false)
 	{
 		$db = $this->db;
 		$nzb = new NZB();
@@ -396,7 +396,11 @@ class Releases
 
 		foreach($id as $identifier)
 		{
-			$rel = $this->getById($identifier);
+			if ($isGuid) {
+				$rel = $this->getByGuid($identifier);
+			} else {
+				$rel = $this->getById($identifier);
+			}
 			$this->fastDelete($rel['id'], $rel['guid'], $this->site);
 		}
 	}
