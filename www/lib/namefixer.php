@@ -19,7 +19,9 @@ class Namefixer
 	const NF_NF_NFO			=	 64;	// 0000 0000 0100 0000 Processed by namefixer NFO.
 	const NF_NF_FILES		=	128;	// 0000 0000 1000 0000 Processed by namefixer Files.
 
-	const NF_NZB_STATUS		=	256;	// 0000 0001 0000 0000 NZBStatus 0 = no nzb, 1 = nzb
+	const NF_NZB_STATUS		=	256;	// 0000 0001 0000 0000 NZBStatus 0 = no nzb, 256 = is an nzb
+	const NF_HASHED			=	512;	// 0000 0010 0000 0000 hashed 0 = not hashed, 512 = is hashed
+	const NF_REQUEST		=  1024;	// 0000 0100 0000 0000 request 0 = not a requestid, 1024 = is a requestid
 
 	function __construct($echooutput=true)
 	{

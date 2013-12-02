@@ -480,9 +480,9 @@ Class Predb
 			echo 'Fixing search names'.$te." using the predb md5.\n";
 		}
 		if ($db->dbSystem() == 'mysql')
-			$regex = "AND (r.hashed = true OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
 		else if ($db->dbSystem() == 'pgsql')
-			$regex = "AND (r.hashed = true OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
 
 		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE (bitwise & 4) = 0 AND dehashstatus BETWEEN -5 AND 0 AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
 		$res->execute();

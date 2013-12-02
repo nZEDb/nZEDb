@@ -62,7 +62,7 @@ function writelog($pane)
 if ($hashcheck != 1)
 	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
 
-if ($patch < 151)
+if ($patch < 152)
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
 
 //remove folders from tmpunrar
