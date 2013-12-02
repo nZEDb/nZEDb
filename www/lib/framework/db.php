@@ -20,7 +20,7 @@ class DB
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
-		if (DB::$initialized === false)
+		if (self::$initialized === false)
 		{
 			if ($this->dbsystem == 'mysql')
 			{
@@ -43,15 +43,15 @@ class DB
 				else
 					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 
-				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
+				self::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
-				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-				DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+				self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+				self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			} catch (PDOException $e) {
 				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 			}
 
-			DB::$initialized = true;
+			self::$initialized = true;
 		}
 		$this->memcached = false;
 		if (defined("MEMCACHE_ENABLED"))
@@ -70,7 +70,7 @@ class DB
 		if (is_null($str))
 			return 'NULL';
 
-		return DB::$pdo->quote($str);
+		return self::$pdo->quote($str);
 	}
 
 	// For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
@@ -83,13 +83,13 @@ class DB
 		{
 			if ($this->dbsystem() == 'mysql')
 			{
-				$ins = DB::$pdo->prepare($query);
+				$ins = self::$pdo->prepare($query);
 				$ins->execute();
-				return DB::$pdo->lastInsertId();
+				return self::$pdo->lastInsertId();
 			}
 			else
 			{
-				$p = DB::$pdo->prepare($query.' RETURNING id');
+				$p = self::$pdo->prepare($query.' RETURNING id');
 				$p->execute();
 				return $r['id'];
 			}
@@ -100,9 +100,9 @@ class DB
 			{
 				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
 				$this->consoletools->showsleep($i * $i);
-				$ins = DB::$pdo->prepare($query);
+				$ins = self::$pdo->prepare($query);
 				$ins->execute();
-				return DB::$pdo->lastInsertId();
+				return self::$pdo->lastInsertId();
 				$i++;
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205)
@@ -134,7 +134,7 @@ class DB
 			return false;
 
 		try {
-			$run = DB::$pdo->prepare($query);
+			$run = self::$pdo->prepare($query);
 			$run->execute();
 			return $run;
 		} catch (PDOException $e) {
@@ -144,7 +144,7 @@ class DB
 			{
 				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
 				$this->consoletools->showsleep($i * $i);
-				$run = DB::$pdo->prepare($query);
+				$run = self::$pdo->prepare($query);
 				$run->execute();
 				return $run;
 				$i++;
@@ -177,7 +177,7 @@ class DB
 			return false;
 
 		try {
-			return DB::$pdo->exec($query);
+			return self::$pdo->exec($query);
 		} catch (PDOException $e) {
 			printf($e->getMessage());
 			return false;
@@ -208,7 +208,7 @@ class DB
 		}
 
 		try {
-			$result = DB::$pdo->query($query);
+			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
 			printf($e->getMessage());
 			$result = false;
@@ -247,7 +247,7 @@ class DB
 			return false;
 
 		try {
-			$result = DB::$pdo->query($query);
+			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
 			printf($e->getMessage());
 			$result = false;
@@ -258,12 +258,12 @@ class DB
     //Query that will return an associative array
     public function queryAssoc($query)
     {
-        DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         if ($query == '')
             return false;
 
         try {
-            $result = DB::$pdo->query($query);
+            $result = self::$pdo->query($query);
         } catch (PDOException $e) {
             printf($e->getMessage());
             $result = false;
@@ -310,7 +310,7 @@ class DB
 		{
 			$binaries = $parts = $collections = false;
 			try {
-				DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+				self::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
 				$collections = true;
 			} catch (PDOException $e) {
 				try {
@@ -327,7 +327,7 @@ class DB
 			if ($collections === true)
 			{
 				try {
-					DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+					self::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
 					$binaries = true;
 				} catch (PDOException $e) {
 					if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
@@ -341,7 +341,7 @@ class DB
 			if ($binaries === true)
 			{
 				try {
-					DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+					self::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
 					$parts = true;
 				} catch (PDOException $e) {
 					if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
@@ -363,7 +363,7 @@ class DB
 	public function Prepare($query)
 	{
 		try {
-			$stat = DB::$pdo->prepare($query);
+			$stat = self::$pdo->prepare($query);
 		} catch (PDOException $e) {
 			//printf($e->getMessage());
 			$stat = false;
@@ -374,19 +374,19 @@ class DB
 	// Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	public function beginTransaction()
 	{
-		return DB::$pdo->beginTransaction();
+		return self::$pdo->beginTransaction();
 	}
 
 	// Commits a transaction. http://www.php.net/manual/en/pdo.commit.php
 	public function Commit()
 	{
-		return DB::$pdo->commit();
+		return self::$pdo->commit();
 	}
 
 	// Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php
 	public function Rollback()
 	{
-		return DB::$pdo->rollBack();
+		return self::$pdo->rollBack();
 	}
 
 	public function from_unixtime($utime, $escape=true)
@@ -420,24 +420,24 @@ class DB
 	public function ping($restart = false)
 	{
 		try {
-			return (bool) DB::$pdo->query('SELECT 1+1');
+			return (bool) self::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
 			if ($restart = true)
 			{
-				DB::$initialized = false;
+				self::$initialized = false;
 				$this->DB();
 			}
 			return false;
 		}
 	}
-	
+
 	// Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php
 	public function getAttribute($attribute)
 	{
 		if ($attribute != '')
 		{
 			try {
-				$result = DB::$pdo->getAttribute($attribute);
+				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
 				printf($e->getMessage());
 				$result = false;
