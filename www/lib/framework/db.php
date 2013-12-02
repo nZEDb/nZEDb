@@ -39,7 +39,10 @@ class DB extends PDO
 	 */
 	private static $pdo = null;
 
-	// Start a connection to the DB.
+	/**
+	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
+	 * if needed, otherwise returns the current one.
+	 */
 	public function __construct()
 	{
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
@@ -97,7 +100,9 @@ class DB extends PDO
 		}
 	}
 
-	// Return string; mysql or pgsql.
+	/**
+	 * @return string; mysql or pgsql.
+	 */
 	public function dbSystem()
 	{
 		return $this->dbsystem;
@@ -417,18 +422,6 @@ class DB extends PDO
 		}
 	}
 
-	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
-	public function Prepare($query)
-	{
-		try {
-			$stat = self::$pdo->prepare($query);
-		} catch (PDOException $e) {
-			//printf($e->getMessage());
-			$stat = false;
-		}
-		return $stat;
-	}
-
 	// Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	public function beginTransaction()
 	{
@@ -487,6 +480,28 @@ class DB extends PDO
 			}
 			return false;
 		}
+	}
+
+	/**
+	 * Prepares a statement to be run by the Db engine.
+	 * To run the statement use the returned $statement with ->execute();
+	 *
+	 * Ideally the signature would have array before $options but that causes a strict warning.
+	 *
+	 * @param string	$query		SQL query to run, with optional place holders.
+	 * @param array		$options	Driver options.
+	 * @return Pobject|false PDOstatement on success false on failure.
+	 * @link http://www.php.net/pdo.prepare.php
+	 */
+	public function Prepare($query, $options = array())
+	{
+		try {
+			$PDOstatement = self::$pdo->prepare($query, $options);
+		} catch (PDOException $e) {
+			//printf($e->getMessage());
+			$PDOstatement = false;
+		}
+		return $PDOstatement;
 	}
 
 	// Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php
