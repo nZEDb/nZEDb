@@ -36,11 +36,11 @@ cur = con.cursor()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
 	sys.exit()
 
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter":
-	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
 	sys.exit()
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
@@ -67,7 +67,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 256) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') AND (bitwise & 4) = 0 ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
