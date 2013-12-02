@@ -65,7 +65,7 @@ function preName($argv)
 							$c->headerOver("Old cat:   ").$c->primary($oldcatname).
 							$c->headerOver("Group:     ").$c->primary($groupname).
 							$c->headerOver("Method:    ").$c->primary('predb md5 release name: '.$pre['source']).
-							$c->headerOver("ReleaseID: "). $c->primary($row['id']);
+							$c->headerOver("ReleaseID: ").$c->primary($row['id']);
 
 						$success = true;
 						$counter++;
