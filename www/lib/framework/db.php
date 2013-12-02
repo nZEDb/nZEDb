@@ -26,43 +26,45 @@ class DB extends PDO
 		else
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
 
-		if (!(self::$pdo instanceof PDO))
-		{
-			if ($this->dbsystem == 'mysql')
-			{
-				if (defined('DB_SOCKET') && DB_SOCKET != '')
-					$dsn = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
-				else
-				{
-					$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-					if (defined('DB_PORT'))
-						$dsn .= ';port='.DB_PORT;
-					$dsn .= ';charset=utf8';
-				}
-			}
-			else
-				$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+		if (!(self::$pdo instanceof PDO)) $this->initialiseDatabase();
 
-			try {
-				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
-				else
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
-
-				self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
-				// For backwards compatibility, no need for a patch.
-				self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-				self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-			} catch (PDOException $e) {
-				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
-			}
-
-		}
 		$this->memcached = false;
 		if (defined("MEMCACHE_ENABLED"))
 			$this->memcached = MEMCACHE_ENABLED;
 
 		return self::$pdo;
+	}
+
+	private function initialiseDatabase($param)
+	{
+		if ($this->dbsystem == 'mysql')
+		{
+			if (defined('DB_SOCKET') && DB_SOCKET != '')
+				$dsn = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
+			else
+			{
+				$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+				if (defined('DB_PORT'))
+					$dsn .= ';port='.DB_PORT;
+				$dsn .= ';charset=utf8';
+			}
+		}
+		else
+			$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+
+		try {
+			if ($this->dbsystem == 'mysql')
+				$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
+			else
+				$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+
+			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
+			// For backwards compatibility, no need for a patch.
+			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		} catch (PDOException $e) {
+			exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
+		}
 	}
 
 	// Return string; mysql or pgsql.
