@@ -352,7 +352,7 @@ class DB
 				}
 			}
 
-			if ($parts === true && $binaries = true && $collections = true)
+			if ($parts === true && $binaries === true && $collections === true)
 				return true;
 			else
 				return false;
@@ -422,7 +422,7 @@ class DB
 		try {
 			return (bool) self::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
-			if ($restart = true)
+			if ($restart === true)
 			{
 				self::$initialized = false;
 				$this->DB();
