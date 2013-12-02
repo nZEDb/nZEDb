@@ -17,6 +17,7 @@ $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 $namecleaning = new nameCleaning();
+$categorize = new Category();
 
 if (!isset($argv[2]))
 {
@@ -38,18 +39,6 @@ $color_skipped = 190;
 $color_blacklist = 11;
 $color_group = 1;
 $color_write_error = 9;
-
-function categorize()
-{
-	$db = new DB();
-	$cat = new Category();
-	$relres = $db->query("SELECT name, id, groupid FROM releases WHERE categoryid = 7010 AND relnamestatus = 0");
-	foreach ($relres as $relrow)
-	{
-		$catID = $cat->determineCategory($relrow['name'], $relrow['groupid']);
-		$db->queryExec(sprintf("UPDATE releases SET categoryid = %d, relnamestatus = 1 WHERE id = %d", $catID, $relrow['id']));
-	}
-}
 
 function relativeTime($_time)
 {
@@ -108,7 +97,7 @@ else
 			$nzba = file_get_contents($nzbFile);
 			$compressed = false;
 		}
-		elseif ($nzbFile->getExtension() == "gz")
+		else if ($nzbFile->getExtension() == "gz")
 		{
 			$nzbc = 'compress.zlib://'.$nzbFile;
 			$nzba = file_get_contents($nzbc);
@@ -167,7 +156,7 @@ else
 			if ($groupID != -1 && !$isBlackListed)
 			{
 				if ($usenzbname)
-						$usename = str_replace('.nzb', '', basename($nzbFile));
+					$usename = str_replace('.nzb', '', basename($nzbFile));
 				if (count($file->segments->segment) > 0)
 				{
 					foreach($file->segments->segment as $segment)
@@ -210,10 +199,11 @@ else
 				$posteddate = $date = date("Y-m-d H:i:s");
 			else
 				$posteddate = $postdate[0];
+			$category = $categorize->determineCategory($cleanName, $groupName);
 			if ($propername === true)
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, relnamestatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1, 6)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
 			else
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, 7010, -1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0)));
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~257)|257)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
 
 			if (isset($relid) && $relid == false)
 			{
@@ -235,10 +225,7 @@ else
 						echo "\n\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m\n";
 					}
 					else
-					{
-						categorize();
 						echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);
-					}
 				}
 				else
 					echo ".";

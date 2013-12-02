@@ -21,11 +21,11 @@ function preName($argv)
 	$db = new DB();
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1] === "all")
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true');
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512');
 	else if (isset($argv[1]) && $argv[1] === "full")
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0');
 	else if (isset($argv[1]) && is_numeric($argv[1]))
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
 	$c = new ColorCLI;
 
 	$total = $res->rowCount();
@@ -50,7 +50,7 @@ function preName($argv)
 				if ($pre !== false)
 				{
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
-					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, relnamestatus = 5, searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
+					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, bitwise = ((bitwise & ~36)|36), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
 					$result->execute();
 					if (count($result) > 0)
 					{
@@ -59,13 +59,13 @@ function preName($argv)
 						$oldcatname = $category->getNameByID($row['categoryid']);
 						$newcatname = $category->getNameByID($determinedcat);
 
-						echo $c->primary($n.'New name:  '.$pre['title'].$n.
-							'Old name:  '.$row['searchname'].$n.
-							'New cat:   '.$newcatname.$n.
-							'Old cat:   '.$oldcatname.$n.
-							'Group:     '.$groupname.$n.
-							'Method:    '.'predb md5 release name: '.$pre['source'].$n.
-							'ReleaseID: '. $row['id']);
+						echo	$n.$c->headerOver("New name:  ").$c->primary($pre['title']).
+							$c->headerOver("Old name:  ").$c->primary($row['searchname']).
+							$c->headerOver("New cat:   ").$c->primary($newcatname).
+							$c->headerOver("Old cat:   ").$c->primary($oldcatname).
+							$c->headerOver("Group:     ").$c->primary($groupname).
+							$c->headerOver("Method:    ").$c->primary('predb md5 release name: '.$pre['source']).
+							$c->headerOver("ReleaseID: ").$c->primary($row['id']);
 
 						$success = true;
 						$counter++;

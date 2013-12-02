@@ -15,6 +15,7 @@ except ImportError:
 	import Queue as queue
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -22,29 +23,28 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 con.autocommit(True)
 cur = con.cursor()
 
-print("\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-
-#cur.execute("UPDATE releases SET reqidstatus = -1 WHERE reqidstatus = 0 AND nzbstatus = 1 AND relnamestatus in (0, 1, 20, 21, 22) AND name REGEXP '^\\[[[:digit:]]+\\]' = 0")
-#cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE relnamestatus in (0, 1, 20, 21, 22) AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.name REGEXP '^\\[[[:digit:]]+\\]' = 1 limit 100")
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND relnamestatus in (0, 1, 20, 21, 22) AND reqidstatus in (0, -1) AND request = true limit 100")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) LIMIT 100")
 datas = cur.fetchall()
 
 if not datas:
-	print("No Work to Process")
+	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
 
 #close connection to mysql
@@ -85,7 +85,7 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	if True:
-		print("We will be using a max of {} threads, a queue of {} items".format(threads, "{:,}".format(len(datas))))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} items".format(threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 		time.sleep(2)
 
 		#spawn a pool of place worker threads
@@ -101,8 +101,8 @@ def main():
 
 	my_queue.join()
 
-	print("\nRequestID Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nRequestID Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()

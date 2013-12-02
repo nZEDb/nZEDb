@@ -24,13 +24,15 @@ def connect():
 			import cymysql as mdb
 			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 		except ImportError:
-			sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+			sys.exit()
 	elif conf['DB_SYSTEM'] == "pgsql":
 		try:
 			import psycopg2 as mdb
 			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 		except ImportError:
-			sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+			print(bcolors.HEADER + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+			sys.exit()
 	cur = con.cursor()
 	return cur, con
 
@@ -43,7 +45,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print(bcolors.HEADER + "\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S"))+ bcolors.ENDC)
+print(bcolors.HEADER + "\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 cur = connect()
 cur[0].execute("SELECT name FROM shortgroups")
@@ -105,7 +107,7 @@ while count < 10000:
 		cur[0].execute(run, (sys.argv[1]))
 		datas = cur[0].fetchone()
 	if not datas or datas[0] is None:
-		print(bcolors.ERROR + "No Groups enabled for backfill"+ bcolors.ENDC)
+		print(bcolors.ERROR + "No Groups enabled for backfill" + bcolors.ENDC)
 		disconnect(cur[0], cur[1])
 		sys.exit()
 	disconnect(cur[0], cur[1])
@@ -113,13 +115,13 @@ while count < 10000:
 	previous += ", '%s'" % datas[0]
 	count = datas[1] - datas[2]
 	if count < 0:
-		print(bcolors.ERROR + "USP returned an invalid first_post for {}, skipping it.".format(datas[0])+ bcolors.ENDC)
+		print(bcolors.ERROR + "USP returned an invalid first_post for {}, skipping it.".format(datas[0]) + bcolors.ENDC)
 		if len(sys.argv) == 2:
 			sys.exit()
 
 	if count == 0:
 		if len(sys.argv) == 2:
-			print(bcolors.ERROR + "We have hit the maximum we can backfill for {}, disabling it".format(datas[0])+ bcolors.ENDC)
+			print(bcolors.ERROR + "We have hit the maximum we can backfill for {}, disabling it".format(datas[0]) + bcolors.ENDC)
 			remove = "UPDATE groups SET backfill = 0 WHERE name = %s"
 			cur = connect()
 			cur[0].execute(remove, (sys.argv[1]))
@@ -127,12 +129,12 @@ while count < 10000:
 			disconnect(cur[0], cur[1])
 			sys.exit()
 		else:
-			print(bcolors.ERROR + "We have hit the maximum we can backfill for {}, skipping it".format(datas[0])+ bcolors.ENDC)
+			print(bcolors.ERROR + "We have hit the maximum we can backfill for {}, skipping it".format(datas[0]) + bcolors.ENDC)
 
 	if count < 10000 and count > 0:
-		print(bcolors.PRIMARY + "Group {} has {} articles, in the range {} to {}".format(datas[0], "{:,}".format(count), "{:,}".format(datas[2]), "{:,}".format(datas[3]))+ bcolors.ENDC)
-		print(bcolors.PRIMARY + "Our oldest post is: {}".format("{:,}".format(datas[1]))+ bcolors.ENDC)
-		print(bcolors.PRIMARY + "Available Posts: {}".format("{:,}".format(count))+ bcolors.ENDC)
+		print(bcolors.PRIMARY + "Group {} has {} articles, in the range {} to {}".format(datas[0], "{:,}".format(count), "{:,}".format(datas[2]), "{:,}".format(datas[3])) + bcolors.ENDC)
+		print(bcolors.PRIMARY + "Our oldest post is: {}".format("{:,}".format(datas[1])) + bcolors.ENDC)
+		print(bcolors.PRIMARY + "Available Posts: {}".format("{:,}".format(count)) + bcolors.ENDC)
 		group = ("{} {} BackfillAll".format(datas[0], count))
 		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 
@@ -170,7 +172,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} and grabbing {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs))+ bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} and grabbing {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -198,12 +200,12 @@ def main(args):
 	group = ("{} {}".format(datas[0], 1000))
 	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
-		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs))+ bcolors.ENDC)
+		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)) + bcolors.ENDC)
 	else:
-		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs))+ bcolors.ENDC)
+		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(geteach, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)) + bcolors.ENDC)
 
-	print(bcolors.HEADER + "\nBackfill Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S"))+ bcolors.ENDC)
-	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time)))+ bcolors.ENDC)
+	print(bcolors.HEADER + "\nBackfill Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 
 if __name__ == '__main__':

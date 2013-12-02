@@ -61,7 +61,7 @@ Class NZBcontents
 	}
 
 	// Attempts to get the releasename from a par2 file
-	public function checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp)
+	public function checkPAR2($guid, $relID, $groupID, $db, $pp, $namestatus, $nntp)
 	{
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(nzbcontents->checkPAR2).\n"));
@@ -73,14 +73,16 @@ Class NZBcontents
 			{
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject))
 				{
-					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true)
+					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp) === true && $namestatus === 1)
 					{
-						$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 22 WHERE (relnamestatus != 7 AND relnamestatus != 22) AND id = %d', $relID));
+						$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
+		if ($namestatus === 1)
+			$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
 		return false;
 	}
 

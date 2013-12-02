@@ -19,7 +19,7 @@ class Console
 		$this->asstag = $site->amazonassociatetag;
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-        $this->db = new DB();
+		$this->db = new DB();
 
 		$this->imgSavePath = nZEDb_WWW.'covers/console/';
 	}
@@ -104,7 +104,7 @@ class Console
 		if (count($excludedcats) > 0)
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN consoleinfo c ON c.id = r.consoleinfoid AND c.title != '' WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN consoleinfo c ON c.id = r.consoleinfoid AND c.title != '' WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res["num"];
 	}
 
@@ -159,7 +159,7 @@ class Console
 			$exccatlist = " AND r.categoryid NOT IN (".implode(",", $excludedcats).")";
 
 		$order = $this->getConsoleOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id AS releaseid, con.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN consoleinfo con ON con.id = r.consoleinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = con.genreid WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id AS releaseid, con.*, g.title AS genre, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN consoleinfo con ON con.id = r.consoleinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN genres g ON g.id = con.genreid WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getConsoleOrder($orderby)
@@ -480,9 +480,9 @@ class Console
 		$threads--;
 		$db = $this->db;
 		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & 256) = 256 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
 		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.consoleinfoid = -2 AND r.relnamestatus NOT IN (0, 1, 20) AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
+		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & 260) = 260 AND r.consoleinfoid = -2 AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
 	}
 
 	public function processConsoleReleaseTypes($res, $type)

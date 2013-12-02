@@ -3,11 +3,11 @@ require_once nZEDb_LIB . 'framework/db.php';
 
 class UserSeries
 {
-    function __construct()
-    {
-        $this->db = new DB();
-    }
-    
+	function __construct()
+	{
+		$this->db = new DB();
+	}
+
 	public function addShow($uid, $rageid, $catid=array())
 	{
 		$db = $this->db;

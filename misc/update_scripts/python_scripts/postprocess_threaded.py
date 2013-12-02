@@ -15,6 +15,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -22,28 +23,31 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
-	print("\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 else:
-	print("\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+	print(bcolors.HEADER + "\nPostProcess {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 if sys.argv[1] == "additional":
-	print("Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file");
-	print("Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample");
-	print("Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip");
+	print(bcolors.HEADER + "Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file" + bcolors.ENDC);
+	print(bcolors.HEADER + "Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample" + bcolors.ENDC);
+	print(bcolors.HEADER + "Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip" + bcolors.ENDC);
 elif sys.argv[1] == "nfo":
-	print("* = hidden NFO, + = NFO, - = no NFO, f = download failed.")
+	print(bcolors.HEADER + "* = hidden NFO, + = NFO, - = no NFO, f = download failed." + bcolors.ENDC)
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -55,7 +59,8 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
 else:
-	sys.exit("\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	sys.exit()
 
 run_threads = int(dbgrab[0][0])
 ppperrun = int(dbgrab[0][1])
@@ -85,81 +90,81 @@ process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun
 
 if sys.argv[1] == "additional":
-	run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, process_additional)
 	datas = cur.fetchall()
 	maxtries = -1
 	if len(datas) < process_additional:
-		run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -2 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -2 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (process_additional - len(datas)))
 		datas += cur.fetchall()
 		maxtries = -2
 		if len(datas) < process_additional:
-			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -3 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+			run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -3 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 			cur.execute(run, (process_additional - len(datas)))
 			datas += cur.fetchall()
 			maxtries = -3
 			if len(datas) < process_additional:
-				run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -4 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+				run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -4 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 				cur.execute(run, (process_additional - len(datas)))
 				datas += cur.fetchall()
 				maxtries = -4
 				if len(datas) < process_additional:
-					run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -5 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+					run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -5 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 					cur.execute(run, (process_additional - len(datas)))
 					datas += cur.fetchall()
 					maxtries = -5
 					if len(datas) < process_additional:
-						run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 "+maxsize+" AND r.passwordstatus = -6 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+						run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -6 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
 						cur.execute(run, (process_additional - len(datas)))
 						datas += cur.fetchall()
 						maxtries = -6
 
 elif sys.argv[1] == "nfo":
-	cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -1 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo))
+	cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -1 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo))
 	datas = cur.fetchall()
 	maxtries = -1
 	if len(datas) < process_nfo:
-		cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -2 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+		cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -2 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
 		datas += cur.fetchall()
 		maxtries = -2
 		if len(datas) < process_nfo:
-			cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -3 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+			cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -3 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
 			datas += cur.fetchall()
 			maxtries = -3
 			if len(datas) < process_nfo:
-				cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -4 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+				cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -4 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
 				datas += cur.fetchall()
 				maxtries = -4
 				if len(datas) < process_nfo:
-					cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -5 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+					cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -5 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
 					datas += cur.fetchall()
 					maxtries = -5
 					if len(datas) < process_nfo:
-						cur.execute("SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus = -6 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+						cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -6 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
 						datas += cur.fetchall()
 						maxtries = -6
 
 
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND (bitwise & 4) = 4 AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "movie":
-		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * movieperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND relnamestatus NOT IN (0, 1) AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND (bitwise & 4) = 4 AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-		run = "SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (run_threads * tvrageperrun))
 		datas = cur.fetchall()
 
 if not datas:
-	print("No Work to Process")
+	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -192,17 +197,17 @@ def u(x):
 		return codecs.unicode_escape_decode(x)[0]
 	else:
 		return x
-		
+
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == "additional":
-		print("We will be using a max of {} threads, a queue of {} {} releases. passwordstatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. passwordstatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries) + bcolors.ENDC)
 	elif sys.argv[1] == "nfo":
-		print("We will be using a max of {} threads, a queue of {} {} releases. nfostatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. nfostatus range {} to -1".format(run_threads, "{:,}".format(len(datas)), sys.argv[1], maxtries) + bcolors.ENDC)
 	else:
-		print("We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases.".format(run_threads, "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -250,8 +255,8 @@ def main(args):
 	cur.close()
 	con.close()
 
-	print("\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

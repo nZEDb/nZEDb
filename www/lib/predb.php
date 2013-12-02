@@ -374,7 +374,7 @@ Class Predb
 		$db = new DB();
 		if($x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName))) !== false)
 		{
-			$db->queryExec(sprintf('UPDATE releases SET relnamestatus = 11, preid = %d WHERE id = %d', $x['id'], $releaseID));
+			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
 		}
 	}
 
@@ -404,7 +404,7 @@ Class Predb
 			echo "\n";
 			foreach ($res as $row)
 			{
-				$run = $db->queryExec(sprintf('UPDATE releases SET preid = %d, relnamestatus = 11 WHERE id = %d', $row['preid'], $row['releaseid']));
+				$run = $db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if($this->echooutput)
 					$consoletools->overWrite('Matching up preDB titles with release search names: '.$consoletools->percentString(++$updated,$total));
 			}
@@ -480,11 +480,11 @@ Class Predb
 			echo 'Fixing search names'.$te." using the predb md5.\n";
 		}
 		if ($db->dbSystem() == 'mysql')
-			$regex = "AND (r.hashed = true OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
 		else if ($db->dbSystem() == 'pgsql')
-			$regex = "AND (r.hashed = true OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
 
-		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.relnamestatus IN (0, 1, 20, 21, 22) AND dehashstatus BETWEEN -5 AND 0 AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
+		$res = $db->prepare(sprintf('SELECT DISTINCT r.id, r.name, r.searchname, r.categoryid, r.groupid, rf.name AS filename, rf.releaseid, rf.size FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE (bitwise & 4) = 0 AND dehashstatus BETWEEN -5 AND 0 AND passwordstatus >= -1 %s %s %s ORDER BY rf.releaseid, rf.size DESC', $regex, $tq, $ct));
 		$res->execute();
 		if ($res->rowCount() > 0)
 		{

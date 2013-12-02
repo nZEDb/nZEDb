@@ -14,6 +14,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -21,24 +22,28 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 if len(sys.argv) == 1:
-	sys.exit("\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	sys.exit()
 
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter":
-	sys.exit("\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n")
+	sys.exit()
 
-print("\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
 run_threads = cur.fetchone()
@@ -49,27 +54,26 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 256) = 256 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 64) = 0) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1, 21, 22)) ORDER BY postdate DESC LIMIT %s"
-	#run = "SELECT id AS releaseid FROM releases WHERE nzbstatus = 1 LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE (bitwise & 256) = 256 AND ((bitwise & 4) = 0 OR categoryid = 7010) AND (bitwise & 16) = 0 ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus in (0, 1)) ORDER BY postdate DESC  LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 256) = 256 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 128) = 0) ORDER BY postdate DESC  LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 256) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.hashed=true OR rf.name REGEXP'[a-fA-F0-9]{32}') AND (bitwise & 4) = 0 ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND (categoryid = 7010 OR relnamestatus IN (0, 1)) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 256) = 256 AND (((bitwise & 4) = 0  OR categoryid = 7010) AND (bitwise & 32) = 0) ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
@@ -78,7 +82,7 @@ cur.close()
 con.close()
 
 if not datas:
-	print("No Work to Process")
+	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
 
 my_queue = queue.Queue()
@@ -109,10 +113,10 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	if sys.argv[1] == 'md5' or sys.argv[1] == 'par2':
-		print("We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1))
+	if sys.argv[1] == 'md5':
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1) + bcolors.ENDC)
 	else:
-		print("We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -130,29 +134,24 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 	elif sys.argv[1] == "miscsorter":
 		for release in datas:
-			time.sleep(.1)
 			my_queue.put("%s %s" % ("miscsorter", release[0]))
 
 	my_queue.join()
 
-	print("\nfixReleaseNames {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nfixReleaseNames {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()

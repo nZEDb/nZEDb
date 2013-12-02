@@ -13,10 +13,10 @@ $logging = new Logging();
 $site = new Sites();
 $s = $site->get();
  if ($s->loggingopt == '0')
-    $loggingon = '0';
+	$loggingon = '0';
 
 else
-    $loggingon = '1';
+	$loggingon = '1';
 
 $page->smarty->assign('loggingon', $loggingon);
 
@@ -36,11 +36,11 @@ $page->smarty->assign('recent', $recent);
 
 if ($loggingon == '1')
 {
-    $toplogincombined = $logging->getTopCombined();
-    $page->smarty->assign('toplogincombined', $toplogincombined);
+	$toplogincombined = $logging->getTopCombined();
+	$page->smarty->assign('toplogincombined', $toplogincombined);
 
-    $toploginips = $logging->getTopIPs();
-    $page->smarty->assign('toploginips', $toploginips);
+	$toploginips = $logging->getTopIPs();
+	$page->smarty->assign('toploginips', $toploginips);
 }
 
 $page->content = $page->smarty->fetch('site-stats.tpl');

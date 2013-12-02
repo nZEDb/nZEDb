@@ -29,18 +29,18 @@ if( isset($argv[1]) )
 	$patch = $tmux->get()->patchdb;
 	$restart = 'false';
 
-	if ( $running == 'TRUE' && $argv[1] == 'true' )
+	if ( $running == '1' && $argv[1] == 'true' )
 	{
-		$db->queryExec('update tmux set value = \'FALSE\' where setting = \'RUNNING\'');
+		$db->queryExec('update tmux set value = \'0\' where setting = \'RUNNING\'');
 		$sleep = $delay;
 		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
 		$restart = 'true';
 		sleep($sleep);
 	}
 
-	if ( $patch == 'TRUE' )
+	if ( $patch == '1' )
 	{
-        exec("cd $ROOTDIR && git pull");
+		exec("cd $ROOTDIR && git pull");
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0)
@@ -85,7 +85,7 @@ if( isset($argv[1]) )
 	if ( $restart == 'true'  && $argv[1] == 'true' )
 	{
 		echo $c->info("Starting tmux scripts");
-		$db->queryExec('update tmux set value = \'TRUE\' where setting = \'RUNNING\'');
+		$db->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');
 	}
 }
 else

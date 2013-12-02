@@ -80,7 +80,7 @@ class Category
 		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
 		$this->catlanguage = (!empty($site->catlanguage)) ? $site->catlanguage : "0";
 		$this->catwebdl = ($site->catwebdl == "0") ? false : true;
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	public function get($activeonly=false, $excludedcats=array())

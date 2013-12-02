@@ -311,12 +311,14 @@ class Binaries
 			if ($this->debug)
 				$colnames = $orignames = $notyenc = array();
 
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			usort($msgs, function ($elem1, $elem2) { return strcmp($elem1['Subject'], $elem2['Subject']); });
+
 			// Loop articles, figure out files/parts.
 			foreach($msgs AS $msg)
 			{
 				if (!isset($msg['Number']))
 					continue;
-
 
 				if (isset($returnArray['firstArticleNumber']))
 				{
@@ -367,7 +369,7 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 				{
-					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === "1")
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1')
 						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".dropped.txt", $msg['Subject']."\n", FILE_APPEND);
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
@@ -395,6 +397,8 @@ class Binaries
 				{
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1')
+						file_put_contents("/var/www/nZEDb/not_yenc/".$groupArr['name'].".no_parts.txt", $msg['Subject']."\n", FILE_APPEND);
 				}
 
 				if(is_numeric($matches[3]) && is_numeric($matches[4]))
@@ -441,7 +445,8 @@ class Binaries
 						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
 						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
-					if($this->grabnzbs && preg_match('/.+\.nzb" yEnc$/', $subject))
+
+					if($this->grabnzbs && preg_match('/.+\.nzb"/', $subject))
 					{
 						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'],1,-1))));
 						if (!isset($ckmsg['message_id']))
@@ -475,9 +480,7 @@ class Binaries
 				echo $this->c->primary('Received '.number_format(sizeof($msgsreceived)).' articles of '.(number_format($last-$first+1)).' requested, '.sizeof($msgsblacklisted).' blacklisted, '.sizeof($msgsignored)." not yEnc.");
 
 			if (sizeof($msgrepaired) > 0)
-			{
 				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
-			}
 
 			if (sizeof($rangenotreceived) > 0)
 			{
@@ -534,13 +537,15 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
+							$cres = $db->queryOneRow(sprintf('SELECT id, subject FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if (array_key_exists($collectionHash, $collectionHashes))
 							{
 								$collectionID = $collectionHashes[$collectionHash];
+								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set subject = %s WHERE id = %s', $db->escapeString(substr($subject,0,255)), $collectionID));
 							}
 							else
 							{
-								$cres = $db->queryOneRow(sprintf('SELECT id FROM '.$group['cname'].' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 								if(!$cres)
 								{
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
@@ -551,12 +556,13 @@ class Binaries
 								{
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-									$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
+									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+										$db->queryExec(sprintf('UPDATE '.$group['cname'].' set subject = %s WHERE id = %s', $db->escapeString(substr($subject,0,255)), $collectionID));
+									else
+										$db->queryExec(sprintf('UPDATE '.$group['cname'].' set dateadded = NOW() WHERE id = %s', $collectionID));
 								}
-
 								$collectionHashes[$collectionHash] = $collectionID;
 							}
-
 							$lastCollectionID = $collectionID;
 						}
 						$binaryHash = md5($subject.$data['From'].$groupArr['id']);
@@ -566,9 +572,7 @@ class Binaries
 						else
 						{
 							if (array_key_exists($binaryHash, $binaryHashes))
-							{
 								$binaryID = $binaryHashes[$binaryHash];
-							}
 							else
 							{
 								$lastBinaryHash = $binaryHash;
@@ -618,7 +622,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true)-$this->startLoop, 2);
 
 			if ($type != 'partrepair')
-				echo $this->c->primary($timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop."s total.");
+				echo $this->c->primary($timeHeaders.'s to download articles, '.$timeCleaning.'s to process articles, '.$timeUpdate.'s to insert articles, '.$timeLoop.'s total.');
 
 			unset($this->message, $data);
 			return $returnArray;
@@ -640,7 +644,13 @@ class Binaries
 
 		// Get all parts in partrepair table.
 		$db = $this->db;
-		$missingParts = $db->query(sprintf('SELECT * FROM partrepair WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
+
+		if ($this->tablepergroup == 1)
+			$group['prname'] = $groupArr['id'].'_partrepair';
+		else
+			$group['prname'] = 'partrepair';
+
+		$missingParts = $db->query(sprintf('SELECT * FROM '.$group['prname'].' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0)
@@ -684,7 +694,7 @@ class Binaries
 			}
 
 			// Calculate parts repaired
-			$sql = sprintf('SELECT COUNT(id) AS num FROM partrepair WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+			$sql = sprintf('SELECT COUNT(id) AS num FROM '.$group['prname'].' WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
 			$result = $db->queryOneRow($sql);
 			if (isset($result['num']))
 				$partsRepaired = (sizeof($missingParts)) - $result['num'];
@@ -692,7 +702,7 @@ class Binaries
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[sizeof($missingParts)-1]['id']))
 			{
-				$sql = sprintf('UPDATE partrepair SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
+				$sql = sprintf('UPDATE '.$group['prname'].' SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts)-1]['numberid']);
 				$result = $db->queryExec($sql);
 				if ($result)
 					$partsFailed = $result->rowCount();
@@ -701,13 +711,24 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$db->queryExec(sprintf('DELETE FROM partrepair WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
+		$db->queryExec(sprintf('DELETE FROM '.$group['prname'].' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
 	}
 
 	private function addMissingParts($numbers, $groupID)
 	{
 		$db = $this->db;
-		$insertStr = 'INSERT INTO partrepair (numberid, groupid) VALUES ';
+
+		// Check that tables exist, create if they do not
+		if ($this->tablepergroup == 1)
+		{
+			if ($db->newtables($groupID) === false)
+				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			$group['prname'] = $groupID.'_partrepair';
+		}
+		else
+			$group['prname'] = 'partrepair';
+
+		$insertStr = 'INSERT INTO '.$group['prname'].' (numberid, groupid) VALUES ';
 		foreach($numbers as $number)
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 
@@ -728,7 +749,12 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		$db = $this->db;
-		$sql = 'DELETE FROM partrepair WHERE numberid in (';
+		if ($this->tablepergroup == 1)
+			$group['prname'] = $groupID.'_partrepair';
+		else
+			$group['prname'] = 'partrepair';
+
+		$sql = 'DELETE FROM '.$group['prname'].' WHERE numberid in (';
 		foreach($numbers as $number)
 			$sql .= sprintf('%d, ', $number);
 		$sql = substr($sql, 0, -2);

@@ -13,21 +13,21 @@ if (!isset($argv[1]))
 passthru("clear");
 if (isset($argv[1]) && $argv[1] == "date")
 	$order = "order by first_record_postdate";
-elseif (isset($argv[1]) && $argv[1] == "releases")
+else if (isset($argv[1]) && $argv[1] == "releases")
 	$order = "order by num_releases";
 else
 	$order = "";
 
 if (isset($argv[2]) && ($argv[2] == "ASC" || $argv[2] == "asc"))
 	$sort = "ASC";
-elseif (isset($argv[2]) && ($argv[2] == "DESC" || $argv[2] == "desc"))
+else if (isset($argv[2]) && ($argv[2] == "DESC" || $argv[2] == "desc"))
 	$sort = "DESC";
 else
 	$sort = "";
 
 if (isset($argv[3]) && is_numeric($argv[3]))
 	$limit = "LIMIT ".$argv[3];
-elseif (isset($argv[2]) && is_numeric($argv[2]))
+else if (isset($argv[2]) && is_numeric($argv[2]))
 	$limit = "LIMIT ".$argv[2];
 else
 	$limit = "";
@@ -53,7 +53,7 @@ if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record
 										COALESCE(ren.num, 0) AS renamed FROM groups
 										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
 										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid is not null GROUP BY groupid ) pre ON pre.groupid = groups.id
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE relnamestatus not in (0, 1) GROUP BY groupid ) ren ON ren.groupid = groups.id
+										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE (bitwise & 1) = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
 										WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit)))
 {
 	foreach ($rels as $rel)

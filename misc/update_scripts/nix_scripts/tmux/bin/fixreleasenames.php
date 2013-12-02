@@ -28,7 +28,7 @@ else if (isset($argv[1]))
 			if (preg_match('/^=newz\[NZB\]=\w+/', $res['textstring']))
 			{
 				$namefixer->done = $namefixer->matched = false;
-				$fail = $db->prepare(sprintf('UPDATE releases SET relnamestatus = 20 WHERE id = %d', $res['releaseid']));
+				$fail = $db->prepare(sprintf('UPDATE releases SET bitwise = ((bitwise & ~64)|64) WHERE id = %d', $res['releaseid']));
 				$fail->execute();
 				$namefixer->checked++;
 				echo '.';
@@ -64,7 +64,7 @@ else if (isset($argv[1]))
 		{
 			if (preg_match('/[a-f0-9]{32}/i', $res['name'], $matches))
 				$namefixer->matchPredbMD5($matches[0], $res, $echo=1, $namestatus=1, $echooutput=true);
-			elseif (preg_match('/[a-f0-9]{32}/i', $res['filename'], $matches))
+			else if (preg_match('/[a-f0-9]{32}/i', $res['filename'], $matches))
 				$namefixer->matchPredbMD5($matches[0], $res, $echo=1, $namestatus=1, $echooutput=true);
 			echo '.';
 		}
@@ -85,8 +85,9 @@ else if (isset($argv[1]))
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBcontents(true);
 		$pp = new Postprocess($echooutput=true);
-		$nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, $nntp);
-		echo '.';
+		$res = $nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, 1, $nntp);
+		if ($res === false)
+			echo '.';
 		if ($site->nntpproxy != "1")
 			$nntp->doQuit();
 	}
@@ -103,8 +104,12 @@ else if (isset($argv[1]))
 
 		$sorter = new MiscSorter(true);
 		$relID = $pieces[1];
-		$sorter->nfosorter(7010, $relID, $nntp);
-		echo '.';
+		$res = $sorter->nfosorter(null, $relID, $nntp);
+		if ($res != true)
+		{
+			$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~16)|16) WHERE id = %d', $relID));
+			echo '.';
+		}
 		if ($site->nntpproxy != "1")
 			$nntp->doQuit();
 	}

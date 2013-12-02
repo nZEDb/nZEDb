@@ -23,7 +23,7 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 			raise ValueError("Bad backend")
 		nntp.NNTPClient.__init__(self, self.host, self.port, username, password, timeout=timeout, use_ssl=use_ssl)
 		self.id = self.socket.getsockname()[1]
-		print(bcolors.HEADER + "%5d NEW CONNECTION" % self.id)
+		print(bcolors.HEADER + "%5d NEW CONNECTION" % self.id + bcolors.ENDC)
 		self._connected = True
 		self.xfeature_compress_gzip()
 
@@ -41,7 +41,7 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
 		return False
 
 	def handle_exception(self, exception):
-		print(str(exception))
+		print(bcolors.ERROR + str(exception) + bcolors.ENDC)
 		self.release()
 		self.invalidate()
 
@@ -69,7 +69,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 			self.wfile.write("200 localhost NNRP Service Ready.\r\n")
 			for line in self.rfile:
 				data = line.strip()
-				print("%5d %s" % (nntp_client.id, data))
+				print(bcolors.HEADER + "%5d %s" % (nntp_client.id, data) + bcolors.ENDC)
 				if data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
 					self.wfile.write("281 Ok\r\n")
 				elif data.startswith("XFEATURE"):

@@ -199,8 +199,9 @@ class PostProcess
 			$t = 'UNIX_TIMESTAMP(postdate)';
 		else
 			$t = 'extract(epoch FROM postdate)';
-		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, relnamestatus, searchname, '.$t.' as postdate, id as releaseid  FROM releases WHERE id = '.$relID);
-		if (!in_array($quer['relnamestatus'], array(0, 1, 6, 20, 21)) || $quer['relnamestatus'] === 7 || $quer['categoryid'] != Category::CAT_MISC)
+
+		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, '.$t.' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = '.$relID);
+		if ($quer['categoryid'] != Category::CAT_MISC)
 			return false;
 
 		$groups = new Groups();
@@ -240,9 +241,10 @@ class PostProcess
 						$relfiles++;
 				}
 				$quer['textstring'] = $file['name'];
-				$namefixer->checkName($quer, 1, 'PAR2, ', 1);
-				$stat = $db->queryOneRow('SELECT relnamestatus AS a FROM releases WHERE id = '.$relID);
-				if ($stat['a'] === 7)
+				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
+				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
+				//if ($stat['id'] === $relID)
+				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1) === true)
 				{
 					$foundname = true;
 					break;
@@ -292,16 +294,16 @@ class PostProcess
 
 		if (!$af && !$bf )
 			return strnatcasecmp($a,$b);
-		elseif (!$bf)
+		else if (!$bf)
 			return -1;
-		elseif (!$af)
+		else if (!$af)
 			return 1;
 
 		if ($af && $bf)
 			$pos = strnatcasecmp($a,$b);
-		elseif ($af)
+		else if ($af)
 			$pos = -1;
-		elseif ($bf)
+		else if ($bf)
 			$pos = 1;
 
 		return $pos;
@@ -367,19 +369,20 @@ class PostProcess
 		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
-			$result = $this->db->query('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
+			$result = $this->db->queryDirect('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
 		else
 		{
-			$result = 0;
+			$result = $totresults = 0;
 			if ($releaseToWork == '')
 			{
 				$i = -1;
 				$tries = (5 * -1) -1;
-				while ((count($result) != $this->addqty) && ($i >= $tries))
+				while (($totresults != $this->addqty) && ($i >= $tries))
 				{
-					$result = $this->db->query(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND nzbstatus = 1 AND r.id IN ( SELECT r.id FROM releases r ORDER BY r.postdate DESC ) ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
-					if (count($result) > 0)
-						$this->doecho('Passwordstatus = '.$i.': Available to process = '.count($result));
+					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND (bitwise & 256) = 256 ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$totresults = $result->rowCount();
+					if ($totresults > 0)
+						$this->doecho('Passwordstatus = '.$i.': Available to process = '.$result->rowCount());
 					$i--;
 				}
 			}
@@ -387,10 +390,11 @@ class PostProcess
 			{
 				$pieces = explode('           =+=            ', $releaseToWork);
 				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6], 'categoryid' => $pieces[7]));
+				$totresults = 1;
 			}
 		}
 
-		$rescount = $startCount = count($result);
+		$rescount = $startCount = $totresults;
 		if ($rescount > 0)
 		{
 			if ($this->echooutput && $rescount > 1)
@@ -433,7 +437,7 @@ class PostProcess
 					{
 						if ($this->echooutput)
 							echo $this->c->error("Unable to create directory: {$this->tmpPath}");
-						// Increment.
+						// Decrement passwordstatus.
 						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
 						continue;
 					}
@@ -449,13 +453,13 @@ class PostProcess
 
 				// turn on output buffering
 				ob_start();
-				
+
 				// uncompress the nzb
 				@readgzfile($nzbpath);
-				
+
 				// read the nzb into memory
 				$nzbfile = ob_get_contents();
-				
+
 				// Clean (erase) the output buffer and turn off output buffering
 				ob_end_clean();
 
@@ -500,7 +504,7 @@ class PostProcess
 					// Check if it's a rar/zip.
 					if (preg_match("/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\.rar)*($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $nzbcontents['title']))
 						$hasrar = 1;
-					elseif (!$hasrar)
+					else if (!$hasrar)
 						$notmatched = true;
 
 					// Look for a sample.
@@ -687,7 +691,7 @@ class PostProcess
 					}
 				}
 				/* Not a good indicator of if there is a password or not, the rar could have had an error for example.
-				elseif ($hasrar == 1)
+				else if ($hasrar == 1)
 					$passStatus[] = Releases::PASSWD_POTENTIAL;
 
 				if(!$foundcontent && $hasrar == 1)
@@ -720,7 +724,6 @@ class PostProcess
 										$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $this->tmpPath.$file, $ri->jpgSavePath, 650, 650);
 										if ($blnTookJPG !== false)
 											$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
-
 									}
 									if ($processSample === true || $processVideo === true || $processMediainfo === true)
 									{
@@ -920,7 +923,7 @@ class PostProcess
 				$size = $this->db->queryOneRow('SELECT COUNT(releasefiles.releaseid) AS count, SUM(releasefiles.size) AS size FROM releasefiles WHERE releaseid = '.$rel['id']);
 				if (max($passStatus) > 0)
 					$sql = sprintf('UPDATE releases SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s %s WHERE id = %d', max($passStatus), $size['count'], $isql, $vsql, $jsql, $hpsql, $rel['id']);
-				elseif ($hasrar && ((isset($size['size']) && (is_null($size['size']) || $size['size'] == 0)) || !isset($size['size'])))
+				else if ($hasrar && ((isset($size['size']) && (is_null($size['size']) || $size['size'] == 0)) || !isset($size['size'])))
 				{
 					if (!$blnTookSample)
 						$hpsql = '';
@@ -1027,12 +1030,12 @@ class PostProcess
 					}
 				}
 				// Extract a video file from the compressed file.
-				elseif ($this->site->mediainfopath != '' && $this->site->processvideos == '1' && preg_match('/'.$this->videofileregex.'$/i', $v['name']))
+				else if ($this->site->mediainfopath != '' && $this->site->processvideos == '1' && preg_match('/'.$this->videofileregex.'$/i', $v['name']))
 					$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $tmpdata);
 				// Extract an audio file from the compressed file.
-				elseif ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v['name'], $ext))
+				else if ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v['name'], $ext))
 					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
-				elseif ($this->site->mediainfopath != '' && preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v['name'], $name))
+				else if ($this->site->mediainfopath != '' && preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v['name'], $name))
 					$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
 			}
 			unset($tmpdata, $rf);
@@ -1108,7 +1111,7 @@ class PostProcess
 					}
 				}
 				// Process RARs inside the ZIP.
-				elseif (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name']))
+				else if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name']))
 				{
 					$tmpfiles = $this->getRar($thisdata);
 					if ($tmpfiles != false)
@@ -1315,25 +1318,26 @@ class PostProcess
 
 				// File is compressed, use unrar to get the content
 				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
-				if(!@file_put_contents($rarfile, $fetchedBinary))
-					continue;
-				$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
-				$output = runCmd($execstring, false, true);
-				if (isset($files[0]['name']))
+				if(@file_put_contents($rarfile, $fetchedBinary))
 				{
-					if ($this->echooutput)
-						echo 'r';
-					foreach ($files as $file)
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
+					$output = runCmd($execstring, false, true);
+					if (isset($files[0]['name']))
 					{
-						if (isset($file['name']))
+						if ($this->echooutput)
+							echo 'r';
+						foreach ($files as $file)
 						{
-							if (!isset($file['next_offset']))
-								$file['next_offset'] = 0;
-							$range = mt_rand(0,99999);
-							if (isset($file['range']))
-								$range = $file['range'];
+							if (isset($file['name']))
+							{
+								if (!isset($file['next_offset']))
+									$file['next_offset'] = 0;
+								$range = mt_rand(0,99999);
+								if (isset($file['range']))
+									$range = $file['range'];
 
-							$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+								$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+							}
 						}
 					}
 				}
@@ -1437,7 +1441,7 @@ class PostProcess
 			return $retval;
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, relnamestatus, groupid FROM releases WHERE id = %d', $releaseID));
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 AND id = %d', $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $rquer['id']))
 			return $retval;
 
@@ -1466,17 +1470,15 @@ class PostProcess
 											$newname = $track['Performer'].' - '.$track['Album'].' ('.$Year[0].') '.$ext;
 										else
 											$newname = $track['Performer'].' - '.$track['Album'].' '.$ext;
-										if ($rquer['relnamestatus'] != '3')
-										{
-											$category = new Category();
-											if ($ext == 'MP3')
-												$newcat = Category::CAT_MUSIC_MP3;
-											else if ($ext == 'FLAC')
-												$newcat = Category::CAT_MUSIC_LOSSLESS;
-											else
-												$newcat = $category->determineCategory($newname, $rquer['groupid']);
-											$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, relnamestatus = 3 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
-										}
+										$category = new Category();
+										if ($ext == 'MP3')
+											$newcat = Category::CAT_MUSIC_MP3;
+										else if ($ext == 'FLAC')
+											$newcat = Category::CAT_MUSIC_LOSSLESS;
+										else
+											$newcat = $category->determineCategory($newname, $rquer['groupid']);
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID,$xmlarray);
 										$retval = true;

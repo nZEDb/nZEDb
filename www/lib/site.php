@@ -15,10 +15,10 @@ class Sites
 	const ERR_DEEPNOUNRAR = -5;
 	const ERR_BADTMPUNRARPATH = -6;
 
-    function __construct()
-    {
-        $this->db = new DB();
-    }
+	function __construct()
+	{
+		$this->db = new DB();
+	}
 
 	public function version()
 	{
