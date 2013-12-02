@@ -45,19 +45,26 @@ class DB extends PDO
 	 */
 	public function __construct()
 	{
-		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+		{
 			$this->dbsystem = strtolower(DB_SYSTEM);
-		} else {
+		}
+		else
+		{
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
 		}
 
-		if (!(self::$pdo instanceof PDO)) {
+		if (!(self::$pdo instanceof PDO))
+		{
 			$this->initialiseDatabase();
 		}
 
-		if (defined("MEMCACHE_ENABLED")) {
+		if (defined("MEMCACHE_ENABLED"))
+		{
 			$this->memcached = MEMCACHE_ENABLED;
-		} else {
+		}
+		else
+		{
 			$this->memcached = false;
 		}
 		$this->c = new ColorCLI();
@@ -68,34 +75,46 @@ class DB extends PDO
 
 	private function initialiseDatabase($param)
 	{
-		if ($this->dbsystem == 'mysql') {
-			if (defined('DB_SOCKET') && DB_SOCKET != '') {
+		if ($this->dbsystem == 'mysql')
+		{
+			if (defined('DB_SOCKET') && DB_SOCKET != '')
+			{
 				$dsn = $this->dbsystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
-			} else {
+			}
+			else
+			{
 				$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
-				if (defined('DB_PORT')) {
+				if (defined('DB_PORT'))
+				{
 					$dsn .= ';port=' . DB_PORT;
 				}
 				$dsn .= ';charset=utf8';
 			}
-		} else {
+		}
+		else
+		{
 			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
 
-		try {
+		try
+		{
 			$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
-			if ($this->dbsystem == 'mysql') {
+			if ($this->dbsystem == 'mysql')
+			{
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
 			}
 
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
-			if (self::$pdo === false) {	// In case PDO is not set to produce exceptions (PHP's default behaviour).
+			if (self::$pdo === false)
+			{	// In case PDO is not set to produce exceptions (PHP's default behaviour).
 				die("Unable to create connection to the Database!\n");
 			}
 			// For backwards compatibility, no need for a patch.
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-		} catch (PDOException $e) {
+		}
+		catch (PDOException $e)
+		{
 			exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 		}
 	}
@@ -128,8 +147,7 @@ class DB extends PDO
 		if ($query == '')
 			return false;
 
-		try
-		{
+		try {
 			if ($this->dbsystem() == 'mysql')
 			{
 				$ins = self::$pdo->prepare($query);
@@ -249,12 +267,15 @@ class DB extends PDO
 			return false;
 		}
 
-		if ($memcache === true && $this->memcached === true) {
+		if ($memcache === true && $this->memcached === true)
+		{
 			try {
 				$memcached = new Mcached();
-				if ($memcached !== false) {
+				if ($memcached !== false)
+				{
 					$crows = $memcached->get($query);
-					if ($crows !== false) {
+					if ($crows !== false)
+					{
 						return $crows;
 					}
 				}
@@ -265,7 +286,8 @@ class DB extends PDO
 
 		$result = $this->queryArray($query);
 
-		if ($memcache === true && $this->memcached === true) {
+		if ($memcache === true && $this->memcached === true)
+		{
 			$memcached->add($query, $rows);
 		}
 
@@ -327,13 +349,15 @@ class DB extends PDO
     {
         if ($query == '') false;
 		$mode = self::$pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
-		if ($mode != PDO::FETCH_ASSOC) {
+		if ($mode != PDO::FETCH_ASSOC)
+		{
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		}
 
         $result = $this->queryArray($query);
 
-		if ($mode != PDO::FETCH_ASSOC) {
+		if ($mode != PDO::FETCH_ASSOC)
+		{
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		}
 		return $result;
@@ -505,7 +529,8 @@ class DB extends PDO
 		try {
 			return (bool) self::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
-			if ($restart == true) {
+			if ($restart == true)
+			{
 				$this->initialiseDatabase();
 			}
 			return false;
