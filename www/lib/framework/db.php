@@ -491,16 +491,22 @@ class DB extends PDO
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
-	// Checks whether the connection to the server is working. Optionally start a new connection.
+	/**
+	 * Checks whether the connection to the server is working. Optionally start
+	 * a new connection.
+	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's
+	 * default configuration). In this case check the return value === false.
+	 *
+	 * @param boolean $restart Whether an attempt should be made to reinitialise the Db object on failure.
+	 * @return boolean
+	 */
 	public function ping($restart = false)
 	{
 		try {
 			return (bool) self::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
-			if ($restart === true)
-			{
-				self::$initialized = false;
-				$this->DB();
+			if ($restart == true) {
+				$this->initialiseDatabase();
 			}
 			return false;
 		}
