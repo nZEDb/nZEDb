@@ -347,7 +347,7 @@ class DB extends PDO
 	 */
     public function queryAssoc($query)
     {
-        if ($query == '') false;
+        if ($query == '') return false;
 		$mode = self::$pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
 		if ($mode != PDO::FETCH_ASSOC)
 		{
