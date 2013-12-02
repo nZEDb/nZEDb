@@ -447,7 +447,7 @@ class DB extends PDO
 				}
 			}
 
-            if ($DoPartRepair === true)
+            if ($DoPartRepair === true && $parts === true)
             {
                 try {
                     DB::$pdo->query('SELECT * FROM '.$grpid.'_partrepair LIMIT 1');
@@ -463,7 +463,7 @@ class DB extends PDO
             else
                 $partrepair = true;
 
-            if ($parts === true && $binaries = true && $collections = true && $partrepair = true)
+            if ($parts === true && $binaries === true && $collections === true && $partrepair === true)
                 return true;
             else
                 return false;

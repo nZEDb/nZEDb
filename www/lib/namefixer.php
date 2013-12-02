@@ -9,13 +9,13 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 class Namefixer
 {
 	/* These constants can not be used as they are
-	 * To select if false - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed
-	 * To select if true - 'SELECT * FROM releases WHERE (bitwise & 1) = 1;' - selects all that have been categorized
+	 * To select where false            - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed
+	 * To select where true             - 'SELECT * FROM releases WHERE (bitwise & 1) = 1;' - selects all that have been categorized
 	 * To select multiple true or false - 'SELECT * FROM releases WHERE (bitwise & 5) = 0;' - selects all that have not been renamed and have not been categorized
 	 *
-	 * To set to false - 'UPDATE releases SET bitwise = ((bitwise & ~4)|0);' - sets all releases to not renamed
-	 * To set to true  - 'UPDATE releases SET bitwise = ((bitwise & ~1)|1);' - sets all releases to categorized
-	 * To set multiple true or false - 'UPDATE releases SET bitwise = ((bitwise & ~5)|1);' - sets all releases to categorized true and renamed false
+	 * To set false                     - 'UPDATE releases SET bitwise = ((bitwise & ~4)|0);' - sets all releases to not renamed
+	 * To set true                      - 'UPDATE releases SET bitwise = ((bitwise & ~1)|1);' - sets all releases to categorized
+	 * To set multiple true or false    - 'UPDATE releases SET bitwise = ((bitwise & ~5)|1);' - sets all releases to categorized true and renamed false
 
 	// One bit each, max 32, limited by 32 bit OS's
 	const NF_NEW			=	   0;	0000 0000 0000 0000 0000 	New release, just inserted into the table.
