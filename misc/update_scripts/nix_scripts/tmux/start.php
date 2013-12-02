@@ -12,6 +12,19 @@ $c= new ColorCLI();
 
 passthru('clear');
 
+$s = new Sites();
+$site = $s->get();
+$patch = (isset($site->sqlpatch)) ? $site->sqlpatch : 0;
+$hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
+
+// Check collections version
+if ($hashcheck != 1)
+	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
+
+// Check database patch version
+if ($patch < 154)
+	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
+
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
 exec("tmux list-session | grep NNTPProxy", $nntpkill);
 if (count($nntpkill) === 0)
@@ -33,11 +46,6 @@ $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
-
-$s = new Sites();
-$site = $s->get();
-$patch = $site->sqlpatch;
-$hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 
 //check if session exists
@@ -58,12 +66,6 @@ function writelog($pane)
 	else
 		return "";
 }
-
-if ($hashcheck != 1)
-	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
-
-if ($patch < 153)
-	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
 
 //remove folders from tmpunrar
 $tmpunrar = $site->tmpunrarpath;
