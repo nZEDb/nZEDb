@@ -2,14 +2,18 @@
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'site.php';
-/*
-* Class for handling connection to MySQL and PostgreSQL database using PDO.
-* Exceptions are caught and displayed to the user.
-*/
 
-class DB
+/**
+ * Class for handling connection to MySQL and PostgreSQL database using PDO.
+ *
+ * The class extends PDO, thereby exposing all of PDO's functionality directly
+ * without the need to wrap each and every method here.
+ *
+ * Exceptions are caught and displayed to the user.
+ * Properties are explicitly created, so IDEs can offer autocompletion for them.
+ */
+class DB extends PDO
 {
-	private static $initialized = false;
 	private static $pdo = null;
 
 	// Start a connection to the DB.
@@ -21,7 +25,8 @@ class DB
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		else
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
-		if (self::$initialized === false)
+
+		if (!(self::$pdo instanceof PDO))
 		{
 			if ($this->dbsystem == 'mysql')
 			{
@@ -52,11 +57,12 @@ class DB
 				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
 			}
 
-			self::$initialized = true;
 		}
 		$this->memcached = false;
 		if (defined("MEMCACHE_ENABLED"))
 			$this->memcached = MEMCACHE_ENABLED;
+
+		return self::$pdo;
 	}
 
 	// Return string; mysql or pgsql.
