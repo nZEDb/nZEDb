@@ -236,46 +236,60 @@ class DB extends PDO
 
 	// Return an array of rows, an empty array if no results.
 	// Optional: Pass true to cache the result with memcache.
-	public function query($query, $memcache=false)
+	/**
+	 * Returns an array of result (empty array if no results or an error occurs)
+	 *
+	 * @param type $query	 SQL to execute.
+	 * @param type $memcache Indicates if memcache should you be used if available.
+	 * @return array	Array of results (possibly empty) on success, empty array on failure.
+	 */
+	public function query($query, $memcache = false)
 	{
-		if ($query == '')
+		if ($query == '') {
 			return false;
+		}
 
-		if ($memcache === true && $this->memcached === true)
-		{
+		if ($memcache === true && $this->memcached === true) {
 			try {
 				$memcached = new Mcached();
-				if ($memcached !== false)
-				{
+				if ($memcached !== false) {
 					$crows = $memcached->get($query);
-					if ($crows !== false)
+					if ($crows !== false) {
 						return $crows;
+					}
 				}
 			} catch (Exception $er) {
-					printf ($er);
+				echo $this->c->error($er->getMessage());
 			}
 		}
 
-		try {
-			$result = self::$pdo->query($query);
-		} catch (PDOException $e) {
-			echo $this->c->error($e->getMessage());
-			$result = false;
+		$result = $this->queryArray($query);
+
+		if ($memcache === true && $this->memcached === true) {
+			$memcached->add($query, $rows);
 		}
 
-		if ($result === false)
-			return array();
+		return ($result === false) ? array() : $result;
+	}
 
+	/**
+	 * Main method for creating results as an array.
+	 *
+	 * @param string $query		SQL to execute.
+	 * @return array|boolean	Array of results on success or false on failure.
+	 */
+	public function queryArray($query)
+	{
+		if ($query == '') return false;
+
+		$result = $this->queryDirect($query);
 		$rows = array();
 		foreach ($result as $row)
 		{
 			$rows[] = $row;
 		}
 
-		if ($memcache === true && $this->memcached === true)
-			$memcached->add($query, $rows);
-
-		return $rows;
+		return (!isset($rows)) ? false : $rows;
 	}
 
 	// Returns the first row of the query.
@@ -292,32 +306,37 @@ class DB extends PDO
 	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	public function queryDirect($query)
 	{
-		if ($query == '')
-			return false;
+		if ($query == '') return false;
 
 		try {
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
-			echo $this->c->error($e->getMessage());
+			echo $this->c->error("queryDirect: " . $e->getMessage() . "\n");
 			$result = false;
 		}
 		return $result;
 	}
 
-    //Query that will return an associative array
+	/**
+	 * Returns results as an array but without an empty array like our query() function.
+	 *
+	 * @param string $query		The query to execute.
+	 * @return array|boolean	Array of results on success, false otherwise.
+	 */
     public function queryAssoc($query)
     {
-        self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        if ($query == '')
-            return false;
+        if ($query == '') false;
+		$mode = self::$pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+		if ($mode != PDO::FETCH_ASSOC) {
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		}
 
-        try {
-            $result = self::$pdo->query($query);
-        } catch (PDOException $e) {
-            echo $this->c->error($e->getMessage());
-            $result = false;
-        }
-        return $result;
+        $result = $this->queryArray($query);
+
+		if ($mode != PDO::FETCH_ASSOC) {
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		}
+		return $result;
     }
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
