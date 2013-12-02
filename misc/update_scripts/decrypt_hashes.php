@@ -21,11 +21,11 @@ function preName($argv)
 	$db = new DB();
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1] === "all")
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true');
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512');
 	else if (isset($argv[1]) && $argv[1] === "full")
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0');
 	else if (isset($argv[1]) && is_numeric($argv[1]))
-		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE hashed = true AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
+		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
 	$c = new ColorCLI;
 
 	$total = $res->rowCount();

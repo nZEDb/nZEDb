@@ -2,64 +2,126 @@
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'site.php';
-/*
-* Class for handling connection to MySQL and PostgreSQL database using PDO.
-* Exceptions are caught and displayed to the user.
-*/
 
-class DB
+/**
+ * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
+ *
+ * The class extends PDO, thereby exposing all of PDO's functionality directly
+ * without the need to wrap each and every method here.
+ *
+ * Exceptions are caught and displayed to the user.
+ * Properties are explicitly created, so IDEs can offer autocompletion for them.
+ */
+class DB extends PDO
 {
-	private static $initialized = false;
+	/**
+	 * @var object Instance of ColorCLI class.
+	 */
+	public $c;
+
+	/**
+	 * @var object Instance of ConsoleTools class.
+	 */
+	public $consoletools;
+
+	/**
+	 * @var string Lower-cased name of DBMS in use.
+	 */
+	public $dbsystem;
+
+	/**
+	 * @var bool	Whether memcache is enabled.
+	 */
+	public $memcached;
+
+	/**
+	 * @var object Instance of PDO class.
+	 */
 	private static $pdo = null;
 
-	// Start a connection to the DB.
+	/**
+	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
+	 * if needed, otherwise returns the current one.
+	 */
 	public function __construct()
 	{
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
+		{
+			$this->dbsystem = strtolower(DB_SYSTEM);
+		}
+		else
+		{
+			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+		}
+
+		if (!(self::$pdo instanceof PDO))
+		{
+			$this->initialiseDatabase(null);
+		}
+
+		if (defined("MEMCACHE_ENABLED"))
+		{
+			$this->memcached = MEMCACHE_ENABLED;
+		}
+		else
+		{
+			$this->memcached = false;
+		}
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
-		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
-			$this->dbsystem = strtolower(DB_SYSTEM);
-		else
-			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
-		if (DB::$initialized === false)
-		{
-			if ($this->dbsystem == 'mysql')
-			{
-				if (defined('DB_SOCKET') && DB_SOCKET != '')
-					$pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
-				else
-				{
-					$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-					if (defined('DB_PORT'))
-						$pdos .= ';port='.DB_PORT;
-					$pdos .= ';charset=utf8';
-				}
-			}
-			else
-				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
-			try {
-				if ($this->dbsystem == 'mysql')
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'");
-				else
-					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
-
-				DB::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
-				// For backwards compatibility, no need for a patch.
-				DB::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-				DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-			} catch (PDOException $e) {
-				exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
-			}
-
-			DB::$initialized = true;
-		}
-		$this->memcached = false;
-		if (defined("MEMCACHE_ENABLED"))
-			$this->memcached = MEMCACHE_ENABLED;
+		return self::$pdo;
 	}
 
-	// Return string; mysql or pgsql.
+	private function initialiseDatabase($param)
+	{
+		if ($this->dbsystem == 'mysql')
+		{
+			if (defined('DB_SOCKET') && DB_SOCKET != '')
+			{
+				$dsn = $this->dbsystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+			}
+			else
+			{
+				$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+				if (defined('DB_PORT'))
+				{
+					$dsn .= ';port=' . DB_PORT;
+				}
+				$dsn .= ';charset=utf8';
+			}
+		}
+		else
+		{
+			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+		}
+
+		try
+		{
+			$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+			if ($this->dbsystem == 'mysql')
+			{
+				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
+			}
+
+			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
+			if (self::$pdo === false)
+			{	// In case PDO is not set to produce exceptions (PHP's default behaviour).
+				die("Unable to create connection to the Database!\n");
+			}
+			// For backwards compatibility, no need for a patch.
+			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		}
+		catch (PDOException $e)
+		{
+			exit($this->c->error("Connection to the SQL server failed, error follows: (".$e->getMessage().")"));
+		}
+	}
+
+	/**
+	 * @return string; mysql or pgsql.
+	 */
 	public function dbSystem()
 	{
 		return $this->dbsystem;
@@ -71,7 +133,12 @@ class DB
 		if (is_null($str))
 			return 'NULL';
 
-		return DB::$pdo->quote($str);
+		return self::$pdo->quote($str);
+	}
+
+	public function isInitialised()
+	{
+		return (self::$pdo instanceof PDO);
 	}
 
 	// For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
@@ -80,17 +147,16 @@ class DB
 		if ($query == '')
 			return false;
 
-		try
-		{
+		try {
 			if ($this->dbsystem() == 'mysql')
 			{
-				$ins = DB::$pdo->prepare($query);
+				$ins = self::$pdo->prepare($query);
 				$ins->execute();
-				return DB::$pdo->lastInsertId();
+				return self::$pdo->lastInsertId();
 			}
 			else
 			{
-				$p = DB::$pdo->prepare($query.' RETURNING id');
+				$p = self::$pdo->prepare($query . ' RETURNING id');
 				$p->execute();
 				return $r['id'];
 			}
@@ -101,9 +167,9 @@ class DB
 			{
 				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
 				$this->consoletools->showsleep($i * $i);
-				$ins = DB::$pdo->prepare($query);
+				$ins = self::$pdo->prepare($query);
 				$ins->execute();
-				return DB::$pdo->lastInsertId();
+				return self::$pdo->lastInsertId();
 				$i++;
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205)
@@ -122,7 +188,7 @@ class DB
 				return false;
 			}
 			else
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 			return false;
 
 		}
@@ -135,7 +201,7 @@ class DB
 			return false;
 
 		try {
-			$run = DB::$pdo->prepare($query);
+			$run = self::$pdo->prepare($query);
 			$run->execute();
 			return $run;
 		} catch (PDOException $e) {
@@ -145,7 +211,7 @@ class DB
 			{
 				echo $this->c->error("A Deadlock or lock wait timeout has occurred, sleeping.\n");
 				$this->consoletools->showsleep($i * $i);
-				$run = DB::$pdo->prepare($query);
+				$run = self::$pdo->prepare($query);
 				$run->execute();
 				return $run;
 				$i++;
@@ -166,7 +232,7 @@ class DB
 				return false;
 			}
 			else
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 			return false;
 		}
 	}
@@ -178,9 +244,9 @@ class DB
 			return false;
 
 		try {
-			return DB::$pdo->exec($query);
+			return self::$pdo->exec($query);
 		} catch (PDOException $e) {
-			printf($e->getMessage());
+			echo $this->c->error($e->getMessage());
 			return false;
 		}
 	}
@@ -188,10 +254,18 @@ class DB
 
 	// Return an array of rows, an empty array if no results.
 	// Optional: Pass true to cache the result with memcache.
-	public function query($query, $memcache=false)
+	/**
+	 * Returns an array of result (empty array if no results or an error occurs)
+	 *
+	 * @param type $query	 SQL to execute.
+	 * @param type $memcache Indicates if memcache should you be used if available.
+	 * @return array	Array of results (possibly empty) on success, empty array on failure.
+	 */
+	public function query($query, $memcache = false)
 	{
-		if ($query == '')
+		if ($query == '') {
 			return false;
+		}
 
 		if ($memcache === true && $this->memcached === true)
 		{
@@ -201,33 +275,43 @@ class DB
 				{
 					$crows = $memcached->get($query);
 					if ($crows !== false)
+					{
 						return $crows;
+					}
 				}
 			} catch (Exception $er) {
-					printf ($er);
+				echo $this->c->error($er->getMessage());
 			}
 		}
 
-		try {
-			$result = DB::$pdo->query($query);
-		} catch (PDOException $e) {
-			printf($e->getMessage());
-			$result = false;
+		$result = $this->queryArray($query);
+
+		if ($memcache === true && $this->memcached === true)
+		{
+			$memcached->add($query, $rows);
 		}
 
-		if ($result === false)
-			return array();
+		return ($result === false) ? array() : $result;
+	}
 
+	/**
+	 * Main method for creating results as an array.
+	 *
+	 * @param string $query		SQL to execute.
+	 * @return array|boolean	Array of results on success or false on failure.
+	 */
+	public function queryArray($query)
+	{
+		if ($query == '') return false;
+
+		$result = $this->queryDirect($query);
 		$rows = array();
 		foreach ($result as $row)
 		{
 			$rows[] = $row;
 		}
 
-		if ($memcache === true && $this->memcached === true)
-			$memcached->add($query, $rows);
-
-		return $rows;
+		return (!isset($rows)) ? false : $rows;
 	}
 
 	// Returns the first row of the query.
@@ -244,32 +328,39 @@ class DB
 	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	public function queryDirect($query)
 	{
-		if ($query == '')
-			return false;
+		if ($query == '') return false;
 
 		try {
-			$result = DB::$pdo->query($query);
+			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
-			printf($e->getMessage());
+			echo $this->c->error("queryDirect: " . $e->getMessage() . "\n");
 			$result = false;
 		}
 		return $result;
 	}
 
-    //Query that will return an associative array
+	/**
+	 * Returns results as an array but without an empty array like our query() function.
+	 *
+	 * @param string $query		The query to execute.
+	 * @return array|boolean	Array of results on success, false otherwise.
+	 */
     public function queryAssoc($query)
     {
-        DB::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        if ($query == '')
-            return false;
+        if ($query == '') return false;
+		$mode = self::$pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+		if ($mode != PDO::FETCH_ASSOC)
+		{
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		}
 
-        try {
-            $result = DB::$pdo->query($query);
-        } catch (PDOException $e) {
-            printf($e->getMessage());
-            $result = false;
-        }
-        return $result;
+        $result = $this->queryArray($query);
+
+		if ($mode != PDO::FETCH_ASSOC)
+		{
+			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		}
+		return $result;
     }
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
@@ -305,56 +396,56 @@ class DB
 	}
 
 	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
-    public function newtables($grpid)
-    {
+	public function newtables($grpid)
+	{
         $s = new Sites();
         $site = $s->get();
         $DoPartRepair = ($site->partrepair == '0') ? false : true;
-        if (!is_null($grpid) && is_numeric($grpid))
-        {
+		if (!is_null($grpid) && is_numeric($grpid))
+		{
             $binaries = $parts = $collections = $partrepair = false;
-            try {
-                DB::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
-                $collections = true;
-            } catch (PDOException $e) {
-                try {
-                    if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
-                    {
-                        $collections = true;
-                        $this->newtables($grpid);
-                    }
-                } catch (PDOException $e) {
-                    return false;
-                }
-            }
+			try {
+				self::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+				$collections = true;
+			} catch (PDOException $e) {
+				try {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+					{
+						$collections = true;
+						$this->newtables($grpid);
+					}
+				} catch (PDOException $e) {
+					return false;
+				}
+			}
 
-            if ($collections === true)
-            {
-                try {
-                    DB::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
-                    $binaries = true;
-                } catch (PDOException $e) {
-                    if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
-                    {
-                        $binaries = true;
-                        $this->newtables($grpid);
-                    }
-                }
-            }
+			if ($collections === true)
+			{
+				try {
+					self::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+					$binaries = true;
+				} catch (PDOException $e) {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+					{
+						$binaries = true;
+						$this->newtables($grpid);
+					}
+				}
+			}
 
-            if ($binaries === true)
-            {
-                try {
-                    DB::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
-                    $parts = true;
-                } catch (PDOException $e) {
-                    if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
-                    {
-                        $parts = true;
-                        $this->newtables($grpid);
-                    }
-                }
-            }
+			if ($binaries === true)
+			{
+				try {
+					self::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+					$parts = true;
+				} catch (PDOException $e) {
+					if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+					{
+						$parts = true;
+						$this->newtables($grpid);
+					}
+				}
+			}
 
             if ($DoPartRepair === true)
             {
@@ -376,37 +467,25 @@ class DB
                 return true;
             else
                 return false;
-        }
-    }
-
-	// Prepares a statement, to run use exexute(). http://www.php.net/manual/en/pdo.prepare.php
-	public function Prepare($query)
-	{
-		try {
-			$stat = DB::$pdo->prepare($query);
-		} catch (PDOException $e) {
-			//printf($e->getMessage());
-			$stat = false;
 		}
-		return $stat;
 	}
 
 	// Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	public function beginTransaction()
 	{
-		return DB::$pdo->beginTransaction();
+		return self::$pdo->beginTransaction();
 	}
 
 	// Commits a transaction. http://www.php.net/manual/en/pdo.commit.php
 	public function Commit()
 	{
-		return DB::$pdo->commit();
+		return self::$pdo->commit();
 	}
 
 	// Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php
 	public function Rollback()
 	{
-		return DB::$pdo->rollBack();
+		return self::$pdo->rollBack();
 	}
 
 	public function from_unixtime($utime, $escape=true)
@@ -436,30 +515,59 @@ class DB
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
-	// Checks whether the connection to the server is working. Optionally start a new connection.
+	/**
+	 * Checks whether the connection to the server is working. Optionally start
+	 * a new connection.
+	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's
+	 * default configuration). In this case check the return value === false.
+	 *
+	 * @param boolean $restart Whether an attempt should be made to reinitialise the Db object on failure.
+	 * @return boolean
+	 */
 	public function ping($restart = false)
 	{
 		try {
-			return (bool) DB::$pdo->query('SELECT 1+1');
+			return (bool) self::$pdo->query('SELECT 1+1');
 		} catch (PDOException $e) {
-			if ($restart = true)
+			if ($restart == true)
 			{
-				DB::$initialized = false;
-				$this->DB();
+				$this->initialiseDatabase(null);
 			}
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Prepares a statement to be run by the Db engine.
+	 * To run the statement use the returned $statement with ->execute();
+	 *
+	 * Ideally the signature would have array before $options but that causes a strict warning.
+	 *
+	 * @param string	$query		SQL query to run, with optional place holders.
+	 * @param array		$options	Driver options.
+	 * @return Pobject|false PDOstatement on success false on failure.
+	 * @link http://www.php.net/pdo.prepare.php
+	 */
+	public function Prepare($query, $options = array())
+	{
+		try {
+			$PDOstatement = self::$pdo->prepare($query, $options);
+		} catch (PDOException $e) {
+			//echo $this->c->error($e->getMessage());
+			$PDOstatement = false;
+		}
+		return $PDOstatement;
+	}
+
 	// Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php
 	public function getAttribute($attribute)
 	{
 		if ($attribute != '')
 		{
 			try {
-				$result = DB::$pdo->getAttribute($attribute);
+				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 				$result = false;
 			}
 			return $result;

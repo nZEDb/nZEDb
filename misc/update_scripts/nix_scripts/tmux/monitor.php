@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4450";
+$version="0.3r4473";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -103,7 +103,7 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 $proc_work = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND (bitwise & 1) = 1) AS audio,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
@@ -118,7 +118,7 @@ $proc_work2 = "SELECT
 	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND ((bitwise & 4) = 0 AND (bitwise & 128) = 0) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus IN (0, -1)) AS requestid_inprogress,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched,
 	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
@@ -390,7 +390,7 @@ $fcfirstrun = true;
 while($i > 0)
 {
 	//check the db connection
-	if ($db->ping() == false)
+	if ($db->ping(true) == false)
 	{
 		unset($db);
 		$db = NULL;
