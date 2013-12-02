@@ -43,7 +43,7 @@ class SABnzbd
 		 			$this->priority = (isset($_COOKIE['sabnzbd_'.$this->uid.'__priority'])) ? $_COOKIE['sabnzbd_'.$this->uid.'__priority'] : 0;
 		 			$this->apikeytype = (isset($_COOKIE['sabnzbd_'.$this->uid.'__apitype'])) ? $_COOKIE['sabnzbd_'.$this->uid.'__apitype'] : 1;
 		 		}
-		 		elseif (!empty($page->userdata['sabapikey']) && !empty($page->userdata['saburl']))
+		 		else if (!empty($page->userdata['sabapikey']) && !empty($page->userdata['saburl']))
 		 		{
 		 			$this->url = $page->userdata['saburl'];
 		 			$this->apikey = $page->userdata['sabapikey'];

@@ -97,7 +97,7 @@ else
 			$nzba = file_get_contents($nzbFile);
 			$compressed = false;
 		}
-		elseif ($nzbFile->getExtension() == "gz")
+		else if ($nzbFile->getExtension() == "gz")
 		{
 			$nzbc = 'compress.zlib://'.$nzbFile;
 			$nzba = file_get_contents($nzbc);
@@ -156,7 +156,7 @@ else
 			if ($groupID != -1 && !$isBlackListed)
 			{
 				if ($usenzbname)
-						$usename = str_replace('.nzb', '', basename($nzbFile));
+					$usename = str_replace('.nzb', '', basename($nzbFile));
 				if (count($file->segments->segment) > 0)
 				{
 					foreach($file->segments->segment as $segment)
@@ -201,9 +201,9 @@ else
 				$posteddate = $postdate[0];
 			$category = $categorize->determineCategory($cleanName, $groupName);
 			if ($propername === true)
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~5)|5)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
 			else
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~1)|1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
+				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, (bitwise & ~257)|257)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
 
 			if (isset($relid) && $relid == false)
 			{

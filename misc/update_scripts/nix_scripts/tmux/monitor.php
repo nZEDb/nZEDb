@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4412";
+$version="0.3r4450";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -101,26 +101,26 @@ $qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND (bitwise & 1) = 1) AS audio,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL AND (bitwise & 1) = 1) AS audio,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
-	(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
+	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
+	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
+	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
 	(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
 	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND ((bitwise & 4) = 0 AND (bitwise & 128) = 0) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1) AS requestid_matched,
-	(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid IS NOT NULL) AS predb_matched,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND ((bitwise & 4) = 0 AND (bitwise & 128) = 0) AND reqidstatus IN (0, -1) AND request = true) AS requestid_inprogress,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched,
 	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
 if ($dbtype == 'mysql')
@@ -132,7 +132,7 @@ if ($dbtype == 'mysql')
 		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
 		(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd,
+		(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
 		(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
 else if ($dbtype == 'pgsql')
@@ -144,13 +144,13 @@ else if ($dbtype == 'pgsql')
 		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days) < first_record_postdate) AS backfill_groups_date,
 		(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
 		(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd,
+		(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
 		(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
 
 // tmux and site settings, refreshes every loop
 $proc_tmux = "SELECT
-	(SELECT searchname FROM releases ORDER BY postdate DESC LIMIT 1) AS newestname,
+	(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestname,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay') AS monitor,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session') AS tmux_session,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'niceness') AS niceness,
@@ -462,12 +462,12 @@ while($i > 0)
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
-                    else if (strpos($tbl, '_partrepair') !== false)
-                    {
-                        $run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-                        if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-                            $partrepair_table += $run[0]['count'];
-                    }
+					else if (strpos($tbl, '_partrepair') !== false)
+					{
+						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
+						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
+							$partrepair_table += $run[0]['count'];
+					}
 				}
 				$oldestcollection = $age;
 				$tpg_count_time = (TIME() - $time07);
@@ -527,7 +527,7 @@ while($i > 0)
 		if ($proc_work_result3[0]['binaries_table'] != NULL) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
 		if ($split_result[0]['parts_table'] != NULL) { $parts_table = $split_result[0]['parts_table']; }
 		if ($proc_work_result2[0]['collections_table'] != NULL) { $collections_table = $proc_work_result2[0]['collections_table']; }
-        if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
+		if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
 	}
 
 	if ($split_result[0]['predb'] != NULL) { $predb = $split_result[0]['predb']; }
@@ -891,9 +891,9 @@ while($i > 0)
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
 						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
 						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py filename $log; \
 						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; \
+						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
 						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			}
 			else

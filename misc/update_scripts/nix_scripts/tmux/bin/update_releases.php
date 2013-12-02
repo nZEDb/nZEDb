@@ -54,7 +54,7 @@ if ($pieces[0] != 'Stage7b')
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 }
-elseif ($pieces[0] == 'Stage7b')
+else if ($pieces[0] == 'Stage7b')
 {
 	// Runs functions that run on releases table after all others completed
 	$releases->processReleasesStage4dot5($groupid='', true);

@@ -14,6 +14,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -21,16 +22,18 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python [2, 3], \nInformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python [2, 3], \nInformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
-print("\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -66,7 +69,8 @@ elif intbackfilltype == 2:
 
 #exit is set to safe backfill
 if len(sys.argv) == 1 and type == 4:
-	sys.exit("Tmux is set for Safe Backfill, no groups to process.")
+	print(bcolors.ERROR + "Tmux is set for Safe Backfill, no groups to process." + bcolors.ENDC)
+	sys.exit()
 
 #query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
@@ -81,7 +85,7 @@ else:
 
 datas = cur.fetchall()
 if not datas:
-	print("No Groups enabled for backfill")
+	print(bcolors.ERROR + "No Groups enabled for backfill" + bcolors.ENDC)
 	sys.exit()
 
 #close connection to mysql
@@ -119,11 +123,11 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))))
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
-		sys.exit(0)
+		sys.exit()
 
 	signal.signal(signal.SIGINT, signal_handler)
 
@@ -141,8 +145,8 @@ def main(args):
 
 	my_queue.join()
 
-	print("\nBackfill Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nBackfill Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

@@ -16,7 +16,7 @@ switch($action)
 	case 'submit':
 		$error = "";
 		$ret = $tmux->update($_POST);
-        $page->title = "Tmux Settings Edit";
+		$page->title = "Tmux Settings Edit";
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
 		break;

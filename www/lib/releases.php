@@ -52,7 +52,7 @@ class Releases
 	public function get()
 	{
 		$db = $this->db;
-		return $db->query('SELECT releases.*, g.name AS group_name, c.title AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN groups g on g.id = releases.groupid WHERE nzbstatus = 1');
+		return $db->query('SELECT releases.*, g.name AS group_name, c.title AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN groups g on g.id = releases.groupid WHERE (bitwise & 256) = 256');
 	}
 
 	public function getRange($start, $num)
@@ -64,7 +64,7 @@ class Releases
 		else
 			$limit = ' LIMIT '.$num.' OFFSET '.$start;
 
-		return $db->query("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid WHERE nzbstatus = 1 ORDER BY postdate DESC".$limit);
+		return $db->query("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid WHERE (bitwise & 256) = 256 ORDER BY postdate DESC".$limit);
 	}
 
 	// Used for paginator.
@@ -89,7 +89,7 @@ class Releases
 		if (count($excludedcats) > 0)
 			$exccatlist = ' AND categoryid NOT IN ('.implode(',', $excludedcats).')';
 
-		$res = $db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s', $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql));
+		$res = $db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid WHERE (bitwise & 256) = 256 AND releases.passwordstatus <= %d %s %s %s %s', $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql));
 		return $res['num'];
 	}
 
@@ -121,7 +121,7 @@ class Releases
 			$exccatlist = ' AND releases.categoryid NOT IN ('.implode(',', $excludedcats).')';
 
 		$order = $this->getBrowseOrder($orderby);
-		return $db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s ORDER BY %s %s %s", $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit), true);
+		return $db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE (bitwise & 256) = 256 AND releases.passwordstatus <= %d %s %s %s %s ORDER BY %s %s %s", $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit), true);
 	}
 
 	// Return site setting for hiding/showing passworded releases.
@@ -192,7 +192,7 @@ class Releases
 		else
 			$group = '';
 
-		return $db->query(sprintf("SELECT searchname, guid, CONCAT(cp.title,'_',category.title) AS catName FROM releases INNER JOIN category ON releases.categoryid = category.id LEFT OUTER JOIN category cp ON cp.id = category.parentid WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group));
+		return $db->query(sprintf("SELECT searchname, guid, CONCAT(cp.title,'_',category.title) AS catName FROM releases INNER JOIN category ON releases.categoryid = category.id LEFT OUTER JOIN category cp ON cp.id = category.parentid WHERE (bitwise & 256) = 256 %s %s %s", $postfrom, $postto, $group));
 	}
 
 	public function getEarliestUsenetPostDate()
@@ -244,7 +244,7 @@ class Releases
 		{
 			if ($cat[0] == -2)
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
-			elseif ($cat[0] != -1)
+			else if ($cat[0] != -1)
 			{
 				$catsrch = ' AND (';
 				foreach ($cat as $category)
@@ -532,7 +532,7 @@ class Releases
 				{
 					if ($intwordcount == 0 && (strpos($word, '^') === 0))
 						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1).'%'));
-					elseif (substr($word, 0, 2) == '--')
+					else if (substr($word, 0, 2) == '--')
 						$searchsql .= sprintf(' AND releases.%s NOT %s %s', $type, $like, $db->escapeString('%'.substr($word, 2).'%'));
 					else
 						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString('%'.$word.'%'));
@@ -607,30 +607,30 @@ class Releases
 		}
 
 		if ($sizefrom == '-1'){$sizefromsql= ('');}
-		elseif ($sizefrom == '1'){$sizefromsql= (' AND releases.size > 104857600 ');}
-		elseif ($sizefrom == '2'){$sizefromsql= (' AND releases.size > 262144000 ');}
-		elseif ($sizefrom == '3'){$sizefromsql= (' AND releases.size > 524288000 ');}
-		elseif ($sizefrom == '4'){$sizefromsql= (' AND releases.size > 1073741824 ');}
-		elseif ($sizefrom == '5'){$sizefromsql= (' AND releases.size > 2147483648 ');}
-		elseif ($sizefrom == '6'){$sizefromsql= (' AND releases.size > 3221225472 ');}
-		elseif ($sizefrom == '7'){$sizefromsql= (' AND releases.size > 4294967296 ');}
-		elseif ($sizefrom == '8'){$sizefromsql= (' AND releases.size > 8589934592 ');}
-		elseif ($sizefrom == '9'){$sizefromsql= (' AND releases.size > 17179869184 ');}
-		elseif ($sizefrom == '10'){$sizefromsql= (' AND releases.size > 34359738368 ');}
-		elseif ($sizefrom == '11'){$sizefromsql= (' AND releases.size > 68719476736 ');}
+		else if ($sizefrom == '1'){$sizefromsql= (' AND releases.size > 104857600 ');}
+		else if ($sizefrom == '2'){$sizefromsql= (' AND releases.size > 262144000 ');}
+		else if ($sizefrom == '3'){$sizefromsql= (' AND releases.size > 524288000 ');}
+		else if ($sizefrom == '4'){$sizefromsql= (' AND releases.size > 1073741824 ');}
+		else if ($sizefrom == '5'){$sizefromsql= (' AND releases.size > 2147483648 ');}
+		else if ($sizefrom == '6'){$sizefromsql= (' AND releases.size > 3221225472 ');}
+		else if ($sizefrom == '7'){$sizefromsql= (' AND releases.size > 4294967296 ');}
+		else if ($sizefrom == '8'){$sizefromsql= (' AND releases.size > 8589934592 ');}
+		else if ($sizefrom == '9'){$sizefromsql= (' AND releases.size > 17179869184 ');}
+		else if ($sizefrom == '10'){$sizefromsql= (' AND releases.size > 34359738368 ');}
+		else if ($sizefrom == '11'){$sizefromsql= (' AND releases.size > 68719476736 ');}
 
 		if ($sizeto == '-1'){$sizetosql= ('');}
-		elseif ($sizeto == '1'){$sizetosql= (' AND releases.size < 104857600 ');}
-		elseif ($sizeto == '2'){$sizetosql= (' AND releases.size < 262144000 ');}
-		elseif ($sizeto == '3'){$sizetosql= (' AND releases.size < 524288000 ');}
-		elseif ($sizeto == '4'){$sizetosql= (' AND releases.size < 1073741824 ');}
-		elseif ($sizeto == '5'){$sizetosql= (' AND releases.size < 2147483648 ');}
-		elseif ($sizeto == '6'){$sizetosql= (' AND releases.size < 3221225472 ');}
-		elseif ($sizeto == '7'){$sizetosql= (' AND releases.size < 4294967296 ');}
-		elseif ($sizeto == '8'){$sizetosql= (' AND releases.size < 8589934592 ');}
-		elseif ($sizeto == '9'){$sizetosql= (' AND releases.size < 17179869184 ');}
-		elseif ($sizeto == '10'){$sizetosql= (' AND releases.size < 34359738368 ');}
-		elseif ($sizeto == '11'){$sizetosql= (' AND releases.size < 68719476736 ');}
+		else if ($sizeto == '1'){$sizetosql= (' AND releases.size < 104857600 ');}
+		else if ($sizeto == '2'){$sizetosql= (' AND releases.size < 262144000 ');}
+		else if ($sizeto == '3'){$sizetosql= (' AND releases.size < 524288000 ');}
+		else if ($sizeto == '4'){$sizetosql= (' AND releases.size < 1073741824 ');}
+		else if ($sizeto == '5'){$sizetosql= (' AND releases.size < 2147483648 ');}
+		else if ($sizeto == '6'){$sizetosql= (' AND releases.size < 3221225472 ');}
+		else if ($sizeto == '7'){$sizetosql= (' AND releases.size < 4294967296 ');}
+		else if ($sizeto == '8'){$sizetosql= (' AND releases.size < 8589934592 ');}
+		else if ($sizeto == '9'){$sizetosql= (' AND releases.size < 17179869184 ');}
+		else if ($sizeto == '10'){$sizetosql= (' AND releases.size < 34359738368 ');}
+		else if ($sizeto == '11'){$sizetosql= (' AND releases.size < 68719476736 ');}
 
 		if ($hasnfo != '0')
 			$hasnfosql= ' AND releases.nfostatus = 1 ';
@@ -976,7 +976,7 @@ class Releases
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d, bitwise = ((bitwise & ~1)|1) WHERE id = %d', $catId, $rowrel['id']));
 				$relcount ++;
 				if ($this->echooutput)
-					$this->consoleTools->overWrite('Categorizing:'.$this->consoleTools->percentString($relcount,$total));
+					$this->consoleTools->overWrite($this->primaryOver('Categorizing: '.$this->consoleTools->percentString($relcount,$total)));
 			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
@@ -1080,8 +1080,7 @@ class Releases
 			echo $this->c->header("\nStage 2 -> Get the size in bytes of the collection.");
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$checked = $db->prepare('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0'.$where);
-		$checked->execute();
+		$checked = $db->queryDirect('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0'.$where);
 		if ($this->echooutput)
 		{
 			echo $this->c->primary($checked->rowCount()." collections set to filecheck = 3(size calculated)");
@@ -1282,7 +1281,8 @@ class Releases
 
 			foreach ($rescol as $rowcol)
 			{
-				$propername = $dupe = false;
+				$propername = true;
+				$dupe = $relid = false;
 				$cleanName = $err = $relid = '';
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
 				$cleanerName = $this->nameCleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
@@ -1301,10 +1301,19 @@ class Releases
 				$relguid = sha1(uniqid('',true).mt_rand());
 
 				$category = $categorize->determineCategory($cleanName, $rowcol['gname']);
-				if ($propername != false)
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, (bitwise & ~5)|5)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
-				else
-					$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %d, %d, -1, %d, -1, (bitwise & ~1)|1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $rowcol['filesize'], ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+				$cleanRelName = utf8_encode($cleanRelName);
+				$cleanName = utf8_encode($cleanName);
+				$fromname = utf8_encode($fromname);
+
+				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
+				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $this->db->escapeString($rowcol['filesize'])));
+				if (!$dupecheck)
+				{
+					if ($propername == true)
+						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~5)|5)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+					else
+						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($page->site->checkpasswordedrar == '1' ? -1 : 0), $category));
+				}
 
 				if (isset($relid) && $relid)
 				{
@@ -1315,7 +1324,7 @@ class Releases
 					if ($this->echooutput)
 						echo $this->c->primary('Added release '.$cleanName);
 				}
-				elseif (isset($relid) && $relid == false)
+				else if (isset($relid) && $relid == false)
 				{
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE collectionhash = %s', $db->escapeString($rowcol['collectionhash'])));
 					$duplicate++;
@@ -1498,7 +1507,7 @@ class Releases
 		if ($this->echooutput)
 			echo $this->c->header("\nStage 5 -> Create the NZB, mark collections as ready for deletion.");
 		$stage5 = TIME();
-		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE".$where."r.nzbstatus = 0");
+		$resrel = $db->query("SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE".$where."(bitwise & 256) = 0");
 		$total = count($resrel);
 		if ($total > 0)
 		{
@@ -1513,6 +1522,7 @@ class Releases
 				if($nzb_create != false)
 				{
 					$db->queryExec(sprintf('UPDATE '.$group['cname'].' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
+					$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
 						echo $this->consoleTools->overWrite($this->c->primaryOver('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
@@ -1523,7 +1533,7 @@ class Releases
 		$timing = $this->c->primary($this->consoleTools->convertTime(TIME() - $stage5));
 		if ($this->echooutput && $nzbcount > 0)
 			echo $this->c->primary("\n".number_format($nzbcount).' NZBs created in '. $timing);
-		elseif ($this->echooutput)
+		else if ($this->echooutput)
 			echo $this->c->primary(number_format($nzbcount).' NZBs created in '. $timing);
 		return $nzbcount;
 	}
@@ -1544,7 +1554,7 @@ class Releases
 				echo $this->c->header("\nStage 5b -> Request ID lookup.");
 
 			// Look for records that potentially have requestID titles.
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(bitwise & 4) = 0 AND nzbstatus = 1 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE".$where."(bitwise & 260) = 256 AND reqidstatus in (0, -1) AND r.request = true LIMIT 100");
 
 			if ($resrel->rowCount() > 0)
 			{
@@ -1910,14 +1920,11 @@ class Releases
 			$db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $page->site->partretentionhours));
 
 		if ($this->echooutput && $this->completion > 0)
-			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other, '.number_format($completioncount).' under '.$this->completion.'% completion. Removed '.number_format($reccount).' parts/binaries/collection rows.');
-		if ($this->echooutput && $this->completion == 0)
+			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other, '.number_format($completioncount).' under '.$this->completion.'% completion.');
+		else if ($this->echooutput && $this->completion == 0)
 			echo $this->c->primary('Removed releases: '.number_format($remcount).' past retention, '.number_format($passcount).' passworded, '.number_format($dupecount).' crossposted, '.number_format($disabledcount).' from disabled categoteries, '.number_format($disabledgenrecount).' from disabled music genres, '.number_format($miscothercount).' from misc->other');
-		else
-		{
-			if ($this->echooutput)
-				echo $this->c->primary("Removed ".number_format($reccount).' parts/binaries/collection rows.');
-		}
+		if ($this->echooutput && $reccount > 0)
+			echo $this->c->primary("Removed ".number_format($reccount).' parts/binaries/collection rows.');
 
 		if ($this->echooutput)
 			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage7));
@@ -1940,7 +1947,7 @@ class Releases
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == '1')
 				$this->processReleasesStage5b($groupID, $this->echooutput);
-			elseif ($this->requestids == '2')
+			else if ($this->requestids == '2')
 			{
 				$stage8 = TIME();
 				if ($this->echooutput)

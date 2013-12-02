@@ -313,7 +313,7 @@
 				<td style="width:180px;"><label for="fix_names">Fix Release Names:</label></td>
 				<td>
 					{html_radios id="fix_names" name='fix_names' values=$yesno_ids output=$yesno_names selected=$ftmux->fix_names separator='<br />'}
-					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false<br /> I have changed the query so that only category 7010 will be processed.</div>
+					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false</div>
 				</td>
 			</tr>
 

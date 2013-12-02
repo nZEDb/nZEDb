@@ -14,6 +14,7 @@ import signal
 import datetime
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 con = None
 if conf['DB_SYSTEM'] == "mysql":
@@ -21,16 +22,18 @@ if conf['DB_SYSTEM'] == "mysql":
 		import cymysql as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
-		sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 elif conf['DB_SYSTEM'] == "pgsql":
 	try:
 		import psycopg2 as mdb
 		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 	except ImportError:
-		sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+		sys.exit()
 cur = con.cursor()
 
-print("\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -44,8 +47,8 @@ run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
 
 if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
-	print("We will be using filename as searchname")
-print("Sorting Folders in {}, be patient.".format(nzbs))
+	print(bcolors.HEADER + "We will be using filename as searchname" + bcolors.ENDC)
+print(bcolors.HEADER + "Sorting Folders in {}, be patient.".format(nzbs) + bcolors.ENDC)
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
 
 #close connection to mysql
@@ -81,11 +84,11 @@ def main(args):
 	time_of_last_run = time.time()
 
 	if len(datas) != 0:
-		print("We will be using a max of {} threads, a queue of {} folders".format(run_threads, "{:,}".format(len(datas))))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} folders".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	else:
-		print("We will be using a max of {} threads, a queue of 1 folder".format(run_threads))
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of 1 folder".format(run_threads) + bcolors.ENDC)
 	if int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
-		print("We will be using filename as searchname")
+		print(bcolors.HEADER + "We will be using filename as searchname" + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -122,8 +125,8 @@ def main(args):
 
 	final = "true"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\nNZB Import Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\nNZB Import Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

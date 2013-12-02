@@ -40,7 +40,7 @@ if( isset($argv[1]) )
 
 	if ( $patch == '1' )
 	{
-        exec("cd $ROOTDIR && git pull");
+		exec("cd $ROOTDIR && git pull");
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0)

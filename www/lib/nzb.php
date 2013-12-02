@@ -33,7 +33,7 @@ class NZB
 		if ($relid == '' || $relguid == '' || $path == '')
 			return false;
 
-		$fp = gzopen($path, 'w6');
+		$fp = gzopen($path, 'w5');
 		if ($fp)
 		{
 			$nzb_guid = '';
@@ -65,9 +65,9 @@ class NZB
 			if (file_exists($path))
 			{
 				if ($nzb_guid === '')
-					$db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1 WHERE id = %d', $relid));
+					$db->queryExec(sprintf('UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %d', $relid));
 				else
-					$db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE id = %d', $db->escapestring(md5($nzb_guid)), $relid));
+					$db->queryExec(sprintf('UPDATE releases SET bitwise = (bitwise & ~256)|256, nzb_guid = %s WHERE id = %d', $db->escapestring(md5($nzb_guid)), $relid));
 
 				chmod($path, 0777); // change the chmod to fix issues some users have with file permissions
 				return true;
@@ -87,7 +87,7 @@ class NZB
 	{
 		$page = new Page();
 		$path = $this->getNZBPath($relguid, $page->site->nzbpath, true, $page->site->nzbsplitlevel);
-		$fp = gzopen($path, 'w6');
+		$fp = gzopen($path, 'w5');
 		if ($fp && $nzb)
 		{
 			gzwrite ($fp, $nzb);

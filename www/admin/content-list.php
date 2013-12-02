@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'content.php';
 $page = new AdminPage();
 $contents = new Contents();
 $contentlist = $contents->getAll();
-$page->smarty->assign('contentlist',$contentlist);	
+$page->smarty->assign('contentlist',$contentlist);
 
 $page->title = "Content List";
 

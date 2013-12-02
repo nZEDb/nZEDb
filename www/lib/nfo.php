@@ -27,7 +27,7 @@ class Nfo
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	public function addReleaseNfo($relid)
@@ -161,7 +161,7 @@ class Nfo
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6))
 			{
-				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus between %d AND -1 AND size < %s '.$groupid.' LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus between %d AND -1 AND size < %s '.$groupid.' LIMIT %d', $i, $this->maxsize*1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
@@ -234,7 +234,7 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '')
 		{
-			$relres = $db->query('SELECT id FROM releases WHERE nzbstatus = 1 AND nfostatus < -6');
+			$relres = $db->query('SELECT id FROM releases WHERE (bitwise & 256) = 256 AND nfostatus < -6');
 			foreach ($relres as $relrow)
 				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
 

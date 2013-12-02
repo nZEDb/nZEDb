@@ -14,8 +14,8 @@ if (isWindows() === true)
 	exit("Curently this is only for linux.\n");
 
 if (!isset($argv[1]))
-	exit("Usage php copy_from_newznab.php newznab_path_to_nzbs\n");
-elseif (isset($argv[1]) && !file_exists($argv[1]))
+	exit("Usage php copy_from_newznab.php path_to_newznab_nzbs\n");
+else if (isset($argv[1]) && !file_exists($argv[1]))
 	exit("$argv[1]) is an invalid path\n");
 else
 {
@@ -25,7 +25,7 @@ else
 	echo "Copying covers from ".$from."/../www/covers\n";
 	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
 	echo "Setting nzbstatus for all releases\n";
-	$db->queryExec("update releases set nzbstatus = 1");
+	$db->queryExec("UPDATE releases SET bitwise = (bitwise & ~256)|256");
 	system("php ".$misc."testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
 }
 ?>

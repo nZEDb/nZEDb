@@ -32,7 +32,7 @@ if (isset($pieces[6]))
 	if ($site->nntpproxy != "1")
 		$nntp->doQuit();
 }
-elseif (isset($pieces[3]))
+else if (isset($pieces[3]))
 {
 	// Create the connection here and pass, this is for post processing, so check for alternate
 	$nntp = new Nntp();
@@ -45,11 +45,11 @@ elseif (isset($pieces[3]))
 	if ($site->nntpproxy != "1")
 		$nntp->doQuit();
 }
-elseif (isset($pieces[2]))
+else if (isset($pieces[2]))
 {
 	$postprocess->processMovies($argv[1]);
 	echo '.';
 }
-elseif (isset($pieces[1]))
+else if (isset($pieces[1]))
 	$postprocess->processTv($argv[1]);
 ?>

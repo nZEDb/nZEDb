@@ -29,12 +29,12 @@ function create_guids($live, $delete = false)
 
 	if ($live == "true")
 	{
-		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC"));
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
 		$relrecs->execute();
 	}
-	elseif ($live == "limited")
+	else if ($live == "limited")
 	{
-		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND nzbstatus = 1 ORDER BY id DESC LIMIT 10000"));
+		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC LIMIT 10000"));
 		$relrecs->execute();
 	}
 	$total = $relrecs->rowCount();
