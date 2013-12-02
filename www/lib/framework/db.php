@@ -4,7 +4,7 @@ require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'site.php';
 
 /**
- * Class for handling connection to MySQL and PostgreSQL database using PDO.
+ * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
  * The class extends PDO, thereby exposing all of PDO's functionality directly
  * without the need to wrap each and every method here.
@@ -19,44 +19,53 @@ class DB extends PDO
 	// Start a connection to the DB.
 	public function __construct()
 	{
+		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
+			$this->dbsystem = strtolower(DB_SYSTEM);
+		} else {
+			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+		}
+
+		if (!(self::$pdo instanceof PDO)) {
+			$this->initialiseDatabase();
+		}
+
+		if (defined("MEMCACHE_ENABLED")) {
+			$this->memcached = MEMCACHE_ENABLED;
+		} else {
+			$this->memcached = false;
+		}
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
-		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0)
-			$this->dbsystem = strtolower(DB_SYSTEM);
-		else
-			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
-
-		if (!(self::$pdo instanceof PDO)) $this->initialiseDatabase();
-
-		$this->memcached = false;
-		if (defined("MEMCACHE_ENABLED"))
-			$this->memcached = MEMCACHE_ENABLED;
 
 		return self::$pdo;
 	}
 
 	private function initialiseDatabase($param)
 	{
-		if ($this->dbsystem == 'mysql')
-		{
-			if (defined('DB_SOCKET') && DB_SOCKET != '')
-				$dsn = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
-			else
-			{
-				$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
-				if (defined('DB_PORT'))
-					$dsn .= ';port='.DB_PORT;
+		if ($this->dbsystem == 'mysql') {
+			if (defined('DB_SOCKET') && DB_SOCKET != '') {
+				$dsn = $this->dbsystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+			} else {
+				$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+				if (defined('DB_PORT')) {
+					$dsn .= ';port=' . DB_PORT;
+				}
 				$dsn .= ';charset=utf8';
 			}
+		} else {
+			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
-		else
-			$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 		try {
 			$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
-			if ($this->dbsystem == 'mysql') $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
+			if ($this->dbsystem == 'mysql') {
+				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
+			}
 
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
+			if (self::$pdo === false) {	// In case PDO is not set to produce exceptions (PHP's default behaviour).
+				die("Unable to create connection to the Database!\n");
+			}
 			// For backwards compatibility, no need for a patch.
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
