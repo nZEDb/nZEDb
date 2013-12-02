@@ -117,6 +117,11 @@ class DB extends PDO
 		return self::$pdo->quote($str);
 	}
 
+	public function isInitialised()
+	{
+		return (self::$pdo instanceof PDO);
+	}
+
 	// For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
 	public function queryInsert($query)
 	{
