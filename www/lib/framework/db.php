@@ -25,17 +25,17 @@ class DB
 			if ($this->dbsystem == 'mysql')
 			{
 				if (defined('DB_SOCKET') && DB_SOCKET != '')
-					$pdos = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
+					$dsn = $this->dbsystem.':unix_socket='.DB_SOCKET.';dbname='.DB_NAME;
 				else
 				{
-					$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+					$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 					if (defined('DB_PORT'))
-						$pdos .= ';port='.DB_PORT;
-					$pdos .= ';charset=utf8';
+						$dsn .= ';port='.DB_PORT;
+					$dsn .= ';charset=utf8';
 				}
 			}
 			else
-				$pdos = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
+				$dsn = $this->dbsystem.':host='.DB_HOST.';dbname='.DB_NAME;
 
 			try {
 				if ($this->dbsystem == 'mysql')
@@ -43,7 +43,7 @@ class DB
 				else
 					$options = array( PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 
-				self::$pdo = new PDO($pdos, DB_USER, DB_PASSWORD, $options);
+				self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
 				// For backwards compatibility, no need for a patch.
 				self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 				self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
