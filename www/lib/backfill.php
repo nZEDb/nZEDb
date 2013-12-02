@@ -24,7 +24,7 @@ class Backfill
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
 		$this->safepartrepair = (!empty($site->safepartrepair)) ? $site->safepartrepair : 0;
-        $this->db = new DB();
+		$this->db = new DB();
 	}
 
 	// Backfill groups using user specified time/date.
@@ -47,14 +47,15 @@ class Backfill
 			$res = $groups->getActiveBackfill();
 
 
-		if (@$res)
+		if ($res)
 		{
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
-				echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
+				if ($groupName === '')
+					echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
 				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res)-$counter);
 				$counter++;
 			}
@@ -137,7 +138,8 @@ class Backfill
 
 			echo $this->c->set256($this->header).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
 			flush();
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$process = $this->safepartrepair ? 'update' : 'backfill';
+			$binaries->scan($nntp, $groupArr, $first, $last, $process);
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
@@ -204,14 +206,15 @@ class Backfill
 				$res = $groups->getActiveByDateBackfill();
 		}
 
-		if (@$res)
+		if ($res)
 		{
 			$counter = 1;
 			$db = $this->db;
 			$binaries = new Binaries();
 			foreach($res as $groupArr)
 			{
-				echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
+				if ($groupName === '')
+					echo $this->c->set256($this->header)."\nStarting group ".$counter.' of '.sizeof($res).".\n".$this->c->rsetColor();
 				$this->backfillPostGroup($nntp, $db, $binaries, $groupArr, $articles, sizeof($res)-$counter);
 				$counter++;
 			}
@@ -295,7 +298,8 @@ class Backfill
 
 			echo $this->c->set256($this->header)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
 			flush();
-			$binaries->scan($nntp, $groupArr, $first, $last, 'backfill');
+			$process = $this->safepartrepair ? 'update' : 'backfill';
+			$binaries->scan($nntp, $groupArr, $first, $last, $process);
 			$newdate = $this->postdate($nntp, $first, false, $groupArr['name'], true, 'oldest');
 			if ($newdate !== false)
 				$firstr_date = $newdate;
@@ -488,7 +492,7 @@ class Backfill
 			echo $this->c->warning("Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (".date('r', $firstDate).' or '.$this->daysOld($firstDate)." days).\n");
 			return $data['first'];
 		}
-		elseif ($goaldate > $lastDate)
+		else if ($goaldate > $lastDate)
 		{
 			echo $this->c->error('Backfill target of '.$days." day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ".ceil($this->daysOld($lastDate)+1).' days ('.date('r', $lastDate-86400).").\n");
 			return '';
@@ -557,7 +561,7 @@ class Backfill
 		$backthread = $site->get()->backfillthreads;
 		$binaries = new Binaries();
 		$groupArr = $groups->getByName($group);
-		$type = $this->safepartrepair ? 'update' : 'backfill';
+		$process = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->nntpproxy == 0)
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).(($this->compressedHeaders)?' Using Compression':' Not Using Compression').' ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
@@ -565,7 +569,7 @@ class Backfill
 			echo $this->c->set256($this->header).'Processing '.str_replace('alt.binaries', 'a.b', $groupArr['name']).' Using NNTPProxy ==> T-'.$threads.' ==> '.number_format($first).' to '.number_format($last)."\n".$this->c->rsetColor();
 		$this->startLoop = microtime(true);
 
-		$binaries->scan($nntp, $groupArr, $last, $first, $type);
+		$binaries->scan($nntp, $groupArr, $last, $first, $process);
 	}
 
 	function getFinal($group, $first, $type, $nntp)

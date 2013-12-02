@@ -61,6 +61,12 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 		case 8:
 			$namefixer->fixNamesWithPar2(2,$update,$other,$setStatus, $nntp);
 			break;
+		case 9:
+			$namefixer->fixNamesWithAniDB(1,$update,$other,$setStatus);
+			break;
+		case 10:
+			$namefixer->fixNamesWithAniDB(2,$update,$other,$setStatus);
+			break;
 		default :
 			exit("ERROR: Wrong argument, type php fixReleaseNames.php to see a list of valid arguments.".$n);
 			break;
@@ -77,6 +83,8 @@ else
 			"php fixReleaseNames.php 6 false other no ...: Fix release names in misc categories using File Name.".$n.
 			"php fixReleaseNames.php 7 false other no ...: Fix release names in misc categories using Par2 Files in the past 6 hours.".$n.
 			"php fixReleaseNames.php 8 false other no ...: Fix release names in misc categories using Par2 Files.".$n.
+			"php fixReleaseNames.php 9 false other no ...: Fix release names in Anime category in the past 6 hours.".$n.
+			"php fixReleaseNames.php 10 false other no ...: Fix release names in Anime category.".$n.
 			"The 2nd argument false will display the results, but not change the name, type true to have the names changed.".$n.
 			"The 3rd argument other will only do against other categories, to do against all categories use all.".$n.
 			"The 4th argument yes will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.".$n.$n);

@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'site.php';
 /*
 * Class for handling connection to MySQL and PostgreSQL database using PDO.
 * Exceptions are caught and displayed to the user.
@@ -110,12 +111,12 @@ class DB
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
+			else if ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Insert would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
+			else if ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;
@@ -154,12 +155,12 @@ class DB
 				//echo "Error: Deadlock or lock wait timeout.";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
+			else if ($e->errorInfo[1]==1062 || $e->errorInfo[0]==23000)
 			{
 				//echo "\nError: Update would create duplicate row, skipping\n";
 				return false;
 			}
-			elseif ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
+			else if ($e->errorInfo[1]==1406 || $e->errorInfo[0]==22001)
 			{
 				//echo "\nError: Too large to fit column length\n";
 				return false;
@@ -306,9 +307,12 @@ class DB
 	// Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
 	public function newtables($grpid)
 	{
+        $s = new Sites();
+        $site = $s->get();
+        $DoPartRepair = ($site->partrepair == '0') ? false : true;
 		if (!is_null($grpid) && is_numeric($grpid))
 		{
-			$binaries = $parts = $collections = false;
+            $binaries = $parts = $collections = $partrepair = false;
 			try {
 				self::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
 				$collections = true;
@@ -352,10 +356,26 @@ class DB
 				}
 			}
 
-			if ($parts === true && $binaries === true && $collections === true)
-				return true;
-			else
-				return false;
+            if ($DoPartRepair === true)
+            {
+                try {
+                    DB::$pdo->query('SELECT * FROM '.$grpid.'_partrepair LIMIT 1');
+                    $partrepair = true;
+                } catch (PDOException $e) {
+                    if ($this->queryExec('CREATE TABLE '.$grpid.'_partrepair LIKE partrepair') !== false)
+                    {
+                        $partrepair = true;
+                        $this->newtables($grpid);
+                    }
+                }
+            }
+            else
+                $partrepair = true;
+
+            if ($parts === true && $binaries = true && $collections = true && $partrepair = true)
+                return true;
+            else
+                return false;
 		}
 	}
 

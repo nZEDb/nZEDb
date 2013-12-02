@@ -708,10 +708,10 @@
 </tr>
 
 <tr>
-	<td style="width:180px;"><label for="safepartrepair">Part Repair for Safe Threaded Scripts:</label></td>
+	<td style="width:180px;"><label for="safepartrepair">Part Repair for Backfill Scripts:</label></td>
 	<td>
 		{html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$fsite->safepartrepair separator='<br />'}
-		<div class="hint">Whether to put unreceived parts into partrepair table when running binaries or backfill safe threaded scripts.</div>
+		<div class="hint">Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.</div>
 	</td>
 </tr>
 
@@ -728,6 +728,14 @@
 	<td>
 		{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
 		<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
+	</td>
+</tr>
+
+<tr>
+	<td style="width:180px;"><label for="showdroppedyencparts">Log Dropped Headers:</label></td>
+	<td>
+		{html_radios id="showdroppedyencparts" name='showdroppedyencparts' values=$yesno_ids output=$yesno_names selected=$fsite->showdroppedyencparts separator='<br />'}
+		<div class="hint">For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.</div>
 	</td>
 </tr>
 
@@ -885,7 +893,7 @@
 	<td style="width:180px;"><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
 		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
-		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases.</div>
+		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases. I have discovered that the nzbs imported using GrabNZBs do not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db. This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs, but the file size will differ.\nThe difference appears to be from USP providers, the posted nzb and size is from the originating USP and may vary in size from your USP.</div>
 	</td>
 </tr>
 

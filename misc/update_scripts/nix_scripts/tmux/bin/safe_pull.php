@@ -31,7 +31,7 @@ else if (isset($argv[1]))
 		$groupArr = $grp->getByName($groupName);
 		$binaries->partRepair($nntp, $groupArr);
 	}
-	elseif (isset($pieces[1]) && $pieces[0] == 'binupdate')
+	else if (isset($pieces[1]) && $pieces[0] == 'binupdate')
 	{
 		$binaries = new Binaries();
 		$groupName = $pieces[1];
@@ -39,22 +39,22 @@ else if (isset($argv[1]))
 		$groupArr = $grp->getByName($groupName);
 		$binaries->updateGroup($groupArr, $nntp);
 	}
-	elseif (isset($pieces[2]) && ($pieces[2] == 'Binary' || $pieces[2] == 'Backfill'))
+	else if (isset($pieces[2]) && ($pieces[2] == 'Binary' || $pieces[2] == 'Backfill'))
 	{
 		$backfill = new Backfill();
 		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2], $nntp);
 	}
-	elseif (isset($pieces[2]) && $pieces[2] == 'BackfillAll')
+	else if (isset($pieces[2]) && $pieces[2] == 'BackfillAll')
 	{
 		$backfill = new Backfill();
 		$backfill->backfillPostAllGroups($pieces[0], $pieces[1], $type='', $nntp);
 	}
-	elseif (isset($pieces[3]))
+	else if (isset($pieces[3]))
 	{
 		$backfill = new Backfill();
 		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3], $nntp);
 	}
-	elseif (isset($pieces[1]))
+	else if (isset($pieces[1]))
 	{
 		$backfill = new Backfill();
 		$backfill->backfillPostAllGroups($pieces[0], $pieces[1], $type='', $nntp);

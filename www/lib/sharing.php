@@ -39,7 +39,7 @@ class Sharing
 		$this->site = $s->get();
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 		$this->echooutput = $echooutput;
-        $this->db = new DB();
+		$this->db = new DB();
 
 		// Will be a site setting.. hides username when posting
 		$this->hideuser = false;

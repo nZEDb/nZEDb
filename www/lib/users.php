@@ -30,10 +30,10 @@ class Users
 	const SALTLEN = 4;
 	const SHA1LEN = 40;
 
-    function __construct()
-    {
-        $this->db = new DB();
-    }
+	function __construct()
+	{
+		$this->db = new DB();
+	}
 
 	public function get()
 	{
@@ -384,7 +384,7 @@ class Users
 	{
 		if (isset($_SESSION['uid']))
 			return true;
-		elseif (isset($_COOKIE['uid']) && isset($_COOKIE['idh']))
+		else if (isset($_COOKIE['uid']) && isset($_COOKIE['idh']))
 		{
 			$u = $this->getById($_COOKIE['uid']);
 

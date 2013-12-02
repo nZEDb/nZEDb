@@ -816,7 +816,7 @@ class TMDb
 				$headers[] = 'Content-Type: application/json';
 				$headers[] = 'Content-Length: '.strlen($json_string);
 			}
-			elseif($method == TMDb::HEAD)
+			else if($method == TMDb::HEAD)
 			{
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
 				curl_setopt($ch, CURLOPT_NOBODY, 1);
@@ -860,7 +860,7 @@ class TMDb
 		{
 			return $results;
 		}
-		elseif($method == TMDb::HEAD)
+		else if($method == TMDb::HEAD)
 		{
 			return $this->_http_parse_headers($header);
 		}

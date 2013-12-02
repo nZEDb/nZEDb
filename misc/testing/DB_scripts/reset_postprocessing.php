@@ -38,7 +38,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 		echo number_format($affected->rowCount())." releases reset.\n";
 	}
 }
-elseif (isset($argv[1]) && $argv[1] === "consoles")
+else if (isset($argv[1]) && $argv[1] === "consoles")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
@@ -49,7 +49,7 @@ elseif (isset($argv[1]) && $argv[1] === "consoles")
 	$affected = $db->queryExec("UPDATE releases SET consoleinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." consoleinfoID's reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "movies")
+else if (isset($argv[1]) && $argv[1] === "movies")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
@@ -63,7 +63,7 @@ elseif (isset($argv[1]) && $argv[1] === "movies")
 	$affected = $db->queryExec("UPDATE releases SET imdbid = NULL".$where);
 	echo number_format($affected->rowCount())." imdbID's reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "music")
+else if (isset($argv[1]) && $argv[1] === "music")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
@@ -74,7 +74,7 @@ elseif (isset($argv[1]) && $argv[1] === "music")
 	$affected = $db->queryExec("UPDATE releases SET musicinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." musicinfoID's reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "misc")
+else if (isset($argv[1]) && $argv[1] === "misc")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 		$where = "";
@@ -84,7 +84,7 @@ elseif (isset($argv[1]) && $argv[1] === "misc")
 	$affected = $db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0");
 	echo number_format($affected->rowCount())." releases reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "tv")
+else if (isset($argv[1]) && $argv[1] === "tv")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 		$where = "";
@@ -94,7 +94,7 @@ elseif (isset($argv[1]) && $argv[1] === "tv")
 	$affected = $db->queryExec("UPDATE releases SET rageid = -1".$where);
 	echo number_format($affected->rowCount())." rageID's reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "books")
+else if (isset($argv[1]) && $argv[1] === "books")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")
@@ -105,7 +105,7 @@ elseif (isset($argv[1]) && $argv[1] === "books")
 	$affected = $db->queryExec("UPDATE releases SET bookinfoid = NULL".$where);
 	echo number_format($affected->rowCount())." bookinfoID's reset.\n";
 }
-elseif (isset($argv[1]) && $argv[1] === "nfos")
+else if (isset($argv[1]) && $argv[1] === "nfos")
 {
 	$where = "";
 	if (isset($argv[2]) && $argv[2] === "true")

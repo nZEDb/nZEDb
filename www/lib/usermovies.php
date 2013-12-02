@@ -3,12 +3,12 @@ require_once nZEDb_LIB . 'framework/db.php';
 
 class UserMovies
 {
-    function __construct()
-    {
-        $this->db = new DB();
-    }
-    
-    public function addMovie($uid, $imdbid, $catid=array())
+	function __construct()
+	{
+		$this->db = new DB();
+	}
+
+	public function addMovie($uid, $imdbid, $catid=array())
 	{
 		$db = $this->db;
 		$catid = (!empty($catid)) ? $db->escapeString(implode('|', $catid)) : "NULL";

@@ -14,6 +14,7 @@ import datetime
 import math
 
 import lib.info as info
+from lib.info import bcolors
 conf = info.readConfig()
 
 def connect():
@@ -23,13 +24,15 @@ def connect():
 			import cymysql as mdb
 			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
 		except ImportError:
-			sys.exit("\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n")
+			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+			sys.exit()
 	elif conf['DB_SYSTEM'] == "pgsql":
 		try:
 			import psycopg2 as mdb
 			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
 		except ImportError:
-			sys.exit("\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n")
+			print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
+			sys.exit()
 	con.autocommit(True)
 	cur = con.cursor()
 	return cur, con
@@ -43,7 +46,7 @@ def disconnect(cur, con):
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-print("\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+print(bcolors.HEADER + "\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get array of collectionhash
 cur = connect()
@@ -54,15 +57,16 @@ delay = int(dbgrab[0][1])
 maxnzb = dbgrab[0][2]
 
 if grab == 0:
-	sys.exit("GrabNZBs is disabled")
+	print(bcolors.ERROR + "GrabNZBs is disabled")
+	sys.exit()
 
 #delete from nzbs where size greater than x
 cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) > "+maxnzb)
 delnzbs = cur[0].fetchall()
 for delnzb in delnzbs:
 	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
-print("Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
-	
+print(bcolors.HEADER + "Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
+
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
 elif conf['DB_SYSTEM'] == "pgsql":
@@ -70,7 +74,8 @@ elif conf['DB_SYSTEM'] == "pgsql":
 cur[0].execute(run, (delay))
 datas = cur[0].fetchall()
 if len(datas) == 0:
-	sys.exit("No NZBs to Grab")
+	print(bcolors.ERROR + "No NZBs to Grab")
+	sys.exit()
 
 #get threads for update_binaries
 cur[0].execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
@@ -105,8 +110,8 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print("We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))))
-	print("+ = nzb imported, - = probably not nzb, ! = duplicate, f = download failed")
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))) + bcolors.ENDC)
+	print(bcolors.HEADER + "+ = nzb imported, - = probably not nzb, ! = duplicate, f = download failed" + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -128,12 +133,12 @@ def main():
 
 	my_queue.join()
 
-	print("\n\nPopulate nzb_guids Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
+	print(bcolors.HEADER + "\n\nPopulate nzb_guids Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	final = "limited"
 	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
-	print("\n\nPopulate nzb_guids Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")))
-	print("Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))))
+	print(bcolors.HEADER + "\n\nPopulate nzb_guids Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
 	main()

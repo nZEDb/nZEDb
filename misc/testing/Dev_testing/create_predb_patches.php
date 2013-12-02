@@ -16,7 +16,7 @@ if (!file_exists(nZEDb_WWW."/a"))
 
 if ($db->dbSystem() == "mysql")
 	$uta = "UNIX_TIMESTAMP(adddate)";
-elseif ($db->dbSystem() == "pgsql")
+else if ($db->dbSystem() == "pgsql")
 	$uta = "extract(epoch FROM adddate)";
 
 foreach (range($lppo, $wp) as $number)

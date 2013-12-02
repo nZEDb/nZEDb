@@ -19,7 +19,7 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $movielist = $movie->getRange($offset, ITEMS_PER_PAGE);
-$page->smarty->assign('movielist',$movielist);	
+$page->smarty->assign('movielist',$movielist);
 
 $page->content = $page->smarty->fetch('movie-list.tpl');
 $page->render();
