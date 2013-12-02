@@ -138,7 +138,7 @@ class DB extends PDO
 			}
 			else
 			{
-				$p = self::$pdo->prepare($query.' RETURNING id');
+				$p = self::$pdo->prepare($query . ' RETURNING id');
 				$p->execute();
 				return $r['id'];
 			}
@@ -170,7 +170,7 @@ class DB extends PDO
 				return false;
 			}
 			else
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 			return false;
 
 		}
@@ -214,7 +214,7 @@ class DB extends PDO
 				return false;
 			}
 			else
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 			return false;
 		}
 	}
@@ -228,7 +228,7 @@ class DB extends PDO
 		try {
 			return self::$pdo->exec($query);
 		} catch (PDOException $e) {
-			printf($e->getMessage());
+			echo $this->c->error($e->getMessage());
 			return false;
 		}
 	}
@@ -259,7 +259,7 @@ class DB extends PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
-			printf($e->getMessage());
+			echo $this->c->error($e->getMessage());
 			$result = false;
 		}
 
@@ -298,7 +298,7 @@ class DB extends PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
-			printf($e->getMessage());
+			echo $this->c->error($e->getMessage());
 			$result = false;
 		}
 		return $result;
@@ -314,7 +314,7 @@ class DB extends PDO
         try {
             $result = self::$pdo->query($query);
         } catch (PDOException $e) {
-            printf($e->getMessage());
+            echo $this->c->error($e->getMessage());
             $result = false;
         }
         return $result;
@@ -503,7 +503,7 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
-			//printf($e->getMessage());
+			//echo $this->c->error($e->getMessage());
 			$PDOstatement = false;
 		}
 		return $PDOstatement;
@@ -517,7 +517,7 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				printf($e->getMessage());
+				echo $this->c->error($e->getMessage());
 				$result = false;
 			}
 			return $result;
