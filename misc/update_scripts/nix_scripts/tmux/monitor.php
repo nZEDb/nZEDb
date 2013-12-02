@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4450";
+$version="0.3r4468";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -390,7 +390,7 @@ $fcfirstrun = true;
 while($i > 0)
 {
 	//check the db connection
-	if ($db->ping() == false)
+	if ($db->ping(true) == false)
 	{
 		unset($db);
 		$db = NULL;

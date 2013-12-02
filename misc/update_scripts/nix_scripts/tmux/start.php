@@ -10,6 +10,8 @@ $db = new DB();
 $DIR = nZEDb_MISC;
 $c= new ColorCLI();
 
+passthru('clear');
+
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
 exec("tmux list-session | grep NNTPProxy", $nntpkill);
 if (count($nntpkill) === 0)

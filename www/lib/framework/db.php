@@ -56,7 +56,7 @@ class DB extends PDO
 
 		if (!(self::$pdo instanceof PDO))
 		{
-			$this->initialiseDatabase();
+			$this->initialiseDatabase(null);
 		}
 
 		if (defined("MEMCACHE_ENABLED"))
@@ -531,7 +531,7 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			if ($restart == true)
 			{
-				$this->initialiseDatabase();
+				$this->initialiseDatabase(null);
 			}
 			return false;
 		}
