@@ -14,6 +14,29 @@ require_once nZEDb_LIB . 'site.php';
  */
 class DB extends PDO
 {
+	/**
+	 * @var object Instance of ColorCLI class.
+	 */
+	public $c;
+
+	/**
+	 * @var object Instance of ConsoleTools class.
+	 */
+	public $consoletools;
+
+	/**
+	 * @var string Lower-cased name of DBMS in use.
+	 */
+	public $dbsystem;
+
+	/**
+	 * @var bool	Whether memcache is enabled.
+	 */
+	public $memcached;
+
+	/**
+	 * @var object Instance of PDO class.
+	 */
 	private static $pdo = null;
 
 	// Start a connection to the DB.
