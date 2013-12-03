@@ -166,27 +166,6 @@ class Namefixer
 		else
 			echo "Nothing to fix.\n";
 	}
-
-	//  Attempts to fix release names using the Par2 File.
-	public function fixNamesWithAniDB($time, $echo, $cats, $namestatus)
-	{
-		$pp = new Postprocess($this->echooutput);
-
-		if ($time == 1)
-		{
-			echo "Fixing search names in the past 6 hours using the AniDB.\n";
-			$pp->processAnime(1, 6);
-		}
-		else
-		{
-			echo "Fixing search names since the beginning using the AniDB.\n";
-			$pp->processAnime(1, 0);
-		}
-
-		// right now we handle 6 hours and forever the same, need a way to do this that cares about time
-		$pp->processAnime(1);
-	}
-
 	//  Attempts to fix release names using the Par2 File.
 	public function fixNamesWithPar2($time, $echo, $cats, $namestatus, $nntp)
 	{
