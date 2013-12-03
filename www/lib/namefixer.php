@@ -8,20 +8,31 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Namefixer
 {
-	// TODO: replace all queries using numbers to these constants.
-	const NF_NEW			=	  0;	// 0000 0000 0000 0000 New release, just inserted into the table.
-	const NF_CATEGORIZED	=	  1;	// 0000 0000 0000 0001 Categorized release.
-										// 0000 0000 0000 0010 Spare - Previously 2 (now split into 8,9,10) : Fixed with namefixer.
-	const NF_RENAMED		=	  4;	// 0000 0000 0000 0100 Renamed using any script.
-	const NF_POST_PROC		=	  8;	// 0000 0000 0000 1000 Processed by post proc (from mp3 tags or music.php).
-	const NF_MISC_SORTER	=	 16;	// 0000 0000 0001 0000 Processed by misc_sorter.
-	const NF_PAR2			=	 32;	// 0000 0000 0010 0000 Processed by namefixer PAR2.
-	const NF_NF_NFO			=	 64;	// 0000 0000 0100 0000 Processed by namefixer NFO.
-	const NF_NF_FILES		=	128;	// 0000 0000 1000 0000 Processed by namefixer Files.
+	/* These constants can not be used as they are
+	 * To select where false            - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed
+	 * To select where true             - 'SELECT * FROM releases WHERE (bitwise & 1) = 1;' - selects all that have been categorized
+	 * To select multiple true or false - 'SELECT * FROM releases WHERE (bitwise & 5) = 0;' - selects all that have not been renamed and have not been categorized
+	 *
+	 * To set false                     - 'UPDATE releases SET bitwise = ((bitwise & ~4)|0);' - sets all releases to not renamed
+	 * To set true                      - 'UPDATE releases SET bitwise = ((bitwise & ~1)|1);' - sets all releases to categorized
+	 * To set multiple true or false    - 'UPDATE releases SET bitwise = ((bitwise & ~5)|1);' - sets all releases to categorized true and renamed false
 
-	const NF_NZB_STATUS		=	256;	// 0000 0001 0000 0000 NZBStatus 0 = no nzb, 256 = is an nzb
-	const NF_HASHED			=	512;	// 0000 0010 0000 0000 hashed 0 = not hashed, 512 = is hashed
-	const NF_REQUEST		=  1024;	// 0000 0100 0000 0000 request 0 = not a requestid, 1024 = is a requestid
+	// One bit each, max 32, limited by 32 bit OS's
+	const NF_NEW			=	   0;	0000 0000 0000 0000 0000 	New release, just inserted into the table.
+	const NF_CATEGORIZED	=	   1;	0000 0000 0000 0000 0001 	Categorized release.
+										0000 0000 0000 0000 0010 	Spare - Previously 2 (now split into 8,9,10) : Fixed with namefixer.
+	const NF_RENAMED		=	   4;	0000 0000 0000 0000 0100 	Renamed using any script.
+	const NF_POST_PROC		=	   8;	0000 0000 0000 0000 1000 	Processed by post proc (from mp3 tags or music.php).
+	const NF_MISC_SORTER	=	  16;	0000 0000 0000 0001 0000 	Processed by misc_sorter.
+	const NF_PAR2			=	  32;	0000 0000 0000 0010 0000 	Processed by namefixer PAR2.
+	const NF_NF_NFO			=	  64;	0000 0000 0000 0100 0000 	Processed by namefixer NFO.
+	const NF_NF_FILES		=	 128;	0000 0000 0000 1000 0000 	Processed by namefixer Files.
+
+	const NZB_STATUS		=	 256;	0000 0000 0001 0000 0000 	NZBStatus 0 = no nzb, 256 = is an nzb
+	const HASHED			=	 512;	0000 0000 0010 0000 0000 	hashed 0 = not hashed, 512 = is hashed
+	const REQUEST			=   1024;	0000 0000 0100 0000 0000 	request 0 = not a requestid, 1024 = is a requestid
+
+	*/
 
 	function __construct($echooutput=true)
 	{

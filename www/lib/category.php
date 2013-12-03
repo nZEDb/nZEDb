@@ -266,9 +266,9 @@ class Category
 		// Note that in byGroup() some overrides occur...
 		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if($this->isPC($releasename)){ return $this->tmpCat; }
+		if($this->isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
-		if($this->isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isConsole($releasename)){ return $this->tmpCat; }
 		if($this->isMusic($releasename)){ return $this->tmpCat; }
 		if($this->isBook($releasename)){ return $this->tmpCat; }
@@ -307,14 +307,14 @@ class Category
 				{
 					if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
 					{
-						$this->tmpCat =  Category::CAT_TV_FOREIGN;
+						$this->tmpCat = Category::CAT_TV_FOREIGN;
 						return true;
 					}
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
 					return true;
 				}
 
@@ -323,16 +323,16 @@ class Category
 					if($this->categorizeforeign)
 					{
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
-						$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+						$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SD;
+					$this->tmpCat = Category::CAT_TV_SD;
 					return true;
 				}
 
@@ -341,16 +341,16 @@ class Category
 					if($this->categorizeforeign)
 					{
 						if($this->isBookForeign($releasename)){ return $this->tmpCat; }
-						$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+						$this->tmpCat = Category::CAT_BOOKS_COMICS;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					$this->tmpCat = Category::CAT_BOOKS_COMICS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_PS3;
+					$this->tmpCat = Category::CAT_GAME_PS3;
 					return true;
 				}
 				if (preg_match('/alt\.binaries\.cores/', $groupRes["name"]))
@@ -363,13 +363,13 @@ class Category
 				{
 
 					if($this->isMusic($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MOVIE_DVD;
+					$this->tmpCat = Category::CAT_MOVIE_DVD;
 					return true;
 				}
 
@@ -480,22 +480,22 @@ class Category
 					if($this->categorizeforeign)
 					{
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
-						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SPORT;
+					$this->tmpCat = Category::CAT_TV_SPORT;
 					return true;
 				}
 
@@ -506,19 +506,19 @@ class Category
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
 						if (preg_match('/720p|[-._ ]mkv/i', $releasename))
 						{
-							$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+							$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 							return true;
 						}
-						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						$this->tmpCat = Category::CAT_MUSIC_MP3;
 						return true;
 					}
 
 					if (preg_match('/720p|[-._ ]mkv/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
@@ -527,10 +527,10 @@ class Category
 					if($this->categorizeforeign)
 					{
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
-						$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+						$this->tmpCat = Category::CAT_MUSIC_AUDIOBOOK;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					$this->tmpCat = Category::CAT_MUSIC_AUDIOBOOK;
 					return true;
 				}
 
@@ -545,10 +545,10 @@ class Category
 					if($this->categorizeforeign)
 					{
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
-						$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+						$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
@@ -559,14 +559,14 @@ class Category
 						if($this->isMusicForeign($releasename)){ return $this->tmpCat; }
 						if (!preg_match('/[-._ ]scans[-._ ]/i', $releasename))
 						{
-							$this->tmpCat =  Category::CAT_MUSIC_MP3;
+							$this->tmpCat = Category::CAT_MUSIC_MP3;
 							return true;
 						}
 					}
 
 					if (!preg_match('/[-._ ]scans[-._ ]/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						$this->tmpCat = Category::CAT_MUSIC_MP3;
 						return true;
 					}
 				}
@@ -613,6 +613,8 @@ class Category
 	{
 		$looksLikeTV = preg_match('/\bS\d+[-._ ](720|1080|Dvd|Blu)|s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Nightly News|ABC|NBC|CBS|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD|\bS\d+(\s|\b)?D\d+\b/i', $releasename);
 		$looksLikeSportTV = preg_match('/[-._ ]((19|20)\d\d[-._ ]\d{1,2}[-._ ]\d{1,2}[-._ ]VHSRip|Indy[-._ ]?Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW[-._ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[-._ ]HD|WWE[-._ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[-._ ]/i', $releasename);
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}/i', $releasename) && preg_match('/part[-._ ]?\d/i', $releasename))
+			return false;
 		if ($looksLikeTV && !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
@@ -737,7 +739,7 @@ class Category
 
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720p/i', $releasename))
+		if (preg_match('/1080(i|p)|720p|HDTV|BDRip/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
@@ -850,7 +852,7 @@ class Category
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(bdrip|divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
+		if(preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -880,7 +882,7 @@ class Category
 
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
+		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
 			return true;
@@ -1473,9 +1475,9 @@ class CategoryDanish extends Category
 		if(Category::isMisc($releasename)){ return $this->tmpCat; }
 		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if(Category::isPC($releasename)){ return $this->tmpCat; }
+		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
-		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if(Category::isConsole($releasename)){ return $this->tmpCat; }
 		if(Category::isMusic($releasename)){ return $this->tmpCat; }
 		if(Category::isBook($releasename)){ return $this->tmpCat; }
@@ -1518,37 +1520,37 @@ class CategoryDanish extends Category
 
 				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_FOREIGN;
+					$this->tmpCat = Category::CAT_TV_FOREIGN;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SD;
+					$this->tmpCat = Category::CAT_TV_SD;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					$this->tmpCat = Category::CAT_BOOKS_COMICS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_PS3;
+					$this->tmpCat = Category::CAT_GAME_PS3;
 					return true;
 				}
 
@@ -1562,52 +1564,52 @@ class CategoryDanish extends Category
 				{
 
 					if($this->isMusic($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MOVIE_DVD;
+					$this->tmpCat = Category::CAT_MOVIE_DVD;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_TECHNICAL;
+					$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isBook($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
+					$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_XXX_OTHER;
+					$this->tmpCat = Category::CAT_XXX_OTHER;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_NDS;
+					$this->tmpCat = Category::CAT_GAME_NDS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
 				{
 					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_WII;
+					$this->tmpCat = Category::CAT_GAME_WII;
 					return true;
 				}
 
@@ -1615,7 +1617,7 @@ class CategoryDanish extends Category
 				{
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_XBOX;
+					$this->tmpCat = Category::CAT_GAME_XBOX;
 					return true;
 				}
 
@@ -1655,19 +1657,19 @@ class CategoryDanish extends Category
 
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SPORT;
+					$this->tmpCat = Category::CAT_TV_SPORT;
 					return true;
 				}
 
@@ -1675,16 +1677,16 @@ class CategoryDanish extends Category
 				{
 					if (preg_match('/720p|[-._ ]mkv/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					$this->tmpCat = Category::CAT_MUSIC_AUDIOBOOK;
 					return true;
 				}
 
@@ -1696,7 +1698,7 @@ class CategoryDanish extends Category
 
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
@@ -1704,7 +1706,7 @@ class CategoryDanish extends Category
 				{
 					if (!preg_match('/[-._ ]scans[-._ ]/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						$this->tmpCat = Category::CAT_MUSIC_MP3;
 						return true;
 					}
 				}
@@ -1738,6 +1740,9 @@ class CategoryDanish extends Category
 	{
 		$looksLikeTV = preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $releasename);
 		$looksLikeSportTV = preg_match('/[-._ ]((19|20)\d\d[-._ ]\d{1,2}[-._ ]\d{1,2}[-._ ]VHSRip|Indy[-._ ]?Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW[-._ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[-._ ]HD|WWE[-._ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[-._ ]/i', $releasename);
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}/i', $releasename) && preg_match('/part[-._ ]?\d/i', $releasename))
+			return false;
+
 		if ($looksLikeTV && !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
@@ -1964,7 +1969,7 @@ class CategoryDanish extends Category
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(bdrip|divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
+		if(preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -1994,7 +1999,7 @@ class CategoryDanish extends Category
 
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
+		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
 			return true;
@@ -2022,9 +2027,9 @@ class CategoryFrench extends Category
 		if(Category::isMisc($releasename)){ return $this->tmpCat; }
 		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if(Category::isPC($releasename)){ return $this->tmpCat; }
+		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
-		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if(Category::isConsole($releasename)){ return $this->tmpCat; }
 		if(Category::isMusic($releasename)){ return $this->tmpCat; }
 		if(Category::isBook($releasename)){ return $this->tmpCat; }
@@ -2061,31 +2066,31 @@ class CategoryFrench extends Category
 
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SD;
+					$this->tmpCat = Category::CAT_TV_SD;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					$this->tmpCat = Category::CAT_BOOKS_COMICS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_PS3;
+					$this->tmpCat = Category::CAT_GAME_PS3;
 					return true;
 				}
 				if (preg_match('/alt\.binaries\.cores/', $groupRes["name"]))
@@ -2097,13 +2102,13 @@ class CategoryFrench extends Category
 				if (preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $groupRes["name"]))
 				{
 					if($this->isMusicLossless($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MOVIE_DVD;
+					$this->tmpCat = Category::CAT_MOVIE_DVD;
 					return true;
 				}
 
@@ -2115,40 +2120,40 @@ class CategoryFrench extends Category
 
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_TECHNICAL;
+					$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isBook($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
+					$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_XXX_OTHER;
+					$this->tmpCat = Category::CAT_XXX_OTHER;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_NDS;
+					$this->tmpCat = Category::CAT_GAME_NDS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
 				{
 					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_WII;
+					$this->tmpCat = Category::CAT_GAME_WII;
 					return true;
 				}
 
@@ -2156,7 +2161,7 @@ class CategoryFrench extends Category
 				{
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_XBOX;
+					$this->tmpCat = Category::CAT_GAME_XBOX;
 					return true;
 				}
 
@@ -2194,19 +2199,19 @@ class CategoryFrench extends Category
 
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SPORT;
+					$this->tmpCat = Category::CAT_TV_SPORT;
 					return true;
 				}
 
@@ -2214,16 +2219,16 @@ class CategoryFrench extends Category
 				{
 					if (preg_match('/720p|[-._ ]mkv/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					$this->tmpCat = Category::CAT_MUSIC_AUDIOBOOK;
 					return true;
 				}
 
@@ -2235,7 +2240,7 @@ class CategoryFrench extends Category
 
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
@@ -2243,7 +2248,7 @@ class CategoryFrench extends Category
 				{
 					if (!preg_match('/[-._ ]scans[-._ ]/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						$this->tmpCat = Category::CAT_MUSIC_MP3;
 						return true;
 					}
 				}
@@ -2286,6 +2291,9 @@ class CategoryFrench extends Category
 	{
 		$looksLikeTV = preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $releasename);
 		$looksLikeSportTV = preg_match('/[-._ ]((19|20)\d\d[-._ ]\d{1,2}[-._ ]\d{1,2}[-._ ]VHSRip|Indy[-._ ]?Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW[-._ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[-._ ]HD|WWE[-._ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[-._ ]/i', $releasename);
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}/i', $releasename) && preg_match('/part[-._ ]?\d/i', $releasename))
+			return false;
+
 		if ($looksLikeTV && !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
@@ -2512,7 +2520,7 @@ class CategoryFrench extends Category
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(bdrip|divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
+		if(preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -2542,7 +2550,7 @@ class CategoryFrench extends Category
 
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
+		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
 			return true;
@@ -2570,9 +2578,9 @@ class CategoryGerman extends Category
 		if(Category::isMisc($releasename)){ return $this->tmpCat; }
 		if($this->byGroup($releasename, $groupID)){ return $this->tmpCat; }
 		if(Category::isPC($releasename)){ return $this->tmpCat; }
+		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if($this->isTV($releasename)){ return $this->tmpCat; }
 		if($this->isMovie($releasename)){ return $this->tmpCat; }
-		if(Category::isXXX($releasename)){ return $this->tmpCat; }
 		if(Category::isConsole($releasename)){ return $this->tmpCat; }
 		if(Category::isMusic($releasename)){ return $this->tmpCat; }
 		if(Category::isBook($releasename)){ return $this->tmpCat; }
@@ -2614,37 +2622,37 @@ class CategoryGerman extends Category
 
 				if (preg_match('/alt\.binaries\.cartoons\.french/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_FOREIGN;
+					$this->tmpCat = Category::CAT_TV_FOREIGN;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.image\.linux/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_PC_0DAY;
+					$this->tmpCat = Category::CAT_PC_0DAY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.cd\.lossless/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.classic\.tv\.shows/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SD;
+					$this->tmpCat = Category::CAT_TV_SD;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_COMICS;
+					$this->tmpCat = Category::CAT_BOOKS_COMICS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.console\.ps3/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_PS3;
+					$this->tmpCat = Category::CAT_GAME_PS3;
 					return true;
 				}
 				if (preg_match('/alt\.binaries\.cores/', $groupRes["name"]))
@@ -2657,13 +2665,13 @@ class CategoryGerman extends Category
 				{
 
 					if($this->isMusic($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MOVIE_DVD;
+					$this->tmpCat = Category::CAT_MOVIE_DVD;
 					return true;
 				}
 
@@ -2675,40 +2683,40 @@ class CategoryGerman extends Category
 
 				if (preg_match('/alt\.binaries\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_BOOKS_TECHNICAL;
+					$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"]))
 				{
 					if($this->isBook($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_BOOKS_EBOOK;
+					$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"]))
 				{
 					if($this->isXxx($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_XXX_OTHER;
+					$this->tmpCat = Category::CAT_XXX_OTHER;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_GAME_NDS;
+					$this->tmpCat = Category::CAT_GAME_NDS;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.games\.wii/', $groupRes["name"]))
 				{
 					if($this->isGameWiiWare($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_WII;
+					$this->tmpCat = Category::CAT_GAME_WII;
 					return true;
 				}
 
@@ -2716,7 +2724,7 @@ class CategoryGerman extends Category
 				{
 					if($this->isGameXBOX360DLC($releasename)){ return $this->tmpCat; }
 					if($this->isGameXBOX360($releasename)){ return $this->tmpCat; }
-					$this->tmpCat =  Category::CAT_GAME_XBOX;
+					$this->tmpCat = Category::CAT_GAME_XBOX;
 					return true;
 				}
 
@@ -2756,19 +2764,19 @@ class CategoryGerman extends Category
 
 				if (preg_match('/alt\.binaries\.mpeg\.video\.music/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+					$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.documentaries/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_DOCUMENTARY;
+					$this->tmpCat = Category::CAT_TV_DOCUMENTARY;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_TV_SPORT;
+					$this->tmpCat = Category::CAT_TV_SPORT;
 					return true;
 				}
 
@@ -2776,16 +2784,16 @@ class CategoryGerman extends Category
 				{
 					if (preg_match('/720p|[-._ ]mkv/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_VIDEO;
+						$this->tmpCat = Category::CAT_MUSIC_VIDEO;
 						return true;
 					}
-					$this->tmpCat =  Category::CAT_MUSIC_MP3;
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
 					return true;
 				}
 
 				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_AUDIOBOOK;
+					$this->tmpCat = Category::CAT_MUSIC_AUDIOBOOK;
 					return true;
 				}
 
@@ -2797,7 +2805,7 @@ class CategoryGerman extends Category
 
 				if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $groupRes["name"]))
 				{
-					$this->tmpCat =  Category::CAT_MUSIC_LOSSLESS;
+					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					return true;
 				}
 
@@ -2805,7 +2813,7 @@ class CategoryGerman extends Category
 				{
 					if (!preg_match('/[-._ ]scans[-._ ]/i', $releasename))
 					{
-						$this->tmpCat =  Category::CAT_MUSIC_MP3;
+						$this->tmpCat = Category::CAT_MUSIC_MP3;
 						return true;
 					}
 				}
@@ -2848,6 +2856,9 @@ class CategoryGerman extends Category
 	{
 		$looksLikeTV = preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}(e\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $releasename);
 		$looksLikeSportTV = preg_match('/[-._ ]((19|20)\d\d[-._ ]\d{1,2}[-._ ]\d{1,2}[-._ ]VHSRip|Indy[-._ ]?Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW[-._ ]TV|(Per|Post)\-Show|PPV|WrestleMania|WCW|WEB[-._ ]HD|WWE[-._ ](Monday|NXT|RAW|Smackdown|Superstars|WrestleMania))[-._ ]/i', $releasename);
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}/i', $releasename) && preg_match('/part[-._ ]?\d/i', $releasename))
+			return false;
+
 		if ($looksLikeTV && !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]/i', $releasename))
 		{
 			if($this->isOtherTV($releasename)){ return true; }
@@ -3076,7 +3087,7 @@ class CategoryGerman extends Category
 
 	public function isMovieSD($releasename)
 	{
-		if(preg_match('/(bdrip|divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
+		if(preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
@@ -3106,7 +3117,7 @@ class CategoryGerman extends Category
 
 	public function isMovieHD($releasename)
 	{
-		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD/i', $releasename))
+		if(preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $releasename))
 		{
 			$this->tmpCat = Category::CAT_MOVIE_HD;
 			return true;
