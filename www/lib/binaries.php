@@ -645,10 +645,17 @@ class Binaries
 		// Get all parts in partrepair table.
 		$db = $this->db;
 
+		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1)
+		{
+			if ($db->newtables($groupArr['id']) === false)
+				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
 			$group['prname'] = $groupArr['id'].'_partrepair';
+		}
 		else
+		{
 			$group['prname'] = 'partrepair';
+		}
 
 		$missingParts = $db->query(sprintf('SELECT * FROM '.$group['prname'].' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
 		$partsRepaired = $partsFailed = 0;
