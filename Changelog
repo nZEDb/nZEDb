@@ -4,7 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-02 -> jonnyboy -> moved releases.hashed and releases.request to bitwise, changed bitwise to smallint unsigned, fixed bug in db.php, moved hdtv and bdrip to hd, if searchname contains part# but not s/e numbers, not tv
+2013-12-02 -> jonnyboy -> moved releases.hashed and releases.request to bitwise, changed bitwise to smallint unsigned, fixed bug in db.php, moved hdtv and bdrip to hd, if searchname contains part# but not s/e numbers, not tv, fixed bug in tpg partrepair
 2013-12-02 -> niel     -> refactored db.php
 2013-12-01 -> jonnyboy -> please update this file when you post do a pull request
                           changed 4 spaces to tab, removed excess whitespace on blank lines
