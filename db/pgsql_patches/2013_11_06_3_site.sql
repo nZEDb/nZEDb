@@ -1,3 +1,3 @@
-INSERT IGNORE INTO site (setting, value) VALUE ('anidbkey', '');
+INSERT INTO site (setting, value) VALUES ('anidbkey', '');
 
 UPDATE site SET value = '139' WHERE setting = 'sqlpatch';

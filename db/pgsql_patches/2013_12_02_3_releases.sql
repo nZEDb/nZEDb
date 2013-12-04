@@ -1,3 +1,3 @@
-ALTER TABLE `releases` CHANGE `bitwise` `bitwise` SMALLINT UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `releases` ALTER COLUMN `bitwise` TYPE integer;
 
 UPDATE site SET value = '154' WHERE setting = 'sqlpatch';

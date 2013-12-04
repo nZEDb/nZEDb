@@ -28,8 +28,7 @@ if  ($page->isPostBack())
 		$cfg->error = true;
 	else
 	{
-		require_once $cfg->nZEDb_WWW.'/lib/users.php';
-
+		require_once '../lib/users.php';
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER))
 		{
@@ -54,6 +53,7 @@ if  ($page->isPostBack())
 		if (!$cfg->error)
 		{
 			$cfg->adminCheck = $user->add($cfg->ADMIN_USER, $cfg->ADMIN_PASS, $cfg->ADMIN_EMAIL, 2, '');
+			echo $cfg->adminCheck;
 			if (!is_numeric($cfg->adminCheck))
 				$cfg->error = true;
 			else

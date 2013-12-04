@@ -277,7 +277,7 @@ class Users
 
 	public function isValidPassword($pass)
 	{
-		// Password mut be longer that 8 characters
+		// Password must be at least 8 characters
 		return (strlen($pass) > 7);
 	}
 

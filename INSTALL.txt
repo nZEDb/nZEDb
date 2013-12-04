@@ -31,6 +31,7 @@ REQUIREMENTS
 				CREATE DATABASE nzedb OWNER EnterYourUserNameHere;
 					(the single quotes for the password are needed)
 				ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';
+			To exit psql enter: \q
 
 
 	Apache

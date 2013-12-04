@@ -159,7 +159,11 @@ if  ($page->isPostBack())
 			if ($dbtype == "mysql")
 				$dbData = file_get_contents($cfg->DB_DIR.'/schema.mysql');
 			if ($dbtype == "pgsql")
+			{
+				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
+				$pdo->query("DROP FUNCTION IF EXISTS request_check() CASCADE");
 				$dbData = file_get_contents($cfg->DB_DIR.'/schema.pgsql');
+			}
 			// Fix to remove BOM in UTF8 files.
 			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 			if (0 == strncmp($dbData, $bom, 3))

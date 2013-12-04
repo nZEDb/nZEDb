@@ -1,3 +1,3 @@
-INSERT IGNORE INTO site (setting, value) VALUE ('nntpretries', '10');
+INSERT INTO site (setting, value) VALUES ('nntpretries', '10');
 
 UPDATE site SET value = '145' WHERE setting = 'sqlpatch';

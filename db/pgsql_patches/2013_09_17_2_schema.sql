@@ -1,7 +1,16 @@
-DROP TRIGGER check_insert;
-DROP TRIGGER check_update;
+DROP FUNCTION IF EXISTS check_insert() CASCADE;
+DROP FUNCTION IF EXISTS check_update() CASCADE;
+DROP FUNCTION IF EXISTS hash_check() CASCADE;
+DROP FUNCTION IF EXISTS request_check() CASCADE;
 
-CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.name REGEXP '^\\[[[:digit:]]+\\]' = 0 AND new.relnamestatus IN (0, 1) THEN SET NEW.reqidstatus = -1; ELSEIF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
-CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.name REGEXP '^\\[[[:digit:]]+\\]' = 0 AND new.relnamestatus IN (0, 1) THEN SET NEW.reqidstatus = -1; ELSEIF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; END IF; END;
+DROP TRIGGER IF EXISTS check_insert ON releases;
+DROP TRIGGER IF EXISTS check_update ON releases;
+DROP TRIGGER IF EXISTS hash_check ON releases;
+DROP TRIGGER IF EXISTS request_check ON releases;
+
+CREATE FUNCTION hash_check() RETURNS trigger AS $hash_check$ BEGIN IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}' THEN SET NEW.hashed = true; ELSE SET NEW.hashed = false; END IF; END; $hash_check$ LANGUAGE plpgsql;
+CREATE TRIGGER hash_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE hash_check();
+CREATE FUNCTION request_check() RETURNS trigger AS $request_check$ BEGIN IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]' THEN SET NEW.reqidstatus = -1; END IF; END; $request_check$ LANGUAGE plpgsql;
+CREATE TRIGGER request_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE request_check();
 
 UPDATE site SET value = '125' WHERE setting = 'sqlpatch';
