@@ -56,9 +56,12 @@ function SplitSQL($file, $delimiter = ';')
 							echo $c->error($e->errorInfo[2]." - Assuming MyIsam, Not Fatal.\n");
 						else if ($e->errorInfo[1] == 1072)
 							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
+						// PGSQL Error Codse
+						else if ($e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07')
+							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else
 						{
-							echo $e;
+							echo $e."\n";
 							exit($c->error($query." Failed\n"));
 						}
 					}

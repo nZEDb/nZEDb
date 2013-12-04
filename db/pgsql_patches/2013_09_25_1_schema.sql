@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS "country" CASCADE;
 CREATE TABLE "country" (
   "id" bigint DEFAULT nextval('country_id_seq'::regclass) NOT NULL,
   "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "country" character varying(2) NOT NULL,
+  "country" character varying(2) NOT NULL
 )
 WITHOUT OIDS;
 

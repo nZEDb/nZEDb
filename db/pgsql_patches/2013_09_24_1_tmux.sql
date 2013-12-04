@@ -1,4 +1,4 @@
-INSERT IGNORE INTO tmux (setting, value) VALUE ('SHOWQUERY', 'FALSE');
+INSERT INTO tmux (setting, value) VALUES ('SHOWQUERY', 'FALSE');
 
 DROP SEQUENCE IF EXISTS "allgroups_id_seq" CASCADE;
 CREATE SEQUENCE "allgroups_id_seq" INCREMENT BY 1

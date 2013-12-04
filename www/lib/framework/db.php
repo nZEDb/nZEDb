@@ -158,6 +158,7 @@ class DB extends PDO
 			{
 				$p = self::$pdo->prepare($query . ' RETURNING id');
 				$p->execute();
+				$r = $p->fetch(PDO::FETCH_ASSOC);
 				return $r['id'];
 			}
 		} catch (PDOException $e) {

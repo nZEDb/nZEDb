@@ -66,6 +66,6 @@ UPDATE tmux SET setting = 'del_blacklisted' WHERE setting = 'DEL_BLACKLISTED';
 UPDATE tmux SET setting = 'del_nogroup' WHERE setting = 'DEL_NOGROUP';
 UPDATE tmux SET setting = 'colors' WHERE setting = 'COLORS';
 UPDATE tmux SET setting = 'showquery' WHERE setting = 'SHOWQUERY';
-UPDATE site SET value = 1 where setting = 'partrepair' and value = 2; 
+UPDATE site SET value = 1 where setting = 'partrepair' and value = '2'; 
 
 UPDATE `site` set `value` = '132' WHERE `setting` = 'sqlpatch';
