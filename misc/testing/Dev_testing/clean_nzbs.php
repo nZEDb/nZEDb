@@ -1,15 +1,14 @@
 <?php
-// This script removes all NZB's not found in the DB and all releases with no NZB.
+require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'consoletools.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
-passthru('clear');
+$c = new ColorCLI();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 {
-	require_once dirname(__FILE__) . '/../../../www/config.php';
-	require_once nZEDb_LIB . 'site.php';
-	require_once nZEDb_LIB . 'nzb.php';
-	require_once nZEDb_LIB . 'releases.php';
-	require_once nZEDb_LIB . 'consoletools.php';
-
 	$s = new Sites();
 	$site = $s->get();
 	$db = new DB();
@@ -20,7 +19,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "";
-	echo "Getting List of nzbs to check against db.\n";
+	echo $c->header('Getting List of nzbs to check against db.');
 	$dirItr = new RecursiveDirectoryIterator($site->nzbpath);
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath)
@@ -41,7 +40,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 				else if (isset($res))
 					$db->queryExec(sprintf("UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %s", $res['id']));
 				$time = $consoletools->convertTime(TIME() - $timestart);
-				$consoletools->overWrite("Checking NZBs: ".$deleted." of ".++$checked." ".$couldbe."deleted from disk,  Running time: ".$time);
+				$consoletools->overWritePrimary('Checking NZBs: '.$deleted.' of '.++$checked.' '.$couldbe.'deleted from disk,  Running time: '.$time);
 			}
 			else
 			{
@@ -51,11 +50,11 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 			}
 		}
 	}
-	echo "\n".number_format(++$checked)." nzbs checked, ".number_format($deleted)." nzbs ".$couldbe."deleted.\n";
+	echo $c->header("\n".number_format(++$checked).' nzbs checked, '.number_format($deleted).' nzbs '.$couldbe.'deleted.');
 
 	$timestart = TIME();
 	$checked = $deleted = 0;
-	echo "\nGetting List of releases to check against nzbs.\n";
+	echo $c->header("Getting List of releases to check against nzbs.");
 	$consoletools = new ConsoleTools();
 	$res = $db->prepare('SELECT id, guid FROM releases');
 	$res->execute();
@@ -78,11 +77,14 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %s", $row['id']));
 
 			$time = $consoletools->convertTime(TIME() - $timestart);
-			$consoletools->overWrite("Checking Releases: ".$deleted." of ".++$checked." ".$couldbe."deleted from db,  Running time: ".$time);
+			$consoletools->overWritePrimary("Checking Releases: ".$deleted." of ".++$checked." ".$couldbe."deleted from db,  Running time: ".$time);
 		}
 	}
-	echo "\n".number_format($checked)." releases checked, ".number_format($deleted)." releases ".$couldbe."deleted.\n";
+	echo $c->header("\n".number_format($checked)." releases checked, ".number_format($deleted)." releases ".$couldbe."deleted.");
 }
 else
-	exit("This script removes all nzbs not found in the db and releases with no nzbs found.\nFor a dry run, to see how many would be deleted, run:\nphp clean_nzbs.php true\nTo delete all affected, run:\nphp clean_nzbs.php delete\n");
+{
+	passthru('clear');
+	exit($c->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also delete invalid nzbs.\nFor a dry run, to see how many would be deleted, run:\nphp clean_nzbs.php true\n\nTo delete all affected, run:\nphp clean_nzbs.php delete\n"));
+}
 ?>

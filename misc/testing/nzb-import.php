@@ -18,7 +18,10 @@ $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 $namecleaning = new nameCleaning();
 $categorize = new Category();
+$maxtoprocess = 0;
 
+if (isset($argv[2]) && is_numeric($argv[2]))
+	exit("To use a max number to process, it must be the third argument. To run:\nphp nzb-import.php /path [true, fasle] 1000\n");
 if (!isset($argv[2]))
 {
 	$pieces = explode("   ", $argv[1]);
@@ -30,6 +33,9 @@ else
 	$path = $argv[1];
 	$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
 }
+if (isset($argv[3]) && is_numeric($argv[3]))
+	$maxtoprocess = $argv[3];
+
 $filestoprocess = Array();
 
 if (substr($path, strlen($path) - 1) != '/')
@@ -182,7 +188,7 @@ else
 		{
 			$relguid = sha1(uniqid('',true).mt_rand());
 			$nzb = new NZB();
-			$propername = false;
+			$propername = true;
 			$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
 			if (!is_array($cleanerName))
 				$cleanName = $cleanerName;
@@ -223,6 +229,11 @@ else
 					{
 						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
 						echo "\n\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m\n";
+					}
+					else if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 ))
+					{
+						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600),0);
+						exit("\n\033[38;5;".$color_blacklist."mAveraging ".$nzbsperhour." imports per hour from ".$path."\033[0m\n");
 					}
 					else
 						echo "\nImported #".$nzbCount." nzb's in ".relativeTime($time);

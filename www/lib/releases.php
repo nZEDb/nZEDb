@@ -976,7 +976,7 @@ class Releases
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d, bitwise = ((bitwise & ~1)|1) WHERE id = %d', $catId, $rowrel['id']));
 				$relcount ++;
 				if ($this->echooutput)
-					$this->consoleTools->overWrite($this->c->primaryOver('Categorizing: '.$this->consoleTools->percentString($relcount,$total)));
+					$this->consoleTools->overWritePrimary('Categorizing: '.$this->consoleTools->percentString($relcount,$total));
 			}
 		}
 		if ($this->echooutput !== false && $relcount > 0)
@@ -1525,7 +1525,7 @@ class Releases
 					$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-						echo $this->consoleTools->overWrite($this->c->primaryOver('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total)));
+						echo $this->consoleTools->overWritePrimary('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total));
 				}
 			}
 		}
