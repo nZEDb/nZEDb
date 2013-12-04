@@ -9,6 +9,32 @@ class ConsoleTools
 		$this->c = new ColorCLI;
 	}
 
+	function overWriteHeader($message, $reset=False)
+	{
+		if ($reset)
+			$this->lastMessageLength = 0;
+
+		echo str_repeat(chr(8), $this->lastMessageLength);
+		echo str_repeat(" ", $this->lastMessageLength);
+		echo str_repeat(chr(8), $this->lastMessageLength);
+
+		$this->lastMessageLength = strlen($message);
+		echo $this->c->headerOver($message);
+	}
+
+	function overWritePrimary($message, $reset=False)
+	{
+		if ($reset)
+			$this->lastMessageLength = 0;
+
+		echo str_repeat(chr(8), $this->lastMessageLength);
+		echo str_repeat(" ", $this->lastMessageLength);
+		echo str_repeat(chr(8), $this->lastMessageLength);
+
+		$this->lastMessageLength = strlen($message);
+		echo $this->c->primaryOver($message);
+	}
+
 	function overWrite($message, $reset=False)
 	{
 		if ($reset)
@@ -73,7 +99,7 @@ class ConsoleTools
 	{
 		for ( $i = $seconds; $i >= 0; $i-- )
 		{
-			$this->overWrite($this->c->headerOver("Sleeping for ".$i." seconds."));
+			$this->overWriteHeader("Sleeping for ".$i." seconds.");
 			usleep(1000000);
 		}
 		echo "\n";

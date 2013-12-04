@@ -1,16 +1,28 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+
+$c = new ColorCLI();
+
 
 if (!isset($argv[1]))
-	exit("This script resets the bitwise on all releases, so you can rerun fixReleaseNames.php miscsorter etc\nRun this with true to run it.\n");
+{
+	passthru('clear');
+	exit($c->error("\nThis script sets bitwise = 0 or just resets specific bits.\nTo reset all releases, run:\nphp resetRelnameStatus.php true\n\nTo run on specific bit, run:\nphp resetRelnameStatus.php 512\n\n"));
+}
 
 $db = new DB();
-$res = $db->queryExec("UPDATE releases SET bitwise = ((bitwise & ~4)|0), bitwise = ((bitwise & ~8)|0), bitwise = ((bitwise & ~16)|0), bitwise = ((bitwise & ~32)|0), bitwise = ((bitwise & ~64)|0), bitwise = ((bitwise & ~128)|0)");
+if ($argv[1] === 'true')
+	$res = $db->queryExec('UPDATE releases SET bitwise = 0');
+else if (is_numeric($argv[1]))
+	$res = $db->queryExec('UPDATE releases SET bitwise = ((bitwise & ~'.$argv[1].')|0)');
 
-if ($res->rowCount() > 0)
-	exit("Succesfully reset the bitwise of {$res} releases to unprocessed.\n");
+if ($res->rowCount() > 0 && is_numeric($argv[1]))
+	echo $c->header('Succesfully reset the bitwise of '.$res->rowCount().' releases to 0 for bit(s) '.$argv[1].'.');
+else if ($res->rowCount() > 0)
+	echo $c->header('Succesfully reset the bitwise of '.$res->rowCount().' releases to unprocessed.');
 else
-	exit("No releases to be reset.\n");
+	echo $c->header('No releases to be reset.');
 
 ?>
