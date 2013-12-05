@@ -271,9 +271,9 @@ class Binaries
 		{
 			if ($db->newtables($groupArr['id']) === false)
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
-			$group['cname'] = $groupArr['id'].'_collections';
-			$group['bname'] = $groupArr['id'].'_binaries';
-			$group['pname'] = $groupArr['id'].'_parts';
+			$group['cname'] = 'collections_'.$groupArr['id'];
+			$group['bname'] = 'binaries_'.$groupArr['id'];
+			$group['pname'] = 'parts_'.$groupArr['id'];
 		}
 		else
 		{
@@ -650,7 +650,7 @@ class Binaries
 		{
 			if ($db->newtables($groupArr['id']) === false)
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
-			$group['prname'] = $groupArr['id'].'_partrepair';
+			$group['prname'] = 'partrepair_'.$groupArr['id'];
 		}
 		else
 		{
@@ -730,7 +730,7 @@ class Binaries
 		{
 			if ($db->newtables($groupID) === false)
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
-			$group['prname'] = $groupID.'_partrepair';
+			$group['prname'] = 'partrepair_'.$groupID;
 		}
 		else
 			$group['prname'] = 'partrepair';
@@ -757,7 +757,7 @@ class Binaries
 	{
 		$db = $this->db;
 		if ($this->tablepergroup == 1)
-			$group['prname'] = $groupID.'_partrepair';
+			$group['prname'] = 'partrepair_'.$groupID;
 		else
 			$group['prname'] = 'partrepair';
 

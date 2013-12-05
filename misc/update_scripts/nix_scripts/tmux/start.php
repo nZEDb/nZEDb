@@ -115,7 +115,7 @@ if ($tablepergroup == 1)
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		if (preg_match('/\d+_collections/',$tbl))
+		if (preg_match('/collections_\d+/',$tbl))
 		{
 			$run = $db->queryDirect('UPDATE '.$tbl.' SET dateadded = now()');
 			$ran += $run->rowCount();

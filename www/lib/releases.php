@@ -995,9 +995,9 @@ class Releases
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			if ($db->newtables($groupID) === false)
 				exit ("There is a problem creating new parts/files tables for this group.\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1039,13 +1039,11 @@ class Releases
 		// If a collection has not been updated in X hours, set filecheck to 2.
 		if ($db->dbSystem() == 'mysql')
 		{
-			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
-			$query1->execute();
+			$query1 = $db->queryDirect(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
 		}
 		else
 		{
-			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
-			$query1->execute();
+			$query1 = $db->queryDirect(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
 		}
 
 		if ($this->echooutput)
@@ -1065,9 +1063,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1098,9 +1096,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1256,9 +1254,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1492,9 +1490,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1656,9 +1654,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{

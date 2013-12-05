@@ -54,7 +54,7 @@ if allowed == 0:
 	print(bcolors.ERROR + "Table per group not enabled")
 	sys.exit()
 
-cur[0].execute("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+conf['DB_NAME']+"' AND table_rows > 0 AND table_name LIKE '%_collections'")
+cur[0].execute("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+conf['DB_NAME']+"' AND table_rows > 0 AND table_name LIKE 'collections_%'")
 datas = cur[0].fetchall()
 disconnect(cur[0], cur[1])
 
@@ -110,7 +110,7 @@ def main():
 		if count >= threads:
 			count = 0
 		count += 1
-		my_queue.put("%s  %s" % (release[0].replace('_collections', ''), count))
+		my_queue.put("%s  %s" % (release[0].replace('collections_', ''), count))
 
 	my_queue.join()
 

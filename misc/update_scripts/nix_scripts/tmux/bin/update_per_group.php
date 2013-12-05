@@ -49,7 +49,7 @@ if ($pieces[0] != 'Stage7b')
 
 	// Update Releases per group
 	try {
-		$test = $db->prepare('SELECT * FROM '.$pieces[0].'_collections');
+		$test = $db->prepare('SELECT * FROM collections_'.$pieces[0]);
 		$test->execute();
 		// Don't even process the group if no collections
 		if ($test->rowCount() == 0)

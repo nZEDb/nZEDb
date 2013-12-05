@@ -73,9 +73,9 @@ while ($cdone < $clen['total'])
 		{
 			echo "\n\nCollection insert:\n";
 			print_r($collection);
-			echo sprintf("\nINSERT INTO %d_collections (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['groupid'], implode(', ', $collection));
+			echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['groupid'], implode(', ', $collection));
 		}
-		$newcid = array('collectionid' => $db->queryInsert(sprintf('INSERT INTO %d_collections (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['groupid'], implode(', ', $collection))));
+		$newcid = array('collectionid' => $db->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groupid, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['groupid'], implode(', ', $collection))));
 		$consoletools->overWrite('Collections Completed: '.$consoletools->percentString($ccount, $clen['total']));
 
 		//Get binaries and split to correct group tables.
@@ -90,9 +90,9 @@ while ($cdone < $clen['total'])
 			{
 				echo "\n\nBinary insert:\n";
 				print_r($binarynew);
-				echo sprintf("\nINSERT INTO %d_binaries (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['groupid'], implode(', ', $binarynew));
+				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['groupid'], implode(', ', $binarynew));
 			}
-			$newbid = array('binaryid' => $db->queryInsert(sprintf('INSERT INTO %d_binaries (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groupid'], implode(', ', $binarynew))));
+			$newbid = array('binaryid' => $db->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groupid'], implode(', ', $binarynew))));
 
 
 			//Get parts and split to correct group tables.
@@ -110,9 +110,9 @@ while ($cdone < $clen['total'])
 			if ($debug)
 			{
 				echo "\n\nParts insert:\n";
-				echo sprintf("\nINSERT INTO %d_parts (binaryid, messageid, number, partnumber, size) VALUES %s;\n\n", $collection['groupid'], $partsnew);
+				echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size) VALUES %s;\n\n", $collection['groupid'], $partsnew);
 			}
-			$sql = sprintf('INSERT INTO %d_parts (binaryid, messageid, number, partnumber, size) VALUES %s;', $collection['groupid'], $partsnew);
+			$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size) VALUES %s;', $collection['groupid'], $partsnew);
 			$db->queryExec($sql);
 		}
 		$ccount++;
@@ -141,9 +141,9 @@ if ($DoPartRepair === true)
 				{
 					echo "\n\nPart Repair insert:\n";
 					print_r($partrepair);
-					echo sprintf("\nINSERT INTO %d_partrepair (numberid, groupid, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts'] );
+					echo sprintf("\nINSERT INTO partrepair_%d (numberid, groupid, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts'] );
 				}
-				$db->queryExec(sprintf('INSERT INTO %d_partrepair (numberid, groupid, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts']));
+				$db->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, groupid, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['groupid'], $partrepair['attempts']));
 				$consoletools->overWrite('Part Repairs Completed for '.$group['name'].':'.$consoletools->percentString($pcount, $plen['total']));
 				$pcount++;
 			}

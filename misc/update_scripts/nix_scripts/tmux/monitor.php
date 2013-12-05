@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4544";
+$version="0.3r4545";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -443,26 +443,26 @@ while($i > 0)
 				foreach($tables as $row)
 				{
 					$tbl = $row['name'];
-					if (strpos($tbl, '_collections') !== false)
+					if (strpos($tbl, 'collections_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
 						$collections_table += $run[0]['count'];
 						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
 							$age = $run[0]['dateadded'];
 					}
-					else if (strpos($tbl, '_binaries') !== false)
+					else if (strpos($tbl, 'binaries_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$binaries_table += $run[0]['count'];
 					}
-					else if (strpos($tbl, '_parts') !== false)
+					else if (strpos($tbl, 'parts_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
-					else if (strpos($tbl, '_partrepair') !== false)
+					else if (strpos($tbl, 'partrepair_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
