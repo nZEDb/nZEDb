@@ -433,7 +433,7 @@ class DB extends PDO
 						if (strpos($tbl, '_parts') !== false)
 							$tblnew = 'parts_'.str_replace('_parts', '', $tbl);
 						if (strpos($tbl, '_partrepair') !== false)
-							$tblnew = 'partrepair_'.str_replace('_partrepairs', '', $tbl);
+							$tblnew = 'partrepair_'.str_replace('_partrepair', '', $tbl);
 						self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
 					}
 				}
