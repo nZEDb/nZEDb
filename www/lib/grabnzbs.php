@@ -226,8 +226,8 @@ class Import
 				{
 					$group = array();
 					$group['cname'] = 'collections_'.$realgroupid;
-					$group['bname'] = 'binaries_'.$realgroupid
-					$group['pname'] = 'parts_'.$realgroupid
+					$group['bname'] = 'binaries_'.$realgroupid;
+					$group['pname'] = 'parts_'.$realgroupid;
 				}
 				else
 				{
