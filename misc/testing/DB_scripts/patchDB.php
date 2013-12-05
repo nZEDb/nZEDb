@@ -57,7 +57,7 @@ function SplitSQL($file, $delimiter = ';')
 						else if ($e->errorInfo[1] == 1072)
 							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						// PGSQL Error Codse
-						else if ($e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07')
+						else if ($e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16')
 							echo $c->error($e->errorInfo[2]." - Not Fatal.\n");
 						else
 						{
