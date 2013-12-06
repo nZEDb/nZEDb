@@ -157,7 +157,7 @@ else
 				$groupArr[] = $group;
 
 				if ($binaries->isBlacklisted($msg, $group))
-					$isBlackListed = TRUE;
+					$isBlackListed = true;
 			}
 			if ($groupID != -1 && !$isBlackListed)
 			{
@@ -184,7 +184,11 @@ else
 				break;
 			}
 		}
-		if (!$importfailed)
+		if ($importfailed)
+		{
+			@unlink($nzbFile);
+		}
+		else
 		{
 			$relguid = sha1(uniqid('',true).mt_rand());
 			$nzb = new NZB();

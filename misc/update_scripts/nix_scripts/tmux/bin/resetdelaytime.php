@@ -20,7 +20,7 @@ if ($tablepergroup == 1)
 	foreach($tables as $row)
 	{
 		$tbl = $row['tables_in_'.DB_NAME];
-		if (preg_match('/\d+_collections/',$tbl))
+		if (preg_match('/collections_\d+/',$tbl))
 		{
 			$run = $db->queryExec('UPDATE '.$tbl.' SET dateadded = now()');
 			$ran += $run->rowCount();
