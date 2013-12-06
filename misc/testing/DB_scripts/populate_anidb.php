@@ -317,7 +317,6 @@ Holding on to this in case we want it again as it has some uses, but currently w
 	public function AniDBAPI($anidbID)
 	{
 		$ch = curl_init('http://api.anidb.net:9001/httpapi?request=anime&client='.$this->APIKEY.'&clientver='.self::CLIENTVER.'&protover=1&aid='.$anidbID);
-
 		if ($this->echooutput)
 			echo 'http://api.anidb.net:9001/httpapi?request=anime&client='.$this->APIKEY.'&clientver='.self::CLIENTVER.'&protover=1&aid='.$anidbID."\n";
 
