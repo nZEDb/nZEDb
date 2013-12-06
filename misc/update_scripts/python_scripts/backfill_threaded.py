@@ -79,9 +79,9 @@ if len(sys.argv) > 1 and sys.argv[1] == "all":
 	cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND backfill = 1 %s" % (group))
 else:
 	if conf['DB_SYSTEM'] == "mysql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 	elif conf['DB_SYSTEM'] == "pgsql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 
 datas = cur.fetchall()
 if not datas:
