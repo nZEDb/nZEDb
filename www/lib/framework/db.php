@@ -436,7 +436,13 @@ class DB extends PDO
 						else if (strpos($tbl, '_partrepair') !== false)
 							$tblnew = 'partrepair_'.str_replace('_partrepair', '', $tbl);
 						if ($tblnew != '')
-							self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
+						{
+							try {
+								self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
+							} catch (PDOException $e) {
+								// table already exists
+							}
+						}
 					}
 				}
 			}
