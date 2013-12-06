@@ -426,15 +426,17 @@ class DB extends PDO
         	        foreach($tables as $row)
 					{
 						$tbl = $row['name'];
+						$tblnew = '';
 						if (strpos($tbl, '_collections') !== false)
 							$tblnew = 'collections_'.str_replace('_collections', '', $tbl);
-						if (strpos($tbl, '_binaries') !== false)
+						else if (strpos($tbl, '_binaries') !== false)
 							$tblnew = 'binaries_'.str_replace('_binaries', '', $tbl);
-						if (strpos($tbl, '_parts') !== false)
+						else if (strpos($tbl, '_parts') !== false)
 							$tblnew = 'parts_'.str_replace('_parts', '', $tbl);
-						if (strpos($tbl, '_partrepair') !== false)
+						else if (strpos($tbl, '_partrepair') !== false)
 							$tblnew = 'partrepair_'.str_replace('_partrepair', '', $tbl);
-						self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
+						if ($tblnew != '')
+							self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
 					}
 				}
 			}
