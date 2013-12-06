@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4556";
+$version="0.3r4557";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -97,7 +97,7 @@ function rand_bool($loop, $chance = 60)
 }
 
 //totals per category in db, results by parentID
-$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid, r.id';
+$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
 
 //needs to be processed query
 $proc_work = "SELECT
