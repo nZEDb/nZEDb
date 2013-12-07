@@ -4,6 +4,7 @@ require_once nZEDb_LIB . 'amazon.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'releaseimage.php';
 require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 /*
  * Class for fetching book info from amazon.com.
@@ -23,6 +24,9 @@ require_once nZEDb_LIB . 'site.php';
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->imgSavePath = nZEDb_WWW.'covers/book/';
 		$this->db = new DB();
+		$this->bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 260 : 256;
+		$this->c = new ColorCLI();
 	}
 
 	public function getBookInfo($id)
@@ -240,37 +244,37 @@ require_once nZEDb_LIB . 'site.php';
 		return $result;
 	}
 
-	public function processBookReleases($threads=1)
+	public function processBookReleases()
 	{
-		$threads--;
 		$ret = 0;
 		$db = $this->db;
 
-		// include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
-		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
-		if (count($res) > 0)
+		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
+		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE (bitwise & %d) = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->cleanbooks, $this->bookreqids, $this->bookqty));
+
+		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo 'Processing '.count($res)." book releases.\n";
+				echo $this->c->header('Processing '.$res->rowCount().' book release(s).');
 
 			foreach ($res as $arr)
 			{
-				// audiobooks are also books and should be handles in an idetical manor, even though it fails under a music category
+				// audiobooks are also books and should be handles in an identical manor, even though it falls under a music category
 				if($arr['categoryid'] == '3030')
 				{
 					// audiobook
-					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "audiobook");
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
 				}
 				else
 				{
 					// ebook
-					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], "ebook");
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'ebook');
 				}
 
 				if ($bookInfo !== false)
 				{
 					if ($this->echooutput)
-						echo 'Looking up: '.$bookInfo."\n";
+						echo $this->c->headerOver('Looking up: ').$this->c->primary($bookInfo);
 
 					$bookId = $this->updateBookInfo($bookInfo);
 					if ($bookId === false)
@@ -286,6 +290,10 @@ require_once nZEDb_LIB . 'site.php';
 				usleep($this->sleeptime*1000);
 			}
 		}
+		else
+			if ($this->echooutput)
+				echo $this->c->header('No book releases to process.');
+
 	}
 
 	public function parseTitle($releasename, $releaseID, $releasetype)
@@ -299,16 +307,16 @@ require_once nZEDb_LIB . 'site.php';
 		{
 			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
 			{
-				echo "Changing category to misc books: ".$releasename."\n";
+				echo $this->c->headerOver('Changing category to misc books: ').$this->c->primary($releasename);
 				$db = $this->db;
-				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8050, $releaseID));
+				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
 				return false;
 			}
 			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
 			{
-				echo "Changing category to magazines: ".$releasename."\n";
+				echo $this->c->headerOver('Changing category to magazines: ').$this->c->primary($releasename);
 				$db = $this->db;
-				$db->queryExec(sprintf("UPDATE releases SET categoryid = %d WHERE id = %d", 8030, $releaseID));
+				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
 				return false;
 			}
 			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))

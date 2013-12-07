@@ -89,7 +89,7 @@
 			<tr>
 				<td style="width:180px;"><label for="sequential">Run Sequential:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="sequential" name='sequential' values=$sequential_ids output=$sequential_names selected=$ftmux->sequential}
+					{html_options style="width:180px;" class="siteeditstyle" id="sequential" name='sequential' values=$sequential_ids output=$sequential_names selected=$ftmux->sequential}
 					<div class="hint">Basic Sequential runs update_binaries, backfill and update releases_sequentially.<br />Complete Sequential runs threaded.sh(copied to user_threaded.sh), this still runs import in its own pane. This will allow you to reorder the script in any order you like. The idea is to get each individual script to run at or near your desired load level.<br />Changing requires restart.</div>
 				</td>
 			</tr>
@@ -117,7 +117,7 @@
 			<tr>
 				<td style="width:180px;"><label for="binaries">Update Binaries:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="binaries" name='binaries' values=$binaries_ids output=$binaries_names selected=$ftmux->binaries}
+					{html_options style="width:180px;" class="siteeditstyle" id="binaries" name='binaries' values=$binaries_ids output=$binaries_names selected=$ftmux->binaries}
 					<div class="hint">Choose to run update_binaries. Update binaries gets from your last_record to now.<br />Simple Threaded Update runs 1 group per thread.<br />Complete Threaded Update splits all work across multiple threads.</div>
 				</td>
 			</tr>
@@ -138,7 +138,7 @@
 			<tr>
 				<td style="width:180px;"><label for="backfill">Backfill:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="backfill" name='backfill' values=$backfill_ids output=$backfill_names selected=$ftmux->backfill}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_order" name='backfill_order' values=$backfill_group_ids output=$backfill_group selected=$ftmux->backfill_order}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options class="siteeditstyle" id="backfill_days" name='backfill_days' values=$backfill_days_ids output=$backfill_days selected=$ftmux->backfill_days}
+					{html_options style="width:180px;" class="siteeditstyle" id="backfill" name='backfill' values=$backfill_ids output=$backfill_names selected=$ftmux->backfill}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options style="width:180px;" class="siteeditstyle" id="backfill_order" name='backfill_order' values=$backfill_group_ids output=$backfill_group selected=$ftmux->backfill_order}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{html_options style="width:180px;" class="siteeditstyle" id="backfill_days" name='backfill_days' values=$backfill_days_ids output=$backfill_days selected=$ftmux->backfill_days}
 					<div class="hint">Choose to run backfill type. Backfill gets from your first_record back.<br /> 
 						Disabled - Disables backfill from running.<br />
 						Safe - Backfills 1 group by backfill days (set in admin-view groups), using the number of threads set in admin. This downloads Backfill Quantity times the Backfill Threads, each loop.<br \>
@@ -195,7 +195,7 @@
 			<tr>
 				<td style="width:180px;"><label for="import">Import nzbs:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="import" name='import' values=$import_ids output=$import_names selected=$ftmux->import}
+					{html_options style="width:180px;" class="siteeditstyle" id="import" name='import' values=$import_ids output=$import_names selected=$ftmux->import}
 					<div class="hint">Choose to run import nzb script true/false. This can point to a single folder with multiple subfolders on just the one folder. If you run this threaded, it will run 1 folder per thread.</div>
 				</td>
 			</tr>
@@ -230,7 +230,7 @@
 			<tr>
 				<td style="width:180px;"><label for="releases">Update Releases:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="releases" name='releases' values=$releases_ids output=$releases_names selected=$ftmux->releases}
+					{html_options style="width:180px;" class="siteeditstyle" id="releases" name='releases' values=$releases_ids output=$releases_names selected=$ftmux->releases}
 					<div class="hint">Create releases, this is really only necessary to turn off when you only want to post process. This runs "Categorizes releases in misc sections using the search name" on first loop and has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new releases.<br />Threaded is only used with tablepergroup and is required if using tpg.</div>
 				</td>
 			</tr>
@@ -251,7 +251,7 @@
 			<tr>
 				<td style="width:180px;"><label for="post">Postprocess Additional:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="post" name='post' values=$post_ids output=$post_names selected=$ftmux->post}
+					{html_options style="width:180px;" class="siteeditstyle" id="post" name='post' values=$post_ids output=$post_names selected=$ftmux->post}
 					<div class="hint">Choose to do deep rar inspection, preview and sample creation and/or nfo processing. true/false</div>
 				</td>
 			</tr>
@@ -291,7 +291,7 @@
 			<tr>
 				<td style="width:180px;"><label for="post_non">Postprocess Non-Amazon:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="post_non" name='post_non' values=$post_non_ids output=$post_non_names selected=$ftmux->post_non}
+					{html_options style="width:180px;" class="siteeditstyle" id="post_non" name='post_non' values=$post_non_ids output=$post_non_names selected=$ftmux->post_non}
 					<div class="hint">Choose to do movies, anime and tv lookups. true/false</div>
 				</td>
 			</tr>
@@ -313,7 +313,7 @@
 				<td style="width:180px;"><label for="fix_names">Fix Release Names:</label></td>
 				<td>
 					{html_radios id="fix_names" name='fix_names' values=$yesno_ids output=$yesno_names selected=$ftmux->fix_names separator='<br />'}
-					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false<br /> I have changed the query so that only category 7010 will be processed.</div>
+					<div class="hint">Choose to try to fix Releases Names using NFOs, par2 files, filenames, md5 and misc sorter. true/false</div>
 				</td>
 			</tr>
 
@@ -362,7 +362,7 @@
 			<tr>
 				<td style="width:180px;"><label for="dehash">Decrypt Hash Based Release Names:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="dehash" name='dehash' values=$dehash_ids output=$dehash_names selected=$ftmux->dehash}
+					{html_options style="width:180px;" class="siteeditstyle" id="dehash" name='dehash' values=$dehash_ids output=$dehash_names selected=$ftmux->dehash}
 					<div class="hint">Choose to run Decrypt Hashes true/false</div>
 				</td>
 			</tr>

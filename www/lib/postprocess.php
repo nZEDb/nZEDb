@@ -82,41 +82,41 @@ class PostProcess
 		$this->processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp);
 		$this->processNfos($releaseToWork='', $nntp);
 		$this->processMovies($releaseToWork='');
-		$this->processMusic($threads=1);
-		$this->processGames($threads=1);
-		$this->processAnime($threads=1);
+		$this->processMusic();
+		$this->processGames();
+		$this->processAnime();
 		$this->processTv($releaseToWork='');
-		$this->processBooks($threads=1);
+		$this->processBooks();
 	}
 
 	// Lookup anidb if enabled - always run before tvrage.
-	public function processAnime($threads=1)
+	public function processAnime()
 	{
 		if ($this->site->lookupanidb == 1)
 		{
 			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate($threads);
-			$anidb->processAnimeReleases($threads);
+			$anidb->animetitlesUpdate();
+			$anidb->processAnimeReleases();
 		}
 	}
 
 	// Process books using amazon.com.
-	public function processBooks($threads=1)
+	public function processBooks()
 	{
-		if ($this->site->lookupbooks == 1)
+		if ($this->site->lookupbooks != 0)
 		{
 			$books = new Books($this->echooutput);
-			$books->processBookReleases($threads);
+			$books->processBookReleases();
 		}
 	}
 
 	// Lookup games if enabled.
-	public function processGames($threads=1)
+	public function processGames()
 	{
-		if ($this->site->lookupgames == 1)
+		if ($this->site->lookupgames != 0)
 		{
 			$console = new Console($this->echooutput);
-			$console->processConsoleReleases($threads);
+			$console->processConsoleReleases();
 		}
 	}
 
@@ -131,12 +131,12 @@ class PostProcess
 	}
 
 	// Lookup music if enabled.
-	public function processMusic($threads=1)
+	public function processMusic()
 	{
-		if ($this->site->lookupmusic == 1)
+		if ($this->site->lookupmusic != 0)
 		{
 			$music = new Music($this->echooutput);
-			$music->processMusicReleases($threads);
+			$music->processMusicReleases();
 		}
 	}
 
