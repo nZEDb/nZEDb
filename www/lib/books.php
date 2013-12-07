@@ -20,6 +20,7 @@ require_once nZEDb_LIB . 'site.php';
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
+		$this->bookreqids = $site->book_reqids;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->imgSavePath = nZEDb_WWW.'covers/book/';
 		$this->db = new DB();
@@ -246,8 +247,12 @@ require_once nZEDb_LIB . 'site.php';
 		$ret = 0;
 		$db = $this->db;
 
-		// include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
-		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		// safety if the user has not entered anything, default back to the old ebooks only setup.
+		if($this->bookreqids == NULL or $this->bookreqids=="") $this->bookreqids="8010";
+
+		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
+		$querystring = sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookreqids, $this->bookqty, floor(($this->bookqty) * ($threads * 1.5)));
+		$res = $db->query($querystring);
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
