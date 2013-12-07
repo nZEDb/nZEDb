@@ -746,6 +746,7 @@ class Smarty_Internal_Utility {
                 "function.html_checkboxes.php" => true,
                 "function.html_image.php" => true,
                 "function.html_options.php" => true,
+                "function.html_options_multiple.php" => true,
                 "function.html_radios.php" => true,
                 "function.html_select_date.php" => true,
                 "function.html_select_time.php" => true,
