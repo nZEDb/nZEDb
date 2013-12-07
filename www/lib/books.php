@@ -20,6 +20,7 @@ require_once nZEDb_LIB . 'site.php';
 		$this->privkey = $site->amazonprivkey;
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
+		$this->bookreqids = $site->book_reqids;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->imgSavePath = nZEDb_WWW.'covers/book/';
 		$this->db = new DB();
@@ -247,7 +248,7 @@ require_once nZEDb_LIB . 'site.php';
 		$db = $this->db;
 
 		// include results for ebooks, technical books and audiobooks, maybe we should add foreign as well 8060, but then I do not want to overload amazon currently
-		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid in (3030, 8010, 8040) ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
+		$res = $db->query(sprintf('SELECT searchname, id,categoryid FROM releases WHERE (bitwise & 256) = 256 AND bookinfoid IS NULL AND categoryid in (' . $this->bookreqids . ') ORDER BY POSTDATE DESC LIMIT %d OFFSET %d', $this->bookqty, floor(($this->bookqty) * ($threads * 1.5))));
 		if (count($res) > 0)
 		{
 			if ($this->echooutput)
