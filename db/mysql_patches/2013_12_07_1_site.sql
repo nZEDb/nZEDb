@@ -1,1 +1,3 @@
-INSERT INTO `site` (`setting`, `value`, `updateddate`) VALUES ('book_reqids', '8010', '2013-12-06 22:30:33');
+INSERT INTO `site` (`setting`, `value`) VALUES ('book_reqids', '8010');
+
+UPDATE site SET value = '156' WHERE setting = 'sqlpatch';

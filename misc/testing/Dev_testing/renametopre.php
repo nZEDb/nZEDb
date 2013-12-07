@@ -36,18 +36,22 @@ function preName($argv)
 	$counter=0;
 	$n = "\n";
 	$what = $argv[1]=='full' ? '' : ' AND adddate > NOW() - INTERVAL '.$argv[1].' HOUR';
-	$where = isset($argv[3]) ? ' AND groupid = '.$argv[3] : '';
-	$where = (isset($argv[2]) && is_numeric($argv[2]) && !isset($argv[3])) ? ' AND groupid = '.$argv[2] : '';
+	if (isset($argv[3]) && is_numeric($argv[3]))
+		$where = ' AND groupid = '.$argv[3];
+	else if (!isset($argv[3]) && isset($argv[2]) && is_numeric($argv[2]))
+		$where = ' AND groupid = '.$argv[2];
+	else
+		$where = '';
+
 	resetSearchnames();
 	echo "Getting work\n";
 	if (!isset($argv[2]))
-		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what);
+		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what);
 	else if (isset($argv[2]) && is_numeric($argv[2]))
-		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what.$where);
-	else if (isset($argv[1]) && $argv[1]=="full" && isset($argv[2]) && $argv[2] == "all")
-		$res = $db->prepare("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256".$where);
-
-	$res->execute();
+		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what.$where);
+	else if (isset($argv[1]) && $argv[1] == 'full' && isset($argv[2]) && $argv[2] == 'all')
+		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256".$where);
+		
 	$total = $res->rowCount();
 	if ($total > 0)
 	{
@@ -58,7 +62,7 @@ function preName($argv)
 			if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname)))
 			{
 				$cleanedBook = false;
-				if ($groupname === 'alt.binaries.e-book' || $groupname === 'alt.binaries.e-book.flood')
+				if ($groupname == 'alt.binaries.e-book' || $groupname == 'alt.binaries.e-book.flood')
 				{
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanerName, $match))
 					{

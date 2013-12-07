@@ -39,18 +39,16 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 #get number of threads from db
-if len(sys.argv) > 1 and sys.argv[1] == "amazon":
-	cur.execute("SELECT value FROM site WHERE setting = 'postthreadsamazon'")
-else:
+if len(sys.argv) > 1 and sys.argv[1] != "amazon":
 	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_old_threaded.py amazon\n" + bcolors.ENDC)
 	sys.exit()
-run_threads = cur.fetchone()
+run_threads = 1
 
 #create a list
 try:
-	datas = list(range(1, int(run_threads[0]) + 1))
+	datas = list(range(1, int(run_threads) + 1))
 except:
-	datas = list(xrange(1, int(run_threads[0]) + 1))
+	datas = list(xrange(1, int(run_threads) + 1))
 
 #close connection to mysql
 cur.close()
@@ -85,7 +83,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} items".format(run_threads[0], "{:,}".format(len(datas))) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} items".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -95,7 +93,7 @@ def main(args):
 
 	if True:
 		#spawn a pool of place worker threads
-		for i in range(int(run_threads[0])):
+		for i in range(int(run_threads)):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()

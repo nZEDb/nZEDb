@@ -6,6 +6,7 @@ require_once nZEDb_LIB . 'genres.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'util.php';
 require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Music
 {
@@ -21,6 +22,8 @@ class Music
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
 		$this->imgSavePath = nZEDb_WWW.'covers/music/';
+		$this->cleanmusic = ($site->lookupmusic == 2 ) ? 260 : 256;
+		$this->c = new ColorCLI();
 	}
 
 	public function getMusicInfo($id)
@@ -423,16 +426,15 @@ class Music
 		return $result;
 	}
 
-	public function processMusicReleases($threads=1)
+	public function processMusicReleases()
 	{
-		$threads--;
 		$ret = 0;
 		$db = $this->db;
-		$res = $db->query(sprintf("SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->musicqty, floor(max(0, $this->musicqty * $threads * 1.5))));
-		if (count($res) > 0)
+		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE musicinfoid IS NULL AND (bitwise & %d) = %d AND categoryid IN (3010, 3040, 3050) ORDER BY postdate DESC LIMIT %d', $this->cleanmusic, $this->cleanmusic, $this->musicqty));
+		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo "Processing ".count($res)." music release(s).\n";
+				echo $this->c->header('Processing '.$res->rowCount().' music release(s).');
 
 			foreach ($res as $arr)
 			{
@@ -442,7 +444,7 @@ class Music
 					$newname = $album["name"].' ('.$album["year"].')';
 
 					if ($this->echooutput)
-						echo 'Looking up: '.$newname."\n";
+						echo $this->c->headerOver('Looking up: ').$this->c->primary($newname);
 
 					$albumId = $this->updateMusicInfo($album["name"], $album['year']);
 					if ($albumId === false)
@@ -458,6 +460,10 @@ class Music
 				usleep($this->sleeptime*1000);
 			}
 		}
+		else
+			if ($this->echooutput)
+				echo $this->c->header('No music releases to process.');
+
 	}
 
 	public function parseArtist($releasename)
