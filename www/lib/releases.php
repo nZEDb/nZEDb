@@ -1512,6 +1512,7 @@ class Releases
 			$nzbsplitlevel = $this->site->nzbsplitlevel;
 			$nzbpath = $this->site->nzbpath;
 			$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
+			$this->consoleTools = new consoleTools();
 			foreach ($resrel as $rowrel)
 			{
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title'], $groupID);
@@ -1521,10 +1522,7 @@ class Releases
 					$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput)
-					{
-						$this->consoleTools = new consoleTools();
 						echo $this->consoleTools->overWritePrimary('Creating NZBs: '.$this->consoleTools->percentString($nzbcount, $total));
-					}
 				}
 			}
 		}
