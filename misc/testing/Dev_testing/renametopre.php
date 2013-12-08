@@ -67,6 +67,10 @@ function preName($argv)
 			{
 				$cleanName = trim($cleanerName['cleansubject']);
 				$propername = $cleanerName['properlynamed'];
+				if (isset($cleanerName['increment']))
+					$increment = $cleanerName['increment'];
+				else
+					$increment = false;
 			}
 			
 			if ($cleanName != '')
@@ -113,7 +117,7 @@ function preName($argv)
 						"Group:     ".$groupname.$n.
 						"Method:    "."renametopre regexes".$n.
 						"ReleaseID: ". $row["id"].$n;*/
-					if ($propername == true)
+					if ($increment == true)
 						$updated++;
 				}
 			}
@@ -158,7 +162,6 @@ function resetSearchnames()
 		echo $tot." Releases had no searchname\n";
 }
 
-
 // Categorizes releases.
 // $type = name or searchname
 // Returns the quantity of categorized releases.
@@ -199,7 +202,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 	if (!empty($cleanerName) && is_array($cleanerName))
 		return $cleanerName;
 	else if (!empty($cleanerName) && !is_array($cleanerName))
-		return array("cleansubject" => $cleanerName, "properlynamed" => false);
+		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
 
 	if ($groupName == "alt.binaries.classic.tv.shows")
 	{
