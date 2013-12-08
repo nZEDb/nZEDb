@@ -35,7 +35,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 cur = con.cursor()
 
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n" + bcolors.ENDC)
 	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)

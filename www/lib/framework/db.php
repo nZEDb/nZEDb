@@ -289,7 +289,7 @@ class DB extends PDO
 
 		if ($memcache === true && $this->memcached === true)
 		{
-			$memcached->add($query, $rows);
+			$memcached->add($query, $result);
 		}
 
 		return ($result === false) ? array() : $result;
