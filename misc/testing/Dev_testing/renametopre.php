@@ -13,8 +13,8 @@ require_once nZEDb_LIB . 'releasefiles.php';
  *
  * This was added because I starting writing this before
  * all of the regexes were converted to by group in namecleaning.php
- * AND I do not want to convert these regexes to run per group.
- * namecleaning.php is WHERE the regexes should go
+ * and I do not want to convert these regexes to run per group.
+ * namecleaning.php is where the regexes should go
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
@@ -31,6 +31,7 @@ function preName($argv)
 	$db = new DB();
 	$groups = new Groups();
 	$category = new Category();
+	$propername = $increment = true;
 	$updated = 0;
 	$cleaned = 0;
 	$counter=0;
@@ -51,20 +52,33 @@ function preName($argv)
 		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what.$where);
 	else if (isset($argv[1]) && $argv[1] == 'full' && isset($argv[2]) && $argv[2] == 'all')
 		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256".$where);
-		
+
 	$total = $res->rowCount();
 	if ($total > 0)
 	{
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$groupname = $groups->getByNameByID($row["groupid"]);
-			if($cleanerName = trim(releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname)))
+			$groupname = $groups->getByNameByID($row['groupid']);
+			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $row['id'], $groupname);
+			if (!is_array($cleanerName))
+				$cleanName = trim($cleanerName);
+			else
+			{
+				$cleanName = trim($cleanerName['cleansubject']);
+				$propername = $cleanerName['properlynamed'];
+				if (isset($cleanerName['increment']))
+					$increment = $cleanerName['increment'];
+				else
+					$increment = false;
+			}
+			
+			if ($cleanName != '')
 			{
 				$cleanedBook = false;
 				if ($groupname == 'alt.binaries.e-book' || $groupname == 'alt.binaries.e-book.flood')
 				{
-					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanerName, $match))
+					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match))
 					{
 						$rf = new ReleaseFiles();
 						$files = $rf->get($row['id']);
@@ -75,42 +89,43 @@ function preName($argv)
 								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi)/', $f["name"], $match))
 								{
 									$cleanedBook = true;
-									$cleanerName = $match['title'];
+									$cleanName = $match['title'];
 								}
 							}
 						}
 					}
 				}
-				if ( $cleanerName != $row['name'] && $cleanerName != '' )
+				if ($cleanName != $row['name'])
 				{
-					$determinedcat = $category->determineCategory($cleanerName, $row["groupid"]);
-					if ($cleanedBook) // reset bookinfoid so it gets re-processed
-					{
-						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s, bookinfoid = NULL where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
-					}
-					else
-					{
-						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %s where id = %s", $db->escapeString($cleanerName), $db->escapeString($determinedcat), $db->escapeString($row['id'])));
-					}
+					$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
+					if ($cleanedBook == true && $propername == true) // reset bookinfoid so it gets re-processed
+						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+					else if ($cleanedBook == true && $propername == false) // reset bookinfoid so it gets re-processed
+						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+					else if ($propername == true)
+						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+					else if ($propername == false)
+						$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 
 					$groupname = $groups->getByNameByID($row["groupid"]);
 					$oldcatname = $category->getNameByID($row["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
-					/*echo	$n."New name:  ".$cleanerName.$n.
+					/*echo	$n."New name:  ".$cleanName.$n.
 						"Old name:  ".$row["searchname"].$n.
 						"New cat:   ".$newcatname.$n.
 						"Old cat:   ".$oldcatname.$n.
 						"Group:     ".$groupname.$n.
 						"Method:    "."renametopre regexes".$n.
 						"ReleaseID: ". $row["id"].$n;*/
-					$updated++;
+					if ($increment == true)
+						$updated++;
 				}
 			}
 			//else if (preg_match('/^\[?\d*\].+?yEnc/i', $row['name']))
 				//echo $row['name']."\n";
 
-			if ( $cleanerName == $row['name'])
-				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $db->escapeString($row['id'])));
+			if ( $cleanName == $row['name'])
+				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
 		}
 	}
@@ -141,13 +156,11 @@ function resetSearchnames()
 {
 	$db = new DB();
 	echo "\nResetting blank searchnames\n";
-	$bad = $db->prepare("UPDATE releases SET searchname = name WHERE searchname = ''");
-	$bad->execute();
+	$bad = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = ''");
 	$tot = $bad->rowCount();
 	if ($tot > 0)
 		echo $tot." Releases had no searchname\n";
 }
-
 
 // Categorizes releases.
 // $type = name or searchname
@@ -158,8 +171,7 @@ function categorizeRelease($type, $where="", $echooutput=false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	$resrel = $db->prepare("SELECT id, ".$type.", groupid FROM releases ".$where);
-	$resrel->execute();
+	$resrel = $db->queryDirect("SELECT id, ".$type.", groupid FROM releases ".$where);
 	$total = $resrel->rowCount();
 	if ($total > 0)
 	{
@@ -186,26 +198,13 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 	$propername = true;
 	$cleanName = '';
 	$category = new Category();
-	if ($cleanerName = $namecleaning->releaseCleaner($subject, $groupname))
-	{
-		if (!is_array($cleanerName))
-			$cleanName = $cleanerName;
-		else
-		{
-			$cleanName = $cleanerName['cleansubject'];
-			$propername = $cleanerName['properlynamed'];
-		}
-		if ($cleanName != '')
-		{
-			$determinedcat = $category->determineCategory($cleanName, $groupid);
-			if (!empty($cleanName) && $cleanName != $subject && $propername != false)
-			{
-				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $id));
-				return;
-			}
-		}
-	}
-	if ($groupName === "alt.binaries.classic.tv.shows")
+	$cleanerName = $namecleaning->releaseCleaner($subject, $groupname);
+	if (!empty($cleanerName) && is_array($cleanerName))
+		return $cleanerName;
+	else if (!empty($cleanerName) && !is_array($cleanerName))
+		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
+
+	if ($groupName == "alt.binaries.classic.tv.shows")
 	{
 		if (preg_match('/^(?P<title>.+\d+x\d+.+)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;)[ _-]{0,3}(yEnc|rar|par2)$/i', $subject, $match))
 		{
