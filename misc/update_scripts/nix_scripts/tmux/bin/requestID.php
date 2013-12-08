@@ -34,9 +34,22 @@ if (count($requestIDtmp) >= 1)
 	$requestID = (int) $requestIDtmp[0];
 	if ($requestID != 0 and $requestID != '')
 	{
-		$newTitle = getReleaseNameFromRequestID($page->site, $requestID, $pieces[2]);
+		// Do a local lookup first
+		$newTitle = localLookup($requestID, $pieces[2]);
 		if ($newTitle != false && $newTitle != '')
+		{
 			$bFound = true;
+			$local = true;
+		}
+		else
+		{
+			$newTitle = getReleaseNameFromRequestID($page->site, $requestID, $pieces[2]);
+			if ($newTitle != false && $newTitle != '')
+			{
+				$bFound = true;
+				$local = false;
+			}
+		}
 	}
 }
 
@@ -47,11 +60,13 @@ if ($bFound === true)
 	$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
 	$run->execute();
 	$newcatname = $category->getNameByID($determinedcat);
+	$method = ($local === true) ? 'requestID local' : 'requestID web';
+
 	echo $c->primary($n.$n.'New name:  '.$newTitle.$n.
 		'Old name:  '.$pieces[1].$n.
 		'New cat:   '.$newcatname.$n.
 		'Group:     '.$pieces[2].$n.
-		'Method:    '.'requestID'.$n.
+		'Method:    '.$method.$n.
 		'ReleaseID: '. $pieces[0]);
 	$updated++;
 }
@@ -78,5 +93,15 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 	$request = $xml->request[0];
 
 	return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
+}
+
+function localLookup($requestID, $groupName)
+{
+	$db = new DB();
+	$groups = new Groups();
+	$groupid = $groups->getIDByName($groupName);
+	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	if (isset($run['title']))
+		return $run['title'];
 }
 ?>
