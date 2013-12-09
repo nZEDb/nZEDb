@@ -373,10 +373,10 @@ class AniDB
 	{
 		$db = $this->db;
 		if($hours == 0)
-		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty));
+		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 		else
 		  // only select items within 6 hours
-		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty));
+		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 
 
 		// process the resulting set
