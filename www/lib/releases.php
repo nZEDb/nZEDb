@@ -1570,13 +1570,25 @@ class Releases
 						$requestID = (int) $requestIDtmp[0];
 						if ($requestID != 0)
 						{
-							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
+							// Do a local lookup first
+							$newTitle = $this->localLookup($requestID, $rowrel['groupname']);
 							if ($newTitle != false && $newTitle != '')
 							{
-								if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+								$bFound = true;
+								$local = true;
+								$iFoundcnt++;
+							}
+							else
+							{
+								$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
+								if ($newTitle != false && $newTitle != '')
 								{
-									$bFound = true;
-									$iFoundcnt++;
+									if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+									{
+										$bFound = true;
+										$local = false;
+										$iFoundcnt++;
+									}
 								}
 							}
 						}
@@ -1590,13 +1602,14 @@ class Releases
 						$run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, bitwise = ((bitwise & ~132)|132), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
 						$run->execute();
 						$newcatname = $category->getNameByID($determinedcat);
+						$method = ($local === true) ? 'requestID local' : 'requestID web';
 						if ($this->echooutput)
 						{
 							echo	$this->c->primary("\n\n".'New name:  '.$newTitle.
 								"\nOld name:  ".$rowrel['searchname'].
 								"\nNew cat:   ".$newcatname.
 								"\nGroup:     ".$rowrel['groupname'].
-								"\nMethod:    requestID\n".
+								"\nMethod:    ".$method."\n".
 								'ReleaseID: '. $rowrel['id']);
 						}
 						$updated++;
@@ -2109,6 +2122,15 @@ class Releases
 		$request = $xml->request[0];
 
 		return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
+	}
+
+	function localLookup($requestID, $groupName)
+	{
+		$db = $this->db;
+		$groupid = $this->groups->getIDByName($groupName);
+		$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+		if (isset($run['title']))
+			return $run['title'];
 	}
 
 	public function command_exist($cmd)
