@@ -40,7 +40,7 @@ print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.da
 threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) LIMIT 100")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1)")
 datas = cur.fetchall()
 
 if not datas:

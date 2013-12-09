@@ -35,7 +35,7 @@ if (count($requestIDtmp) >= 1)
 	if ($requestID != 0 and $requestID != '')
 	{
 		// Do a local lookup first
-		$newTitle = localLookup($requestID, $pieces[2]);
+		$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
 		if ($newTitle != false && $newTitle != '')
 		{
 			$bFound = true;
@@ -62,12 +62,12 @@ if ($bFound === true)
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
 
-	echo $c->primary($n.$n.'New name:  '.$newTitle.$n.
-		'Old name:  '.$pieces[1].$n.
-		'New cat:   '.$newcatname.$n.
-		'Group:     '.$pieces[2].$n.
-		'Method:    '.$method.$n.
-		'ReleaseID: '. $pieces[0]);
+	echo 	$c->headerOver($n.$n.'New name:  ').$c->primary($newTitle).
+			$c->headerOver('Old name:  ').$c->primary($pieces[1]).
+			$c->headerOver('New cat:   ').$c->primary($newcatname).
+			$c->headerOver('Group:     ').$c->primary($pieces[2]).
+			$c->headerOver('Method:    ').$c->primary($method).
+			$c->headerOver('ReleaseID: ').$c->primary($pieces[0]);
 	$updated++;
 }
 else
@@ -95,11 +95,25 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 	return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
 }
 
-function localLookup($requestID, $groupName)
+function localLookup($requestID, $groupName, $oldname)
 {
 	$db = new DB();
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
+	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	if (isset($run['title']))
+		return $run['title'];
+	if (preg_match('/\[#?a\.b\.teevee\]/', $oldname))
+		$groupid = $groups->getIDByName('alt.binaries.teevee');
+	else if (preg_match('/\[#?a\.b\.moovee\]/', $oldname))
+		$groupid = $groups->getIDByName('alt.binaries.moovee');
+	else if (preg_match('/\[#?a\.b\.erotica\]/', $oldname))
+		$groupid = $groups->getIDByName('alt.binaries.erotica');
+	else if (preg_match('/\[#?a\.b\.foreign\]/', $oldname))
+		$groupid = $groups->getIDByName('alt.binaries.mom');
+	else if ($groupName == 'alt.binaries.etc')
+		$groupid = $groups->getIDByName('alt.binaries.teevee');
+	
 	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
 	if (isset($run['title']))
 		return $run['title'];

@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4586";
+$version="0.3r4587";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -105,7 +105,7 @@ $proc_work = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (8010, 8040) AND bookinfoid IS NULL) AS book,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
@@ -633,17 +633,17 @@ while($i > 0)
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
-	if ($site->lookuptvrage != 1)
+	if ($site->lookuptvrage == 0)
 		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
-	if ($site->lookupmusic != 1)
+	if ($site->lookupmusic == 0)
 		$music_releases_proc = $music_releases_proc_start = 0;
-	if ($site->lookupimdb != 1)
+	if ($site->lookupimdb == 0)
 		$movie_releases_proc = $movie_releases_proc_start = 0;
-	if ($site->lookupgames != 1)
+	if ($site->lookupgames == 0)
 		$console_releases_proc = $console_releases_proc_start = 0;
-	if ($site->lookupbooks != 1)
+	if ($site->lookupbooks == 0)
 		$book_releases_proc = $book_releases_proc_start = 0;
-	if ($site->lookupnfo != 1)
+	if ($site->lookupnfo == 0)
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 
 	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $pron_remaining_now;
@@ -1324,7 +1324,7 @@ while($i > 0)
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)))
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0)))
 			{
 				//run postprocess_releases amazon
 				$log = writelog($panes1[1]);

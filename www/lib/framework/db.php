@@ -334,6 +334,7 @@ class DB extends PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
+			//echo $query."\n";
 			echo $this->c->error("queryDirect: " . $e->getMessage() . "\n");
 			$result = false;
 		}

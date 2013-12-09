@@ -37,7 +37,6 @@ class Genres
 		$sql = $this->getListQuery($type, $activeonly);
 		$sql .= " LIMIT ".$num." OFFSET ".$start;
 		return $db->query($sql);
-
 	}
 
 	public function getCount($type='', $activeonly=false)
@@ -50,7 +49,7 @@ class Genres
 			$typesql = '';
 
 		if ($activeonly)
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) x ON x.genreid = genres.id %s ORDER BY title", $typesql, $typesql);
+			$sql = sprintf("SELECT COUNT(*) AS num FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT genres.* FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) y ON y.genreid = genres.id %s ORDER BY title", $typesql, $typesql);
 		else
 			$sql = sprintf("SELECT COUNT(*) AS num FROM genres WHERE 1 %s ORDER BY title", $typesql);
 
