@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4587";
+$version="0.3r4588";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -27,7 +27,8 @@ $alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
 $running = (isset($tmux->running)) ? $tmux->running : 0;
-
+$bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+		
 
 if (command_exist("python3"))
 	$PYTHON = "python3 -OOu";
@@ -105,7 +106,7 @@ $proc_work = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (8010, 8040) AND bookinfoid IS NULL) AS book,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (".$bookreqids.") AND bookinfoid IS NULL) AS book,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";

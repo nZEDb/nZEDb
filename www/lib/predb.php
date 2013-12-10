@@ -396,7 +396,7 @@ Class Predb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE predate = %s, requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $predate, $requestid, $groupid));
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 							}
 						}
 					}
@@ -429,7 +429,7 @@ Class Predb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE predate = %s, requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $predate, $requestid, $groupid));
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 							}
 						}
 					}
@@ -462,7 +462,7 @@ Class Predb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE predate = %s, requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $predate, $requestid, $groupid));
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 							}
 						}
 					}
@@ -495,7 +495,7 @@ Class Predb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE predate = %s, requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $predate, $requestid, $groupid));
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 							}
 						}
 					}
