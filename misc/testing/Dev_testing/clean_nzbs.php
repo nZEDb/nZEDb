@@ -35,7 +35,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 				{
 					if ($argv[1] === "delete")
 					{
-						$releases->fastDelete(null, $guid[1], $site)
+						$releases->fastDelete(null, $guid[1], $site);
 						$deleted++;
 					}
 				}
@@ -46,7 +46,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 			{
 				if ($argv[1] === "delete")
 				{
-					unlink($filePath)
+					unlink($filePath);
 					$deleted++;
 				}
 			}
