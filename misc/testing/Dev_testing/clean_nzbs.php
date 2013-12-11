@@ -35,8 +35,8 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 				{
 					if ($argv[1] === "delete")
 					{
-						if ($releases->fastDelete(null, $guid[1], $site))
-							$deleted++;
+						$releases->fastDelete(null, $guid[1], $site)
+						$deleted++;
 					}
 				}
 				else if (isset($res))
@@ -46,8 +46,8 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 			{
 				if ($argv[1] === "delete")
 				{
-					if(unlink($filePath))
-						$deleted++;
+					unlink($filePath)
+					$deleted++;
 				}
 			}
 			$time = $consoletools->convertTime(TIME() - $timestart);
