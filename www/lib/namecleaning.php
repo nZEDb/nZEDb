@@ -118,10 +118,12 @@ class nameCleaning
 				return $this->dvd();
 			case 'alt.binaries.dvd-r':
 				return $this->dvd_r();
-			case 'alt.binaries.e-book':
+			case 'alt.binaries.ebook':
 				return $this->ebook();
+			case 'alt.binaries.e-book':
+				return $this->e_book();
 			case 'alt.binaries.e-book.flood':
-				return $this->ebook_flood();
+				return $this->e_book_flood();
 			case 'alt.binaries.erotica':
 				return $this->erotica();
 			case 'alt.binaries.etc':
@@ -839,7 +841,7 @@ class nameCleaning
 			return $this->generic();
 	}
 
-	//a.b.e-book
+	//a.b.ebook
 	public function ebook()
 	{
 		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
@@ -855,8 +857,24 @@ class nameCleaning
 			return $this->generic();
 	}
 
+	//a.b.e-book
+	public function e_book()
+	{
+		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
+			return $match[2];
+		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
+		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $this->subject, $match))
+			return $match[1].$match[2];
+		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
+
 	//a.b.e-book.flood
-	public function ebook_flood()
+	public function e_book_flood()
 	{
 		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
 		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
@@ -2259,6 +2277,19 @@ class nameCleaning
 				return $match[1];
 			//[01/52] - "H1F3E_20130715_005.par2" - 4.59 GB yEnc
 			else if (preg_match('/^\[\d+\/\d+\] - "([A-Z0-9](19|20)\d\d[01]\d[123]\d_\d+\.).+?" - \d+[,.]\d+ [mMkKgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.ebook")
+		{
+			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
+				return $match[2];
+			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $subject, $match))
+				return $match[1];
+			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
