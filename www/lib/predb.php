@@ -327,7 +327,20 @@ Class Predb
 	{
 		$db = new DB();
 		$newnames = 0;
-		$releases = @simplexml_load_file('http://www.srrdb.com/feed/srrs');
+		$url = "http://www.srrdb.com/feed/srrs";
+
+		$options = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Accept-language: en\r\n" .
+					  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
+					  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad 
+		  )
+		);
+
+		$context = stream_context_create($options);
+		$releases = file_get_contents($url, false, $context);
+		$releases = @simplexml_load_string($releases);
 		if ($releases !== false)
 		{
 			foreach ($releases->channel->item as $release)
@@ -338,8 +351,7 @@ Class Predb
 					continue;
 				else
 				{
-					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString('srrdb'), $db->escapeString($md5)));
-					$newnames++;
+					$db->queryExec(sprintf('INSERT INTO srrdb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));$newnames++;
 				}
 			}
 		}

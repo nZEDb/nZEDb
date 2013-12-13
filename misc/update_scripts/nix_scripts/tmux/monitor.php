@@ -1,1500 +1,1672 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../www/config.php';
-require_once nZEDb_LIB . 'postprocess.php';
+require_once nZEDb_LIB . 'anidb.php';
+require_once nZEDb_LIB . 'books.php';
+require_once nZEDb_LIB . 'category.php';
+require_once nZEDb_LIB . 'console.php';
+require_once nZEDb_LIB . 'consoletools.php';
 require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'tmux.php';
+require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'music.php';
+require_once nZEDb_LIB . 'nfo.php';
+require_once nZEDb_LIB . 'nntp.php';
+require_once nZEDb_LIB . 'nzb.php';
+require_once nZEDb_LIB . 'nzbcontents.php';
+require_once nZEDb_LIB . 'predb.php';
+require_once nZEDb_LIB . 'releases.php';
+require_once nZEDb_LIB . 'releaseextra.php';
+require_once nZEDb_LIB . 'releasefiles.php';
+require_once nZEDb_LIB . 'releaseimage.php';
 require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'tvrage.php';
+require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIB . 'rarinfo/par2info.php';
+require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4592";
-
-$db = new DB();
-$DIR = nZEDb_MISC;
-$db_name = DB_NAME;
-$dbtype = DB_SYSTEM;
-
-$t = new Tmux();
-$tmux = $t->get();
-$seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
-$powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$colors = (isset($tmux->colors)) ? $tmux->colors : 0;
-$c = new ColorCLI();
-
-$s = new Sites();
-$site = $s->get();
-$patch = $site->sqlpatch;
-$alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
-$tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
-$nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
-$running = (isset($tmux->running)) ? $tmux->running : 0;
-$bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		
-
-if (command_exist("python3"))
-	$PYTHON = "python3 -OOu";
-else
-	$PYTHON = "python -OOu";
-
-if (command_exist("php5"))
-	$PHP = "php5";
-else
-	$PHP = "php";
-
-if ($nntpproxy == 0)
+class PostProcess
 {
-	$port = NNTP_PORT;
-	$host = NNTP_SERVER;
-	$ip = gethostbyname($host);
-	if ($alternate_nntp == "1")
+	public function __construct($echooutput=false)
 	{
-		$port_a = NNTP_PORT_A;
-		$host_a = NNTP_SERVER_A;
-		$ip_a = gethostbyname($host_a);
-	}
-}
-else
-{
-	$filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy.conf";
-	$fp = fopen($filename, "r") or die("Couldn't open $filename");
-	while (! feof($fp))
-	{
-		$line = fgets($fp);
-		if (preg_match('/"host": "(.+)",$/', $line, $match))
-			$host = $match[1];
-		if (preg_match('/"port": (.+),$/', $line, $match))
+		$s = new Sites();
+		$this->site = $s->get();
+		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
+		$this->addpar2 = ($this->site->addpar2 == '0') ? false : true;
+		$this->audSavePath = nZEDb_WWW.'covers/audiosample/';
+		$this->consoleTools = new ConsoleTools();
+		$this->db = new DB();
+		$this->DEBUG_ECHO = ($this->site->debuginfo == '0') ? false : true;
+		if (defined('DEBUG_ECHO') && DEBUG_ECHO == true)
+			$this->DEBUG_ECHO = true;
+		$this->echooutput = $echooutput;
+		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? $this->site->ffmpeg_duration : 5;
+		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
+		$this->filesadded = 0;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
+		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
+		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
+		$this->password = $this->nonfo = false;
+		$this->processAudioSample = ($this->site->processaudiosample == '0') ? false : true;
+		$this->segmentstodownload = (!empty($this->site->segmentstodownload)) ? $this->site->segmentstodownload : 2;
+		$this->tmpPath = $this->site->tmpunrarpath;
+		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
+			$this->tmpPath = $this->tmpPath.'/';
+
+		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
+		$this->ignorebookregex = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
+		$this->supportfiles = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
+		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
+
+		$sigs = array(array('00', '00', '01', 'BA'), array('00', '00', '01', 'B3'), array('00', '00', '01', 'B7'), array('1A', '45', 'DF', 'A3'), array('01', '00', '09', '00'), array('30', '26', 'B2', '75'), array('A6', 'D9', '00', 'AA'));
+		$sigstr = '';
+		foreach($sigs as $sig)
 		{
-			$port = $match[1];
-			break;
+			$str = '';
+			foreach($sig as $s)
+			{
+				$str = $str."\x$s";
+			}
+			$sigstr = $sigstr.'|'.$str;
+		}
+		$sigstr = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
+		$this->sigregex = $sigstr;
+		$this->c = new ColorCLI;
+	}
+
+	public function processAll($nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAll).\n"));
+
+		$this->processPredb($nntp);
+		$this->processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp);
+		$this->processNfos($releaseToWork='', $nntp);
+		$this->processMovies($releaseToWork='');
+		$this->processMusic();
+		$this->processGames();
+		$this->processAnime();
+		$this->processTv($releaseToWork='');
+		$this->processBooks();
+	}
+
+	// Lookup anidb if enabled - always run before tvrage.
+	public function processAnime()
+	{
+		if ($this->site->lookupanidb == 1)
+		{
+			$anidb = new AniDB($this->echooutput);
+			$anidb->animetitlesUpdate();
+			$anidb->processAnimeReleases();
 		}
 	}
 
-	if ($alternate_nntp == 1)
+	// Process books using amazon.com.
+	public function processBooks()
 	{
-		$filename = "$DIR/update_scripts/python_scripts/lib/nntpproxy_a.conf";
-		$fp = fopen($filename, "r") or die("Couldn't open $filename");
-		while (!feof($fp)) {
-			$line = fgets($fp);
-			if (preg_match('/"host": "(.+)",$/', $line, $match))
-				$host_a = $match[1];
-			if (preg_match('/"port": (.+),$/', $line, $match)) {
-				$port_a = $match[1];
-				break;
+		if ($this->site->lookupbooks != 0)
+		{
+			$books = new Books($this->echooutput);
+			$books->processBookReleases();
+		}
+	}
+
+	// Lookup games if enabled.
+	public function processGames()
+	{
+		if ($this->site->lookupgames != 0)
+		{
+			$console = new Console($this->echooutput);
+			$console->processConsoleReleases();
+		}
+	}
+
+	// Lookup imdb if enabled.
+	public function processMovies($releaseToWork='')
+	{
+		if ($this->site->lookupimdb == 1)
+		{
+			$movie = new Movie($this->echooutput);
+			$movie->processMovieReleases($releaseToWork);
+		}
+	}
+
+	// Lookup music if enabled.
+	public function processMusic()
+	{
+		if ($this->site->lookupmusic != 0)
+		{
+			$music = new Music($this->echooutput);
+			$music->processMusicReleases();
+		}
+	}
+
+	// Process nfo files.
+	public function processNfos($releaseToWork='', $nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processNfos).\n"));
+
+		if ($this->site->lookupnfo == 1)
+		{
+			$nfo = new Nfo($this->echooutput);
+			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID='',$nntp);
+		}
+	}
+
+	// Process nfo files.
+	public function processAdditionalThreaded($releaseToWork='', $nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditionalThreaded).\n"));
+
+		$this->processAdditional($releaseToWork, $id='', $gui=false, $groupID='', $nntp);
+	}
+
+	// Fetch titles from predb sites.
+	public function processPredb($nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
+
+		$predb = new Predb($this->echooutput);
+		$titles = $predb->updatePre();
+		$predb->checkPre($nntp);
+		if ($titles > 0)
+			$this->doecho('Fetched '.$titles.' new title(s) from predb sources.');
+	}
+
+	// Process all TV related releases which will assign their series/episode/rage data.
+	public function processTv($releaseToWork='')
+	{
+		if ($this->site->lookuptvrage == 1)
+		{
+			$tvrage = new TVRage($this->echooutput);
+			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage==1);
+		}
+	}
+
+	// Attempt to get a better name from a par2 file and categorize the release.
+	public function parsePAR2($messageID, $relID, $groupID, $nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
+
+		if ($messageID == '')
+			return false;
+		$db = $this->db;
+		$category = new Category();
+		if ($db->dbSystem() == 'mysql')
+			$t = 'UNIX_TIMESTAMP(postdate)';
+		else
+			$t = 'extract(epoch FROM postdate)';
+
+		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, '.$t.' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = '.$relID);
+		if ($quer['categoryid'] != Category::CAT_MISC)
+			return false;
+
+		$groups = new Groups();
+		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
+		if (PEAR::isError($par2))
+		{
+			$nntp->doQuit();
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
+			if (PEAR::isError($par2))
+			{
+				$nntp->doQuit();
+				return false;
 			}
 		}
-	}
-	$ip = gethostbyname($host);
-	if ($alternate_nntp == 1)
-		$ip_a = gethostbyname($host_a);
-}
 
-// Returns random bool, weighted by $chance
-function rand_bool($loop, $chance = 60)
-{
-	$usecache = (isset($tmux->usecache)) ? $tmux->usecache : 0;
-	if ($loop == 1 || $usecache == 0)
-		return false;
-	else
-		return (mt_rand(1,100) <= $chance);
-}
+		$par2info = new Par2Info();
+		$par2info->setData($par2);
+		if ($par2info->error)
+			return false;
 
-//totals per category in db, results by parentID
-$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
-
-//needs to be processed query
-$proc_work = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (".$bookreqids.") AND bookinfoid IS NULL) AS book,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
-
-$proc_work2 = "SELECT
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
-	(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
-	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
-
-$proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus IN (0, -1)) AS requestid_inprogress,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched,
-	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
-
-if ($dbtype == 'mysql')
-{
-	$split_query = "SELECT
-		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name') AS predb,
-		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name') AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
-		(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
-		(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
-		(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
-}
-else if ($dbtype == 'pgsql')
-{
-	$split_query = "SELECT
-		(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
-		(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date,
-		(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
-		(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
-		(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
-}
-
-// tmux and site settings, refreshes every loop
-$proc_tmux = "SELECT
-	(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestname,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay') AS monitor,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session') AS tmux_session,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'niceness') AS niceness,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'binaries') AS binaries_run,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'backfill') AS backfill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'import') AS import,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'nzbs') AS nzbs,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post') AS post,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'releases') AS releases_run,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'releases_threaded') AS releases_threaded,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_names') as fix_names,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'seq_timer') as seq_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'bins_timer') as bins_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'back_timer') as back_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'import_timer') as import_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'rel_timer') as rel_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_timer') as fix_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer') as post_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'collections_kill') as collections_kill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'postprocess_kill') as postprocess_kill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'crap_timer') as crap_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap') as fix_crap,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap_opt') as fix_crap_opt,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'tv_timer') as tv_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'update_tv') as update_tv,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_kill_timer') as post_kill_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path') as monitor_path,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_a') as monitor_path_a,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_b') as monitor_path_b,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'progressive') as progressive,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays,
-	(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames,
-	(SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath') as tmpunrar,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon') as post_amazon,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon') as post_timer_amazon,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_non') as post_non,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_non') as post_timer_non,
-	(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
-	(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_start') AS colors_start,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_end') AS colors_end,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS running,
-	(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs,
-	(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs,
-	(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs,
-	(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs";
-
-
-//get microtime
-function microtime_float()
-{
-	list($usec, $sec) = explode(" ", microtime());
-	return ((float)$usec + (float)$sec);
-}
-
-function decodeSize($bytes)
-{
-	$types = array('B', 'KB', 'MB', 'GB', 'TB');
-	for($i = 0; $bytes >= 1024 && $i < (count($types) -1); $bytes /= 1024, $i++);
-	return(round($bytes, 2) . " " . $types[$i]);
-}
-
-function writelog($pane)
-{
-	$path = dirname(__FILE__)."/logs";
-	$getdate = gmDate("Ymd");
-	$t = new Tmux();
-	$tmux = $t->get();
-	$logs = (isset($tmux->write_logs)) ? $tmux->write_logs : 0;
-	if ($logs == 1)
-		return "2>&1 | tee -a $path/$pane-$getdate.log";
-	else
-		return "";
-}
-
-function get_color($colors_start, $colors_end, $colors_exc)
-{
-	$exceptions = str_replace(".", ".", $colors_exc);
-	$exceptions = explode(",", $exceptions);
-	sort($exceptions);
-	$number = mt_rand($colors_start, $colors_end - count($exceptions));
-	foreach ($exceptions as $exception)
-	{
-		if ($number >= $exception)
-			$number++;
-		else
-			break;
-	}
-	return $number;
-}
-
-function relativeTime($_time) {
-	$d[0] = array(1,"sec");
-	$d[1] = array(60,"min");
-	$d[2] = array(3600,"hr");
-	$d[3] = array(86400,"day");
-	$d[4] = array(31104000,"yr");
-
-	$w = array();
-
-	$return = "";
-	$now = TIME();
-	$diff = ($now-$_time);
-	$secondsLeft = $diff;
-
-	for($i=4;$i>-1;$i--)
-	{
-		$w[$i] = intval($secondsLeft/$d[$i][0]);
-		$secondsLeft -= ($w[$i]*$d[$i][0]);
-		if($w[$i]!=0)
+		$files = $par2info->getFileList();
+		if ($files !== false && count($files) > 0)
 		{
-			//$return.= abs($w[$i]). " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
-			$return.= $w[$i]. " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
-		}
-	}
-	//$return .= ($diff>0)?"ago":"left";
-	return $return;
-}
-
-function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd 2>/dev/null");
-	return (empty($returnVal) ? false : true);
-}
-
-//create timers
-$time = TIME();
-$time1 = TIME();
-$time2 = TIME();
-$time3 = TIME();
-$time4 = TIME();
-$time5 = TIME();
-$time6 = TIME();
-$time7 = TIME();
-
-// variables
-$newestadd = TIME();
-$newestname = "";
-$newestpre = TIME();
-$oldestcollection = TIME();
-$oldestnzb = TIME();
-
-$active_groups = $all_groups = 0;
-$backfilldays = $backfill_groups_date = 0;
-$book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
-$console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
-$misc_diff = $misc_percent = $misc_releases_now = $work_start = 0;
-$music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
-$movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
-$nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
-$pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
-$pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = 0;
-$pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
-$nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
-$request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
-$total_work_now = $work_diff = $work_remaining_now = $pc_releases_proc_start = 0;
-$tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 0;
-$usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
-$collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
-$grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = $music_releases_proc_start = 0;
-$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
-$init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
-$console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
-
-$last_history = "";
-
-$mask1 = "\033[1;33m%-16s \033[38;5;214m%-50.50s \n";
-$mask2 = "\033[1;33m%-20s \033[38;5;214m%-33.33s \n";
-
-//create display
-passthru('clear');
-//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
-printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
-if ($alternate_nntp == "1")
-	printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".(($alternate_nntp == "1") ? $host_a.":".$port_a : "n/a"));
-printf($mask1, "Newest Release:", "$newestname");
-printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
-printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
-printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
-if ($grabnzbs != 0)
-	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
-printf($mask1, "Parts in Repair:", number_format($partrepair_table));
-
-$mask = "%-16.16s %25.25s %25.25s\n";
-printf("\033[1;33m\n");
-printf($mask, "Collections", "Binaries", "Parts");
-printf($mask, "======================================", "=========================", "======================================");
-printf("\033[38;5;214m");
-printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
-
-printf("\033[1;33m\n");
-printf($mask, "Category", "In Process", "In Database");
-printf($mask, "======================================", "=========================", "======================================");
-printf("\033[38;5;214m");
-printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-printf($mask, "predb",number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
-printf($mask, "requestID",$requestid_inprogress."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
-printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
-printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
-printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
-printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
-printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
-printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
-printf($mask, "Pron(6000)",number_format($pron_remaining_now)."(".$pron_diff.")",number_format($pron_releases_now)."(".$pron_percent."%)");
-printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
-printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
-printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
-
-printf("\n\033[1;33m\n");
-printf($mask, "Groups", "Active", "Backfill");
-printf($mask, "======================================", "=========================", "======================================");
-printf("\033[38;5;214m");
-if ($backfilldays == "1")
-	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
-else
-	printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
-
-if ($show_query == 1)
-{
-	printf("\n\033[1;33m\n");
-	printf($mask, "Query Block", "Time", "Cumulative");
-	printf($mask, "======================================", "=========================", "======================================");
-	printf("\033[38;5;214m");
-	printf($mask, "Combined", "0",  "0");
-}
-
-$monitor = 30;
-$i = 1;
-$fcfirstrun = true;
-while($i > 0)
-{
-	//check the db connection
-	if ($db->ping(true) == false)
-	{
-		unset($db);
-		$db = NULL;
-		$db = new DB();
-	}
-
-	// These queries are very fast, run every loop
-	$time01 = TIME();
-	$proc_tmux_result = $db->query($proc_tmux, false);
-	$tmux_time = (TIME() - $time01);
-
-	//run queries only after time exceeded, these queries can take awhile
-	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1))
-	{
-		echo "\nNote:\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n";
-		$time02 = TIME();
-		$split_result = $db->query($split_query, false);
-		$split_time = (TIME() - $time02);
-		$split1_time = (TIME() - $time01);
-
-		$time03 = TIME();
-		$initquery = $db->query($qry, false);
-		$init_time = (TIME() - $time03);
-		$init1_time = (TIME() - $time01);
-
-		$time04 = TIME();
-		$proc_work_result = $db->query($proc_work, rand_bool($i));
-		$proc1_time = (TIME() - $time04);
-		$proc11_time = (TIME() - $time01);
-
-		$time05 = TIME();
-		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
-		$proc2_time = (TIME() - $time05);
-		$proc21_time = (TIME() - $time01);
-
-		$time06 = TIME();
-		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
-		$proc3_time = (TIME() - $time06);
-		$proc31_time = (TIME() - $time01);
-
-		$time07 = TIME();
-		if ($tablepergroup == 1)
-		{
-			if ($db->dbsystem == 'mysql')
-				$sql = 'SHOW table status';
-			else
-				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
-			$tables = $db->queryDirect($sql);
-			$collections_table = $binaries_table = $parts_table = $partrepair_table = 0;
-			$age = TIME();
-			if (count($tables) > 0)
+			$namefixer = new Namefixer($this->echooutput);
+			$rf = new ReleaseFiles();
+			$relfiles = 0;
+			$foundname = false;
+			foreach ($files as $fileID => $file)
 			{
-				foreach($tables as $row)
+				if (!array_key_exists('name', $file))
+					return false;
+				// Add to releasefiles.
+				if ($this->addpar2 && $relfiles < 11 && $db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s', $relID, $this->db->escapeString($file['name']))) === false)
 				{
-					if ($db->dbsystem == 'mysql')
+					if ($rf->add($relID, $file['name'], $file['size'], $quer['postdate'], 0))
+						$relfiles++;
+				}
+				$quer['textstring'] = $file['name'];
+				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
+				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
+				//if ($stat['id'] === $relID)
+				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1) === true)
+				{
+					$foundname = true;
+					break;
+				}
+			}
+			if ($relfiles > 0)
+			{
+				$this->debug('Added '.$relfiles.' releasefiles from PAR2 for '.$quer['searchname']);
+				$cnt = $db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = '.$relID);
+				$count = $relfiles;
+				if ($cnt !== false && $cnt['count'] > 0)
+					$count = $relfiles + $cnt['count'];
+				$db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
+			}
+			if ($foundname === true)
+				return true;
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+
+	// Comparison function for usort, for sorting nzb file content.
+	public function sortrar($a, $b)
+	{
+		$pos = 0;
+		$af = $bf = false;
+		$a = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $a['title']);
+		$b = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $b['title']);
+
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $a))
+			$af = true;
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $b))
+			$bf = true;
+
+		if (!$af && preg_match("/\.(rar)($|[ \")\]-])/i", $a))
+		{
+			$a = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $a);
+			$af = true;
+		}
+		if (!$bf && preg_match("/\.(rar)($|[ \")\]-])/i", $b))
+		{
+			$b = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $b);
+			$bf = true;
+		}
+
+		if (!$af && !$bf )
+			return strnatcasecmp($a,$b);
+		else if (!$bf)
+			return -1;
+		else if (!$af)
+			return 1;
+
+		if ($af && $bf)
+			$pos = strnatcasecmp($a,$b);
+		else if ($af)
+			$pos = -1;
+		else if ($bf)
+			$pos = 1;
+
+		return $pos;
+	}
+
+	// Sort a multidimensional array using one subkey.
+	public function subval_sort($a,$subkey)
+	{
+		foreach($a as $k=>$v)
+			$b[$k] = strtolower($v[$subkey]);
+
+		natcasesort($b);
+
+		foreach($b as $k=>$v)
+			$c[] = $a[$k];
+
+		return $c;
+	}
+
+	// Check for passworded releases, RAR contents and Sample/Media info.
+	public function processAdditional($releaseToWork='', $id='', $gui=false, $groupID='', $nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processAdditional).\n"));
+
+		$like = 'ILIKE';
+		if ($this->db->dbSystem() == 'mysql')
+			$like = 'LIKE';
+
+		if ($gui)
+		{
+			$ok = false;
+			while (!$ok)
+			{
+				usleep(mt_rand(10,300));
+				$this->db->setAutoCommit(false);
+				$ticket = $this->db->queryOneRow('SELECT value  FROM site WHERE setting '.$like." 'nextppticket'");
+				$ticket = $ticket['value'];
+				$upcnt = $this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'nextppticket' AND value = %d", $ticket + 1, $like, $ticket));
+				if (count($upcnt) == 1)
+				{
+					$ok = true;
+					$this->db->Commit();
+				}
+				else
+					$this->db->Rollback();
+			}
+			$this->db->setAutoCommit(true);
+			$sleep = 1;
+			$delay = 100;
+
+			do
+			{
+				sleep($sleep);
+				$serving = $this->db->queryOneRow('SELECT * FROM site WHERE setting '.$like." 'currentppticket1'");
+				$time = strtotime($serving['updateddate']);
+				$serving = $serving['value'];
+				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
+
+			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
+		}
+
+		$groupid = $groupID == '' ? '' : 'AND groupid = '.$groupID;
+		// Get out all releases which have not been checked more than max attempts for password.
+		if ($id != '')
+			$result = $this->db->queryDirect('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = '.$id);
+		else
+		{
+			$result = $totresults = 0;
+			if ($releaseToWork == '')
+			{
+				$i = -1;
+				$tries = (5 * -1) -1;
+				while (($totresults != $this->addqty) && ($i >= $tries))
+				{
+					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND (bitwise & 256) = 256 ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
+					$totresults = $result->rowCount();
+					if ($totresults > 0)
+						$this->doecho('Passwordstatus = '.$i.': Available to process = '.$totresults);
+					$i--;
+				}
+			}
+			else
+			{
+				$pieces = explode('           =+=            ', $releaseToWork);
+				$result = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'name' => $pieces[2], 'disablepreview' => $pieces[3], 'size' => $pieces[4], 'groupid' => $pieces[5], 'nfostatus' => $pieces[6], 'categoryid' => $pieces[7]));
+				$totresults = 1;
+			}
+		}
+
+		// Get count of releases per passwirdstatus
+		$pw1 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -1');
+		$pw2 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -2');
+		$pw3 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -3');
+		$pw4 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -4');
+		$pw5 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -5');
+		$pw6 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -6');
+
+		$rescount = $startCount = $totresults;
+		if ($rescount > 0)
+		{
+			if ($this->echooutput && $rescount > 1)
+			{
+				$this->doecho('Additional post-processing, started at: '.date('D M d, Y G:i a'));
+				$this->doecho('Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
+				$this->doecho('Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample');
+				$this->doecho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
+			}
+			if ($this->echooutput)
+				$this->doecho('Available to process: -6 = '.number_format($pw6[0]['count']).', -5 = '.number_format($pw5[0]['count']).', -4 = '.number_format($pw4[0]['count']).', -3 = '.number_format($pw3[0]['count']).', -2 = '.number_format($pw2[0]['count']).', -1 = '.number_format($pw1[0]['count']));
+
+			$ri = new ReleaseImage();
+			$nzbcontents = new NZBcontents($this->echooutput);
+			$nzb = new NZB($this->echooutput);
+			$groups = new Groups();
+			$processSample 		= ($this->site->ffmpegpath != '') ? true : false;
+			$processVideo 		= ($this->site->processvideos == '0') ? false : true;
+			$processMediainfo 	= ($this->site->mediainfopath != '') ? true : false;
+			$processAudioinfo 	= ($this->site->mediainfopath != '') ? true : false;
+			$processJPGSample 	= ($this->site->processjpg == '0') ? false : true;
+			$processPasswords 	= ($this->site->unrarpath != '') ? true : false;
+			$tmpPath 			= $this->tmpPath;
+
+			// Loop through the releases.
+			foreach ($result as $rel)
+			{
+				if ($this->echooutput && $releaseToWork == '')
+					echo '['.$this->c->primaryOver($startCount--).']';
+				else if ($this->echooutput)
+					echo '['.$this->c->primaryOver($rel['id']).']';
+
+				// Per release defaults.
+				$this->tmpPath = $tmpPath.$rel['guid'].'/';
+				if (!is_dir($this->tmpPath))
+				{
+					$old = umask(0777);
+					mkdir($this->tmpPath, 0777, true);
+					chmod($this->tmpPath, 0777);
+					umask($old);
+
+					if (!is_dir($this->tmpPath))
 					{
-						$tbl = $row['name'];
-						$stamp = 'UNIX_TIMESTAMP(dateadded)';
+						if ($this->echooutput)
+							echo $this->c->error("Unable to create directory: {$this->tmpPath}");
+						// Decrement passwordstatus.
+						$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
+						continue;
+					}
+				}
+
+				$nzbpath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
+				if (!file_exists($nzbpath))
+				{
+					// The nzb was not located. decrement the passwordstatus.
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
+					continue;
+				}
+
+				// turn on output buffering
+				ob_start();
+
+				// uncompress the nzb
+				@readgzfile($nzbpath);
+
+				// read the nzb into memory
+				$nzbfile = ob_get_contents();
+
+				// Clean (erase) the output buffer and turn off output buffering
+				ob_end_clean();
+
+				// get a list of files in the nzb
+				$nzbfiles = $nzb->nzbFileList($nzbfile);
+				if (count($nzbfiles) == 0)
+				{
+					// There does not appear to be any files in the nzb, decrement passwordstatus
+					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = '.$rel['id']);
+					continue;
+				}
+
+				// sort the files
+				usort($nzbfiles, 'PostProcess::sortrar');
+
+				// Only process for samples, previews and images if not disabled.
+				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
+				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
+				if ($processSample === false)		$blnTookSample = true;
+				if ($processVideo === false)		$blnTookVideo = true;
+				if ($processMediainfo === false)	$blnTookMediainfo = true;
+				if ($processAudioinfo === false)	$blnTookAudioinfo = true;
+				if ($processJPGSample === false)	$blnTookJPG = true;
+				$passStatus = array(Releases::PASSWD_NONE);
+				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = '';
+				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();
+				$hasrar = $ignoredbooks = $failed = $this->filesadded = 0;
+				$this->password = $this->nonfo = $notmatched = $flood = $foundcontent = false;
+
+				// Make sure we don't already have an nfo.
+				if ($rel['nfostatus'] !== 1)
+					$this->nonfo = true;
+
+				$groupName = $groups->getByNameByID($rel['groupid']);
+				// Go through the nzb for this release looking for a rar, a sample etc...
+				foreach ($nzbfiles as $nzbcontents)
+				{
+					// Check if it's not a nfo, nzb, par2 etc...
+					if (preg_match($this->supportfiles."|nfo\b|inf\b|ofn\b)($|[ \")\]-])(?!.{20,})/i",$nzbcontents['title']))
+						continue;
+
+					// Check if it's a rar/zip.
+					if (preg_match("/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\.rar)*($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $nzbcontents['title']))
+						$hasrar = 1;
+					else if (!$hasrar)
+						$notmatched = true;
+
+					// Look for a sample.
+					if ($processSample === true && !preg_match('/\.(jpg|jpeg)/i', $nzbcontents['title']) && preg_match('/sample/i', $nzbcontents['title']))
+					{
+						if (isset($nzbcontents['segments']) && empty($samplemsgid))
+						{
+							$samplegroup = $groupName;
+							$samplemsgid[] = $nzbcontents['segments'][0];
+
+							for($i=1; $i < $this->segmentstodownload; $i++)
+							{
+								if (count($nzbcontents['segments']) > $i)
+									$samplemsgid[] = $nzbcontents['segments'][$i];
+							}
+						}
+					}
+
+					// Look for a media file.
+					if ($processMediainfo === true && !preg_match('/sample/i', $nzbcontents['title']) && preg_match('/'.$this->videofileregex.'[. ")\]]/i', $nzbcontents['title']))
+					{
+						if (isset($nzbcontents['segments']) && empty($mediamsgid))
+						{
+							$mediagroup = $groupName;
+							$mediamsgid[] = $nzbcontents['segments'][0];
+						}
+					}
+
+					// Look for a audio file.
+					if ($processAudioinfo === true && preg_match('/'.$this->audiofileregex.'[. ")\]]/i', $nzbcontents['title'], $type))
+					{
+						if (isset($nzbcontents['segments']) && empty($audiomsgid))
+						{
+							$audiogroup = $groupName;
+							$audiotype = $type[1];
+							$audiomsgid[] = $nzbcontents['segments'][0];
+						}
+					}
+
+					// Look for a JPG picture.
+					if ($processJPGSample === true && !preg_match('/flac|lossless|mp3|music|inner-sanctum|sound/i', $groupName) && preg_match('/\.(jpg|jpeg)[. ")\]]/i', $nzbcontents['title']))
+					{
+						if (isset($nzbcontents['segments']) && empty($jpgmsgid))
+						{
+							$jpggroup = $groupName;
+							$jpgmsgid[] = $nzbcontents['segments'][0];
+							if (count($nzbcontents['segments']) > 1)
+								$jpgmsgid[] = $nzbcontents['segments'][1];
+						}
+					}
+					if (preg_match($this->ignorebookregex, $nzbcontents['title']))
+						$ignoredbooks++;
+				}
+
+				// Ignore massive book NZB's.
+				if (count($nzbfiles) > 40 && $ignoredbooks * 2 >= count($nzbfiles))
+				{
+					$this->debug(' skipping book flood');
+					if (isset($rel['categoryid']) && substr($rel['categoryid'], 0, 1) == 8)
+						$this->db->queryExec(sprintf('UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d', $rel['id']));
+					$flood = true;
+				}
+
+				// Seperate the nzb content into the different parts (support files, archive segments and the first parts).
+				if ($flood === false && $hasrar !== 0)
+				{
+					if ($this->site->checkpasswordedrar > 0 || $processSample === true || $processMediainfo === true || $processAudioinfo === true)
+					{
+						$this->sum = $this->size = $this->segsize = $this->adj = $notinfinite = $failed = 0;
+						$this->name = '';
+						$this->ignorenumbered = $foundcontent = false;
+
+						// Loop through the files, attempt to find if passworded and files. Starting with what not to process.
+						foreach ($nzbfiles as $rarFile)
+						{
+							if ($this->passchkattempts > 1)
+							{
+								if ($notinfinite > $this->passchkattempts)
+									break;
+							}
+							else
+							{
+								if ($notinfinite > $this->partsqty)
+									break;
+							}
+
+							if ($this->password === true)
+							{
+								$this->debug('Skipping processing of rar '.$rarFile['title'].' it has a password.');
+								break;
+							}
+
+							// Probably not a rar/zip.
+							if (!preg_match("/\.\b(part\d+|part00\.rar|part01\.rar|rar|r00|r01|zipr\d{2,3}|zip|zipx)($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $rarFile['title']))
+								continue;
+
+							// Process rar contents until 1G or 85% of file size is found (smaller of the two).
+							if ($rarFile['size'] == 0 && $rarFile['partsactual'] != 0 && $rarFile['partstotal'] != 0)
+								$this->segsize = $rarFile['size']/($rarFile['partsactual']/$rarFile['partstotal']);
+							else
+								$this->segsize = 0;
+							$this->sum = $this->sum + $this->adj * $this->segsize;
+							if ($this->sum > $this->size || $this->adj === 0)
+							{
+								$mid = array_slice((array)$rarFile['segments'], 0, $this->segmentstodownload);
+								$bingroup = $groupName;
+								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+								if (PEAR::isError($fetchedBinary))
+								{
+									$nntp->doQuit();
+									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+									if (PEAR::isError($fetchedBinary))
+										$fetchedBinary = false;
+								}
+
+								if ($fetchedBinary !== false)
+								{
+									$this->debug("\nProcessing ".$rarFile['title']);
+									if ($this->echooutput)
+										echo 'b';
+									$notinfinite++;
+									$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile['title'], $nntp);
+									if ($this->password === true)
+										$passStatus[] = Releases::PASSWD_RAR;
+
+									if ($relFiles === false)
+									{
+										$this->debug('Error processing files '.$rarFile['title']);
+										continue;
+									}
+									// Flag to indicate the archive has content.
+									else
+										$foundcontent = true;
+								}
+								else
+								{
+									if ($this->echooutput)
+										echo 'f';
+									$notinfinite = $notinfinite + 0.2;
+									$failed++;
+								}
+							}
+						}
+					}
+
+					// Starting to look for content.
+					if (is_dir($this->tmpPath))
+					{
+						$files = '';
+						$files = @scandir($this->tmpPath);
+						$rar = new ArchiveInfo();
+						if (!empty($files) && count($files) > 0)
+						{
+							foreach($files as $file)
+							{
+								if (is_file($this->tmpPath.$file))
+								{
+									if (preg_match('/\.rar$/i', $file))
+									{
+										$rar->open($this->tmpPath.$file, true);
+										if ($rar->error)
+											continue;
+
+										$tmpfiles = $rar->getArchiveFileList();
+										if (isset($tmpfiles[0]['name']))
+										{
+											foreach($tmpfiles as $r)
+											{
+												$range = mt_rand(0,99999);
+												if (isset($r['range']))
+													$range = $r['range'];
+
+												$r['range'] = $range;
+												if (!isset($r['error']) && !preg_match($this->supportfiles.'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $r['name']))
+													$this->addfile($r, $rel, $rar, $nntp);
+											}
+										}
+									}
+								}
+							}
+						}
+						unset($rar);
+					}
+				}
+				/* Not a good indicator of if there is a password or not, the rar could have had an error for example.
+				else if ($hasrar == 1)
+					$passStatus[] = Releases::PASSWD_POTENTIAL;
+
+				if(!$foundcontent && $hasrar == 1)
+					$passStatus[] = Releases::PASSWD_POTENTIAL; */
+
+				// Try to get image/mediainfo/audioinfo, using extracted files before downloading more data
+				if ($blnTookSample === false || $blnTookAudioinfo === false || $blnTookMediainfo === false || $blnTookJPG === false || $blnTookVideo === false)
+				{
+					if (is_dir($this->tmpPath))
+					{
+						$files = @scandir($this->tmpPath);
+						if (isset($files) && is_array($files) && count($files) > 0)
+						{
+							foreach ($files as $file)
+							{
+								if (is_file($this->tmpPath.$file))
+								{
+									if ($processAudioinfo === true && $blnTookAudioinfo === false && preg_match('/(.*)'.$this->audiofileregex.'$/i', $file, $name))
+									{
+										rename($this->tmpPath.$name[0], $this->tmpPath.'audiofile.'.$name[2]);
+										$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['id']);
+										@unlink($this->tmpPath.'sample.'.$name[2]);
+									}
+									if ($processJPGSample === true && $blnTookJPG === false && preg_match('/\.(jpg|jpeg)$/',$file))
+									{
+										if (filesize($this->tmpPath.$file) < 15)
+											continue;
+										if (exif_imagetype($this->tmpPath.$file) === false)
+											continue;
+										$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $this->tmpPath.$file, $ri->jpgSavePath, 650, 650);
+										if ($blnTookJPG !== false)
+											$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
+									}
+									if ($processSample === true || $processVideo === true || $processMediainfo === true)
+									{
+										if (preg_match('/(.*)'.$this->videofileregex.'$/i', $file, $name))
+										{
+											rename($this->tmpPath.$name[0], $this->tmpPath.'sample.avi');
+											if ($processSample && $blnTookSample === false)
+												$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+											if ($processVideo && $blnTookVideo === false)
+												$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+											if ($processMediainfo && $blnTookMediainfo === false)
+												$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel['id']);
+											@unlink($this->tmpPath.'sample.avi');
+										}
+									}
+									if ($blnTookJPG === true && $blnTookAudioinfo === true && $blnTookMediainfo === true && $blnTookVideo === true && $blnTookSample === true)
+										break;
+								}
+							}
+							unset($files);
+						}
+					}
+				}
+
+				// Download and process sample image.
+				if ($processSample === true || $processVideo === true)
+				{
+					if ($blnTookSample === false || $blnTookVideo === false)
+					{
+						if (!empty($samplemsgid))
+						{
+							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
+							if (PEAR::isError($sampleBinary))
+							{
+								$nntp->doQuit();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
+								if (PEAR::isError($sampleBinary))
+									$sampleBinary = false;
+							}
+
+							if ($sampleBinary !== false)
+							{
+								if ($this->echooutput)
+									echo 'b';
+								if (strlen($sampleBinary) > 100)
+								{
+									$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $sampleBinary);
+									if ($processSample === true && $blnTookSample === false)
+										$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+									if ($processVideo === true && $blnTookVideo === false)
+										$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+								}
+								unset($sampleBinary);
+							}
+							else
+							{
+								if ($this->echooutput)
+									echo 'f';
+							}
+						}
+					}
+				}
+
+				// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
+				if ($processMediainfo === true || $processSample === true || $processVideo === true)
+				{
+					if ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false)
+					{
+						if (!empty($mediamsgid))
+						{
+							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
+							if (PEAR::isError($mediaBinary))
+							{
+								$nntp->doQuit();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
+								if (PEAR::isError($mediaBinary))
+									$mediaBinary = false;
+							}
+							if ($mediaBinary !== false)
+							{
+								if ($this->echooutput)
+									echo 'b';
+								if (strlen($mediaBinary) > 100)
+								{
+									$this->addmediafile($this->tmpPath.'media.avi', $mediaBinary);
+									if ($processMediainfo === true && $blnTookMediainfo === false)
+										$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel['id']);
+									if ($processSample === true && $blnTookSample === false)
+										$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+									if ($processVideo === true && $blnTookVideo === false)
+										$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+								}
+								unset($mediaBinary);
+							}
+							else
+							{
+								if ($this->echooutput)
+									echo 'f';
+							}
+						}
+					}
+				}
+
+				// Download audio file, use mediainfo to try to get the artist / album.
+				if($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false)
+				{
+					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+					if (PEAR::isError($audioBinary))
+					{
+						$nntp->doQuit();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+						if (PEAR::isError($audioBinary))
+							$audioBinary = false;
+					}
+					if ($audioBinary !== false)
+					{
+						if ($this->echooutput)
+							echo 'b';
+						if (strlen($audioBinary) > 100)
+						{
+							$this->addmediafile($this->tmpPath.'audio.'.$audiotype, $audioBinary);
+							$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['id']);
+						}
+						unset($audioBinary);
 					}
 					else
 					{
-						$tbl = $row['relname'];
-						$stamp = 'extract(epoch FROM dateadded)';
-					}
-					if (strpos($tbl, 'collections_') !== false)
-					{
-						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-						$collections_table += $run[0]['count'];
-						$run = $db->query('SELECT '.$stamp.' AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
-						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
-							$age = $run[0]['dateadded'];
-					}
-					else if (strpos($tbl, 'binaries_') !== false)
-					{
-						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-							$binaries_table += $run[0]['count'];
-					}
-					else if (strpos($tbl, 'parts_') !== false)
-					{
-						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-							$parts_table += $run[0]['count'];
-					}
-					else if (strpos($tbl, 'partrepair_') !== false)
-					{
-						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
-						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
-							$partrepair_table += $run[0]['count'];
+						if ($this->echooutput)
+						echo 'f';
 					}
 				}
-				$oldestcollection = $age;
-				$tpg_count_time = (TIME() - $time07);
-				$tpg_count_1_time = (TIME() - $time01);
+
+				// Download JPG file.
+				if($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false)
+				{
+					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+					if (PEAR::isError($jpgBinary))
+					{
+						$nntp->doQuit();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+						if (PEAR::isError($jpgBinary))
+							$jpgBinary = false;
+					}
+					if ($jpgBinary !== false)
+					{
+						if ($this->echooutput)
+							echo 'b';
+						$this->addmediafile($this->tmpPath.'samplepicture.jpg', $jpgBinary);
+						if (is_dir($this->tmpPath) && is_file($this->tmpPath.'samplepicture.jpg'))
+						{
+							if (filesize($this->tmpPath.'samplepicture.jpg') > 15 && exif_imagetype($this->tmpPath.'samplepicture.jpg') !== false && $blnTookJPG === false)
+							{
+								$blnTookJPG = $ri->saveImage($rel['guid'].'_thumb', $this->tmpPath.'samplepicture.jpg', $ri->jpgSavePath, 650, 650);
+								if ($blnTookJPG !== false)
+									$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
+							}
+
+							foreach(glob($this->tmpPath.'samplepicture.jpg') as $v)
+							{
+								@unlink($v);
+							}
+						}
+						unset($jpgBinary);
+					}
+					else
+					{
+						if ($this->echooutput)
+							echo 'f';
+					}
+				}
+
+				// Set up release values.
+				$hpsql = $isql = $vsql = $jsql = '';
+				if ($processSample === true && $blnTookSample !== false)
+					$this->updateReleaseHasPreview($rel['guid']);
+				else
+					$hpsql = ', haspreview = 0';
+
+				if ($failed > 0)
+				{
+					if ($failed / count($nzbfiles) > 0.7 || $notinfinite > $this->passchkattempts || $notinfinite > $this->partsqty)
+						$passStatus[] = Releases::BAD_FILE;
+				}
+
+				// If samples exist from previous runs, set flags.
+				if(file_exists($ri->imgSavePath.$rel['guid'].'_thumb.jpg'))
+					$isql = ', haspreview = 1';
+				if(file_exists($ri->vidSavePath.$rel['guid'].'.ogv'))
+					$vsql = ', videostatus = 1';
+				if(file_exists($ri->jpgSavePath.$rel['guid'].'_thumb.jpg'))
+					$jsql = ', jpgstatus = 1';
+
+				$size = $this->db->queryOneRow('SELECT COUNT(releasefiles.releaseid) AS count, SUM(releasefiles.size) AS size FROM releasefiles WHERE releaseid = '.$rel['id']);
+				if (max($passStatus) > 0)
+					$sql = sprintf('UPDATE releases SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s %s WHERE id = %d', max($passStatus), $size['count'], $isql, $vsql, $jsql, $hpsql, $rel['id']);
+				else if ($hasrar && ((isset($size['size']) && (is_null($size['size']) || $size['size'] == 0)) || !isset($size['size'])))
+				{
+					if (!$blnTookSample)
+						$hpsql = '';
+					$sql = sprintf('UPDATE releases SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s %s WHERE id = %d', $size['count'], $isql, $vsql, $jsql, $hpsql, $rel['id']);
+				}
+				else
+					$sql = sprintf('UPDATE releases SET passwordstatus = %s, rarinnerfilecount = %d %s %s %s %s WHERE id = %d', Releases::PASSWD_NONE, $size['count'], $isql, $vsql, $jsql, $hpsql, $rel['id']);
+
+				$this->db->queryExec($sql);
+
+				// Erase all files and directory.
+				foreach(glob($this->tmpPath.'*') as $v)
+				{
+					@unlink($v);
+				}
+				foreach(glob($this->tmpPath.'.*') as $v)
+				{
+					@unlink($v);
+				}
+				@rmdir($this->tmpPath);
+			}
+			if ($this->echooutput)
+				echo "\n";
+		}
+		if ($gui)
+			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
+
+		unset($this->consoleTools, $rar, $nzbcontents, $groups, $ri);
+	}
+
+	function doecho($str)
+	{
+		if ($this->echooutput)
+			echo $this->c->header($str);
+	}
+
+	function debug($str)
+	{
+		if ($this->echooutput && $this->DEBUG_ECHO)
+		{
+			echo $this->c->debug($str);
+		}
+	}
+
+	function addmediafile ($file, $data)
+	{
+		if (@file_put_contents($file, $data) !== false)
+		{
+			@$xmlarray = runCmd('"'.$this->site->mediainfopath.'" --Output=XML "'.$file.'"');
+			if (is_array($xmlarray))
+			{
+				$xmlarray = implode("\n",$xmlarray);
+				$xmlObj = @simplexml_load_string($xmlarray);
+				$arrXml = objectsIntoArray($xmlObj);
+				if (!isset($arrXml['File']['track'][0]))
+					@unlink($file);
 			}
 		}
-		$time1 = TIME();
 	}
 
-	//get start values from $qry
-	if ($i == 1)
+	function addfile($v, $release, $rar=false, $nntp)
 	{
-		if ($proc_work_result[0]['nforemains'] != NULL) { $nfo_remaining_start = $proc_work_result[0]['nforemains']; }
-		if ($proc_work_result3[0]['predb_matched'] != NULL) { $predb_start = $proc_work_result3[0]['predb_matched']; }
-		if ($proc_work_result[0]['console'] != NULL) { $console_releases_proc_start = $proc_work_result[0]['console']; }
-		if ($proc_work_result[0]['movies'] != NULL) { $movie_releases_proc_start = $proc_work_result[0]['movies']; }
-		if ($proc_work_result[0]['audio'] != NULL) { $music_releases_proc_start = $proc_work_result[0]['audio']; }
-		if ($proc_work_result2[0]['pc'] != NULL) { $pc_releases_proc_start = $proc_work_result2[0]['pc']; }
-		if ($proc_work_result[0]['tv'] != NULL) { $tvrage_releases_proc_start = $proc_work_result[0]['tv']; }
-		if ($proc_work_result[0]['book'] != NULL) { $book_releases_proc_start = $proc_work_result[0]['book']; }
-		if ($proc_work_result2[0]['work'] != NULL) { $work_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
-		if ($proc_work_result2[0]['pron'] != NULL) { $pron_remaining_start = $proc_work_result2[0]['pron']; }
-		if ($proc_work_result2[0]['pron'] != NULL) { $pron_start = $proc_work_result2[0]['pron']; }
-		if ($proc_work_result[0]['releases'] != NULL) { $releases_start = $proc_work_result[0]['releases']; }
-		if ($proc_work_result3[0]['requestid_inprogress'] != NULL) { $requestid_inprogress_start = $proc_work_result3[0]['requestid_inprogress']; }
-		if ($proc_work_result2[0]['work'] != NULL) { $work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
-	}
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->addfile).\n"));
 
-	//get values from $qry
-	foreach ($initquery as $cat)
-	{
-		if ($cat['parentid'] == 1000) { $console_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 2000) { $movie_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 3000) { $music_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 4000) { $pc_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 5000) { $tvrage_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 6000) { $pron_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 7000) { $misc_releases_now = $cat['count']; }
-		if ($cat['parentid'] == 8000) { $book_releases_now = $cat['count']; }
-	}
-
-	//get values from $proc
-	if ($proc_work_result[0]['console'] != NULL) { $console_releases_proc = $proc_work_result[0]['console']; }
-	if ($proc_work_result[0]['movies'] != NULL) { $movie_releases_proc = $proc_work_result[0]['movies']; }
-	if ($proc_work_result[0]['audio'] != NULL) { $music_releases_proc = $proc_work_result[0]['audio']; }
-	if ($proc_work_result2[0]['pc'] != NULL) { $pc_releases_proc = $proc_work_result2[0]['pc']; }
-	if ($proc_work_result[0]['tv'] != NULL) { $tvrage_releases_proc = $proc_work_result[0]['tv']; }
-	if ($proc_work_result[0]['book'] != NULL) { $book_releases_proc = $proc_work_result[0]['book']; }
-	if ($proc_work_result2[0]['work'] != NULL) { $work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron']; }
-	if ($proc_work_result2[0]['pron'] != NULL) { $pron_remaining_now = $proc_work_result2[0]['pron']; }
-	if ($proc_work_result[0]['releases'] != NULL) { $releases_loop = $proc_work_result[0]['releases']; }
-	if ($proc_work_result[0]['nforemains'] != NULL) { $nfo_remaining_now = $proc_work_result[0]['nforemains']; }
-	if ($proc_work_result[0]['nfo'] != NULL) { $nfo_now = $proc_work_result[0]['nfo']; }
-
-	if ($tablepergroup == 0)
-	{
-		if ($proc_work_result3[0]['binaries_table'] != NULL) { $binaries_table = $proc_work_result3[0]['binaries_table']; }
-		if ($split_result[0]['parts_table'] != NULL) { $parts_table = $split_result[0]['parts_table']; }
-		if ($proc_work_result2[0]['collections_table'] != NULL) { $collections_table = $proc_work_result2[0]['collections_table']; }
-		if ($proc_work_result2[0]['partrepair_table'] != NULL) { $partrepair_table = $proc_work_result2[0]['partrepair_table']; }
-	}
-
-	if ($split_result[0]['predb'] != NULL) { $predb = $split_result[0]['predb']; }
-
-	if ($proc_work_result3[0]['predb_matched'] != NULL) { $predb_matched = $proc_work_result3[0]['predb_matched']; }
-	if ($proc_work_result3[0]['requestid_inprogress'] != NULL) { $requestid_inprogress = $proc_work_result3[0]['requestid_inprogress']; }
-	if ($proc_work_result3[0]['requestid_matched'] != NULL) { $requestid_matched = $proc_work_result3[0]['requestid_matched']; }
-
-	if ($proc_tmux_result[0]['collections_kill'] != NULL) { $collections_kill = $proc_tmux_result[0]['collections_kill']; }
-	if ($proc_tmux_result[0]['postprocess_kill'] != NULL) { $postprocess_kill = $proc_tmux_result[0]['postprocess_kill']; }
-	if ($proc_tmux_result[0]['backfilldays'] != NULL) { $backfilldays = $proc_tmux_result[0]['backfilldays']; }
-	if ($proc_tmux_result[0]['tmpunrar'] != NULL) { $tmpunrar = $proc_tmux_result[0]['tmpunrar']; }
-	if ($proc_tmux_result[0]['distinctnzbs'] != NULL) { $distinctnzbs = $proc_tmux_result[0]['distinctnzbs']; }
-	if ($proc_tmux_result[0]['totalnzbs'] != NULL) { $totalnzbs = $proc_tmux_result[0]['totalnzbs']; }
-	if ($proc_tmux_result[0]['pendingnzbs'] != NULL) { $pendingnzbs = $proc_tmux_result[0]['pendingnzbs']; }
-
-	if ($proc_tmux_result[0]['active_groups'] != NULL) { $active_groups = $proc_tmux_result[0]['active_groups']; }
-	if ($proc_tmux_result[0]['all_groups'] != NULL) { $all_groups = $proc_tmux_result[0]['all_groups']; }
-	if ($proc_tmux_result[0]['grabnzbs'] != NULL) { $grabnzbs = $proc_tmux_result[0]['grabnzbs']; }
-
-	if ($proc_tmux_result[0]['colors_start'] != NULL) { $colors_start = $proc_tmux_result[0]['colors_start']; }
-	if ($proc_tmux_result[0]['colors_end'] != NULL) { $colors_end = $proc_tmux_result[0]['colors_end']; }
-	if ($proc_tmux_result[0]['colors_exc'] != NULL) { $colors_exc = $proc_tmux_result[0]['colors_exc']; }
-
-	if ($proc_tmux_result[0]['processbooks'] != NULL) { $processbooks = $proc_tmux_result[0]['processbooks']; }
-	if ($proc_tmux_result[0]['processmusic'] != NULL) { $processmusic = $proc_tmux_result[0]['processmusic']; }
-	if ($proc_tmux_result[0]['processgames'] != NULL) { $processgames = $proc_tmux_result[0]['processgames']; }
-	if ($proc_tmux_result[0]['tmux_session'] != NULL) { $tmux_session = $proc_tmux_result[0]['tmux_session']; }
-	if ($proc_tmux_result[0]['monitor'] != NULL) { $monitor = $proc_tmux_result[0]['monitor']; }
-	if ($proc_tmux_result[0]['backfill'] != NULL) { $backfill = $proc_tmux_result[0]['backfill']; }
-	if ($proc_tmux_result[0]['niceness'] != NULL) { $niceness = $proc_tmux_result[0]['niceness']; }
-	if ($proc_tmux_result[0]['progressive'] != NULL) { $progressive = $proc_tmux_result[0]['progressive']; }
-
-	if ($proc_tmux_result[0]['binaries_run'] != NULL) { $binaries = $proc_tmux_result[0]['binaries_run']; }
-	if ($proc_tmux_result[0]['import'] != NULL) { $import = $proc_tmux_result[0]['import']; }
-	if ($proc_tmux_result[0]['nzbs'] != NULL) { $nzbs = $proc_tmux_result[0]['nzbs']; }
-	if ($proc_tmux_result[0]['fix_names'] != NULL) { $fix_names = $proc_tmux_result[0]['fix_names']; }
-	if ($proc_tmux_result[0]['fix_crap'] != NULL) { $fix_crap = explode(', ', ($proc_tmux_result[0]['fix_crap'])); }
-	if ($proc_tmux_result[0]['fix_crap_opt'] != NULL) { $fix_crap_opt = $proc_tmux_result[0]['fix_crap_opt']; }
-	if ($proc_tmux_result[0]['update_tv'] != NULL) { $update_tv = $proc_tmux_result[0]['update_tv']; }
-	if ($proc_tmux_result[0]['post'] != NULL) { $post = $proc_tmux_result[0]['post']; }
-	if ($proc_tmux_result[0]['releases_run'] != NULL) { $releases_run = $proc_tmux_result[0]['releases_run']; }
-	if ($proc_tmux_result[0]['releases_threaded'] != NULL) { $releases_threaded = $proc_tmux_result[0]['releases_threaded']; }
-	if ($proc_tmux_result[0]['dehash'] != NULL) { $dehash = $proc_tmux_result[0]['dehash']; }
-	if ($proc_tmux_result[0]['newestname']) { $newestname = $proc_tmux_result[0]['newestname']; }
-	if ($proc_tmux_result[0]['show_query']) { $show_query = $proc_tmux_result[0]['show_query']; }
-	if ($proc_tmux_result[0]['running']) { $running = $proc_tmux_result[0]['running']; }
-
-	if ($split_result[0]['oldestnzb'] != NULL) { $oldestnzb = $split_result[0]['oldestnzb']; }
-	if ($split_result[0]['newestpre']) { $newestpre = $split_result[0]['newestpre']; }
-	if ($tablepergroup == 0)
-		if ($split_result[0]['oldestcollection'] != NULL) { $oldestcollection = $split_result[0]['oldestcollection']; }
-	if ($split_result[0]['backfill_groups_days'] != NULL) { $backfill_groups_days = $split_result[0]['backfill_groups_days']; }
-	if ($split_result[0]['backfill_groups_date'] != NULL) { $backfill_groups_date = $split_result[0]['backfill_groups_date']; }
-	if ($split_result[0]['newestadd']) { $newestadd = $split_result[0]['newestadd']; }
-
-	//reset monitor paths before query
-	$monitor_path = "";
-	$monitor_path_a = "";
-	$monitor_path_b = "";
-
-	if ($proc_tmux_result[0]['monitor_path'] != NULL) { $monitor_path = $proc_tmux_result[0]['monitor_path']; }
-	if ($proc_tmux_result[0]['monitor_path_a'] != NULL) { $monitor_path_a = $proc_tmux_result[0]['monitor_path_a']; }
-	if ($proc_tmux_result[0]['monitor_path_b'] != NULL) { $monitor_path_b = $proc_tmux_result[0]['monitor_path_b']; }
-
-	if ($proc_tmux_result[0]['debug'] != NULL) { $debug = $proc_tmux_result[0]['debug']; }
-	if ($proc_tmux_result[0]['post_amazon'] != NULL) { $post_amazon = $proc_tmux_result[0]['post_amazon']; }
-	if ($proc_tmux_result[0]['post_timer_amazon'] != NULL) { $post_timer_amazon = $proc_tmux_result[0]['post_timer_amazon']; }
-	if ($proc_tmux_result[0]['post_non'] != NULL) { $post_non = $proc_tmux_result[0]['post_non']; }
-	if ($proc_tmux_result[0]['post_timer_non'] != NULL) { $post_timer_non = $proc_tmux_result[0]['post_timer_non']; }
-
-	if ($proc_tmux_result[0]['seq_timer'] != NULL) { $seq_timer = $proc_tmux_result[0]['seq_timer']; }
-	if ($proc_tmux_result[0]['bins_timer'] != NULL) { $bins_timer = $proc_tmux_result[0]['bins_timer']; }
-	if ($proc_tmux_result[0]['back_timer'] != NULL) { $back_timer = $proc_tmux_result[0]['back_timer']; }
-	if ($proc_tmux_result[0]['import_timer'] != NULL) { $import_timer = $proc_tmux_result[0]['import_timer']; }
-	if ($proc_tmux_result[0]['rel_timer'] != NULL) { $rel_timer = $proc_tmux_result[0]['rel_timer']; }
-	if ($proc_tmux_result[0]['fix_timer'] != NULL) { $fix_timer = $proc_tmux_result[0]['fix_timer']; }
-	if ($proc_tmux_result[0]['crap_timer'] != NULL) { $crap_timer = $proc_tmux_result[0]['crap_timer']; }
-	if ($proc_tmux_result[0]['post_timer'] != NULL) { $post_timer = $proc_tmux_result[0]['post_timer']; }
-	if ($proc_tmux_result[0]['post_kill_timer'] != NULL) { $post_kill_timer = $proc_tmux_result[0]['post_kill_timer']; }
-	if ($proc_tmux_result[0]['tv_timer'] != NULL) { $tv_timer = $proc_tmux_result[0]['tv_timer']; }
-	if ($proc_tmux_result[0]['dehash_timer'] != NULL) { $dehash_timer = $proc_tmux_result[0]['dehash_timer']; }
-	if ($proc_work_result[0]['releases']) { $releases_now = $proc_work_result[0]['releases']; }
-
-	//calculate releases difference
-	$releases_misc_diff = number_format($releases_now - $releases_start);
-	$releases_since_start = number_format($releases_now - $releases_start);
-	$work_misc_diff = $work_remaining_now - $work_remaining_start;
-	$pron_misc_diff = $pron_remaining_now - $pron_remaining_start;
-
-	// Make sure thes types of post procs are on or off in the site first.
-	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
-	if ($site->lookuptvrage == 0)
-		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
-	if ($site->lookupmusic == 0)
-		$music_releases_proc = $music_releases_proc_start = 0;
-	if ($site->lookupimdb == 0)
-		$movie_releases_proc = $movie_releases_proc_start = 0;
-	if ($site->lookupgames == 0)
-		$console_releases_proc = $console_releases_proc_start = 0;
-	if ($site->lookupbooks == 0)
-		$book_releases_proc = $book_releases_proc_start = 0;
-	if ($site->lookupnfo == 0)
-		$nfo_remaining_now = $nfo_remaining_start = 0;
-
-	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $pron_remaining_now;
-	if ($i == 1) { $total_work_start = $total_work_now; }
-
-	$nfo_diff = number_format($nfo_remaining_now - $nfo_remaining_start);
-	$pre_diff = number_format($predb_matched - $predb_start);
-	$requestid_diff = number_format($requestid_inprogress - $requestid_inprogress_start);
-
-	$console_diff = number_format($console_releases_proc - $console_releases_proc_start);
-	$movie_diff = number_format($movie_releases_proc - $movie_releases_proc_start);
-	$music_diff = number_format($music_releases_proc - $music_releases_proc_start);
-	$pc_diff = number_format($pc_releases_proc - $pc_releases_proc_start);
-	$tvrage_diff = number_format($tvrage_releases_proc - $tvrage_releases_proc_start);
-	$book_diff = number_format($book_releases_proc - $book_releases_proc_start);
-
-	//formatted output
-	$misc_diff = number_format($work_remaining_now - $work_start);
-	$pron_diff = number_format($pron_remaining_now - $pron_start);
-
-	$work_since_start = ($total_work_now - $total_work_start);
-	$work_diff = number_format($work_since_start);
-
-	if ($releases_now != 0) {
-		$nfo_percent = sprintf("%02s", floor(($nfo_now / $releases_now) * 100));
-		$pre_percent = sprintf("%02s", floor(($predb_matched / $releases_now) * 100));
-		$request_percent = sprintf("%02s", floor(($requestid_matched / $releases_now) * 100));
-		$console_percent = sprintf("%02s", floor(($console_releases_now / $releases_now) * 100));
-		$movie_percent = sprintf("%02s", floor(($movie_releases_now / $releases_now) * 100));
-		$music_percent = sprintf("%02s", floor(($music_releases_now / $releases_now) * 100));
-		$pc_percent = sprintf("%02s", floor(($pc_releases_now / $releases_now) * 100));
-		$pron_percent = sprintf("%02s", floor(($pron_releases_now / $releases_now) * 100));
-		$tvrage_percent = sprintf("%02s", floor(($tvrage_releases_now / $releases_now) * 100));
-		$book_percent = sprintf("%02s", floor(($book_releases_now / $releases_now) * 100));
-		$misc_percent = sprintf("%02s", floor(($misc_releases_now / $releases_now) * 100));
-	}
-	else
-	{
-		$nfo_percent = 0;
-		$pre_percent = 0;
-		$request_percent = 0;
-		$console_percent = 0;
-		$movie_percent = 0;
-		$music_percent = 0;
-		$pc_percent = 0;
-		$tvrage_percent = 0;
-		$book_percent = 0;
-		$misc_percent = 0;
-	}
-
-	//get usenet connections
-	if ($alternate_nntp == "1")
-	{
-		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
-		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
-		$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host_a.":".$port_a." | grep -c ESTAB"));
-		$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host_a.":".$port_a.""));
-		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0)
+		if (!isset($v['error']) && isset($v['source']))
 		{
-			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
-			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
-			$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip_a.":".$port_a." | grep -c ESTAB"));
-			$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip_a.":".$port_a.""));
-		}
-		else if ($usp1activeconnections ==  0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a)
-		{
-			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port." | grep -c ESTAB"));
-			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port.""));
-			$usp2activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$port_a." | grep -c ESTAB"));
-			$usp2totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$port_a.""));
-		}
-	}
-	else
-	{
-		$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$host.":".$port." | grep -c ESTAB"));
-		$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$host.":".$port.""));
-		if ($usp1activeconnections ==  0 && $usp1totalconnections == 0)
-		{
-			$usp1activeconnections = str_replace("\n", '', shell_exec ("ss -n --resolve | grep ".$ip.":".$port." | grep -c ESTAB"));
-			$usp1totalconnections  = str_replace("\n", '', shell_exec ("ss -n --resolve | grep -c ".$ip.":".$port.""));
-		}
-	}
-
-	//update display
-	passthru('clear');
-	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-	printf($mask2, "Monitor Running v$version [".$patch."]: ", relativeTime("$time"));
-	printf($mask1, "USP Connections:", $usp1activeconnections." active (".$usp1totalconnections." total) - ".$host.":".$port);
-	if ($alternate_nntp == "1")
-		printf($mask1, "USP Alternate:", $usp2activeconnections." active (".$usp2totalconnections." total) - ".(($alternate_nntp == "1") ? $host_a.":".$port_a : "n/a"));
-
-	printf($mask1, "Newest Release:", "$newestname");
-	printf($mask1, "Release Added:", relativeTime("$newestadd")."ago");
-	printf($mask1, "Predb Updated:", relativeTime("$newestpre")."ago");
-	printf($mask1, "Collection Age:", relativeTime("$oldestcollection")."ago");
-	if ($grabnzbs != 0)
-		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb")."ago");
-	printf($mask1, "Parts in Repair:", number_format($partrepair_table));
-	if (($post == "1" || $post == "3") && $seq != 2)
-		printf($mask1, "Postprocess:", "stale for ".relativeTime($time2));
-
-	printf("\033[1;33m\n");
-	printf($mask, "Collections", "Binaries", "Parts");
-	printf($mask, "======================================", "=========================", "======================================");
-	printf("\033[38;5;214m");
-	printf($mask, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
-
-	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b))))
-	{
-		printf("\033[1;33m\n");
-		printf($mask, "Ramdisk", "Used", "Free");
-		printf($mask, "======================================", "=========================", "======================================");
-		printf("\033[38;5;214m");
-		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path))
-		{
-			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
-			$disk_free = decodeSize(disk_free_space($monitor_path));
-			if (basename($monitor_path) == "")
-				$show = "/";
+			if ($rar !== false && preg_match('/\.zip$/', $v['source']))
+			{
+				$zip = new ZipInfo();
+				$tmpdata = $zip->getFileData($v['name'], $v['source']);
+			}
+			else if ($rar !==  false)
+				$tmpdata = $rar->getFileData($v['name'], $v['source']);
 			else
-				$show = basename($monitor_path);
-			printf($mask, $show, $disk_use, $disk_free);
+				$tmpdata = false;
+
+			// Check if we already have the file or not.
+			// Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
+			if ($this->filesadded < 11 && $this->db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s AND size = %d', $release['id'], $this->db->escapeString($v['name']), $v['size'])) === false)
+			{
+				$rf = new ReleaseFiles();
+				if ($rf->add($release['id'], $v['name'], $v['size'], $v['date'], $v['pass']))
+				{
+					$this->filesadded++;
+					$this->newfiles = true;
+					if ($this->echooutput)
+						echo '^';
+				}
+			}
+
+			if ($tmpdata !== false)
+			{
+				// Extract a NFO from the rar.
+				if ($this->nonfo === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name']))
+				{
+					$nfo = new Nfo($this->echooutput);
+					if($nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp))
+					{
+						$this->debug('added rar nfo');
+						if ($this->echooutput)
+							echo 'n';
+						$this->nonfo = false;
+					}
+				}
+				// Extract a video file from the compressed file.
+				else if ($this->site->mediainfopath != '' && $this->site->processvideos == '1' && preg_match('/'.$this->videofileregex.'$/i', $v['name']))
+					$this->addmediafile($this->tmpPath.'sample_'.mt_rand(0,99999).'.avi', $tmpdata);
+				// Extract an audio file from the compressed file.
+				else if ($this->site->mediainfopath != '' && preg_match('/'.$this->audiofileregex.'$/i', $v['name'], $ext))
+					$this->addmediafile($this->tmpPath.'audio_'.mt_rand(0,99999).$ext[0], $tmpdata);
+				else if ($this->site->mediainfopath != '' && preg_match('/([^\/\\\r]+)(\.[a-z][a-z0-9]{2,3})$/i', $v['name'], $name))
+					$this->addmediafile($this->tmpPath.$name[1].mt_rand(0,99999).$name[2], $tmpdata);
+			}
+			unset($tmpdata, $rf);
 		}
-		if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a))
-		{
-			$disk_use = decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
-			$disk_free = decodeSize(disk_free_space($monitor_path_a));
-			if (basename($monitor_path_a) == "")
-				$show = "/";
-			else
-				$show = basename($monitor_path_a);
-			printf($mask, $show, $disk_use, $disk_free);
-		}
-		if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b))
-		{
-			$disk_use = decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
-			$disk_free = decodeSize(disk_free_space($monitor_path_b));
-			if (basename($monitor_path_b) == "")
-				$show = "/";
-			else
-				$show = basename($monitor_path_b);
-			printf($mask, $show, $disk_use, $disk_free);
-		}
 	}
 
-	printf("\033[1;33m\n");
-	printf($mask, "Category", "In Process", "In Database");
-	printf($mask, "======================================", "=========================", "======================================");
-	printf("\033[38;5;214m");
-	printf($mask, "NZBs",number_format($totalnzbs)."(".number_format($distinctnzbs).")", number_format($pendingnzbs));
-	printf($mask, "predb", number_format($predb - $predb_matched)."(".$pre_diff.")",number_format($predb_matched)."(".$pre_percent."%)");
-	printf($mask, "requestID",number_format($requestid_inprogress)."(".$requestid_diff.")",number_format($requestid_matched)."(".$request_percent."%)");
-	printf($mask, "NFO's",number_format($nfo_remaining_now)."(".$nfo_diff.")",number_format($nfo_now)."(".$nfo_percent."%)");
-	printf($mask, "Console(1000)",number_format($console_releases_proc)."(".$console_diff.")",number_format($console_releases_now)."(".$console_percent."%)");
-	printf($mask, "Movie(2000)",number_format($movie_releases_proc)."(".$movie_diff.")",number_format($movie_releases_now)."(".$movie_percent."%)");
-	printf($mask, "Audio(3000)",number_format($music_releases_proc)."(".$music_diff.")",number_format($music_releases_now)."(".$music_percent."%)");
-	printf($mask, "PC(4000)",number_format($pc_releases_proc)."(".$pc_diff.")",number_format($pc_releases_now)."(".$pc_percent."%)");
-	printf($mask, "TVShows(5000)",number_format($tvrage_releases_proc)."(".$tvrage_diff.")",number_format($tvrage_releases_now)."(".$tvrage_percent."%)");
-	printf($mask, "Pron(6000)",number_format($pron_remaining_now)."(".$pron_diff.")",number_format($pron_releases_now)."(".$pron_percent."%)");
-	printf($mask, "Misc(7000)",number_format($work_remaining_now)."(".$misc_diff.")",number_format($misc_releases_now)."(".$misc_percent."%)");
-	printf($mask, "Books(8000)",number_format($book_releases_proc)."(".$book_diff.")",number_format($book_releases_now)."(".$book_percent."%)");
-	printf($mask, "Total", number_format($total_work_now)."(".$work_diff.")", number_format($releases_now)."(".$releases_since_start.")");
-
-	printf("\n\033[1;33m\n");
-	printf($mask, "Groups", "Active", "Backfill");
-	printf($mask, "======================================", "=========================", "======================================");
-	printf("\033[38;5;214m");
-	if ($backfilldays == "1")
-		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_days."(".$all_groups.")");
-	else
-		printf($mask, "Activated", $active_groups."(".$all_groups.")", $backfill_groups_date."(".$all_groups.")");
-
-	if ($show_query == 1)
+	// Open the zip, see if it has a password, attempt to get a file.
+	function processReleaseZips($fetchedBinary, $open=false, $data=false, $release, $nntp)
 	{
-		printf("\n\033[1;33m\n");
-		printf($mask, "Query Block", "Time", "Cumulative");
-		printf($mask, "======================================", "=========================", "======================================");
-		printf("\033[38;5;214m");
-		printf($mask, "Combined", $tmux_time." ".$split_time." ".$init_time." ".$proc1_time." ".$proc2_time." ".$proc3_time." ".$tpg_count_time, $tmux_time." ".$split1_time." ".$init1_time." ".$proc11_time." ".$proc21_time." ".$proc31_time." ".$tpg_count_1_time);
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseZips).\n"));
 
-		$pieces = explode(" ", $db->getAttribute(PDO::ATTR_SERVER_INFO));
-		echo "\nThreads = ".$pieces[4].', Opens '.$pieces[14].', Tables = '.$pieces[22].', Slow = '.$pieces[11].', QPS = '.$pieces[28]."\n";
-	}
-
-	//get list of panes by name
-	if ($seq == 0)
-	{
-		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
-		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
-		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
-	}
-	else if ($seq == 1)
-	{
-		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
-		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
-		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
-	}
-	else if ($seq == 2)
-	{
-		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
-		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
-		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-	}
-
-	if ($debug == "1")
-		$show_time = "/usr/bin/time";
-	else
-		$show_time = "";
-
-	$_php = $show_time." nice -n$niceness $PHP";
-	$_phpn = "nice -n$niceness $PHP";
-
-	$_python = $show_time." nice -n$niceness $PYTHON";
-	$_pythonn = "nice -n$niceness $PYTHON";
-
-	if (($postprocess_kill < $total_work_now) && ($postprocess_kill != 0))
-		$kill_pp = true;
-	else
-		$kill_pp = false;
-	if (($collections_kill < $collections_table) && ($collections_kill != 0))
-		$kill_coll = true;
-	else
-		$kill_coll = false;
-
-	if ($binaries != 0)
-		$which_bins = "$_python ${DIR}update_scripts/python_scripts/binaries_threaded.py";
-	else if ($binaries == 2)
-		$which_bins = "$_python ${DIR}update_scripts/python_scripts/binaries_safe_threaded.py";
-
-	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
-
-	if ($releases_run != 0)
-	{
-		if ($tablepergroup == 0)
-			$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
+		// Load the ZIP file or data.
+		$zip = new ZipInfo();
+		if ($open)
+			$zip->open($fetchedBinary, true);
 		else
-			$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
+			$zip->setData($fetchedBinary, true);
+
+		if ($zip->error)
+		{
+		  $this->debug('Error: '.$zip->error);
+		  return false;
+		}
+
+		if (!empty($zip->isEncrypted))
+		{
+			$this->debug('ZIP archive is password encrypted.');
+			$this->password = true;
+			return false;
+		}
+
+		$files = $zip->getFileList();
+		$dataarray = array();
+		if ($files !== false)
+		{
+			if ($this->echooutput)
+				echo 'z';
+			if ($this->nonfo === true)
+				$nfo = new Nfo($this->echooutput);
+			foreach ($files as $file)
+			{
+				$thisdata = $zip->getFileData($file['name']);
+				$dataarray[] = array('zip'=>$file, 'data'=>$thisdata);
+
+				//Extract a NFO from the zip.
+				if ($this->nonfo === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name']))
+				{
+					if ($file['compressed'] !== 1)
+					{
+						if($nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp))
+						{
+							$this->debug('Added zip NFO.');
+							if ($this->echooutput)
+								echo 'n';
+							$this->nonfo = false;
+						}
+					}
+					else if ($this->site->zippath != '' && $file['compressed'] === 1)
+					{
+						$zip->setExternalClient($this->site->zippath);
+						$zipdata = $zip->extractFile($file['name']);
+						if ($zipdata !== false && strlen($zipdata) > 5);
+						{
+							if($nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp))
+							{
+								$this->debug('Added compressed zip NFO.');
+								if ($this->echooutput)
+									echo 'n';
+								$this->nonfo = false;
+							}
+						}
+					}
+				}
+				// Process RARs inside the ZIP.
+				else if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name']))
+				{
+					$tmpfiles = $this->getRar($thisdata);
+					if ($tmpfiles != false)
+					{
+						$limit = 0;
+						foreach ($tmpfiles as $f)
+						{
+							if ($limit++ > 11)
+								break;
+							$ret = $this->addfile($f, $release, $rar=false, $nntp);
+							$files[] = $f;
+						}
+					}
+				}
+			}
+		}
+
+		if ($data)
+		{
+			$files = $dataarray;
+			unset ($dataarray);
+		}
+
+		unset($fetchedBinary, $zip);
+		return $files;
 	}
 
-	if ($post_non == 2)
-		$clean = ' clean ';
-	else
-		$clean = ' ';
-
-	if ($running == 1)
+	function getRar($fetchedBinary)
 	{
-		//run these if complete sequential not set
-		if ($seq != 2)
+		$rar = new ArchiveInfo();
+		$files = $retval = false;
+		if ($rar->setData($fetchedBinary, true))
+			$files = $rar->getArchiveFileList();
+		if ($rar->error)
 		{
-			// Show all available colors
-			if ($colors == 1)
-				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
-
-			//fix names
-			if ($fix_names == 1)
+			$this->debug('Error: '.$rar->error);
+			return $retval;
+		}
+		if (!empty($rar->isEncrypted))
+		{
+			$this->debug('Archive is password encrypted.');
+			$this->password = true;
+			return $retval;
+		}
+		$tmp = $rar->getSummary(true, false);
+		if (isset($tmp['is_encrypted']) && $tmp['is_encrypted'] != 0)
+		{
+			$this->debug('Archive is password encrypted.');
+			$this->password = true;
+			return $retval;
+		}
+		$files = $rar->getArchiveFileList();
+		if ($files !== false)
+		{
+			$retval = array();
+			if ($this->echooutput !== false)
+				echo 'r';
+			foreach ($files as $file)
 			{
-				$log = writelog($panes1[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py filename $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py nfo $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py par2 $log; \
-						$_python ${DIR}update_scripts/python_scripts/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Fix Release Names\"'");
-			}
-
-			//dehash releases
-			if ($dehash == 1)
-			{
-				$log = writelog($panes1[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update_scripts/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
-			}
-			else if ($dehash == 2)
-			{
-				$log = writelog($panes1[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
-			}
-			else if ($dehash == 3)
-			{
-				$log = writelog($panes1[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update_scripts/nix_scripts/tmux/bin/postprocess_pre.php $log; \
-						$_php ${DIR}update_scripts/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Decrypt Hashes\"'");
-			}
-
-			//remove crap releases
-			if (($fix_crap_opt != "Disabled") && (($i == 1) || $fcfirstrun))
-			{
-				$log = writelog($panes1[1]);
-				if ( $fix_crap_opt == 'All' )
+				if (isset($file['name']))
 				{
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				}
-				else
-				{
-					$fcmax = count($fix_crap) - 1;
-					if (is_null($fcnum))
-						$fcnum = 0;
-					//Check to see if the pane is dead, if so resawn it.
-					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
+					if (isset($file['error']))
 					{
-						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							php ${DIR}testing/Release_scripts/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-						$fcnum++;
+						$this->debug("Error: {$file['error']} (in: {$file['source']})");
+						continue;
 					}
-					if ($fcnum == $fcmax)
+					if (isset($file['pass']) && $file['pass'] == true)
 					{
-						$fcnum = 0;
-						$fcfirstrun = false;
+						$this->password = true;
+						break;
 					}
-				}
-			}
-			else if ($fix_crap_opt != 'Disabled')
-			{
-				$log = writelog($panes1[1]);
-				if ( $fix_crap_opt == 'All' )
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				}
-				else
-				{
-					$fcmax = count($fix_crap) - 1;
-					if (is_null($fcnum))
-						$fcnum = 0;
-					//Check to see if the pane is dead, if so respawn it.
-					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1 )
+					if (preg_match($this->supportfiles.')(?!.{20,})/i', $file['name']))
+						continue;
+					if (preg_match('/([^\/\\\\]+)(\.[a-z][a-z0-9]{2,3})$/i', $file['name'], $name))
 					{
-						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							$_php ${DIR}testing/Release_scripts/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-						$fcnum++;
+						$rarfile = $this->tmpPath.$name[1].mt_rand(0,99999).$name[2];
+						$fetchedBinary = $rar->getFileData($file['name'], $file['source']);
+						$this->addmediafile($rarfile, $fetchedBinary);
 					}
-					if ($fcnum == $fcmax)
-						$fcnum = 0;
-
+					if (!preg_match('/\.(r\d+|part\d+)$/i', $file['name']))
+						$retval[] = $file;
 				}
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
-			}
-
-			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now) > 0)
-			{
-				//run postprocess_releases additional
-				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
-				if ($last_history != $history)
-				{
-					$last_history = $history;
-					$time2 = TIME();
-				}
-				else
-				{
-					if (TIME() - $time2 >= $post_kill_timer)
-					{
-						$color = get_color($colors_start, $colors_end, $colors_exc);
-						passthru("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
-						$wipe = `tmux clearhist -t${tmux_session}:2.0`;
-						$time2 = TIME();
-					}
-				}
-				$dead1 = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l`);
-				if ($dead1 == 1)
-					$time2 = TIME();
-				$log = writelog($panes2[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
-						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
-			}
-			else if ($post == 2 && $nfo_remaining_now > 0)
-			{
-				$log = writelog($panes2[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
-						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
-			}
-			else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0)))
-			{
-				//run postprocess_releases additional
-				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
-				if ($last_history != $history)
-				{
-					$last_history = $history;
-					$time2 = TIME();
-				}
-				else
-				{
-					if (TIME() - $time2 >= $post_kill_timer)
-					{
-						$color = get_color($colors_start, $colors_end, $colors_exc);
-						shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been terminated by Possible Hung thread\"'");
-						$wipe = `tmux clearhist -t${tmux_session}:2.0`;
-						$time2 = TIME();
-					}
-				}
-				$dead1 = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep dead | grep 0: | wc -l`);
-				if ($dead1 == 1)
-					$time2 = TIME();
-				$log = writelog($panes2[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
-						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py additional $log; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
-			}
-			else if (($post != 0) && ($nfo_remaining_now == 0) && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by Postprocess Additional\"'");
-			}
-
-			if (($post_non != 0) && (($movie_releases_proc > 0) || ($tvrage_releases_proc > 0)))
-			{
-				//run postprocess_releases non amazon
-				$log = writelog($panes2[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:2.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py tv $clean $log; \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py movie $clean $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
-			}
-			else if (($post_non != 0) && ($movie_releases_proc == 0) && ($tvrage_releases_proc == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by No Movies/TV to process\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess Non-Amazon\"'");
-			}
-
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)))
-			{
-				//run postprocess_releases amazon
-				$log = writelog($panes2[2]);
-				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
-			}
-			else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			}
-			else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console to process\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess Amazon\"'");
-			}
-
-			//update tv and theaters
-			if (($update_tv == 0) && ((TIME() - $time3 >= $tv_timer) || ($i == 1)))
-			{
-				$log = writelog($panes1[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
-						$_phpn ${DIR}update_scripts/update_theaters.php $log; $_phpn ${DIR}update_scripts/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
-				$time3 = TIME();
-			}
-			else if ($update_tv == 1)
-			{
-				$run_time = relativeTime($tv_timer + $time3);
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.2 'echo \"\033[38;5;${color}m\n${panes1[2]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 		}
 
-		if ($seq == 1)
+		if (count($retval) == 0)
+			return false;
+		return $retval;
+	}
+
+	// Open the rar, see if it has a password, attempt to get a file.
+	function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
+	{
+		if (!isset($nntp))
+			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
+
+		$retval = array();
+		$rar = new ArchiveInfo();
+		$rf = new ReleaseFiles();
+		$this->password = false;
+
+		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $name))
 		{
-			//run nzb-import
-			if (($import != 0) && ($kill_pp == false))
+			$rar->setData($fetchedBinary, true);
+			if ($rar->error)
 			{
-				$log = writelog($panes0[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+				$this->debug("\nError: {$rar->error}.");
+				return false;
+			}
+
+			$tmp = $rar->getSummary(true, false);
+			if (preg_match('/par2/i', $tmp['main_info']))
+				return false;
+
+			if (isset($tmp['is_encrypted']) && $tmp['is_encrypted'] != 0)
+			{
+				$this->debug('Archive is password encrypted.');
+				$this->password = true;
+				return false;
+			}
+
+			if (!empty($rar->isEncrypted))
+			{
+				$this->debug('Archive is password encrypted.');
+				$this->password = true;
+				return false;
+			}
+
+			$files = $rar->getArchiveFileList();
+			if (count($files) == 0 || !is_array($files) || !isset($files[0]['compressed']))
+				return false;
+
+			if ($files[0]['compressed'] == 0 && $files[0]['name'] != $this->name)
+			{
+				$this->name = $files[0]['name'];
+				$this->size = $files[0]['size'] * 0.95;
+				$this->adj = $this->sum = 0;
+
+				if ($this->echooutput)
+					echo 'r';
+				// If archive is not stored compressed, process data
+				foreach ($files as $file)
+				{
+					if (isset($file['name']))
+					{
+						if (isset($file['error']))
+						{
+							$this->debug("Error: {$file['error']} (in: {$file['source']})");
+							continue;
+						}
+						if ($file['pass'] == true)
+						{
+							$this->password = true;
+							break;
+						}
+
+						if (preg_match($this->supportfiles.')(?!.{20,})/i', $file['name']))
+							continue;
+
+						if (preg_match('/\.zip$/i', $file['name']))
+						{
+							$zipdata = $rar->getFileData($file['name'], $file['source']);
+							$data = $this->processReleaseZips($zipdata, false, true , $release, $nntp);
+
+							if ($data != false)
+							{
+								foreach($data as $d)
+								{
+									if (preg_match('/\.(part\d+|r\d+|rar)(\.rar)?$/i', $d['zip']['name']))
+										$tmpfiles = $this->getRar($d['data']);
+								}
+							}
+						}
+
+						if (!isset($file['next_offset']))
+							$file['next_offset'] = 0;
+						$range = mt_rand(0,99999);
+						if (isset($file['range']))
+							$range = $file['range'];
+						$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range'=>$range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+						$this->adj = $file['next_offset'] + $this->adj;
+					}
+				}
+
+				$this->sum = $this->adj;
+				if ($this->segsize != 0)
+					$this->adj = $this->adj / $this->segsize;
+				else
+					$this->adj = 0;
+
+				if ($this->adj < .7)
+					$this->adj = 1;
+
 			}
 			else
 			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
-			}
-
-			//run update_binaries
-			$log = writelog($panes0[2]);
-			if (($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 <= 4800))
-			{
-				//runs all/safe less than 4800
-				if (($binaries != 0) && ($backfill == 4) && ($releases_run != 0))
+				$this->size = $files[0]['size'] * 0.95;
+				if ($this->name != $files[0]['name'])
 				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs all less than 4800
-				else if (($binaries != 0) && ($backfill != 0) && ($releases_run != 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/back/safe less than 4800
-				else if (($binaries != 0) && ($backfill == 4) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; \
-							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/back less than 4800
-				else if (($binaries != 0) && ($backfill != 0) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/safe/rel less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run != 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/rel less than 4800
-				else if (($binaries == 0) && ($backfill != 0) && ($releases_run != 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/rel less than 4800
-				else if (($binaries != 0) && ($backfill == 0) && ($releases_run != 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin less than 4800
-				else if (($binaries != 0) && ($backfill == 0) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/safe less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
-							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs rel less than 4800
-				else if (($binaries == 0) && ($backfill == 0) && ($releases_run != 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				else if (($binaries == 0) && ($backfill == 0) && ($releases_run == 0))
-				{
-					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+					$this->name = $files[0]['name'];
+					$this->sum = $this->segsize;
+					$this->adj = 1;
 				}
 
-			}
-			else if (($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 >= 4800))
-			{
-				//run backfill all once and resets the timer
-				if ($backfill != 0)
+				// File is compressed, use unrar to get the content
+				$rarfile = $this->tmpPath.'rarfile'.mt_rand(0,99999).'.rar';
+				if(@file_put_contents($rarfile, $fetchedBinary))
 				{
-					shell_exec("tmux respawnp -k -t${tmux_session}:0.2 ' \
-						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py all $log; \
-						$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-					$time6 = TIME();
+					$execstring = '"'.$this->site->unrarpath.'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "'.$rarfile.'" "'.$this->tmpPath.'"';
+					$output = runCmd($execstring, false, true);
+					if (isset($files[0]['name']))
+					{
+						if ($this->echooutput)
+							echo 'r';
+						foreach ($files as $file)
+						{
+							if (isset($file['name']))
+							{
+								if (!isset($file['next_offset']))
+									$file['next_offset'] = 0;
+								$range = mt_rand(0,99999);
+								if (isset($file['range']))
+									$range = $file['range'];
+
+								$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+							}
+						}
+					}
 				}
-				$time6 = TIME();
 			}
-			else if ((($kill_coll == true) || ($kill_pp == true)) && ($releases_run != 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
-					echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
-					$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-			}
-			else if (($kill_coll == true) || ($kill_pp == true))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Exceeding Limits\"'");
-			}
-		}
-		else if ($seq == 2)
-		{
-			// Show all available colors
-			if ($colors = 1)
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
-
-			//run nzb-import
-			if (($import != 0) && ($kill_pp == false))
-			{
-				$log = writelog($panes0[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
-			}
-
-			//update tv and theaters
-			if (($update_tv == 1) && ((TIME() - $time3 >= $tv_timer) || ($i == 1)))
-			{
-				$log = writelog($panes1[0]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}update_scripts/update_theaters.php $log; $_phpn ${DIR}update_scripts/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
-				$time3 = TIME();
-			}
-			else if ($update_tv == 1)
-			{
-				$run_time = relativeTime($tv_timer + $time3);
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} will run in T[ $run_time]\"' 2>&1 1> /dev/null");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
-			}
-
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0)))
-			{
-				//run postprocess_releases amazon
-				$log = writelog($panes1[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
-			}
-			else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			}
-			else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console to process\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Postprocess Amazon\"'");
-			}
-
-			//run user_threaded.sh
-			$log = writelog($panes0[2]);
-			shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-					${DIR}update_scripts/nix_scripts/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
-
 		}
 		else
 		{
-			//run update_binaries
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			if (($binaries != 0) && ($kill_coll == false) && ($kill_pp == false))
+			// Not a rar file, try it as a ZIP file.
+			$files = $this->processReleaseZips($fetchedBinary, false, false , $release, $nntp);
+			if ($files !== false)
 			{
-				$log = writelog($panes0[2]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-						$which_bins $log; \
-						$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
-			}
-			else if (($kill_coll == true) || ($kill_pp == true))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Exceeding Limits\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Binaries\"'");
-			}
+				$this->name = $files[0]['name'];
+				$this->size = $files[0]['size'] * 0.95;
+				$this->sum = $this->adj =  0;
 
-			//run backfill
-			if ($progressive == 1 && floor($collections_table / 500) > $back_timer)
-				$backsleep = floor($collections_table / 500);
-			else
-				$backsleep = $back_timer;
+				foreach ($files as $file)
+				{
+					if (isset($file['pass']) && $file['pass'])
+					{
+						$this->password = true;
+						break;
+					}
 
-			if (($backfill == 4) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 <= 4800))
-			{
-				$log = writelog($panes0[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
-			}
-			else if (($backfill != 0) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 <= 4800))
-			{
-				$log = writelog($panes0[3]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
-			}
-			else if (($backfill != 0) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 >= 4800))
-			{
-				$log = writelog($panes0[3]);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
-				$time6 = TIME();
-			}
-			else if (($kill_coll == false) || ($kill_pp == false))
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} has been disabled/terminated by Exceeding Limits\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} has been disabled/terminated by Backfill\"'");
-			}
+					if (!isset($file['next_offset']))
+							$file['next_offset'] = 0;
+					if (!isset($file['range']))
+						$file['range'] = 0;
 
-			//run nzb-import
-			if (($import != 0) && ($kill_pp == false))
-			{
-				$log = writelog($panes0[1]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update_scripts/python_scripts/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
-			}
-			else if ($kill_pp == true)
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Exceeding Limits\"'");
-			}
-			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
-			}
+					$retval[] = array('name' => $file['name'], 'source '=> 'main', 'range' => $file['range'], 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
+					$this->adj = $file['next_offset'] + $this->adj;
+					$this->sum = $file['size'] + $this->sum;
+				}
 
-			//run update_releases
-			if ($releases_run != 0)
-			{
-				$log = writelog($panes0[4]);
-				shell_exec("tmux respawnp -t${tmux_session}:0.4 ' \
-						$run_releases $log; date +\"%D %T\"; $_sleep $rel_timer' 2>&1 1> /dev/null");
+				$this->size = $this->sum;
+				$this->sum = $this->adj;
+				if ($this->segsize != 0)
+					$this->adj = $this->adj / $this->segsize;
+				else
+					$this->adj = 0;
+
+				if ($this->adj < .7)
+					$this->adj = 1;
 			}
+			// Not a compressed file, but segmented.
 			else
-			{
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:0.4 'echo \"\033[38;5;${color}m\n${panes0[4]} has been disabled/terminated by Releases\"'");
-			}
+				$this->ignorenumbered = true;
 		}
+
+		// Use found content to populate releasefiles, nfo, and create multimedia files.
+		foreach ($retval as $k => $v)
+		{
+			if (!preg_match($this->supportfiles.'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $v['name']) && count($retval) > 0)
+				$this->addfile($v, $release, $rar, $nntp);
+			else
+				unset($retval[$k]);
+		}
+
+		if (count($retval) == 0)
+			$retval = false;
+		unset($fetchedBinary, $rar, $rf, $nfo);
+		return $retval;
 	}
-	else if ($seq == 0)
+
+	// Attempt to get mediafio xml from a video file.
+	public function getMediainfo($ramdrive, $mediainfo, $releaseID)
 	{
-		for ($g=1; $g<=4; $g++)
+		$retval = false;
+		if ($mediainfo == '' && !is_dir($ramdrive) && $releaseID <= 0)
+			return $retval;
+
+		$mediafiles = glob($ramdrive.'*.*');
+		if (is_array($mediafiles))
 		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
+			foreach($mediafiles as $mediafile)
+			{
+				if (is_file($mediafile) && filesize($mediafile) > 15 && preg_match('/'.$this->videofileregex.'$/i', $mediafile))
+				{
+					@$xmlarray = runCmd('"'.$mediainfo.'" --Output=XML "'.$mediafile.'"');
+					if (is_array($xmlarray))
+					{
+						$xmlarray = implode("\n",$xmlarray);
+						$re = new ReleaseExtra();
+						$re->addFull($releaseID,$xmlarray);
+						$re->addFromXml($releaseID,$xmlarray);
+						$retval = true;
+						if ($this->echooutput)
+							echo 'm';
+						break;
+					}
+				}
+			}
 		}
-		for ($g=0; $g<=3; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
-		}
-		for ($g=0; $g<=2; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
-		}
-	}
-	else if ($seq == 1)
-	{
-		for ($g=1; $g<=2; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
-		}
-		for ($g=0; $g<=3; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
-		}
-		for ($g=0; $g<=2; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:2.$g 'echo \"\033[38;5;${color}m\n${panes2[$g]} has been disabled/terminated by Running\"'");
-		}
-	}
-	else if ($seq == 2)
-	{
-		for ($g=1; $g<=2; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
-		}
-		for ($g=0; $g<=1; $g++)
-		{
-			$color = get_color($colors_start, $colors_end, $colors_exc);
-			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
-		}
+		return $retval;
 	}
 
-	$i++;
-	sleep(2);
+	// Attempt to get mediainfo/sample/title from a audio file.
+	public function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
+	{
+		$retval = $audval = false;
+		if (!is_dir($ramdrive) && $releaseID <= 0)
+			return $retval;
+
+		// Make sure the category is music or other->misc.
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 AND id = %d', $releaseID));
+		if (!preg_match('/^3\d{3}|7010/', $rquer['id']))
+			return $retval;
+
+		$audiofiles = glob($ramdrive.'*.*');
+		if (is_array($audiofiles))
+		{
+			foreach($audiofiles as $audiofile)
+			{
+				if (is_file($audiofile) && preg_match('/'.$this->audiofileregex.'$/i',$audiofile, $ext))
+				{
+					// Process audio info, change searchname if we find a group/album name in the tags.
+					if ($this->site->mediainfopath != '' && $retval === false)
+					{
+						@$xmlarray = runCmd('"'.$audioinfo.'" --Output=XML "'.$audiofile.'"');
+						if (is_array($xmlarray))
+						{
+							$arrXml = objectsIntoArray(@simplexml_load_string(implode("\n",$xmlarray)));
+							if (isset($arrXml['File']['track']))
+							{
+								foreach ($arrXml['File']['track'] as $track)
+								{
+									if (isset($track['Album']) && isset($track['Performer']))
+									{
+										$ext = strtoupper($ext[1]);
+										if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year))
+											$newname = $track['Performer'].' - '.$track['Album'].' ('.$Year[0].') '.$ext;
+										else
+											$newname = $track['Performer'].' - '.$track['Album'].' '.$ext;
+										$category = new Category();
+										if ($ext == 'MP3')
+											$newcat = Category::CAT_MUSIC_MP3;
+										else if ($ext == 'FLAC')
+											$newcat = Category::CAT_MUSIC_LOSSLESS;
+										else
+											$newcat = $category->determineCategory($newname, $rquer['groupid']);
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+
+										$re = new ReleaseExtra();
+										$re->addFromXml($releaseID,$xmlarray);
+										$retval = true;
+										if ($this->echooutput)
+											echo 'a';
+										break;
+									}
+								}
+							}
+						}
+					}
+					// Create an audio sample in ogg format.
+					if($this->processAudioSample && $audval === false)
+					{
+						$output = runCmd('"'.$ffmpeginfo.'" -t 30 -i "'.$audiofile.'" -acodec libvorbis -loglevel quiet -y "'.$ramdrive.$releaseguid.'.ogg"');
+						if (is_dir($ramdrive))
+						{
+							@$all_files = scandir($ramdrive,1);
+							foreach($all_files as $file)
+							{
+								if(preg_match('/'.$releaseguid.'\.ogg/',$file))
+								{
+									if (filesize($ramdrive.$file) < 15)
+										continue;
+
+									@copy($ramdrive.$releaseguid.'.ogg', $this->audSavePath.$releaseguid.'.ogg');
+									if(@file_exists($this->audSavePath.$releaseguid.'.ogg'))
+									{
+										chmod($this->audSavePath.$releaseguid.'.ogg', 0764);
+										$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
+										$audval = true;
+										if ($this->echooutput)
+											echo 'A';
+										break;
+									}
+								}
+							}
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogg') as $v)
+							{
+								@unlink($v);
+							}
+						}
+					}
+					if ($retval === true && $audval === true)
+						break;
+				}
+			}
+		}
+		return $retval;
+	}
+
+	// Attempt to get a sample image from a video file.
+	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
+	{
+		$retval = false;
+		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0)
+			return $retval;
+
+		$ri = new ReleaseImage();
+		$samplefiles = glob($ramdrive.'*.*');
+		if (is_array($samplefiles))
+		{
+			foreach($samplefiles as $samplefile)
+			{
+				if (is_file($samplefile) && preg_match('/'.$this->videofileregex.'$/i',$samplefile))
+				{
+					@$filecont = file_get_contents($samplefile, true, null, 0, 40);
+					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
+						continue;
+
+					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
+					//$output = runCmd($cmd);
+					$sample_duration = exec($ffmpeginfo.' -i "'.$samplefile."\" 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
+					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == '')
+						$sample_duration = 2;
+					$output_file=$ramdrive.'zzzz'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'.jpg';
+					$output = exec($ffmpeginfo.' -i "'.$samplefile.'" -loglevel quiet -vframes 250 -y "'.$output_file.'"');
+					$output = exec($ffmpeginfo.' -i "'.$samplefile.'" -loglevel quiet -vframes 1 -ss '.$sample_duration.' -y "'.$output_file.'"');
+
+					if (is_dir($ramdrive))
+					{
+						@$all_files = scandir($ramdrive,1);
+						foreach ($all_files as $file)
+						{
+							if(preg_match('/zzzz\d{3}\.jpg/', $file) && $retval === false)
+							{
+								if (filesize($ramdrive.$file) < 15)
+									continue;
+								if (exif_imagetype($ramdrive.$file) === false)
+									continue;
+
+								$ri->saveImage($releaseguid.'_thumb', $ramdrive.$file, $ri->imgSavePath, 800, 600);
+								if(file_exists($ri->imgSavePath.$releaseguid.'_thumb.jpg'))
+								{
+									$retval = true;
+									if ($this->echooutput)
+										echo 's';
+									break;
+								}
+							}
+						}
+
+						// Clean up all files.
+						foreach(glob($ramdrive.'*.jpg') as $v)
+						{
+							@unlink($v);
+						}
+						if ($retval === true)
+							break;
+					}
+				}
+			}
+		}
+		// If an image was made, return true, else return false.
+		return $retval;
+	}
+
+	public function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
+	{
+		$retval = false;
+		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0)
+			return $retval;
+
+		$ri = new ReleaseImage();
+		$samplefiles = glob($ramdrive.'*.*');
+		if (is_array($samplefiles))
+		{
+			foreach($samplefiles as $samplefile)
+			{
+				if (is_file($samplefile) && preg_match('/'.$this->videofileregex.'$/i', $samplefile))
+				{
+					@$filecont = file_get_contents($samplefile, true, null, 0, 40);
+					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) <30)
+						continue;
+
+					$output = runCmd('"'.$ffmpeginfo.'" -i "'.$samplefile.'" -vcodec libtheora -filter:v scale=320:-1 -t '.$this->ffmpeg_duration.' -acodec libvorbis -loglevel quiet -y "'.$ramdrive.'zzzz'.$releaseguid.'.ogv"');
+
+					if (is_dir($ramdrive))
+					{
+						@$all_files = scandir($ramdrive,1);
+						foreach ($all_files as $file)
+						{
+							if(preg_match('/zzzz'.$releaseguid.'\.ogv/',$file))
+							{
+								if (filesize($ramdrive.'zzzz'.$releaseguid.'.ogv') > 4096)
+								{
+									@copy($ramdrive.'zzzz'.$releaseguid.'.ogv', $ri->vidSavePath.$releaseguid.'.ogv');
+									if(@file_exists($ri->vidSavePath.$releaseguid.'.ogv'))
+									{
+										chmod($ri->vidSavePath.$releaseguid.'.ogv', 0764);
+										$this->db->queryExec(sprintf('UPDATE releases SET videostatus = 1 WHERE guid = %s', $this->db->escapeString($releaseguid)));
+										$retval = true;
+										if ($this->echooutput)
+											echo 'v';
+										break;
+									}
+								}
+							}
+							// Clean up all files.
+							foreach(glob($ramdrive.'*.ogv') as $v)
+							{
+								@unlink($v);
+							}
+							if ($retval === true)
+								break;
+						}
+					}
+				}
+			}
+		}
+		// If an video was made, return true, else return false.
+		return $retval;
+	}
+
+	public function updateReleaseHasPreview($guid)
+	{
+		$this->db->queryExec(sprintf('UPDATE releases SET haspreview = 1 WHERE guid = %s', $this->db->escapeString($guid)));
+	}
 }
-?>
