@@ -225,9 +225,9 @@ class Import
 				if ($this->tablepergroup == 1)
 				{
 					$group = array();
-					$group['cname'] = $realgroupid.'_collections';
-					$group['bname'] = $realgroupid.'_binaries';
-					$group['pname'] = $realgroupid.'_parts';
+					$group['cname'] = 'collections_'.$realgroupid;
+					$group['bname'] = 'binaries_'.$realgroupid;
+					$group['pname'] = 'parts_'.$realgroupid;
 				}
 				else
 				{

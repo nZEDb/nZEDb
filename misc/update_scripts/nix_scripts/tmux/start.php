@@ -22,7 +22,7 @@ if ($hashcheck != 1)
 	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
 
 // Check database patch version
-if ($patch < 154)
+if ($patch < 157)
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
 
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
@@ -115,7 +115,7 @@ if ($tablepergroup == 1)
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		if (preg_match('/\d+_collections/',$tbl))
+		if (preg_match('/collections_\d+/',$tbl))
 		{
 			$run = $db->queryDirect('UPDATE '.$tbl.' SET dateadded = now()');
 			$ran += $run->rowCount();

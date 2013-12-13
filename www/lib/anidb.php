@@ -4,6 +4,7 @@ require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'releaseimage.php';
 require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class AniDB
 {
@@ -15,6 +16,7 @@ class AniDB
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = nZEDb_WWW.'covers/anime/';
 		$this->db = new DB();
+		$this->c = new ColorCLI();
 	}
 
 	public function animetitlesUpdate()
@@ -367,15 +369,14 @@ class AniDB
 	}
 
 	// process a group of previously unprcoessed Anime Releases, as in postprocess
-	public function processAnimeReleases($threads=1, $hours=0)
+	public function processAnimeReleases($hours=0)
 	{
 		$db = $this->db;
-		$threads--;
 		if($hours == 0)
-		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
+		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 		else
 		  // only select items within 6 hours
-		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d OFFSET %d', Category::CAT_TV_ANIME, $this->aniqty, floor(($this->aniqty) * ($threads * 1.5))));
+		  $results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE anidbid IS NULL AND (bitwise & 256) = 256 AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 
 
 		// process the resulting set

@@ -995,9 +995,9 @@ class Releases
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
 			if ($db->newtables($groupID) === false)
 				exit ("There is a problem creating new parts/files tables for this group.\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1012,8 +1012,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' AND c.groupid = '.$groupID.' ' : ' ';
 
 		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$db->queryExec('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0'.$where.'GROUP BY b.collectionid, c.totalfiles HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1');
-
+		$db->queryExec('UPDATE '.$group['cname'].' c INNER JOIN (SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0'.$where.'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1');
 		//$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
@@ -1024,14 +1023,13 @@ class Releases
 
 		// If we have all the parts set partcheck to 1.
 		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0'.$where.'GROUP BY b.id,b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1');
+		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0'.$where.'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1');
 
 		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0'.$where.'GROUP BY b.id,b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1');
+		$db->queryExec('UPDATE '.$group['bname'].' b INNER JOIN(SELECT b.id FROM '.$group['bname'].' b INNER JOIN '.$group['pname'].' p ON p.binaryid = b.id INNER JOIN '.$group['cname'].' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0'.$where.'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1');
 
 		// Set filecheck to 2 if partcheck = 1.
-		$query = $db->prepare('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)'.$where.'GROUP BY b.collectionid,c.totalfiles HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2');
-		$query->execute();
+		$db->queryExec('UPDATE '.$group['cname'].' c INNER JOIN(SELECT c.id FROM '.$group['cname'].' c INNER JOIN '.$group['bname'].' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)'.$where.'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2');
 
 		// Set filecheck to 1 if we don't have all the parts.
 		$db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE filecheck in (15, 16)'.$where);
@@ -1039,18 +1037,16 @@ class Releases
 		// If a collection has not been updated in X hours, set filecheck to 2.
 		if ($db->dbSystem() == 'mysql')
 		{
-			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
-			$query1->execute();
+			$query = $db->queryDirect(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
 		}
 		else
 		{
-			$query1 = $db->prepare(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
-			$query1->execute();
+			$query = $db->queryDirect(sprintf("UPDATE ".$group['cname']." c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM ".$group['bname']." b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)".$where, $this->delaytimet));
 		}
 
 		if ($this->echooutput)
 		{
-			echo $this->c->primary($query->rowCount()+$query1->rowCount()." collections set to filecheck = 2 (complete)");
+			echo $this->c->primary($query->rowCount()+$query->rowCount()." collections set to filecheck = 2 (complete)");
 			echo $this->c->primary($this->consoleTools->convertTime(TIME() - $stage1));
 		}
 	}
@@ -1065,9 +1061,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1098,9 +1094,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1256,9 +1252,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1492,9 +1488,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -1516,6 +1512,7 @@ class Releases
 			$nzbsplitlevel = $this->site->nzbsplitlevel;
 			$nzbpath = $this->site->nzbpath;
 			$date = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
+			$this->consoleTools = new consoleTools();
 			foreach ($resrel as $rowrel)
 			{
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $nzb->getNZBPath($rowrel['guid'], $nzbpath, true, $nzbsplitlevel), $db, $version, $date, $rowrel['title'], $groupID);
@@ -1573,13 +1570,25 @@ class Releases
 						$requestID = (int) $requestIDtmp[0];
 						if ($requestID != 0)
 						{
-							$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
+							// Do a local lookup first
+							$newTitle = $this->localLookup($requestID, $rowrel['groupname']);
 							if ($newTitle != false && $newTitle != '')
 							{
-								if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+								$bFound = true;
+								$local = true;
+								$iFoundcnt++;
+							}
+							else
+							{
+								$newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
+								if ($newTitle != false && $newTitle != '')
 								{
-									$bFound = true;
-									$iFoundcnt++;
+									if (strtolower($newTitle) != strtolower($rowrel['searchname']))
+									{
+										$bFound = true;
+										$local = false;
+										$iFoundcnt++;
+									}
 								}
 							}
 						}
@@ -1593,13 +1602,14 @@ class Releases
 						$run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, bitwise = ((bitwise & ~132)|132), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
 						$run->execute();
 						$newcatname = $category->getNameByID($determinedcat);
+						$method = ($local === true) ? 'requestID local' : 'requestID web';
 						if ($this->echooutput)
 						{
 							echo	$this->c->primary("\n\n".'New name:  '.$newTitle.
 								"\nOld name:  ".$rowrel['searchname'].
 								"\nNew cat:   ".$newcatname.
 								"\nGroup:     ".$rowrel['groupname'].
-								"\nMethod:    requestID\n".
+								"\nMethod:    ".$method."\n".
 								'ReleaseID: '. $rowrel['id']);
 						}
 						$updated++;
@@ -1656,9 +1666,9 @@ class Releases
 		{
 			if ($groupID == '')
 				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{
@@ -2104,7 +2114,7 @@ class Releases
 		$req_url = str_ireplace('[GROUP_NM]', urlencode($groupName), $site->request_url);
 		$req_url = str_ireplace('[REQUEST_ID]', urlencode($requestID), $req_url);
 
-		$xml = simplexml_load_file($req_url);
+		$xml = @simplexml_load_file($req_url);
 
 		if (($xml == false) || (count($xml) == 0))
 			return '';
@@ -2112,6 +2122,15 @@ class Releases
 		$request = $xml->request[0];
 
 		return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
+	}
+
+	function localLookup($requestID, $groupName)
+	{
+		$db = $this->db;
+		$groupid = $this->groups->getIDByName($groupName);
+		$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+		if (isset($run['title']))
+			return $run['title'];
 	}
 
 	public function command_exist($cmd)

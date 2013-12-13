@@ -3,6 +3,8 @@ require_once './config.php';
 require_once nZEDb_LIB . 'adminpage.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'sabnzbd.php';
+// new to get information on books groups
+require_once nZEDb_LIB . 'framework/db.php';
 
 $page = new AdminPage();
 $sites = new Sites();
@@ -15,7 +17,13 @@ switch($action)
 {
 	case 'submit':
 		$error = "";
+		// book_reqids is an array it needs to be a comma seperated string, make it so
+		$book_ids = implode(', ', $_POST[book_reqids]);
+		// save it back 
+		$_POST['book_reqids'] = $book_ids;
+		// update site table as always
 		$ret = $sites->update($_POST);
+
 		if (is_int($ret))
 		{
 			if ($ret == Sites::ERR_BADUNRARPATH)
@@ -94,8 +102,42 @@ $page->smarty->assign('grabnzbs_names', array('Disabled', 'Primary NNTP Provider
 $page->smarty->assign('partrepair_ids', array(0,1,2));
 $page->smarty->assign('partrepair_names', array('Disabled', 'Part Repair', 'Part Repair Threaded'));
 
+$page->smarty->assign('lookupbooks_ids', array(0,1,2));
+$page->smarty->assign('lookupbooks_names', array('Disabled', 'Lookup All Books', 'Lookup Renamed Books'));
+
+$page->smarty->assign('lookupgames_ids', array(0,1,2));
+$page->smarty->assign('lookupgames_names', array('Disabled', 'Lookup All Consoles', 'Lookup Renamed Consoles'));
+
+$page->smarty->assign('lookupmusic_ids', array(0,1,2));
+$page->smarty->assign('lookupmusic_names', array('Disabled', 'Lookup All Music', 'Lookup Renamed Music'));
+
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
+
+// return a list of audiobooks, ebooks, technical and foreign books
+$db = new DB();
+$result = $db->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
+
+// setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
+$book_reqids_ids = array();
+$book_reqids_names = array();
+foreach ($result as $bookcategory)
+{
+	$book_reqids_ids[]   = $bookcategory["id"];
+	$book_reqids_names[] = $bookcategory["title"];
+}
+
+// convert from a string array to an int array as we want to use int
+$book_reqids_ids = array_map(create_function('$value', 'return (int)$value;'), $book_reqids_ids);
+$page->smarty->assign('book_reqids_ids', $book_reqids_ids);
+$page->smarty->assign('book_reqids_names', $book_reqids_names);
+
+// convert from a list to an array as we need to use an array, but teh sites table only saves strings
+$books_selected = explode(",", $site->book_reqids);
+
+// convert from a string array to an int array
+$books_selected = array_map(create_function('$value', 'return (int)$value;'), $books_selected);
+$page->smarty->assign('book_reqids_selected', $books_selected);
 
 $page->smarty->assign('loggingopt_ids', array(0,1,2,3));
 $page->smarty->assign('loggingopt_names', array ('Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file'));

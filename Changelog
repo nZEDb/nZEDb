@@ -3,15 +3,22 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-
+2013-12-13 -> jonnyboy -> added additional output to postprocessing additional, fixed a couple of predb bugs
+2013-12-08 -> jonnyboy -> added added lookups to requestid lookup, fixed bug in tmux not counting/processing amazon since added clean option
+2013-12-08 -> jonnyboy -> added requestid lookup to current predb, fixed zenet
+2013-12-07 -> jonnyboy -> added scripts for downloading headers to file and parse headers with current regexes
+                          removed threads for pp amazon, added clean option for anidb, book, console and music pp, fixed patches
+2012-12-07 -> egandt   -> added new parmeter to sites table (optional) modified through sites->edit screen to select which book categories to lookup on Amazon.
+2013-12-06 -> jonnyboy -> updated tmux for pgsql - working, fixed bug in monitor - pane not found, update_releases.php still not working with pgsql
+2013-12-05 -> niel     -> Changing anidb table. Dropping id column (not needed as anidbid is numeric and unique) adding imdbid and tvdbid columns
+2013-12-05 -> jonnyboy -> change table names for tpg
 2013-12-04 -> jonnyboy -> updated and verfied pgsql schema and all patches.
 2013-12-03 -> jonnyboy -> removed incomplete patch, added color to more scripts, added functions to consoletools for overwrite color, added ability to reset specific bits using resetRelnameStatus.php,
                           added option to import x number nzbs, then exit
 2013-12-02 -> jonnyboy -> moved releases.hashed and releases.request to bitwise, changed bitwise to smallint unsigned, fixed bug in db.php, moved hdtv and bdrip to hd, if searchname contains part# but not s/e numbers,
                           not tv, fixed bug in tpg partrepair
 2013-12-02 -> niel     -> refactored db.php
-2013-12-01 -> jonnyboy -> please update this file when you post do a pull request
-                          changed 4 spaces to tab, removed excess whitespace on blank lines
+2013-12-01 -> jonnyboy -> changed 4 spaces to tab, removed excess whitespace on blank lines
                           added notices to start.php to better explain the tmux output(iguyking)
                           moved nzbstatus to bitwise, added color to all python scripts, added color to more php scripts, fixed bug in fixreleasenames par2 not couting total changed
                           fixed bug in monitor.php not get correct newest releases name

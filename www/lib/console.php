@@ -6,6 +6,7 @@ require_once nZEDb_LIB . 'genres.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'util.php';
 require_once nZEDb_LIB . 'releaseimage.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Console
 {
@@ -20,8 +21,9 @@ class Console
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
-
 		$this->imgSavePath = nZEDb_WWW.'covers/console/';
+		$this->cleanconsole = ($site->lookupgames == 2 ) ? 260 : 256;
+		$this->c = new ColorCLI();
 	}
 
 	public function getConsoleInfo($id)
@@ -475,25 +477,16 @@ class Console
 		return $result;
 	}
 
-	public function processConsoleReleases($threads=1)
+	public function processConsoleReleases()
 	{
-		$threads--;
 		$db = $this->db;
-		// Non-fixed release names.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & 256) = 256 AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 1);
-		// Names that were fixed and the release still doesn't have a consoleID.
-		$this->processConsoleReleaseTypes($db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & 260) = 260 AND r.consoleinfoid = -2 AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d OFFSET %d", Category::CAT_PARENT_GAME, $this->gameqty, floor(($this->gameqty) * ($threads * 1.5)))), 2);
-	}
-
-	public function processConsoleReleaseTypes($res, $type)
-	{
 		$ret = 0;
-		$db = $this->db;
+		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & %d) = %d AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->cleanconsole, $this->cleanconsole, Category::CAT_PARENT_GAME, $this->gameqty));
 
-		if (count($res) > 0)
+		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo "\nProcessing ".count($res)." console releases\n";
+				echo $this->c->header('Processing '.$res->rowCount().' console release(s).');
 
 			foreach ($res as $arr)
 			{
@@ -502,41 +495,37 @@ class Console
 				{
 
 					if ($this->echooutput)
-						echo 'Looking up: '.$gameInfo["title"].' ('.$gameInfo["platform"].")\n";
+						echo $this->c->headerOver('Looking up: ').$this->c->primary($gameInfo['title'].' ('.$gameInfo['platform'].')');
 
 					// Check for existing console entry.
-					$gameCheck = $this->getConsoleInfoByName($gameInfo["title"], $gameInfo["platform"]);
+					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
 
 					if ($gameCheck === false)
 					{
 						$gameId = $this->updateConsoleInfo($gameInfo);
 						if ($gameId === false)
-						{
-							if($type == 1)
-								$gameId = -2;
-							if($type == 2)
-								$gameId = -3;
-						}
+							$gameId = -2;
 					}
 					else
-						$gameId = $gameCheck["id"];
+						$gameId = $gameCheck['id'];
 
 					// Update release.
-					$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", $gameId, $arr["id"]));
+					$db->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', $gameId, $arr['id']));
 
 				}
 				else
 				{
 					// Could not parse release title.
-					if($type == 1)
-						$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -2, $arr["id"]));
-					if($type == 2)
-						$db->queryExec(sprintf("UPDATE releases SET consoleinfoid = %d WHERE id = %d", -3, $arr["id"]));
+					$db->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', -2, $arr['id']));
 				}
 				// Sleep to not flood amazon.
 				usleep($this->sleeptime*1000);
 			}
 		}
+		else
+			if ($this->echooutput)
+				echo $this->c->header('No console releases to process.');
+
 	}
 
 	function parseTitle($releasename)

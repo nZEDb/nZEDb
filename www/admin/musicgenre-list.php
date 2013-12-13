@@ -30,7 +30,7 @@ $page->smarty->assign('pager', $pager);
 
 $genrelist = $genres->getRange(Genres::MUSIC_TYPE, $activeOnly, $offset, ITEMS_PER_PAGE);
 
-$page->smarty->assign('genrelist',$genrelist);
+$page->smarty->assign('genrelist', $genrelist);
 
 $page->content = $page->smarty->fetch('musicgenre-list.tpl');
 $page->render();

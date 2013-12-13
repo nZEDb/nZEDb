@@ -13,7 +13,7 @@ else if(isset($argv[1]) && is_numeric($argv[1]))
 	$limit = "limit ".$argv[1];
 
 $mask = "\033[1;33m%-50.50s %22.22s %22.22s %22.22s %22.22s\n";
-$groups = $db->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE backfill = 1 AND first_record IS NOT NULL AND first_record_postdate != '2000-01-01'");
+$groups = $db->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE backfill = 1 AND first_record IS NOT NULL'");
 if ($rels = $db->query("SELECT last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded FROM groups"))
 {
 	foreach ($rels as $rel)

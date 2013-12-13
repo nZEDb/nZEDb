@@ -24,7 +24,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath)
 	{
-		if (is_file($filePath))
+		if (is_file($filePath) && preg_match('/\.nzb\.gz/', $filePath))
 		{
 			$nzbpath = 'compress.zlib://'.$filePath;
 			$nzbfile = @simplexml_load_file($nzbpath);
@@ -34,23 +34,27 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete"))
 				if ($res === false)
 				{
 					if ($argv[1] === "delete")
-						$releases->fastDelete("NULL", $guid[1], $site);
-					$deleted++;
+					{
+						$releases->fastDelete(null, $guid[1], $site);
+						$deleted++;
+					}
 				}
 				else if (isset($res))
 					$db->queryExec(sprintf("UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %s", $res['id']));
-				$time = $consoletools->convertTime(TIME() - $timestart);
-				$consoletools->overWritePrimary('Checking NZBs: '.$deleted.' of '.++$checked.' '.$couldbe.'deleted from disk,  Running time: '.$time);
 			}
 			else
 			{
 				if ($argv[1] === "delete")
-					$releases->fastDelete("NULL", $guid[1], $site);
-				$deleted++;
+				{
+					unlink($filePath);
+					$deleted++;
+				}
 			}
+			$time = $consoletools->convertTime(TIME() - $timestart);
+			$consoletools->overWritePrimary('Checking NZBs: '.$deleted.' of '.++$checked.' '.$couldbe.'deleted from disk,  Running time: '.$time);
 		}
 	}
-	echo $c->header("\n".number_format(++$checked).' nzbs checked, '.number_format($deleted).' nzbs '.$couldbe.'deleted.');
+	echo $c->header("\n".number_format($checked).' nzbs checked, '.number_format($deleted).' nzbs '.$couldbe.'deleted.');
 
 	$timestart = TIME();
 	$checked = $deleted = 0;

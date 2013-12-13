@@ -271,10 +271,10 @@ class Groups
 			$binaries->delete($col["id"]);
 
 		$db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
-		$db->queryExec('TRUNCATE TABLE '.$id.'_collections');
-		$db->queryExec('TRUNCATE TABLE '.$id.'_binaries');
-		$db->queryExec('TRUNCATE TABLE '.$id.'_parts');
-		$db->queryExec('TRUNCATE TABLE '.$id.'_partrepair');
+		$db->queryExec('TRUNCATE TABLE collections_'.$id);
+		$db->queryExec('TRUNCATE TABLE binaries_'.$id);
+		$db->queryExec('TRUNCATE TABLE parts_'.$id);
+		$db->queryExec('TRUNCATE TABLE partrepair_'.$id);
 	}
 
 	public function purgeall()

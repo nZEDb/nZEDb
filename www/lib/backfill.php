@@ -352,9 +352,9 @@ class Backfill
 					if ($db->newtables($groupID) === false)
 						echo $this->c->error("There is a problem creating new parts/files tables for this group.\n");
 					$groupa = array();
-					$groupa['cname'] = $groupID.'_collections';
-					$groupa['bname'] = $groupID.'_binaries';
-					$groupa['pname'] = $groupID.'_parts';
+					$groupa['cname'] = 'collections_'.$groupID;
+					$groupa['bname'] = 'binaries_'.$groupID;
+					$groupa['pname'] = 'parts_'.$groupID;
 				}
 				else
 				{

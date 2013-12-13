@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4544";
+$version="0.3r4600";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -27,7 +27,8 @@ $alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
 $running = (isset($tmux->running)) ? $tmux->running : 0;
-
+$bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+		
 
 if (command_exist("python3"))
 	$PYTHON = "python3 -OOu";
@@ -105,7 +106,7 @@ $proc_work = "SELECT
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid = 8010 AND bookinfoid IS NULL) AS book,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (".$bookreqids.") AND bookinfoid IS NULL) AS book,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
@@ -128,8 +129,8 @@ if ($dbtype == 'mysql')
 	$split_query = "SELECT
 		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name') AS predb,
 		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name') AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days,
+		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
 		(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
 		(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
 		(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
@@ -140,8 +141,8 @@ else if ($dbtype == 'pgsql')
 	$split_query = "SELECT
 		(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
 		(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval backfill_target days) < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND first_record_postdate != '2000-00-00 00:00:00' AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) days) < first_record_postdate) AS backfill_groups_date,
+		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days,
+		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date,
 		(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
 		(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
 		(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
@@ -303,23 +304,23 @@ $active_groups = $all_groups = 0;
 $backfilldays = $backfill_groups_date = 0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
-$misc_diff = $misc_percent = $misc_releases_now = 0;
+$misc_diff = $misc_percent = $misc_releases_now = $work_start = 0;
 $music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
 $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
-$nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = 0;
-$pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = 0;
+$nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
+$pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
 $pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = 0;
 $pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
-$releases_now = $releases_since_start = 0;
+$nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
-$total_work_now = $work_diff = $work_remaining_now = 0;
+$total_work_now = $work_diff = $work_remaining_now = $pc_releases_proc_start = 0;
 $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 0;
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
 $collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
-$grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = 0;
+$grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = $music_releases_proc_start = 0;
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
 $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
-$show_query = $run_releases = 0;
+$console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
 
 $last_history = "";
 
@@ -434,35 +435,48 @@ while($i > 0)
 		$time07 = TIME();
 		if ($tablepergroup == 1)
 		{
-			$sql = 'SHOW TABLE STATUS';
-			$tables = $db->query($sql);
+			if ($db->dbsystem == 'mysql')
+				$sql = 'SHOW table status';
+			else
+				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
+			$tables = $db->queryDirect($sql);
 			$collections_table = $binaries_table = $parts_table = $partrepair_table = 0;
 			$age = TIME();
 			if (count($tables) > 0)
 			{
 				foreach($tables as $row)
 				{
-					$tbl = $row['name'];
-					if (strpos($tbl, '_collections') !== false)
+					if ($db->dbsystem == 'mysql')
 					{
-						$run = $db->query('SELECT COUNT(*) AS count, UNIX_TIMESTAMP(dateadded) AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
+						$tbl = $row['name'];
+						$stamp = 'UNIX_TIMESTAMP(dateadded)';
+					}
+					else
+					{
+						$tbl = $row['relname'];
+						$stamp = 'extract(epoch FROM dateadded)';
+					}
+					if (strpos($tbl, 'collections_') !== false)
+					{
+						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						$collections_table += $run[0]['count'];
+						$run = $db->query('SELECT '.$stamp.' AS dateadded FROM '.$tbl.' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
 						if (isset($run[0]['dateadded']) && is_numeric($run[0]['dateadded']) && $run[0]['dateadded'] < $age)
 							$age = $run[0]['dateadded'];
 					}
-					else if (strpos($tbl, '_binaries') !== false)
+					else if (strpos($tbl, 'binaries_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$binaries_table += $run[0]['count'];
 					}
-					else if (strpos($tbl, '_parts') !== false)
+					else if (strpos($tbl, 'parts_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
 							$parts_table += $run[0]['count'];
 					}
-					else if (strpos($tbl, '_partrepair') !== false)
+					else if (strpos($tbl, 'partrepair_') !== false)
 					{
 						$run = $db->query('SELECT COUNT(*) AS count FROM '.$tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count']))
@@ -620,17 +634,17 @@ while($i > 0)
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
-	if ($site->lookuptvrage != 1)
+	if ($site->lookuptvrage == 0)
 		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
-	if ($site->lookupmusic != 1)
+	if ($site->lookupmusic == 0)
 		$music_releases_proc = $music_releases_proc_start = 0;
-	if ($site->lookupimdb != 1)
+	if ($site->lookupimdb == 0)
 		$movie_releases_proc = $movie_releases_proc_start = 0;
-	if ($site->lookupgames != 1)
+	if ($site->lookupgames == 0)
 		$console_releases_proc = $console_releases_proc_start = 0;
-	if ($site->lookupbooks != 1)
+	if ($site->lookupbooks == 0)
 		$book_releases_proc = $book_releases_proc_start = 0;
-	if ($site->lookupnfo != 1)
+	if ($site->lookupnfo == 0)
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 
 	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $pron_remaining_now;
@@ -816,22 +830,28 @@ while($i > 0)
 	}
 
 	//get list of panes by name
-	$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
-	if ($seq != 2)
-	{
-		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
-		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
-		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
-		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
-	}
 	if ($seq == 0)
 	{
-		$panes_win_4 = shell_exec("echo `tmux list-panes -t $tmux_session:3 -F '#{pane_title}'`");
-		$panes3 = str_replace("\n", '', explode(" ", $panes_win_4));
+		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
+		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
+		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
+		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
+		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
 	}
-	if ($seq == 2)
+	else if ($seq == 1)
 	{
+		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
+		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
+		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
+		$panes_win_3 = shell_exec("echo `tmux list-panes -t $tmux_session:2 -F '#{pane_title}'`");
+		$panes2 = str_replace("\n", '', explode(" ", $panes_win_3));
+	}
+	else if ($seq == 2)
+	{
+		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
+		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	}
@@ -1305,7 +1325,7 @@ while($i > 0)
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)))
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0)))
 			{
 				//run postprocess_releases amazon
 				$log = writelog($panes1[1]);
@@ -1431,7 +1451,7 @@ while($i > 0)
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
 		}
-		for ($g=0; $g<=4; $g++)
+		for ($g=0; $g<=3; $g++)
 		{
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");
@@ -1449,7 +1469,7 @@ while($i > 0)
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");
 		}
-		for ($g=0; $g<=4; $g++)
+		for ($g=0; $g<=3; $g++)
 		{
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:1.$g 'echo \"\033[38;5;${color}m\n${panes1[$g]} has been disabled/terminated by Running\"'");

@@ -55,6 +55,10 @@ Class Predb
 			$newpdme = $this->retrievePredbme();
 			if ($this->echooutput)
 				echo $newpdme." \tRetrieved from Predbme.\n";
+			$this->retrieveAllfilledMoovee();
+			$this->retrieveAllfilledTeevee();
+			$this->retrieveAllfilledErotica();
+			$this->retrieveAllfilledForeign();
 			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
@@ -188,15 +192,17 @@ Class Predb
 		$buffer = getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false && strlen($buffer))
 		{
-			if (preg_match_all('/<tr bgcolor=".+?<\/tr>/s', $buffer, $matches))
+			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches))
 			{
 				foreach ($matches as $match)
 				{
 					foreach ($match as $m)
 					{
-						if (preg_match('/<tr bgcolor=".+?<td.+?">(?P<date>.+?)<\/td.+?<td.+?(<font.+?">(?P<category>.+?)<\/a.+?|">(?P<category1>NUKE)+?)?<\/td.+?<td.+?">(?P<title>.+?-)<a.+?<b>(?P<title2>.+?)<\/b>.+?<\/td.+?<td.+<td.+?(">(?P<size1>[\d.]+)<b>(?P<size2>.+?)<\/b>.+)?<\/tr>/s', $m, $matches2))
+						if (preg_match('/<span class="bold">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/.+<\/div>/s', $m, $matches2))
 						{
-							$md5 = md5($matches2['title'].$matches2['title2']);
+							$predate = $db->escapeString($matches2['predate']);
+							$md5 = $db->escapeString(md5($matches2['title']));
+							$title = $db->escapeString($matches2['title']);
 							$oldname = $db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $db->escapeString($md5)));
 							if ($oldname !== false && $oldname['md5'] == $md5)
 								continue;
@@ -209,13 +215,12 @@ Class Predb
 
 								if (isset($matches2['category']) && !empty($matches2['category']))
 									$category = $db->escapeString($matches2['category']);
-								else if (isset($matches2['category1']) && !empty($matches2['category1']))
-									$category = $db->escapeString($matches2['category1']);
 								else
 									$category = 'NULL';
 
-								$db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title'].$matches2['title2']), $size, $category, $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('zenet'), $db->escapeString($md5)));
-								$newnames++;
+								$run = $db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5));
+								if ($run)
+									$newnames++;
 							}
 						}
 					}
@@ -322,7 +327,20 @@ Class Predb
 	{
 		$db = new DB();
 		$newnames = 0;
-		$releases = @simplexml_load_file('http://www.srrdb.com/feed/srrs');
+		$url = "http://www.srrdb.com/feed/srrs";
+
+		$options = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Accept-language: en\r\n" .
+					  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
+					  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad 
+		  )
+		);
+
+		$context = stream_context_create($options);
+		$releases = file_get_contents($url, false, $context);
+		$releases = @simplexml_load_string($releases);
 		if ($releases !== false)
 		{
 			foreach ($releases->channel->item as $release)
@@ -333,8 +351,7 @@ Class Predb
 					continue;
 				else
 				{
-					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime($release->pubDate), $db->escapeString('srrdb'), $db->escapeString($md5)));
-					$newnames++;
+					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));$newnames++;
 				}
 			}
 		}
@@ -366,6 +383,138 @@ Class Predb
 			}
 		}
 		return $newnames;
+	}
+
+	public function retrieveAllfilledMoovee()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$groups = new Groups();
+		$groupid = $groups->getIDByName('alt.binaries.moovee');
+		$buffer = @file_get_contents('http://abmoovee.allfilled.com/reqs.php?fetch=posted&page=1');
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2))
+						{
+							if (isset($matches2["requestid"]) && isset($matches2["title"]))
+							{
+								$requestid = $matches2["requestid"];
+								$title = $db->escapeString($matches2["title"]);
+								$md5 = $db->escapeString(md5($matches2["title"]));
+								$predate = $db->escapeString($matches2["predate"]);
+								$source = $db->escapeString('allfilled');
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public function retrieveAllfilledTeevee()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$groups = new Groups();
+		$groupid = $groups->getIDByName('alt.binaries.teevee');
+		$buffer = @file_get_contents('http://abteevee.allfilled.com/reqs.php?fetch=posted&page=1');
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2))
+						{
+							if (isset($matches2["requestid"]) && isset($matches2["title"]))
+							{
+								$requestid = $matches2["requestid"];
+								$title = $db->escapeString($matches2["title"]);
+								$md5 = $db->escapeString(md5($matches2["title"]));
+								$predate = $db->escapeString($matches2["predate"]);
+								$source = $db->escapeString('allfilled');
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public function retrieveAllfilledErotica()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$groups = new Groups();
+		$groupid = $groups->getIDByName('alt.binaries.erotica');
+		$buffer = @file_get_contents('http://aberotica.allfilled.com/reqs.php?fetch=posted&page=1');
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2))
+						{
+							if (isset($matches2["requestid"]) && isset($matches2["title"]))
+							{
+								$requestid = $matches2["requestid"];
+								$title = $db->escapeString($matches2["title"]);
+								$md5 = $db->escapeString(md5($matches2["title"]));
+								$predate = $db->escapeString($matches2["predate"]);
+								$source = $db->escapeString('allfilled');
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public function retrieveAllfilledForeign()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$groups = new Groups();
+		$groupid = $groups->getIDByName('alt.binaries.mom');
+		$buffer = @file_get_contents('http://abforeign.allfilled.com/reqs.php?fetch=posted&page=1');
+		if ($buffer !== false && strlen($buffer))
+		{
+			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches))
+			{
+				foreach ($matches as $match)
+				{
+					foreach ($match as $m)
+					{
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?)<\/td>/s', $m, $matches2))
+						{
+							if (isset($matches2["requestid"]) && isset($matches2["title"]))
+							{
+								$requestid = $matches2["requestid"];
+								$title = $db->escapeString($matches2["title"]);
+								$md5 = $db->escapeString(md5($matches2["title"]));
+								$predate = $db->escapeString($matches2["predate"]);
+								$source = $db->escapeString('allfilled');
+								$run = $db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// Update a single release as it's created.

@@ -19,9 +19,9 @@ class NZB
 		{
 			if ($groupID == '')
 				exit("$groupID is missing, are you running grabnzbs_threaded.py\n");
-			$group['cname'] = $groupID.'_collections';
-			$group['bname'] = $groupID.'_binaries';
-			$group['pname'] = $groupID.'_parts';
+			$group['cname'] = 'collections_'.$groupID;
+			$group['bname'] = 'binaries_'.$groupID;
+			$group['pname'] = 'parts_'.$groupID;
 		}
 		else
 		{

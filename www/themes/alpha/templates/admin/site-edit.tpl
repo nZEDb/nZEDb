@@ -77,7 +77,7 @@
 			<tr>
 				<td style="width:180px;"><label for="style">Theme:</label></td>
 				<td>
-					{html_options class="siteeditstyle" id="style" name='style' values=$themelist output=$themelist selected=$fsite->style}
+					{html_options style="width:180px;" class="siteeditstyle" id="style" name='style' values=$themelist output=$themelist selected=$fsite->style}
 					<div class="hint">The theme folder which will be loaded for css and images. (Use / for default)</div>
 				</td>
 			</tr>
@@ -85,7 +85,7 @@
 			<tr>
 				<td style="width:180px;"><label for="style">User Menu Position:</label></td>
 				<td>
-					{html_options class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$fsite->menuposition}
+					{html_options style="width:180px;" class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$fsite->menuposition}
 					<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (not currently functional)</div>
 				</td>
 			</tr>
@@ -117,7 +117,7 @@
 			<tr>
 				<td style="width:180px;"><label for="loggingopt">Logging Option:</label></td>
 				<td>
-					{html_options class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
+					{html_options style="width:180px;" class="loggingopt" id="loggingopt" name='loggingopt' values=$loggingopt_ids output=$loggingopt_names selected=$fsite->loggingopt}
 					<div class="hint">Where you would like to log failed logins to the site.</div>
 				</td>
 			</tr>
@@ -137,7 +137,7 @@
 			<tr>
 				<td style="width:180px;"><label for="catlanguage">Categorize Language:</label></td>
 				<td>
-					{html_options class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
+					{html_options style="width:180px;" class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
 					<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
 				</td>
 			</tr>
@@ -161,7 +161,7 @@
 			<tr>
 				<td style="width:180px;"><label for="imdburl">IMDB.com:</label></td>
 				<td>
-					{html_options class="imdburl" id="imdburl" name='imdburl' values=$imdb_urls output=$imdburl_names selected=$fsite->imdburl}
+					{html_options style="width:180px;" class="imdburl" id="imdburl" name='imdburl' values=$imdb_urls output=$imdburl_names selected=$fsite->imdburl}
 					<div class="hint">Akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).</div>
 				</td>
 			</tr>
@@ -169,7 +169,7 @@
 			<tr>
 				<td style="width:180px;"><label for="imdblanguage">IMDB/Tmdb Language:</label></td>
 				<td>
-					{html_options class="imdblanguage" id="imdblanguage" name='imdblanguage' values=$imdblang_ids output=$imdblang_names selected=$fsite->imdblanguage}
+					{html_options style="width:180px;" class="imdblanguage" id="imdblanguage" name='imdblanguage' values=$imdblang_ids output=$imdblang_names selected=$fsite->imdblanguage}
 					<div class="hint">Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)</div>
 				</td>
 			</tr>
@@ -383,7 +383,7 @@
 <tr>
 	<td style="width:180px;"><label for="sabpriority">Priority Level:</label></td>
 	<td>
-		{html_options id="sabpriority" name='sabpriority' values=$sabpriority_ids output=$sabpriority_names selected=$fsite->sabpriority}
+		{html_options style="width:180px;" id="sabpriority" name='sabpriority' values=$sabpriority_ids output=$sabpriority_names selected=$fsite->sabpriority}
 		<div class="hint">Set the priority level for NZBs that are added to your queue</div>
 	</td>
 </tr>
@@ -462,7 +462,7 @@
 <tr>
 	<td style="width:180px;"><label for="showpasswordedrelease">Show Passworded Releases:</label></td>
 	<td>
-		{html_options id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$fsite->showpasswordedrelease}
+		{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$fsite->showpasswordedrelease}
 		<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.</div>
 	</td>
 </tr>
@@ -558,7 +558,7 @@
 <tr>
 	<td style="width:180px;"><label for="lookupmusic">Lookup Music:</label></td>
 	<td>
-		{html_radios id="lookupmusic" name='lookupmusic' values=$yesno_ids output=$yesno_names selected=$fsite->lookupmusic separator='<br />'}
+		{html_options style="width:180px;" id="lookupmusic" name='lookupmusic' values=$lookupmusic_ids output=$lookupmusic_names selected=$fsite->lookupmusic}
 		<div class="hint">Whether to attempt to lookup music information from Amazon when processing binaries.</div>
 	</td>
 </tr>
@@ -566,7 +566,7 @@
 <tr>
 	<td style="width:180px;"><label for="lookupgames">Lookup Games:</label></td>
 	<td>
-		{html_radios id="lookupgames" name='lookupgames' values=$yesno_ids output=$yesno_names selected=$fsite->lookupgames separator='<br />'}
+		{html_options style="width:180px;" id="lookupgames" name='lookupgames' values=$lookupgames_ids output=$lookupgames_names selected=$fsite->lookupgames}
 		<div class="hint">Whether to attempt to lookup game information from Amazon when processing binaries.</div>
 	</td>
 </tr>
@@ -574,15 +574,26 @@
 <tr>
 	<td style="width:180px;"><label for="lookupbooks">Lookup Books:</label></td>
 	<td>
-		{html_radios id="lookupbooks" name='lookupbooks' values=$yesno_ids output=$yesno_names selected=$fsite->lookupbooks separator='<br />'}
+		{html_options style="width:180px;" id="lookupbooks" name='lookupbooks' values=$lookupbooks_ids output=$lookupbooks_names selected=$fsite->lookupbooks}
 		<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
 	</td>
 </tr>
 
+
+<tr>
+	<td style="width:180px;"><label for="book_reqids">Type of books to look up:</label></td>
+	<td>
+		{html_options_multiple id="book_reqids" name='book_reqids' values=$book_reqids_ids output=$book_reqids_names selected=$book_reqids_selected}
+		<div class="hint">Categories of Books to lookup information for (only work if Lookup Books is set to yes).</div>
+       </div>
+	</td>
+</tr>
+
+
 <tr>
 	<td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
 	<td>
-		{html_options id="lookup_reqids" name='lookup_reqids' values=$lookup_reqids_ids output=$lookup_reqids_names selected=$fsite->lookup_reqids}
+		{html_options style="width:180px;" id="lookup_reqids" name='lookup_reqids' values=$lookup_reqids_ids output=$lookup_reqids_names selected=$fsite->lookup_reqids}
 		<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below.</div>
 	</td>
 </tr>
@@ -892,7 +903,7 @@
 <tr>
 	<td style="width:180px;"><label for="grabnzbs">Grab NZBs:</label></td>
 	<td>
-		{html_options class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
+		{html_options style="width:180px;" class="grabnzbs" id="grabnzbs" name='grabnzbs' values=$grabnzbs_ids output=$grabnzbs_names selected=$fsite->grabnzbs}
 		<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases. I have discovered that the nzbs imported using GrabNZBs do not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db. This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs, but the file size will differ.\nThe difference appears to be from USP providers, the posted nzb and size is from the originating USP and may vary in size from your USP.</div>
 	</td>
 </tr>
@@ -965,14 +976,6 @@
 	<td>
 		<input class="short" id="postthreads" name="postthreads" type="text" value="{$fsite->postthreads}" />
 		<div class="hint">The number of threads for additional postprocessing. This includes deep rar inspection, preview and sample creation and nfo processing.</div>
-	</td>
-</tr>
-
-<tr>
-	<td style="width:180px;"><label for="postthreadsamazon">Postprocessing Amazon Threads:</label></td>
-	<td>
-		<input class="short" id="postthreadsamazon" name="postthreadsamazon" type="text" value="{$fsite->postthreadsamazon}" />
-		<div class="hint">The number of threads for amazon postprocessing. This includes books, music and games lookups.</div>
 	</td>
 </tr>
 

@@ -32,6 +32,32 @@ class Namefixer
 	const HASHED			=	 512;	0000 0000 0010 0000 0000 	hashed 0 = not hashed, 512 = is hashed
 	const REQUEST			=   1024;	0000 0000 0100 0000 0000 	request 0 = not a requestid, 1024 = is a requestid
 
+	// To display counts for false
+	SELECT
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1) = 0) as not_categorized,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 4) = 0) as not_renamed,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 8) = 0) as not_proc_by_pp,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 16) = 0) as not_proc_by_sorter,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 32) = 0) as not_proc_by_par2,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 64) = 0) as not_proc_by_nfo,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 128) = 0) as not_proc_by_files,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 0) as no_nzb,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 512) = 0) as not_hashed,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1024) = 0) as not_requestid;
+
+	// To display counts for true
+	SELECT
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1) = 1) as categorized,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 4) = 4) as renamed,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 8) = 8) as proc_by_pp,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 16) = 16) as proc_by_sorter,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 32) = 32) as proc_by_par2,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 64) = 64) as proc_by_nfo,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 128) = 128) as proc_by_files,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) as has_nzb,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 512) = 512) as is_hashed,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1024) = 1024) as is_requestid;
+
 	*/
 
 	function __construct($echooutput=true)

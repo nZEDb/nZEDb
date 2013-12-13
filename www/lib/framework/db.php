@@ -289,7 +289,7 @@ class DB extends PDO
 
 		if ($memcache === true && $this->memcached === true)
 		{
-			$memcached->add($query, $rows);
+			$memcached->add($query, $result);
 		}
 
 		return ($result === false) ? array() : $result;
@@ -334,6 +334,7 @@ class DB extends PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
+			//echo $query."\n";
 			echo $this->c->error("queryDirect: " . $e->getMessage() . "\n");
 			$result = false;
 		}
@@ -402,15 +403,57 @@ class DB extends PDO
         $s = new Sites();
         $site = $s->get();
         $DoPartRepair = ($site->partrepair == '0') ? false : true;
+
 		if (!is_null($grpid) && is_numeric($grpid))
 		{
             $binaries = $parts = $collections = $partrepair = false;
+			if ($this->dbsystem == 'pgsql')
+				$like = ' (LIKE collections INCLUDING ALL)';
+			else
+				$like = ' LIKE collections';
 			try {
 				self::$pdo->query('SELECT * FROM '.$grpid.'_collections LIMIT 1');
+				$old_tables = true;
+			} catch (PDOException $e) {
+				$old_tables = false;
+			}
+
+			if ($old_tables === true)
+			{
+	            $sql = 'SHOW TABLE STATUS';
+    	        $tables = self::$pdo->query($sql);
+	            if (count($tables) > 0)
+    	        {
+        	        foreach($tables as $row)
+					{
+						$tbl = $row['name'];
+						$tblnew = '';
+						if (strpos($tbl, '_collections') !== false)
+							$tblnew = 'collections_'.str_replace('_collections', '', $tbl);
+						else if (strpos($tbl, '_binaries') !== false)
+							$tblnew = 'binaries_'.str_replace('_binaries', '', $tbl);
+						else if (strpos($tbl, '_parts') !== false)
+							$tblnew = 'parts_'.str_replace('_parts', '', $tbl);
+						else if (strpos($tbl, '_partrepair') !== false)
+							$tblnew = 'partrepair_'.str_replace('_partrepair', '', $tbl);
+						if ($tblnew != '')
+						{
+							try {
+								self::$pdo->query('ALTER TABLE '.$tbl.' RENAME TO '.$tblnew);
+							} catch (PDOException $e) {
+								// table already exists
+							}
+						}
+					}
+				}
+			}
+
+			try {
+				self::$pdo->query('SELECT * FROM collections_'.$grpid.' LIMIT 1');
 				$collections = true;
 			} catch (PDOException $e) {
 				try {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_collections LIKE collections') !== false)
+					if ($this->queryExec('CREATE TABLE collections_'.$grpid.$like) !== false)
 					{
 						$collections = true;
 						$this->newtables($grpid);
@@ -422,11 +465,15 @@ class DB extends PDO
 
 			if ($collections === true)
 			{
+	            if ($this->dbsystem == 'pgsql')
+    	            $like = ' (LIKE binaries INCLUDING ALL)';
+        	    else
+            	    $like = ' LIKE binaries';
 				try {
-					self::$pdo->query('SELECT * FROM '.$grpid.'_binaries LIMIT 1');
+					self::$pdo->query('SELECT * FROM binaries_'.$grpid.' LIMIT 1');
 					$binaries = true;
 				} catch (PDOException $e) {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_binaries LIKE binaries') !== false)
+					if ($this->queryExec('CREATE TABLE binaries_'.$grpid.$like) !== false)
 					{
 						$binaries = true;
 						$this->newtables($grpid);
@@ -436,11 +483,15 @@ class DB extends PDO
 
 			if ($binaries === true)
 			{
+	            if ($this->dbsystem == 'pgsql')
+    	            $like = ' (LIKE parts INCLUDING ALL)';
+        	    else
+            	    $like = ' LIKE parts';
 				try {
-					self::$pdo->query('SELECT * FROM '.$grpid.'_parts LIMIT 1');
+					self::$pdo->query('SELECT * FROM parts_'.$grpid.' LIMIT 1');
 					$parts = true;
 				} catch (PDOException $e) {
-					if ($this->queryExec('CREATE TABLE '.$grpid.'_parts LIKE parts') !== false)
+					if ($this->queryExec('CREATE TABLE parts_'.$grpid.$like) !== false)
 					{
 						$parts = true;
 						$this->newtables($grpid);
@@ -450,11 +501,15 @@ class DB extends PDO
 
             if ($DoPartRepair === true && $parts === true)
             {
+	            if ($this->dbsystem == 'pgsql')
+    	            $like = ' (LIKE partrepair INCLUDING ALL)';
+        	    else
+            	    $like = ' LIKE partrepair';
                 try {
-                    DB::$pdo->query('SELECT * FROM '.$grpid.'_partrepair LIMIT 1');
+                    DB::$pdo->query('SELECT * FROM partrepair_'.$grpid.' LIMIT 1');
                     $partrepair = true;
                 } catch (PDOException $e) {
-                    if ($this->queryExec('CREATE TABLE '.$grpid.'_partrepair LIKE partrepair') !== false)
+                    if ($this->queryExec('CREATE TABLE partrepair_'.$grpid.$like) !== false)
                     {
                         $partrepair = true;
                         $this->newtables($grpid);

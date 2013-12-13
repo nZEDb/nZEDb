@@ -45,12 +45,18 @@ foreach ($arr as &$value)
 }
 unset($value);
 
-$sql = "SHOW table status";
+if ($db->dbsystem == 'mysql')
+	$sql = "SHOW table status";
+else
+	$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
 $tables = $db->query($sql);
 foreach($tables as $row)
 {
-	$tbl = $row['name'];
-	if (preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl) || preg_match('/\d+_partrepair/',$tbl))
+	if ($db->dbsystem == 'mysql')
+		$tbl = $row['name'];
+	else
+		$tbl = $row['relname'];
+	if (preg_match('/collections_\d+/',$tbl) || preg_match('/binaries_\d+/',$tbl) || preg_match('/parts_\d+/',$tbl) || preg_match('/partrepair_\d+/',$tbl) || preg_match('/\d+_collections/',$tbl) || preg_match('/\d+_binaries/',$tbl) || preg_match('/\d+_parts/',$tbl) || preg_match('/\d+_partrepair_\d+/',$tbl))
 	{
 		$rel = $db->queryDirect(sprintf('DROP TABLE %s', $tbl));
 		if($rel !== false)
