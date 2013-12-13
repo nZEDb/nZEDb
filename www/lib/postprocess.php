@@ -382,7 +382,7 @@ class PostProcess
 					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d '.$groupid.' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND (bitwise & 256) = 256 ORDER BY postdate DESC LIMIT %d', $this->maxsize*1073741824, $i, $this->addqty));
 					$totresults = $result->rowCount();
 					if ($totresults > 0)
-						$this->doecho('Passwordstatus = '.$i.': Available to process = '.$result->rowCount());
+						$this->doecho('Passwordstatus = '.$i.': Available to process = '.$totresults);
 					$i--;
 				}
 			}
@@ -394,6 +394,7 @@ class PostProcess
 			}
 		}
 
+
 		$rescount = $startCount = $totresults;
 		if ($rescount > 0)
 		{
@@ -403,18 +404,27 @@ class PostProcess
 				$this->doecho('Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
 				$this->doecho('Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample');
 				$this->doecho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
+				// Get count of releases per passwirdstatus
+				$pw1 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -1');
+				$pw2 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -2');
+				$pw3 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -3');
+				$pw4 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -4');
+				$pw5 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -5');
+				$pw6 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -6');
+				$this->doecho('Available to process: -6 = '.number_format($pw6[0]['count']).', -5 = '.number_format($pw5[0]['count']).', -4 = '.number_format($pw4[0]['count']).', -3 = '.number_format($pw3[0]['count']).', -2 = '.number_format($pw2[0]['count']).', -1 = '.number_format($pw1[0]['count']));
 			}
+
 			$ri = new ReleaseImage();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
 			$groups = new Groups();
-			$processSample 		= ($this->site->ffmpegpath != '') ? true : false;
-			$processVideo 		= ($this->site->processvideos == '0') ? false : true;
-			$processMediainfo 	= ($this->site->mediainfopath != '') ? true : false;
-			$processAudioinfo 	= ($this->site->mediainfopath != '') ? true : false;
-			$processJPGSample 	= ($this->site->processjpg == '0') ? false : true;
-			$processPasswords 	= ($this->site->unrarpath != '') ? true : false;
-			$tmpPath 			= $this->tmpPath;
+			$processSample      = ($this->site->ffmpegpath != '') ? true : false;
+			$processVideo       = ($this->site->processvideos == '0') ? false : true;
+			$processMediainfo   = ($this->site->mediainfopath != '') ? true : false;
+			$processAudioinfo   = ($this->site->mediainfopath != '') ? true : false;
+			$processJPGSample   = ($this->site->processjpg == '0') ? false : true;
+			$processPasswords   = ($this->site->unrarpath != '') ? true : false;
+			$tmpPath            = $this->tmpPath;
 
 			// Loop through the releases.
 			foreach ($result as $rel)
@@ -478,11 +488,11 @@ class PostProcess
 				// Only process for samples, previews and images if not disabled.
 				$blnTookSample =  ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
-				if ($processSample === false)		$blnTookSample = true;
-				if ($processVideo === false)		$blnTookVideo = true;
-				if ($processMediainfo === false)	$blnTookMediainfo = true;
-				if ($processAudioinfo === false)	$blnTookAudioinfo = true;
-				if ($processJPGSample === false)	$blnTookJPG = true;
+				if ($processSample === false)       $blnTookSample = true;
+				if ($processVideo === false)        $blnTookVideo = true;
+				if ($processMediainfo === false)    $blnTookMediainfo = true;
+				if ($processAudioinfo === false)    $blnTookAudioinfo = true;
+				if ($processJPGSample === false)    $blnTookJPG = true;
 				$passStatus = array(Releases::PASSWD_NONE);
 				$bingroup = $samplegroup = $mediagroup = $jpggroup = $audiogroup = '';
 				$samplemsgid = $mediamsgid = $audiomsgid = $jpgmsgid = $audiotype = $mid = $rarpart = array();

@@ -2114,7 +2114,7 @@ class Releases
 		$req_url = str_ireplace('[GROUP_NM]', urlencode($groupName), $site->request_url);
 		$req_url = str_ireplace('[REQUEST_ID]', urlencode($requestID), $req_url);
 
-		$xml = simplexml_load_file($req_url);
+		$xml = @simplexml_load_file($req_url);
 
 		if (($xml == false) || (count($xml) == 0))
 			return '';
