@@ -351,7 +351,7 @@ Class Predb
 					continue;
 				else
 				{
-					$db->queryExec(sprintf('INSERT INTO srrdb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));$newnames++;
+					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));$newnames++;
 				}
 			}
 		}
