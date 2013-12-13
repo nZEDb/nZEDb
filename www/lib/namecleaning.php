@@ -118,6 +118,12 @@ class nameCleaning
 				return $this->dvd();
 			case 'alt.binaries.dvd-r':
 				return $this->dvd_r();
+			case 'alt.binaries.ebook':
+				return $this->ebook();
+			case 'alt.binaries.e-book':
+				return $this->e_book();
+			case 'alt.binaries.e-book.flood':
+				return $this->e_book_flood();
 			case 'alt.binaries.erotica':
 				return $this->erotica();
 			case 'alt.binaries.etc':
@@ -130,6 +136,8 @@ class nameCleaning
 				return $this->game();
 			case 'alt.binaries.games':
 				return $this->games();
+			case 'alt.binaries.games.dox':
+				return $this->games_dox();
 			case 'alt.binaries.games.xbox360':
 				return $this->games_xbox360();
 			case 'alt.binaries.german.movies':
@@ -833,6 +841,51 @@ class nameCleaning
 			return $this->generic();
 	}
 
+	//a.b.ebook
+	public function ebook()
+	{
+		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
+		return $match[2];
+		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
+		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $this->subject, $match))
+			return $match[1].$match[2];
+		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
+
+	//a.b.e-book
+	public function e_book()
+	{
+		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
+			return $match[2];
+		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
+		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $this->subject, $match))
+			return $match[1].$match[2];
+		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
+
+	//a.b.e-book.flood
+	public function e_book_flood()
+	{
+		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
+			return $match[2];
+		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
+
 	// a.b.erotica
 	public function erotica()
 	{
@@ -888,8 +941,8 @@ class nameCleaning
 	public function game()
 	{
 		//[192474]-[MP3]-[a.b.inner-sanctumEFNET]-[ Newbie_Nerdz_-_I_Cant_Forget_that_Girl_EP-(IM005)-WEB-2012-YOU ] [17/17] - "newbie_nerdz_-_i_cant_forget_that_girl_ep-(im005)-web-2012-you.nfo" yEnc
-		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ .+? \][- ]\[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-)\[ (.+?) \][- ]\[\d+\/\d+\] - "(.+?)" yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
 		else
 			return $this->generic();
 	}
@@ -913,13 +966,27 @@ class nameCleaning
 			return $this->generic();
 	}
 
+
+	// a.b.games.dox
+	public function games_dox()
+	{
+		//[142961]-[MP3]-[a.b.inner-sanctumEFNET]-[ Pascal_and_Pearce-Passport-CDJUST477-2CD-2011-1REAL ] [28/36] - "Pascal_and_Pearce-Passport-CDJUST477-2CD-2011-1REAL.par2" yEnc
+		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-)\[ (.+?) \][- ]\[\d+\/\d+\] - "(.+?)" yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
+		//[NEW DOX] The.King.of.Fighters.XIII.Update.v1.1c-RELOADED [1/6] - "The.King.of.Fighters.XIII.Update.v1.1c-RELOADED.par2"
+		else if (preg_match('/^\[(.+?)\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"(.+?)' . $this->e1, $this->subject, $match))
+			return $match[1].$match[2];
+		else
+			return $this->generic();
+	}
+
 	// a.b.games.xbox360
 	public function games_xbox360()
 	{
 		//Uploader.Presents-Injustice.Gods.Among.Us.Ultimate.Edition.XBOX360-COMPLEX(02/92]"complex-injustice.ultimate.nfo" yEnc
 		//Uploader.Presents-Need.For.Speed.Rivals.XBOX360-PROTOCOL[10/94]"nfs.r-ptc.r07" yEnc
-		if (preg_match('/^Uploader.Presents-(.+?)[\(\[]\d+\/\d+\]".+?" yEnc$/', $this->subject, $match))
-			return $match[1];
+		if (preg_match('/^(Uploader.Presents)[- ](.+?)[\(\[]\d+\/\d+\]".+?" yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
 		//place2home.net - Call.of.Duty.Ghosts.XBOX360-iMARS - [095/101] - "imars-codghosts-360b.vol049+33.par2" yEnc
 		//Place2home.net - Diablo_III_USA_RF_XBOX360-PROTOCOL - "d3-ptc.r34" yEnc
 		else if (preg_match('/^place2home\.net - (.*?) - (\[\d+\/\d+\] - )?".+?" yEnc$/i', $this->subject, $match))
@@ -2214,6 +2281,43 @@ class nameCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
+		else if ($groupName === "alt.binaries.ebook")
+		{
+			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
+				return $match[2];
+			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $subject, $match))
+				return $match[1];
+			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.e-book")
+		{
+			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
+				return $match[2];
+			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw3)" yEnc/', $subject, $match))
+				return $match[1];
+			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.e-book.flood")
+		{
+			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
+			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
+				return $match[2];
+			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
+			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
 		else if ($groupName === "alt.binaries.e-book.technical")
 		{
 			//ASST NEW MTLS 13 MAR 2012 A  -  [106/116] - "The Elements of Style, Illus. - W. Strunk Jr., E. White, M. Kalman (Penguin, 2005) WW.pdf" yEnc
@@ -2277,8 +2381,8 @@ class nameCleaning
 		else if ($groupName === "alt.binaries.game")
 		{
 			//[192474]-[MP3]-[a.b.inner-sanctumEFNET]-[ Newbie_Nerdz_-_I_Cant_Forget_that_Girl_EP-(IM005)-WEB-2012-YOU ] [17/17] - "newbie_nerdz_-_i_cant_forget_that_girl_ep-(im005)-web-2012-you.nfo" yEnc
-			if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
-				return $match[1];
+			if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-)\[ (.+?) \][- ]\[\d+\/\d+\] - "(.+?)" yEnc$/', $subject, $match))
+				return $match[2];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -2296,6 +2400,17 @@ class nameCleaning
 			//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [11/17] - "Reload.Outdoor.Action.Target.Down.GERMAN-0x0007.vol003+004.PAR2" yEnc
 			else if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "(.+?)' . $this->e1, $subject, $match))
 				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.games.dox")
+		{
+			//[142961]-[MP3]-[a.b.inner-sanctumEFNET]-[ Pascal_and_Pearce-Passport-CDJUST477-2CD-2011-1REAL ] [28/36] - "Pascal_and_Pearce-Passport-CDJUST477-2CD-2011-1REAL.par2" yEnc
+			if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\]-)\[ (.+?) \][- ]\[\d+\/\d+\] - "(.+?)" yEnc$/', $subject, $match))
+				return $match[2];
+			//[NEW DOX] The.King.of.Fighters.XIII.Update.v1.1c-RELOADED [1/6] - "The.King.of.Fighters.XIII.Update.v1.1c-RELOADED.par2"
+			else if (preg_match('/^\[(.+?)\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"(.+?)'.$this->e1, $subject, $match))
+				return $match[2];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
