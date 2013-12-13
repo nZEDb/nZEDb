@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__FILE__) . '/../../../../www/config.php';
 require_once nZEDb_LIB . 'anidb.php';
 require_once nZEDb_LIB . 'books.php';
 require_once nZEDb_LIB . 'category.php';
