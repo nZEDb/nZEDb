@@ -30,7 +30,7 @@ Class Predb
 		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
-		if (strtotime($newestrel['adddate']) < time()-600 || is_null($newestrel['adddate']))
+		if (strtotime($newestrel['adddate']) < time()-0 || is_null($newestrel['adddate']))
 		{
 			if ($this->echooutput)
 				echo "Retrieving titles from preDB sources.\n";
@@ -134,8 +134,10 @@ Class Predb
 					}
 				}
 			}
+			echo $updated." \tUpdated from Womble.\n";
 		}
-		echo $updated." \tUpdated from Womble.\n";
+		else
+			echo "Error: \tUpdate from Womble failed.\n";
 		return $newnames;
 	}
 
@@ -179,8 +181,10 @@ Class Predb
 					}
 				}
 			}
+			echo $updated." \tUpdated from Omgwtfnzbs.\n";
 		}
-		echo $updated." \tUpdated from Omgwtfnzbs.\n";
+		else
+			echo "Error: \tUpdate from Omgwtfnzbs failed.\n";
 		return $newnames;
 	}
 
@@ -227,6 +231,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Zenet failed.\n";
 		return $newnames;
 	}
 
@@ -279,6 +285,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Prelist failed.\n";
 		return $newnames;
 	}
 
@@ -320,6 +328,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Orly failed.\n";
 		return $newnames;
 	}
 
@@ -339,8 +349,7 @@ Class Predb
 		);
 
 		$context = stream_context_create($options);
-		$releases = file_get_contents($url, false, $context);
-		$releases = @simplexml_load_string($releases);
+		$releases = @simplexml_load_string(@file_get_contents($url, false, $context));
 		if ($releases !== false)
 		{
 			foreach ($releases->channel->item as $release)
@@ -355,6 +364,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Srr failed.\n";
 		return $newnames;
 	}
 
@@ -381,6 +392,8 @@ Class Predb
 					}
 				}
 			}
+			else
+				echo "Error: \tUpdate from Predbme failed.\n";
 		}
 		return $newnames;
 	}
@@ -416,6 +429,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Moovee failed.\n";
 	}
 
 	public function retrieveAllfilledTeevee()
@@ -449,6 +464,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Teevee failed.\n";
 	}
 
 	public function retrieveAllfilledErotica()
@@ -482,6 +499,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Erotica failed.\n";
 	}
 
 	public function retrieveAllfilledForeign()
@@ -515,6 +534,8 @@ Class Predb
 				}
 			}
 		}
+		else
+			echo "Error: \tUpdate from Forrign failed.\n";
 	}
 
 	// Update a single release as it's created.
