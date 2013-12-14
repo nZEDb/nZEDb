@@ -54,6 +54,7 @@ class DB extends PDO
 			exit($this->c->error("config.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
 		}
 
+		$this->c = new ColorCLI();
 		if (!(self::$pdo instanceof PDO))
 		{
 			$this->initialiseDatabase();
@@ -67,7 +68,6 @@ class DB extends PDO
 		{
 			$this->memcached = false;
 		}
-		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
 
 		return self::$pdo;

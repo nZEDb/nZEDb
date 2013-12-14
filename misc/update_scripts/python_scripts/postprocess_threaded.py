@@ -55,6 +55,12 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
 	cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -1) as j, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -2) as k, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -3) as l, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -4) as m, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -5) as n, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -6) as o")
 	dbgrab = cur.fetchall()
+	ps1 = format(int(dbgrab[0][9]))
+	ps2 = format(int(dbgrab[0][10]))
+	ps3 = format(int(dbgrab[0][11]))
+	ps4 = format(int(dbgrab[0][12]))
+	ps5 = format(int(dbgrab[0][13]))
+	ps6 = format(int(dbgrab[0][14]))
 elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
@@ -72,12 +78,6 @@ tmppath = dbgrab[0][6]
 posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 maxsize = (int(maxsizeck * 1073741824))
-ps1 = format(int(dbgrab[0][9]))
-ps2 = format(int(dbgrab[0][10]))
-ps3 = format(int(dbgrab[0][11]))
-ps4 = format(int(dbgrab[0][12]))
-ps5 = format(int(dbgrab[0][13]))
-ps6 = format(int(dbgrab[0][14]))
 
 if sys.argv[1] == "additional":
 	print(bcolors.HEADER + "Available to process: -6 = {}, -5 = {}, -4 = {}, -3 = {}, -2 = {}, -1 = {}".format(ps6, ps5, ps4, ps3, ps2, ps1) + bcolors.ENDC);
