@@ -245,6 +245,7 @@ class Import
 					if ($this->db->dbSystem() == 'mysql')
 						$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
 					else if ($this->db->dbSystem() == 'pgsql')
+					{
 						$idr = $this->db->queryDirect(sprintf('SELECT id FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $this->db->escapeString($hash)));
 						if ($idr->rowCount() > 0)
 						{
