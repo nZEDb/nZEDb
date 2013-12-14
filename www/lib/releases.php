@@ -992,7 +992,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			if ($db->newtables($groupID) === false)
 				exit ("There is a problem creating new parts/files tables for this group.\n");
 			$group['cname'] = 'collections_'.$groupID;
@@ -1060,7 +1060,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			$group['cname'] = 'collections_'.$groupID;
 			$group['bname'] = 'binaries_'.$groupID;
 			$group['pname'] = 'parts_'.$groupID;
@@ -1076,7 +1076,9 @@ class Releases
 			echo $this->c->header("\nStage 2 -> Get the size in bytes of the collection.");
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$checked = $db->queryDirect('UPDATE '.$group['cname'].' c SET filesize = (SELECT SUM(size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0'.$where);
+		$checked = $db->queryDirect('UPDATE '.$group['cname'].' c SET filesize =
+									IFNULL((SELECT SUM(p.size) FROM '.$group['pname'].' p LEFT JOIN '.$group['bname'].' b ON p.binaryid = b.id WHERE b.collectionid = c.id), 0),
+									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0'.$where);
 		if ($this->echooutput)
 		{
 			echo $this->c->primary($checked->rowCount()." collections set to filecheck = 3(size calculated)");
@@ -1093,7 +1095,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			$group['cname'] = 'collections_'.$groupID;
 			$group['bname'] = 'binaries_'.$groupID;
 			$group['pname'] = 'parts_'.$groupID;
@@ -1251,7 +1253,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			$group['cname'] = 'collections_'.$groupID;
 			$group['bname'] = 'binaries_'.$groupID;
 			$group['pname'] = 'parts_'.$groupID;
@@ -1487,7 +1489,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			$group['cname'] = 'collections_'.$groupID;
 			$group['bname'] = 'binaries_'.$groupID;
 			$group['pname'] = 'parts_'.$groupID;
@@ -1665,7 +1667,7 @@ class Releases
 		if ($this->tablepergroup == 1)
 		{
 			if ($groupID == '')
-				exit("You are using 'tablepergroup', you must use releases_threaded.py\n");
+				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			$group['cname'] = 'collections_'.$groupID;
 			$group['bname'] = 'binaries_'.$groupID;
 			$group['pname'] = 'parts_'.$groupID;
