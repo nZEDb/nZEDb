@@ -572,6 +572,7 @@ class Movie
 				{
 					$year = false;
 					$moviename = $parsed['title'];
+					$movienameonly = $moviename;
 					if ($parsed['year'] != '')
 					{
 						$year = true;
@@ -606,6 +607,19 @@ class Movie
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 
 						continue;
+					}
+
+					// Check OMDbapi first
+					if ($year === true && preg_match('/\d{4}/', $year))
+						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ','%20',$movienameonly) . '&y='. $year .'&r=json';
+					else
+						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ','%20',$movienameonly) . '&r=json';
+					$omdbid = json_decode(file_get_contents($url));
+					if (isset($omdbid->imdbID))
+					{
+						$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
+						if ($imdbId != false)
+							continue;
 					}
 
 					// Check on trakt.

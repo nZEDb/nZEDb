@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version="0.3r4603";
+$version="0.3r4613";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -28,7 +28,7 @@ $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
 $running = (isset($tmux->running)) ? $tmux->running : 0;
 $bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		
+
 
 if (command_exist("python3"))
 	$PYTHON = "python3 -OOu";
