@@ -3,7 +3,7 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-2013-12-14 -> jonnyboy -> attempt to fix is null error in stage, releases.php
+2013-12-14 -> jonnyboy -> attempt to fix is null error in stage, releases.php, added OMDb API lookup as first lookup for imdb id
 2013-12-13 -> niel     -> Moved initializing of DB::$c so that it is available if initializing the pdo object fails.
 2013-12-13 -> jonnyboy -> added additional output to postprocessing additional, fixed a couple of predb bugs
 2013-12-08 -> jonnyboy -> added added lookups to requestid lookup, fixed bug in tmux not counting/processing amazon since added clean option
