@@ -572,10 +572,10 @@ class Movie
 				{
 					$year = false;
 					$moviename = $parsed['title'];
+					$movienameonly = $moviename;
 					if ($parsed['year'] != '')
 					{
 						$year = true;
-						$movienameonly = $moviename;
 						$moviename .= ' ('.$parsed['year'].')';
 					}
 					if ($this->echooutput && $releaseToWork == '')
