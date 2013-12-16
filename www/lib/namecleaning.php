@@ -164,7 +164,7 @@ class nameCleaning
 				return $this->moovee();
 			case 'alt.binaries.movies.divx':
 				return $this->movies_divx();
-			case 'alt.binaries.x264':
+			case 'alt.binaries.movies.x264':
 				return $this->movies_x264();
 			case 'alt.binaries.mp3.complete_cd':
 				return $this->mp3_complete_cd();
