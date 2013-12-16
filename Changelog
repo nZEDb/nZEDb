@@ -3,6 +3,10 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
+2013-12-16 -> niel     -> Changing password hashing method to make them more secure. crypt() uses the best algorithm your system has available.
+                          YOU WILL NEED TO RESET YOUR PASSWORD.
+                          Removing now unnecessary 'siteseed' setting from site table.
+                          Updating the convert from newznab script to accommodate these changes.
 2013-12-14 -> jonnyboy -> attempt to fix is null error in stage, releases.php, added OMDb API lookup as first lookup for imdb id
 2013-12-13 -> niel     -> Moved initializing of DB::$c so that it is available if initializing the pdo object fails.
 2013-12-13 -> jonnyboy -> added additional output to postprocessing additional, fixed a couple of predb bugs
