@@ -364,6 +364,11 @@ class Users
 		return crypt($password);		// let the salt be automatically generated
 	}
 
+	public static function hashSHA1($string)
+	{
+		return sha1($string);
+	}
+
 	public static function checkPassword($password, $hash)
 	{
 		return (crypt($password, $hash) == $hash);
