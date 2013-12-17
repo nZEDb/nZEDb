@@ -59,7 +59,10 @@ Class Predb
 			$this->retrieveAllfilledTeevee();
 			$this->retrieveAllfilledErotica();
 			$this->retrieveAllfilledForeign();
-			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme;
+			$abgx = $this->retrieveAbgx();
+			if ($this->echooutput)
+				echo $abgx." \tRetrieved from abgx.\n";
+			$newnames = $newwomble+$newomgwtf+$newzenet+$newprelist+$neworly+$newsrr+$newpdme+$abgx;
 			if(count($newnames) > 0)
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 			return $newnames;
@@ -360,7 +363,8 @@ Class Predb
 					continue;
 				else
 				{
-					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));$newnames++;
+					$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));
+					$newnames++;
 				}
 			}
 		}
@@ -536,6 +540,60 @@ Class Predb
 		}
 		else
 			echo "Error: \tUpdate from Foreign failed.\n";
+	}
+
+	public function retrieveAbgx()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$db = new DB();
+		$groups = new Groups();
+
+		$options = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Accept-language: en\r\n" .
+					  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
+					  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad
+		  )
+		);
+		$context = stream_context_create($options);
+		$arr = array('x360', 'abcp', 'abgw', 'abgwu', 'absp', 'abgn', 'spsv', 'n3ds', 'abgx', 'abg', 'x360');
+		foreach ($arr as &$value)
+		{
+			$releases = @simplexml_load_string(@file_get_contents('http://www.abgx.net/rss/' . $value . '/posted.rss', false, $context));
+			if ($releases !== false)
+			{
+				preg_match('/^Filled requests in #(\S+)/', $releases->channel->description, $groupname);
+				$groupid = ($groups->getIDByName($groupname[1])) ? $groups->getIDByName($groupname[1]) : 0;
+				foreach ($releases->channel->item as $release)
+				{
+					preg_match('/^Req (\d+) - (\S+) .+/', $release->title, $request);
+					$requestid = $request[1];
+					preg_match('/\(\d+\) (\S+) .+(\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2})/', $release->description, $title);
+					$md5 = md5($title[1]);
+					$predate = $title[2];
+
+					$oldname = $db->queryOneRow(sprintf('SELECT md5, requestid, groupid FROM predb WHERE md5 = %s', $db->escapeString($md5)));
+					if ($oldname !== false && $oldname['md5'] == $md5)
+					{
+						$oldrequestid = $oldname['requestid'];
+						$oldgroupid = $oldname['groupid'];
+						$db->queryExec(sprintf('UPDATE predb SET requestid = IF(%d = 0, %d, 0), groupid = IF(%d = 0, %d, 0) WHERE md5 = %s', $oldrequestid, $requestid, $oldgroupid, $groupid, $db->escapeString($md5)));
+					}
+					else
+					{
+						if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %d, %d)', $db->escapeString($title[1]), $db->from_unixtime(strtotime($predate)), $db->escapeString('abgx'), $db->escapeString($md5), $requestid, $groupid)))
+						{
+							$newnames++;
+						}
+					}
+				}
+			}
+			else
+				echo "Error: \tUpdate from ABGX failed.\n";
+		}
+		return $newnames;
 	}
 
 	// Update a single release as it's created.
