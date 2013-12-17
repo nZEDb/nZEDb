@@ -34,7 +34,7 @@ function preName($argv)
 	if($total > 0)
 	{
 		$precount = $db->queryOneRow('SELECT COUNT(*) AS count FROM predb');
-		echo $c->primary('Comparing '.number_format($total).' releases against '.number_format($precount['count'])." preDB's.");
+		echo $c->header("\nComparing ".number_format($total).' releases against '.number_format($precount['count'])." preDB's.");
 		sleep(2);
 		$consoletools = new ConsoleTools();
 		$category = new Category();

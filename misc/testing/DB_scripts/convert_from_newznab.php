@@ -198,8 +198,7 @@ function truncateTable($db, $tableName, $runQueries)
 
 	echo "Skipping rolexcat table: Not in nZEDb\n";
 
-	echo "Skipping sites table: You must manually update your site settings (siteseed will be copied)\n";
-	runQueryupdate($db, "UPDATE ".$nZEDB_schema.".site set value = (select value from ".$nn_schema.".site where setting = siteseed) where setting = siteseed", $runQueries);
+	echo "Skipping sites table: You must manually update your site settings (siteseed is not used)\n";
 
 	echo "Skipping sphinx table: Not in nZEDb\n";
 
@@ -237,9 +236,9 @@ function truncateTable($db, $tableName, $runQueries)
 	convertTable($db, $nZEDB_schema, "userroles", "INSERT IGNORE INTO ".$nZEDB_schema.".userroles (apirequests, canpreview, defaultinvites, downloadrequests, id, isdefault, name) ".
 				"SELECT apirequests, canpreview, defaultinvites, downloadrequests, ID, isdefault, name FROM ".$nn_schema.".userroles", $runQueries);
 
-	// You lose (kindleid, notes, rolechangedate, nzbvortex_api_key, nzbvortex_server_url).
-	convertTable($db, $nZEDB_schema, "users", "INSERT INTO ".$nZEDB_schema.".users (apiaccess, bookview, consoleview, createddate, email, grabs, host, id, invitedby, invites, lastlogin, movieview, musicview, password, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl,username, userseed) ".
-		"SELECT apiaccess, bookview, consoleview, createddate, email, grabs, host, ID, invitedby, invites, lastlogin, movieview, musicview, password, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl, username, userseed FROM ".$nn_schema.".users", $runQueries);
+	// You lose (kindleid, notes, rolechangedate, nzbvortex_api_key, nzbvortex_server_url, siteseed; and password IS reset).
+	convertTable($db, $nZEDB_schema, "users", "INSERT INTO ".$nZEDB_schema.".users (apiaccess, bookview, consoleview, createddate, email, grabs, host, id, invitedby, invites, lastlogin, movieview, musicview, password, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl, username) ".
+		"SELECT apiaccess, bookview, consoleview, createddate, email, grabs, host, ID, invitedby, invites, lastlogin, movieview, musicview, NULL, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl, username FROM ".$nn_schema.".users", $runQueries);
 
 	convertTable($db, $nZEDB_schema, "userseries", "INSERT INTO ".$nZEDB_schema.".userseries (userid, rageid, categoryid, createddate) ".
 		"SELECT userID, rageID, categoryID, createddate FROM ".$nn_schema.".userseries", $runQueries);
@@ -248,4 +247,3 @@ function truncateTable($db, $tableName, $runQueries)
 		."You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
 		."DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
 ?>
-

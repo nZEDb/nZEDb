@@ -16,6 +16,9 @@ if (!$cfg->isInitialized())
 $cfg = $cfg->getSession();
 
 // Start checks.
+$cfg->cryptCheck = function_exists('crypt');
+if ($cfg->cryptCheck === false) $cfg->error = true;
+
 $cfg->sha1Check = function_exists('sha1');
 if ($cfg->sha1Check === false)
 	$cfg->error = true;

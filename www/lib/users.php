@@ -361,23 +361,12 @@ class Users
 
 	public static function hashPassword($password)
 	{
-		$salt = self::randomKey(self::SALTLEN);
-		$site = new Sites();
-		$s = $site->get();
-		return self::hashSHA1($s->siteseed.$password.$salt.$s->siteseed).$salt;
-	}
-
-	public static function hashSHA1($string)
-	{
-		return sha1($string);
+		return crypt($password);		// let the salt be automatically generated
 	}
 
 	public static function checkPassword($password, $hash)
 	{
-		$salt = substr($hash, -self::SALTLEN);
-		$site = new Sites();
-		$s = $site->get();
-		return self::hashSHA1($s->siteseed.$password.$salt.$s->siteseed) === substr($hash, 0, self::SHA1LEN);
+		return (crypt($password, $hash) == $hash);
 	}
 
 	public function isLoggedIn()
