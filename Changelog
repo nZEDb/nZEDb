@@ -5,6 +5,7 @@ Each update goes to the top of the file
 
 
 2013-12-17 -> jonnyboy -> added option to not display renaming in requestid.php
+2013-12-17 -> bart39   -> Additional regexes added to namecleaning
 2013-12-16 -> niel     -> Adding misc/testing/DB_scripts/setUserPasswordHash.php to allow resetting of passwords to current method.
                           Changing password hashing method to make them more secure. crypt() uses the best algorithm your system has available.
                           YOU WILL NEED TO RESET YOUR PASSWORD.
