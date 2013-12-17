@@ -107,7 +107,7 @@ function localLookup($requestID, $groupName, $oldname)
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
 	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
-	if (isset($run['title']) && preg_match('/s\d+/'i, $run['title']) && !preg_match('/s\d+e\d+/'i, $run['title'])
+	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title']))
 	{
 		return false;
 	}
