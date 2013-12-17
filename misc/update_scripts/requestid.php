@@ -96,7 +96,7 @@ if($total > 0)
 		}
 	}
 	if ($total > 0)
-		echo $c->header("\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart).".");
+		echo $c->header("\nRenamed ".number_format($counter)." releases in ".$consoletools->convertTime(TIME() - $timestart).".");
 	else
 		echo $c->info("\nNothing to do.");
 }
