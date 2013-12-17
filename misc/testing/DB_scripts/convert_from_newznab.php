@@ -247,4 +247,3 @@ function truncateTable($db, $tableName, $runQueries)
 		."You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
 		."DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
 ?>
-
