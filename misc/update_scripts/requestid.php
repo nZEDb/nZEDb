@@ -10,9 +10,9 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI;
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1])))
 	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5 doing local lookup only.\n"
-		."php requestid.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
-		."php requestid.php full 		...: to run on full database.\n"
-		."php requestid.php all 		...: to run on all hashed releases(including previously renamed).\n"));
+		."php requestid.php 1000 true		...: to limit to 1000 sorted by newest postdate and show renaming.\n"
+		."php requestid.php full true		...: to run on full database and show renaming.\n"
+		."php requestid.php all true		...: to run on all hashed releases(including previously renamed) and show renaiming.\n"));
 
 $db = new DB();
 $page = new Page();
@@ -36,7 +36,7 @@ if($total > 0)
 	$precount = $db->queryOneRow('SELECT COUNT(*) AS count FROM predb WHERE requestid > 0');
 	echo $c->header("\nComparing ".number_format($total).' releases against '.number_format($precount['count'])." Local requestID's.");
 	sleep(2);
-	
+
 	foreach ($qry as $row)
 	{
 		if (!preg_match('/^\[\d+\]/', $row['name']) && !preg_match('/^\[ \d+ \]/', $row['name']))
@@ -48,7 +48,7 @@ if($total > 0)
 		$requestIDtmp = explode(']', substr($row['name'], 1));
 		$bFound = false;
 		$newTitle = '';
-		
+
 		if (count($requestIDtmp) >= 1)
 		{
 			$requestID = (int) trim($requestIDtmp[0]);
@@ -67,17 +67,27 @@ if($total > 0)
 			$determinedcat = $category->determineCategory($newTitle, $groupname);
 			$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $row['id']));
 			$run->execute();
-			$newcatname = $category->getNameByID($determinedcat);
-			$oldcatname = $category->getNameByID($row['categoryid']);
-
-			echo 	$c->headerOver($n.$n.'New name:  ').$c->primary($newTitle).
-					$c->headerOver('Old name:  ').$c->primary($row['name']).
-					$c->headerOver('New cat:   ').$c->primary($newcatname).
-					$c->headerOver('Old cat:   ').$c->primary($oldcatname).
-					$c->headerOver('Group:     ').$c->primary($row['groupname']).
-					$c->headerOver('Method:    ').$c->primary('requestID local').
-					$c->headerOver('ReleaseID: ').$c->primary($row['id']);
 			$counter++;
+			if (isset($argv[2]) && $argv[2] === 'true')
+			{
+				$newcatname = $category->getNameByID($determinedcat);
+				$oldcatname = $category->getNameByID($row['categoryid']);
+
+				echo 	$c->headerOver($n.$n.'New name:  ').$c->primary($newTitle).
+						$c->headerOver('Old name:  ').$c->primary($row['name']).
+						$c->headerOver('New cat:   ').$c->primary($newcatname).
+						$c->headerOver('Old cat:   ').$c->primary($oldcatname).
+						$c->headerOver('Group:     ').$c->primary($row['groupname']).
+						$c->headerOver('Method:    ').$c->primary('requestID local').
+						$c->headerOver('ReleaseID: ').$c->primary($row['id']);
+			}
+			else
+			{
+				if ($counter % 100 == 0)
+				{
+					echo ".";
+				}
+			}
 		}
 		else
 		{
@@ -86,7 +96,7 @@ if($total > 0)
 		}
 	}
 	if ($total > 0)
-		echo $c->header("\nRenamed ".$counter." releases in ".$consoletools->convertTime(TIME() - $timestart).".");
+		echo $c->header("\nRenamed ".number_format($counter)." releases in ".$consoletools->convertTime(TIME() - $timestart).".");
 	else
 		echo $c->info("\nNothing to do.");
 }
@@ -97,6 +107,11 @@ function localLookup($requestID, $groupName, $oldname)
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
 	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title']))
+	{
+		return false;
+	}
+
 	if (isset($run['title']))
 		return $run['title'];
 	if (preg_match('/\[#?a\.b\.teevee\]/', $oldname))

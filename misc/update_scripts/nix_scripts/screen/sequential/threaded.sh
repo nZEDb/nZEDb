@@ -82,10 +82,10 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
 #	$PHP ${DEV_PATH}/renametopre.php 4
-#	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no

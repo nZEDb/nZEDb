@@ -88,7 +88,7 @@ posttorun = int(dbgrab[0][7])
 postnon = dbgrab[0][8]
 maxsize = (int(maxsizeck * 1073741824))
 
-if sys.argv[1] == "additional":
+if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
 	print(bcolors.HEADER + "Available to process: -6 = {}, -5 = {}, -4 = {}, -3 = {}, -2 = {}, -1 = {}".format(ps6, ps5, ps4, ps3, ps2, ps1) + bcolors.ENDC);
 
 datas = []
