@@ -407,7 +407,7 @@ class TvRage
 		return false;
 	}
 
-	//Convert 2012-24-07 to 2012-07-24, there is probably a better way
+	// Convert 2012-24-07 to 2012-07-24, there is probably a better way
 	public function checkDate($date)
 	{
 		if (!empty($date) && $date != NULL)

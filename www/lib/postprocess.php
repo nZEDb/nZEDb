@@ -404,7 +404,7 @@ class PostProcess
 				$this->doecho('Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
 				$this->doecho('Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample');
 				$this->doecho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
-				// Get count of releases per passwirdstatus
+				// Get count of releases per passwordstatus
 				$pw1 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -1');
 				$pw2 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -2');
 				$pw3 = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = -3');

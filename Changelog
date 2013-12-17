@@ -3,17 +3,29 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-2013-12-13 -> niel     -> Moved initialising of DB::$c so that it is available if initialising the pdo object fails.
+
+2013-12-17 -> jonnyboy -> added option to not display renaming in requestid.php
+2013-12-17 -> bart39   -> Additional regexes added to namecleaning
+2013-12-16 -> niel     -> Adding misc/testing/DB_scripts/setUserPasswordHash.php to allow resetting of passwords to current method.
+                          Changing password hashing method to make them more secure. crypt() uses the best algorithm your system has available.
+                          YOU WILL NEED TO RESET YOUR PASSWORD.
+                          Removing now unnecessary 'siteseed' setting from site table.
+                          Updating the convert from newznab script to accommodate these changes.
+2013-12-16 -> jonnyboy -> added requestid.php for local lookup, is faster than using python script for local and is recommended
+                          added script to import/export predb dump to allow for insert and update
+                          merged unmerged pull requests for TMDB.php
+2013-12-14 -> jonnyboy -> attempt to fix is null error in stage, releases.php, added OMDb API lookup as first lookup for imdb id
+2013-12-13 -> niel     -> Moved initializing of DB::$c so that it is available if initializing the pdo object fails.
 2013-12-13 -> jonnyboy -> added additional output to postprocessing additional, fixed a couple of predb bugs
 2013-12-08 -> jonnyboy -> added added lookups to requestid lookup, fixed bug in tmux not counting/processing amazon since added clean option
 2013-12-08 -> jonnyboy -> added requestid lookup to current predb, fixed zenet
 2013-12-07 -> jonnyboy -> added scripts for downloading headers to file and parse headers with current regexes
                           removed threads for pp amazon, added clean option for anidb, book, console and music pp, fixed patches
-2012-12-07 -> egandt   -> added new parmeter to sites table (optional) modified through sites->edit screen to select which book categories to lookup on Amazon.
+2012-12-07 -> egandt   -> added new parameter to sites table (optional) modified through sites->edit screen to select which book categories to lookup on Amazon.
 2013-12-06 -> jonnyboy -> updated tmux for pgsql - working, fixed bug in monitor - pane not found, update_releases.php still not working with pgsql
 2013-12-05 -> niel     -> Changing anidb table. Dropping id column (not needed as anidbid is numeric and unique) adding imdbid and tvdbid columns
 2013-12-05 -> jonnyboy -> change table names for tpg
-2013-12-04 -> jonnyboy -> updated and verfied pgsql schema and all patches.
+2013-12-04 -> jonnyboy -> updated and verified pgsql schema and all patches.
 2013-12-03 -> jonnyboy -> removed incomplete patch, added color to more scripts, added functions to consoletools for overwrite color, added ability to reset specific bits using resetRelnameStatus.php,
                           added option to import x number nzbs, then exit
 2013-12-02 -> jonnyboy -> moved releases.hashed and releases.request to bitwise, changed bitwise to smallint unsigned, fixed bug in db.php, moved hdtv and bdrip to hd, if searchname contains part# but not s/e numbers,
@@ -202,7 +214,7 @@ Each update goes to the top of the file
                           added option for alternate sequential run in tmux
 2013-08-21 -> kevin    -> Add memcache support. Add the following under define('NNTP_SSLENABLED_A', false); in your config.php. Set to true to enable. (for ubuntu -> sudo apt-get install memcached php5-memcache)
 
-                          // Wether to use memcached or not.
+                          // Whether to use memcached or not.
                           define('MEMCACHE_ENABLED', false);
                           define('MEMCACHE_HOST', '127.0.0.1');
                           define('MEMCACHE_PORT', '11211');
@@ -220,7 +232,7 @@ Each update goes to the top of the file
 2013-08-15 -> ThePeePs -> Site stats for alpha theme.
 2013-08-15 -> Josh     -> Update themes.
 2013-08-12 -> bodrick  -> Fixed bug with namefixer, if print changes only, status was still being set to updated.
-2013-08-12 -> kevin    -> Catgorize S01E01E02 / S01E01A properly, clean up more files.
+2013-08-12 -> kevin    -> Categorize S01E01E02 / S01E01A properly, clean up more files.
 2013-08-11 -> kevin    -> Clean up/fix bugs in a bunch of files in www/lib
 2013-08-10 -> kevin    -> Clean up postprocess.php
 2013-08-09 -> kevin    -> More regex in namecleaning.
@@ -266,7 +278,7 @@ Each update goes to the top of the file
                           fixed typo in namecleaning.php
 2013-07-15 -> jonnyboy -> replaced external decrypt hashes script with internal one
                           added preg_replace to grabnzbs and nzb-import to remove part number from end of subject
-2013-07-15 -> kevin    -> update namecleaning     Added some regex to name cleaning.
+2013-07-15 -> kevin    -> update namecleaning, Added some regex to name cleaning.
                           Make sure that yEnc is before part count in binaries.php (some High Compressed virus posts were getting through).
 2013-07-14 -> jonnyboy -> reverted last
                           changed default user view to list view

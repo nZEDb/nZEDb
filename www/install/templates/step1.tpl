@@ -3,12 +3,16 @@
 		<th>check</th>
 		<th style="width:75px;">status</th>
 	</tr>
-	<tr class="alt">
+	<tr class="">
 		<td>Checking for Curl support:{if !$cfg->curlCheck}<br /><span class="warn">The PHP installation lacks support for curl.</span>{/if}</td>
 		<td>{if $cfg->curlCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
-	<tr class="">
+	<tr class="alt">
 		<td>Checking for sha1():{if !$cfg->sha1Check}<br /><span class="error">The PHP installation lacks support for sha1.</span>{/if}</td>
+		<td>{if $cfg->sha1Check}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
+	</tr>
+	<tr class="">
+		<td>Checking for crypt():{if !$cfg->cryptCheck}<br /><span class="error">The PHP installation lacks support for crypt.</span>{/if}</td>
 		<td>{if $cfg->sha1Check}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
@@ -114,16 +118,16 @@
 {else}
 		<td>Checking for Apache's mod_rewrite:{if !$cfg->rewriteCheck}<br /><span class="warn">The Apache module mod_rewrite is not loaded. This module is required, please enable it if you are running Apache</span>{/if}</td>
 		<td>{if $cfg->rewriteCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
-{/if}		
+{/if}
 	</tr>
-	
+
 </table>
 
 <div align="center">
 {if !$cfg->error}
 	<p>No problems were found and you are ready to install.</p>
-	<form action="step2.php"><input type="submit" value="Go to step two: Set up the database" /></form>              
+	<form action="step2.php"><input type="submit" value="Go to step two: Set up the database" /></form>
 {else}
-	<div class="error">Errors encountered - nZEDb will not function correctly unless these problems are solved.</div> 
+	<div class="error">Errors encountered - nZEDb will not function correctly unless these problems are solved.</div>
 {/if}
 </div>

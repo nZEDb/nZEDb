@@ -32,6 +32,7 @@ class Movie
 		$this->imgSavePath = nZEDb_WWW.'covers/movies/';
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
+		$this->c = new ColorCLI;
 	}
 
 	public function getMovieInfo($imdbId)
@@ -167,7 +168,29 @@ class Movie
 
 		$order = $this->getMovieOrder($orderby);
 		if ($this->db->dbSystem() == 'mysql')
-			$sql = sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s GROUP BY m.imdbid ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+		{
+			$sql = sprintf("SELECT
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+					GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+					GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+					GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+					GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+					m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
+					LEFT OUTER JOIN groups ON groups.id = r.groupid
+					INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != ''
+					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+					WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s
+					GROUP BY m.imdbid
+					ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+		}
 		else
 		{
 			$rel = new Releases();
@@ -265,7 +288,6 @@ class Movie
 
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
-
 		if (!$imdb && !$tmdb)
 		{
 			if ($this->echooutput && $this->service != '')
@@ -435,6 +457,8 @@ class Movie
 			$ret['cover'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185".$tmdbLookup['poster_path'];
 		if (isset($movie->backdrops) && sizeof($movie->backdrops) > 0)
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original".$tmdbLookup['backdrop_path'];
+		if ($this->echooutput)
+			echo "TMDb Found ".$ret['title']."\n";
 		return $ret;
 	}
 
@@ -501,6 +525,8 @@ class Movie
 					$ret['director'] = $results[1];
 				}
 			}
+			if ($this->echooutput && isset($ret['title']))
+				echo "IMDb Found ".$ret['title']."\n";
 
 			return $ret;
 		}
@@ -516,7 +542,9 @@ class Movie
 			if ($service == 'nfo')
 				$this->service = 'nfo';
 			if ($this->echooutput && $this->service != '')
-				echo "\n".$service.' found IMDBid: tt'.$imdbId."\n";
+			{
+				echo $this->c->headerOver("\n" . $service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId);
+			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
 
@@ -572,6 +600,7 @@ class Movie
 				{
 					$year = false;
 					$moviename = $parsed['title'];
+					$movienameonly = $moviename;
 					if ($parsed['year'] != '')
 					{
 						$year = true;
@@ -606,6 +635,19 @@ class Movie
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 
 						continue;
+					}
+
+					// Check OMDbapi first
+					if ($year === true && preg_match('/\d{4}/', $year))
+						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ','%20',$movienameonly) . '&y='. $year .'&r=json';
+					else
+						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ','%20',$movienameonly) . '&r=json';
+					$omdbid = json_decode(file_get_contents($url));
+					if (isset($omdbid->imdbID))
+					{
+						$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
+						if ($imdbId != false)
+							continue;
 					}
 
 					// Check on trakt.
