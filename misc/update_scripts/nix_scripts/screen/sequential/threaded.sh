@@ -91,7 +91,8 @@ do
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
 #	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
+#	$PHP ${NZEDB_PATH}/requestid.php full
+#   $PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional

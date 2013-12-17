@@ -177,7 +177,17 @@ class Nfo
 		if ($nfocount > 0)
 		{
 			if ($this->echooutput && $releaseToWork == '')
+			{
 				echo $this->c->set256($this->primary).'Processing '.$nfocount.' NFO(s), starting at '.$this->nzbs." * = hidden NFO, + = NFO, - = no NFO, f = download failed.\n".$this->c->rsetcolor();
+				// Get count of releases per passwordstatus
+				$pw1 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -1');
+				$pw2 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -2');
+				$pw3 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -3');
+				$pw4 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -4');
+				$pw5 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -5');
+				$pw6 = $this->db->query('SELECT count(*) as count FROM releases WHERE nfostatus = -6');
+				$this->doecho('Available to process: -6 = '.number_format($pw6[0]['count']).', -5 = '.number_format($pw5[0]['count']).', -4 = '.number_format($pw4[0]['count']).', -3 = '.number_format($pw3[0]['count']).', -2 = '.number_format($pw2[0]['count']).', -1 = '.number_format($pw1[0]['count']));
+			}
 			$groups = new Groups();
 			$nzbcontents = new NZBcontents($this->echooutput);
 			$movie = new Movie($this->echooutput);
