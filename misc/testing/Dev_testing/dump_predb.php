@@ -50,7 +50,7 @@ else if (isset($argv[1]) && $argv[1] == 'import' && isset($argv[2]) && is_file($
 	$db->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_md5`, DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_adddate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
 
 	// Import file into tmp_pre
-	$db->queryDirect("LOAD DATA INFILE '".$path."' IGNORE into table tmp_pre (title, nfo, size, category, predate, adddate, source, md5, requestid, groupid)");
+	$db->queryDirect("LOAD DATA LOCAL INFILE '".$path."' IGNORE into table tmp_pre (title, nfo, size, category, predate, adddate, source, md5, requestid, groupid)");
 
 	// Insert and update table
 	$db->queryDirect('INSERT INTO '.$table.' (title, nfo, size, category, predate, adddate, source, md5, requestid, groupid) SELECT t.title, t.nfo, t.size, t.category, t.predate, t.adddate, t.source, t.md5, t.requestid, t.groupid FROM tmp_pre t ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo), predb.size = IF(predb.size is null, t.size, predb.size), predb.category = IF(predb.category is null, t.category, predb.category), predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid), predb.groupid = IF(predb.groupid = 0, t.groupid, predb.groupid)');
