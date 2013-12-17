@@ -302,7 +302,7 @@ class nameCleaning
 		//<Have Fun> [02/39] - SpongeBoZZ yEnc
 		else if (preg_match('/^(<Have Fun> \[)\d+(\/\d+\] - .+? )yEnc$/', $this->subject, $match))
 			return $match[1] . $match[2]; //return array('hash' => $match[1].$match[2], 'subject' => $this->subject, 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
-		//Old Dad uppt Taffe MÃ¤dels XivD LD HDTV Rip oben Kleine Einblendug German 01/43] - "Taffe MÃ¤dels.par2" yEnc
+		//Old Dad uppt Taffe Mädels XivD LD HDTV Rip oben Kleine Einblendug German 01/43] - "Taffe Mädels.par2" yEnc
 		else if (preg_match('/^([a-zA-Z0-9].+?\s{2,}|Old Dad uppt\s+)(.+?) \d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1] . $match[2]; //return array('hash' => $match[1].$match[2], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_TV_FOREIGN);
 		else
@@ -555,7 +555,7 @@ class nameCleaning
 		//[LB] - [063/112] - "RVL-GISSFBD.part063.rar" yEnc
 		else if (preg_match('/^(\[[A-Z]+\] - \[)\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match))
 			return $match[1] . $match[2]; //return array('hash' => $match[1].$match[2], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
-		//(Â¯`*.Â¸(PWP).*Â´Â¯) (071/100) "JUST4US_025.part070.rar" - 22,50 GB  yEnc
+		//(¯`*.¸(PWP).*´¯) (071/100) "JUST4US_025.part070.rar" - 22,50 GB  yEnc
 		else if (preg_match('/^\(.+?\(PWP\).+?\) \(\d+(\/\d+\) "(.+?))' . $this->e0 . ' .+? \d+[,.]\d+ [mMkKgG][bB] .+ yEnc$/', $this->subject, $match))
 			return $match[1]; //return array('hash' => $match[1], 'subject' => $match[2], 'rstatus' => Namefixer::NF_CATEGORIZED, 'cat' => Category::CAT_MISC);
 		//thnx to original poster [00/98] - "2669DFKKFD2008.nzb ` 2669DFKKFD2008 " yEnc
@@ -1141,7 +1141,7 @@ class nameCleaning
 		//Old Dad uppt 18 und immer (noch) Jungfrau DvD Rip AC3 XviD German 02/34] - "18 und immer (noch) Jungfrau.part01.rar" yEnc
 		//Old Dad uppt In ihrem Haus DVD Ripp AC3 German Xvid [01/31] - "In ihrem Haus.par2" yEnc
 		//Old Dad uppt Eine offene Rechnung XviD German DVd Rip[02/41] - "Eine offene Rechnung.part01.rar" yEnc
-		//Old Dad uppMiss Marple: Der WachsblumenstrauÃŸ , Wunschpost Xvid German10/29] - "Miss Marple Der WachsblumenstrauÃŸ.part09.rar" yEnc
+		//Old Dad uppMiss Marple: Der Wachsblumenstrauß , Wunschpost Xvid German10/29] - "Miss Marple Der Wachsblumenstrauß.part09.rar" yEnc
 		if (preg_match('/^(Old\s+Dad\s+uppt?.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1];
 		//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
@@ -1246,7 +1246,7 @@ class nameCleaning
 		//Antony.and.Cleopatra.1972.720p.WEB-DL.H264-brento -[35/57] - "Antony.and.Cleopatra.1972.720p.WEB-DL.AAC2.0.H.264-brento.part34.rar" yEnc
 		else if (preg_match('/^([a-zA-Z0-9._-]+ - ?\[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1];
-		//[133668] - p00okjiue34635xxzx$$Ã‚Â£Ã‚Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
+		//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
 		else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $this->subject, $match))
 			return $match[1];
 		//-[004/115] - "134218-0.par2" yEnc
@@ -1730,7 +1730,7 @@ class nameCleaning
 			//<Have Fun> "Invader.German.2012.PAL.DVDR-MORTAL.nfo" SpongeBoZZ yEnc
 			else if (preg_match('/^<Have Fun> "(.+?)' . $this->e0 . ' SpongeBoZZ yEnc$/', $subject, $match))
 				return $match[1] . $match[2];
-			//Old Dad uppt Taffe MÃ¤dels XivD LD HDTV Rip oben Kleine Einblendug German 01/43] - "Taffe MÃ¤dels.par2" yEnc
+			//Old Dad uppt Taffe Mädels XivD LD HDTV Rip oben Kleine Einblendug German 01/43] - "Taffe Mädels.par2" yEnc
 			else if (preg_match('/^([a-zA-Z0-9].+?\s{2,}|Old Dad uppt\s+)(.+?) \d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[2];
 			else
@@ -1767,7 +1767,7 @@ class nameCleaning
 			//(01/10) "The Vampire Diaries - Raseriet.par2" - 296,93 MB yEnc
 			else if (preg_match('/^(Re: )?\(\d+\/\d+\) "(.+)[\.-](par2).*" - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
 				return $match[2];
-			//Margaret Weis - Dragonlance Krï¿½niker Bind 1-6 [Danish AudioBook] [02/18] - "DL-CRON.r00" yEnc
+			//Margaret Weis - Dragonlance Kr�niker Bind 1-6 [Danish AudioBook] [02/18] - "DL-CRON.r00" yEnc
 			else if (preg_match('/^(.+) \[Danish.+\] \[\d+\/\d+\] - ".+" yEnc$/', $subject, $match))
 				return $match[1];
 			//David Baldacci - The Forgotten 128 kbps stereo [03/24] - "The Forgotten 01.m4b" yEnc
@@ -2307,7 +2307,7 @@ class nameCleaning
 			//>>> usenet4ever.info <<<+>>> secretusenet.com <<< "Weltnaturerbe USA Grand Canyon Nationalpark 2012 3D Blu-ray untouched  - DarKneSS.part039.rar" - DarKneSS yEnc
 			else if (preg_match('/^>+ .+?\.info [<>+]+ .+?\.com <+ "(.+?)\s+- .*?' . $this->e0 . ' - .+? yEnc$/', $subject, $match))
 				return $match[1];
-			//Old Dad uppt   Der groï¿½e Gatsby   BD Rip AC3 Line XvidD German  01/57] - "Der groï¿½e Gatsby.par2" yEnc
+			//Old Dad uppt   Der gro�e Gatsby   BD Rip AC3 Line XvidD German  01/57] - "Der gro�e Gatsby.par2" yEnc
 			else if (preg_match('/^Old\s+Dad\s+uppt?\s*?(.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return preg_replace('/\s\s+/', ' ', $match[1]);
 			//panter - [46/60] - "68645-Busty Beauties Car Wash XXX 3D BD26.part45.rar" yEnc
@@ -2711,7 +2711,7 @@ class nameCleaning
 			//Old Dad uppt 18 und immer (noch) Jungfrau DvD Rip AC3 XviD German 02/34] - "18 und immer (noch) Jungfrau.part01.rar" yEnc
 			//Old Dad uppt In ihrem Haus DVD Ripp AC3 German Xvid [01/31] - "In ihrem Haus.par2" yEnc
 			//Old Dad uppt Eine offene Rechnung XviD German DVd Rip[02/41] - "Eine offene Rechnung.part01.rar" yEnc
-			//Old Dad uppMiss Marple: Der WachsblumenstrauÃŸ , Wunschpost Xvid German10/29] - "Miss Marple Der WachsblumenstrauÃŸ.part09.rar" yEnc
+			//Old Dad uppMiss Marple: Der Wachsblumenstrauß , Wunschpost Xvid German10/29] - "Miss Marple Der Wachsblumenstrauß.part09.rar" yEnc
 			if (preg_match('/^Old\s+Dad\s+uppt? ?(.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
 			//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
@@ -2739,7 +2739,7 @@ class nameCleaning
 			//Batman postet 30 Nights of Paranormal Activity with the Devil Inside AC3 XviD German [01/24] - "30 Nights of Paranormal Activity with the Devil Inside.par2" yEnc
 			else if (preg_match('/^[A-Za-z0-9]+ postet (.+?) \[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
-			//[04/20 Geroellheimer - S03E19 - Freudige ï¿½berraschung Geroellheimer - S03E19 - Freudige ï¿½berraschung.mp4.004" yEnc
+			//[04/20 Geroellheimer - S03E19 - Freudige �berraschung Geroellheimer - S03E19 - Freudige �berraschung.mp4.004" yEnc
 			else if (preg_match('/^\[\d+\/\d+ (.+?)(\.(part\d*|rar|avi|iso|mp4|mkv|mpg))?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/', $subject, $match))
 				return implode(' ', array_intersect_key(explode(' ', $match[1]), array_unique(array_map('strtolower', explode(' ', $match[1])))));
 			//"Homeland.S01.Complete.German.WS.DVDRiP.XViD-ETM.part001.rar" yEnc
@@ -2843,7 +2843,7 @@ class nameCleaning
 			//Antony.and.Cleopatra.1972.720p.WEB-DL.H264-brento -[35/57] - "Antony.and.Cleopatra.1972.720p.WEB-DL.AAC2.0.H.264-brento.part34.rar" yEnc
 			else if (preg_match('/^([a-zA-Z0-9._-]+) - ?\[\d+\/\d+\] - ".+?" yEnc$/', $subject, $match))
 				return $match[1];
-			//[133668] - p00okjiue34635xxzx$$Ã‚Â£Ã‚Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
+			//[133668] - p00okjiue34635xxzx$$Â£Â£zll-b.vol3+2.PAR2 - [005/118]  yEnc
 			else if (preg_match('/^(\[\d+\] - [a-z0-9]+.+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4}) - \[\d+\/\d+\]\s+yEnc$/', $subject, $match))
 				return $match[1];
 			//[134517]-[01/76] - "Lara Croft Tomb Raider 2001 720p BluRay DTS x264-RightSiZE.nfo" yEnc
