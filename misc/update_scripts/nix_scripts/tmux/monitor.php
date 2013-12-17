@@ -6,11 +6,7 @@ require_once nZEDb_LIB . 'tmux.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-<<<<<<< HEAD
-$version="0.3r4624";
-=======
-$version="0.3r4624";
->>>>>>> af6846799c689df54946800b3daf5d26dee65874
+$version="0.3r4627";
 
 $db = new DB();
 $DIR = nZEDb_MISC;
