@@ -265,7 +265,6 @@ class Movie
 
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
-
 		if (!$imdb && !$tmdb)
 		{
 			if ($this->echooutput && $this->service != '')
@@ -435,6 +434,8 @@ class Movie
 			$ret['cover'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185".$tmdbLookup['poster_path'];
 		if (isset($movie->backdrops) && sizeof($movie->backdrops) > 0)
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original".$tmdbLookup['backdrop_path'];
+		if ($this->echooutput)
+			echo "TMDb Found ".$ret['title']."\n";
 		return $ret;
 	}
 
@@ -501,6 +502,8 @@ class Movie
 					$ret['director'] = $results[1];
 				}
 			}
+			if ($this->echooutput && isset($ret['title']))
+				echo "IMDb Found ".$ret['title']."\n";
 
 			return $ret;
 		}
