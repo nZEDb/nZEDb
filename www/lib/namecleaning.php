@@ -763,7 +763,7 @@ class nameCleaning
 		//>>> usenet4ever.info <<<+>>> secretusenet.com <<< "Weltnaturerbe USA Grand Canyon Nationalpark 2012 3D Blu-ray untouched  - DarKneSS.part039.rar" - DarKneSS yEnc
 		else if (preg_match('/^>+ .+?\.info [<>+]+ .+?\.com <+ "(.+?)\s+- .*?' . $this->e0 . ' - .+? yEnc$/', $this->subject, $match))
 			return $match[1];
-		//Old Dad uppt   Der groï¿½e Gatsby   BD Rip AC3 Line XvidD German  01/57] - "Der groï¿½e Gatsby.par2" yEnc
+		//Old Dad uppt   Der gro�e Gatsby   BD Rip AC3 Line XvidD German  01/57] - "Der gro�e Gatsby.par2" yEnc
 		else if (preg_match('/^Old\s+Dad\s+uppt?\s*?(.+?)( mp4| )?\[?\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
 			return preg_replace('/\s\s+/', ' ', $match[1]);
 		//panter - [46/60] - "68645-Busty Beauties Car Wash XXX 3D BD26.part45.rar" yEnc
