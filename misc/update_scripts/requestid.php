@@ -100,6 +100,8 @@ if($total > 0)
 	else
 		echo $c->info("\nNothing to do.");
 }
+else
+	echo $c->info("No work to process\n");
 
 function localLookup($requestID, $groupName, $oldname)
 {
