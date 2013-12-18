@@ -904,7 +904,7 @@ class nameCleaning
 		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
 			return $match[2];
 		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
-		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc/', $this->subject, $match))
+		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match))
 			return $match[1].$match[2];
 		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
 		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
@@ -938,7 +938,7 @@ class nameCleaning
 		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
 			return $match[2];
 		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
-		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc/', $this->subject, $match))
+		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match))
 			return $match[1].$match[2];
 		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
 		else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+(\/\d+\] - ".+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
@@ -2427,7 +2427,7 @@ class nameCleaning
 			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
 			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
 				return $match[2];
-			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc/', $subject, $match))
+			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $subject, $match))
 				return $match[1];
 			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
 			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
@@ -2458,7 +2458,7 @@ class nameCleaning
 			//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
 			if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $subject, $match))
 				return $match[2];
-			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc/', $subject, $match))
+			else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $subject, $match))
 				return $match[1];
 			//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
 			else if (preg_match('/town\.ag.+?download all our files with.+?www\..+?\.info.+? \[\d+\/\d+\] - "(.+?)(-sample)?' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $subject, $match))
@@ -2997,6 +2997,68 @@ class nameCleaning
 			//some m4vs - "SilverHawks_v1eps01_The Origin Story.par2" yEnc
 			if (preg_match('/^some m4vs - "(.+?)' . $this->e1, $subject, $match))
 				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.multimedia.vintage-film.pre-1960")
+		{
+			//WE.WANT.OUR.MUMMY.(THE.THREE.STOOGES).(1939) [08/15] - "The.Three.Stooges.S06E02.We.Want.Our.Mummy.DVDRip.XviD-DEiMOS.part6.rar" yEnc
+			if (preg_match('/^\S+ \[\d+\/\d+\] - ("|#34;)(\S+)\.part\d+\.rar("|#34;) yEnc$/', $subject, $match))
+				return $match[3];
+			//[Hepburn-Tracy Movie Pack] [4of8] Xvid 700mb ENG No-Subs - [00/62] - "State of the Union (1948).nzb" yEnc
+			else if (preg_match('/^\[.+\] \[\d+of\d+\] .+ - \[\d+\/\d+\] - ("|#34)(.+)\.nzb("|#34) yEnc$/', $subject, $match))
+				return $match[2];
+			//{Dracula #01}  Dracula (1931) - Xvid DVDRip 624x464 NTSC FS Dual Audio - [00/15] - "DRACULA.nzb" yEnc
+			else if (preg_match('/^\{.+\} (.+ \(\d{4}\)) .+ \[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//The Incredible Shrinking Man (1957) - Xvid DVDRip 688x384 NTSC WS - [00/16] - "TISM.nzb" yEnc
+			else if (preg_match('/^(.+ \(\d{4}\)) - .+ - \[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//Sudden.Danger.1955.VHSRip.XviD-KG [01/56] - "Sudden.Danger.1955.VHSRip.XviD-KG.nfo" yEnc
+			else if (preg_match('/^(.+\d{4})\.(VHSRip|COLOR).+\[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//W.C. Fields - You Can't Cheat An Honest Man - 1939 - DVDRip - Xvid - [00/68] - "you can't cheat an honest man 1939.nzb" yEnc
+			else if (preg_match('/^.+ - (.+) -( \d{4}) - DVDRip.+ \[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1].$match[2];
+			//-=>EnJoY!<-=->Experimental/Avant-Garde/Artistic Shorts<-=->(Day1/?) [00/26] - "Unseen Cinema - Disc I - The Mechanized Eye - Experiments in Technique and Form - 1894-1941 (480p,x264).nzb" yEnc
+			else if (preg_match('/^.+enjoy\!.+\[\d+\/\d+\] - ("|#34)(.+)\.(nzb|nfo|part\d+\.rar|part\.PAR2)("|#34) yEnc$/i', $subject, $match))
+				return $match[2];
+			//Goodbye.Charlie.1964.COLOR.TVRip.XviD-CG [01/56] - "Goodbye.Charlie.1964.COLOR.TVRip.XviD-CG.nfo" yEnc
+			else if (preg_match('/^(.+\d{4})(\.COLOR)?\.(TV|VHS|VHSTV)Rip.+ \[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//The.Adventures.of.Sadie.(Our.Girl.Friday).1953.COLOR.DVDRip.XviD-CG [01/69] - "Our.Girl.Friday.1953.COLOR.DVDRip.XviD-CG.nfo" yEnc
+			else if (preg_match('/^(\S+\d{4})\.COLOR\.DVDRip.+ \[\d+\/\d+\] - ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//"Singin' in the Rain (1952) AVC 480p.MKV.001" 01 of 15
+			else if (preg_match('/^("|#34)(.+)\.MKV\.\d+("|#34) \d+ of \d+$/', $subject, $match))
+				return $match[2];
+			//RANDOLPH.SCOTT.-.PARIS.CALLING.(1941) [42/49] - "Paris.Calling.1941.VHSRip.AVC-DD.vol001+002.par2" yEnc
+			else if (preg_match('/^.+\(\d{4}\)(\.EXTRA\.PARS|\.\[REPOST\])? \[\d+(\/| of )\d+\][ -]+("|#34)(.+)(\.vol\d+\+\d+\.par2|-\[big.+\]\.nfo|\.nzb|\.nfo| \- .+.avi\.\d+)("|#34) yEnc$/', $subject, $match))
+				return $match[2];
+			//RANDOLPH.SCOTT.-.PARIS.CALLING.(1941) [42/49] - "Paris.Calling.1941.VHSRip.AVC-DD.vol001+002.par2" yEnc
+			else if (preg_match('/^.+\(\d{4}\)(\.EXTRA\.PARS|\.\[REPOST\])? \[\d+(\/| of )\d+\][ -]+("|#34)(.+)(\.vol\d+\+\d+\.par2|-\[big.+\]\.nfo|\.nzb|\.nfo| \- .+.avi\.\d+|\.par2)("|#34) yEnc$/', $subject, $match))
+				return $match[2];
+			//Mickey.1918.SILENT.DVDRip.XviD-KG [01/70] - "Mickey.1918.SILENT.DVDRip.XviD-KG.nfo" yEnc
+			else if (preg_match('/^.+\d{4}\.(SILENT|DVDRip).+ \[\d+\/\d+\] - ("|#34)(.+)\.nfo("|#34) yEnc$/', $subject, $match))
+				return $match[2];
+			//More Assorted Goodies - REQ:Decasia [01/16] - "The Bullwinkle Show with Occasional Rare Bullwinkle Puppet - BnW.part.nzb" yEnc
+			else if (preg_match('/^(More Assorted Goodies|Even More Offerings) - REQ:.+ \[\d+\/\d+\] - ("|#34)(.+)\.part\.nzb("|#34) yEnc$/', $subject, $match))
+				return $match[3];
+			//The Birth of a Nation - 1915 [1 of 71] "The Birth of a Nation - 1915.part01.rar" yEnc
+			else if (preg_match('/^(.+) -( \d{4}) \[\d+ of \d+\] ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1].$match[2];
+			//Musicals [05/10] - "The band wagon 1953.nzb" yEnc
+			else if (preg_match('/^Musicals(\.NZBs)? \[\d+\/\d+\] - ("|#34)(.+)\.nzb("|#34) yEnc$/', $subject, $match))
+				return $match[3];
+			//Torchy Runs for Mayor (Maypo) [13 of 24] "Torchy Runs for Mayor.avi.013" yEnc
+			else if (preg_match('/^(Torchy.+) \[\d+ of \d+\] ("|#34).+("|#34) yEnc$/', $subject, $match))
+				return $match[1];
+			//[01/27] - "Monkey Business (1952).avi.001" (1/130)
+			else if (preg_match('/^\[\d+\/\d+\] - ("|#34)(.+ \(\d{4}\))\.avi\.\d+("|#34)( \(\d+\/\d+\))?$/', $subject, $match))
+			{
+				echo "here\n";
+				return $match[2];
+			}
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
