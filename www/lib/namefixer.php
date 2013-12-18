@@ -365,13 +365,6 @@ class Namefixer
 			$this->fileCheck($release, $echo, $type, $namestatus);
 		else
 		{
-			// Just for filenames.
-			if ($type == "Filenames, ")
-				$this->fileCheck($release, $echo, $type, $namestatus);
-			$this->tvCheck($release, $echo, $type, $namestatus);
-			$this->movieCheck($release, $echo, $type, $namestatus);
-			$this->gameCheck($release, $echo, $type, $namestatus);
-			$this->appCheck($release, $echo, $type, $namestatus);
 			// Just for NFOs.
 			if ($type == "NFO, ")
 			{
@@ -381,6 +374,13 @@ class Namefixer
 				$this->nfoCheckTY($release, $echo, $type, $namestatus);
 				$this->nfoCheckG($release, $echo, $type, $namestatus);
 			}
+			// Just for filenames.
+			if ($type == "Filenames, ")
+				$this->fileCheck($release, $echo, $type, $namestatus);
+			$this->tvCheck($release, $echo, $type, $namestatus);
+			$this->movieCheck($release, $echo, $type, $namestatus);
+			$this->gameCheck($release, $echo, $type, $namestatus);
+			$this->appCheck($release, $echo, $type, $namestatus);
 		}
 		// The release didn't match so set bitwise 64 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false && $type == "NFO, ")

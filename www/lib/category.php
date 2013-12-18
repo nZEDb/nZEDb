@@ -522,7 +522,7 @@ class Category
 					return true;
 				}
 
-				if (preg_match('/alt\.binaries\.(mp3|sounds?)(\.mp3)?\.audiobook(s|\.repost)?/', $groupRes["name"]))
+				if (preg_match('/audiobook/', $groupRes["name"]))
 				{
 					if($this->categorizeforeign)
 					{
