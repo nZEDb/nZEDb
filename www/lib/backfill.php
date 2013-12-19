@@ -393,7 +393,7 @@ class Backfill
 						$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date DESC LIMIT 1');
 						if (isset($res['date']))
 						{
-							$date = strtotime($res['date']);
+							$date = $res['date'];
 							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
@@ -404,7 +404,7 @@ class Backfill
 						$res = $db->queryOneRow('SELECT date FROM '.$groupa['cname'].' ORDER BY date ASC LIMIT 1');
 						if (isset($res['date']))
 						{
-							$date = strtotime($res['date']);
+							$date = $res['date'];
 							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
