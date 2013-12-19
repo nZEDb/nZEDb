@@ -287,8 +287,7 @@ class Movie
 		$tmdb = $this->fetchTmdbProperties($imdbId);
 
 		//check imdb for movie info
-		//$imdb = $this->fetchImdbProperties($imdbId);
-		$imdb = false;
+		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb)
 		{
 			if ($this->echooutput && $this->service != '')
