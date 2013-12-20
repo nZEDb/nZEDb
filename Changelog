@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-12-20 -> bart39   -> More regex additions/fixes mainly warez groups
 2013-12-19 -> jonnyboy -> possible fix to postdate
 2013-12-19 -> bart39   -> Additional book regexes added to namecleaning
 2013-12-18 -> jonnyboy -> fixed bug in category.php not getting audiobooks into correct cat, added regexes for another movie group
