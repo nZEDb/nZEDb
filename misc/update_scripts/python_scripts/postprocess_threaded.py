@@ -35,8 +35,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 cur = con.cursor()
 
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo] (optional [groupid, categoryid])" + bcolors.ENDC)
-	print(bcolors.ERROR + "postprocess_threaded.py [movie, tv] (optional [clean])\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\nWrong set of arguments.\nThe first argument [additional, nfo, movie, clean] determines the postprocessing to do.\nThe optional second argument for [additional, nfo] [groupid, categoryid] allows to process only that group or category.\nThe optional second argument for [movies, tv] [clean] allows processing only properly renamed releases.\n\npython postprocess_threaded.py [additional, nfo] (optional [groupid, categoryid])\npython postprocess_threaded.py [movie, tv] (optional [clean])\n" + bcolors.ENDC)
 	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
