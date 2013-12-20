@@ -21,7 +21,7 @@
         </label>
         </div>
         <button class="btn btn-success" type="submit" value="Login">Login</button>
-        <button class="btn btn-link" type="button"><a class="text-right" href="{$smarty.const.WWW_TOP}/forgottenpassword">Forgotten your password?</a></button>
+        <a class="text-right" href="{$smarty.const.WWW_TOP}/forgottenpassword">Forgotten your password?</a>
       </form>
     </div>
   </div>

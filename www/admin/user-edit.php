@@ -47,11 +47,11 @@ switch($action)
 				if ($role['id'] == $_POST['role'])
 					$invites = $role['defaultinvites'];
 			}
-			$ret = $users->signup($_POST["username"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
+			$ret = $users->signup($_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
 		}
 		else
 		{
-			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"));
+			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"));
 			if ($_POST['password'] != "")
 					$users->updatePassword($_POST["id"], $_POST['password']);
 		}
@@ -90,6 +90,8 @@ switch($action)
 			$user = array();
 			$user["id"] = $_POST["id"];
 			$user["username"] = $_POST["username"];
+			$user["firstname"] = $_POST["firstname"];
+			$user["lastname"] = $_POST["lastname"];
 			$user["email"] = $_POST["email"];
 			$user["grabs"] = (isset($_POST["grabs"]) ? $_POST["grabs"] : "0");
 			$user["role"] = $_POST["role"];

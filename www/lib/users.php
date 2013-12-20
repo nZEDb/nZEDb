@@ -136,7 +136,7 @@ class Users
 		return $res["num"];
 	}
 
-	public function add($uname, $pass, $email, $role, $host, $invites=Users::DEFAULT_INVITES, $invitedby=0)
+	public function add($uname, $fname, $lname, $pass, $email, $role, $host, $invites=Users::DEFAULT_INVITES, $invitedby=0)
 	{
 		$db = $this->db;
 
@@ -148,14 +148,16 @@ class Users
 		if ($invitedby == 0)
 			$invitedby = "null";
 
-		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s))", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid())));
+		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
 	}
 
-	public function update($id, $uname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
+	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl=false, $sabapikey=false, $sabpriority=false, $sabapikeytype=false)
 	{
 		$db = $this->db;
 
 		$uname = trim($uname);
+		$fname = trim($fname);
+		$lname = trim($lname);
 		$email = trim($email);
 
 		if (!$this->isValidUsername($uname))
@@ -177,6 +179,10 @@ class Users
 		$sql = array();
 
 		$sql[] = sprintf('username = %s', $db->escapeString($uname));
+		if ($fname !== false)
+			$sql[] = sprintf('firstname = %s', $db->escapeString($fname));
+		if ($lname !== false)
+			$sql[] = sprintf('lastname = %s', $db->escapeString($lname));
 		$sql[] = sprintf('email = %s', $db->escapeString($email));
 		$sql[] = sprintf('grabs = %d', $grabs);
 		$sql[] = sprintf('role = %d', $role);
@@ -309,12 +315,14 @@ class Users
 		return substr(md5(uniqid()), 0, 8);
 	}
 
-	public function signup($uname, $pass, $email, $host, $role = Users::ROLE_USER, $invites=Users::DEFAULT_INVITES, $invitecode="", $forceinvitemode=false)
+	public function signup($uname, $fname, $lname, $pass, $email, $host, $role = Users::ROLE_USER, $invites=Users::DEFAULT_INVITES, $invitecode="", $forceinvitemode=false)
 	{
 		$site = new Sites();
 		$s = $site->get();
 
 		$uname = trim($uname);
+		$fname = trim($fname);
+		$lanme = trim($lname);
 		$pass = trim($pass);
 		$email = trim($email);
 
@@ -347,7 +355,7 @@ class Users
 				return Users::ERR_SIGNUP_BADINVITECODE;
 		}
 
-		return $this->add($uname, $pass, $email, $role, $host, $invites, $invitedby);
+		return $this->add($uname, $fname, $lname, $pass, $email, $role, $host, $invites, $invitedby);
 	}
 
 	function randomKey($amount)
@@ -551,7 +559,10 @@ class Users
 		$token = $this->hashSHA1(uniqid());
 		$subject = $sitetitle." Invitation";
 		$url = $serverurl."register?invitecode=".$token;
-		$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address. \nTo accept the invition click the following link.\n\n".$url;
+		if (!is_null($sender['firstname']) || $sender['firstname'] != '')
+			$contents = $sender["firstname"]." ".$sender["lastname"]." has sent an invite to join ".$sitetitle." to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
+		else
+			$contents = $sender["username"]." has sent an invite to join ".$sitetitle." to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 
 		if (sendEmail($emailto, $subject, $contents, $siteemail))
 			$this->addInvite($uid, $token);
