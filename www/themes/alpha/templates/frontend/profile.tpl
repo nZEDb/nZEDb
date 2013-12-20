@@ -7,7 +7,8 @@
 <th>Username:</th>
 <td>{$user.username|escape:"htmlall"}</td>
 </tr>
-
+<th>Real Name:</th>
+<td>{$user.firstname} {$user.lastname}</td>
 {if $user.id==$userdata.id || $userdata.role==2}
 <tr>
 <th title="Not public">Email:</th>

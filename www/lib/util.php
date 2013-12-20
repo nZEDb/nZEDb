@@ -13,13 +13,13 @@ function sendEmail($to, $subject, $contents, $from)
 		$n = "\n";
 	$body = '<html>'.$n;
 	$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>'.$n;
-	$body = $contents;
+	$body .= $contents;
 	$body .= '</body>'.$n;
 	$body .= '</html>'.$n;
 
-	$headers  = 'From: $from'.$n;
-	$headers .= 'Reply-To: $from'.$n;
-	$headers .= 'Return-Path: $from'.$n;
+	$headers  = 'From: '.$from.$n;
+	$headers .= 'Reply-To: '.$from.$n;
+	$headers .= 'Return-Path: '.$from.$n;
 	$headers .= 'X-Mailer: nZEDb'.$n;
 	$headers .= 'MIME-Version: 1.0'.$n;
 	$headers .= 'Content-type: text/html; charset=iso-8859-1'.$n;
