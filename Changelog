@@ -3,6 +3,7 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
+2013-12-21 -> egandt   -> Fixes to Anime display and reading for new table structure
 2013-12-20 -> ThePeePs -> Added Frist/Last names for users
                           Fixed email function in util.php
                           Fixed formating for password reset and invite emails.
