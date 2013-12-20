@@ -10,7 +10,7 @@ It will also truncate the parts, binaries, collections, and partsrepair tables.
 */
 // TODO: Make this threaded so it goes faster.
 
-$c = New ColorCLI;
+$c = New ColorCLI();
 $db = New DB();
 
 if (!isset($argv[1]) || $argv[1] != 'true')
@@ -31,7 +31,9 @@ foreach ($groups as $group)
 	$starttime = microtime(true);
 	$nntp = new Nntp();
 	if ($nntp->doConnect() === false)
+	{
 		return;
+	}
 	//printf("Updating group ".$group['name']."..\n");
 	$bfdays = daysOldstr($group['first_record_postdate']);
 	$currdays = daysOldstr($group['last_record_postdate']);
@@ -47,19 +49,19 @@ foreach ($groups as $group)
 }
 
 $totalend = microtime(true);
-echo 'Total time to update all groups '.gmdate("H:i:s",$totalend-$totalstart)."\n";
+echo $c->header('Total time to update all groups '.gmdate("H:i:s",$totalend-$totalstart));
 
 // Truncate tables to complete the change to the new USP.
 $arr = array("parts", "partrepair", "binaries", "collections");
 	foreach ($arr as &$value)
 	{
 		$rel = $db->queryExec("TRUNCATE TABLE $value");
-		if($rel !== false)
-			printf("Truncating $value completed.\n");
+		if ($rel !== false)
+	{
+		echo $c->header("Truncating $value completed.");
 	}
+}
 	unset($value);
-
-
 
 function daysOldstr($timestamp)
 {
@@ -74,18 +76,22 @@ function daysOld($timestamp)
 // This function taken from lib/backfill.php, and modified to fit our needs.
 function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 {
-	$c = New ColorCLI;
+	$c = New ColorCLI();
 	$backfill = New Backfill();
 	// DEBUG every postdate call?!?!
 	$pddebug = $st = false;
 	if ($debug && $bfcheck)
-		echo 'Finding start and end articles for '.$group.".\n";
+	{
+		echo $c->primary('Finding start and end articles for ' . $group . '.');
+	}
 
 	if (!isset($nntp))
 	{
 		$nntp = new Nntp;
 		if ($nntp->doConnectNC() === false)
+		{
 			return;
+		}
 
 		$st = true;
 	}
@@ -95,7 +101,9 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 	{
 		$data = $nntp->dataError($nntp, $group, false);
 		if ($data === false)
+		{
 			return;
+		}
 	}
 
 	// Goal timestamp.
@@ -105,10 +113,14 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 	$lowerbound = $data['first'];
 
 	if ($debug && $bfcheck)
-		echo 'Total Articles: '.number_format($totalnumberofarticles).' Newest: '.number_format($upperbound).' Oldest: '.number_format($lowerbound)."\n";
+	{
+		echo $c->header('Total Articles: ' . number_format($totalnumberofarticles) . ' Newest: ' . number_format($upperbound) . ' Oldest: ' . number_format($lowerbound));
+	}
 
 	if ($data['last'] == PHP_INT_MAX)
+	{
 		exit($c->error("Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug."));
+	}
 
 	$firstDate = $backfill->postdate($nntp, $data['first'], $pddebug, $group);
 	$lastDate = $backfill->postdate($nntp, $data['last'], $pddebug, $group);
@@ -116,24 +128,29 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 	if ($goaldate < $firstDate && $bfcheck)
 	{
 		if ($st === true)
+		{
 			$nntp->doQuit();
+		}
 		echo $c->warning("The oldest post indexed from $days day(s) ago is older than the first article stored on your news server.\nSetting to First available article of (date('r', $firstDate) or daysOld($firstDate) days).");
 		return $data['first'];
 	}
 	else if ($goaldate > $lastDate && $bfcheck)
 	{
 		if ($st === true)
+		{
 			$nntp->doQuit();
+		}
 		echo $c->error("ERROR: The oldest post indexed from $days day(s) ago is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least ceil(daysOld($lastDate)+1) days (date('r', $lastDate-86400).");
 		return '';
 	}
 
 	if ($debug && $bfcheck)
-		echo "Searching for postdates.\nGroup's Firstdate: ".$firstDate.' ('.((is_int($firstDate))?date('r', $firstDate):'n/a').").\nGroup's Lastdate: ".$lastDate.' ('.date('r', $lastDate).").\n";
+	{
+		echo $c->primary("Searching for postdates.\nGroup's Firstdate: " . $firstDate . ' (' . ((is_int($firstDate)) ? date('r', $firstDate) : 'n/a') . ").\nGroup's Lastdate: " . $lastDate . ' (' . date('r', $lastDate) . ").");
+	}
 
 	$interval = floor(($upperbound - $lowerbound) * 0.5);
-	$dateofnextone = $templowered = '';
-
+	$templowered = '';
 	$dateofnextone = $lastDate;
 	// Match on days not timestamp to speed things up.
 	while(daysOld($dateofnextone) < $days)
@@ -152,11 +169,16 @@ function daytopost($nntp, $group, $days, $debug=true, $bfcheck=true)
 		{  $dateofnextone = $backfill->postdate($nntp,($upperbound-1),$pddebug,$group); }
 	}
 	if ($st === true)
+	{
 		$nntp->doQuit();
+	}
 	if ($bfcheck)
-		echo "\nBackfill article determined to be ".$upperbound." ".$c->setColor('Yellow')."(".date('r', $dateofnextone).")".$c->rsetcolor()."\n"; // which is '.daysOld($dateofnextone)." days old.\n";
+	{
+		echo $c->header("\nBackfill article determined to be " . $upperbound . " " . $c->setColor('Yellow') . "(" . date('r', $dateofnextone) . ")" . $c->rsetcolor());
+	} // which is '.daysOld($dateofnextone)." days old.\n";
 	else
-		echo 'Current article determined to be '.$upperbound." ".$c->setColor('Yellow')."(".date('r', $dateofnextone).")".$c->rsetcolor()."\n"; // which is '.daysOld($dateofnextone)." days old.\n";
+	{
+		echo $c->header('Current article determined to be ' . $upperbound . " " . $c->setColor('Yellow') . "(" . date('r', $dateofnextone) . ")" . $c->rsetcolor());
+	} // which is '.daysOld($dateofnextone)." days old.\n";
 	return $upperbound;
 }
-

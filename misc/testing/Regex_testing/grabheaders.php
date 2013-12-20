@@ -13,7 +13,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 $cleaner = new nameCleaning();
 $group = $argv[1];
 $nntp = new Nntp();
-$c = new ColorCLI;
+$c = new ColorCLI();
 if ($nntp->doConnect() === false)
 	exit($c->error("Unable to connect to usenet."));
 

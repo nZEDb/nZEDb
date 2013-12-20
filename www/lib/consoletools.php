@@ -6,7 +6,7 @@ class ConsoleTools
 
 	function __construct(){
 		$this->lastMessageLength = 0;
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 	}
 
 	function overWriteHeader($message, $reset=False)

@@ -39,7 +39,7 @@ function print_str($type, $str, $argv)
 {
 	if ($argv[1] != 'file')
 	{
-		$c = new ColorCLI;
+		$c = new ColorCLI();
 		if ($type == "primary")
 			echo $c->primary($str);
 		else

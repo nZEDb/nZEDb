@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 require_once nZEDb_LIB . 'site.php';
 
 $binaries = new Binaries();
-$c = new ColorCLI;
+$c = new ColorCLI();
 $s = new Sites();
 $site = $s->get();
 

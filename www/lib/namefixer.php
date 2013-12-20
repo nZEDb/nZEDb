@@ -79,7 +79,7 @@ class Namefixer
 		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 		$this->fullall = " ORDER BY postdate DESC";
 		$this->done = $this->matched = false;
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 	}
 
 	//  Attempts to fix release names using the NFO.

@@ -8,7 +8,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 $s = new Sites();
 $site = $s->get();
 
-$c = new ColorCLI;
+$c = new ColorCLI();
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new Nntp();

@@ -29,7 +29,7 @@ class MiscSorter
 		$this->nfolib = new Nfo($this->echooutput);
 		$this->nc = new nameCleaning();
 		$this->groups = new Groups();
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 
 		//$res = $this->db->queryExec("SET NAMES 'utf8'");
 		//$res = $this->db->queryExec("SET CHARACTER SET 'utf8'");

@@ -19,7 +19,7 @@ class Backfill
 		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
 		$this->nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
 		$this->tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';

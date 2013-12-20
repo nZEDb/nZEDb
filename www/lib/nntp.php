@@ -13,7 +13,7 @@ class Nntp extends Net_NNTP_Client
 
 	public function __construct()
 	{
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';

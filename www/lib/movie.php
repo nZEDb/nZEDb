@@ -32,7 +32,7 @@ class Movie
 		$this->imgSavePath = nZEDb_WWW.'covers/movies/';
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 	}
 
 	public function getMovieInfo($imdbId)
