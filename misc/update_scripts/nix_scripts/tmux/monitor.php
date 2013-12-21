@@ -724,7 +724,6 @@ while ($i > 0) {
 	}
 	if ($proc_tmux_result[0]['is_running'] != NULL) {
 		$running = (int)$proc_tmux_result[0]['is_running'];
-		echo "here\n\n\n\n\n\nCrap";
 	}
 
 	if ($split_result[0]['oldestnzb'] != NULL) {
