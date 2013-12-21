@@ -453,15 +453,17 @@ class Console
 
 		if ($consoleId)
 		{
-			if ($this->echooutput)
-				echo "Added/updated game: ".$con['title']." ".$con['platform'].".\n";
+			if ($this->echooutput) {
+				echo $this->c->headerOver("Added/updated game: ") . $this->c->primary($con['title'] . " " . $con['platform']);
+			}
 
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		}
 		else
 		{
-			if ($this->echooutput)
-				echo "Nothing to update: ".$con['title']." (".$con['platform'].").\n";
+			if ($this->echooutput) {
+				echo $this->c->headerOver("Nothing to update: ") . $this->c->primary($con['title'] . " (" . $con['platform']);
+			}
 		}
 		return $consoleId;
 	}
@@ -486,7 +488,7 @@ class Console
 		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo $this->c->header('Processing '.$res->rowCount().' console release(s).');
+				echo $this->c->header("\nProcessing ".$res->rowCount().' console release(s).');
 
 			foreach ($res as $arr)
 			{

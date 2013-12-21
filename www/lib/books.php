@@ -255,7 +255,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo $this->c->header('Processing '.$res->rowCount().' book release(s).');
+				echo $this->c->header("\nProcessing ".$res->rowCount().' book release(s).');
 
 			foreach ($res as $arr)
 			{
@@ -426,25 +426,26 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		{
 			if ($this->echooutput)
 			{
-				echo 'Added/updated book: ';
-				if ($book['author'] !== '')
-					echo 'Author: '.$book['author'].', ';
-				echo 'Title: '.$book['title'];
-				if ($book['genre'] !== 'null')
-					echo ', Genre: '.$book['genre'].".\n";
-				else
-					echo ".\n";
+				echo $this->c->headerOver("\nAdded/updated book: ");
+				if ($book['author'] !== '') {
+					echo $this->c->headerOver("Author: ") . $this->c->primary($book['author']);
+				}
+				echo $this->c->headerOver("                    Title: ") . $this->c->primary(" " . $book['title']);
+				if ($book['genre'] !== 'null') {
+					echo $this->c->headerOver("                    Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
+				} else {
+					echo "\n\n";
+				}
 			}
 
 			$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 		}
 		else
 		{
-			if ($this->echooutput)
-				echo 'Nothing to update: '.$book['author'].' - '.$book['title'].".\n";
+			if ($this->echooutput) {
+				echo $this->c->header('Nothing to update: ') . $this->c->header($book['author'] . ' - ' . $book['title']);
+			}
 		}
 		return $bookId;
 	}
 }
-
-

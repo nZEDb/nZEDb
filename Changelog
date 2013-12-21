@@ -3,7 +3,7 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-2013-12-21 -> jonnyboy -> added option to run postprocess_threaded.py on categroyid, changed monitor to use ColorCLI, changing brackets
+2013-12-21 -> jonnyboy -> added option to run postprocess_threaded.py on categroyid, changed monitor to use ColorCLI, changing brackets, changed output of pp amazon scripts
 2013-12-21 -> egandt   -> Fixes to Anime display and reading for new table structure
 2013-12-20 -> ThePeePs -> Added First/Last names for users
                           Fixed email function in util.php

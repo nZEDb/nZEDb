@@ -434,7 +434,7 @@ class Music
 		if ($res->rowCount() > 0)
 		{
 			if ($this->echooutput)
-				echo $this->c->header('Processing '.$res->rowCount().' music release(s).');
+				echo $this->c->header("\nProcessing ".$res->rowCount().' music release(s).');
 
 			foreach ($res as $arr)
 			{

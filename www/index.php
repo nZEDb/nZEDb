@@ -1,10 +1,9 @@
 <?php
-if(is_file("config.php"))
+
+if (is_file("config.php")) {
 	require_once './config.php';
-else
-{
-	if(is_dir("install"))
-	{
+} else {
+	if (is_dir("install")) {
 		header("location: install");
 		exit();
 	}
@@ -16,8 +15,7 @@ require_once nZEDb_LIB . 'users.php';
 $page = new Page;
 $users = new Users;
 
-switch($page->page)
-{
+switch ($page->page) {
 	case 'content':
 	case 'sendtosab':
 	case 'browse':
@@ -66,20 +64,18 @@ switch($page->page)
 	case 'calendar':
 	case 'upcoming':
 
-	// Don't show these pages if it's an API-only site.
-	if (!$users->isLoggedIn() && $page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY)
-	{
-		header("Location: ".$page->site->code);
-		break;
-	}
+		// Don't show these pages if it's an API-only site.
+		if (!$users->isLoggedIn() && $page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY) {
+			header("Location: " . $page->site->code);
+			break;
+		}
 	case 'rss':
 	case 'api':
 	case 'getnzb':
 	case 'login':
-		include(nZEDb_WWW.'pages/'.$page->page.'.php');
-	break;
+		include(nZEDb_WWW . 'pages/' . $page->page . '.php');
+		break;
 	default:
 		$page->show404();
-	break;
+		break;
 }
-?>

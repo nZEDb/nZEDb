@@ -409,13 +409,15 @@ class Movie
 
 		if ($movieId)
 		{
-			if ($this->echooutput && $this->service != '')
-				echo "Added/updated movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id'].".\n";
+			if ($this->echooutput && $this->service != '') {
+				echo $this->c->headerOver("Added/updated movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+			}
 		}
 		else
 		{
-			if ($this->echooutput && $this->service != '')
-				echo "Nothing to update for movie: ".$movtitle." (".$mov['year'].") - ".$mov['imdb_id']."\n";
+			if ($this->echooutput && $this->service != '') {
+				echo $this->c->headerOver("Nothing to update for movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+			}
 		}
 
 		return $movieId;
@@ -583,7 +585,7 @@ class Movie
 		if ($moviecount > 0)
 		{
 			if ($this->echooutput && $moviecount > 1)
-				echo "Processing ".$moviecount." movie release(s)."."\n";
+				echo "\nProcessing ".$moviecount." movie release(s)."."\n";
 
 			$like = 'ILIKE';
 			$inyear = 'year::int';
