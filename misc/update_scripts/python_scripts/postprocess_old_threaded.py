@@ -83,7 +83,7 @@ def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} items".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of 1 threads to process Amazon Lookups".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):

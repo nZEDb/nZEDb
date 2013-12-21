@@ -112,7 +112,10 @@ class Books
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE (r.bitwise & 256) = 256 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r "
+				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' "
+				. "WHERE (r.bitwise & 256) = 256 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
+				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res['num'];
 	}
 
@@ -167,7 +170,16 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, "
+					. "CONCAT(cp.title, ' > ', c.title) AS category_name, "
+					. "CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid "
+					. "FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid "
+					. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
+					. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL "
+					. "LEFT OUTER JOIN category c ON c.id = r.categoryid "
+					. "LEFT OUTER JOIN category cp ON cp.id = c.parentid "
+					. "WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
+					. "AND %s %s %s %s ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
@@ -204,7 +216,8 @@ class Books
 
 	public function getBookOrdering()
 	{
-		return array('title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'releasedate_asc', 'releasedate_desc', 'author_asc', 'author_desc');
+		return array('title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc',
+			'files_desc', 'stats_asc', 'stats_desc', 'releasedate_asc', 'releasedate_desc', 'author_asc', 'author_desc');
 	}
 
 	public function getBrowseByOptions()
@@ -245,7 +258,6 @@ class Books
 
 	public function processBookReleases()
 	{
-		$ret = 0;
 		$db = $this->db;
 
 		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
@@ -257,7 +269,9 @@ class Books
 			}
 
 			foreach ($res as $arr) {
-				// audiobooks are also books and should be handles in an identical manor, even though it falls under a music category
+				$startTime = microtime(true);
+				$usedAmazon = false;
+				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
 				if ($arr['categoryid'] == '3030') {
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
@@ -271,9 +285,17 @@ class Books
 						echo $this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo);
 					}
 
-					$bookId = $this->updateBookInfo($bookInfo);
-					if ($bookId === false) {
-						$bookId = -2;
+					// Do a local lookup first
+					$bookCheck = $this->getBookInfoByName('', $bookInfo);
+
+					if ($bookCheck === false) {
+						$bookId = $this->updateBookInfo($bookInfo);
+						$usedAmazon = true;
+						if ($bookId === false) {
+							$bookId = -2;
+						}
+					} else {
+						$bookId = $bookCheck['id'];
 					}
 
 					// Update release.
@@ -282,9 +304,13 @@ class Books
 				// Could not parse release title.
 				else {
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
+					echo '.';
 				}
 				// Sleep to not flood amazon.
-				usleep($this->sleeptime * 1000);
+				$diff = floor((microtime(true) - $startTime) * 1000000);
+				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
+					usleep($this->sleeptime * 1000 - $diff);
+				}
 			}
 		} else
 		if ($this->echooutput) {
@@ -292,11 +318,11 @@ class Books
 		}
 	}
 
-	public function parseTitle($releasename, $releaseID, $releasetype)
+	public function parseTitle($release_name, $releaseID, $releasetype)
 	{
-		$releasename = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $releasename);
-		$releasename = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $releasename);
-		$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
+		$a = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|(si)?PDF|RTF|TXT)(?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $release_name);
+		$b = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $a);
+		$releasename = trim(preg_replace('/\s\s+/i', ' ', $b));
 
 		// the default existing type was ebook, this handles that in the same manor as before
 		if ($releasetype == 'ebook') {
@@ -420,13 +446,13 @@ class Books
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				echo $this->c->headerOver("\nAdded/updated book: ");
+				echo $this->c->header("\nAdded/updated book: ");
 				if ($book['author'] !== '') {
-					echo $this->c->headerOver("Author: ") . $this->c->primary($book['author']);
+					echo $this->c->alternateOver("   Author: ") . $this->c->primary($book['author']);
 				}
-				echo $this->c->headerOver("                    Title: ") . $this->c->primary(" " . $book['title']);
+				echo $this->c->alternateOver("   Title: ") . $this->c->primary(" " . $book['title']);
 				if ($book['genre'] !== 'null') {
-					echo $this->c->headerOver("                    Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
+					echo $this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
 				} else {
 					echo "\n\n";
 				}

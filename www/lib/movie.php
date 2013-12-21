@@ -657,14 +657,14 @@ class Movie
 						if ($imdbId === false) {
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						}
-						echo $this->c->alternateOver("\nFound Local: ") . $this->c->header($moviename);
+						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
 						continue;
 					}
 
 					if ($this->echooutput && $releaseToWork == '') {
-						echo $this->c->primaryOver('Looking up: ') . $this->c->header($moviename);
+						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);
 					} else {
-						echo $this->c->primaryOver("\nLooking up: ") . $this->c->header($moviename);
+						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
 					}
 
 					// Check OMDbapi first
