@@ -351,11 +351,11 @@ if ($grabnzbs != 0) {
 printf($mask1, "Parts in Repair:", number_format($partrepair_table));
 echo "\n";
 printf($mask3, "Collections", "Binaries", "Parts");
-printf($mask3, "==========================", "=================", "==========================");
+printf($mask3, "======================================", "=========================", "======================================");
 printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 echo "\n";
 printf($mask3, "Category", "In Process", "In Database");
-printf($mask3, "==========================", "=================", "==========================");
+printf($mask3, "======================================", "=========================", "======================================");
 printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
 printf($mask4, "predb", number_format($predb - $predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 printf($mask4, "requestID", $requestid_inprogress . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
@@ -371,7 +371,7 @@ printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_d
 printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
 echo "\n";
 printf($mask3, "Groups", "Active", "Backfill");
-printf($mask3, "==========================", "=================", "==========================");
+printf($mask3, "======================================", "=========================", "======================================");
 if ($backfilldays == "1") {
 	printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
 } else {
@@ -380,7 +380,7 @@ if ($backfilldays == "1") {
 echo "\n";
 if ($show_query == 1) {
 	printf($mask3, "Query Block", "Time", "Cumulative");
-	printf($mask3, "==========================", "=================", "==========================");
+	printf($mask3, "======================================", "=========================", "======================================");
 	printf($mask4, "Combined", "0", "0");
 }
 
@@ -943,13 +943,13 @@ while ($i > 0) {
 	}
 	echo "\n";
 	printf($mask3, "Collections", "Binaries", "Parts");
-	printf($mask3, "==========================", "=================", "==========================");
+	printf($mask3, "======================================", "=========================", "======================================");
 	printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
 	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
 		echo "\n";
 		printf($mask3, "Ramdisk", "Used", "Free");
-		printf($mask3, "==========================", "=================", "==========================");
+		printf($mask3, "======================================", "=========================", "======================================");
 		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
 			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
 			$disk_free = decodeSize(disk_free_space($monitor_path));
@@ -983,7 +983,7 @@ while ($i > 0) {
 	}
 	echo "\n";
 	printf($mask3, "Category", "In Process", "In Database");
-	printf($mask3, "==========================", "=================", "==========================");
+	printf($mask3, "======================================", "=========================", "======================================");
 	printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
 	printf($mask4, "predb", number_format($predb - $predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 	printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
@@ -999,7 +999,7 @@ while ($i > 0) {
 	printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
 	echo "\n";
 	printf($mask3, "Groups", "Active", "Backfill");
-	printf($mask3, "==========================", "=================", "==========================");
+	printf($mask3, "======================================", "=========================", "======================================");
 	if ($backfilldays == "1") {
 		printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
 	} else {
@@ -1009,7 +1009,7 @@ while ($i > 0) {
 	if ($show_query == 1) {
 		echo "\n";
 		printf($mask3, "Query Block", "Time", "Cumulative");
-		printf($mask3, "==========================", "=================", "==========================");
+		printf($mask3, "======================================", "=========================", "======================================");
 		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
 
 		$pieces = explode(" ", $db->getAttribute(PDO::ATTR_SERVER_INFO));
