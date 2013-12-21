@@ -26,8 +26,8 @@ $site = $s->get();
 $patch = $site->sqlpatch;
 $alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
+$delay = (isset($site->delaytime)) ? $site->delaytime : 2;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
-$running = (isset($tmux->running)) ? $tmux->running : 0;
 $bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 
 
@@ -43,7 +43,7 @@ if (command_exist("php5")) {
 	$PHP = "php";
 }
 
-if ($nntpproxy == 0) {
+if ($nntpproxy === 0) {
 	$port = NNTP_PORT;
 	$host = NNTP_SERVER;
 	$ip = gethostbyname($host);
@@ -92,7 +92,7 @@ function rand_bool($loop, $chance = 60)
 	$t = new Tmux();
 	$tmux = $t->get();
 	$usecache = (isset($tmux->usecache)) ? $tmux->usecache : 0;
-	if ($loop == 1 || $usecache == 0) {
+	if ($loop == 1 || $usecache === 0) {
 		return false;
 	} else {
 		return (mt_rand(1, 100) <= $chance);
@@ -199,7 +199,7 @@ $proc_tmux = "SELECT
 	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_end') AS colors_end,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc,
 	(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS running,
+	(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS is_running,
 	(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs,
 	(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs,
 	(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs,
@@ -299,8 +299,8 @@ $newestpre = TIME();
 $oldestcollection = TIME();
 $oldestnzb = TIME();
 
-$active_groups = $all_groups = 0;
-$backfilldays = $backfill_groups_date = 0;
+$active_groups = $all_groups = $running = 0;
+$backfilldays = $backfill_groups_date = $colors_exc =0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
 $misc_diff = $misc_percent = $misc_releases_now = $work_start = 0;
@@ -320,10 +320,9 @@ $grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = $music_releases_proc_sta
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
 $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
-
 $last_history = "";
 
-$mask1 = $c->headerOver("%-16s")." ".$c->tmuxOrange("%-50.50s");
+$mask1 = $c->headerOver("%-18s")." ".$c->tmuxOrange("%-48.48s");
 $mask2 = $c->headerOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
 $mask3 = $c->header("%-16.16s %25.25s %25.25s");
 $mask4 = $c->primaryOver("%-16.16s") . " " . $c->tmuxOrange("%25.25s %25.25s");
@@ -332,7 +331,12 @@ $mask5 = $c->tmuxOrange("%-16.16s %25.25s %25.25s");
 //create display
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
+if ($running === 1)
+{
+	printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
+} else {
+	printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
+}
 printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
 if ($alternate_nntp == "1") {
 	printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
@@ -340,7 +344,7 @@ if ($alternate_nntp == "1") {
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre") . "ago");
-printf($mask1, "Collection Age:", relativeTime("$oldestcollection") . "ago");
+printf($mask1, "Collection Age[${delay}]:", relativeTime("$oldestcollection") . "ago");
 if ($grabnzbs != 0) {
 	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb") . "ago");
 }
@@ -396,7 +400,7 @@ while ($i > 0) {
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
-	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1)) {
+	if ($i == 1 || (TIME() - $time1 >= $monitor && $running === 1)) {
 		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = TIME();
 		$split_result = $db->query($split_query, false);
@@ -583,7 +587,7 @@ while ($i > 0) {
 		$nfo_now = $proc_work_result[0]['nfo'];
 	}
 
-	if ($tablepergroup == 0) {
+	if ($tablepergroup === 0) {
 		if ($proc_work_result3[0]['binaries_table'] != NULL) {
 			$binaries_table = $proc_work_result3[0]['binaries_table'];
 		}
@@ -712,23 +716,24 @@ while ($i > 0) {
 	if ($proc_tmux_result[0]['dehash'] != NULL) {
 		$dehash = $proc_tmux_result[0]['dehash'];
 	}
-	if ($proc_tmux_result[0]['newestname']) {
+	if ($proc_tmux_result[0]['newestname'] != NULL) {
 		$newestname = $proc_tmux_result[0]['newestname'];
 	}
-	if ($proc_tmux_result[0]['show_query']) {
+	if ($proc_tmux_result[0]['show_query'] != NULL) {
 		$show_query = $proc_tmux_result[0]['show_query'];
 	}
-	if ($proc_tmux_result[0]['running']) {
-		$running = $proc_tmux_result[0]['running'];
+	if ($proc_tmux_result[0]['is_running'] != NULL) {
+		$running = (int)$proc_tmux_result[0]['is_running'];
+		echo "here\n\n\n\n\n\nCrap";
 	}
 
 	if ($split_result[0]['oldestnzb'] != NULL) {
 		$oldestnzb = $split_result[0]['oldestnzb'];
 	}
-	if ($split_result[0]['newestpre']) {
+	if ($split_result[0]['newestpre'] != NULL) {
 		$newestpre = $split_result[0]['newestpre'];
 	}
-	if ($tablepergroup == 0) {
+	if ($tablepergroup === 0) {
 		if ($split_result[0]['oldestcollection'] != NULL) {
 			$oldestcollection = $split_result[0]['oldestcollection'];
 		}
@@ -739,7 +744,7 @@ while ($i > 0) {
 	if ($split_result[0]['backfill_groups_date'] != NULL) {
 		$backfill_groups_date = $split_result[0]['backfill_groups_date'];
 	}
-	if ($split_result[0]['newestadd']) {
+	if ($split_result[0]['newestadd'] != NULL) {
 		$newestadd = $split_result[0]['newestadd'];
 	}
 
@@ -807,7 +812,7 @@ while ($i > 0) {
 	if ($proc_tmux_result[0]['dehash_timer'] != NULL) {
 		$dehash_timer = $proc_tmux_result[0]['dehash_timer'];
 	}
-	if ($proc_work_result[0]['releases']) {
+	if ($proc_work_result[0]['releases'] != NULL) {
 		$releases_now = $proc_work_result[0]['releases'];
 	}
 
@@ -819,22 +824,22 @@ while ($i > 0) {
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
-	if ($site->lookuptvrage == 0) {
+	if ($site->lookuptvrage === 0) {
 		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
 	}
-	if ($site->lookupmusic == 0) {
+	if ($site->lookupmusic === 0) {
 		$music_releases_proc = $music_releases_proc_start = 0;
 	}
-	if ($site->lookupimdb == 0) {
+	if ($site->lookupimdb === 0) {
 		$movie_releases_proc = $movie_releases_proc_start = 0;
 	}
-	if ($site->lookupgames == 0) {
+	if ($site->lookupgames === 0) {
 		$console_releases_proc = $console_releases_proc_start = 0;
 	}
-	if ($site->lookupbooks == 0) {
+	if ($site->lookupbooks === 0) {
 		$book_releases_proc = $book_releases_proc_start = 0;
 	}
-	if ($site->lookupnfo == 0) {
+	if ($site->lookupnfo === 0) {
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 	}
 
@@ -892,12 +897,12 @@ while ($i > 0) {
 		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host . ":" . $port . ""));
 		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $host_a . ":" . $port_a . " | grep -c ESTAB"));
 		$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host_a . ":" . $port_a . ""));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
+		if ($usp1activeconnections === 0 && $usp1totalconnections === 0 && $usp2activeconnections === 0 && $usp2totalconnections === 0) {
 			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip . ":" . $port . ""));
 			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
 			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip_a . ":" . $port_a . ""));
-		} else if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
+		} else if ($usp1activeconnections === 0 && $usp1totalconnections === 0 && $usp2activeconnections === 0 && $usp2totalconnections === 0 && $port != $port_a) {
 			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $port . " | grep -c ESTAB"));
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $port . ""));
 			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $port_a . " | grep -c ESTAB"));
@@ -906,7 +911,7 @@ while ($i > 0) {
 	} else {
 		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $host . ":" . $port . " | grep -c ESTAB"));
 		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host . ":" . $port . ""));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0) {
+		if ($usp1activeconnections === 0 && $usp1totalconnections === 0) {
 			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip . ":" . $port . ""));
 		}
@@ -915,7 +920,12 @@ while ($i > 0) {
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-	printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
+	if ($running === 1)
+	{
+		printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
+	} else {
+		printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
+	}
 	printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
 	if ($alternate_nntp == "1") {
 		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
@@ -924,7 +934,7 @@ while ($i > 0) {
 	printf($mask1, "Newest Release:", "$newestname");
 	printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre") . "ago");
-	printf($mask1, "Collection Age:", relativeTime("$oldestcollection") . "ago");
+	printf($mask1, "Collection Age[${delay}]:", relativeTime("$oldestcollection") . "ago");
 	if ($grabnzbs != 0) {
 		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb") . "ago");
 	}
@@ -1008,7 +1018,7 @@ while ($i > 0) {
 	}
 
 	//get list of panes by name
-	if ($seq == 0) {
+	if ($seq === 0) {
 		$panes_win_1 = shell_exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 		$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 		$panes_win_2 = shell_exec("echo `tmux list-panes -t $tmux_session:1 -F '#{pane_title}'`");
@@ -1061,7 +1071,7 @@ while ($i > 0) {
 	$_sleep = "$_phpn ${DIR}update_scripts/nix_scripts/tmux/bin/showsleep.php";
 
 	if ($releases_run != 0) {
-		if ($tablepergroup == 0) {
+		if ($tablepergroup === 0) {
 			$run_releases = "$_php ${DIR}update_scripts/update_releases.php 1 false";
 		} else {
 			$run_releases = "$_python ${DIR}update_scripts/python_scripts/releases_threaded.py";
@@ -1074,7 +1084,7 @@ while ($i > 0) {
 		$clean = ' ';
 	}
 
-	if ($running == 1) {
+	if ($running === 1) {
 		//run these if complete sequential not set
 		if ($seq != 2) {
 			// Show all available colors
@@ -1214,7 +1224,7 @@ while ($i > 0) {
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
-			} else if (($post != 0) && ($nfo_remaining_now == 0) && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0)) {
+			} else if (($post != 0) && ($nfo_remaining_now === 0) && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
 			} else {
@@ -1228,7 +1238,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -t${tmux_session}:2.1 ' \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py tv $clean $log; \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_threaded.py movie $clean $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
-			} else if (($post_non != 0) && ($movie_releases_proc == 0) && ($tvrage_releases_proc == 0)) {
+			} else if (($post_non != 0) && ($movie_releases_proc === 0) && ($tvrage_releases_proc === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by No Movies/TV to process\"'");
 			} else {
@@ -1241,10 +1251,10 @@ while ($i > 0) {
 				$log = writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
-			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
+			} else if (($post_amazon == 1) && ($processbooks === 0) && ($processmusic === 0) && ($processgames === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0)) {
+			} else if (($post_amazon == 1) && ($music_releases_proc === 0) && ($book_releases_proc === 0) && ($console_releases_proc === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console to process\"'");
 			} else {
@@ -1253,7 +1263,7 @@ while ($i > 0) {
 			}
 
 			//update tv and theaters
-			if (($update_tv == 0) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
+			if (($update_tv === 0) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
 						$_phpn ${DIR}update_scripts/update_theaters.php $log; $_phpn ${DIR}update_scripts/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
@@ -1301,7 +1311,7 @@ while ($i > 0) {
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back/safe less than 4800
-				else if (($binaries != 0) && ($backfill == 4) && ($releases_run == 0)) {
+				else if (($binaries != 0) && ($backfill == 4) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
@@ -1310,7 +1320,7 @@ while ($i > 0) {
 							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/back less than 4800
-				else if (($binaries != 0) && ($backfill != 0) && ($releases_run == 0)) {
+				else if (($binaries != 0) && ($backfill != 0) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
@@ -1318,49 +1328,49 @@ while ($i > 0) {
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe/rel less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run != 0)) {
+				else if (($binaries === 0) && ($backfill == 4) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/rel less than 4800
-				else if (($binaries == 0) && ($backfill != 0) && ($releases_run != 0)) {
+				else if (($binaries === 0) && ($backfill != 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin/rel less than 4800
-				else if (($binaries != 0) && ($backfill == 0) && ($releases_run != 0)) {
+				else if (($binaries != 0) && ($backfill === 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs bin less than 4800
-				else if (($binaries != 0) && ($backfill == 0) && ($releases_run == 0)) {
+				else if (($binaries != 0) && ($backfill === 0) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back/safe less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
+				else if (($binaries === 0) && ($backfill == 4) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs back less than 4800
-				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
+				else if (($binaries === 0) && ($backfill == 4) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update_scripts/python_scripts/backfill_threaded.py $log; \
 							$_python ${DIR}update_scripts/python_scripts/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
 				//runs rel less than 4800
-				else if (($binaries == 0) && ($backfill == 0) && ($releases_run != 0)) {
+				else if (($binaries === 0) && ($backfill === 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				} else if (($binaries == 0) && ($backfill == 0) && ($releases_run == 0)) {
+				} else if (($binaries === 0) && ($backfill === 0) && ($releases_run === 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
 				}
@@ -1418,10 +1428,10 @@ while ($i > 0) {
 				$log = writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 						$_python ${DIR}update_scripts/python_scripts/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
-			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
+			} else if (($post_amazon == 1) && ($processbooks === 0) && ($processmusic === 0) && ($processgames === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0)) {
+			} else if (($post_amazon == 1) && ($music_releases_proc === 0) && ($book_releases_proc === 0) && ($console_releases_proc === 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console to process\"'");
 			} else {
@@ -1500,7 +1510,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.4 'echo \"\033[38;5;${color}m\n${panes0[4]} has been disabled/terminated by Releases\"'");
 			}
 		}
-	} else if ($seq == 0) {
+	} else if ($seq === 0) {
 		for ($g = 1; $g <= 4; $g++) {
 			$color = get_color($colors_start, $colors_end, $colors_exc);
 			shell_exec("tmux respawnp -k -t${tmux_session}:0.$g 'echo \"\033[38;5;${color}m\n${panes0[$g]} has been disabled/terminated by Running\"'");

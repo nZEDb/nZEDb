@@ -229,6 +229,12 @@ class ColorCLI
 		return $str;
 	}
 
+	public static function alternate($str)
+	{
+		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
+		return $str;
+	}
+
 	public static function tmuxOrange($str)
 	{
 		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
@@ -244,6 +250,12 @@ class ColorCLI
 	public static function headerOver($str)
 	{
 		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m";
+		return $str;
+	}
+
+	public static function alternateOver($str)
+	{
+		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
 		return $str;
 	}
 
