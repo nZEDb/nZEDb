@@ -496,7 +496,7 @@ class Movie
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->header($ret['title']);
+			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->headerOver($ret['title']);
 		}
 		return $ret;
 	}
@@ -558,7 +558,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primary($ret['title']);
+				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
 			}
 
 			return $ret;
@@ -657,14 +657,14 @@ class Movie
 						if ($imdbId === false) {
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						}
-						echo $this->c->alternateOver("\nFound Local: ") . $this->c->header($moviename);
+						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
 						continue;
 					}
 
 					if ($this->echooutput && $releaseToWork == '') {
-						echo $this->c->primaryOver('Looking up: ') . $this->c->header($moviename);
+						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);
 					} else {
-						echo $this->c->primaryOver("\nLooking up: ") . $this->c->header($moviename);
+						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
 					}
 
 					// Check OMDbapi first
