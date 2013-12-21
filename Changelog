@@ -6,6 +6,7 @@ Each update goes to the top of the file
 2013-12-22 -> jonnyboy -> added local lookup for books, music and console(may be buggy), added easier to read output for books, music and console
                           changed sleep timer for amazon, so that each amazon lookup only takes 1 sec, does not sleep if local or lookup exceeded 1 sec
                           fixed monitor running on/off
+2013-12-21 -> bart39   -> More regex additions/fixes for movie/audio
 2013-12-21 -> jonnyboy -> updated movie.php to get movie backdrops
                           changed site to use relative urls for all menu items, instead of a mix of relative and full urls
                           added option to run postprocess_threaded.py on categroyid, changed monitor to use ColorCLI, changing brackets, changed output of pp amazon scripts
