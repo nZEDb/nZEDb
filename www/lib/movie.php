@@ -496,7 +496,7 @@ class Movie
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->header($ret['title']);
+			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->headerOver($ret['title']);
 		}
 		return $ret;
 	}
@@ -558,7 +558,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primary($ret['title']);
+				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
 			}
 
 			return $ret;
