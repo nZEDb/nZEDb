@@ -1,4 +1,5 @@
 <?php
+
 define('nZEDb_DEBUG', false);
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -23,15 +24,16 @@ if (function_exists('ini_set') && function_exists('ini_get')) {
 define('SMARTY_DIR', nZEDb_LIB . 'smarty' . DS);
 
 // These are site constants
-$www_top = str_replace("\\","/",dirname($_SERVER['PHP_SELF']));
-if(strlen($www_top) == 1)
+$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
+if (strlen($www_top) == 1) {
 	$www_top = "";
+}
 
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
 
 // Path to themes directory.
-define('THEMES_DIR', WWW_TOP.'themes');
+define('THEMES_DIR', WWW_TOP . 'themes');
 
 // Number of results per page.
 define("ITEMS_PER_PAGE", "100");

@@ -2,7 +2,6 @@
 require_once './config.php';
 require_once nZEDb_LIB . 'adminpage.php';
 require_once nZEDb_LIB . 'tmux.php';
-require_once nZEDb_LIB . 'sabnzbd.php';
 
 $page = new AdminPage();
 $tmux = new Tmux();

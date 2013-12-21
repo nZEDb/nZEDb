@@ -1,32 +1,35 @@
 <?php
+
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'users.php';
 
 class Menu
 {
+
 	public function get($role, $serverurl)
 	{
 		$db = new DB();
 
 		$guest = "";
-		if ($role != Users::ROLE_GUEST)
+		if ($role != Users::ROLE_GUEST) {
 			$guest = sprintf(" AND role != %d ", Users::ROLE_GUEST);
+		}
 
-		if ($role != Users::ROLE_ADMIN)
+		if ($role != Users::ROLE_ADMIN) {
 			$guest .= sprintf(" AND role != %d ", Users::ROLE_ADMIN);
+		}
 
 		$data = $db->query(sprintf("SELECT * FROM menu WHERE role <= %d %s ORDER BY ordinal", $role, $guest));
 
 		$ret = array();
-		foreach ($data as $d)
-		{
-			if (!preg_match("/http/i", $d["href"]))
-			{
-				$d["href"] = $serverurl.$d["href"];
+		foreach ($data as $d) {
+			if (!preg_match("/http/i", $d["href"])) {
+				// To use server url instead of relative url, umcomment the next line
+				//$d["href"] = "serverurl" . $d["href"];
+				$ret[] = $d;
+			} else {
 				$ret[] = $d;
 			}
-			else
-				$ret[] = $d;
 		}
 		return $ret;
 	}
@@ -60,4 +63,5 @@ class Menu
 		$db = new DB();
 		return $db->queryExec(sprintf("UPDATE menu SET href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow = %d WHERE id = %d", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"], $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]));
 	}
+
 }

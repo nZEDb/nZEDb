@@ -1,4 +1,5 @@
 <?php
+
 require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'amazon.php';
 require_once nZEDb_LIB . 'category.php';
@@ -10,10 +11,11 @@ require_once nZEDb_LIB . 'ColorCLI.php';
  * Class for fetching book info from amazon.com.
  */
 
- class Books
- {
-	 function __construct($echooutput=false)
-	 {
+class Books
+{
+
+	function __construct($echooutput = false)
+	{
 		$this->echooutput = $echooutput;
 		$s = new Sites();
 		$site = $s->get();
@@ -22,7 +24,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->imgSavePath = nZEDb_WWW.'covers/book/';
+		$this->imgSavePath = nZEDb_WWW . 'covers/book/';
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 260 : 256;
@@ -39,21 +41,23 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql')
+		if ($db->dbSystem() == 'mysql') {
 			$like = 'LIKE';
-		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%'.$author.'%'), $like, $db->escapeString('%'.$title.'%')));
+		}
+		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%' . $author . '%'), $like, $db->escapeString('%' . $title . '%')));
 	}
 
 	public function getRange($start, $num)
 	{
 		$db = $this->db;
 
-		if ($start === false)
+		if ($start === false) {
 			$limit = '';
-		else
-			$limit = ' LIMIT '.$num.' OFFSET '.$start;
+		} else {
+			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
+		}
 
-		return $db->query(' SELECT * FROM bookinfo ORDER BY createddate DESC'.$limit);
+		return $db->query(' SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
 	}
 
 	public function getCount()
@@ -63,141 +67,140 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		return $res['num'];
 	}
 
-	public function getBookCount($cat, $maxage=-1, $excludedcats=array())
+	public function getBookCount($cat, $maxage = -1, $excludedcats = array())
 	{
 		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
 		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
+		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
+			foreach ($cat as $category) {
+				if ($category != -1) {
 					$categ = new Category();
-					if ($categ->isParent($category))
-					{
+					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';
-						foreach ($children as $child)
-							$chlist .= ', '.$child['id'];
+						foreach ($children as $child) {
+							$chlist .= ', ' . $child['id'];
+						}
 
-						if ($chlist != '-99')
-								$catsrch .= ' r.categoryid IN ('.$chlist.') OR ';
-					}
-					else
+						if ($chlist != '-99') {
+							$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
+						}
+					} else {
 						$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
+					}
 				}
 			}
 			$catsrch .= '1=2 )';
 		}
 
-		if ($maxage > 0)
-		{
-			if ($db->dbSystem() == 'mysql')
+		if ($maxage > 0) {
+			if ($db->dbSystem() == 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			else if ($db->dbSystem() == 'pgsql')
+			} else if ($db->dbSystem() == 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-		}
-		else
+			}
+		} else {
 			$maxage = '';
+		}
 
 		$exccatlist = '';
-		if (count($excludedcats) > 0)
-			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
+		if (count($excludedcats) > 0) {
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+		}
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' WHERE (r.bitwise & 256) = 256 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res['num'];
 	}
 
-	public function getBookRange($cat, $start, $num, $orderby, $maxage=-1, $excludedcats=array())
+	public function getBookRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
 	{
 		$db = $this->db;
 
 		$browseby = $this->getBrowseBy();
 
-		if ($start === false)
+		if ($start === false) {
 			$limit = '';
-		else
-			$limit = ' LIMIT '.$num.' OFFSET '.$start;
+		} else {
+			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
+		}
 
 		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1)
-		{
+		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
-			foreach ($cat as $category)
-			{
-				if ($category != -1)
-				{
+			foreach ($cat as $category) {
+				if ($category != -1) {
 					$categ = new Category();
-					if ($categ->isParent($category))
-					{
+					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';
-						foreach ($children as $child)
-							$chlist .= ', '.$child['id'];
+						foreach ($children as $child) {
+							$chlist .= ', ' . $child['id'];
+						}
 
-						if ($chlist != '-99')
-							$catsrch .= ' r.categoryid IN ('.$chlist.') OR ';
-					}
-					else
+						if ($chlist != '-99') {
+							$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
+						}
+					} else {
 						$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
+					}
 				}
 			}
 			$catsrch .= '1=2)';
 		}
 
 		$maxage = '';
-		if ($maxage > 0)
-		{
-			if ($db->dbSystem() == 'mysql')
+		if ($maxage > 0) {
+			if ($db->dbSystem() == 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			else if ($db->dbSystem() == 'pgsql')
+			} else if ($db->dbSystem() == 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+			}
 		}
 
 		$exccatlist = '';
-		if (count($excludedcats) > 0)
-			$exccatlist = ' AND r.categoryid NOT IN ('.implode(',', $excludedcats).')';
+		if (count($excludedcats) > 0) {
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+		}
 
 		$order = $this->getBookOrder($orderby);
-		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s".$limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(sprintf("SELECT r.*, r.id as releaseid, boo.*, groups.name AS group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, rn.id AS nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN bookinfo boo ON boo.id = r.bookinfoid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = r.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getBookOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
 		$orderArr = explode('_', $order);
-		switch($orderArr[0]) {
+		switch ($orderArr[0]) {
 			case 'title':
 				$orderfield = 'boo.title';
-			break;
+				break;
 			case 'author':
 				$orderfield = 'boo.title';
-			break;
+				break;
 			case 'publishdate':
 				$orderfield = 'boo.publishdate';
-			break;
+				break;
 			case 'size':
 				$orderfield = 'r.size';
-			break;
+				break;
 			case 'files':
 				$orderfield = 'r.totalpart';
-			break;
+				break;
 			case 'stats':
 				$orderfield = 'r.grabs';
-			break;
+				break;
 			case 'posted':
 			default:
 				$orderfield = 'r.postdate';
-			break;
+				break;
+		}
+		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
+		return array($orderfield, $ordersort);
 	}
-	$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
-	return array($orderfield, $ordersort);
-}
 
 	public function getBookOrdering()
 	{
@@ -214,17 +217,16 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		$db = $this->db;
 
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql')
+		if ($db->dbSystem() == 'mysql') {
 			$like = 'LIKE';
+		}
 
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		foreach ($browsebyArr as $bbk=>$bbv)
-		{
-			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk]))
-			{
+		foreach ($browsebyArr as $bbk => $bbv) {
+			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'boo.'.$bbv.' '.$like.' ('.$db->escapeString('%'.$bbs.'%').') AND ';
+				$browseby .= 'boo.' . $bbv . ' ' . $like . ' (' . $db->escapeString('%' . $bbs . '%') . ') AND ';
 			}
 		}
 		return $browseby;
@@ -233,12 +235,9 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 	public function fetchAmazonProperties($title)
 	{
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
-		try
-		{
+		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, 'TITLE');
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			$result = false;
 		}
 		return $result;
@@ -252,48 +251,45 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
 		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE (bitwise & %d) = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->cleanbooks, $this->bookreqids, $this->bookqty));
 
-		if ($res->rowCount() > 0)
-		{
-			if ($this->echooutput)
-				echo $this->c->header("\nProcessing ".$res->rowCount().' book release(s).');
+		if ($res->rowCount() > 0) {
+			if ($this->echooutput) {
+				echo $this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).');
+			}
 
-			foreach ($res as $arr)
-			{
+			foreach ($res as $arr) {
 				// audiobooks are also books and should be handles in an identical manor, even though it falls under a music category
-				if($arr['categoryid'] == '3030')
-				{
+				if ($arr['categoryid'] == '3030') {
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
-				}
-				else
-				{
+				} else {
 					// ebook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'ebook');
 				}
 
-				if ($bookInfo !== false)
-				{
-					if ($this->echooutput)
-						echo $this->c->headerOver('Looking up: ').$this->c->primary($bookInfo);
+				if ($bookInfo !== false) {
+					if ($this->echooutput) {
+						echo $this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo);
+					}
 
 					$bookId = $this->updateBookInfo($bookInfo);
-					if ($bookId === false)
+					if ($bookId === false) {
 						$bookId = -2;
+					}
 
 					// Update release.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
 				}
 				// Could not parse release title.
-				else
+				else {
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
+				}
 				// Sleep to not flood amazon.
-				usleep($this->sleeptime*1000);
+				usleep($this->sleeptime * 1000);
 			}
+		} else
+		if ($this->echooutput) {
+			echo $this->c->header('No book releases to process.');
 		}
-		else
-			if ($this->echooutput)
-				echo $this->c->header('No book releases to process.');
-
 	}
 
 	public function parseTitle($releasename, $releaseID, $releasetype)
@@ -303,36 +299,29 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		$releasename = trim(preg_replace('/\s\s+/i', ' ', $releasename));
 
 		// the default existing type was ebook, this handles that in the same manor as before
-		if($releasetype == 'ebook')
-		{
-			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename))
-			{
-				echo $this->c->headerOver('Changing category to misc books: ').$this->c->primary($releasename);
+		if ($releasetype == 'ebook') {
+			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename)) {
+				echo $this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename);
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
 				return false;
-			}
-			else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename))
-			{
-				echo $this->c->headerOver('Changing category to magazines: ').$this->c->primary($releasename);
+			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
+				echo $this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename);
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
 				return false;
-			}
-			else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
+			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				return $releasename;
-			else
+			} else {
 				return false;
-		}
-		else if($releasetype == 'audiobook')
-		{
-			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename))
-			{
+			}
+		} else if ($releasetype == 'audiobook') {
+			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				// we can skip category for audiobooks, since we already know it, so as long as the release name is valid return it so that it is postprocessed by amazon.  In the future, determining the type of audiobook could be added (Lecture or book), since we can skip lookups on lectures, but for now handle them all the same way
 				return $releasename;
-			}
-			else
+			} else {
 				return false;
+			}
 		}
 	}
 
@@ -343,13 +332,15 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 
 		$book = array();
 
-		if ($bookInfo != '')
+		if ($bookInfo != '') {
 			$amaz = $this->fetchAmazonProperties($bookInfo);
-		else if ($amazdata != null)
+		} else if ($amazdata != null) {
 			$amaz = $amazdata;
+		}
 
-		if (!$amaz)
+		if (!$amaz) {
 			return false;
+		}
 
 		$book['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
 
@@ -358,74 +349,77 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 		$book['asin'] = (string) $amaz->Items->Item->ASIN;
 
 		$book['isbn'] = (string) $amaz->Items->Item->ItemAttributes->ISBN;
-		if ($book['isbn'] == '')
+		if ($book['isbn'] == '') {
 			$book['isbn'] = 'null';
+		}
 
 		$book['ean'] = (string) $amaz->Items->Item->ItemAttributes->EAN;
-		if ($book['ean'] == '')
+		if ($book['ean'] == '') {
 			$book['ean'] = 'null';
+		}
 
 		$book['url'] = (string) $amaz->Items->Item->DetailPageURL;
 		$book['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $book['url']);
 
 		$book['salesrank'] = (string) $amaz->Items->Item->SalesRank;
-		if ($book['salesrank'] == '')
+		if ($book['salesrank'] == '') {
 			$book['salesrank'] = 'null';
+		}
 
 		$book['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
-		if ($book['publisher'] == '')
+		if ($book['publisher'] == '') {
 			$book['publisher'] = 'null';
+		}
 
 		$book['publishdate'] = date('Y-m-d', strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
-		if ($book['publishdate'] == '')
+		if ($book['publishdate'] == '') {
 			$book['publishdate'] = 'null';
+		}
 
 		$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
-		if ($book['pages'] == '')
+		if ($book['pages'] == '') {
 			$book['pages'] = 'null';
+		}
 
-		if(isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content))
-		{
+		if (isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content)) {
 			$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
-			if ($book['overview'] == '')
+			if ($book['overview'] == '') {
 				$book['overview'] = 'null';
-		}
-		else
+			}
+		} else {
 			$book['overview'] = 'null';
-
-		if(isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name))
-		{
-			$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
-			if ($book['genre'] == '')
-				$book['genre'] = 'null';
 		}
-		else
+
+		if (isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name)) {
+			$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
+			if ($book['genre'] == '') {
+				$book['genre'] = 'null';
+			}
+		} else {
 			$book['genre'] = 'null';
+		}
 
 		$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
-		if ($book['coverurl'] != '')
+		if ($book['coverurl'] != '') {
 			$book['cover'] = 1;
-		else
+		} else {
 			$book['cover'] = 0;
+		}
 
-		if ($db->dbSystem() == 'mysql')
+		if ($db->dbSystem() == 'mysql') {
 			$bookId = $db->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now()) ON DUPLICATE KEY UPDATE title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, createddate = NOW(), updateddate = NOW()", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']));
-		else if ($db->dbSystem() == 'pgsql')
-		{
+		} else if ($db->dbSystem() == 'pgsql') {
 			$check = $db->queryOneRow(sprintf('SELECT id FROM bookinfo WHERE asin = %s', $db->escapeString($book['asin'])));
-			if ($check === false)
+			if ($check === false) {
 				$bookId = $db->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']));
-			else
-			{
+			} else {
 				$bookId = $check['id'];
 				$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
 			}
 		}
 
-		if ($bookId)
-		{
-			if ($this->echooutput)
-			{
+		if ($bookId) {
+			if ($this->echooutput) {
 				echo $this->c->headerOver("\nAdded/updated book: ");
 				if ($book['author'] !== '') {
 					echo $this->c->headerOver("Author: ") . $this->c->primary($book['author']);
@@ -439,13 +433,12 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 			}
 
 			$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
-		}
-		else
-		{
+		} else {
 			if ($this->echooutput) {
 				echo $this->c->header('Nothing to update: ') . $this->c->header($book['author'] . ' - ' . $book['title']);
 			}
 		}
 		return $bookId;
 	}
+
 }
