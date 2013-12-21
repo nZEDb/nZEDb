@@ -23,7 +23,7 @@ class Nfo
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';

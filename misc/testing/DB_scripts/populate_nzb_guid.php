@@ -25,17 +25,15 @@ function create_guids($live, $delete = false)
 	$consoletools = new ConsoleTools();
 	$site = $s->get();
 	$timestart = TIME();
-	$relcount = 0;
+	$relcount = $deleted = 0;
 
 	if ($live == "true")
 	{
-		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
-		$relrecs->execute();
+		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
 	}
 	else if ($live == "limited")
 	{
-		$relrecs = $db->prepare(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC LIMIT 10000"));
-		$relrecs->execute();
+		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC LIMIT 10000"));
 	}
 	$total = $relrecs->rowCount();
 	if ($total > 0)
@@ -55,8 +53,9 @@ function create_guids($live, $delete = false)
 				{
 					if (isset($delete) && $delete == 'delete')
 					{
-						echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
+						//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
 						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+						$deleted++;
 					}
 					continue;
 				}
@@ -69,8 +68,9 @@ function create_guids($live, $delete = false)
 				{
 					if (isset($delete) && $delete == 'delete')
 					{
-						echo "\n".$nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
+						//echo "\n".$nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
 						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+						$deleted++;
 					}
 					continue;
 				}
@@ -86,7 +86,7 @@ function create_guids($live, $delete = false)
 
 						$db->queryExec("UPDATE releases set nzb_guid = ".$db->escapestring($nzb_guid)." WHERE id = ".$relrec["id"]);
 						$relcount++;
-						$consoletools->overWrite("Updating: ".$consoletools->percentString($reccnt,$total)." Time:".$consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWrite("Updating: [".$deleted."] ".$consoletools->percentString($reccnt,$total)." Time:".$consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
 				}

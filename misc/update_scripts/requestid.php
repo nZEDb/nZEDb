@@ -7,7 +7,7 @@ require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$c = new ColorCLI;
+$c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1])))
 	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5 doing local lookup only.\n"
 		."php requestid.php 1000 true		...: to limit to 1000 sorted by newest postdate and show renaming.\n"

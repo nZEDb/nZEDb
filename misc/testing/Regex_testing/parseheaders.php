@@ -12,7 +12,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 
 $group = $argv[1];
 $cleaner = new nameCleaning();
-$c = new ColorCLI;
+$c = new ColorCLI();
 
 if (isset($argv[1]) && file_exists($argv[1]))
 {

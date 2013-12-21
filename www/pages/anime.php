@@ -14,9 +14,9 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
 	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", "5070", -1);
 	$AniDBAPIArray = $AniDB->getAnimeInfo($_GET['id']);
-
-	if (!$release || !$AniDBAPIArray)
+	if (!$release && !$AniDBAPIArray) {
 		$page->show404();
+	}
 
 	$animeEpisodeTitle = $postdate = array();
 	foreach($release as $rlk=>$rlv)
@@ -26,9 +26,10 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 	}
 
 	$animeEpisodeTitles = array();
-	foreach ($release as $r)
+	foreach ($release as $r) {
 		$animeEpisodeTitles[$r['tvtitle']][] = $r;
-
+	}
+	$page->smarty->assign('animeEpisodeTitlesSize', count($animeEpisodeTitles));
 	$page->smarty->assign('animeEpisodeTitles', $animeEpisodeTitles);
 	$page->smarty->assign('animeAnidbID', $AniDBAPIArray['anidbid']);
 	# case is off on old variable this resolves that, I do not think the other is ever used, but left if anyways
@@ -50,7 +51,6 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 
 	$page->content = $page->smarty->fetch('viewanime.tpl');
 	$page->render();
-
 }
 else
 {

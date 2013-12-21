@@ -35,7 +35,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 cur = con.cursor()
 
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\nWrong set of arguments.\nThe first argument [additional, nfo, movie, clean] determines the postprocessing to do.\nThe optional second argument for [additional, nfo] [groupid, categoryid] allows to process only that group or category.\nThe optional second argument for [movies, tv] [clean] allows processing only properly renamed releases.\n\npython postprocess_threaded.py [additional, nfo] (optional [groupid, categoryid])\npython postprocess_threaded.py [movie, tv] (optional [clean])\n" + bcolors.ENDC)
 	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
@@ -48,6 +48,16 @@ if sys.argv[1] == "additional":
 	print(bcolors.HEADER + "Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip" + bcolors.ENDC);
 elif sys.argv[1] == "nfo":
 	print(bcolors.HEADER + "* = hidden NFO, + = NFO, - = no NFO, f = download failed." + bcolors.ENDC)
+
+# You can limit postprocessing for additional and nfop by groupid or categoryid
+if len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) < 4:
+	groupID = 'AND groupid = '+sys.argv[2]
+	print(bcolors.HEADER + "Using groupid "+sys.argv[2] + bcolors.ENDC)
+elif len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) == 4:
+	groupID = 'AND categoryid = '+sys.argv[2]
+	print(bcolors.HEADER + "Using categoryid "+sys.argv[2] + bcolors.ENDC)
+else:
+	groupID = ''
 
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -74,7 +84,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur.execute("SELECT(SELECT value FROM site WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur.fetchall()
 else:
-	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n")
+	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_threaded.py [additional, nfo, movie, tv]\n" + bcolors.ENDC)
 	sys.exit()
 
 run_threads = int(dbgrab[0][0])
@@ -91,18 +101,13 @@ maxsize = (int(maxsizeck * 1073741824))
 if sys.argv[1] == "additional" or sys.argv[1] == "nfo":
 	print(bcolors.HEADER + "Available to process: -6 = {}, -5 = {}, -4 = {}, -3 = {}, -2 = {}, -1 = {}".format(ps6, ps5, ps4, ps3, ps2, ps1) + bcolors.ENDC);
 
-datas = []
-maxtries = -1
-
-if len(sys.argv) == 3 and sys.argv[2].isdigit():
-	groupID = 'AND groupid = '+sys.argv[2]
-else:
-	groupID = ''
-
 if maxsize == 0:
 	maxsize = ''
 else:
 	maxsize = 'AND r.size < '+str(maxsizeck * 1073741824)
+
+datas = []
+maxtries = -1
 
 process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun

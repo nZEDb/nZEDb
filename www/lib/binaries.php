@@ -35,7 +35,7 @@ class Binaries
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? $this->site->showdroppedyencparts : 0;
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 
 		// Cache of our black/white list.
 		$this->blackList = $this->message = array();
