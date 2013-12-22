@@ -84,7 +84,7 @@ class TMDb
 	 * @var array of double values
 	 */
 	protected $_timestamps;
-	
+
 	/**
 	 * Oldest timestamp for debugging only
 	 *
@@ -98,7 +98,7 @@ class TMDb
 	 * @var integer
 	 */
 	protected $_retries = 0;
-	
+
 	/**
 	 * Default constructor
 	 *
@@ -110,7 +110,7 @@ class TMDb
 	public function __construct($apikey, $default_lang = 'en', $config = FALSE, $scheme = TMDb::API_SCHEME)
 	{
 		$this->_timestamps = array_fill(0, TMDB::REQUEST_LIMIT, 0.0);
-		
+
 		$this->_apikey = (string) $apikey;
 		$this->_apischeme = ($scheme == TMDb::API_SCHEME) ? TMDb::API_SCHEME : TMDb::API_SCHEME_SSL;
 		$this->setLang($default_lang);
@@ -127,16 +127,16 @@ class TMDb
 	 * @return void
 	 */
 	protected function incRequests(){
-		
+
 		/* Increment request counter */
 		$this->_requests += 1;
-		
+
 		/* Calculate index for the oldest timestamp in the timestamps array */
 		$idx = $this->_requests % TMDB::REQUEST_LIMIT;
-		
+
 		/* Save the oldest timestamp for debugging */
 		$this->_timestamp = $this->_timestamps[ $idx ];
-		
+
 		/* Calculate elapsed time */
 		$timediff = microtime(true) - $this->_timestamp;
 		//$timediff = ( floor(microtime(true)*10) - ceil($this->_timestamp*10) ) / 10;
@@ -144,9 +144,9 @@ class TMDb
 		/* Compare the elapsed time against the specified timespan */
 		if ( $timediff < TMDB::REQUEST_TIMESPAN ){
 			/* Calculate delay * 1 second and sleep */
-			usleep( (TMDB::REQUEST_TIMESPAN - $timediff) *1000000 );  
+			usleep( (TMDB::REQUEST_TIMESPAN - $timediff) *1000000 );
 		}
-		
+
 		/* Save new timestamp */
 		$this->_timestamps[ $idx ] = microtime(true);
 	}
@@ -1066,6 +1066,7 @@ class TMDb
 				if ( $this->_retries < 3 )
 				{
 					$this->_retries += 1;
+					echo "\nTMDB limits exceeded, sleeping for 10 seconds.";
 					usleep( 10 *1000*1000 );
 					return $this->_makeCall($function, $params, $session_id, $method);
 				}
