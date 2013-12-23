@@ -444,7 +444,7 @@ class Movie
 		return $movieId;
 	}
 
-	public function fetchTmdbProperties($imdbId, $text = false)
+    public function fetchTmdbProperties($imdbId, $text = false)
 	{
 		$tmdb = new TMDb($this->apikey, $this->imdblanguage);
 		if ($text == false) {
@@ -660,8 +660,9 @@ class Movie
 						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
 						continue;
 					}
+                    continue;
 
-					if ($this->echooutput && $releaseToWork == '') {
+					if ($this->echooutput && $releaseToWork === '') {
 						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);
 					} else {
 						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
