@@ -168,6 +168,8 @@ class nameCleaning
 				return $this->movies_divx();
 			case 'alt.binaries.movies.x264':
 				return $this->movies_x264();
+			case 'alt.binaries.mp3':
+				return $this->mp3();
 			case 'alt.binaries.mp3.complete_cd':
 				return $this->mp3_complete_cd();
 			case 'alt.binaries.multimedia':
@@ -1036,6 +1038,9 @@ class nameCleaning
 		//Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
 		else if (preg_match('/(.+?)[-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/', $this->subject, $match))
 			return $match[1].$match[2];
+		//04/63  Brave New World Revisited - Aldous Huxley.mobi  yEnc
+		else if (preg_match('/\d+\/(\d+[-_ ]{0,3}.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/', $this->subject, $match))
+			return $match[1];
 		else
 			return $this->generic();
 	}
@@ -1074,10 +1079,28 @@ class nameCleaning
 		//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
 		else if (preg_match('/^(Attn:|Re:|REQ:|New Scan).+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i', $this->subject, $match))
 			return $match[1].$match[2];
+		//*FULL REPOST* New eBooks 26 Nov 2012 & 20% PAR2 Set -  "Elisabeth Kyle - The Captain's House (siPDF).rar"
+		//*REPOST* New eBooks 23 Nov 2012 -  "Charles Culver - [The 11th Floor 02] - Awakening (mobi).rar"
+		else if (preg_match('/^\*(FULL )?REPOST\* New eBooks.+[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")$/', $this->subject, $match))
+			return $match[2];
+		//1 - 5 July 2013 - Search for number at end of title - Bevin Alexander - How Hitler Could Have Won World War II- The Fatal Errors That Lead to Nazi Defeat (epub).rar - 14418-25255-6053.rar.txt yEnc
+		//10 July 2013 - Search 4 Numeric String at End of Subject - Andew Hodges - Alan Turing- The Enigma (Centenary Edition) (kf8 mobi).rar = 21317-25234-21710.rar.txt yEnc
+		else if (preg_match('/^.+?Search (for|4) (number|Numeric String) at end of (title|Subject)[-_ ]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4})[-\=_ ]{0,3}\d+[-_ ]{0,3}.+?yEnc$/i', $this->subject, $match))
+			return $match[4];
 		//"Gabaldon, Diana - Outlander [5] The Fiery Cross.epub" yEnc
 		//Kiny Friedman "Friedman, Kinky - Prisoner of Vandam Street_ A Novel, The.epub" yEnc
 		else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
 			return $match[1];
+		//"Back to Pakistan_ A Fifty-Year Journey - Leslie Noyes Mass.pdf"  2778K
+		else if (preg_match('/^"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}\d+[kKmMgG]$/', $this->subject, $match))
+			return $match[1];
+		//[002/182] A. E. Van Vogt - The Anarchistic Colossus.mobi  mobi flood
+		//[002/115] Alan Dean Foster - Alien.mobi  sf single author flood
+		else if (preg_match('/^\[\d+\/(\d+\][-_ ]{0,3}.+)\.(txt|pdf|mobi|epub|azw)[-_ ]{0,3}.+flood( )?$/', $this->subject, $match))
+			return $match[1];
+		//[2/4] Graham Masterton - Descendant.mobi
+		else if (preg_match('/^\[\d+\/(\d+\]) (.+?)\.(txt|pdf|mobi|epub|azw)/', $this->subject, $match))
+			return $match[1].$match[2];
 		else
 			return $this->generic();
 	}
@@ -1426,6 +1449,23 @@ class nameCleaning
 			return $this->generic();
 	}
 
+	// a.b.mp3
+	public function mp3()
+	{
+		//"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
+		if (preg_match('/"(.+)"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
+		//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
+		//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
+		if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
+		//Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
+		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match))
+			return $match[1];
+		else
+			return $this->generic();
+	}
+
 	// a.b.mp3.complete_cd
 	public function mp3_complete_cd()
 	{
@@ -1442,6 +1482,9 @@ class nameCleaning
 		//Escort.2006.DUTCH.WEB-RiP.x264-DLH - [01/23] - "Escort.2006.DUTCH.WEB-RiP.x264-DLH.par2" yEnc
 		//Tusenbroder.S01E05.PDTV.XViD.SWEDiSH-NTV  [01/69] - "ntv-tusenbroder.s01e05.nfo" yEnc
 		if (preg_match('/^([A-Z0-9a-z.-]{10,}\s+(- )?\[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match))
+			return $match[1];
+		//- "Auction Hunters S04E04.HDTV.x264-StarryNights1.nzb" yEnc
+		else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
 			return $match[1];
 		else
 			return $this->generic();
@@ -1562,6 +1605,19 @@ class nameCleaning
 			return $match[1];
 		//<<<usenet-space-cowboys.info>>>  <<<Powered by https://secretusenet.com>< "Justin_Bieber-Believe_Acoustic-2013-pLAN9_usenet-space-cowbys.info.rar" >< 4/6 (78.65 MB) >< 60.84 MB > yEnc
 		else if (preg_match('/^(.+?usenet-space.+?Powered by.+? ".+?)' . $this->e0 . '.+? \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) .+? \d+[.,]\d+ [kKmMgG][bB] .+?yEnc$/', $this->subject, $match))
+			return $match[1];
+		//"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
+		if (preg_match('/"(.+)"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
+		//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
+		//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
+		if (preg_match('/\( (.+?)\)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
+			return $match[1].$match[3];
+		//( Addison_Road-Addison_Road-2008 ) [01/10] - "01. Addison Road - This Could Be Our Day.mp3" yEnc
+		if (preg_match('/\( (.+?) \)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
+			return $match[1].$match[2];
+		//(????) [0/8] - Crionics Post - Alice In Chains - Dirt REPOST"Alice In Chains - Dirt.nzb" yEnc
+		if (preg_match('/^.+?\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match))
 			return $match[1];
 		else
 			return $this->generic();
@@ -2728,6 +2784,9 @@ class nameCleaning
 			//Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
 			else if (preg_match('/(.+?)[-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/', $subject, $match))
 				return $match[2];
+			//04/63  Brave New World Revisited - Aldous Huxley.mobi  yEnc
+			else if (preg_match('/\d+\/\d+[-_ ]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/', $subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -2773,10 +2832,28 @@ class nameCleaning
 			//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
 			else if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i', $subject, $match))
 				return $match[2];
+			//*FULL REPOST* New eBooks 26 Nov 2012 & 20% PAR2 Set -  "Elisabeth Kyle - The Captain's House (siPDF).rar"
+			//*REPOST* New eBooks 23 Nov 2012 -  "Charles Culver - [The 11th Floor 02] - Awakening (mobi).rar"
+			else if (preg_match('/^\*(FULL )?REPOST\* New eBooks.+[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")$/', $subject, $match))
+				return $match[2];
+			//1 - 5 July 2013 - Search for number at end of title - Bevin Alexander - How Hitler Could Have Won World War II- The Fatal Errors That Lead to Nazi Defeat (epub).rar - 14418-25255-6053.rar.txt yEnc
+			//10 July 2013 - Search 4 Numeric String at End of Subject - Andew Hodges - Alan Turing- The Enigma (Centenary Edition) (kf8 mobi).rar = 21317-25234-21710.rar.txt yEnc
+			else if (preg_match('/^.+?Search (for|4) (number|Numeric String) at end of (title|Subject)[-_ ]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4})[-\=_ ]{0,3}\d+[-_ ]{0,3}.+?yEnc$/i', $subject, $match))
+				return $match[4];
 			//"Gabaldon, Diana - Outlander [5] The Fiery Cross.epub" yEnc
 			//Kiny Friedman "Friedman, Kinky - Prisoner of Vandam Street_ A Novel, The.epub" yEnc
 			else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
 				return $match[1];
+			//"Back to Pakistan_ A Fifty-Year Journey - Leslie Noyes Mass.pdf"  2778K
+			else if (preg_match('/^"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}\d+[kKmMgG]$/', $subject, $match))
+				return $match[1];
+			//[002/182] A. E. Van Vogt - The Anarchistic Colossus.mobi  mobi flood
+			//[002/115] Alan Dean Foster - Alien.mobi  sf single author flood
+			else if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}(.+)\.(txt|pdf|mobi|epub|azw)[-_ ]{0,3}.+flood( )?$/', $subject, $match))
+				return $match[1];
+			//[2/4] Graham Masterton - Descendant.mobi
+			else if (preg_match('/^\[\d+\/(\d+\]) (.+?)\.(txt|pdf|mobi|epub|azw)/', $subject, $match))
+				return $match[2];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -3234,7 +3311,7 @@ class nameCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
-		else if ($groupName === 'alt.binaries.movies.x264')
+		else if ($groupName === "alt.binaries.movies.x264")
 		{
 			//http://nzbroyalty.com - House.of.The.Rising.sun.2011.BluRay.720p.DTS.x264-CHD - [00/48] - "House.of.The.Rising.sun.2011.BluRay.720p.DTS.x264-CHD.nzb" yEnc
 			if (preg_match('/^http:\/\/nzbroyalty\.com - (.+?) - \[\d+\/(\d+\]) - ".+?" yEnc$/', $subject, $match))
@@ -3248,6 +3325,21 @@ class nameCleaning
 			//"The.Hudsucker.Proxy.1994.1080p.Blu-ray.Remux.AVC.DTS.HD.MA.2.0-KRaLiMaRKo"(127/132) "The.Hudsucker.Proxy.1994.1080p.Blu-ray.Remux.AVC.DTS.HD.MA.2.0-KRaLiMaRKo.vol379+20.par2" - 24.61 GB - yEnc
 			else if (preg_match('/("|#34;)(.+)("|#34;)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)[-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_ ]{0,3}yEnc$/', $subject, $match))
 				return $match[2];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.mp3")
+		{
+			//"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
+			if (preg_match('/"(.+)"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
+			//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
+			if (preg_match('/\( (.+?) \)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
+			else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $subject, $match))
+				return $match[3];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -3270,6 +3362,9 @@ class nameCleaning
 				return $match[1];
 			//Handyman Shows-TOH-S32E10 - File 01 of 32 - yEnc
 			else if (preg_match('/^Handyman Shows-(.+) - File \d+ of \d+ - yEnc$/', $subject, $match))
+				return $match[1];
+			//- "Auction Hunters S04E04.HDTV.x264-StarryNights1.nzb" yEnc
+			else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
@@ -3453,10 +3548,23 @@ class nameCleaning
 			//<<<usenet-space-cowboys.info>>>  <<<Powered by https://secretusenet.com>< "Justin_Bieber-Believe_Acoustic-2013-pLAN9_usenet-space-cowbys.info.rar" >< 4/6 (78.65 MB) >< 60.84 MB > yEnc
 			else if (preg_match('/^.+?usenet-space.+?Powered by.+? "(.+?)' . $this->e0 . '.+? \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) .+? \d+[.,]\d+ [kKmMgG][bB] .+?yEnc$/', $subject, $match))
 				return $match[1];
+			//"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
+			if (preg_match('/"(.+)"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
+			//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
+			if (preg_match('/\( (.+?)\)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//( Addison_Road-Addison_Road-2008 ) [01/10] - "01. Addison Road - This Could Be Our Day.mp3" yEnc
+			if (preg_match('/\( (.+?) \)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
+				return $match[1];
+			//(????) [0/8] - Crionics Post - Alice In Chains - Dirt REPOST"Alice In Chains - Dirt.nzb" yEnc
+			if (preg_match('/^.+?\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $subject, $match))
+				return $match[3];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
-		else if ($groupName === 'alt.binaries.sounds.mp3.complete_cd')
+		else if ($groupName === "alt.binaries.sounds.mp3.complete_cd")
 		{
 			//The Refreshments - [1/9] - "The Refreshments - RockÂ´n Roll Christmas [2003].par2" yEnc
 			if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
