@@ -375,6 +375,11 @@ table.highlight tr:hover
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=1 );
 }
 
+table.nohighlight tr:hover
+{
+    background: transparent;
+}
+
 table tr.alt { background-color: #F6F6F6; }
 table tr.new { background-color: #f6f8ff; }
 table.data em {font-weight:bolder; color:red;}
@@ -499,15 +504,96 @@ another round button
 	top:1px;
 }
 
-.ui-tooltip-nzedb .ui-tooltip-titlebar{
-    background-color: #B0DE78;
-    color:white;
-    font-size:1.2em;
+/*
+site wide covers and images with dropshadows
+*/
+
+img.shadow {padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
+
+/*
+mainly one-off styles used on individual pages
+*/
+
+a.title
+{
+	font-size: 1.0em;
 }
 
-.ui-tooltip-nzedb .ui-state-default .ui-tooltip-icon{
-    background-position: -42px 0;
+
+#forumtable a.title { font-size: 1.4em; }
+
+pre#nfo { font-family: "Courier New", "DejaVu Sans Mono", monospace; font-size: 12px; line-height: 13px; }
+
+div.resextra
+{
+	padding-top:2px;
+	color: #555;
+	font-size: 0.9em;
+	height:16px;
 }
+div.resextra a.browsename { color: #B22222; font-size: 0.9em; }
+a.browsename:active {text-decoration: none}
+a.browsename:hover {text-decoration: underline}
+div.resextra a
+{
+	color: #555;
+	text-decoration:none;
+}
+div.resextra div.admin { float:right; }
+div.resextra div.btns {float:left; }
+
+div.movextra { padding-top:5px; color: #888; font-size: 0.9em; }
+div.movextra td {border:0; padding:0 0 10px 0}
+div.movextra tr.mlextra {display:none;}
+
+div.movcover { width:260px; }
+div.movcover img { margin-bottom:15px;}
+
+.mediainfo, .seriesinfo {cursor:pointer;}
+
+a.external { background: url('../../Default/images/newwindow.png') center right no-repeat !important; padding-right:13px !important;}
+
+ol.tracklist li { line-height: 140%; }
+
+div.tvseriesheading img {float:right; margin:10px 0 10px 10px; max-width:300px;}
+div.tvseriesheading p {text-align:left;}
+
+a.descmore { display: inline; margin: 0px; margin-left:5px;}
+span.descfull {display:none;}
+#detailstable a.descmore { display: inline; margin: 0px; }
+
+
+div.error { padding:20px; padding-left:50px; border:1px solid #BBB; background: #FED0D0 url(../../Default/images/icons/warning.png) no-repeat top; background-position: 5px 50%; font-size:1.2em; font-weight:bold; margin-bottom:10px;}
+div.comments { padding-top:20px; }
+
+.invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
+.invitefailed {display:none; font-weight:bold; padding-left:10px; color:red;}
+
+div.nosearchresults {margin-left:25px; padding-top:50px;}
+div.nosearchresults ul { line-height: 150%;}
+
+span.warning { color: red; }
+
+/*! nZEDb tooltip style */
+.ui-tooltip-nzedb .ui-tooltip-titlebar,
+.ui-tooltip-nzedb .ui-tooltip-content{
+	border-color: #90D93F;
+	color: #3F6219;
+}
+
+	.ui-tooltip-nzedb .ui-tooltip-content{
+		background-color: #CAED9E;
+	}
+
+	.ui-tooltip-nzedb .ui-tooltip-titlebar{
+		background-color: #B0DE78;
+		color:white;
+		font-size:1.2em;
+	}
+
+	.ui-tooltip-nzedb .ui-state-default .ui-tooltip-icon{
+		background-position: -42px 0;
+	}
 
 .rarfilelist {cursor:pointer;}
 /*.tooltiphead {background-color:#A9DB66; padding:5px;color:white; font-weight:bold; margin:-5px -10px 5px -10px;}*/

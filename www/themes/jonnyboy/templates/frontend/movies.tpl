@@ -49,7 +49,7 @@
 			{/foreach}
 			</select>
 		</td>
-		<td><input type="submit" value="Go" /></td>
+		<td><input class="button" type="submit" value="Go" /></td>
 	</tr>
 </table>
 </form>
@@ -75,9 +75,9 @@
 <table style="width:100%;" class="data highlight icons" id="coverstable">
 	<tr>
 		<th width="130"><input type="checkbox" class="nzb_check_all" /></th>
-		<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-		<th>year<br/><a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-		<th>rating<br/><a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+		<th>title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+		<th>year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+		<th>rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 	</tr>
 
 	{foreach from=$results item=result}
@@ -85,7 +85,7 @@
 			<td class="mid">
 				<div class="movcover">
 				<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="300" border="0" alt="{$result.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="240" border="0" alt="{$result.title|escape:"htmlall"}" />
 				</a>
 				<div class="movextra">
 					<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
@@ -96,17 +96,18 @@
 				</div>
 			</td>
 			<td colspan="3" class="left" >
-				<h1><b>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
+			<div >
+				<h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
 				{foreach from=$result.languages item=movielanguage}
 					{release_flag($movielanguage, browse)}
-				{/foreach}</b></h1>
+				{/foreach}</h2>
 				{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
 				{if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
 				{if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
 				{if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
 				{if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
-				<div class="movextra">
-					<table>
+				<div class="movextra" float="left">
+					<table class="nohighlight">
 						{assign var="msplits" value=","|explode:$result.grp_release_id}
 						{assign var="mguid" value=","|explode:$result.grp_release_guid}
 						{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -148,6 +149,7 @@
 						{/foreach}
 					</table>
 				</div>
+			</div>
 			</td>
 		</tr>
 	{/foreach}
