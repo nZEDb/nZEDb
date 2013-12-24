@@ -1,6 +1,8 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
+
+if (!$users->isLoggedIn()) {
+    $page->show403();
+}
 
 require_once nZEDb_LIB . 'movie.php';
 require_once nZEDb_LIB . 'category.php';
@@ -10,13 +12,13 @@ $cat = new Category;
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
 $mtmp = array();
-foreach($moviecats as $mcat)
-{
-	$mtmp[$mcat['id']] = $mcat;
+foreach ($moviecats as $mcat) {
+    $mtmp[$mcat['id']] = $mcat;
 }
 $category = Category::CAT_PARENT_MOVIE;
-if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp))
-	$category = $_REQUEST['t'] + 0;
+if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
+    $category = $_REQUEST['t'] + 0;
+}
 
 $catarray = array();
 $catarray[] = $category;
@@ -32,14 +34,13 @@ $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $movies = array();
 $results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
-foreach($results as $result)
-{
-	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
-	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
-	$result['director'] = $movie->makeFieldLinks($result, 'director');
-	$result['languages'] = explode(", ", $result['language']);
+foreach ($results as $result) {
+    $result['genre'] = $movie->makeFieldLinks($result, 'genre');
+    $result['actors'] = $movie->makeFieldLinks($result, 'actors');
+    $result['director'] = $movie->makeFieldLinks($result, 'director');
+    $result['languages'] = explode(", ", $result['language']);
 
-	$movies[] = $result;
+    $movies[] = $result;
 }
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
@@ -61,39 +62,40 @@ $genre = (isset($_REQUEST['genre']) && in_array($_REQUEST['genre'], $genres)) ? 
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 
-$years = range(1903, (date("Y")+1));
+$years = range(1903, (date("Y") + 1));
 rsort($years);
 $year = (isset($_REQUEST['year']) && in_array($_REQUEST['year'], $years)) ? $_REQUEST['year'] : '';
 $page->smarty->assign('years', $years);
 $page->smarty->assign('year', $year);
 
-$browseby_link = '&amp;title='.$title.'&amp;actors='.$actors.'&amp;director='.$director.'&amp;rating='.$rating.'&amp;genre='.$genre.'&amp;year='.$year;
+$browseby_link = '&amp;title=' . $title . '&amp;actors=' . $actors . '&amp;director=' . $director . '&amp;rating=' . $rating . '&amp;genre=' . $genre . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems',$browsecount);
-$page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_COVER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP."/movies?t=".$category.$browseby_link."&amp;ob=".$orderby."&amp;offset=");
+$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pageroffset', $offset);
+$page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/movies?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
-if ($category == -1)
-	$page->smarty->assign("catname","All");
-else
-{
-	$cat = new Category();
-	$cdata = $cat->getById($category);
-	if ($cdata)
-		$page->smarty->assign('catname',$cdata['title']);
-	else
-		$page->show404();
+if ($category == -1) {
+    $page->smarty->assign("catname", "All");
+} else {
+    $cat = new Category();
+    $cdata = $cat->getById($category);
+    if ($cdata) {
+        $page->smarty->assign('catname', $cdata['title']);
+    } else {
+        $page->show404();
+    }
 }
 
-foreach($ordering as $ordertype)
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/movies?t=".$category.$browseby_link."&amp;ob=".$ordertype."&amp;offset=0");
+foreach ($ordering as $ordertype) {
+    $page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/movies?t=" . $category . $browseby_link . "&amp;ob=" . $ordertype . "&amp;offset=0");
+}
 
-$page->smarty->assign('results',$movies);
+$page->smarty->assign('results', $movies);
 
 $page->meta_title = "Browse Movies";
 $page->meta_keywords = "browse,movies,nzb,description,details";
@@ -101,5 +103,3 @@ $page->meta_description = "Browse for Moviess";
 
 $page->content = $page->smarty->fetch('movies.tpl');
 $page->render();
-
-?>

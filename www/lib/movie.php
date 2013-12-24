@@ -171,7 +171,7 @@ class Movie
 
 		$order = $this->getMovieOrder($orderby);
 		if ($this->db->dbSystem() == 'mysql') {
-			$sql = sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+			/*$sql = sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
 				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
 				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
@@ -188,12 +188,22 @@ class Movie
 				. "LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL "
 				. "WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
+				. "GROUP BY m.imdbid ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);*/
+            $sql = sprintf("SELECT r.id AS grp_release_id, r.rarinnerfilecount AS grp_rarinnerfilecount, "
+				. "r.haspreview AS grp_haspreview, r.passwordstatus AS grp_release_password, r.guid AS grp_release_guid, "
+				. "rn.id AS grp_release_nfoid, groups.name AS grp_release_grpname, r.searchname AS grp_release_name, "
+				. "r.postdate AS grp_release_postdate, r.size AS grp_release_size, r.totalpart grp_release_totalparts, "
+				. "r.comments AS grp_release_comments, r.grabs AS grp_release_grabs, m.*, groups.name AS group_name,  "
+                . "rn.id as nfoid FROM releases r "
+				. "LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' "
+				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL "
+				. "WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 				. "GROUP BY m.imdbid ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		} else {
 			$rel = new Releases();
 			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		}
-		return $this->db->query($sql);
+		return $this->db->queryDirect($sql);
 	}
 
 	public function getMovieOrder($orderby)
@@ -660,7 +670,7 @@ class Movie
 						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
 						continue;
 					}
-                    //continue;
+                    continue;
 
 					if ($this->echooutput && $releaseToWork === '') {
 						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);
