@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-23 -> jonnyboy -> updated jonnyboy theme, updated postprocess_threaded.py to also use parent categoryid
+2013-12-23 -> jonnyboy -> changed query for movie image view
+                          updated jonnyboy theme, updated postprocess_threaded.py to also use parent categoryid
                           most commit changes are due to Netbeans making permission changes
 2013-12-22 -> bart39   -> More regex additions/fixes for movie/audio/books/tv
 2013-12-22 -> jonnyboy -> added utf8 to tmux.conf
