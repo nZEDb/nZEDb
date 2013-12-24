@@ -670,7 +670,6 @@ class Movie
 						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
 						continue;
 					}
-                    continue;
 
 					if ($this->echooutput && $releaseToWork === '') {
 						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);

@@ -19,7 +19,7 @@
 			{html_options values=$role_ids output=$role_names selected=$role}
 		</select>
 		&nbsp;&nbsp;
-		<input type="submit" value="Go" />
+		<input class="button" type="submit" value="Go" />
 	</form>
 </div>
 

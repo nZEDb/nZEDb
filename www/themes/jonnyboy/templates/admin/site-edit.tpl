@@ -1021,6 +1021,6 @@
 </table>
 </fieldset>
 
-<input type="submit" value="Save Site Settings" />
+<input class="button" type="submit" value="Save Site Settings" />
 
 </form>

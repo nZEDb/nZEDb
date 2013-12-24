@@ -45,7 +45,7 @@ If you are exporting a large number of nzb files, run this script from the comma
 <tr>
 	<td></td>
 	<td>
-		<input type="submit" value="Export" />
+		<input class="button" type="submit" value="Export" />
 	</td>
 </tr>
 

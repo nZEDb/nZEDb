@@ -21,7 +21,7 @@
 <tr>
 	<td></td>
 	<td>
-		<input type="submit" value="Add" />
+		<input class="button" type="submit" value="Add" />
 	</td>
 </tr>
 

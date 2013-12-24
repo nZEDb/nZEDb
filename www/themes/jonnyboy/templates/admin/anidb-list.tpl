@@ -8,7 +8,7 @@
 		<label for="animetitle">Title</label>
 		<input id="animetitle" type="text" name="animetitle" value="{$animetitle}" size="15" />
 		&nbsp;&nbsp;
-		<input type="submit" value="Go" />
+		<input class="button" type="submit" value="Go" />
 	</form>
 </div>
 
