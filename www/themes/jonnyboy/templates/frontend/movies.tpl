@@ -95,7 +95,7 @@
 				</div>
 				</div>
 			</td>
-			<td colspan="3" class="left" background="{$smarty.const.WWW_TOP}/covers/movies/{if $result.backdrop == 1}{$result.imdbid}-backdrop.jpg{/if}" >
+			<td colspan="3" class="left" >
 				<h1><b>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
 				{foreach from=$result.languages item=movielanguage}
 					{release_flag($movielanguage, browse)}

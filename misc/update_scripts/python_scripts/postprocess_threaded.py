@@ -54,8 +54,33 @@ if len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) < 4:
 	groupID = 'AND groupid = '+sys.argv[2]
 	print(bcolors.HEADER + "Using groupid "+sys.argv[2] + bcolors.ENDC)
 elif len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) == 4:
-	groupID = 'AND categoryid = '+sys.argv[2]
-	print(bcolors.HEADER + "Using categoryid "+sys.argv[2] + bcolors.ENDC)
+    if sys.argv[2] == '1000':
+        groupID = 'AND categoryid BETWEEN 1000 AND 1999'
+        print(bcolors.HEADER + "Using categoryids 1000-1999" + bcolors.ENDC)
+    elif sys.argv[2] == '2000':
+        groupID = 'AND categoryid BETWEEN 2000 AND 2999'
+        print(bcolors.HEADER + "Using categoryids 2000-2999" + bcolors.ENDC)
+    elif sys.argv[2] == '3000':
+        groupID = 'AND categoryid BETWEEN 3000 AND 3999'
+        print(bcolors.HEADER + "Using categoryids 3000-3999" + bcolors.ENDC)
+    elif sys.argv[2] == '4000':
+        groupID = 'AND categoryid BETWEEN 4000 AND 4999'
+        print(bcolors.HEADER + "Using categoryids 4000-4999" + bcolors.ENDC)
+    elif sys.argv[2] == '5000':
+        groupID = 'AND categoryid BETWEEN 5000 AND 5999'
+        print(bcolors.HEADER + "Using categoryids 5000-5999" + bcolors.ENDC)
+    elif sys.argv[2] == '6000':
+        groupID = 'AND categoryid BETWEEN 6000 AND 6999'
+        print(bcolors.HEADER + "Using categoryids 6000-6999" + bcolors.ENDC)
+    elif sys.argv[2] == '7000':
+        groupID = 'AND categoryid BETWEEN 7000 AND 7999'
+        print(bcolors.HEADER + "Using categoryids 7000-7999" + bcolors.ENDC)
+    elif sys.argv[2] == '8000':
+        groupID = 'AND categoryid BETWEEN 8000 AND 8999'
+        print(bcolors.HEADER + "Using categoryids 8000-8999" + bcolors.ENDC)
+    else:
+        groupID = 'AND categoryid = '+sys.argv[2]
+        print(bcolors.HEADER + "Using categoryid "+sys.argv[2] + bcolors.ENDC)
 else:
 	groupID = ''
 
