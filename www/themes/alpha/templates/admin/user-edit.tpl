@@ -10,27 +10,11 @@
 <table class="input">
 
 <tr>
-	<td>Username:</td>
+	<td>Name:</td>
 	<td>
 		<input type="hidden" name="id" value="{$user.id}" />
 		<input autocomplete="off" class="long" name="username" type="text" value="{$user.username}" />
 	</td>
-</tr>
-
-<tr>
-    <td>First Name:</td>
-    <td>
-        <input type="hidden" name="firstname" value="{$user.firstname}" />
-        <input autocomplete="off" class="long" name="firstname" type="text" value="{$user.firstname}" />
-    </td>
-</tr>
-
-<tr>
-    <td>Last Name:</td>
-    <td>
-        <input type="hidden" name="lastname" value="{$user.lastname}" />
-        <input autocomplete="off" class="long" name="lastname" type="text" value="{$user.lastname}" />
-    </td>
 </tr>
 
 <tr>

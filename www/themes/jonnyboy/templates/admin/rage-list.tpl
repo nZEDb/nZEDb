@@ -8,7 +8,7 @@
 		<label for="ragename">Title</label>
 		<input id="ragename" type="text" name="ragename" value="{$ragename}" size="15" />
 		&nbsp;&nbsp;
-		<input class="button" type="submit" value="Go" />
+		<input class="rndbtn" type="submit" value="Go" />
 	</form>
 </div>
 

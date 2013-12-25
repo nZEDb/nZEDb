@@ -13,7 +13,7 @@
                 <label for="groupname">Group</label>
                 <input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
                 &nbsp;&nbsp;
-                <input class="button" type="submit" value="Go" />
+                <input class="rndbtn" type="submit" value="Go" />
             </form>
 
         <div style="position:absolute;">
@@ -71,7 +71,7 @@
         	    <label for="groupname">Group</label>
             	<input id="groupname" type="text" name="groupname" value="{$groupname}" size="15" />
 	            &nbsp;&nbsp;
-    	        <input class="button" type="submit" value="Go" />
+    	        <input class="rndbtn" type="submit" value="Go" />
         	</form>
 			<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | <a href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a> \\// <a href="javascript:ajax_all_active()" class="all_active" >Active Groups</a> | <a href="javascript:ajax_all_inactive()" class="all_inactive" >Inactive Groups</a> | <a href="javascript:ajax_all_groups()" class="all_groups" >All Groups</a>
 		</td><center/>

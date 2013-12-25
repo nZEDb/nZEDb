@@ -550,6 +550,6 @@
 		</table>
 </fieldset>
 
-<input class="button" type="submit" value="Save Tmux Settings" />
+<input class="rndbtn" type="submit" value="Save Tmux Settings" />
 
 </form>

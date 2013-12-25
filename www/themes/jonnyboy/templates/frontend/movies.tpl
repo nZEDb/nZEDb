@@ -49,7 +49,7 @@
 			{/foreach}
 			</select>
 		</td>
-		<td><input class="button" type="submit" value="Go" /></td>
+		<td><input class="rndbtn" type="submit" value="Go" /></td>
 	</tr>
 </table>
 </form>

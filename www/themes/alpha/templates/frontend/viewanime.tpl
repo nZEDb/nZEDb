@@ -40,7 +40,7 @@
 	{/if}	
 </div>
 
-{if $animeEpisodeTitlesSize > 0}
+
 <table style="width:100%;" class="data highlight icons" id="browsetable">
 	{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
 		<tr>
@@ -89,6 +89,5 @@
 		{/foreach}
 	{/foreach}
 </table>
-{/if}
 
 </form>

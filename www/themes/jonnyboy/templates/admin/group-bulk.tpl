@@ -43,7 +43,7 @@
 <tr>
 	<td></td>
 	<td>
-		<input class="button" type="submit" value="Add Groups" />
+		<input class="rndbtn" type="submit" value="Add Groups" />
 	</td>
 </tr>
 
