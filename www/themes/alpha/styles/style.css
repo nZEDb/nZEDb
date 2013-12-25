@@ -4,7 +4,7 @@ body{ background:#282828 url(../images/body-bg.png); color:#ddd }
 
 /*html, body { height: 100%; width: 100%; }*/
 /*.wrap100 { left:0;right:0; }*/
-/*.wrap87 { width:87% !important;max-width:87% !important;min-width:1180px; } /* Creates the page width. May change to tag first-child */
+/*.wrap87 { width:87% !important;max-width:87% !important;min-width:1180px; } /* Creates the page width. May change to tag first-child */*/
 hr { margin-top: 10px; margin-bottom: 10px; border-top:1px solid rgb(221, 221, 221); }
 a:hover{ text-decoration: none; }
 h3.heading{ margin-top: 0; }
@@ -98,7 +98,7 @@ table.table { margin-top: 10px; margin-bottom: 10px; }
 .dropdown-menu {
     margin-top: 1px !important;
     padding: 0;
-
+    
     min-width:120px;
     overflow: hidden;
     background: #ff9d0b;

@@ -40,7 +40,7 @@ Importing will add the release to your database, compress the NZB and store it i
 <tr>
 	<td></td>
 	<td>
-		<input class="button" type="submit" value="Import" />&nbsp;&nbsp;&nbsp;<b>Once imported the NZB will be deleted.</b>
+		<input class="rndbtn" type="submit" value="Import" />&nbsp;&nbsp;&nbsp;<b>Once imported the NZB will be deleted.</b>
 	</td>
 </tr>
 
@@ -80,7 +80,7 @@ Importing will add the release to your database, compress the NZB and store it i
 <tr>
 	<td></td>
 	<td>
-		<input class="button" type="submit" value="Import" />
+		<input class="rndbtn" type="submit" value="Import" />
 	</td>
 </tr>
 

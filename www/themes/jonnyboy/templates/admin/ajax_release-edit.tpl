@@ -73,7 +73,7 @@
       <input type="text" class="form-control short" id="imdbID" name="imdbID" value="{$release.imdbid}">
     </div>
   </div>
-<input class="button" type="submit" class="btn btn-default" value="Save" id="save">
+<input class="rndbtn" type="submit" class="btn btn-default" value="Save" id="save">
 </form>
 {/if}
 

@@ -3,7 +3,6 @@
 
 <table class="data">
 	<tr><th>Username:</th><td>{$user.username|escape:"htmlall"}</td></tr>
-    <th>Real Name:</th><td>{$user.firstname} {$user.lastname}</td>
 	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Email:</th><td>{$user.email}</td></tr>{/if}
 	<tr><th>Registered:</th><td title="{$user.createddate}">{$user.createddate|date_format}  ({$user.createddate|timeago} ago)</td></tr>
 	<tr><th>Last Login:</th><td title="{$user.lastlogin}">{$user.lastlogin|date_format}  ({$user.lastlogin|timeago} ago)</td></tr>

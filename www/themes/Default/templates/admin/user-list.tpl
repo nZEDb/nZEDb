@@ -30,8 +30,7 @@
 <table style="width:100%;margin-top:10px;" class="data highlight">
 
 	<tr>
-		<th>username<br/><a title="Sort Descending" href="{$orderbyusername_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyusername_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-        <th>Real name</th>
+		<th>name<br/><a title="Sort Descending" href="{$orderbyusername_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyusername_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>email<br/><a title="Sort Descending" href="{$orderbyemail_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyemail_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>host<br/><a title="Sort Descending" href="{$orderbyhost_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyhost_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>join date<br/><a title="Sort Descending" href="{$orderbycreateddate_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbycreateddate_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
@@ -47,7 +46,6 @@
 	{foreach from=$userlist item=user}
 	<tr class="{cycle values=",alt"}">
 		<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.id}">{$user.username}</a></td>
-        <td>{$user.firstname} {$user.lastname}</td>
 		<td>{$user.email}</td>
 		<td>{$user.host}</td>
 		<td title="{$user.createddate}">{$user.createddate|date_format}</td>
