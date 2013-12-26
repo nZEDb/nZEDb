@@ -638,6 +638,8 @@ div.icon_cart_clicked	{ background-image:url('../../Default/images/icons/cartdow
 div.icon_nzb			{ background-image:url('../../Default/images/icons/nzbup.png'); }
 div.icon_nzb_clicked	{ background-image:url('../../Default/images/icons/nzbdown.png'); }
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
+div.icon_imdb			{ background-image:url('../../Default/images/icons/imdb.png'); }
+div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_sab			{ background-image:url('../../Default/images/icons/sabup.png'); }
 div.icon_sab_clicked	{ background-image:url('../../Default/images/icons/sabdown.png'); }
 div.icon_tvrage			{ background-image:url('../../Default/images/icons/tvrage.png'); }
