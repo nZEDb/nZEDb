@@ -201,7 +201,7 @@ br.clear{
 
 .library-wrapper{
     overflow:hidden;
-    width:100%;
+    max-width:1300px;
     padding:10px 20px 20px;
     margin: 0px auto;
 }
