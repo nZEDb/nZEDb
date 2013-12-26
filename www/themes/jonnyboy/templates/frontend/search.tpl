@@ -1,41 +1,108 @@
 
-<h1>Browse {$catname|escape:"htmlall"}</h1>
+<h1>Search</h1>
+
+	<div><center>
+		<a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
+	</center></div><br/>
+
+	<center> <b>Include ^ to indicate search must start with term, -- to exclude words.</b></center>
+
+<form method="get" action="{$smarty.const.WWW_TOP}/search">
+	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
+		<label for="search" style="display:none;">Search</label>
+		<input id="search" name="search" value="{$search|escape:'html'}" type="text"/>
+		<input class="rndbtn" id="search_search_button" type="submit" value="Name" />&nbsp;&nbsp;&nbsp;
+		<label for="subject" style="display:none;">Subject</label>
+		<input id="subject" name="subject" value="{$subject|escape:'html'}" type="text"/>
+		<input class="rndbtn" id="subject_search_button" type="submit" value="Subject" /><br/>
+		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
+		<input type="hidden" name="search_type" value="basic" id="search_type" />
+	</div>
+</form>
+
+<form method="get" action="{$smarty.const.WWW_TOP}/search">
+	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
+		<center>
+		<table class="data">
+			<tr>
+				<th><label for="searchadvr">Release Name:</label></th>
+				<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvsubject">Usenet Name:</label></th>
+				<td><input class="searchadv" id="searchadvsubject" name="searchadvsubject" value="{$searchadvsubject|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvposter">Poster:</label></th>
+				<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
+			</tr>
+			<tr>
+				<th><label for="searchadvdaysnew">Min/Max days:</label></th>
+				<td><input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/> <input class="searchdaysinput" id="searchadvdaysold" name="searchadvdaysold" value="{$searchadvdaysold|escape:'html'}" type="text"/> </td>
+			</tr>
+			<tr>
+				<th><label for="searchadvgroups">Group:</label></th>
+				<td>{html_options class="searchadvbtns" id="searchadvgroups" name="searchadvgroups" options=$grouplist selected=$selectedgroup}</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvcat">Category:</label></th>
+				<td>{html_options class="searchadvbtns" id="searchadvcat" name="searchadvcat" options=$catlist selected=$selectedcat}</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvsizefrom">Min/Max Size:</label></th>
+				<td>
+					{html_options id="searchadvsizefrom" name="searchadvsizefrom" options=$sizelist selected=$selectedsizefrom}
+					{html_options id="searchadvsizeto" name="searchadvsizeto" options=$sizelist selected=$selectedsizeto}
+				</td>
+			</tr>
+			<tr>
+				<th><label for="searchadvhasnfo">NFO/Comments:</label></th>
+				<td><input type="hidden" name="searchadvhasnfo" value="0" /> <input type="checkbox" name="searchadvhasnfo" value="1" />
+				<input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input id="search_adv_button" type="submit" value="search" /></div> </td>
+			</tr>
+		</table>
+		</center>
+	</div>
+</form>
+
+{if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) != ""}
+	<center><div class="nosearchresults">
+		Your search did not match any releases.
+		<br/><br/>
+		Suggestions:
+		<br/><br/>
+		<ul>
+		<center><li>Make sure all words are spelled correctly.</li></center>
+		<center><li>Try different keywords.</li></center>
+		<center><li>Try more general keywords.</li></center>
+		<center><li>Try fewer keywords.</li></center>
+		</ul>
+	</div></center>
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
+{else}
 
 {$site->adbrowse}
 
-{if $shows}
-<p><b>Jump to</b>:
-&nbsp;&nbsp;[ <a href="{$smarty.const.WWW_TOP}/series" title="View available TV series">Series List</a> ]
-&nbsp;&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows" title="List my watched shows">My Shows</a> ]
-<br />Your shows can also be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-3&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss Feed</a>.
-</p>
-{/if}
+<form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 
-{if $results|@count > 0}
-
-<form id="nzb_multi_operations_form" action="get">
+{$pager}
 
 <div class="nzb_multi_operations">
-	{if $covgroup != ''}View: <a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">Covers</a> | <b>List</b><br />{/if}
-	<small>With Selected:</small>
+	<small>With selected:</small>
 	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 	<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
 	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
-	{if $isadmin || $ismod}
+	{if $isadmin}
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
 	{/if}
 </div>
-
-{$pager}
-
 <table style="width:100%;" class="data highlight icons" id="browsetable">
 	<tr>
 		<th></th>
-		<th></th>
 		<th>name<br/><a title="Sort Descending" href="{$orderbyname_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbyname_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
-        <th style="text-align:center;">category<br/><a title="Sort Descending" href="{$orderbycat_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbycat_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
+		<th style="text-align:center;">category<br/><a title="Sort Descending" href="{$orderbycat_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbycat_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
 		<th style="text-align:center;">posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
 		<th style="text-align:center;">size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
 		<th style="text-align:center;">files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="Sort Descending" /></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="Sort Ascending" /></a></th>
@@ -99,19 +166,19 @@
 {$pager}
 
 <div class="nzb_multi_operations">
-	<small>With Selected:</small>
+	<small>With selected:</small>
 	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 	<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
 	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
-	{if $isadmin || $ismod}
+	{if $isadmin}
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
 	{/if}
 </div>
 
+<br/><br/><br/>
+
 </form>
 
 {/if}
-
-<br/><br/><br/>
