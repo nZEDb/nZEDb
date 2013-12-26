@@ -20,6 +20,7 @@
         <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
         <link href="{$smarty.const.WWW_TOP}/themes/jonnyboy/styles/jquery.qtip.css" rel="stylesheet" media="screen">
         <!-- <link href="{$smarty.const.WWW_TOP}/themes/jonnyboy/styles/subnav.css" rel="stylesheet" media="screen"> -->
+        <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="{$smarty.const.WWW_TOP}/themes/jonnyboy/styles/style.css" rel="stylesheet" media="screen">
 
         <!-- Manual Adjustment for Search input fields on browse pages. -->

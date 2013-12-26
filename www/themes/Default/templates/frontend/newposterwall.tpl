@@ -9,10 +9,6 @@
             <div class="library-wrapper">
                 {foreach from=$newestmovies item=result}
                     <div class="library-show">
-                        <h4>
-                            <div class="title-overflow"></div>
-                            <a class="title" href="{$smarty.const.WWW_TOP}/../details/{$result.guid}">{$result.name}</a>
-                        </h4>
                         <div class="poster">
                             <a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" /></a>
                         </div>
