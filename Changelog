@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-26 -> jonnyboy -> fixed IMDB lookup, changed sleep timers for tmdb/imdb update scripts, added updateTvRage.php
+2013-12-26 -> jonnyboy -> fixed add user and register, including optional real first/last names
+                          fixed IMDB lookup, changed sleep timers for tmdb/imdb update scripts, added updateTvRage.php
                           reverted change to use relative url, added missing files to theme
 2013-12-24 -> jonnyboy -> reverted function signup to before adding user real name, temp fix, until its added to the register page
                           reverted all changes to themes other than jonnyboy, cleaned up jonnyboy theme
