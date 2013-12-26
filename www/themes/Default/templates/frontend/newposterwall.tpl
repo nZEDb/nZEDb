@@ -14,7 +14,7 @@
                         </div>
                         <div class="rating-pod" id="guid{$result.guid}">
                             <div class="icons">
-                                <div class="icon icon_imdb"><a title="View on IMDB" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/">&nbsp;</a></div>
+                                <div class="icon icon_imdb"><a title="View on IMDB" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" target="_blank">&nbsp;</a></div>
                                 <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}">&nbsp;</a></div>
                                 <div class="icon icon_cart" title="Add to Cart"></div>
                                 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
