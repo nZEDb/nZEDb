@@ -14,7 +14,7 @@
                             <a class="title" href="{$smarty.const.WWW_TOP}/../details/{$result.guid}">{$result.name}</a>
                         </h4>
                         <div class="poster">
-                            <a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbID}-cover.jpg{else}no-cover.jpg{/if}" /></a>
+                            <a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" /></a>
                         </div>
                         <div class="rating-pod" id="guid{$result.guid}">
                             <div class="icons">

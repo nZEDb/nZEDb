@@ -13,7 +13,7 @@ $contents = new Contents();
 $getnewestmovies = $releases->getNewestMovies();
 $page->smarty->assign('newestmovies', $getnewestmovies);
 
-$getnewestconsole = $releases->getNewestConsole();
+/*$getnewestconsole = $releases->getNewestConsole();
 $page->smarty->assign('newestconsole', $getnewestconsole);
 
 $getnewestmp3 = $releases->getnewestMP3s();
@@ -24,6 +24,6 @@ $page->smarty->assign('newestbooks', $getnewestbooks);
 
 $recent = $releases->getRecentlyAdded();
 $page->smarty->assign('recent', $recent);
-
+*/
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();
