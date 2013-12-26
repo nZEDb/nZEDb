@@ -332,13 +332,15 @@ class Users
         return substr(md5(uniqid()), 0, 8);
     }
 
-    public function signup($uname, $pass, $email, $host, $role = Users::ROLE_USER, $invites = Users::DEFAULT_INVITES, $invitecode = "", $forceinvitemode = false)
+    public function signup($uname, $fname, $lname, $pass, $email, $host, $role = Users::ROLE_USER, $invites = Users::DEFAULT_INVITES, $invitecode = "", $forceinvitemode = false)
     {
         $site = new Sites();
         $s = $site->get();
 
         $uname = trim($uname);
-        $pass = trim($pass);
+		$fname = trim($fname);
+		$lname = trim($lname);
+		$pass = trim($pass);
         $email = trim($email);
 
         if (!$this->isValidUsername($uname)) {
@@ -376,7 +378,7 @@ class Users
             }
         }
 
-        return $this->add($uname, $pass, $email, $role, $host, $invites, $invitedby);
+        return $this->add($uname, $fname, $lname, $pass, $email, $role, $host, $invites, $invitedby);
     }
 
     function randomKey($amount)

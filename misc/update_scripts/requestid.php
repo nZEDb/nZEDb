@@ -42,7 +42,7 @@ if ($total > 0) {
     foreach ($qry as $row) {
         if (!preg_match('/^\[\d+\]/', $row['name']) && !preg_match('/^\[ \d+ \]/', $row['name'])) {
             $db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
-            exit('-');
+            continue;
         }
 
         $requestIDtmp = explode(']', substr($row['name'], 1));

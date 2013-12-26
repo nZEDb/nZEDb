@@ -18,6 +18,7 @@
     <!-- nZEDb core CSS -->
     <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/style.css" rel="stylesheet" media="screen">
     <link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
     <!-- nZEDb extras -->
@@ -31,7 +32,7 @@
 -------------------------------------------------- */
 html, body { height: 100%; }    /* The html and body elements cannot have any padding or margin. */
 /* Wrapper for page content to push down footer */
-#wrap { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -100px; padding: 0 0 100px; } /* Negative indent footer by its height */ /* Pad bottom by footer 
+#wrap { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -100px; padding: 0 0 100px; } /* Negative indent footer by its height */ /* Pad bottom by footer
 height */
 /* Set the fixed height of the footer here */
 footer { height: 100px; }
@@ -94,7 +95,7 @@ nav.navbar.navbar-inverse { z-index:99999; }
 <li class="divider"></li>
 <li><a href="{$smarty.const.WWW_TOP}/mymovies"><i class="icon-ticket"></i> My Movies</a></li>
 <li><a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i> My Shows</a></li>
-<li class="divider"></li>                
+<li class="divider"></li>
 <li><a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart"></i> My Cart</a></li>
 <li><a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i> My Queue</a></li>
 </ul>

@@ -168,7 +168,6 @@ class Nfo
 		}
 		else
 		{
-			$res = 0;
 			$pieces = explode('           =+=            ', $releaseToWork);
 			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
 			$nfocount = 1;

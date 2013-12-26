@@ -8,7 +8,6 @@ require_once nZEDb_LIB . 'tvrage.php';
 $tvrage = new TvRage(true);
 $db = new Db();
 
-$tvrage->updateSchedule();
 $shows = $db->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC");
 if ($shows->rowCount() > 0)
     echo "Updating ".$shows->rowCount()." tv shows.\n";

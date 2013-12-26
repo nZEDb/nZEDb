@@ -15,6 +15,18 @@
 					<div class="hint">Should be at least three characters and start with a letter.</div>
 				</td>
 			</tr>
+			<tr><th width="75px;"><label for="firstname">First Name:</label></th>
+				<td>
+					<input autocomplete="off" id="firstname" name="firstname" value="{$firstname}" type="text"/>
+					<div class="hint">Optional real first name.</div>
+				</td>
+			</tr>
+			<tr><th width="75px;"><label for="lastname">Last Name:</label></th>
+				<td>
+					<input autocomplete="off" id="lastname" name="lastname" value="{$lastname}" type="text"/>
+					<div class="hint">Optional real last name.</div>
+				</td>
+			</tr>
 			<tr><th><label for="password">Password:</label> <em>*</em></th>
 				<td>
 					<input id="password" autocomplete="off" name="password" value="{$password}" type="password"/>

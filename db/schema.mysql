@@ -309,6 +309,9 @@ INSERT INTO menu (href, title, tooltip, role, ordinal )
 VALUES ('register','Register',
 	'Register.', 0, 110);
 
+INSERT INTO menu (href, title, tooltip, role, ordinal )
+VALUES ('newposterwall', 'New Releases', "Newest Releases Poster Wall", 1, 11);
+
 DROP TABLE IF EXISTS releasenfo;
 CREATE TABLE releasenfo (
 	id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1064,7 +1067,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','158');
+	('sqlpatch','160');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
