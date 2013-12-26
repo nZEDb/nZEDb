@@ -24,8 +24,7 @@ class Menu
 		$ret = array();
 		foreach ($data as $d) {
 			if (!preg_match("/http/i", $d["href"])) {
-				// To use server url instead of relative url, umcomment the next line
-				//$d["href"] = "serverurl" . $d["href"];
+				$d["href"] = $serverurl . $d["href"];
 				$ret[] = $d;
 			} else {
 				$ret[] = $d;

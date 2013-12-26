@@ -570,7 +570,7 @@ class Movie
 			if ($this->echooutput && isset($ret['title'])) {
 				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
 			}
-
+var_dump($ret);
 			return $ret;
 		}
 		return false;
