@@ -448,6 +448,17 @@ div.pager .current
     border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;
 }
 
+div.highlight:hover
+{
+    background: #b5c6d0;
+    background: -moz-radial-gradient(center, ellipse cover,  #b5c6d0 8%, #e0eff9 65%, #f2f6f8 81%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(8%,#b5c6d0), color-stop(65%,#e0eff9), color-stop(81%,#f2f6f8));
+    background: -webkit-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: -o-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: -ms-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: radial-gradient(ellipse at center,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=1 );
+}
 
 /*
 round buttoning

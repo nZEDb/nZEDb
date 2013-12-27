@@ -101,7 +101,7 @@
                             </div>
                         </td>
                         <td colspan="3" class="left" >
-                            <div >
+                            <div class="highlight">
                                 <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                     {foreach from=$result.languages item=movielanguage}
                                         {release_flag($movielanguage, browse)}
@@ -158,7 +158,7 @@
                         </td>
                     {else}
                         <td colspan="3" class="left" >
-                            <div >
+                            <div>
                                 <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                     {foreach from=$result.languages item=movielanguage}
                                         {release_flag($movielanguage, browse)}
@@ -211,7 +211,7 @@
                                         {/foreach}
                                     </table>
                                 </div>
-                            </div>
+                            </div></div>
                         </td>
                         <td class="mid">
                             <div class="movcover">
@@ -226,7 +226,6 @@
                                 </div>
                             </div>
                         </td>
-
                     </tr>
                 {/if}
             {/foreach}
