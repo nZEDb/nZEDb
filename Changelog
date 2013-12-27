@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-12-27 -> jonnyboy -> added 2 column display in jonnyboy->movies, needs some tweaks to pager and multi select
 2013-12-26 -> jonnyboy -> added tooltip release info to wall
                           added patch to add menuitem for newposterwall
                           added imdb to newposterwall

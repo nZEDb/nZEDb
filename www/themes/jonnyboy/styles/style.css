@@ -383,7 +383,6 @@ table tr.new { background-color: #f6f8ff; }
 table.data em {font-weight:bolder; color:red;}
 table td.item { padding:5px 5px 2px 5px; }
 
-
 label a.title
 {
     font-weight: bold;
@@ -545,7 +544,10 @@ div.movextra { padding-top:5px; color: #888; font-size: 0.9em; }
 div.movextra td {border:0; padding:0 0 10px 0}
 div.movextra tr.mlextra {display:none;}
 
-div.movcover { width:260px; }
+div.movcover {
+    width:220px;
+    margin-top: 15px;
+}
 div.movcover img { margin-bottom:15px;}
 
 a.external { background: url('../../Default/images/newwindow.png') center right no-repeat !important; padding-right:13px !important;}
@@ -659,6 +661,21 @@ div.icon_check			{ background-image:url('../../Default/images/icons/check.png');
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+}
+
+div.imdb {
+    border: solid 1px #FF4848;
+    background-color: #C0FF97;
+    width: 50%;
+    height: 400px;
+    float: left;
+    margin: 0 -4px 0px 0;
+    overflow: auto;
+}
+
+div.imdb:hover {
+    border: solid 1px white;
+    background-color: #99FF00;
 }
 
 /*
