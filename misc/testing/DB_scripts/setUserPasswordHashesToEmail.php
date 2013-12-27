@@ -30,12 +30,13 @@ This script will (re)set the password hashes for older hashes (pre Db patch
 secure (a user's email addresses may be known to other users). If you only have
 a few users then run setUsersPasswordHash.php for each of them instead.
 WARNING;
+$usage = "\nUsage: php {$argv[0]} <IUnderStandTheRisks>";
 
 echo $output->warning($warning);
 if ($argc != 2) {
-	exit($output->error("\nWrong number of parameters\nUsage: php {$argv[0]} <IUnderStandTheRisks>"));
+	exit($output->error("\nWrong number of parameters$usage"));
 } else if ($argv[1] !== 1 && $argv[1] != '<IUnderStandTheRisks>' && $argv[1] != 'IUnderStandTheRisks' && $argv[1] != 'true') {
-	exit($output->error("\nInvalid parameter(s)\nUsage: php {$argv[0]} <IUnderStandTheRisks>"));
+	exit($output->error("\nInvalid parameter(s)$usage"));
 }
 
 
