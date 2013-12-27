@@ -545,8 +545,7 @@ div.movextra td {border:0; padding:0 0 10px 0}
 div.movextra tr.mlextra {display:none;}
 
 div.movcover {
-    width:220px;
-    margin-top: 15px;
+    margin: 5px;
 }
 div.movcover img { margin-bottom:15px;}
 
