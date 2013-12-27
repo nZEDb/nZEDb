@@ -204,7 +204,7 @@ nav.navbar.navbar-inverse { z-index:99999; }
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/holder.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.pnotify.min.js"></script>
-<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.qtip.js"></script>
+<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.qtip.min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.autosize-min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.colorbox-min.js"></script>
 <script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/sorttable.js"></script>

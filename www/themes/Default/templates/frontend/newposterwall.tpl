@@ -10,12 +10,12 @@
                 {foreach from=$newestmovies item=result}
                     <div class="library-show">
                         <div class="poster">
-                            <a title={$result.searchname} href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" /></a>
+                            <a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" /></a>
                         </div>
                         <div class="rating-pod" id="guid{$result.guid}">
                             <div class="icons">
-                                <div class="icon icon_imdb"><a title="View on IMDB" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" target="_blank">&nbsp;</a></div>
-                                <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}">&nbsp;</a></div>
+                                <div class="icon icon_imdb"><a title="View on IMDB" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" target="_blank" ></a></div>
+                                <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a></div>
                                 <div class="icon icon_cart" title="Add to Cart"></div>
                                 {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
                             </div>
