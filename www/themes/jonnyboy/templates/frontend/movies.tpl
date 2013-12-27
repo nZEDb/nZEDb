@@ -74,14 +74,14 @@
 
         <table style="width:100%;" class="data highlight icons" id="coverstable">
             <tr>
-                <th width="230"><input type="checkbox" class="nzb_check_all" /></th>
-                <th>title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th>year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th>rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="230"><input type="checkbox" class="nzb_check_all" /></th>
-                <th>title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th>year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th>rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th><input type="checkbox" class="nzb_check_all" /></th>
+                <th width="20%">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th width="10%">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th width="10%">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th><input type="checkbox" class="nzb_check_all" /></th>
+                <th width="20%">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th width="10%">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th width="10%">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
             </tr>
 
             {foreach from=$results item=result}
@@ -92,7 +92,7 @@
                     <td class="mid">
                         <div class="movcover">
                             <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-                                <img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="200" border="0" alt="{$result.title|escape:"htmlall"}" />
+                                <img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="180" border="0" alt="{$result.title|escape:"htmlall"}" />
                             </a>
                             <div class="movextra">
                                 <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
