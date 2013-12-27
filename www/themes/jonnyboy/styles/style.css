@@ -663,21 +663,6 @@ div.icon_check			{ background-image:url('../../Default/images/icons/check.png');
     -webkit-border-radius: 5px;
 }
 
-div.imdb {
-    border: solid 1px #FF4848;
-    background-color: #C0FF97;
-    width: 50%;
-    height: 400px;
-    float: left;
-    margin: 0 -4px 0px 0;
-    overflow: auto;
-}
-
-div.imdb:hover {
-    border: solid 1px white;
-    background-color: #99FF00;
-}
-
 /*
     ColorBox Core Style
     The following rules are the styles that are consistant between themes.
