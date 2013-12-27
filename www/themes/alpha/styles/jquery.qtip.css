@@ -1,13 +1,13 @@
 /*
- * qTip2 - Pretty powerful tooltips - v2.0.1-102
+ * qTip2 - Pretty powerful tooltips - v2.2.0
  * http://qtip2.com
  *
  * Copyright (c) 2013 Craig Michael Thompson
  * Released under the MIT, GPL licenses
  * http://jquery.org/license
  *
- * Date: Tue May 21 2013 04:35 UTC+0000
- * Plugins: tips modal viewport svg imagemap ie6
+ * Date: Sun Dec 15 2013 12:33 EST-0500
+ * Plugins: tips viewport imagemap svg modal ie6
  * Styles: basic css3
  */
 .qtip{
@@ -389,12 +389,12 @@
 }
 
 	.qtip-tipsy .qtip-titlebar{
-		padding: 6px 35px 0 10;
+		padding: 6px 35px 0 10px;
 		background-color: transparent;
 	}
 
 	.qtip-tipsy .qtip-content{
-		padding: 6px 10;
+		padding: 6px 10px;
 	}
 	
 	.qtip-tipsy .qtip-icon{
@@ -596,8 +596,8 @@
 
 #qtip-overlay{
 	position: fixed;
-	left: -10000em;
-	top: -10000em;
+	left: 0; top: 0;
+	width: 100%; height: 100%;
 }
 
 	/* Applied to modals with show.modal.blur set to true */

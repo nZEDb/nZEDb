@@ -104,7 +104,7 @@
             {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}
             <!-- <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/subnav.js"></script> -->
             <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>
-            <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.qtip.js"></script>
+            <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.qtip.min.js"></script>
             <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
             <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/sorttable.js"></script>
 

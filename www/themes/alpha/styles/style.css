@@ -4,7 +4,7 @@ body{ background:#282828 url(../images/body-bg.png); color:#ddd }
 
 /*html, body { height: 100%; width: 100%; }*/
 /*.wrap100 { left:0;right:0; }*/
-/*.wrap87 { width:87% !important;max-width:87% !important;min-width:1180px; } /* Creates the page width. May change to tag first-child */
+/*.wrap87 { width:87% !important;max-width:87% !important;min-width:1180px; } /* Creates the page width. May change to tag first-child */*/
 hr { margin-top: 10px; margin-bottom: 10px; border-top:1px solid rgb(221, 221, 221); }
 a:hover{ text-decoration: none; }
 h3.heading{ margin-top: 0; }
@@ -18,6 +18,8 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_nzb            { background-image:url('../images/icons/nzbup.png'); }
 .icon_nzb_clicked    { background-image:url('../images/icons/nzbdown.png'); }
 .icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+.icon_imdb			{ background-image:url('../images/icons/imdb.png'); }
+.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 .icon_sab            { background-image:url('../images/icons/sabup.png'); }
 .icon_sab_clicked    { background-image:url('../images/icons/sabdown.png'); }
 .icon_tvrage         { background-image:url('../images/icons/tvrage.png'); }

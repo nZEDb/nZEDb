@@ -950,7 +950,6 @@ VALUES ('example content','/great/seo/content/page/','<p>this is an example cont
 INSERT INTO content (title, url, body, contenttype, status, showinmenu, metadescription, metakeywords, ordinal)
 VALUES ('another example','/another/great/seo/content/page/','<p>this is another example content page</p>', 2, 1, 1, '', '', 0);
 
-
 INSERT INTO forumpost (forumid, parentid,  userid,  subject,  message, locked, sticky,replies,  createddate, updateddate)
 VALUES (1 ,0, 1, 'Welcome to nZEDb!', 'Feel free to leave a message.', 0, 0, 0, NOW(), NOW());
 
@@ -1309,6 +1308,7 @@ INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('forum','Forum',
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('login','Login','Login.', 0, 100);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('register','Register','Register.', 0, 110);
 INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','Sab Queue','View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
+INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('newposterwall', 'New Releases', "Newest Releases Poster Wall", 1, 11);
 
 
 INSERT INTO site
@@ -1440,7 +1440,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','158');
+	('sqlpatch','160');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

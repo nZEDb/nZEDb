@@ -4,6 +4,17 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-12-27 -> jonnyboy -> added find_new_groups.php
+                          added 2 column display in jonnyboy->movies, needs some tweaks to pager and multi select
+2013-12-26 -> jonnyboy -> added tooltip release info to wall
+                          added patch to add menuitem for newposterwall
+                          added imdb to newposterwall
+                          added css for newposterwall for current themes
+                          fixed add user and register, including optional real first/last names
+                          fixed IMDB lookup, changed sleep timers for tmdb/imdb update scripts, added updateTvRage.php
+                          reverted change to use relative url, added missing files to theme
+2013-12-24 -> jonnyboy -> reverted function signup to before adding user real name, temp fix, until its added to the register page
+                          reverted all changes to themes other than jonnyboy, cleaned up jonnyboy theme
 2013-12-23 -> bart39   -> More regex additions/fixes for movie/audio/books/tv
                           fixed adding/updating tvrage data
 2013-12-23 -> jonnyboy -> reset exec bit for bash scripts

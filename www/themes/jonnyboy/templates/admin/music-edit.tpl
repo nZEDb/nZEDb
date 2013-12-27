@@ -95,7 +95,7 @@
 <tr>
 	<td></td>
 	<td>
-		<input class="button" type="submit" value="Save" />
+		<input class="rndbtn" type="submit" value="Save" />
 	</td>
 </tr>
 

@@ -81,7 +81,7 @@
 <tr>
 	<td></td>
 	<td>
-		<input class="button" class="button" type="submit" value="Save" />
+		<input class="rndbtn" class="rndbtn" type="submit" value="Save" />
 	</td>
 </tr>
 

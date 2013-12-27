@@ -22,6 +22,7 @@ class TvRage
 		$this->primary = 'Purple';
 
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
+		$this->xmlShowInfoUrl = "http://services.tvrage.com/feeds/showinfo.php?sid=";
 		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid=";
 		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=".TvRage::APIKEY;
 		$this->xmlFullScheduleUrl = "http://services.tvrage.com/feeds/fullschedule.php?country=";
@@ -391,7 +392,7 @@ class TvRage
 	{
 		$result = array('genres'=>'', 'country'=>'', 'showid'=>$rageid);
 		// Full search gives us the akas.
-		$xml = getUrl($this->xmlFullShowInfoUrl.$rageid);
+		$xml = getUrl($this->xmlShowInfoUrl.$rageid);
 		if ($xml !== false)
 		{
 			$arrXml = objectsIntoArray(simplexml_load_string($xml));

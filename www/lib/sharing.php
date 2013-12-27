@@ -303,8 +303,6 @@ class Sharing
 					}
 				}
 			}
-			else
-				return false;
 		}
 		else
 			return false;

@@ -520,7 +520,7 @@ class Movie
 			'plot' => '/<p itemprop="description">\s*?(.*?)\s*?<\/p>/i',
 			'rating' => '/"ratingValue">([\d.]+)<\/span>/i',
 			'year' => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
-			'cover' => '/<a.*?href="\/media\/.*?><img src="(.*?)"/i'
+			'cover' => '/<link rel=\'image_src\' href="(http:\/\/ia\.media-imdb\.com.+\.jpg)">/'
 		);
 
 		$imdb_regex_multi = array(
@@ -529,12 +529,25 @@ class Movie
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
-		if ($this->imdburl === false) {
-			$buffer = getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
-		} else {
-			$buffer = getUrl("http://akas.imdb.com/title/tt$imdbId/");
-		}
+	$options = array(
+	  'http'=>array(
+		'method'=>"GET",
+		'header'=>"Accept-language: en\r\n" .
+				  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
+				  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad 
+	  )
+	);
 
+	$context = stream_context_create($options);
+
+		if ($this->imdburl === false) {
+			// i don't know how to use the language, but this is broken
+			//$url = getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
+			$url = "http://www.imdb.com/title/tt$imdbId/";
+		} else {
+			$url = "http://akas.imdb.com/title/tt$imdbId/";
+		}
+		$buffer = @file_get_contents($url, false, $context);
 		// make sure we got some data
 		if ($buffer !== false && strlen($buffer)) {
 			$ret = array();
@@ -570,7 +583,6 @@ class Movie
 			if ($this->echooutput && isset($ret['title'])) {
 				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
 			}
-
 			return $ret;
 		}
 		return false;

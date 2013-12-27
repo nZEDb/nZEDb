@@ -3,7 +3,7 @@ site wide html styles
 */
 body { margin: 0; padding: 0; background: #FFF url(../images/menu.gif) repeat-x left top; font-family: Calibri, Arial, Helvetica, sans-serif;	font-size: 12px; color: #515151; }
 h1, h2, h3 {	margin: 0;	font-weight: normal; color: #485459; }
-input, select, textarea { font-family: Calibri, Arial, Helvetica, sans-serif; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
+input, select, textarea { font-family: Calibri, Arial, Helvetica, sans-serif;}
 textarea { height:100px; width:300px;}
 h1 { font-size: 44px; padding-bottom:10px;}
 h2 { padding-bottom:5px; font-size: 1.6em; }
@@ -156,16 +156,15 @@ predb
 form inputs and helpers
 */
 div.hint, div.hint a { font-size:0.9em; font-style:italic; color:#999;}
-div.explanation { padding: 5px 5px 5px 5px;  border:1px #CCC solid; margin-bottom:20px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
+div.explanation { padding: 5px 5px 5px 5px;  border:1px #CCC solid; margin-bottom:20px; }
 div.hint { margin-bottom:10px;}
-input.long {width:400px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-input.longer {width:600px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-input.short { width:40px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-input.tiny { width: 31px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-input.date { width:70px; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-fieldset { margin-bottom:20px; border:1px solid #999;border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:left; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
-button { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:left; border-radius: 5px; -moz-border-radius: 5px;  -webkit-border-radius: 5px; }
+input.long {width:400px; }
+input.longer {width:600px; }
+input.short { width:40px; }
+input.tiny { width: 31px; }
+input.date { width:70px; }
+fieldset { margin-bottom:20px; border:1px solid #999;}
+legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:left; }
 
 /*
 pager
@@ -293,6 +292,8 @@ div.icon_cart_clicked	{ background-image:url('../images/icons/cartdown.png'); }
 div.icon_nzb			{ background-image:url('../images/icons/nzbup.png'); }
 div.icon_nzb_clicked	{ background-image:url('../images/icons/nzbdown.png'); }
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
+div.icon_imdb			{ background-image:url('../images/icons/imdb.png'); }
+div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_sab			{ background-image:url('../images/icons/sabup.png'); }
 div.icon_sab_clicked	{ background-image:url('../images/icons/sabdown.png'); }
 div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
