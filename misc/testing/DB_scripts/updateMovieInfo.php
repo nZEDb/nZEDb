@@ -10,7 +10,7 @@ $movie = new Movie(true);
 $db = new Db();
 $updated = $deleted = 0;
 
-$dirItr = new RecursiveDirectoryIterator(dirname(__FILE__) . '/www/covers/movies/');
+$dirItr = new RecursiveDirectoryIterator(nZEDb_ROOT . 'www/covers/movies/');
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
         if (is_file($filePath) && preg_match('/-cover\.jpg/', $filePath)) {
