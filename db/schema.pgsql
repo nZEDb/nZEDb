@@ -1358,6 +1358,7 @@ INSERT INTO site
 	('amazonassociatetag','n01369-20'),
 	('tmdbkey','9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey','qxbxyngtujprvw7jxam2m6na'),
+	('rottentomatoquality', 'profile'),
 	('trakttvkey',''),
 	('fanarttvkey', ''),
 	('compressedheaders', 0),
@@ -1441,7 +1442,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','161');
+	('sqlpatch','162');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-28 -> jonnyboy -> fixed rottentomatoes lookup, changed image to high resolution
+2013-12-28 -> jonnyboy -> added rottentomatoes image quality selection to site-edit, changes the image quality when select theater
+                          fixed rottentomatoes lookup, changed image to high resolution
                           fixed release-edit for imdbid and anidbid
                           added farnart.tv lookup for movie covers and backgrounds, you need an api key from fanart.tv to use it
 2013-12-27 -> jonnyboy -> added background image to movie cover view, still need to get the alpha value and hover settings correct

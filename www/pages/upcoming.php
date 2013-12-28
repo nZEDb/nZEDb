@@ -5,7 +5,10 @@ if (!$users->isLoggedIn()) {
 }
 
 require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'site.php';
 $m = new Movie();
+$s = new Sites();
+$site = $s->get();
 
 if (!isset($_GET["id"])) {
     $_GET["id"] = 1;
@@ -23,7 +26,7 @@ if ($data["info"] == "") {
             $page->title = "Box Office";
             break;
         case Movie::SRC_INTHEATRE;
-            $page->title = "In Theatre";
+            $page->title = "In Theater";
             break;
         case Movie::SRC_OPENING;
             $page->title = "Opening";
@@ -35,6 +38,7 @@ if ($data["info"] == "") {
             $page->title = "DVD Releases";
             break;
     }
+    $page->quality = $site->rottentomatoquality;
     $page->meta_title = "View upcoming theatre releases";
     $page->meta_keywords = "view,series,theatre,dvd";
     $page->meta_description = "View upcoming theatre releases";
