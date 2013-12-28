@@ -53,6 +53,11 @@ h1, h2, h3
     color: #485459;
 }
 
+h2.white
+{
+    color: #FFF;
+    font-weight: bold;
+}
 h4
 {
     margin: 0;
@@ -379,6 +384,7 @@ table.nohighlight tr:hover
 }
 
 table tr.alt { background-color: #F6F6F6; }
+table tr.alttrans { background-color: transparent; }
 table tr.new { background-color: #f6f8ff; }
 table.data em {font-weight:bolder; color:red;}
 table td.item { padding:5px 5px 2px 5px; }
