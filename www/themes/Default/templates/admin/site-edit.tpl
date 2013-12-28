@@ -290,6 +290,14 @@
 	</td>
 </tr>
 
+<tr>
+	<td style="width:180px;"><label for="fanarttvkey">Fanart.tv API key:</label></td>
+	<td>
+		<input id="fanarttvkey" class="long" name="fanarttvkey" type="text" value="{$fsite->fanarttvkey}" />
+		<div class="hint">The Fanart.tv api key. Used for Fanart.tv lookups.</div>
+	</td>
+</tr>
+
 </table>
 </fieldset>
 
