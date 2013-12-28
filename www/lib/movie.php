@@ -491,7 +491,7 @@ class Movie
 				$ret['title'] = $art->movie['name'];
 			}
 			if ($this->echooutput) {
-				echo $this->c->primaryOver("\nFanart Found ") . $this->c->headerOver($ret['title']);
+				echo $this->c->alternateOver("\nFanart Found ") . $this->c->headerOver($ret['title']);
 			}
 			return $ret;
 		} else {
